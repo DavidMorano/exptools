@@ -1,0 +1,910 @@
+
+(provide (quote vm))
+
+(defvar vm-primary-inbox "~/INBOX" "\
+*Mail is moved from the system mailbox to this file for reading.")
+
+(defvar vm-crash-box "~/INBOX.CRASH" "\
+*File in which to store mail temporarily while it is transferrred from
+the system mailbox to the primary inbox.  If the something happens
+during this mail transfer, any missing mail will be found in this file.
+VM will do crash recovery from this file automatically at startup, as
+necessary.")
+
+(defvar vm-spool-files nil "\
+*If non-nil this variable's value should be a list of strings naming files
+that VM will check for incoming mail instead of the where VM thinks your
+system mailbox is.  This variable can be used to specify multiple spool files
+or to point VM in the right direction if its notion of your system mailbox is
+incorrect.")
+
+(defvar vm-visible-headers (quote ("From:" "Sender:" "To:" "Apparently-To:" "Cc:" "Subject:" "Date:")) "\
+*List of headers that should be visible when VM first displays a message.
+These should be listed in the order you wish them presented.
+Regular expressions are allowed.")
+
+(defvar vm-highlighted-header-regexp nil "\
+*Regular expression that matches the beginnings of headers that should
+be highlighted when a message is first presented.  For exmaple setting
+this variable to \"^From\\\\|^Subject\" causes the From: and Subject:
+headers to be highlighted.")
+
+(defvar vm-preview-lines 0 "\
+*Non-nil value N causes VM to display the visible headers + N lines of text
+from a message when it is first presented.  The message is not actually marked
+as read until the message is exposed in its entirety.  Nil causes VM not to
+preview a message at all; it is displayed in its entirety when first
+presented and is marked as read.")
+
+(defvar vm-preview-read-messages t "\
+*Non-nil value means to preview messages, even if they've already been read.
+A nil value causes VM to preview messages only if new or unread.")
+
+(defvar vm-folder-type nil "\
+*Value specifies the type of mail folder VM should expect to read and
+write.  Nil means expect the UNIX style folders characterized by the
+\"\\n\\nFrom \" message separators.  The only other supported value for
+this variable is the symbol `mmdf' which causes VM to use
+\"^A^A^A^A\\n\" MMDF style leaders and trailers.")
+
+(defvar vm-folder-directory nil "\
+*Directory where folders of mail are kept.")
+
+(defvar vm-confirm-new-folders nil "\
+*Non-nil value causes interactive calls to vm-save-message
+to ask for confirmation before creating a new folder.")
+
+(defvar vm-delete-empty-folders t "\
+*Non-nil value causes VM to remove empty (zero length) folder files
+after saving them.")
+
+(defvar vm-included-text-prefix " > " "\
+*String used to prefix included text in replies.")
+
+(defvar vm-auto-folder-alist nil "\
+*Non-nil value should be an alist that VM will use to choose a default
+folder name when messages are saved.  The alist should be of the form
+((HEADER-NAME
+   (REGEXP . FOLDER-NAME) ...
+  ...))
+where HEADER-NAME and REGEXP are strings, and FOLDER-NAME is a string or an s-expression that evaluates to a string.
+
+If any part of the contents of the message header named by HEADER-NAME
+is matched by the regular expression REGEXP, VM will evaluate the
+corresponding FOLDER-NAME and use the result as the default when
+prompting for a folder to save the message in.  If trhe resulting folder
+name is a relative pathname, then it will resolve to the directory named by
+vm-folder-directory, or the default-directory of the currently visited
+folder if vm-folder-directory is nil.
+
+When FOLDER-NAME is evaluated, the current buffer will contain only the
+contents of the header named by HEADER-NAME.  It is safe to modify this
+buffer.  You can use the match data from any \\( ... \\) grouping
+constructs in REGEXP along with the function buffer-substring to build a
+folder name based on the header information.
+
+Matching is case sensitive.")
+
+(defvar vm-visit-when-saving nil "\
+*Non-nil causes VM to visit folders when saving messages.  This means
+VM will read the folder into Emacs and append the message to the buffer
+instead of appending to the folder file directly.  This behavior is
+ideal when folders are encrypted or compressed since appending plaintext
+to such files is a ghastly mistake.
+
+Note the setting of this variable does not affect how the primary inbox
+is accessed, i.e. the primary inbox must be a plaintext file.")
+
+(defvar vm-in-reply-to-format "%i" "\
+*String which specifies the format of the contents of the In-Reply-To
+header that is generated for replies.  See the documentation for the
+variable vm-summary-format for information on what this string may
+contain.  The format should *not* end with a newline.
+Nil means don't put an In-Reply-To: header in replies.")
+
+(defvar vm-included-text-attribution-format "%F writes:
+" "*String which specifies the format of the attribution that precedes the
+included text from a message in a reply.  See the documentation for the
+variable vm-summary-format for information on what this string may contain.
+Nil means don't attribute included text in replies.")
+
+(defvar vm-forwarding-subject-format "forwarded message from %F" "\
+*String which specifies the format of the contents of the Subject
+header that is generated for a forwarded message.  See the documentation
+for the variable vm-summary-format for information on what this string
+may contain.  The format should *not* end with a newline.  Nil means
+leave the Subject header empty when forwarding.")
+
+(defvar vm-summary-format "%2n %a %-17.17F %3m %2d %3l/%-5c \"%s\"
+" "*String which specifies the message summary line format.
+The string may contain the printf-like `%' conversion specifiers which
+substitute information about the message into the final summary line.
+
+Recognized specifiers are:
+   a - attribute indicators (always three characters wide)
+       The first char is  `D', `N', `U' or ` ' for deleted, new, unread
+       and read message respectively.
+       The second char is `F' for filed (saved) messages.
+       The third char is `R' if the message has been replied to.
+   c - number of characters in message (ignoring headers)
+   d - date of month message sent
+   f - author's address
+   F - author's full name (same as f if full name not found)
+   h - hour message sent
+   i - message ID
+   l - number of lines in message (ignoring headers)
+   m - month message sent
+   n - message number
+   s - message subject
+   w - day of the week message sent
+   y - year message sent
+   z - timezone of date when the message was sent
+
+Use %% to get a single %.
+
+A numeric field width may be specified between the `%' and the specifier;
+this causes right justification of the substituted string.  A negative field
+width causes left justification.
+
+The field width may be followed by a `.' and a number specifying the maximum
+allowed length of the substituted string.  If the string is longer than this
+value it is truncated.
+
+The summary format need not be one line per message but it must end with
+a newline, otherwise the message pointer will not be displayed correctly
+in the summary window.")
+
+(defvar vm-mail-window-percentage 75 "\
+*Percentage of the screen that should be used to show mail messages.
+The rest of the screen will be used by the summary buffer, if displayed.")
+
+(defvar vm-mutable-windows t "\
+*This variable's value controls VM's window usage.
+
+A value of t gives VM free run of the Emacs display; it will commandeer
+the entire screen for its purposes.
+
+A value of nil restricts VM's window usage to the window from which
+it was invoked.  VM will not create, delete, or use any other windows,
+nor will it resize it's own window.
+
+A value that is neither t nor nil allows VM to use other windows, but it
+will not create new ones, or resize or delete the current ones.")
+
+(defvar vm-startup-with-summary nil "\
+*Value tells VM what to display when a folder is visited.
+Nil means display folder only, t means display the summary only.  A
+value that is neither t not nil means to display both folder and summary.
+The latter only works if the variable pop-up-windows's value is non-nil.
+See the documentation for vm-mail-window-percentage to see how to change how
+the screen is apportioned between the folder and summary windows.")
+
+(defvar vm-follow-summary-cursor nil "\
+*Non-nil value causes VM to select the message under the cursor in the
+summary window before executing commands that operate on the current message.
+This occurs only when the summary buffer window is the selected window.")
+
+(defvar vm-group-by nil "\
+*Non-nil value tells VM how to group message presentation.
+Currently, the valid non-nil values for this variable are
+  \"subject\", which causes messages with the same subject (ignoring
+    Re:'s) to be presented together,
+  \"author\", which causes messages with the same author to be presented
+    together, and
+  \"date-sent\", which causes message sent on the same day to be
+    presented together.
+  \"arrival-time\" which appears only for completeness, this is the
+    default behavior and is the same as nil.
+
+The ordering of the messages in the folder itself is not altered, messages
+are simply numbered and ordered differently internally.")
+
+(defvar vm-skip-deleted-messages t "\
+*Non-nil value causes VM's `n' and 'p' commands to skip over
+deleted messages.  If all messages are marked deleted then this variable
+is, of course, ignored.")
+
+(defvar vm-skip-read-messages nil "\
+*Non-nil value causes VM's `n' and `p' commands to skip over
+message that have already been read in favor of new or unread messages.
+If there are no unread message then this variable is, of course, ignored.")
+
+(defvar vm-move-after-deleting nil "\
+*Non-nil value causes VM's `d' command to automatically invoke
+vm-next-message or vm-previous-message after deleting, to move
+past the deleted messages.")
+
+(defvar vm-delete-after-saving nil "\
+*Non-nil value causes VM automatically to mark messages for deletion
+after successfully saving them to a folder.")
+
+(defvar vm-circular-folders 0 "\
+*Value determines whether VM folders will be considered circular by
+various commands.  `Circular' means VM will wrap from the end of the folder
+to the start and vice versa when moving the message pointer or deleting,
+undeleting or saving messages before or after the current message.
+
+A value of t causes all VM commands to consider folders circular.
+
+A value of nil causes all of VM commands to signal an error if the start
+or end of the folder would have to be passed to complete the command.
+For movement commands, this occurs after the message pointer has been
+moved as far it can go.  For other commands the error occurs before any
+part of the command has been executed, i.e. no moves, saves, etc. will
+be done unless they can be done in their entirety.
+
+A value that is not nil and not t causes only VM's movement commands to
+consider folders circular.  Saves, deletes and undeleted command will
+behave the same as if the value is nil.")
+
+(defvar vm-search-using-regexps nil "\
+*Non-nil value causes VM's search command will interpret user input as a
+regular expression instead of as a literal string.")
+
+(defvar vm-mode-hooks nil "\
+*List of hook functions to run when a buffer enters vm-mode.
+These hook functions should generally be used to set key bindings
+and local variables.  Mucking about in the folder buffer is certainly
+possible but it is not encouraged.")
+
+(defvar vm-berkeley-mail-compatibility (memq system-type (quote (berkeley-unix))) "\
+*Non-nil means to read and write BSD Mail(1) style Status: headers.
+This makes sense if you plan to use VM to read mail archives created by
+Mail.")
+
+(defvar vm-gargle-uucp nil "\
+*Non-nil value means to use a crufty regular expression that does
+surprisingly well at beautifying UUCP addresses that are substitued for
+%f as part of summary and attribution formats.")
+
+(defvar vm-strip-reply-headers nil "\
+*Non-nil value causes VM to strip away all comments and extraneous text
+from the headers generated in reply messages.  If you use the \"fakemail\"
+program as distributed with Emacs, you probably want to set this variable to
+to t, because as of Emacs v18.52 \"fakemail\" could not handle unstripped
+headers.")
+
+(defvar vm-rfc934-forwarding t "\
+*Non-nil value causes VM to use char stuffing as described in RFC 934
+when packaging a message to be forwarded.  This will allow the recipient
+to use a standard bursting agent on the message and act upon it as if it
+were sent directly.")
+
+(defvar vm-inhibit-startup-message nil "\
+*Non-nil causes VM not to display its copyright notice, disclaimers
+etc. when started in the usual way.")
+
+(defvar mail-yank-hooks nil "\
+*List of hooks functions called after yanking a message into a *mail*
+buffer.")
+
+(defvar vm-mode-map nil "\
+Keymap for VM mode and VM Summary mode.")
+
+(defconst vm-version "4.42" "\
+Version number of VM.")
+
+(defvar vm-message-list nil)
+
+(make-variable-buffer-local (quote vm-message-list))
+
+(defvar vm-message-pointer nil)
+
+(make-variable-buffer-local (quote vm-message-pointer))
+
+(defvar vm-last-message-pointer nil)
+
+(make-variable-buffer-local (quote vm-last-message-pointer))
+
+(defvar vm-primary-inbox-p nil)
+
+(make-variable-buffer-local (quote vm-primary-inbox-p))
+
+(defvar vm-visible-header-alist nil)
+
+(make-variable-buffer-local (quote vm-visible-header-alist))
+
+(defvar vm-mail-buffer nil)
+
+(make-variable-buffer-local (quote vm-mail-buffer))
+
+(defvar vm-summary-buffer nil)
+
+(make-variable-buffer-local (quote vm-summary-buffer))
+
+(defvar vm-system-state nil)
+
+(make-variable-buffer-local (quote vm-system-state))
+
+(defvar vm-undo-record-list nil)
+
+(make-variable-buffer-local (quote vm-undo-record-list))
+
+(defvar vm-undo-record-pointer nil)
+
+(make-variable-buffer-local (quote vm-undo-record-pointer))
+
+(defvar vm-messages-needing-display-update nil)
+
+(make-variable-buffer-local (quote vm-messages-needing-display-update))
+
+(defvar vm-current-grouping nil)
+
+(make-variable-buffer-local (quote vm-current-grouping))
+
+(defvar vm-last-save-folder nil)
+
+(make-variable-buffer-local (quote vm-last-save-folder))
+
+(defvar vm-last-pipe-command nil)
+
+(make-variable-buffer-local (quote vm-last-pipe-command))
+
+(defvar vm-messages-not-on-disk 0)
+
+(make-variable-buffer-local (quote vm-messages-not-on-disk))
+
+(defvar vm-inhibit-write-file-hook nil)
+
+(defvar vm-session-beginning t)
+
+(defconst vm-spool-directory (or (and (boundp (quote rmail-spool-directory)) rmail-spool-directory) "/usr/spool/mail"))
+
+(defconst vm-attributes-header-regexp "^X-VM-Attributes:\\(.*
+\\([ 	]+.*
+\\)*\\)")
+
+(defconst vm-v5-data-header-regexp "^X-VM-v5-Data:\\(.*
+\\([ 	]+.*
+\\)*\\)")
+
+(defconst vm-attributes-header "X-VM-Attributes:")
+
+(defconst vm-berkeley-mail-status-header "Status: ")
+
+(defconst vm-berkeley-mail-status-header-regexp "^Status: ..?
+")
+
+(defconst vm-generic-header-regexp "^[^:
+]+:\\(.*
+\\([ 	]+.*
+\\)*\\)")
+
+(defconst vm-header-regexp-format "^%s:[ 	]*\\(.*\\(
+[ 	]+.*\\)*\\)")
+
+(defconst vm-supported-groupings-alist (quote (("arrival-time") ("subject") ("author") ("date-sent"))))
+
+(defconst vm-total-count 0)
+
+(defconst vm-new-count 0)
+
+(defconst vm-unread-count 0)
+
+(defvar vm-ml-message-number nil)
+
+(make-variable-buffer-local (quote vm-ml-message-number))
+
+(defvar vm-ml-highest-message-number nil)
+
+(make-variable-buffer-local (quote vm-ml-highest-message-number))
+
+(defvar vm-ml-attributes-string nil)
+
+(make-variable-buffer-local (quote vm-ml-attributes-string))
+
+(defmacro vm-marker (pos &optional buffer) (byte-code "ÂÃ	F‡" [pos buffer set-marker (make-marker)] 4))
+
+(defmacro vm-increment (variable) (byte-code "ÁÂDE‡" [variable setq 1+] 4))
+
+(defmacro vm-decrement (variable) (byte-code "ÁÂDE‡" [variable setq 1-] 4))
+
+(defun vm-abs (n) (byte-code "ÁWƒ [‚ ‡" [n 0] 2))
+
+(defmacro vm-save-restriction (&rest forms) (byte-code "ÅÆ!ÅÇ!ÅÈ!ÉÊDCËÌ	ÍEÌ
+ÎEFÏĞBÑËĞÒ	
+EÓ	ÄEÓ
+ÄEFEFF+‡" [vm-sr-clip vm-sr-min vm-sr-max forms nil make-symbol "vm-sr-clip" "vm-sr-min" "vm-sr-max" let (> (buffer-size) (- (point-max) (point-min))) and setq (set-marker (make-marker) (point-min)) (set-marker (make-marker) (point-max)) unwind-protect progn (widen) narrow-to-region set-marker] 17))
+
+(defun vm-make-message nil (byte-code "ÁÂÀ\"‡" [nil make-vector 20] 3))
+
+(defmacro vm-start-of (message) (byte-code "ÁÂE‡" [message aref 0] 3))
+
+(defun vm-vheaders-of (message) (byte-code "ÁH† Â!ˆÁH‡" [message 1 vm-reorder-message-headers] 3))
+
+(defmacro vm-text-of (message) (byte-code "ÁÂE‡" [message aref 2] 3))
+
+(defmacro vm-end-of (message) (byte-code "ÁÂE‡" [message aref 3] 3))
+
+(defmacro vm-number-of (message) (byte-code "ÁÂE‡" [message aref 4] 3))
+
+(defmacro vm-attributes-of (message) (byte-code "ÁÂE‡" [message aref 5] 3))
+
+(defmacro vm-new-flag (message) (byte-code "ÁÁÂEÃE‡" [message aref 5 0] 4))
+
+(defmacro vm-unread-flag (message) (byte-code "ÁÁÂEÃE‡" [message aref 5 1] 4))
+
+(defmacro vm-deleted-flag (message) (byte-code "ÁÁÂEÃE‡" [message aref 5 2] 4))
+
+(defmacro vm-filed-flag (message) (byte-code "ÁÁÂEÃE‡" [message aref 5 3] 4))
+
+(defmacro vm-replied-flag (message) (byte-code "ÁÁÂEÃE‡" [message aref 5 4] 4))
+
+(defmacro vm-byte-count-of (message) (byte-code "ÁÂE‡" [message aref 6] 3))
+
+(defmacro vm-weekday-of (message) (byte-code "ÁÂE‡" [message aref 7] 3))
+
+(defmacro vm-monthday-of (message) (byte-code "ÁÂE‡" [message aref 8] 3))
+
+(defmacro vm-month-of (message) (byte-code "ÁÂE‡" [message aref 9] 3))
+
+(defmacro vm-year-of (message) (byte-code "ÁÂE‡" [message aref 10] 3))
+
+(defmacro vm-hour-of (message) (byte-code "ÁÂE‡" [message aref 11] 3))
+
+(defmacro vm-zone-of (message) (byte-code "ÁÂE‡" [message aref 12] 3))
+
+(defmacro vm-full-name-of (message) (byte-code "ÁÂE‡" [message aref 13] 3))
+
+(defmacro vm-from-of (message) (byte-code "ÁÂE‡" [message aref 14] 3))
+
+(defmacro vm-message-id-of (message) (byte-code "ÁÂE‡" [message aref 15] 3))
+
+(defmacro vm-line-count-of (message) (byte-code "ÁÂE‡" [message aref 16] 3))
+
+(defmacro vm-subject-of (message) (byte-code "ÁÂE‡" [message aref 17] 3))
+
+(defmacro vm-su-start-of (message) (byte-code "ÁÂE‡" [message aref 18] 3))
+
+(defmacro vm-su-end-of (message) (byte-code "ÁÂE‡" [message aref 19] 3))
+
+(defmacro vm-set-start-of (message start) (byte-code "ÂÃ	F‡" [message start aset 0] 4))
+
+(defmacro vm-set-vheaders-of (message vh) (byte-code "ÂÃ	F‡" [message vh aset 1] 4))
+
+(defmacro vm-set-text-of (message text) (byte-code "ÂÃ	F‡" [message text aset 2] 4))
+
+(defmacro vm-set-end-of (message end) (byte-code "ÂÃ	F‡" [message end aset 3] 4))
+
+(defmacro vm-set-number-of (message n) (byte-code "ÂÃ	F‡" [message n aset 4] 4))
+
+(defmacro vm-set-attributes-of (message attrs) (byte-code "ÂÃ	F‡" [message attrs aset 5] 4))
+
+(defmacro vm-set-byte-count-of (message count) (byte-code "ÂÃ	F‡" [message count aset 6] 4))
+
+(defmacro vm-set-weekday-of (message val) (byte-code "ÂÃ	F‡" [message val aset 7] 4))
+
+(defmacro vm-set-monthday-of (message val) (byte-code "ÂÃ	F‡" [message val aset 8] 4))
+
+(defmacro vm-set-month-of (message val) (byte-code "ÂÃ	F‡" [message val aset 9] 4))
+
+(defmacro vm-set-year-of (message val) (byte-code "ÂÃ	F‡" [message val aset 10] 4))
+
+(defmacro vm-set-hour-of (message val) (byte-code "ÂÃ	F‡" [message val aset 11] 4))
+
+(defmacro vm-set-zone-of (message val) (byte-code "ÂÃ	F‡" [message val aset 12] 4))
+
+(defmacro vm-set-full-name-of (message author) (byte-code "ÂÃ	F‡" [message author aset 13] 4))
+
+(defmacro vm-set-from-of (message author) (byte-code "ÂÃ	F‡" [message author aset 14] 4))
+
+(defmacro vm-set-message-id-of (message id) (byte-code "ÂÃ	F‡" [message id aset 15] 4))
+
+(defmacro vm-set-line-count-of (message count) (byte-code "ÂÃ	F‡" [message count aset 16] 4))
+
+(defmacro vm-set-subject-of (message subject) (byte-code "ÂÃ	F‡" [message subject aset 17] 4))
+
+(defmacro vm-set-su-start-of (message start) (byte-code "ÂÃ	F‡" [message start aset 18] 4))
+
+(defmacro vm-set-su-end-of (message end) (byte-code "ÂÃ	F‡" [message end aset 19] 4))
+
+(defun vm-text-end-of (message) (byte-code "ÃH	Ä=ƒ Å‚ ÆZ‡" [message vm-folder-type t 3 mmdf 5 1] 3))
+
+(if vm-mode-map nil (setq vm-mode-map (make-keymap)) (suppress-keymap vm-mode-map) (define-key vm-mode-map "h" (quote vm-summarize)) (define-key vm-mode-map "î" (quote vm-next-unread-message)) (define-key vm-mode-map "ğ" (quote vm-previous-unread-message)) (define-key vm-mode-map "n" (quote vm-next-message)) (define-key vm-mode-map "p" (quote vm-previous-message)) (define-key vm-mode-map "N" (quote vm-Next-message)) (define-key vm-mode-map "P" (quote vm-Previous-message)) (define-key vm-mode-map "	" (quote vm-goto-message-last-seen)) (define-key vm-mode-map "" (quote vm-goto-message)) (define-key vm-mode-map "t" (quote vm-expose-hidden-headers)) (define-key vm-mode-map " " (quote vm-scroll-forward)) (define-key vm-mode-map "b" (quote vm-scroll-backward)) (define-key vm-mode-map "" (quote vm-scroll-backward)) (define-key vm-mode-map "d" (quote vm-delete-message)) (define-key vm-mode-map "u" (quote vm-undelete-message)) (define-key vm-mode-map "k" (quote vm-kill-subject)) (define-key vm-mode-map "f" (quote vm-followup)) (define-key vm-mode-map "F" (quote vm-followup-include-text)) (define-key vm-mode-map "r" (quote vm-reply)) (define-key vm-mode-map "R" (quote vm-reply-include-text)) (define-key vm-mode-map "z" (quote vm-forward-message)) (define-key vm-mode-map "@" (quote vm-send-digest)) (define-key vm-mode-map "*" (quote vm-burst-digest)) (define-key vm-mode-map "m" (quote vm-mail)) (define-key vm-mode-map "g" (quote vm-get-new-mail)) (define-key vm-mode-map "G" (quote vm-group-messages)) (define-key vm-mode-map "v" (quote vm-visit-folder)) (define-key vm-mode-map "s" (quote vm-save-message)) (define-key vm-mode-map "w" (quote vm-save-message-sans-headers)) (define-key vm-mode-map "A" (quote vm-auto-archive-messages)) (define-key vm-mode-map "S" (quote vm-save-folder)) (define-key vm-mode-map "|" (quote vm-pipe-message-to-command)) (define-key vm-mode-map "#" (quote vm-expunge-folder)) (define-key vm-mode-map "q" (quote vm-quit)) (define-key vm-mode-map "x" (quote vm-quit-no-change)) (define-key vm-mode-map "?" (quote vm-help)) (define-key vm-mode-map "" (quote vm-undo)) (define-key vm-mode-map "u" (quote vm-undo)) (define-key vm-mode-map "!" (quote shell-command)) (define-key vm-mode-map "<" (quote beginning-of-buffer)) (define-key vm-mode-map ">" (quote vm-end-of-message)) (define-key vm-mode-map "ó" (quote vm-isearch-forward)) (define-key vm-mode-map "=" (quote vm-summarize)) (define-key vm-mode-map "Ã" (quote vm-show-copying-restrictions)) (define-key vm-mode-map "×" (quote vm-show-no-warranty)))
+
+(defun vm-mark-for-display-update (message) (byte-code "	>?… 	B‰‡" [message vm-messages-needing-display-update] 2))
+
+(defun vm-last (list) (byte-code "Á!… A‰ˆ‚  ˆ‡" [list cdr-safe] 4))
+
+(put (quote folder-empty) (quote error-conditions) (quote (folder-empty error)))
+
+(put (quote folder-empty) (quote error-message) "Folder is empty")
+
+(defun vm-error-if-folder-empty nil (byte-code "?… ÂÃÁ\"ˆ‚  ‡" [vm-message-list nil signal folder-empty] 4))
+
+(defun vm-proportion-windows nil (byte-code "… qˆÆÁ!?…; Çp!ÈÇp!!ÉÊË ÈÌ !Z\"Í\"ZÎ 
+…: ŠÏ
+!ˆĞ!ˆÏ!)+‡" [vm-mail-buffer t mail-w n vm-mail-window-percentage old-w one-window-p get-buffer-window window-height / * screen-height minibuffer-window 100 selected-window select-window shrink-window] 14))
+
+(defun vm-number-messages nil (byte-code "Ä
+	… 	@ÅÆ!IˆT	A‰ˆ‚ ˆÆS!‰*‡" [n message-list vm-message-list vm-ml-highest-message-number 1 4 int-to-string] 5))
+
+(defun vm-match-visible-header (alist) (byte-code "ÀÁ‡" [match (byte-code "… Â@@!… ÃÄ@\"ˆA‰ˆ‚  ˆÁ‡" [alist nil looking-at throw match] 5)] 2))
+
+(defun vm-delete-header nil (byte-code "Á!… ÂÃÄ!ÅÄ!\"‡" [vm-generic-header-regexp looking-at delete-region match-beginning 0 match-end] 6))
+
+(defun vm-build-message-list nil (byte-code "ŠÏ ˆÍÍÍÍÍÍÍÍĞ=ƒ) ÑÒ	Ó‰‚2 ÔÕ	Ö‰ˆ
+ƒt 
+e…b @×HW…W @×H‰ˆA‰ˆ‚? ˆZbˆØ
+!‰*‚˜ ebˆÙ!…˜ Ú 	‰ˆ	ÛÜİ ŞÛ!Í#Iˆ	C
+
+‰ˆß	ÍÎ#…â Üİ ŞÛ!\\Í#Ú ‰ˆ	ÛIˆ
+…À 
+×IˆƒÔ à	C\"ˆA	‰‚Ş 	C
+
+	‰ˆ‚™ ˆ
+…ğ 
+×Üİ dÍ#I.)‡" [tail-cons message prev-message case-fold-search marker start-regexp sep-pattern trailer-length vm-folder-type separator-string vm-message-list mp end nil t vm-build-visible-header-alist mmdf "^
+" "
+
+" 6 "^From " "
+
+From " 2 3 vm-last looking-at vm-make-message 0 set-marker make-marker match-beginning search-forward setcdr] 20))
+
+(defun vm-build-visible-header-alist nil (byte-code "ÁÁBÁ‰ˆ
+…% Æ
+@ÁBÁB\"ˆA
+A‰ˆ‚ ˆA‰+‡" [header-alist nil vheaders vm-visible-headers list vm-visible-header-alist setcdr] 5))
+
+(defun vm-reorder-message-headers (message) (byte-code "ŠÎ deZV… ÏĞ e\"‰… ÏĞ d\"‰ˆÑÍÍÍÉÒ 
+ÓHbˆÔ ˆgÕU?…E Ö!…ƒ ×Ó!Ø!‰ˆ?ƒ^ b‚ Aƒq ÙAÚ`\"P\"‚y ÙÚ`\"\"ˆÛ`\"ˆ‚: ˆÜİ Iˆ‰ˆ…¬ @A…£ @AcˆÙ@Í\"ˆA‰ˆ‚ ˆŞ
+!.)))‡" [vm-sr-clip vm-sr-min vm-sr-max header-alist vm-visible-header-alist list buffer-read-only match-end-0 inhibit-quit t old-buffer-modified-p message vm-generic-header-regexp nil buffer-size set-marker make-marker ((byte-code "Ä ˆ… Å	
+\"ˆÆ	Ã\"ˆÆ
+Ã\"‡" [vm-sr-clip vm-sr-min vm-sr-max nil widen narrow-to-region set-marker] 6)) buffer-modified-p 0 forward-line 10 looking-at match-end vm-match-visible-header setcdr buffer-substring delete-region 1 point-marker set-buffer-modified-p] 20))
+
+(defun vm-read-attributes nil (byte-code "Š	ÍÍÍ‰ˆ…#T‰ˆ@ÎHƒ Å‚ó @ÍHbˆÏĞÑ@!Í#ˆ@ÒÓ Iˆ@ÍHbˆÔ@ÒHÇ#ƒx ÕÖ!bˆ@ÎÅ×ØIˆÙ@ÎH!?†g @ÎHGÎU?…u @ÎÚÇÅÅÅÅ%I‚ó Ô@ÒHÇ#ƒÇ ÕÖ!bˆ@ÎÅÛÜIˆÍÚÅÅÅÅÅ%
+		ÎW…¼ 
+	@ÎH	HIˆ	T‰	ˆ‚ ˆ@Î
+I*‚ó …Õ Ô@ÒHÇ#ƒè @ÎÚÅİŞ!ÅÅÅ%I‚ó @ÎÚÇÅÅÅÅ%Iˆ@ÎHÒH†@ÎHÍHƒ
+T‰‚@ÎHÖH…T‰ˆA‰ˆ‚ ))‡" [mp vm-message-list vm-new-count vm-unread-count vm-total-count nil vm-attributes-header-regexp t vm-v5-data-header-regexp i v vm-berkeley-mail-compatibility vm-berkeley-mail-status-header-regexp 0 5 search-forward "
+
+" vm-text-end-of 2 point-marker re-search-forward match-beginning 1 (byte-code "Àp!‡" [read] 2) ((error (byte-code "ÂÀÁÁÁÁ%‡" [t nil vector] 6))) vectorp vector (byte-code "Àp!@‡" [read] 2) ((error (byte-code "ÂÀÁÁÁÁ%‡" [t nil vector] 6))) looking-at "R"] 22))
+
+(defun vm-stuff-attributes nil (byte-code "ŠĞ deZV… ÑÒ e\"‰… ÑÒ d\"‰ˆÓÔ ˆÏÏÕ …Ñ @ÖH‰ˆ@×HbˆØ@ÙHÉ#…S ÚÛ×!Ü×!\"ˆ@×HbˆØ
+@ÙHÉ#…n ÚÛ×!Ü×!\"ˆ…µ @×HbˆØ@ÙHÉ#… ÚÛ×!Ü×!\"ˆ@ÖH×H?…µ @×Hbˆİ ˆŞ@ÖHßHƒ² à‚³ áâ#ˆ@×Hbˆİ ˆŞãä!å$ˆA‰ˆ‚. ˆæ!,)))‡" [vm-sr-clip vm-sr-min vm-sr-max mp vm-message-list attributes buffer-read-only old-buffer-modified-p vm-attributes-header-regexp t vm-v5-data-header-regexp vm-berkeley-mail-compatibility vm-berkeley-mail-status-header-regexp vm-berkeley-mail-status-header vm-attributes-header nil buffer-size set-marker make-marker ((byte-code "Ä ˆ… Å	
+\"ˆÆ	Ã\"ˆÆ
+Ã\"‡" [vm-sr-clip vm-sr-min vm-sr-max nil widen narrow-to-region set-marker] 6)) widen buffer-modified-p 5 0 re-search-forward 2 delete-region match-beginning match-end forward-line insert-before-markers 1 "" "R" "O
+" " " prin1-to-string "
+" set-buffer-modified-p] 29))
+
+(defun vm-gobble-deleted-messages nil (byte-code "ŠÎ deZV… ÏĞ e\"‰… ÏĞ d\"‰ˆÑÒ ˆÊÊÊ…k @ÓHÔH?ƒA ‰‚b È‰ˆÕ@ÖH@×H\"ˆ?ƒ] A‰‚b ØA\"ˆA‰ˆ‚- ˆ…Ï Ù ˆ?…} Ê‰	ˆ…Š @ÓHÔH…‘ Ê‰ˆ… @ÓHÔH…Ì Ê‰ˆA‰ˆ…¶ @ÓHÔH…Á A‰ˆ‚¬ ˆ†É Ú!‰ˆ,)))‡" [vm-sr-clip vm-sr-min vm-sr-max mp vm-message-list prev buffer-read-only did-gobble t overlay-arrow-position nil vm-last-message-pointer vm-message-pointer vm-system-state buffer-size set-marker make-marker ((byte-code "Ä ˆ… Å	
+\"ˆÆ	Ã\"ˆÆ
+Ã\"‡" [vm-sr-clip vm-sr-min vm-sr-max nil widen narrow-to-region set-marker] 6)) widen 5 2 delete-region 0 3 setcdr vm-clear-expunge-invalidated-undos vm-last] 12))
+
+(defun vm-change-all-new-to-unread nil (byte-code "	…# @ÄHÅH… Æ@Â\"ˆÇ@Ã\"ˆA‰ˆ‚ )‡" [mp vm-message-list nil t 5 0 vm-set-new-flag vm-set-unread-flag] 5))
+
+(defun vm-update-summary-and-mode-line nil (byte-code "	@ÅH‰ˆ	@ÆHÇHƒ È‰‚( 	@ÆHÉHƒ% Ê‰‚( Ë‰ˆ	@ÆHÌH…7 
+ÍP‰ˆ	@ÆHÅH…F 
+ÎP‰ˆ	@ÆHÏH…U 
+ĞP‰ˆ…f Ñ!ˆA‰ˆ‚V ˆŠÒ qˆÓÔ !)‡" [vm-ml-message-number vm-message-pointer vm-ml-attributes-string t vm-messages-needing-display-update 4 5 0 "new" 1 "unread" "read" 3 " filed" " replied" 2 " deleted" vm-update-message-summary other-buffer set-buffer-modified-p buffer-modified-p] 5))
+
+(defun vm-goto-message (n) "\
+Go to the message numbered N.
+Interactively N is the prefix argument.  If no prefix arg is provided
+N is prompted for in the minibuffer." (interactive "NGo to message: ") (byte-code "Æˆ… qˆÇ ˆÈ
+S\"	?… ÉÊ!ˆ	=ƒ& Ë ‚3 	‰ˆÌ@!ˆË )‡" [vm-mail-buffer cons n vm-message-list vm-message-pointer vm-last-message-pointer nil vm-error-if-folder-empty nthcdr error "No such message." vm-preview-current-message vm-set-summary-pointer] 7))
+
+(defun vm-goto-message-last-seen nil "\
+Go to the message last previewed." (interactive) (byte-code "Äˆ… qˆÅ ˆ	…\" Ä	
+‰ˆÆ@!ˆÇ )‡" [vm-mail-buffer vm-last-message-pointer tmp vm-message-pointer nil vm-error-if-folder-empty vm-set-summary-pointer vm-preview-current-message] 4))
+
+(put (quote beginning-of-folder) (quote error-conditions) (quote (beginning-of-folder error)))
+
+(put (quote beginning-of-folder) (quote error-message) "Beginning of folder")
+
+(put (quote end-of-folder) (quote error-conditions) (quote (end-of-folder error)))
+
+(put (quote end-of-folder) (quote error-message) "End of folder")
+
+(defun vm-check-count (count) (byte-code "ÄYƒ 	GW… ÅÆÂ\"‚% G	GZTÇ!W…% ÅÈÂ\"‡" [count vm-message-pointer nil vm-message-list 0 signal end-of-folder vm-abs beginning-of-folder] 5))
+
+(defun vm-move-message-pointer (direction) (byte-code "	
+Ç=ƒ# A‰ˆ?…  ƒ ‰‚  ÈÉÅ\"‚X =ƒ< ƒ5 Ê!‰‚9 ÈËÅ\"‚X A=?…R A‰ˆ‚? ˆ)‰ˆ‰)‡" [mp vm-message-pointer direction vm-circular-folders vm-message-list nil curr forward signal end-of-folder vm-last beginning-of-folder] 6))
+
+(defun vm-should-skip-message (mp) (byte-code "…
+ 	@ÃHÄH†* 
+…* 	@ÃHÄH†* 	@ÃHÅH†) 	@ÃHÆH?‡" [vm-skip-deleted-messages mp vm-skip-read-messages 5 2 0 1] 2))
+
+(defun vm-next-message (&optional count retry) "\
+Go forward one message and preview it.
+With prefix arg COUNT, go forward COUNT messages.  A negative COUNT
+means go backward.  If the absolute value of COUNT > 1 the values of the
+variables vm-skip-deleted-messages and vm-skip-read-messages are
+ignored." (interactive "p
+p") (byte-code "Åˆ… qˆÊ ˆ	† Ë‰ˆÅ	ÌVƒ  Í‚! ÎÏ	!?ƒ5 ‰‚G Ğ	Ë\"ƒC ÅÑÒ‚G ÅÓÔˆ
+=?…[ 
+‰	ˆÕ@!ˆÖ ˆ…d ×Å\",‡" [vm-mail-buffer count oldmp vm-message-pointer error nil direction vm-message-list t vm-last-message-pointer vm-error-if-folder-empty 1 0 forward backward vm-abs /= (byte-code "Â!?… Ã	!ˆS‰ˆ‚  ‡" [count direction zerop vm-move-message-pointer] 5) ((beginning-of-folder (byte-code "Á‰‡" [error beginning-of-folder] 2)) (end-of-folder (byte-code "Á‰‡" [error end-of-folder] 2))) (byte-code "Å!ˆ	
+=?… Æ
+!… Å!ˆ‚ ˆ
+	=…1 …1 A…1 Æ
+!…1 Å!‡" [direction oldmp vm-message-pointer retry vm-message-list vm-move-message-pointer vm-should-skip-message] 6) ((beginning-of-folder (byte-code "	‰ˆ
+ƒ Å!‚ Æ‰‡" [vm-message-pointer oldmp retry direction error vm-move-message-pointer beginning-of-folder] 3)) (end-of-folder (byte-code "	‰ˆ
+ƒ Å!‚ Æ‰‡" [vm-message-pointer oldmp retry direction error vm-move-message-pointer end-of-folder] 3))) vm-set-summary-pointer vm-preview-current-message signal] 8))
+
+(defun vm-previous-message (&optional count retry) "\
+Go back one message and preview it.
+With prefix arg COUNT, go backward COUNT messages.  A negative COUNT
+means go forward.  If the absolute value of COUNT > 1 the values of the
+variables vm-skip-deleted-messages and vm-skip-read-messages are
+ignored." (interactive "p
+p") (byte-code "Âˆ†	 Ã‰ˆÄ[	\"‡" [count retry nil 1 vm-next-message] 3))
+
+(defun vm-Next-message (&optional count) "\
+Like vm-next-message but will not skip messages." (interactive "p") (byte-code "ÃˆÃÃÄ
+!*‡" [vm-skip-deleted-messages vm-skip-read-messages count nil vm-next-message] 2))
+
+(defun vm-Previous-message (&optional count) "\
+Like vm-previous-message but will not skip messages." (interactive "p") (byte-code "ÃˆÃÃÄ
+!*‡" [vm-skip-deleted-messages vm-skip-read-messages count nil vm-previous-message] 2))
+
+(defun vm-next-unread-message nil "\
+Move forward to the nearest new or unread message, if there is one." (interactive) (byte-code "Áˆ… qˆÁÂÃ‡" [vm-mail-buffer nil (byte-code "ÁÅ ˆ
+=… ÆÇÄ\"*‡" [vm-skip-read-messages t oldmp vm-message-pointer nil vm-next-message signal end-of-folder] 4) ((end-of-folder (byte-code "ÀÁ!‡" [error "No next unread message"] 2)))] 3))
+
+(defun vm-previous-unread-message nil "\
+Move backward to the nearest new or unread message, if there is one." (interactive) (byte-code "Áˆ… qˆÁÂÃ‡" [vm-mail-buffer nil (byte-code "ÁÅ ˆ
+=… ÆÇÄ\"*‡" [vm-skip-read-messages t oldmp vm-message-pointer nil vm-previous-message signal beginning-of-folder] 4) ((beginning-of-folder (byte-code "ÀÁ!‡" [error "No previous unread message"] 2)))] 3))
+
+(defun vm-preview-current-message nil (byte-code "Ê‰ˆË ˆÌÍ	@!
+ƒ/ Î	@!Š	@ÏHbˆĞÑ
+!ƒ& 
+‚' Ò!ˆ`)^‚3 	@ÏH\"ˆÓp!…F Ôe\"ˆÕd\"ˆ…Ÿ …Ÿ ŒÌ``\"ˆÖÒ!)ˆebˆ×ÅÆ#…Ÿ ŒØÒ!bˆÙ!ˆØÚ!bˆÌe`\"ˆÖÒ!ˆÆ‰ˆË ˆÌeÛÚ!\"ˆÖÒ!ˆÅ‰ˆÛÒ!b)ˆ‚] )ˆdbˆ
+?†À 	?…À 	@ÜHÒH?…À 	@ÜHÚH?ƒË İÓp!!‚Í Ş ‡" [vm-system-state vm-message-pointer vm-preview-lines w vm-highlighted-header-regexp nil t vm-generic-header-regexp inverse-video vm-preview-read-messages previewing widen narrow-to-region vm-vheaders-of vm-text-end-of 2 forward-line natnump 0 get-buffer-window set-window-start set-window-point sit-for re-search-forward match-beginning looking-at 1 match-end 5 vm-show-current-message vm-update-summary-and-mode-line] 26))
+
+(defun vm-show-current-message (&optional sit-and-howl) (byte-code "Ä‰ˆŠebˆÅ ˆÆ`Ç	@!\")ˆ	@ÈHÉHƒ% Ê	@Â\"‚3 	@ÈHËH…3 Ì	@Â\"ˆÍ ˆ…A ÎÉ!ˆÏ ‡" [vm-system-state vm-message-pointer nil sit-and-howl reading widen narrow-to-region vm-text-end-of 5 0 vm-set-new-flag 1 vm-set-unread-flag vm-update-summary-and-mode-line sit-for vm-howl-if-eom-visible] 9))
+
+(defun vm-expose-hidden-headers nil "\
+Expose headers omitted from vm-visible-headers." (interactive) (byte-code "ÃˆÄ ˆ… qˆÅ ˆŠdbˆÆ ˆÇ`	@ÈH\"ˆÃÉp!‰…: Ê
+!Ë	@!U…: Ì
+	@ÈH\"))‡" [vm-mail-buffer vm-message-pointer w nil vm-follow-summary-cursor vm-error-if-folder-empty widen narrow-to-region 0 get-buffer-window window-start vm-vheaders-of set-window-start] 11))
+
+(defun vm-howl-if-eom-visible nil (byte-code "Âp!… Ãd\"… ÄÅ	@ÆHÇ	@!#)‡" [w vm-message-pointer get-buffer-window pos-visible-in-window-p message "End of message %s from %s" 4 vm-su-full-name] 7))
+
+(defun vm-scroll-forward (&optional arg message-changed) "\
+Scroll forward a screenful of text.
+If the current message is being previewed, the message body is revealed.
+If at the end of the current message, move to the next message." (interactive "P") (byte-code "ÉˆÊ ‰ˆ	… 	qˆË ˆÌp!?ƒT 
+ƒ+ …# 
+Ä=Íp!)‚. Îp!ˆ…< Ì!…< 
+Ä=…A Ï ˆĞ=ƒO ÑÄ!‚Q Ò ‚ˆ Ğ=ƒa ÑÄ!‚ˆ ƒj Ò ‚ˆ Ìp!Ó ÔÕ!ˆÉÖ×Ø=?…† Ò )*‡" [message-changed vm-mail-buffer vm-mutable-windows pop-up-windows t vm-summary-buffer vm-system-state w old-w nil vm-follow-summary-cursor vm-error-if-folder-empty get-buffer-window display-buffer switch-to-buffer vm-proportion-windows previewing vm-show-current-message vm-howl-if-eom-visible selected-window ((byte-code "Á!‡" [old-w select-window] 2)) select-window (byte-code "Á!‡" [arg scroll-up] 2) ((end-of-buffer (byte-code "?…	 Á ˆÂ‡" [arg vm-next-message next-message] 2))) next-message] 17))
+
+(defun vm-scroll-backward (&optional arg) "\
+Scroll backward a screenful of text." (interactive "P") (byte-code "ÈˆÉ ˆ… qˆÊ ˆËp!?ƒB 	ƒ) 
+…! 	Ã=Ìp!)‚, Íp!ˆ…: Ë!…: 	Ã=…? Î ‚V Ëp!Ï ĞÑ!ˆÒ!)*‡" [vm-mail-buffer vm-mutable-windows pop-up-windows t vm-summary-buffer w old-w arg nil vm-follow-summary-cursor vm-error-if-folder-empty get-buffer-window display-buffer switch-to-buffer vm-proportion-windows selected-window ((byte-code "Á!‡" [old-w select-window] 2)) select-window scroll-down] 12))
+
+(defun vm-end-of-message nil "\
+Displays the end of the current message, exposing and marking it read
+as necessary." (interactive) (byte-code "ÂˆÃ ˆ… qˆÄ ˆ	Å=… Æ ˆdbˆÇ ‡" [vm-mail-buffer vm-system-state nil vm-follow-summary-cursor vm-error-if-folder-empty previewing vm-show-current-message vm-howl-if-eom-visible] 5))
+
+(defun vm-quit-no-change nil "\
+Exit VM without saving changes made to the folder." (interactive) (byte-code "ÁˆÂÀ!‡" [t nil vm-quit] 2))
+
+(defun vm-quit (&optional no-change) "\
+Quit VM, saving changes and expunging messages marked for deletion.
+New messages are changed to unread." (interactive) (byte-code "Êˆ… qˆ	…9 Ï …9 Ğ
+!?…9 ÑÒ\"?…9 ÓÔÕ
+Ö
+Uƒ/ ×‚0 Ø#!?…9 ÙÚ!ˆÅ	?…C Û ˆÏ …K 	?…Q ÜÅ!ˆp…s Ê‰	ˆÅ=…n İ!ˆŞ!ˆqˆÒÊ!ˆŞp!*ˆßà !qˆá=…’ Å=ƒÓ ?ƒ  â ‚Ğ Êãäˆå=?…Ğ Å=…Ğ æÅ!?…Ğ …Ğ ç!…Ğ èç!!ˆâ ‚3å=…3Ê=ƒø é!ˆæÅ!?…õ Å=…õ â ‚3Å=?ƒ*…	Å=ê!)ˆÅ=…'å=ƒ#ë ‚'é!‚3Å=…3â )‡" [vm-mail-buffer no-change vm-messages-not-on-disk vm-undo-record-list inhibit-quit t summary-buffer vm-summary-buffer mail-buffer overlay-arrow-position nil vm-mutable-windows major-mode vm-startup-with-summary pop-up-windows buffer-modified-p zerop assq set-buffer-modified-p y-or-n-p format "%d message%s have not been saved to disk, exit anyway? " 1 "" "s" error "Aborted" vm-change-all-new-to-unread vm-save-folder delete-windows-on kill-buffer window-buffer selected-window vm-mode delete-other-windows (byte-code "ÁÀ!‡" [t vm-summarize] 2) ((error (byte-code "À‡" [nil] 1))) vm-summary-mode one-window-p get-buffer-window select-window switch-to-buffer display-buffer vm-proportion-windows] 29))
+
+(defun vm-write-file-hook nil (byte-code "É=?ƒ Á‚? 
+ƒ Á‚? Ê deZV…/ ËÌ e\"‰…/ ËÌ d\"‰ˆÍÇÁÎ ˆÁ*))‡" [major-mode nil vm-inhibit-write-file-hook vm-sr-clip vm-sr-min vm-sr-max inhibit-quit t buffer-read-only vm-mode buffer-size set-marker make-marker ((byte-code "Ä ˆ… Å	
+\"ˆÆ	Ã\"ˆÆ
+Ã\"‡" [vm-sr-clip vm-sr-min vm-sr-max nil widen narrow-to-region set-marker] 6)) vm-stuff-attributes] 7))
+
+(defun vm-save-folder (&optional quitting) "\
+Save current folder to disk." (interactive) (byte-code "Èˆ… qˆÉ …E ÂÈÊËˆÌ ˆÂÍ )ˆÎ‰ˆÏĞ !…1 …1 ÈÑÒˆ?…D ƒB Ó ‚D Ô )‡" [vm-mail-buffer inhibit-quit t vm-inhibit-write-file-hook vm-messages-not-on-disk vm-delete-empty-folders quitting vm-message-pointer nil buffer-modified-p (byte-code "ÂÁ\"‡" [quitting t vm-expunge-folder] 3) ((error (byte-code "À‡" [nil] 1))) vm-stuff-attributes save-buffer 0 zerop buffer-size (byte-code "Á!ˆÂÃ\"‡" [buffer-file-name delete-file message "%s removed"] 4) ((error (byte-code "À‡" [nil] 1))) vm-update-summary-and-mode-line vm-next-message] 8))
+
+(defun vm-visit-folder (folder) "\
+Visit a mail file.
+VM will parse and present its messages to you in the usual way." (interactive (byte-code "ÄÅƒ Æ!‚ 	ÂÃ$C‡" [vm-folder-directory default-directory nil t read-file-name "Visit folder: " expand-file-name] 6)) (byte-code "Âˆ… qˆÆ!‡" [vm-folder-directory default-directory nil t vm-mail-buffer folder vm] 2))
+
+(defun vm-help nil "\
+Display VM command and variable information." (interactive) (byte-code "Æˆ…	 Ç!… qˆ	… 
+Ã=È=ƒ\" É ‚< Ê=ƒ. ËÌ!‚< Í=ƒ: ËÎ!‚< É )‡" [vm-mail-buffer pop-up-windows vm-mutable-windows t last-command vm-system-state nil get-buffer-window vm-help describe-mode previewing message "Type SPC to read message, n previews next message   (? gives more help)" reading "SPC and b scroll, (d)elete, (s)ave, (n)ext, (r)eply   (? gives more help)"] 6))
+
+(defun vm-move-mail (source destination) (byte-code "ÃÄÀÀÀÅ	!Å
+!&‡" [nil source destination call-process "movemail" expand-file-name] 9))
+
+(defun vm-gobble-crash-box nil (byte-code "ŠÌ deZV… ÍÎ e\"‰… ÍÎ d\"‰ˆÏĞ ˆdËËÑ ÈÒ	!‰ˆdbˆÓÔŠqˆĞ ˆÌ )T#ˆÕd
+ÈÈ%ˆÖ ˆË×ØˆÙ!ˆÚ!ˆËÛÜ-)))‡" [vm-sr-clip vm-sr-min vm-sr-max opoint-max crash-buf buffer-read-only old-buffer-modified-p inhibit-local-variables t vm-crash-box buffer-file-name nil buffer-size set-marker make-marker ((byte-code "Ä ˆ… Å	
+\"ˆÆ	Ã\"ˆÆ
+Ã\"‡" [vm-sr-clip vm-sr-min vm-sr-max nil widen narrow-to-region set-marker] 6)) widen buffer-modified-p find-file-noselect insert-buffer-substring 1 write-region backup-buffer (byte-code "ÁÂ\"‡" [buffer-file-name set-file-modes 384] 3) ((error (byte-code "À‡" [nil] 1))) set-buffer-modified-p kill-buffer (byte-code "Á!‡" [vm-crash-box delete-file] 2) ((error (byte-code "À‡" [nil] 1)))] 18))
+
+(defun vm-get-spooled-mail nil (byte-code "	†	 
+È PCÄÆÉ!…# ÊË!ˆÌ ˆÊÍ!ˆÄ‰ˆ…Q Î@!…H ÊÏ@\"ˆĞ@\"ˆÌ ˆÊÑ@\"ˆÄ‰ˆA‰ˆ‚$ ˆ+‡" [spool-files vm-spool-files vm-spool-directory inhibit-quit t got-mail nil vm-crash-box user-login-name file-exists-p message "Recovering messages from crash box..." vm-gobble-crash-box "Recovering messages from crash box... done" file-readable-p "Getting new mail from %s..." vm-move-mail "Getting new mail from %s... done"] 13))
+
+(defun vm-get-new-mail nil "\
+Move any new mail that has arrived in the system mailbox into the
+primary inbox.  New mail is appended to the disk and buffer copies of
+the primary inbox.
+
+This command is valid only from the primary inbox buffer." (interactive) (byte-code "Åˆ… qˆ	?… ÆÇ!ˆÈ … É ?ƒ# ÊË!‚@ Ì ˆ
+…, ?…4 Í ˆÌ ˆÎ ˆ
+…@ Ï@!‡" [vm-mail-buffer vm-primary-inbox-p vm-summary-buffer vm-current-grouping vm-message-pointer nil error "This is not your primary inbox." vm-get-spooled-mail vm-assimilate-new-messages message "No new mail." vm-emit-totals-blurb vm-do-summary vm-thoughtfully-select-message vm-set-summary-pointer] 10))
+
+(defun vm-emit-totals-blurb nil (byte-code "ÃÄÅUƒ Æ‚ Ç	
+%‡" [vm-total-count vm-new-count vm-unread-count message "%d message%s, %d new, %d unread." 1 "" "s"] 6))
+
+(defun vm-find-first-unread-message nil (byte-code "ÃÃ
+‰ˆ…/ @ÄHÅH… @ÄHÆH?ƒ' Ã‰‚+ A‰ˆ‚ ˆ	?…` 
+‰ˆ…` @ÄHÇH…M @ÄHÆH?ƒX Ã‰‚\\ A‰ˆ‚9 ˆ	*‡" [mp unread-mp vm-message-list nil 5 0 2 1] 3))
+
+(defun vm-assimilate-new-messages nil (byte-code "É	!?Ê deZV…$ ËÌ e\"‰…$ ËÌ d\"‰ˆÍÎ ˆÏ ˆĞ ˆ
+†6 A‰ˆ…? 
+ƒI ÑÒÓ‚K Ô ))ˆ
+*‡" [tail-cons vm-message-list new-messages-p vm-message-pointer vm-sr-clip vm-sr-min vm-sr-max vm-current-grouping nil vm-last buffer-size set-marker make-marker ((byte-code "Ä ˆ… Å	
+\"ˆÆ	Ã\"ˆÆ
+Ã\"‡" [vm-sr-clip vm-sr-min vm-sr-max nil widen narrow-to-region set-marker] 6)) widen vm-build-message-list vm-read-attributes data (byte-code "Á!‡" [vm-current-grouping vm-group-messages] 2) ((error (byte-code "ÁA@!ˆÂÃ!ˆÄ ‡" [data message sleep-for 2 vm-number-messages] 4))) vm-number-messages] 12))
+
+(defun vm-thoughtfully-select-message nil (byte-code "?†7 	Ç=?†7 
+?†' ?…' @ÈHÉH?…' @ÈHÊH?…7 Ëp!…6 Ìe\")…_ Í ƒW ƒN ‰‚Q ‰ˆÎ ‚^ ?…^ Ï )‡" [vm-message-pointer vm-system-state vm-preview-lines vm-preview-read-messages w mp vm-last-message-pointer reading 5 0 1 get-buffer-window pos-visible-in-window-p vm-find-first-unread-message vm-preview-current-message vm-Next-message] 6))
+
+(defun vm-display-startup-message nil (byte-code "ÂÃ!…' ÄÅÆ	\"ˆÂÇ!… …& ÅÈ@!!ˆA‰ˆ‚ )ˆÅÉ!‡" [lines vm-version sit-for 5 ("You may give out copies of VM.  Type \\[vm-show-copying-restrictions] to see the conditions" "VM comes with ABSOLUTELY NO WARRANTY; type \\[vm-show-no-warranty] for full details") message "VM %s, Copyright (C) 1989 Kyle E. Jones; type ? for help" 4 substitute-command-keys ""] 8))
+
+(defun vm (&optional folder) "\
+Read mail under Emacs.
+Optional first arg FOLDER specifies the folder to visit.  It defaults
+to the value of vm-primary-inbox.  The folder buffer is put into VM
+mode, a major mode for reading mail.
+
+Visiting the primary inbox causes any contents of the system mailbox to
+be moved and appended to the resulting buffer.
+
+All the messages can be read by repeatedly pressing SPC.  Messages are
+marked for deletion with `d', and saved to a folder with `s'.  Quitting
+VM with `q' expunges messages marked for deletion and saves the buffered
+folder to disk.
+
+See the documentation for vm-mode for more information." (interactive) (byte-code "Òˆ… ÔÁ!ˆÕÖÁÁÁ$ˆÕ×!ˆÕØ!ˆ
+… 
+qˆÁÙ†+ Ú!!‰ˆqˆÛ †; Ü‰ˆ	İ=?Á
+…Y Şp!ˆßÜ!ˆàÜ!ˆİ ˆ…a á †f …™ â ˆ?ƒx ãä!‚™ å ˆ…ƒ ?…‹ æ ˆå ˆç‹ˆ…™ è@!ˆé!ˆ…¥ ƒÕ êÁ!ˆå ˆÁ=…Ò Á=…Ò 	ë=ƒÉ ì ‚Ò íî!!ˆì ‚Ş Á=…Ş ì ˆ… Ò‰ˆ†ò †ò ï ˆ…û ğ ?… å *)‡" [vm-session-beginning t vm-mail-buffer inhibit-local-variables mail-buffer folder vm-primary-inbox vm-messages-not-on-disk first-time major-mode inhibit-quit vm-primary-inbox-p vm-message-list vm-summary-buffer vm-current-grouping vm-message-pointer vm-startup-with-summary vm-mutable-windows nil vm-inhibit-startup-message random load "~/.vm" "vm-undo" "vm-summary" find-file-noselect expand-file-name buffer-modified-p 0 vm-mode buffer-flush-undo abbrev-mode auto-fill-mode vm-get-spooled-mail vm-assimilate-new-messages message "Folder is empty." vm-emit-totals-blurb vm-do-summary ((byte-code "Á!… Â ƒ ÃÄ !‚ Å!ˆqˆÆ ‡" [mail-buffer get-buffer-window one-window-p switch-to-buffer other-buffer delete-windows-on vm-thoughtfully-select-message] 7)) vm-set-summary-pointer switch-to-buffer vm-summarize vm-summary-mode delete-other-windows select-window get-buffer-window vm-display-startup-message input-pending-p] 30))
+
+(defun vm-mode nil "\
+Major mode for reading mail.
+
+Commands:
+   h - summarize folder contents
+
+   n - go to next message
+   p - go to previous message
+   N - like `n' but ignores skip-variable settings
+   P - like `p' but ignores skip-variable settings
+ M-n - go to next unread message
+ M-p - go to previous unread message
+ RET - go to numbered message (uses prefix arg or prompts in minibuffer)
+ TAB - go to last message seen
+ M-s - incremental search through the folder
+
+   t - display hidden headers
+ SPC - scroll forward a page (if at end of message, then display next message)
+   b - scroll backward a page
+   > - go to end of current message
+
+   d - delete current message (mark as deleted)
+   u - undelete
+   k - mark for deletion all messages with same subject as the current message
+
+   r - reply (only to the sender of the message)
+   R - reply with included text for current message
+   f - followup (reply to all recipients of message)
+   F - followup with included text from the current message
+   z - forward the current message
+   m - send a message
+
+   @ - digestify and mail entire folder contents (the folder is not modified)
+   * - burst a digest into indivdual messages, and append and assimilate these
+       message into the current folder.
+
+   G - group messages according to some criteria
+
+   g - get any new mail that has arrived in the system mailbox
+       (new mail is appended to the disk and buffer copies of the
+       primary inbox.)
+   v - visit another mail folder
+
+   s - save current message in a folder (appends if folder already exists)
+   w - write current message to a file without its headers (appends if exists)
+   S - save entire folder to disk, expunging deleted messages
+   A - save unfiled messages to their vm-auto-folder-alist specified folders
+   # - expunge deleted messages (without saving folder)
+   q - quit VM, deleted messages are expunged, folder saved to disk
+   x - exit VM with no change to the folder
+
+ C-_ - undo, special undo that retracts the most recent
+             changes in message attributes.  Expunges and saves
+             cannot be undone.
+
+   ? - help
+
+   ! - run a shell command
+   | - run a shell command with the current message as input
+
+ M-c - view conditions under which youmay redistribute of VM
+ M-w - view the details of VM's lack of a warranty
+
+Variables:
+   vm-auto-folder-alist
+   vm-berkeley-mail-compatibility
+   vm-circular-folders
+   vm-confirm-new-folders
+   vm-crash-box
+   vm-delete-after-saving
+   vm-delete-empty-folders
+   vm-folder-directory
+   vm-folder-type
+   vm-follow-summary-cursor
+   vm-forwarding-subject-format
+   vm-gargle-uucp
+   vm-group-by
+   vm-highlighted-header-regexp
+   vm-in-reply-to-format
+   vm-included-text-attribution-format
+   vm-included-text-prefix
+   vm-inhibit-startup-message
+   vm-mail-window-percentage
+   vm-mode-hooks
+   vm-move-after-deleting
+   vm-mutable-windows
+   vm-preview-lines
+   vm-preview-read-messages
+   vm-primary-inbox
+   vm-rfc934-forwarding
+   vm-search-using-regexps
+   vm-skip-deleted-messages
+   vm-skip-read-messages
+   vm-spool-files
+   vm-startup-with-summary
+   vm-strip-reply-headers
+   vm-summary-format
+   vm-visible-headers
+   vm-visit-when-saving" (byte-code "Ğ ˆÑÉ!ˆÑÄ!ˆÁÃÃÒÓÔÕÁ	
+Ö×!\"‰ˆØ!ˆÙÚ!‡" [buffer-read-only nil case-fold-search t file-precious-flag major-mode mode-line-format mode-line-buffer-identification mode-name require-final-newline vm-current-grouping vm-group-by vm-primary-inbox-p buffer-file-name vm-primary-inbox vm-mode-map widen make-local-variable vm-mode ("" mode-line-modified mode-line-buffer-identification "   " global-mode-string (vm-message-list ("   %[(" vm-ml-attributes-string ")%]----") ("   %[()%]----")) (-3 . "%p") "-%-") ("VM " vm-version ": %b" (vm-message-list ("   " vm-ml-message-number " (of " vm-ml-highest-message-number ")") "  (no messages)")) "VM" equal expand-file-name use-local-map run-hooks vm-mode-hooks] 8))
+
+(put (quote vm-mode) (quote mode-class) (quote special))
+
+(autoload (quote vm-group-messages) "vm-group" nil t)
+
+(autoload (quote vm-reply) "vm-reply" nil t)
+
+(autoload (quote vm-reply-include-text) "vm-reply" nil t)
+
+(autoload (quote vm-followup) "vm-reply" nil t)
+
+(autoload (quote vm-followup-include-text) "vm-reply" nil t)
+
+(autoload (quote vm-mail) "vm-reply" nil t)
+
+(autoload (quote vm-forward-message) "vm-reply" nil t)
+
+(autoload (quote vm-send-digest) "vm-reply" nil t)
+
+(autoload (quote vm-isearch-forward) "vm-search" nil t)
+
+(autoload (quote vm-burst-digest) "vm-digest" nil t)
+
+(autoload (quote vm-rfc934-char-stuff-region) "vm-digest")
+
+(autoload (quote vm-digestify-region) "vm-digest")
+
+(autoload (quote vm-show-no-warranty) "vm-license" nil t)
+
+(autoload (quote vm-show-copying-restrictions) "vm-license" nil t)
+
+(autoload (quote vm-auto-archive-messages) "vm-save" nil t)
+
+(autoload (quote vm-save-message) "vm-save" nil t)
+
+(autoload (quote vm-save-message-sans-headers) "vm-save" nil t)
+
+(autoload (quote vm-pipe-message-to-command) "vm-save" nil t)
+
+(autoload (quote vm-delete-message) "vm-delete" nil t)
+
+(autoload (quote vm-undelete-message) "vm-delete" nil t)
+
+(autoload (quote vm-kill-subject) "vm-delete" nil t)
+
+(autoload (quote vm-expunge-folder) "vm-delete" nil t)
+
+(if (not (memq (quote vm-write-file-hook) write-file-hooks)) (setq write-file-hooks (cons (quote vm-write-file-hook) write-file-hooks)))

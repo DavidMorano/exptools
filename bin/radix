@@ -1,0 +1,95 @@
+############################################
+#
+# Radix command
+#
+#############################################
+
+
+CMD=`basename $0`
+VERSION="5.8"
+RDX_BIN=${TOOLS:?'must be set'}/lib/radix
+USAGE1="Usage: $CMD [-HV] [-m|p]"
+
+USAGE="$USAGE1
+For help, use: $CMD -H"
+
+Help="$USAGE1"'
+
+Convert RADIX commands to nroff/troff commands. 
+Result is printed to stdout.
+
+	-H		print this help message
+	-V		print tool version number
+	-m 		use troff macro implementation
+	-p 		use preprocessor implementation
+
+'
+
+
+############################################
+# Process command line flags
+
+set -- `getopt HmpV  $*`
+if [ $? -ne 0 ]
+then
+	echo "$USAGE" >&2
+	exit 1
+fi
+
+IMPL=pre
+
+while [ $# -gt 0 ]
+do
+	case "$1" in
+	-H)	echo "$Help" >&2; exit 0;;
+	-m)	IMPL=mac_cmd
+		;;
+	-p)	IMPL=pre
+		;;
+	-V)	echo "$CMD: Version $VERSION" >&2; exit 0;;
+	--)	shift; break;;
+	-*)	echo "$CMD: Error: Unknown flag: $1" >&2
+		echo "$USAGE" >&2
+		exit 1 ;;
+	*)	echo "$CMD: Internal Error: Processing flag: $1" >&2
+		exit 1 ;;
+	esac
+	shift
+done
+
+$RDX_BIN/radixlog $IMPL 
+
+if [ $IMPL = "pre" ]
+then
+	exec $RDX_BIN/radixpp $*
+fi
+
+echo '.\"############# Set up for RADIX macros - version '"$VERSION"' ##########'
+
+cat <<\!
+.\"
+.\"  Set "rX" to the path of the radix macros and
+.\"  utilities in the exptools directory. This is necessary so
+.\"  that the RADIX utilities can be  found. The "\" in front of
+.\"  the ".so" insures that xpand and soexpand will not try to
+.\"  expand the ".so". 
+.\"  
+.\"  These commands were put in place by running the "radix"
+.\"  exptool. Type "toolman radix" for more information.
+.\"
+.if @\*(f1@@ \{\
+.sy echo .ds rX `logdir exptools`/lib/radix/ > /usr/tmp/\n($$
+\.so /usr/tmp/\n($$
+.sy rm /usr/tmp/\n($$
+\.so \*(rXradix.mac
+'br\}
+.\"################## End Set up for RADIX macros ###############
+!
+
+if [ $# = 0 ]
+then
+	cat -
+else
+	cat "$@"
+fi
+

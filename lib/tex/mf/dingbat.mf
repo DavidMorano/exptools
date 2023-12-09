@@ -1,0 +1,217 @@
+% hands.mf
+if unknown cmbase: input cmbase fi
+mode_setup;
+% specify size on command line
+% size=10pt#;
+%
+font_size size;
+em#:=size; cap#:=7/10em#; desc#:=3/10em#;
+thinline#:=1/100em#;
+define_pixels(em,cap,desc);
+define_blacker_pixels(thinline);
+% Hand pointing right
+def handpointing=
+% define points for thumb and cuff
+x1=x3=1/2[0,1/15w];
+x2=x5=x4=x23=4/16w;
+y1=y2=10/15[-desc,cap];
+y3=y4=2/15[-desc,cap];
+y5=6/7[y4,y2]; y23=1/7[y4,y2];
+x6=9.75/16w; y6=y2;
+x7=11.25/16w; y7=4/5[y23,y5];
+x8=8.75/16w; y8=1/4[y7,y6];
+x17=14.5/16w;
+y17=9.25/15[-desc,cap];
+% find a point at a certain height on
+% the curve from z6 to z7
+path dummyCurve; path dummyLine;
+x.dummy=1/2[x8,x7]; y.dummy=y17;
+dummyCurve:=z6{z5-z2}..z7..tension1.4..z8;
+dummyLine:=z.dummy--z17;
+z18=dummyCurve intersectionpoint dummyLine;
+x16=x17; y16=y7;
+x9=7/16w; y9=y8;
+x10=6/16w; y10=2/5[y23,y5];
+% find another point on the 
+% crve from z6 to z7
+x.dummy2=x5;
+y.dummy2=y16;
+x.dummy3=1/2[x8,x7];
+y.dummy3=y.dummy2;
+dummyLine:=z.dummy3--z.dummy2;
+z12=dummyCurve intersectionpoint dummyLine;
+% define points for curled fingers
+x15=x14=x19=x22=1/3[x18,x17];
+x13=x20=x21=x12;
+y15=y16;
+y13=y14=y15-(y17-y16);
+y20=y19=y13-(y17-y16);
+y21=y22=y20-(y17-y16);
+% pick up pen and draw whole image
+pickup pencircle scaled thinline;
+draw z1--z2--z4--z3--cycle;
+draw z5{(1,1)}..tension 1.5..z6
+ &z6{z5-z2}...z7..tension 1.4..z8
+ &z8{down}..tension3..z9
+ &z9..tension 1.8..{left}z10;
+draw z18--z17{right}..z16--z7;
+draw z7--z15{right}..z14--z13{left}..z12;
+draw z14{right}..z19--z20{left}..z13;
+draw z19{right}..z22--z21{left}..z20;
+draw z21{(-1,-1)}..tension1.5..z23;
+showit;
+enddef;
+
+% "Note" icon (a pencil nib)
+% 
+beginchar("C",21/10em#,em#,0pt#);
+horzline#:=1/5em#;
+diagline#:=1/10em#;
+define_blacker_pixels(horzline,diagline);
+x11=x21=x31=0pt;
+x12=x22=x32=12/10em;
+y21=y22=1/2[2horzline,3horzline];
+x41=20.66/10em;
+y41=1/2[0,5horzline];
+pickup pencircle xscaled 0.1pt# yscaled horzline;
+bot y11=bot y12=0;
+top y31=top y32=5horzline;
+draw z11--z12;
+draw z21--z22;
+draw z31--z32;
+pickup pencircle scaled diagline;
+x52=x62=12/10em;
+bot y52=0;
+top y62=5horzline;
+draw z52--z41;
+draw z62--z41;
+fill 6/10[z52,z41]--z41--6/10[z62,z41]--cycle;
+showit;
+endchar;
+
+% "Admonishment icon (black equilateral triangle 1.5pc on side with
+% white 12 pt "!" in center)
+%
+beginchar("D",18pt#,15.6pt#,0pt#);
+x11=0em;
+x12=18/10em;
+x13=9/10em;
+y11=y12=0em;
+y13=15.589/10em;
+fill z11--z12--z13--cycle;
+% parameters from cmss10.mf needed by punct.mf 
+% This is CMSS12.MF in text format, as of May 5, 1986.
+% Computer Modern Sans Serif 12 pt
+if unknown cmbase: input cmbase fi
+
+font_identifier:="CMSS"; font_size 12pt#;
+
+u#:=23.5/36pt#;      % unit width
+width_adj#:=17/36pt#;    % width adjustment for certain characters
+serif_fit#:=-9/36pt#;    % extra sidebar near lowercase serifs
+cap_serif_fit#:=-13/36pt#;  % extra sidebar near uppercase serifs
+letter_fit#:=0pt#;    % extra space added to all sidebars
+
+body_height#:=324/36pt#;  % height of tallest characters
+asc_height#:=300/36pt#;    % height of lowercase ascenders
+cap_height#:=300/36pt#;    % height of caps
+fig_height#:=283/36pt#;    % height of numerals
+x_height#:=192/36pt#;    % height of lowercase without ascenders
+math_axis#:=108/36pt#;    % axis of symmetry for math symbols
+bar_height#:=97/36pt#;    % height of crossbar in lowercase e
+comma_depth#:=54/36pt#;    % depth of comma below baseline
+desc_depth#:=84/36pt#;    % depth of lowercase descenders
+
+crisp#:=0pt#;      % diameter of serif corners
+tiny#:=0pt#;      % diameter of rounded corners
+fine#:=0pt#;      % diameter of sharply rounded corners
+thin_join#:=20/36pt#;    % width of extrafine details
+hair#:=33/36pt#;    % lowercase hairline breadth
+stem#:=33/36pt#;    % lowercase stem breadth
+curve#:=33/36pt#;    % lowercase curve breadth
+ess#:=33/36pt#;      % breadth in middle of lowercase s
+flare#:=30/36pt#;    % diameter of bulbs or breadth of terminals
+dot_size#:=35/36pt#;    % diameter of dots
+cap_hair#:=33/36pt#;    % uppercase hairline breadth
+cap_stem#:=37/36pt#;    % uppercase stem breadth
+cap_curve#:=37/36pt#;    % uppercase curve breadth
+cap_ess#:=37/36pt#;    % breadth in middle of uppercase s
+rule_thickness#:=.44pt#;  % thickness of lines in math symbols
+
+dish#:=0pt#;      % amount erased at top or bottom of serifs
+bracket#:=0pt#;      % vertical distance from serif base to tangent
+jut#:=0pt#;      % protrusion of lowercase serifs
+cap_jut#:=0pt#;      % protrusion of uppercase serifs
+beak_jut#:=0pt#;    % horizontal protrusion of beak serifs
+beak#:=.6/36pt#;    % vertical protrusion of beak serifs
+vair#:=26/36pt#;    % vertical diameter of hairlines
+notch_cut#:=22/36pt#;    % maximum breadth above or below notches
+bar#:=25/36pt#;      % lowercase bar thickness
+slab#:=27/36pt#;    % serif and arm thickness
+cap_bar#:=26/36pt#;    % uppercase bar thickness
+cap_band#:=24/36pt#;    % uppercase thickness above/below lobes
+cap_notch_cut#:=31/36pt#;  % max breadth above/below uppercase notches
+serif_drop#:=2/36pt#;    % vertical drop of sloped serifs
+stem_corr#:=1/36pt#;    % for small refinements of stem breadth
+vair_corr#:=1/36pt#;    % for small refinements of hairline height
+apex_corr#:=6/36pt#;    % extra width at diagonal junctions
+
+o#:=9/36pt#;      % amount of overshoot for curves
+apex_o#:=0pt#;      % amount of overshoot for diagonal junctions
+
+slant:=0;      % tilt ratio $(\Delta x/\Delta y)$
+fudge:=.98;      % factor applied to weights of heavy characters
+math_spread:=-0.2;    % extra openness of math symbols
+superness:=1/sqrt 2;    % parameter for superellipses
+superpull:=1/20;    % extra openness inside bowls
+beak_darkness:=0;    % fraction of triangle inside beak serifs
+ligs:=2;      % level of ligatures to be included
+
+square_dots:=true;    % should dots be square?
+hefty:=true;      % should we try hard not to be overweight?
+serifs:=false;      % should serifs and bulbs be attached?
+monospace:=false;    % should all characters have the same width?
+variant_g:=false;    % should an italic-style g be used?
+low_asterisk:=false;    % should the asterisk be centered at the axis?
+math_fitting:=false;    % should math-mode spacing be used?
+
+font_setup;
+def undot(suffix $,$$) =
+ unfilldraw if square_dots: (x$l,y$$l)--(x$r,y$$l)
+   --(x$r,y$$r)--(x$l,y$$r)--cycle  % squarish dot
+  else: z$l...z$$l...z$r...z$$r...cycle  fi % roundish dot
+ enddef;
+
+% the "!" copied from punct.mf
+thisw#=5u#+width_adj#;
+thish#=asc_height#;
+define_pixels(thisw,thish);
+
+italcorr asc_height#*slant-2u#-.5width_adj#+.5dot_size#;
+normal_adjust_fit(0,0);
+pickup tiny.nib; pos3(dot_size,0); pos4(dot_size,90);
+lft x3l=hround(.5w-.5dot_size); bot y4l=.18h; z3=z4; undot(3,4);  % dot
+numeric bot_width;
+bot_width=if hefty:max(hround .8dot_size,fine.breadth) else: hair fi;
+pickup fine.nib; pos1(dot_size,0); pos2(bot_width,0);
+x1=x2=x3; bot y2=.25[top y4r,x_height]+1;
+if square_dots: top y1=thish+.18h;
+ unfilldraw stroke z1e--z2e;  % stem
+else: top z0=(x1,thish+o); y1+.5dot_size=thish+o;
+ unfilldraw z1r...z0...z1l---z2l--z2r---cycle; fi  % stem and bulb
+penlabels(0,1,2,3,4); 
+showit;
+endchar;
+% letter B must go after all others because it uses pattern_mirror to
+% reflect dimensions and it seems natural to take A with it.
+%
+%beginchar("A",16/15em#,cap#,desc#);
+%handpointing;
+%endchar;
+
+%beginchar("B",16/15em#,cap#,desc#);
+%input pattern_mirror;
+%pattern;
+%handpointing;
+%endchar;
+

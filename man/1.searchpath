@@ -1,0 +1,528 @@
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+     NAME
+          searchpath - Search directories in a directory path list for
+          entries
+
+     SYNOPSIS
+          searchpath [ _o_p_t_i_o_n_s ] _e_n_t_r_y ...
+
+     DESCRIPTION
+          In this document, the term _e_n_t_r_y is used to  mean  either  a
+          file  or  directory,  while  _f_i_l_e  is  used  to  mean a non-
+          directory file, and _d_i_r_e_c_t_o_r_y means just that.  This command
+          searches  the  directories  in a path list for the specified
+          _e_n_t_r_i_e_s and reports the path of each _e_n_t_r_y found.  An  _e_n_t_r_y
+          of  -  means  to  read a list of _e_n_t_r_i_e_s, one per line, from
+          standard input (issuing a prompt for each, if standard input
+          is a terminal).
+
+          The default path list it searches is your  PATH  environment
+          variable.   A usage message is printed if no _e_n_t_r_y is speci-
+          fied, or if an illegal option is specified.
+
+          If an _e_n_t_r_y argument begins with a slash (/), _i._e. is  fully
+          qualified,  _s_e_a_r_c_h_p_a_t_h  ignores  the  path  list  and simply
+          prints the given _e_n_t_r_y if it  meets  the  location  criteria
+          (permissions and entry type).
+
+          Each _e_n_t_r_y may contain more than one path component as in
+               searchpath my/long/lost/file
+
+          If the entry that it finds is a directory, it prints a slash
+          (/)  at the end of the full path.  If the specified _e_n_t_r_y is
+          not found, an error message is printed.
+
+          _e_n_t_r_i_e_s may contain shell file name wild-card characters (?,
+          *,  [,  and  ]),  in which case they should be quoted.  When
+          given such an _e_n_t_r_y pattern, _s_e_a_r_c_h_p_a_t_h prints the names  of
+          all  the  entries that match it in the first directory where
+          there is a match.  _e_n_t_r_y patterns do _n_o_t ignore  file  names
+          beginning  with dot (however, see the +z option).  Also, see
+          the CAVEATS section.
+
+          Options are specified with either a leading plus  sign  (+),
+          or the traditional dash (-).  The plus sign prefix generally
+          means to turn an option on, while the dash prefix  means  to
+          turn  the  option  off.  (When invoked as _w_h_e_r_e, options are
+          only prefixed with the  dash.)  The  option  prefix  may  be
+          changed  midstream,  as in +x-f, which is the same as +x -f.
+          However, options that take an argument, such as +s  and  +p,
+          must be separated from options following them on the command
+          line.  (When invoked as _w_h_e_r_e, an entirely different set  of
+          options are available.  See where(1).)
+
+
+
+
+     Page 1                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+        Mode Options
+          These are accumulative:
+
+          +e   look for _e_n_t_r_i_e_s that merely Exist.  If used  with  the
+               r,  w  or x option, this option is insignificant, since
+               an _e_n_t_r_y must exist to be readable, writable or execut-
+               able.   Since  _s_e_a_r_c_h_p_a_t_h  does not look for files that
+               don't exist (hmmmm), -e is the same as +e.
+
+          +r   look for _e_n_t_r_i_e_s that are Readable.  -r means  to  look
+               for entries that are _n_o_t Readable.
+
+          +w   look for _e_n_t_r_i_e_s that are Writable.  -w means  to  look
+               for entries that are _n_o_t Writable.
+
+          +x   look for _e_n_t_r_i_e_s that are eXecutable (searchable, if  a
+               directory).   -x means to look for entries that are _n_o_t
+               eXecutable.
+
+          If none of the mode options  are  specified,  it  looks  for
+          _e_n_t_r_i_e_s that are executable.  If more than one is specified,
+          it looks for _e_n_t_r_i_e_s that have at least all of the specified
+          modes  set/unset  (they  may have others set too).  An error
+          message is printed if any conflicting mode options are  used
+          (_e._g.  +r-r).   (When  invoked  as _w_h_e_r_e the default mode is
+          executable unless an alternate path list is given, in  which
+          case the default is readable.)
+
+          These options tell _s_e_a_r_c_h_p_a_t_h what modes  the  searched  for
+          _e_n_t_r_i_e_s  must  have  for  the login executing the _s_e_a_r_c_h_p_a_t_h
+          command.  If _s_e_a_r_c_h_p_a_t_h finds an _e_n_t_r_y in a path list direc-
+          tory  and the entry is readable by its owner but not by your
+          login, and the +r option was given, then  _s_e_a_r_c_h_p_a_t_h  disre-
+          gards  this  entry  and continues searching for the _e_n_t_r_y in
+          other directories of the path list.
+
+        Type Options
+          These are accumulative:
+
+          +f   looks for Files.
+
+          +d   looks for Directories.
+
+          +/   looks for directories and places a slash (/) after each
+               directory name found.
+
+          If neither of the type options are specified, it  looks  for
+          files and directories as though +f/ had been specified.
+
+          Using a dash prefix before any of  these  options  not  only
+          tells  _s_e_a_r_c_h_p_a_t_h  to  _n_o_t  look for that type of entry, but
+          instead look for the other type of entry.  That is, -f means
+
+
+
+     Page 2                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+          to  look  for  directories,  but not files (as though +/ had
+          been specified).  -fd means look for  neither  and  is  gen-
+          erally  useless.  An error message is printed if conflicting
+          types are specified (such as -f+f).  (_w_h_e_r_e only  looks  for
+          files.)
+
+        Search Options
+          +a   prints paths of _e_n_t_r_i_e_s found in All path  list  direc-
+               tories.   The default is to print only the path of each
+               _e_n_t_r_y in the _f_i_r_s_t path list directory that  the  _e_n_t_r_y
+               is  found in.  When an _e_n_t_r_y file name pattern argument
+               is given, +a causes it to print all entries that  match
+               the  pattern  in  all directories in the path list.  -a
+               turns off +a and is  the  default.   (When  invoked  as
+               _w_h_e_r_e the default is to search for all instances of the
+               given files or patterns.)
+
+          -m   The default behavior of _s_e_a_r_c_h_p_a_t_h is to decide whether
+               a  given  _e_n_t_r_y  is  a  file  name pattern depending on
+               whether it contains a ?, *, [, or ].  This option tells
+               _s_e_a_r_c_h_p_a_t_h  that each _e_n_t_r_y is _n_o_t a file name pattern,
+               even if it contains one of those wild-card  characters.
+               This  can  be  used  to look for files that have one of
+               those characters in their name (probably by  mistake!).
+               On  the other hand, +m tells _s_e_a_r_c_h_p_a_t_h that each _e_n_t_r_y
+               is always supposed to be treated as a  file  name  pat-
+               tern, and is probably not as useful.
+
+               The default behavior of determining whether an argument
+               is a file name pattern by what it contains is lost when
+               +m or -m is used.
+
+          +z   (zap dot) means to ignore . and .. entries when using a
+               file  name  pattern  that  would  match them.  It isn't
+               needed unless: a file name pattern  is  used,  searches
+               include  directories,  and  at  least one _e_n_t_r_y pattern
+               that would match .  or .. is specified.  In  any  case,
+               specifying  .  or .. explicitly as an _e_n_t_r_y locates the
+               specified directory (if directories are being  searched
+               for),  even if +z is specified.  -z turns off +z and is
+               the default.
+
+          +p _s_t_r_i_n_g
+               if the string contains the separator character (default
+               is  colon  [:] - see +s), a slash (/), or a dot (.), it
+               is taken to be a path list; otherwise it is taken to be
+               the  name  of  an  environment variable that contains a
+               path list.  If more than one +p  option  is  specified,
+               the  resulting  path  list is the string sum of all the
+               specified path lists separated with the separator char-
+               acter.   If no +p option is used, the PATH path list is
+               used.  -p is the same as +p.  Remember  that  the  path
+
+
+
+     Page 3                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+               list  is ignored for those command line _e_n_t_r_y arguments
+               that begin with a slash.
+
+          +s[_c_h_a_r_a_c_t_e_r]
+               allows you to specify a different  Separator  character
+               between  directories in the path list.  If present, the
+               _c_h_a_r_a_c_t_e_r must immediately follow the +s with no inter-
+               vening  white  space, otherwise the default, colon (:),
+               is assumed.  It usually makes sense to specify only one
+               separator  character,  and  that before any +p options.
+               -s is the same as +s.
+
+          +v _s_t_r_i_n_g
+               This option is the same as the p  option,  except  that
+               viewpathing  is  turned on (even if -v is used).  There
+               is no way to turn viewpathing off once it is turned on.
+
+          When viewpathing is on,
+
+          1. The first directory in the path list is always  expanded,
+             as  if  +F  (see  below)  was used.  We'll call the first
+             directory in the path list the "current node."
+
+          2. The current directory at the time _s_e_a_r_c_h_p_a_t_h was  invoked
+             must  either  be the same as the current node, or it must
+             be a subdirectory thereunder, otherwise _s_e_a_r_c_h_p_a_t_h issues
+             an error message and quits.
+
+          3. The subdirectory of the current directory off of the node
+             is  determined.   This subdirectory is then automatically
+             prepended to every _e_n_t_r_y argument  that  does  not  start
+             with a slash.
+
+          For example, if
+              VPATH=$HOME:/
+          (VPATH is exported) and the current directory is  $HOME/bin,
+          then
+              searchpath  +vVPATH  ls
+          looks for bin/ls in $HOME and /.
+
+        Output Options
+          +l   Lists the names of the directories in the path list  to
+               standard  error  before  searching for the _e_n_t_r_i_e_s.  -l
+               turns off +l and is the default.
+
+          +q   it is Quiet about _e_n_t_r_i_e_s not found in the  path  list.
+               -q  turns off +q and is the default.  (When accessed as
+               _w_h_e_r_e it never complains about files that  couldn't  be
+               located.)
+
+          +#   Prints the number of times each _e_n_t_r_y is located in the
+               path list.  -# turns off +# and is the default.
+
+
+
+     Page 4                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+          +F   Fully  qualifies  the  located  _e_n_t_r_i_e_s  so  that   the
+               reported  path name begins with root (/).  -F turns off
+               +F and is the default.
+
+          +t   prints a Tab between the directory where the entry  was
+               found  (from  the  path list) and the entry itself when
+               printing.  When used with a command line _e_n_t_r_y argument
+               that begins with a slash, a tab is output at the begin-
+               ning of the line before the "located" entry, no  direc-
+               tory  from the path list having been used to locate it.
+               -t turns off +t and is the default.
+
+          -E   only prints the directories that the specified  _e_n_t_r_i_e_s
+               are  in  (from  the  path  list)  without  printing the
+               entries' names.  When used with a  command  line  _e_n_t_r_y
+               argument  that  begins with a slash, only the directory
+               name portion of each entry is printed [see dirname(1)].
+               -E  overrides  the  +t option.  +E turns on printing of
+               the located entries' names and is the default.   Speci-
+               fying +E without +D turns off printing of the path list
+               directory where the entry was found.
+
+          -D   only prints the entry name without the  directory  from
+               the path list that it was found in.  This is especially
+               useful if _e_n_t_r_i_e_s contains  wild-card  characters,  and
+               you  are  interested  in  what  matched,  but not which
+               directory (from the path  list)  that  each  _e_n_t_r_y  was
+               located  in.   -D  overrides the +t and +F options.  +D
+               turns on printing of the directory from the  path  list
+               where  each entry was found and is the default.  Speci-
+               fying +D without +E turns off  printing  of  the  entry
+               name,  and  only  prints the directory/directories from
+               the path list that the entry is in.
+
+          -DE  causes it not to output the  names  or  directories  of
+               found  entries to standard output (thus causing options
+               t and F to be ignored).  This is useful for checking to
+               see  if  an  entry  is available, without caring where,
+               since the exit code is non-zero if  any  of  the  named
+               entries  doesn't  exist.   Unless  +q  is also used, it
+               still complains about missing entries, so you may  want
+               to use +q with -DE.
+
+          -V   causes it to print the version number of the program to
+               standard  output.   Unlike  the normal situation, if no
+               non-option arguments are given with this option,  _s_e_a_r_-
+               _c_h_p_a_t_h exits (successfully) without a usage message.
+
+     EXIT CODES
+          If any fatal errors occur, it returns a -1.  Otherwise,  the
+          return  code  is the number of entries not found in the path
+          list.  (Note: This is different from when invoked as _w_h_e_r_e.)
+
+
+
+     Page 5                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+     EXAMPLES
+          # Find the entries named _i_t and _a_l_l in my PATH:
+          searchpath +f/e it all
+
+          # Find the executable command named _q_r in the PATH,
+          # only the first:
+          searchpath  qr
+
+          # List my CDPATH and find all directories named _l_i_b/_b_i_n in it:
+          searchpath  +ladp CDPATH  lib/bin
+
+          # Look for a source file down the VPATH nodes:
+          alias vsrch="searchpath +rvVPATH"  vsrcha="vsrch +a"
+          vsrch searchpath.c
+
+          # Find all makefiles down the VPATH:
+          vsrcha makefile
+
+          # Find all entries named ed that exist in my PATH or VPATH:
+          searchpath  +ep$PATH:$VPATH  ed
+          # or searchpath +epPATH -pVPATH  ed
+
+          # Find all searchable directories in my CDPATH that have
+          # 3 character names:
+          searchpath  +adxpCDPATH  '???'
+
+          # See if there is a /usr/lbin/ctags program:
+          # (Same as [ -f /usr/lbin/ctags -a -x /usr/lbin/ctags ])
+          if searchpath -DE+q /usr/lbin/ctags
+          ...
+
+          # Find all non-readable, non-writable directories in the current
+          # directory (including . and .. and other .directories):
+          searchpath  -rw+dqp:  '*'   # Could have used p. instead of p:
+
+          # Change to the directory containing the program _m_u_g_w_u_m_p:
+          cd `searchpath -E mugwump`
+
+          # Search the directory above this one for all searchable
+          # directories (except . and ..):
+          searchpath  +zxdqp..  '*'
+
+          # Locate all readable lib*.a files in a LIBPATH path list
+          searchpath +arfpLIBPATH 'lib*.a'    # (LIBPATH is exported)
+
+          # If tset is available in my PATH, execute it:
+          searchpath +q-DE tset && tset -IQ
+
+          # Print all directories I can cd to with my CDPATH:
+          # Ignore . and ..
+          searchpath +adxEzpCDPATH '*' | sort -u | pr -tw80 -5
+
+
+
+
+     Page 6                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+          Mnemonically:
+          a = all
+          d = directories
+          x = searchable (can cd to)
+          E = print entry without the directory from CDPATH path list
+          z = zap . and ..
+          p = use CDPATH instead of PATH
+
+     SEE ALSO
+          where(1),  checkpath(1),  formpath(1),  splitpath(1),  norm-
+          file(1), purgepath(1)
+
+     DIAGNOSTICS
+          Environment variable:
+          ...
+          not set or not exported.
+                    Any environment variables referred  to  (in  a  +p
+                    option,  or  the  default  PATH)  must  be set and
+                    exported.
+
+          Can't stat "_d_i_r_e_c_t_o_r_y": _s_y_s_t_e_m _e_r_r_o_r _m_e_s_s_a_g_e
+                    One of the directories in the path list cannot  be
+                    _s_t_a_ted.    It   is  either  inaccessible  or  non-
+                    existent.  It is ignored when  searching  for  the
+                    entries.
+
+          Not a directory: _i_t_e_m
+                    One of the components in the path list exists, but
+                    is  not a directory.  It is ignored when searching
+                    for the entries.
+
+          Too many directories at directory: _d_i_r_e_c_t_o_r_y
+          Current limit = #.  Need to recompile `searchpath' for more.
+                    Try to reduce your path list first  [using  check-
+                    path(1) helps], before contacting the provider.
+
+          All other diagnostic messages should be self explanatory.
+
+     NOTES
+          The directories in the path list and the  specified  _e_n_t_r_i_e_s
+          are  normalized,  as with normfile(1) (without compression),
+          to get rid of extraneous slashes.  . and ..  components  are
+          not removed (compressed out).  Use checkpath(1) to check and
+          clean up a path list before using it.
+
+          Before searching for any of  the  specified  _e_n_t_r_i_e_s,  _s_e_a_r_-
+          _c_h_p_a_t_h  first  eliminates redundant instances of directories
+          in its internal copy of the path list (except  when  invoked
+          as  _w_h_e_r_e,  for  historical  reasons).  For example, if your
+          current directory is /, then
+
+              searchpath  +ads' '  -p". / .. ../.."  bin
+
+
+
+     Page 7                                           (printed 6/9/94)
+
+
+
+
+
+
+     SEARCHPATH(1)       UNIX System V (EXPTOOLS)        SEARCHPATH(1)
+
+
+
+          only prints bin/ but  _n_o_t  /bin/,  ../bin/,  or  ../../bin/,
+          since . = / = ..  = ../..
+
+          However, if  the  file  $HOME/tmp  is  linked  to  the  file
+          $HOME/bin/tmp, then
+
+              searchpath  +aep:$HOME:$HOME/bin  tmp
+
+          reports both $HOME/tmp and $HOME/bin/tmp.
+
+     CAVEATS
+          When a multiple path component _e_n_t_r_y file  name  pattern  is
+          specified,  only the last component can have wild-card char-
+          acters.  That is,
+              searchpath +pCDPATH 'bin/c*'
+          locates all files whose names begin with c in the first  bin
+          directory  off  of  a  CDPATH directory in which any such c*
+          files exist.  However,
+              searchpath +zpCDPATH '*/.*'
+          attempts to locate all files  whose  names  begin  with  dot
+          (except  .  and  ..) _i_n _t_h_e _f_i_r_s_t _d_i_r_e_c_t_o_r_y _n_a_m_e_d * off of a
+          CDPATH directory in which any such .* files exist.  This  is
+          probably  not  what was desired, but _s_e_a_r_c_h_p_a_t_h can't handle
+          such multiple-component file name patterns.
+
+          If you want to search just one directory  (say  _s_o_u_r_c_e)  for
+          some entries (say _l*._c) you _c_a_n_n_o_t do this:
+              searchpath  +p source  'l*.c'
+          since _s_e_a_r_c_h_p_a_t_h thinks that _s_o_u_r_c_e is the name  of  a  path
+          list environment variable.  Instead you should do this:
+              searchpath  +p ./source  'l*.c'
+
+     PROVIDED BY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8                                           (printed 6/9/94)
+
+
+

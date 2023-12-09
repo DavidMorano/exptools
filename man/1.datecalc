@@ -1,0 +1,528 @@
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          datecalc, datediff - do common date calculations
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          datecalc [ -csheznawdmjyJYv ] date [ adjustment ... ]
+
+          datediff date1 date2
+          datediff -
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _d_a_t_e_c_a_l_c routine calculates a new date given a start
+          date and a series of adjustments to be made to it.
+
+          The _d_a_t_e_d_i_f_f routine calculates the difference in days
+          between two dates.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD----LLLLIIIINNNNEEEE AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+          The following are the date forms that can be used on the
+          command lines or in standard input.
+
+          mm/dd/yy  This is the _s_l_a_s_h form, commonly used in the US
+                    and in countries around the world with strong
+                    American connections.
+
+          mm-dd-yy  This is the _h_y_p_h_e_n form, a common alternative to
+                    the slash form.
+
+          dd.mm.yy  This is the _E_u_r_o_p_e_a_n form, with the day in the
+                    first position and the month second, used chiefly
+                    in Europe and many countries around the world with
+                    strong European connexions.
+
+          yymmdd    This is the _c_o_m_p_r_e_s_s_e_d or _c_o_m_p_u_t_e_r form, commonly
+                    used in computer databases to simplify the
+                    problems of comparing and sorting dates, since the
+                    year is in the major position followed by the
+                    month and day.
+
+          'today'   This requests today's date.
+
+          The year or the year and month can be oooommmmiiiitttttttteeeedddd and will
+          default to the current year and month.
+
+        DDDDaaaatttteeeeccccaaaallllcccc
+          This command returns an adjusted date or information about
+          such a date.  By default, the result takes the same form as
+          the date on the command line, i.e., a slash date on the
+          command line will produce a slash date result.  The _s_l_a_s_h
+          form is the default.
+
+          The form of the result can be changed by the following
+          command-line arguments.
+
+
+
+     Page 1                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+          -c     The _c_o_m_p_r_e_s_s_e_d form of the resulting date should be
+                 returned.
+
+          -s     The _s_l_a_s_h form of the resulting date should be
+                 returned.
+
+          -h     The _h_y_p_h_e_n form of the resulting date should be
+                 returned.
+
+          -e     The _E_u_r_o_p_e_a_n form of the resulting date should be
+                 returned.
+
+          -z     The result should display _l_e_a_d_i_n_g _z_e_r_o_s in the day,
+                 month, and day-of-year fields.
+
+          -w     The _w_e_e_k_d_a_y _n_u_m_b_e_r of the resulting date should be
+                 returned, in the range 1-7, where 1 is Monday and 7
+                 is Sunday.  NOTE: this is different from the weekday
+                 number returned by _d_a_t_e(_1).
+
+          -d     The _d_a_y _o_f _t_h_e _m_o_n_t_h of the resulting date should be
+                 returned, in the range 1-31.
+
+          -m     The _m_o_n_t_h of the resulting date should be returned,
+                 in the range 1-12.
+
+          -y     The _2-_d_i_g_i_t _y_e_a_r of the resulting date should be
+                 returned, in the range 00-99.
+
+          -Y     The _4-_d_i_g_i_t _y_e_a_r of the resulting date should be
+                 returned, in the form YYYY.
+
+          -j     The _d_a_y _o_f _t_h_e _y_e_a_r (partial Julian date) of the
+                 resulting date should be returned, in the range 1-
+                 366.
+
+          -J     The _f_u_l_l _J_u_l_i_a_n _d_a_t_e of the resulting date should be
+                 returned, in the form YYYYjjj, where 'YYYY' is the
+                 year in full as returned by the -Y flag, and 'jjj' is
+                 the day of the year as returned by the -jz flags.
+
+          -n     The _n_a_m_e of either the weekday (with the -w argument)
+                 or month (with the -m argument) of the resulting date
+                 should be returned.  The weekday form is the default.
+
+          -a     The _a_b_b_r_e_v_i_a_t_e_d _n_a_m_e of either the weekday (with the
+                 -w argument) or month (with the -m argument) of the
+                 resulting date should be returned.  The abbreviated
+                 form is the first 3 characters of the name.  The
+                 weekday form is the default.
+
+          -v     The command is to be executed only to validate its
+
+
+
+     Page 2                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+                 argument without generating the normal date output.
+                 This is useful for shell scripts that only need to
+                 process the error codes.
+
+          date   A date in one of the accepted forms (see above).
+
+          adjustment
+                 A change to the current date, represented as
+                 <op><number><unit>, where
+
+                 <op>      is the type of the adjustment:
+                           +   addition
+                           -   subtraction
+                           /   forward search, or
+                           ?   backward search,
+
+                 <number>  is an integer number, and
+
+                 <unit>    is the (optional) adjustment unit,
+                           represented as follows:
+                           d   days,
+                           m   months,
+                           y   years, or
+                           w   weeks (for '+' or '-') or week days
+                               (for '/' or '?').
+                           If no unit is given, the default is days.
+
+                 For example, the adjustment ++++11115555dddd requests that 15
+                 days be added to the given date while ////11115555dddd requests
+                 that dates be searched forward from the given date
+                 until the first one with the day component '15' is
+                 found.  For more on searching, see SEARCHING below.
+
+                 If several adjustments are given on the command line,
+                 they are applied sequentially from left to right,
+                 returning the date that is the result of all the
+                 requested adjustments.
+
+          NOTE: If no adjustment is given, this command converts a
+          given date from one form to another based on the command-
+          line flags.
+
+        DDDDaaaatttteeeeddddiiiiffffffff
+          This command returns an integer representing the number of
+          days difference between two dates.  If the first date is
+          larger than the second, a negative number will be returned.
+
+          date1  A date in one of the accepted forms (see above).
+
+          date2  A date in one of the accepted forms (see above).
+
+          -      This argument signals that the dates to be processed
+
+
+
+     Page 3                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+                 are read from standard input instead of taken from
+                 the command line.  Each line of input is expected to
+                 have 2 dates separated by whitespace.  For each line
+                 of input there will be a matching line of output
+                 giving the difference in days between the given
+                 dates.
+
+     SSSSEEEEAAAARRRRCCCCHHHHIIIINNNNGGGG
+          The _s_e_a_r_c_h_i_n_g adjustment of datecalc provides a way to
+          adjust a date based on a search of dates close to it.
+          Searches can be directed forward with the '/' character or
+          backward with the '?' character.  These characters were
+          chosen because of their similar meaning in several Unix text
+          editors.
+
+          Searches can be made to one of 4 date components:  the _d_a_y
+          ('d' adjustment), the _m_o_n_t_h ('m'), the _y_e_a_r ('y'), or the
+          _w_e_e_k_d_a_y ('w').
+
+          Searches always begin by examining the _c_u_r_r_e_n_t date, to see
+          if it satisfies the search condition.  If so, the search
+          stops.  Otherwise, the given component is adjusted by adding
+          one to it (for forward searches) or subtracting one from it
+          (for backward searches) and checking the date again.  This
+          continues until a date is found that satisfies the search
+          condition.
+
+          Note that the primary date component changed by this process
+          is the one being searched.  The other components are not
+          changed except indirectly, as the result of changing the
+          primary search component.  For example, consider the
+          following search for a date next May:
+
+               $ datecalc  3/13/84  /5m
+               5/13/84
+
+          The month component was incremented until it became May
+          (month 5).  The day and year did not change as a result of
+          this search.  However, if the search had been in the
+          backward direction, the year would have changed, as shown
+          below, but not the day:
+
+               $ datecalc  3/13/84  ?5m
+               5/13/83
+
+          The most powerful search adjustments are probably those that
+          use the day-of-the-week search, invoked with the 'w'
+          character.  This allows dates to be adjusted to given
+          weekdays as designated by numbers in the range 1 (= Monday)
+          to 7 (= Sunday).  For example, the adjustment ////3333wwww requests
+          that the date be adjusted to the next Wednesday.  If the
+          current day is Wednesday, no change would be made.  If the
+
+
+
+     Page 4                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+          user wishes the Wednesday one week hence instead, the
+          adjustment ++++1111dddd ////3333wwww would do the trick.
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          The return code issued by these commands is normally 0
+          unless an error occurs.  The following are the return codes
+          and messages issued by these commands when errors are
+          detected.
+
+        ddddaaaatttteeeeccccaaaallllcccc
+          1: Invalid flag found!
+                 An invalid command-line argument was encountered.
+
+          2: Invalid date 'dddd' found!
+                 An input date was found to be invalid.  If the '-v'
+                 command-line flag is used, this message is not
+                 generated although the error code is still set.
+
+          3: Invalid adjustment 'aaaa' found!
+                 A datecalc adjustment argument was incorrectly
+                 specified.
+
+          4: Internal error -- aborting!
+                 An internal problem acquiring system resources was
+                 detected.
+
+        ddddaaaatttteeeeddddiiiiffffffff
+          1: Invalid argument count!
+                 An incorrect number of command line arguments was
+                 detected.
+
+          2: Invalid date1 'dddd' found!
+                 The first date in the difference calculation was
+                 found to be invalid.
+
+          3: Invalid date2 'dddd' found!
+                 The second date in the difference calculation was
+                 found to be invalid.
+
+          4: Invalid input line 'xxxx' found!
+                 The given input line does not consist of two dates.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+        FFFFiiiirrrrsssstttt FFFFrrrriiiiddddaaaayyyy ooooffff eeeeaaaacccchhhh mmmmoooonnnntttthhhh
+          The following simple shell script shows how to generate the
+          dates of the first Friday of each month of 1991:
+
+               for mm in 1 2 3 4 5 6 7 8 9 10 11 12; do
+                   datecalc $mm/1/91 /5w
+               done
+
+          Similar scripts can be used to find the second Friday of
+
+
+
+     Page 5                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+          each month (using ////5555wwww ++++1111wwww), the last Friday of each month
+          (using ++++1111mmmm ----1111dddd ????5555wwww), etc.
+
+        CCCChhhheeeecccckkkkiiiinnnngggg ddddaaaatttteeeessss ffffoooorrrr ccccoooorrrrrrrreeeeccccttttnnnneeeessssssss
+          The datecalc command with the '-v' command line option can
+          be used to check the validity of dates in shell scripts
+          without generating the normal date output, as shown by the
+          following shell code that prompts the user for a date until
+          a valid one is entered:
+
+               until
+                   echo "Please enter start date: \c"
+                   read DATE
+                   datecalc -v "$DATE"
+               do
+                   echo "Invalid date -- try again."
+               done
+
+
+        FFFFrrrroooonnnntttt----eeeennnnddddssss ttttoooo ooootttthhhheeeerrrr pppprrrrooooggggrrrraaaammmmssss
+          These routines can be handy simply as front ends to other
+          programs that require dates as arguments.  The _d_a_t_e_c_a_l_c
+          routine can be used to change the form of a given date to
+          match the input requirements of other programs.  For
+          example, dates used by the unity database management program
+          are expected to be in full slash form.  A useful ksh script
+          might prompt for dates and convert them into slash form
+          using datecalc.  An example is shown below:
+
+               until
+                   echo "Please enter start date: \c"
+                   read DATE
+                   datecalc -v "$DATE"
+               do
+                   echo "Invalid date -- try again."
+               done
+               BEGIN=$(datecalc -s $DATE)
+
+               until
+                   echo "Please enter end date: \c"
+                   read DATE
+                   datecalc -v "$DATE"
+               do
+                   echo "Invalid date -- try again."
+               done
+               END=$(datecalc -s $DATE)
+
+               uprint meetings where date dge $BEGIN and date dle $END
+
+          The user of such a script is free to enter dates in all the
+          forms supported by _d_a_t_e_c_a_l_c, including alternate date forms
+          such as European dates, abbreviated dates such as mmmmmmmm////dddddddd,,,,
+
+
+
+     Page 6                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+          tokens such as ttttooooddddaaaayyyy or even calculations such as ttttooooddddaaaayyyy ++++2222wwww....
+          All such enties will be converted to the correct slash form
+          and used on the unity command line as if that had been the
+          user's entry.
+
+        FFFFiiiinnnnddddiiiinnnngggg tttthhhheeee ddddiiiiffffffffeeeerrrreeeennnncccceeeessss ooooffff llllaaaarrrrggggeeee nnnnuuuummmmbbbbeeeerrrrssss ooooffff ddddaaaatttteeeessss
+          If a large number of date differences needs to be
+          calculated, it is much faster to provide those dates as
+          standard input to a single instance of _d_a_t_e_d_i_f_f than to
+          invoke the command separately for each pair of dates.  The
+          following shows how this would look with a file of dates
+          called datelist:
+
+               $ cat datelist
+               5/1/91  5/12/91
+               4/23/91 6/2/91
+               4/15/91 7/5/91
+
+               $ cat datelist | datediff -
+               11
+               40
+               81
+
+
+        WWWWeeeeeeeekkkkddddaaaayyyy nnnnaaaammmmeeeessss iiiinnnn ooootttthhhheeeerrrr llllaaaannnngggguuuuaaaaggggeeeessss
+          Although the weekday names are normally displayed in
+          English, it is easy to produce the names in other languages
+          using a shell function.  The following is a ksh function
+          named ttttaaaaggggnnnnaaaammmmeeee that renders the weekday names in German:
+
+               function tagname {
+                   case "$(datecalc -w $1)" in
+                   1) TAG=Montag ;;
+                   2) TAG=Dienstag ;;
+                   3) TAG=Mittwoch ;;
+                   4) TAG=Donnerstag ;;
+                   5) TAG=Freitag ;;
+                   6) TAG=Samstag ;;
+                   7) TAG=Sonntag ;;
+                   *) TAG=IRRTUM! ;;
+                   esac
+                   echo "$TAG"
+               }
+
+          If the above function were invoked as
+
+               tagname 3/1/91
+
+          the result would be _F_r_e_i_t_a_g.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          Because the dates used by these routines always express the
+
+
+
+     Page 7                                          (printed 9/22/92)
+
+
+
+
+
+
+     DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          DDDDAAAATTTTEEEECCCCAAAALLLLCCCC((((1111))))
+
+
+
+          year in the two-digit form _y_y, it is important to keep in
+          mind the vvvvaaaalllliiiidddd ddddaaaatttteeee rrrraaaannnnggggeeee used by these routines.  This
+          range depends on the current year.  If the current year is
+          YYYY, then all dates provided as input to these commands
+          will be considered in the range
+
+               [YYYY-60, YYYY+39]
+
+          For example, if the current year is 1991, the date 5/1/30
+          will be interpreted as May 1, 2222000033330000,,,, while 5/1/35 will be
+          interpreted as May 1, 1111999933335555....
+
+          NOTE: If the _d_a_t_e_c_a_l_c routine computes a date outside the
+          valid date range, use of this date in further calculations
+          may lead to unpredictable results.
+
+          A special problem can occur when _d_a_t_e_c_a_l_c is requested to
+          make an adjustment based on months or years.  Normally, this
+          adjustment is done by making the appropriate changes to the
+          month or year of the given date.  But this can result in an
+          illegal date.  For example, using this technique the command
+
+               datecalc 1/30/90 +1m
+
+          would return the result "2/30/90," which isn't correct.
+          Since different months have different sizes, it is not
+          always clear what adjusting by months means.  What datecalc
+          does in this case is to back up the date to the last day of
+          the resulting month, i.e., "2/28/90."  Be aware that this
+          can lead to surprising results, since
+
+               datecalc 1/30/90 +1m +1m
+
+          will not yield the same result as
+
+               datecalc 1/30/90 +2m
+
+          The dual meaning of the 'w' character in datecalc
+          adjustments may cause some confusion at first, but the
+          choice seems appropriate nevertheless.  The ----wwww flag in
+          datecalc refers to days of the week, which is the meaning
+          indicated by 'w' in search adjustments.  When adjusting
+          dates by adding or subtracting, however, it makes little
+          sense to talk of adding or subtracting days of the week, so
+          the more appropriate meaning of adding or subtracting _w_e_e_k_s
+          is used.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          George Otto (ptah!otto)
+
+
+
+
+
+
+     Page 8                                          (printed 9/22/92)
+
+
+

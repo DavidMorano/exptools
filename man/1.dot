@@ -1,0 +1,330 @@
+
+
+
+DOT(1)                   USER COMMANDS                     DOT(1)
+
+
+
+NNNNAAAAMMMMEEEE
+     dot - preprocessor for drawing directed graphs
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+     ddddooootttt [----GGGG_n_a_m_e=_v_a_l_u_e]  [----NNNN_n_a_m_e=_v_a_l_u_e]  [-E_n_a_m_e=_v_a_l_u_e]  [----TTTT_l_a_n_g]
+     [----llll _l_i_b_f_i_l_e] [----oooo _o_u_t_f_i_l_e] [files]
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+     _d_o_t draws directed graphs.  It works well on DAGs and  other
+     graphs   that   can  be  drawn  as  hierarchies.   It  reads
+     attributed graph files and writes drawings.  By default, the
+     output  format _d_o_t is the input file with layout coordinates
+     appended.  To generate  PostScript,  use  the  ----TTTTppppssss  option.
+     Other  choices  are  ----TTTTmmmmiiiiffff (FrameMaker graphics), ----TTTThhhhppppggggllll (HP
+     pen plotters), and ----TTTTppppccccllll (Laserjet printers).
+
+     Here is a synopsis of the graph file language.
+
+     ddddiiiiggggrrrraaaapppphhhh _n_a_m_e {{{{ _s_t_a_t_e_m_e_n_t-_l_i_s_t }}}}  is  the  top  level  graph.
+     Statements may be:
+
+     _n_a_m_e====_v_a_l;;;;
+     nnnnooooddddeeee [[[[_n_a_m_e====_v_a_l]]]];;;;
+     eeeeddddggggeeee [[[[_n_a_m_e====_v_a_l]]]];;;; Set default graph, node, or edge  attribute
+     _n_a_m_e  to  _v_a_l.   Any subgraph, node, or edge appearing after
+     this inherits the new default attributes.
+
+     nnnn0000 [[[[_n_a_m_e_0=_v_a_l_0,_n_a_m_e_1=_v_a_l_1,...]]]];;;; Creates node nnnn0000 (if it  does
+     not  already exist) and sets its attributes according to the
+     optional list.
+
+     nnnn0000 ---->>>> nnnn1111 ---->>>> ... ---->>>> nnnnnnnn  [[[[_n_a_m_e_0=_v_a_l_0,_n_a_m_e_1=_v_a_l_1,...]]]];;;;  Creates
+     edges   between  nodes  nnnn0000,  nnnn1111,  ...,  nnnnnnnn  and  sets  their
+     attributes according to the optional list.  Creates nodes as
+     necessary.
+
+     ssssuuuubbbbggggrrrraaaapppphhhh _n_a_m_e {{{{ _s_t_a_t_e_m_e_n_t-_l_i_s_t }}}} Creates a  subgraph.   Sub-
+     graphs  may  be  used  in  place of nnnn0000, ..., nnnnnnnn in the above
+     statements to create edges.  ssssuuuubbbbggggrrrraaaapppphhhh _n_a_m_e is  optional;  if
+     missing, the subgraph is assigned an internal name.
+
+     Attribute names and values are ordinary  (C-style)  strings.
+     The  following  sections  describe  attributes  that control
+     graph layout.
+
+GGGGRRRRAAAAPPPPHHHH AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEESSSS
+     ssssiiiizzzzeeee====""""_x,_y"""" sets bounding box of drawing in inches.
+
+     ppppaaaaggggeeee====""""_x,_y"""" sets the PostScript pagination unit.
+
+     rrrraaaattttiiiioooo====_f sets the aspect ratio to _f which may be  a  floating
+     point  number,  or  one  of  the keywords ffffiiiillllllll, ccccoooommmmpppprrrreeeessssssss, or
+
+
+
+EXPTOOLS           Last change: 2 August 1993                   1
+
+
+
+
+
+
+DOT(1)                   USER COMMANDS                     DOT(1)
+
+
+
+     aaaauuuuttttoooo.
+
+     mmmmaaaarrrrggggiiiinnnn====_f sets the page margin (included in the page size).
+
+     nnnnooooddddeeeesssseeeepppp====_f sets the minimum separation between nodes.
+
+     rrrraaaannnnkkkksssseeeepppp====_f sets the minimum separation between ranks.
+
+     oooorrrrddddeeeerrrriiiinnnngggg====oooouuuutttt constrains order of  out-edges  in  a  subgraph
+     according to their file sequence.
+
+     rrrraaaannnnkkkkddddiiiirrrr====LLLLRRRR requests a left-to-right drawing.
+
+     ppppaaaaggggeeeeddddiiiirrrr====[TBLR][TBLR] sets the major and minor order of pagi-
+     nation.
+
+     rrrraaaannnnkkkk====ssssaaaammmmeeee (or mmmmiiiinnnn or mmmmaaaaxxxx) in a subgraph constrains the  rank
+     assignment of its nodes.   If a subgraph's name has the pre-
+     fix cccclllluuuusssstttteeeerrrr, its nodes are drawn in a distinct rectangle  of
+     the layout.  Clusters may be nested.
+
+     rrrroooottttaaaatttteeee====99990000 sets landscape mode. (oooorrrriiiieeeennnnttttaaaattttiiiioooonnnn====llllaaaannnndddd is backward
+     compatible but obsolete.)
+
+     cccceeeennnntttteeeerrrr====_n a non-zero value centers the drawing on the page.
+
+     nnnnsssslllliiiimmmmiiiitttt====_f or mmmmcccclllliiiimmmmiiiitttt====_f adjusts the bound on  the  number  of
+     network simplex or mincross iterations by the given ratio.
+
+NNNNOOOODDDDEEEE AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEESSSS
+     hhhheeeeiiiigggghhhhtttt====_d or wwwwiiiiddddtttthhhh====_d sets minimum height or width.
+
+     sssshhhhaaaappppeeee====rrrreeeeccccoooorrrrdddd ppppoooollllyyyyggggoooonnnn _b_u_i_l_t_i_n__p_o_l_y_g_o_n
+     _b_u_i_l_t_i_n__p_o_l_y_g_o_n is one of: ppppllllaaaaiiiinnnntttteeeexxxxtttt eeeelllllllliiiippppsssseeee cccciiiirrrrcccclllleeee eeeegggggggg ttttrrrriiii----
+     aaaannnngggglllleeee  bbbbooooxxxx  ddddiiiiaaaammmmoooonnnndddd  ttttrrrraaaappppeeeezzzziiiiuuuummmm  ppppaaaarrrraaaalllllllleeeellllooooggggrrrraaaammmm  hhhhoooouuuusssseeee hhhheeeexxxxaaaaggggoooonnnn
+     ooooccccttttaaaaggggoooonnnn....  (Polygons are defined or modified by the following
+     node  attributes:  rrrreeeegggguuuullllaaaarrrr, ppppeeeerrrriiiipppphhhheeeerrrriiiieeeessss, ssssiiiiddddeeeessss, oooorrrriiiieeeennnnttttaaaattttiiiioooonnnn,
+     ddddiiiissssttttoooorrrrttttiiiioooonnnn and sssskkkkeeeewwww.)
+
+     llllaaaabbbbeeeellll====_t_e_x_t where _t_e_x_t may include escaped newlines  \n,  \l,
+     or  \r  for center, left, and right justified lines.  Record
+     labels may contain recursive box lists delimited by {  |  }.
+     Port  identifiers  in labels are set off by angle brackets <
+     >.  In the graph file, use colon (such as, nnnnooooddddeeee0000::::ppppoooorrrrtttt22228888).
+
+     ffffoooonnnnttttssssiiiizzzzeeee====_n sets the label type size to _n points.
+
+     ffffoooonnnnttttnnnnaaaammmmeeee====_n_a_m_e sets the label font family name.
+
+     ccccoooolllloooorrrr====_c_o_l_o_r_v_a_l_u_e sets the node color.
+
+
+
+
+
+EXPTOOLS           Last change: 2 August 1993                   2
+
+
+
+
+
+
+DOT(1)                   USER COMMANDS                     DOT(1)
+
+
+
+     ffffoooonnnnttttccccoooolllloooorrrr====_c_o_l_o_r_v_a_l_u_e sets the label text color.
+
+     A _c_o_l_o_r_v_a_l_u_e may be "_h,_s,_v""""  (hue,  saturation,  brightness)
+     floating point numbers between 0 and 1, or an X11 color name
+     such as wwwwhhhhiiiitttteeee bbbbllllaaaacccckkkk rrrreeeedddd ggggrrrreeeeeeeennnn bbbblllluuuueeee yyyyeeeelllllllloooowwww  mmmmaaaaggggeeeennnnttttaaaa  ccccyyyyaaaannnn  or
+     bbbbuuuurrrrllllyyyywwwwoooooooodddd.
+
+     ssssttttyyyylllleeee====ffffiiiilllllllleeeedddd ssssoooolllliiiidddd ddddaaaasssshhhheeeedddd ddddooootttttttteeeedddd bbbboooolllldddd iiiinnnnvvvviiiissss
+
+     The following attributes apply only to polygon shape nodes:
+
+     rrrreeeegggguuuullllaaaarrrr====_n if _n is non-zero then the polygon is made regular,
+     i.e. symmetric about the x and y axis, otherwise the polygon
+     takes on the aspect ratio  of  the  label.  _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s
+     that  are  not  already  regular  are  made  regular by this
+     attribute.  _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s that are  already  regular  are
+     not affected (i.e.  they cannot be made asymmetric).
+
+     ppppeeeerrrriiiipppphhhheeeerrrriiiieeeessss====_n sets  the  number  of  periphery  lines  drawn
+     around  the  polygon.   This  value supercedes the number of
+     periphery lines of _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s.
+
+     ssssiiiiddddeeeessss====_n sets the number of sides to the polygon. _n<3 results
+     in    an    ellipse.    This   attribute   is   ignored   by
+     _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s.
+
+     oooorrrriiiieeeennnnttttaaaattttiiiioooonnnn====_f sets the orientation of the first apex of  the
+     polygon  counterclockwise  from the vertical, in degrees.  _f
+     may be a floating point number.  The orientation  of  labels
+     is  not affected by this attribute.  This attribute is added
+     to the initial orientation of _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s.
+
+     ddddiiiissssttttoooorrrrttttiiiioooonnnn====_f sets the amount of broadening of  the  top  and
+     narrowing of the bottom of the polygon (relative to its ori-
+     entation). Floating point values between -1 and +1 are  sug-
+     gested.  This attribute is ignored by _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s.
+
+     sssskkkkeeeewwww====_f sets the amount of right-displacement of the top  and
+     left-displacement  of the bottom of the polygon (relative to
+     its orientation).  Floating point values between -1  and  +1
+     are    suggested.     This    attribute    is   ignored   by
+     _b_u_i_l_t_i_n__p_o_l_y_g_o_n_s.
+
+EEEEDDDDGGGGEEEE AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEESSSS
+     mmmmiiiinnnnlllleeeennnn====_n where _n is an integer factor that  applies  to  the
+     edge length (ranks for normal edges, or minimum node separa-
+     tion for flat edges).
+
+     wwwweeeeiiiigggghhhhtttt====_n where _n is the integer cost of  the  edge.   Values
+     greater  than  1  tend  to  shorten the edge.  Weight 0 flat
+     edges are ignored for ordering nodes.
+
+
+
+
+EXPTOOLS           Last change: 2 August 1993                   3
+
+
+
+
+
+
+DOT(1)                   USER COMMANDS                     DOT(1)
+
+
+
+     llllaaaabbbbeeeellll====_t_e_x_t where _t_e_x_t may include escaped newlines  \n,  \l,
+     or \r for centered, left, or right justified lines.
+
+     ffffoooonnnnttttssssiiiizzzzeeee====_n sets the label type size to _n points.
+
+     ffffoooonnnnttttnnnnaaaammmmeeee====_n_a_m_e sets the label font family name.
+
+     ffffoooonnnnttttccccoooolllloooorrrr====_c_o_l_o_r_v_a_l_u_e sets the label text color.
+
+     ssssttttyyyylllleeee====ssssoooolllliiiidddd ddddaaaasssshhhheeeedddd ddddooootttttttteeeedddd bbbboooolllldddd iiiinnnnvvvviiiissss
+
+     ccccoooolllloooorrrr====_c_o_l_o_r_v_a_l_u_e sets the line color for edges.
+
+     ddddiiiirrrr====ffffoooorrrrwwwwaaaarrrrdddd bbbbaaaacccckkkk bbbbooootttthhhh nnnnoooonnnneeee controls arrowheads.
+
+OOOOPPPPTTTTIIIIOOOONNNNSSSS
+     ----GGGG sets a default graph attribute.  ----NNNN and  ----EEEE  set  default
+     attributes for nodes and edges.  Some examples: ----GGGGssssiiiizzzzeeee====""""7777,,,,8888""""
+     or ----NNNNsssshhhhaaaappppeeee====bbbbooooxxxx or ----EEEEffffoooonnnnttttssssiiiizzzzeeee====8888.
+
+     ----llll_f_i_l_e loads custom PostScript library files.  Usually these
+     define  custom  shapes or styles.  If ----llll is given by itself,
+     the standard library is omitted.
+
+     ----TTTT_l_a_n_g sets the output language as described above.
+
+EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+     digraph test123 {
+             a -> b -> c;
+             a -> {x y};
+             b [shape=box];
+             c [label="hello\nworld",color=blue,fontsize=24,
+                  fontname="Palatino-
+     Italic",fontcolor=red,style=filled];
+             a -> z [label="hi", weight=100];
+             x -> z [label="multi-line\nlabel"];
+             edge [style=dashed,color=red];
+             b -> x;
+             {rank=same; b x}
+     }
+
+BBBBUUUUGGGGSSSS
+     Edge splines can overlap unintentionally.
+
+     Layout of flat edges with labels is not fully implemented.
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     dotty(1)
+     neato(1)
+     xcolors(1)
+     libgraph(3)
+
+
+
+
+EXPTOOLS           Last change: 2 August 1993                   4
+
+
+
+
+
+
+DOT(1)                   USER COMMANDS                     DOT(1)
+
+
+
+     E. R. Gansner, S. C. North,  K. P. Vo, "DAG - A Graph  Draw-
+     ing Program," 59554-871019-04TM.
+     E. R. Gansner, S. C. North,  K.  P.  Vo,  "A  Technique  for
+     Drawing Directed Graphs,"
+       59113-910625-07TM.
+     E. Koutsofios and S. C. North, "Drawing  Graphs  with  dot,"
+     59113-910904-08TM.     Available   on   ftp.zoo.att.com   in
+     outgoing/dotguide.ps.Z.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EXPTOOLS           Last change: 2 August 1993                   5
+
+
+

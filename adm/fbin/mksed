@@ -1,0 +1,45 @@
+#  @(#)  SID: 1.4;  module: mksed;  last changed: 1/28/93  13:25:05
+#
+#  Make sed commands from exclude list (converts shell wildcards to RE's).
+#  If the flag '-w' is used, additional commands are added to remove 'core',
+#  'dead.letter', and other workfile entries for all directories.
+
+mksed() {
+    typeset WORKFILES
+    set +u
+    if test "$1" = "-w"; then
+	WORKFILES=true
+	shift
+    else
+	WORKFILES=false
+    fi
+    sed	\
+	-e 's/^#.*//' \
+	-e 's/[ 	][ 	]*#.*//' \
+	-e '/^$/d' \
+	-e 's%/%\\/%g' \
+	-e 's%\(.*\)\\/$%&/d\
+/^\1%' \
+	-e 's%\.%\\.%g' \
+	-e 's%\*%[^\\/]*%g' \
+	-e 's%?%[^\\/]%g' \
+	-e 's%^%/^%' \
+	-e 's%$%$/d%' \
+	$*
+	if $WORKFILES; then
+	    cat <<-\!
+		/\/core$/d
+		/^core$/d
+		/\/BAK\.[^\/]*$/d
+		/^BAK\.[^\/]*$/d
+		/\/CKP\.[^\/]*$/d
+		/^CKP\.[^\/]*$/d
+		/\/\.emacs_[0-9]*$/d
+		/^\.emacs_[0-9]*$/d
+		/\/dead\.letter$/d
+		/^dead\.letter$/d
+		/\/nohup\.out$/d
+		/^nohup\.out$/d
+		!
+	fi
+}

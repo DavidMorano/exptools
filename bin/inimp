@@ -1,0 +1,17 @@
+#!/bin/sh
+
+_inimp=${TOOLS:?}/lib/mp/bin/inimp
+
+#append default paths
+TEXFONTS=${TEXFONTS:+$TEXFONTS:}.:$TOOLS/lib/tex/fonts
+MFINPUTS=${MFINPUTS:+$MFINPUTS:}.:$TOOLS/lib/tex/mf
+MPINPUTS=${MPINPUTS:+$MPINPUTS:}.:$TOOLS/lib/mp/lib
+MPMEMS=${MPMEMS:+$MPMEMS:}.:$TOOLS/lib/mp/lib
+MPPOOL=${MPPOOL:+$MPPOOL:}.:$TOOLS/lib/mp
+TEXVFONTS=${TEXVFONTS:+$TEXVFONTS:}$TOOLS/lib/tex/fonts
+MPXCOMMAND=${MPXCOMMAND:-$TOOLS/lib/mp/bin/makempx}
+: ${MPEDITOR:="${EDITOR:-${VISUAL:-vi}} +%d %s"}
+
+export TEXFONTS MFINPUTS MPINPUTS MPMEMS MPPOOL MPXCOMMAND MPEDITOR TEXVFONTS
+
+exec $_inimp -I $*

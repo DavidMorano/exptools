@@ -1,0 +1,49 @@
+#	@(#)specfile	1.6
+#
+#  This is the ncsl language specification file.
+#
+#	EOL == End of Line
+#	BOF == Beginning of File
+
+language ada
+orientation character-oriented
+comment-start --
+comment-end EOL
+string-quote \"
+# Quotes are stored within strings by using a doubled quote,
+# so "hello ""world""" produces the string
+#	hello "world"
+# Since ncsl uses a simple minded parse, there's no need to
+# handle this specially.
+#
+# There are no character strings.
+
+
+language prl5
+orientation character-oriented
+comment-start BOF
+comment-end default-rules: 1
+comment-start attribute: 1
+comment-end checks: 1
+comment-start /*
+comment-end */
+comment-start BOF
+comment-end definitions: 1
+
+
+language ts
+orientation character-oriented
+comment-start #
+comment-end EOL
+comment-start /*
+comment-end */
+skip . 1
+
+# PADL (Page Description Language) is used by UNIX RTR applications on the
+# 3B20 for writing maintenance display pages (5ESS for one).
+
+language padl
+orientation character-oriented
+comment-start %
+comment-end EOL
+string-quote \"

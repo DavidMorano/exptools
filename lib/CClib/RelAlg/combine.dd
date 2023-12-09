@@ -1,0 +1,25 @@
+#ident "@(#) /sable/sdb/ra/rel/relation/s.combine.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+typedef enum which { MAJOR='M', MINOR='m', BOTH='B' }Which;
+class Combine_attributes
+   {
+include(combine.pd)
+public:
+   Combine_attributes(Relation &major,Relation &minor);
+   ~Combine_attributes();
+   Tuple_Hash *hash;
+   Degree_t degree;     // number of combined attributes
+   struct combined_info
+      {
+      Which which;
+      Dlength length;
+      const Attribute * attr; // simplifies creating new intension
+      Dlength major_offset, minor_offset; // new supplied by caller
+      }*info;
+   Which build, check;  // build should be hashed
+   
+   Boolean_t build_hash(Tuple *tuple);
+   Extension *check_hash(Tuple *tuple);
+   };
+extern ostream &operator<<(ostream &o,Combine_attributes &c);

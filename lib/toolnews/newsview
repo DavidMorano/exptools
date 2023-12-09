@@ -1,0 +1,108 @@
+#ident	"@(#)newsview:news	1.11	96/03/10"
+
+=========
+03/06/96:
+=========
+I just made two changes to "newsview":
+
+(1)	News directories are automatically re-loaded whenever they
+	change (i.e., when a news item is added or removed).  If you
+	are running newsview when an item is added to one of your news
+	directories, newsview will load that item automatically, and
+	you will see it by typing the 'r' command (read any unread
+	news items).
+
+	If you use a workstation with multiple windows, you can leave
+	your "newsview" window running all the time, and just hit the
+	'r' key once in a while to see if there is any new news to read.
+
+(2)	On systems that can determine when a window size has changed,
+	newsview will adjust its screens whenever you change the size
+	of your window.  For example, if you start newsview with a 24
+	line window, and you start reading a long news item and want to
+	see more of it on the screen at once, you can make your window
+	larger and newsview will automatically adjust to fit your screen.
+
+If you have any trouble with "newsview", please let me know as soon as
+possible.  The current version of the program is:
+
+	NEWSVIEW Version 03/08/96 11:35:22
+
+You can find the version by typing "newsview -V".
+
+			  Richard A. Johnson
+			  Lucent Technologies
+			     Whippany, NJ
+			    (201) 386-7345
+			      fuwutai!raj
+========================================================================
+
+For those who are not familiar with newsview, here is a description:
+
+Newsview is a curses-based program for reading /usr/news, and other
+similar news directories (such as exptools "toolnews").  Unlike the
+System V "news" command, "newsview" lets you page or scroll forward
+and backward through each news item, and lets you browse through
+news directories to read news items you have read before.
+
+To read news from the default news directories, simply type "newsview".
+Once newsview is running, you can type '?' for help at any time.
+
+To read news from directories other than the default, you need to set
+and export an environment variable called NEWSPATH.  This should contain
+the list of news directories you want to read, with the directory names
+each separated by a colon.  Here is an example (to put in your .profile):
+
+	NEWSPATH=/usr/news:$TOOLS/lib/toolnews:/local/project/news
+	export NEWSPATH
+
+/local/project/news is an example of a directory set up for a local project.
+You may have several different project news directories on your system.
+Each user can decide which of these directories to read with newsview.
+All people working on a given project should have write-permission in the
+news directory, to allow everybody to share their items of interest.
+
+Newsview has three types of screens:  From the Directory Menu you select
+a news directory.  The File List screen displays the names of the news
+items in the selected directory and lets you select a news item.  The
+File Display screen displays the selected news item.
+
+Each screen has a different set of commands available.  Press '?' at
+any time to get a list of commands.  Here are a few important commands
+to remember:
+
+	r	Read the next news item that you have not yet read.
+		This command is available from any screen, and is the
+		quickest way to read all new news items.
+
+	*	Print the current news item.  If you use a non-standard
+		command to print ascii files, set and export the variable
+		NEWSPRINT.  For example, if you want to print on a PC
+		printer through "ctrm":
+
+			NEWSPRINT=pcprint
+			export NEWSPRINT
+
+	/	Search a news directory for a string or regular expression.
+		When you do a search, the list of files in your current
+		news directory is limited to those files which contain
+		a match to your search string.  When reading an item,
+		all occurrences of the string are highlighted, and SPACE
+		brings you to the next occurrence of the string.
+
+	q	Quit the newsview program.  Your $HOME/.newsview file
+		will be updated with the timestamp of the last item
+		you have read in each news directory.
+
+To list the default news directories, and the default print command
+for this system type "newsview -d".  To have newsview tell you if there
+are any new news items to read, type "newsview -l".  You might want to
+put this command in your .profile.
+
+For more information, type "toolman newsview".  Report problems or bugs to:
+
+			  Richard A. Johnson
+			  Lucent Technologies
+			     Whippany, NJ
+			    (201) 386-7345
+			      fuwutai!raj

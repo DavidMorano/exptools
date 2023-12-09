@@ -1,0 +1,11 @@
+# startup.sh
+if [ $# = 0 ]; then
+	echo "usage: $0 [-pad] string" >&2
+	exit 1
+fi
+
+case $j in
+	-p|-d|-a);;
+	-*) echo $0: illegal option "'"$j"'"; exit 1;;
+esac
+exec ${DMDTOOLS:-$TOOLS}/lib/dmdtools/dmdtool `basename $0` ${1+"$@"}

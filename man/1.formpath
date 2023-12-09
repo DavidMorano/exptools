@@ -1,0 +1,66 @@
+
+
+
+     FORMPATH(1)         UNIX System V (EXPTOOLS)          FORMPATH(1)
+
+
+
+     NAME
+          formpath - Combine components of a directory path list
+
+     SYNOPSIS
+          formpath [ -RV ] [ [ -r ] _f_i_l_e ] ...
+
+     DESCRIPTION
+          Reads the _f_i_l_es (or standard input) assuming that each  line
+          contains  a  single directory name, and prints the directory
+          names separated by colons to form a UNIX(Reg.) path list.
+
+          _f_o_r_m_p_a_t_h is the inverse of _s_p_l_i_t_p_a_t_h(1).  Thus,
+
+              VPATH=`splitpath VPATH | formpath`
+
+          should have no effect on VPATH (except to change  constructs
+          like :.: to just ::, which means the same thing according to
+          UNIX(Reg.) conventions).
+
+          A -r may preceded each _f_i_l_e which causes it  to  delete  the
+          _f_i_l_e  if successfully read.  The -r must be a separate argu-
+          ment from the _f_i_l_e argument, and each -r applies only to the
+          very next _f_i_l_e argument only.
+
+          The -R causes each of the input _f_i_l_es to  be  removed  after
+          being  read  successfully.  It is equivalent to placing a -r
+          before each _f_i_l_e name.
+
+          The -V option reports the program  version  number,  and  if
+          there are no other command line arguments, simply exits.
+
+     EXIT CODES
+          0 if OK, non-zero if a file is not readable.
+
+     EXAMPLES
+          RPATH=`ls -d /usr/rje*/job | formpath`
+
+          might set RPATH to
+
+          /usr/rje1/job:/usr/rje2/job:/usr/rje4/job
+
+          or something like it.
+
+     SEE ALSO
+          checkpath(1),  normfile(1),   purgepath(1),   searchpath(1),
+          splitpath(1), where(1)
+
+     PROVIDED BY
+          Warren D. Swan
+
+
+
+
+
+
+     Page 1                                          (printed 10/4/93)
+
+
+

@@ -1,0 +1,44 @@
+cms.el contains GNU Emacs aids for CMS/5ESS editing, 
+by Paul Guthrie,IH6H315 x.2014  {ihlpj|ihdev}!pdg
+
+ Additional features
+   1.  Saving a featured file auto-extracts it
+   2.  .L, .G suffixes are recognized as C format
+ Key settings as follows
+   ^C^F : insert featuring on next line - with arg, features out
+   ^X^G : find file using vpath as follows
+             in form "filename" looks in current, then down viewpath
+                                relative to $ROOT
+             in form "module/filename" looks down viewpath using $SS
+             in form "ss/module/filename" looks down viewpath
+          N.B. the node (or "ROOT") is updated in the status line
+          so you can see where it was found.
+   ^Cm  : run modbuild command, output in seperate buffer
+          N.B. this does *not* run it in a queue
+          use in conjunction with next-error (^X`) to fix syntax
+   ^C^E : Extract the file in the named buffer
+; Add .G and .L suffixes to auto-mode-alist, bound to c mode.
+
+;;; --------------------------------------------------------------------
+;;; This is the command to put in your .emacs file to cause cms to
+;;; be loaded each time you start emacs. You can have it autoloaded
+;;; when it is invoked, but it is easier to just load it every time.
+;;; --------------------------------------------------------------------
+(load-file "cms")   ;;; lazy way to set up cms in .emacs 
+
+;;; --------------------------------------------------------------------
+;;; If you want to autoload it, you have to bind the keys in your .emacs
+;;; file, and put in an autoload statement for each top level function
+;;; as follows. I guess you might as well use these since I went to the
+;;; trouble of typing them in anyway. :-)
+;;; --------------------------------------------------------------------
+(global-set-key "\C-Cm" 'modbuild)
+(global-set-key "\C-C\C-F" 'feature-lines)
+(global-set-key "\C-X\C-G" 'find-vpath-file)
+(global-set-key "\C-C\C-E" 'extract-buffer)
+
+(autoload 'modbuild "cms" "Run the modbuild command" t)
+(autoload 'feature-lines "cms" "Insert featuring on next line" t)
+(autoload 'find-vpath-file "cms" "Find file using vpath" t)
+(autoload 'extract-buffer "cms" "Extract the file in the named buffer" t)
+

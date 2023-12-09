@@ -1,0 +1,300 @@
+###############################################################################
+#									      #
+#	    This is unpublished AT&T proprietary source code.		      #
+#									      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+#									      #
+###############################################################################
+
+##
+# mantomm - converts man macros to mm macros
+#
+# Authors:  Original version written by Paul Gross
+#	    Extensions made by John Hammond
+#	    Further enhancements and bug fixes made by Dennis Vadner
+#
+# Usage:    mantomm [ files ]
+##
+
+
+# Check command line arguments.
+# All arguments should be filenames (or - for stdin);
+# any option arguments (i.e., args beginning with -) are usage errors.
+
+for f in $*
+do
+	if [ "$f" != "-"  -a  "`echo $f | cut -c1`" = "-" ]
+	then
+	    echo "`basename $0`:  unknown option $f" >&2
+	    echo "Usage:\t`basename $0` [ files ]"  >&2
+	    echo "\n\tType \"toolman mantomm\" for help." >&2
+	    exit 2
+
+	elif [ "$f" != "-"  -a  ! -r "$f" ]
+	then
+	    echo "Error [`basename $0`]:  Can't read input file <$f>" >&2
+	    exit 1
+	fi
+done
+
+
+# Run awk script to translate man macros into mm macros.
+
+awk '
+BEGIN {
+	print ".br"
+	print ".ds Dt (printed \\n(mo/\\n(dy/\\n(yr)"
+	print ".ifn .ds R (Reg.)"
+	print ".ift .ds R \\(rg"
+	print ".EF \"'\''Page \\\\\\\\n+(mP'\'\''\\\\*(Dt'\''\""
+	print ".OF \"'\''Page \\\\\\\\n+(mP'\'\''\\\\*(Dt'\''\""
+	print ".de tH"
+	print ".if !'\''\\\\$4'\'''\'' .ds mC (\\\\$4)"
+	print ".ds mN UNIX 5.0"
+	print ".if !'\''\\\\$5'\'''\'' .ds mN \\\\$5"
+	print ".ds mT '\''\\\\$2(\\\\$3)'\''\\\\*(mN \\\\*(mC'\''\\\\$2(\\\\$3)'\''"
+	print ".rm mC mN"
+	print ".ie \\\\$1 \\{"
+	print ".tl \\\\*(mT"
+	print ".SP"
+	print "\\}"
+	print ".el .SK"
+	print ".nr mP 0 1"
+	print ".."
+	print ".rn TP tp"
+	print ".deTP"
+	print ".sp"
+	print ".ie \\\\n(Pv-1 \\{\\"
+	print ".ce"
+	print "PRIVATE\\h'\''-\\w'\''PRIVATE'\''u'\''\\l'\''\\w'\''PRIVATE'\''u'\''"
+	print ".sp \}"
+	print ".el .sp 2"
+	print ".ie \w'\''\\\\*(]n'\'' .tl '\''\\\\*(]n - \\\\nP'\'''\'''\''"
+	print ".el .tl \\\\*(}t"
+	print ".if e .tl \\\\*(}e"
+	print ".if o .tl \\\\*(}o"
+	print ".sp 2"
+	print ".tl \\\\*(mT"
+	print ".sp"
+	print ".."
+	first_th = 1
+}
+
+/^\.TH/ {
+	if ( first_th ) {
+	    print ".tH " 1 substr( $0, 4 )
+	    first_th = 0
+	}
+	else {
+	    print ".LE"
+	    print ".tH " 0 substr( $0, 4 )
+	}
+	print ".VL 5"
+	next
+}
+
+/^\.S[HS]/ {
+	if ( inlist ) {
+	    print ".LE"
+	    inlist = 0
+	}
+
+	# determine length of section heading line (ignoring any comment)
+	len = index($0, "\\\"") - 1
+	if ( len < 0 )
+	    len = length($0)
+
+	# skip leading blanks and initial quote in section heading
+	for (i = 5;  i <= len;  i++) {
+	    c = substr( $0, i, 1 )
+	    if ( c != " "  &&  c != "\"" )
+		break
+	}
+
+	# also skip trailing blanks and quotes
+	for (;  len >= i;  len--) {
+	    c = substr( $0, len, 1)
+	    if ( c != " "  &&  c != "\"" )
+		break
+	}
+
+	printf ".LI \"\\fB"
+	if ( $1 == ".SS" )
+	    printf "   "
+	print substr( $0, i, (len-i)+1 ) "\\fR\""
+	print ".br"
+
+	next
+}
+
+/^\.PD/ {
+	printf ".nr Ps "
+	if ( NF >= 2 )
+	    print $2
+	else
+	    print 1
+	next
+}
+
+/^\.P[ 	]*$/ || /^\.PP/ {
+	if ( inlist ) {
+	    print ".LE"
+	    inlist = 0
+	}
+	print ".P"
+	next
+}
+
+/^\.[HT]P/ {
+	if ( $1 == ".TP" )
+	    tp = 1
+	if ( !inlist || NF >= 2 ) {
+	    if ( inlist )
+		print ".LE"
+	    else
+		inlist = 1
+	    printf ".VL "
+	    if ( NF >= 2 ) {
+		# Use everything on the line after the macro name rather
+		# than just using $2 for the indent to handle the case
+		# where the troff width macro (\w'string') is used to
+		# specify the indent and there is a space in the string.
+		print substr($0, 5)
+		}
+	    else
+		print 5
+	}
+	print ".LI"
+	next
+}
+
+/^\.IP/ {
+	# determine length of indented paragraph line (ignoring any comment)
+	len = index($0, "\\\"") - 1
+	if ( len < 0 )
+	    len = length($0)
+
+	# Note: The tag and indentation values are extracted manually
+	# rather than just using $2 and $3 so that quoted strings with
+	# blanks in them will be handled properly. 
+
+	# get tag value
+	oq = 0
+	tag = ""
+	for ( i = 5; i <= len;  i++ ) {
+	    c = substr( $0, i, 1)
+	    if ( c != " " )
+		if ( c == "\"" )
+		    if ( oq == 0 )
+			oq = i
+		    else {
+			tag = substr($0, oq, i-oq+1)
+			break
+		    }
+		else if ( oq == 0 ) {
+		    tag = $2
+		    i = i + length($2)
+		    break
+		}
+	}
+	if ( tag == "" )	# use a non-paddable blank if no tag given
+	    tag = "\"\ \""
+
+	# get indentation value
+	oq = 0
+	indent = ""
+	for ( i++; i <= len;  i++ ) {
+	    c = substr( $0, i, 1)
+	    if ( c != " " )
+		if ( c == "\"" )
+		    if ( oq == 0 )
+			oq = i
+		    else {
+			indent = substr($0, oq, i-oq+1)
+			break
+		    }
+		else if ( oq == 0 ) {
+		    indent = substr($0, i)
+		    break
+		}
+	}
+
+	# start new list if necessary
+	if ( !inlist || indent != "" ) {
+	    if ( inlist )
+		print ".LE"
+	    else
+		inlist = 1
+	    printf ".VL "
+	    if ( indent != "" )
+		print indent
+	    else
+		print 5
+	}
+
+	print ".LI " tag
+	print ".br"
+	next
+}
+
+/^\.RS/ {
+	print ".in +5"
+	next
+}
+
+/^\.RE/ {
+	print ".in -5"
+	next
+}
+
+/^\.DT/ { next }
+
+/^\.[BIR]/ {
+	# only worry about .B or .I if there is more than one word of text
+	if ( NF > 2  &&  ($1 == ".B" || $1 == ".I") ) {
+	    # skip leading blanks in text
+	    len = length($0)
+	    for (i = 4;  i < len;  i++ ) {
+		c = substr( $0, i, 1)
+		if ( c != " " )
+		    break
+	    }
+	    if ( substr( $0, i, 1 ) != "\"" )
+		Q = "\""
+
+	    print $1 " " Q substr( $0, i ) Q
+	}
+	else {
+	    print $0
+	}
+
+	if ( tp == 1 ) {
+	    print ".br"
+	    tp = 0
+	}
+	next
+}
+
+/^\./ {
+	print $0
+	next
+}
+
+($0 ~ /^[^.]/ || $0 ~ /^$/) {
+	print $0
+	if ( tp == 1 ) {
+	    print ".br"
+	    tp = 0
+	}
+	next
+}
+
+END {
+	print ".LE"
+	print ".EF \"\""
+	print ".OF \"\""
+	print ".rn tp TP"
+}
+' $*

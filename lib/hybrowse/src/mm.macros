@@ -1,0 +1,173 @@
+'\" @(#)  .sccs/s.mm.macros  3.13  2/28/90
+'\"
+'\"	Redefinitions of MM macros to format text for hybrowse
+'\"
+'\"   Changes nroff output so hybrowse can interpret it.
+'\"   Turns off things that interfere with online access.
+'\"---------------------------------------------------------------
+'\"
+'\" Remove traps for top and bottom-of-page to avoid page headers
+'\" Apparently no way to avoid a single blank line at page break
+.ch )h
+.ch )b
+'\"----------------------------------
+'\" Change .DF to work like .DS since page breaks are no big deal
+.de )u
+.)t
+..
+'\"----------------------------------
+'\" Page offset (left margin) and line length
+'\" Keep offset+length <= 70 to fit minimal width hybrowse window
+.po 4
+.ll 65
+'\"----------------------------------
+'\" Redefine header macro to produce machine-readable headers
+.de H
+'\"	error checks and cleanup taken from mmt source
+.if \\n(:F .)D "H:missing FE"
+.if \\n(:y .)D "H:missing DE"
+.if !\\n(.$ .)D "H:missing arg"
+'\"  ;0 set to 1 on any error
+.nr ;0 0
+.if \\$1-7 .nr ;0 1
+.if \w@\\$1@-\w'0'u .nr ;0 1
+.if \\n(;0 .)D "H:bad arg:\\$1"
+'\"	make sure all List Control items cleared
+'\"	Also, reset the world
+.LC 0
+.br
+.)R
+'\" The .sp is important for tables that come at the end of a section;
+'\"  it somehow keeps the vertical lines from running into the next section.
+.sp
+'\" Some stuff may be buffered until bottom of page or next page.
+'\" Flush it before the reference page.
+.SK
+'\" Print any references from the previous section
+.RP
+'\" Start at top of page to avoid page break in short sections
+.SK
+'\" Generate header for new section in column 1
+'\" The output consists of "^", level number, "^", and section name
+\\!^\\$1^\\$2
+..
+'\"----------------------------------
+'\" Put unnumbered headers at author-specified level.
+'\" The backslash in front of .H hides it from radix error checking.
+.de HU
+\.H \\n(Hu "\\$1"
+..
+'\"----------------------------------
+'\" Ignore distribution lists
+'\" The backslash in front of .ig  is to keep tools like soexpand from
+'\" thinking that the macro defn is the start of an ignore block;
+'\" it has no effect on what the macro does.
+.de NS
+\.ig NE
+..
+.rm NE
+'\"----------------------------------
+'\" Tie off pic diagrams
+'\"
+'\" If you use .PF instead of .PE, you're on your own
+.de PS
+.ce
+[ pic output not available online ]
+.ie \\n(:y .tm Hybrowse macros can't skip picture inside DS - use sed or awk to remove PS/PE
+.el .ig PE
+..
+.rm PE
+'\"----------------------------------
+'\" Ignore clutter
+.rm FC
+.rm CS
+.rm TC
+.rm PM
+.rm OK
+.rm OP
+'\"----------------------------------
+'\" Put footnotes inline
+'\" I haven't found any way to avoid blanks before the closing paren.
+.ds F
+.de FS
+(\\c
+..
+.de FE
+)
+..
+'\"----------------------------------
+'\" Put abstract (.AS) into a separate section called "ABSTRACT".
+'\" Flush author and title info by calling .MT before the abstract.
+'\"
+.de AS
+'\"	MT removes AS, so rename it to a safe name
+.rn AS aZ
+'\"	Force out title and author
+'\"	MT removes itself, so nroff will ignore the MT after the abstract
+.MT ""
+'\"	Put out the header
+.H 1 ABSTRACT
+'\"	Removing itself is safe only if it's the LAST line of the macro
+.rm aZ
+..
+'\"
+'\"	Don't do anything in the AE
+.rm AE
+'\"----------------------------------
+'\"	Don't do anything in the SG
+.rm SG
+'\" If you want to tie off everything after the signature,
+'\"   uncomment the following lines
+'\".de SG
+'\".ex
+'\"..
+'\"-------------------------------------------------------
+'\"	Macros defined just for the browser
+'\"
+'\" Nroff and troff ignore undefined macros, so you format documents that
+'\"  use these macros without including this file; the result will be as if
+'\"  the macro calls weren't present.  That means you can produce both
+'\"  browsable and paper copies of the document from the same source file.
+'\"
+'\"----------------------------------
+'\" Reference that appears only when formatting for the browser.
+'\" Usage:
+'\"    .hR document_filename "section_name"
+'\"
+'\" To reference a section in the current document, use "" for the filename.
+'\" A null section name is interpreted as the first section in the document.
+.de hR
+\\*(Rf
+.RS
+.hT "\\$1" "\\$2"
+.RF
+..
+'\"----------------------------------
+'\" Reference for both paper copies and the browser.
+'\" Hybrowse will use the hT reference and ignore the paper-style reference.
+'\" When the document is formatted without this file, only the paper-style
+'\"   reference will be generated.
+'\"
+'\" Usage: 
+'\"    .RS
+'\"    .hT document_filename section_name
+'\"    paper reference (1 or more lines)
+'\"    .RF
+'\"
+'\" Nofill mode is used to avoid wrapping long section names
+'\" The backslash-c is to get the text onto the line with the reference number
+'\" The backslash-ampersand is to allow file names starting with "."
+'\"
+.de hT
+\\\\c
+.nf
+\\&\\$1^\\$2
+.fi
+.br
+..
+'\" This string can be testing with nroff's .if command to determine whether
+'\"   the document is being formatted with mm.macros
+'\" This allows authors to insert arbitrary differences in the document
+'\"   when it's formatted for hybrowse.
+'\"
+.ds hB hybrowse

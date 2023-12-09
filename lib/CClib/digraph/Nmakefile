@@ -1,0 +1,83 @@
+/*
+			AT&T - PROPRIETARY
+	THIS DOCUMENT CONTAINS PROPRIETARY INFORMATION OF
+	AT&T AND IS NOT TO BE DISCLOSED OR USED EXCEPT IN
+	ACCORDANCE WITH APPLICABLE AGREEMENTS.
+
+		Copyright (c) 1988 AT&T
+		Unpublished & Not for Publication
+		All Rights Reserved
+*/
+
+/*	%M% %I% %G%	*/
+/*	%W%	*/
+
+/*
+ * New make file template
+ */
+
+/*
+ * NOTES:
+ *
+ * ROOT and/or VPATH should be set in the shell and exported
+ *
+ * VROOT is extracted as the first component of VPATH  and must be an
+ * ancestor of the current directory
+ *
+ * Install diectories are 
+ *	$(VROOT|ROOT|"..")/bin,
+ *	$(VROOT|ROOT|"..")/lib, etc.
+ */
+
+CC = CC 
+.SOURCE.h : /usr/include/CC
+/* */
+
+
+/* Add state variables here (for example: DEBUG = 1) */
+
+
+/* USINGSLISTS := 1	/* This line is used if the UNIT is under slist control. */
+
+.SOURCE.a : .CLEAR 
+
+/* Use the following line as a model to add strange include directories.
+ * Normally leave the line out. The example below works for TCP software.
+.SOURCE.h : /usr/netinclude
+ */
+
+.UNIT = libsfmac
+
+SRC =	sllist.c \
+	int_sllist.c \
+	Hash.c \
+	edge.c \
+	node.c \
+	universe.c
+
+
+HDR =	sllist.h int_sllist.h Hash.h general.h  edge.h node.h universe.h 
+
+
+MAN =	sllist.3p \
+	int_sllist.3p \
+	Hash.3p \
+	digraph.3p
+
+
+OTHER = /* Add other misc. files (.par, .ld, .ini) to be installed/controlled */
+		
+/* Target name may be an executable, a library, etc.
+ * For executables add library options ala "cc" or "ld"
+ * Change the target name if the product is not the same name as the UNIT.
+ */
+$(.UNIT).a :- $(SRC) $(HDR) $(OTHER) $(MAN) 
+
+/* Add other targets to be installed, for example
+ * gsncs.h :-
+ * would force the installation of gsncs.h into the $(...)/include directory */
+
+utest : $(.PRODUCT) .INSTALL
+	cd test
+	Nmake
+	beep

@@ -1,0 +1,462 @@
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  inedit - General Purpose Input Editor
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  iiiinnnneeeeddddiiiitttt [-e 'exit-cmd'] [-s start-file] command [ arguments ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _I_n_e_d_i_t is a general purpose input editor that	gives edit
+	  shell	editing	features to most any command.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  If -e	is specified, an exit-cmd must also be specified.  In
+	  this case, when inedit exits it will execute the exit-cmd.
+	  In most cases, the exit-cmd will need	to be specified	in
+	  either single	or double quotes.
+
+	  If -s	is specified, a	start-file must	also be	specified.  In
+	  this case the	lines of the file will be inserted into	the
+	  input	stream before the keyboard is read.  See METERING
+	  section.
+
+     EEEEDDDDIIIITTTTIIIINNNNGGGG
+	  Normally each	line is	simply entered followed	by a new-line
+	  ('RETURN' or 'LINE FEED').  At any point while entering a
+	  line from a terminal,	if 'echo' mode (see stty(1)) is
+	  active, the user has the option to edit the line.  To	edit,
+	  the user moves the cursor to the point needing correction
+	  and then inserts or deletes characters or words as needed.
+
+	  Many of the editing commands are control characters or
+	  escape sequences.  The notation for control characters is
+	  caret	(^) followed by	the character.	For example, ^F	is the
+	  notation for control F.  This	is entered by depressing 'f'
+	  while	holding	down the "CTRL"	(control) key.	The "SHIFT"
+	  key is _n_o_t depressed (^f would be a better notation, but the
+	  convention is	^F).  (The notation ^? indicates the DEL
+	  (delete) key.)
+
+	  The notation for escape sequences is M- followed by a
+	  character.  For example, M-f (pronounced Meta	f) is entered
+	  by depressing	ESC (escape) followed by 'f'.  (M-F would be
+	  the notation for ESC followed	by "SHIFT" (capital) 'F'.)
+
+	  All edit commands operate from any place on the line (not
+	  just at the beginning).  Neither the "RETURN"	nor the	"LINE
+	  FEED"	key is entered after edit commands except when noted.
+
+	  The editing features require that the	user's terminal	accept
+	  "RETURN" as carriage return without line feed	and that a
+	  space	(' ') must overwrite the current character on the
+	  screen.  ADM terminal	users should set the "space - advance"
+	  switch to 'space'.  Hewlett-Packard series 2621 terminal
+
+
+
+     Page 1					     (printed 8/19/87)
+
+
+
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+	  users	should set the straps to "bcGHxZ etX".
+
+	  There	are two	editing	modes: emacs and vi. _I_n_e_d_i_t will come
+	  up in	emacs mode by default, unless the shell	variable
+	  VISUAL or EDITOR is assigned a value ending in 'vi'.
+
+	CCCCoooommmmmmmmoooonnnn EEEEddddiiiitttt CCCCoooommmmmmmmaaaannnnddddssss
+	  _e_r_a_s_e	    (User defined erase	character as defined by	the
+		    stty command, usually ^H or	#.) Delete previous
+		    character (only when performing an insert if in vi
+		    mode, otherwise in vi mode this is the same	as hhhh.)
+
+	  _k_i_l_l	    (User defined kill character as defined by the
+		    stty command, usually ^G or	@.) Kill the entire
+		    current line.  If two _k_i_l_l characters are entered
+		    in succession, all kill characters from then on
+		    cause a line feed (useful when using paper
+		    terminals).
+
+	  \\\\	    Escape next	character. Editing characters, the
+		    user's erase, kill and interrupt (normally ^?)
+		    characters may be entered in a line	or in a	search
+		    string if preceded by a \.	The \ removes the next
+		    character's	editing	features.
+
+	  ^^^^VVVV	    Display mode and version of	inedit.	 Mode is
+		    either VI or EMACS.	 The EMACS version described
+		    in this document is	5-30-86.  The VI version
+		    described in this document is 6-6-86.  If ^^^^VVVV is
+		    hit	twice in a row,	the editing mode is changed
+		    from EMACS to VI or	VI to EMACS, effective after
+		    the	next carriage return.
+
+
+	  ^^^^LLLL	    Line feed and print	current	line.
+
+	EEEEMMMMAAAACCCCSSSS EEEEddddiiiitttt CCCCoooommmmmmmmaaaannnnddddssss
+	  ^^^^FFFF	    Move cursor	forward	(right)	one character.
+
+	  MMMM----ffff	    Move cursor	forward	one word.  (The	editor's idea
+		    of a word is a string of characters	consisting of
+		    only letters, digits and underscores.)
+
+	  ^^^^BBBB	    Move cursor	backward (left)	one character.
+
+	  MMMM----bbbb	    Move cursor	backward one word.
+
+	  ^^^^AAAA	    Move cursor	to start of line.
+
+	  ^^^^EEEE	    Move cursor	to end of line.
+
+	  ^^^^]]]]_c_h_a_r    Move cursor	to _c_h_a_r_a_c_t_e_r on	current	line.
+
+
+
+     Page 2					     (printed 8/19/87)
+
+
+
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+	  ^^^^XXXX^^^^XXXX	    Interchange	the cursor and mark.
+
+	  ^^^^DDDD	    Delete current character.
+
+	  MMMM----dddd	    Delete current word.
+
+	  MMMM----^^^^????	    (Meta-DEL) Delete previous word.
+
+	  ^^^^TTTT	    Transpose current character	with next character.
+
+	  ^^^^CCCC	    Capitalize current character.
+
+	  MMMM----CCCC	    Capitalize current word.
+
+	  ^^^^KKKK	    Kill from the cursor to the	end of the line.  If
+		    given a parameter of zero then kill	from the start
+		    of the line	to the cursor.
+
+	  ^^^^WWWW	    Kill from the cursor to the	mark.
+
+	  MMMM----pppp	    Push the region from the cursor to the mark	on the
+		    stack.
+
+	  ^^^^YYYY	    Restore last item removed from line. (Yank item
+		    back to the	line.)
+
+	  ^^^^@@@@	    (Null character) Set mark.
+
+	  MMMM----	    (Meta space) Set mark.
+
+	  ^^^^JJJJ	    (New line)	Send the current line to the subject
+		    command.
+
+	  ^^^^MMMM	    (Return)   Send the	current	line to	the subject
+		    command.
+
+	  ^^^^PPPP	    Fetch previous line. Each time ^^^^PPPP is entered the
+		    previous line back in time is accessed.
+
+	  MMMM----<<<<	    Fetch the least previous (oldest) line.
+
+	  ^^^^NNNN	    Fetch next line. Each time ^^^^NNNN is entered the next
+		    line forward in time is accessed.
+
+	  MMMM---->>>>	    Fetch most recent (youngest) line.
+
+	  ^^^^RRRR_s_t_r_i_n_g  Reverse search history for a previous line
+		    containing _s_t_r_i_n_g.	_S_t_r_i_n_g is terminated by	a
+		    "RETURN" or	"NEW LINE" and is a _r_e_g_u_l_a_r _e_x_p_r_e_s_s_i_o_n
+		    as defined by the UNIX text	editor (ed).
+
+	  ^^^^OOOO	    Operate - Send the current line to the subject
+
+
+
+     Page 3					     (printed 8/19/87)
+
+
+
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+		    command
+
+		    and	fetch the next line relative to	the current
+		    line from the history.
+
+	  MMMM----_d_i_g_i_t_s  (Escape) Define numeric parameter, the digits are
+		    taken as a parameter to the	next command.  The
+		    commands that accept a parameter are ^^^^FFFF, ^^^^BBBB,
+		    _e_r_a_s_e, ^^^^KKKK, ^^^^DDDD, ^^^^PPPP and ^^^^NNNN.
+
+	  MMMM----_l_e_t_t_e_r  Softkey - Your environment is searched for a
+		    variable by	the name _l_e_t_t_e_r.  If the variable is
+		    defined its	value will be inserted on the line.
+
+	  ^^^^UUUU	    Multiply parameter of next command by 4.
+
+	  MMMM----hhhh	    Display saved history of lines.
+
+	  ^^^^ZZZZ	    Inedit terminates when it detects that the command
+		    you	were running terminates.  For example, if you
+		    were running sdb and entered
+
+		    q
+
+		    sdb	would terminate.  This will cause inedit to
+		    terminate also.  If, for some reason, the command
+		    fails to terminate enter ^Z.  This will terminate
+		    inedit and the command (and	all processes in its
+		    process group).  (You can also use your end-of-
+		    file character as defined by the stty command,
+		    normally ^D, if the	current	line is	null.)
+
+	VVVVIIII EEEEddddiiiitttt	CCCCoooommmmmmmmaaaannnnddddssss
+	  As in	the editor VI, there are two modes, command and	input.
+	  By default, the line editor is in input mode.	 Most of the
+	  following commands can only be entered in the	command	mode
+	  and can be preceded by an integer number specifying how many
+	  times	to perform the command.
+
+	  ^^^^DDDD	    Inedit terminates when it detects that the command
+		    you	were running terminates.  If, for some reason,
+		    the	command	fails to terminate enter your end-of-
+		    file character, normally ^D.  This will terminate
+		    inedit and the command (and	all processes in its
+		    process group).
+
+	  llll	    Move cursor	forward	(right)	one character.
+
+	  ssssppppaaaacccceeee	    Like llll, move cursor	forward	one character.
+
+	  hhhh	    Move cursor	backward (left)	one character.
+
+
+
+
+     Page 4					     (printed 8/19/87)
+
+
+
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+	  wwww	    Move cursor	forward	one alpha-numeric word.
+
+	  bbbb	    Move cursor	backward one alpha-numeric word.
+
+	  WWWW	    Move cursor	forward	one blank delimited word.
+
+	  BBBB	    Move cursor	backward one blank delimited word.
+
+	  eeee	    Move cursor	to end of the current alpha-numeric
+		    word.
+
+	  EEEE	    Move cursor	to end of the current blank delimited
+		    word.
+
+	  0000	    Move cursor	to the start of	the line.
+
+	  ^^^^	    Move cursor	to the first non-blank character of
+		    the	line.
+
+	  $$$$	    Move cursor	to the end of the line.
+
+	  kkkk,,,,----	    Fetch previous command.  Each time this is
+		    entered, the previous command back in time is
+		    accessed.
+
+	  jjjj,,,,++++	    Fetch next command.	 Each time this	is entered,
+		    the	next command forward in	time is	accessed.
+
+	  ////_s_t_r_i_n_g   Reverse search history for a previous line
+		    containing _s_t_r_i_n_g.	_S_t_r_i_n_g is terminated by	a
+		    "RETURN" or	"NEW LINE" and is a _r_e_g_u_l_a_r _e_x_p_r_e_s_s_i_o_n
+		    as defined by the UNIX text	editor (ed).
+
+	  nnnn	    Search for next match of the last string given to
+		    ////.
+
+	  aaaa	    Enter input	mode and enter text after the current
+		    character.
+
+	  iiii	    Enter input	mode and enter text before the current
+		    character.
+
+	  AAAA	    Append text	to the end of the line.	 Equivalent to
+		    $$$$aaaa.
+
+	  IIII	    Enter input	mode and enter text before the
+		    beginning of the line.
+
+	  xxxx	    Delete the current character.
+
+	  XXXX	    Delete the character to the	left of	the cursor.
+
+
+
+
+     Page 5					     (printed 8/19/87)
+
+
+
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+	  rrrr	    Replace the	current	character with the next
+		    character typed.
+
+	  ssss	    Substitute for the current character - deletes
+		    current character and enters input mode.
+
+	  ^^^^[[[[	    (ESCAPE) - exit input mode.
+
+	  DDDD	    Delete to the end of line.
+
+	  CCCC	    Change to the end of line.	Equivalent to DDDDaaaa.
+
+	  dddd_m_o_t_i_o_n   Delete with	the specified motion. If the motion is
+		    dddd, delete the entire line, other motions can be:
+
+		    llll	      to the right one character
+
+		    hhhh	      to the left one character
+
+		    wwww,,,,eeee	      to the end of the	current	alpha-numeric
+			      word
+
+		    WWWW,,,,EEEE	      to the end of the	current	blank
+			      delimited	word
+
+		    bbbb	      back to the beginning of the previous
+			      alpha-numeric word
+
+		    BBBB	      back to the beginning of the current
+			      blank delimited word
+
+		    $$$$	      to the end of the	line
+
+	  cccc_m_o_t_i_o_n   Change with	the specified motion. If the motion is
+		    cccc, delete the entire line, other motions can be as
+		    listed for dddd above.
+
+
+
+     EEEEssssccccaaaappppeeee CCCCoooommmmmmmmaaaannnndddd....
+	  A line that starts with a ! is taken as a shell escape line.
+	  All characters after the ! to	the end	of the line are	passed
+	  to system(3) upon execution of the line (^M, ^J or ^O).
+
+     HHHHiiiissssttttoooorrrryyyy FFFFiiiilllleeee
+	  If the variable 'INEDIT' is set to a filename, inedit	saves
+	  a record of all lines	entered	in the specified file upon
+	  exit and loads from the file upon start up.  This file must
+	  NOT be the same file as used by ksh as the formats are
+	  different!  If 'INEDIT' is not set or	is null, then the file
+	  'history' in the current directory is	used.
+
+
+
+
+     Page 6					     (printed 8/19/87)
+
+
+
+
+
+
+     IIIINNNNEEEEDDDDIIIITTTT((((1111))))		    UUUUNNNNIIIIXXXX 5555....0000 ((((EEEExxxxppppttttoooooooollllssss))))		     IIIINNNNEEEEDDDDIIIITTTT((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+	  To run sdb with inedit you would enter:
+
+	  inedit sdb file
+
+     MMMMEEEETTTTEEEERRRRIIIINNNNGGGG
+	  In many cases	when using a start-file	you will have to meter
+	  the rate the start-file is processed.	 For example, to have
+	  the start-file call the editor (/bin/ed) and then have the
+	  start-file supply editor commands, if	the start-file
+	  contains only:
+
+	   cd /etc
+	   ed /etc/passwd
+	   g/root/p
+
+	  you'll get a message indicating g/root/p was not found.  If
+	  however, your	start-file contains:
+
+	   cd /etc
+	   ed /etc/passwd
+	   !PAUSE 6
+	   g/root/p
+
+	  the entry for	root will be found and printed.
+
+	  The problem is that without the !PAUSE, the lines after a
+	  program (such	as the editor) is entered will be processed by
+	  the shell rather than	the desired program.  The !PAUSE
+	  causes a delay so that the desired program will get these
+	  lines	rather than the	shell.	The number, is the number of
+	  seconds of the delay.	 Values	of 1 to	60 are valid.  Values
+	  outside this range are converted to 60.
+
+     BBBBUUUUGGGGSSSS
+	  Inedit, to locate the	cursor,	issues a new line when the
+	  first	character of each line is entered.
+
+	  Commands that	put the	tty port in the	raw mode (e.g. vi,
+	  emacs, more) can not be run through inedit.  However,	they
+	  can be executed as an	escaped	(!) command.  Example:
+
+	  !emacs file
+
+	  Several VI commands are unimplemented, notably u,U,.,f, and
+	  F.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRRSSSS
+	  Inedit is provided by	Michael	T. Veach.  The VI editing
+	  feature is maintained	by Steven G. Spearman.
+
+
+
+
+
+     Page 7					     (printed 8/19/87)
+
+
+

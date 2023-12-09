@@ -1,0 +1,153 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1991				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+####################################################################
+# Add comments to nroff program source
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				September 1991
+#
+#
+# USAGE:  nroff   -f comment_file    [files]
+#
+# NOTES:
+#
+####################################################################
+VERSION="1.0"
+PGM=`basename $0`
+#TOOLS=`logdir exptools`
+LIBDIR=$TOOLS/lib/comment/
+
+
+#if [ "${LOGNAME}" != "parnass" ]
+#then
+	# log this instance and send mail to provider
+	#(echo "Subject: ${LOGNAME} exec ${PGM}\n\nexecuted ${PGM};`uname -n`;${LOGNAME};`date`;`pwd`;${ALLARGS}" | mail att!ihlpn!parnass) > /dev/null 2>&1
+#fi
+
+TMP=/usr/tmp
+
+# set temporary files
+TMPCF=$TMP/3shc$$
+CCFILE=$TMP/4shc$$
+FCNLINE=$TMP/5shc$$
+COMMENTS=$TMP/6shc$$
+NOTABS=$TMP/7shc$$	# script with tabs converted to blanks
+HERELESS=$TMP/8shc$$	# script with here-document blanked out
+
+TMPFILES="$TMPCF $CCFILE $FCNLINE $COMMENTS $NOTABS ${HERELESS}"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+FORHELP="\n\t(Type toolman $PGM, for a manual page, then contact Bob Parnass\n\tif you need help.)\n"
+USAGE="USAGE:  ${PGM}  -f comment_file  [files]\nVersion ${VERSION}\n${FORHELP}"
+
+EXIT_CODE=0
+FFLAG=
+CMTFILE=
+
+# parse command line arguments 
+set -- `getopt f: $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	for i in $*
+	do
+		case $i in
+
+		-f)
+			FFLAG=1
+			CMTFILE=$2
+			test -r "$CMTFILE"
+			if [ $? -ne 0 ]
+			then
+				echo "### error ### ${PGM}: Cannot read file $CMTFILE" 1>&2
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+			shift 2;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+
+
+NFILES=$#
+
+if [ "$FFLAG" ]
+then
+	:
+else
+	echo "### error ### ${PGM}: File of comments must be specified." 1>&2
+	echo "${USAGE}" 1>&2
+	exit 1
+fi
+if [ $# -eq 0 ]
+then
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	${LIBDIR}newform -i $CFILE > $NOTABS
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: newform failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1;
+		> $NOTABS
+	fi
+
+
+
+	awk '\
+		{
+		restline = $0
+		if(index(restline, ".") == 1)
+			{
+			macro = substr(restline, 2, 2)
+
+			# delete trailing space
+			if(index(macro, " ") == 2)
+				macro = substr(macro, 1, 1)
+
+			printf ".%s;%d\n", macro, NR
+			}
+		}' "${NOTABS}"  >> $FCNLINE
+		
+	sort  -u -o $FCNLINE $FCNLINE
+
+	sort $CMTFILE > $COMMENTS
+	join -t\; -j1 1 -j2 1 -o 1.2 2.2 2.3  $FCNLINE $COMMENTS
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`expr ${NFILES} - 1`
+
+	# set next source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}

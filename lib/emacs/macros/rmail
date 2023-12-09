@@ -1,0 +1,119 @@
+rRMAIL mail processing subsystem
+
+Warren A. Montgomery (IH6E314) Version 3.4
+
+B		Push starting buffer into kill stack
+<RMAIL
+goto RMAIL buffer
+<$HOME/rmail
+0>­<$MAIL
+0>¾ append new mail and save
+¼5000-wipeout /usr/mail
+Read back rmail file
+10^û8~!û-<RMAIL? 
+				loop until exit
+		ûý		exit RMAIL
+		ûnønext_mail
+			100ý	find next and redisplay top
+		ûpølast_mail
+			100ý	previous message
+		û100ý	Refresh Screen
+		ûm  
+			<getmail
+			¤B<.exec
+			¼ ¾%-100ý
+		ûN	unix news
+			<news
+			¤B<.exec
+			<(.*).*:..:
+			0>^û“while we find a search string
+				äFrom -0>ý
+			-¼1000%-100ý
+		ûx netnews 
+			<netnews -p
+			<usilent
+			¤B<.exec
+			<usilent
+			¼ ¾%-100ý
+		ûdølast_mail
+			 ønext_mail
+				Delete message
+			%	Keep buffer name on top
+			100ý	Wrap up
+		ûu%-	Undelete message
+			Bring message back to top
+			ølast_mail
+			100ý	Wrap up
+		ûeølast_mail
+		100ý		edit mail buffer
+		ûrølast_mail
+			B^û~‘>	While next line is '>'
+				|ûû~‘*	If not Forwarding line
+					 âð+<!
+					+ýý		This line processed
+				ýMove on
+			æ æð	Pick up target user
+			ølast_mail
+			 ønext_mail
+			ð<Mail
+			To: %-
+			Subject: <fill
+			Fill mode on
+			|ûû		If edited successfully
+				øSign_mail
+					Sign and send
+			ýý	End  if
+			-<$HOME/.mail_reply
+			<fill
+			B%100ýcleanup
+		ûwølast_mail
+			 ønext_mail
+			Bð<Mail
+			-<Write mail to File? 
+			B%100ýwrite message
+		û00ý	next page
+		û>¾ølast_mail
+			100ý last message
+		û!<Command? 
+			¡-<Continue? 
+			100ý last message
+		û<¼ønext_mail
+			100ý next message
+		ûPølast_mail
+			 ønext_mail
+			Bð<Mail
+			-<tpr - | lp
+			¡B%100ýwrite message
+		û?B<Mail
+			</usr/lib/emacs/macros/rmail_help
+			0-<Continue? 
+			B%100ýhelp function
+		ýýDone with work, now get back
+
+next_mail Go to next mail entry
+<^From 
+|û	search for next From
+	û“ý
+	û ¾ýý
+last_mail Go to last mail entry
+<^From 
+|û	Search backwords for a From
+	û-2“ý
+	û ¼ýý
+Sign_mail
+
+|ûLook for what kind of mail
+	ûû<@
+	³çý<$HOME/.sig_arpa
+	ý	Arpanet mail
+	ûû<!
+	³çý<$HOME/.sig_btl
+	ý	btl mail
+	û 	Default, local mail
+	<$HOME/.sig_local
+	ýý
+¾ ­	Read in signature (If any)
+|ûû ý	If this worked, do nothing
+	û <$HOME/.signature
+	­	Read in default signature
+ýý

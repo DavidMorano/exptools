@@ -1,0 +1,858 @@
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  todo - maintain online personal to-do	lists
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  todo [-hV] [-d dir] [-D date]	[+D date] [-s dpar] [-
+	  qnbAaHupPoOS]	[-X lsoe] [-x lvl] [-w width] [category	...]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _t_o_d_o is an interactive, menu driven system to	improve	organ-
+	  ization and productivity by keeping personal 'to do' lists
+	  online.  _T_o_d_o	may be used interactively or from the command
+	  line to produce reports.
+
+	  A _t_o_d_o list is a collection of statements reflecting activi-
+	  ties which must be accomplished by a given date.  Once an
+	  activity is completed, it is archived	with the date done and
+	  an optional comment.	The comment allows an explanation if a
+	  task is late.	 _T_o_d_o items may	be grouped into	categories to
+	  aid in organization.	Selecting the category name is up to
+	  the user.  Any name with 10 (8 for MSDOS) or fewer
+	  alphanumeric characters may be used.	The category GGGGeeeennnneeeerrrraaaallll
+	  is provided by default.
+
+	  ----hhhh	    Print a usage message, the current version,	a help
+		    message and	exit.
+
+	  ----VVVV	    Print the current version and exit.
+
+	  ----dddd _d_i_r    Use	_d_i_r as the _t_o_d_o	directory.  Default is
+		    $$$$TTTTOOOODDDDOOOO____DDDDIIIIRRRR, or $$$$HHHHOOOOMMMMEEEE////ttttooooddddoooo if	that is	not set.  If
+		    this directory does	not exist, _t_o_d_o	will attempt
+		    to create it.  This	may fail if one	of the path
+		    components does not	exist.	All files in the _t_o_d_o
+		    directory are considered _t_o_d_o files.
+
+	  ----DDDD _d_a_t_e   Use	_d_a_t_e as	the current date.  This	is the date at
+		    which items	are considered overdue.	 The default
+		    is today's date.  When printing archives [-S or
+		    -P], _d_a_t_e will limit printing to those items com-
+		    pleted on or after this date.
+
+	  ++++DDDD _d_a_t_e   Only print [-p or -P] items	up to and including
+		    _d_a_t_e. This is useful for printing any items	that
+		    are	due in a specific time period.	In addition,
+		    the	ending date may	not come before	the starting
+		    date.
+
+	  ----ssss ddddppppaaaarrrr   Set	the sort order for categories.	Default	is
+		    ddddppppaaaa.... Ordering is significant.
+
+		    dddd Use dates	to sort	with.
+
+
+
+
+     Page 1					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+		    pppp Use priorities to	sort with.
+
+		    aaaa Use abstracts to sort with.
+
+		    rrrr Set reverse sort mode.  This sort	flag acts as a
+		      toggle.
+
+	  ----qqqq	    Suppress (quiet) the help messages that appear in
+		    the	menu.  This flag acts as a toggle.
+
+	  ----nnnn	    Disable skipping multiple entries in the change
+		    category menu.  By default,	you may	enter a	number
+		    and	then an	up/down	motion and move	that number of
+		    entries at one time.  This option works as a tog-
+		    gle	only when running interactively.
+
+	  ----bbbb	    Ignore SIGINT when running interactively.  The
+		    default is to catch	the signal and kill the
+		    current operation.	This option works as a toggle
+		    only when running interactively.
+
+	  ----AAAA	    Use	an alternate printing format for items and
+		    archives.  This option works as a toggle.
+
+	  ----aaaa	    When printing the categories, print	even the empty
+		    ones.  By default, a category will only be printed
+		    if something is in it.  This option	works as a
+		    toggle only	when printing.
+
+	  ----HHHH	    Suppress the headings generated with the ----pppp	or ----PPPP
+		    options.  This option ignores the ----aaaa option.  This
+		    is useful in combination with the ----wwww 0000 option.
+		    _t_o_d_o's output can then be piped to other commands
+		    for	easy parsing.  By default, headings are
+		    printed.  This option works	as a toggle.
+
+	  ----uuuu	    Set	the default date to unknown when adding	new
+		    items.  This option	works as a toggle.
+
+	  ----pppp	    Print the categories specified on the command line
+		    (or	all the	categories if none are specified) to
+		    standard output and	exit.  This allows an easy way
+		    to generate	a paper	copy.
+
+	  ----PPPP	    Same as ----pppp except that archives are	also printed.
+
+	  ----oooo	    Print only the overdue items.  The default is to
+		    print everything.  It does not apply to archives.
+		    This option	works as a toggle only when printing.
+
+	  ----OOOO	    Print only the items not yet due.  The default is
+		    to print everything.  It does not apply to
+
+
+
+     Page 2					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+		    archives.  This option works as a toggle only when
+		    printing.
+
+	  ----SSSS	    Generate a summary for tracking purposes and exit.
+		    This option	ignores	the -oOpP and +D options.
+
+	  ----XXXX llllssssooooeeee   Select the type of items to	print with the ----SSSS
+		    option.  Default is	llllssssooooeeee.... Ordering is not signifi-
+		    cant.
+
+		    llll Print late items.
+
+		    ssss Print items that have slipped.
+
+		    oooo Print on-time items.
+
+		    eeee Print early items.
+
+	  ----xxxx _l_v_l    Set	the default priority level to _l_v_l. Priority
+		    levels may be between 1 and	9, inclusive.  The
+		    default is 9.  When	used in	the non-interactive
+		    mode, this option will suppress any	items whose
+		    priority level is greater than _l_v_l.
+
+	  ----wwww _w_i_d_t_h  Only allow _w_i_d_t_h characters	for each line.	If an
+		    abstract is	too long, it is	wrapped	and indented
+		    to the next	line.  (There is no word parsing done,
+		    it is strictly character oriented.)	 Lines are not
+		    allowed to be limited to less than 50 characters
+		    except in the case where it	is less	than or	equal
+		    to 0.  In this case, no width restriction is
+		    applied.  If a shorter line	is attempted, the
+		    width restriction will be turned off.  When	print-
+		    ing	to standard output, the	default	is defined by
+		    the	environment variable CCCCOOOOLLLLUUUUMMMMNNNNSSSS.... If this is not
+		    set, 80 columns are	used.  Interactively, the
+		    default is the width of the	window.
+
+	  _c_a_t_e_g_o_r_y  Use	only _c_a_t_e_g_o_r_y when printing.  When a _c_a_t_e_g_o_r_y
+		    is specified for interactive mode, that category
+		    is the one displayed on entering the command.  Any
+		    additional ones are	listed in the change category
+		    menu in the	order the were entered.	 Any not
+		    specified are sorted below these.
+
+	  Several of the above options may be set with the environment
+	  variable TTTTOOOODDDDOOOO____OOOOPPPPTTTTSSSS.... This allows some tailoring of the	com-
+	  mand without having to specify the arguments on every	invo-
+	  cation.  Command line	arguments will override	the ones set
+	  in the environment.  The allowable arguments are: ----ssss_d_p_a_r, ----
+	  qqqq,,,, ----nnnn,,,, ----bbbb,,,, ----AAAA,,,, ----aaaa,,,, ----HHHH,,,, ----uuuu,,,, ----oooo,,,, ----OOOO,,,, ----XXXX_l_s_o, ----xxxx_l_v_l and ----wwww_w_i_d_t_h.
+	  The ----ssss,,,, ----XXXX,,,, ----xxxx and ----wwww	options	require	the use	of a colon (::::)
+
+
+
+     Page 3					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  after	the argument if	other options are to follow it.	 This
+	  is used to separate the option's argument from other
+	  options.  For	example, set TODO_OPTS="w79:asr" to use	a
+	  width	of 79 when printing, to	list all the categories	when
+	  printing, and	to sort	items in reverse order for each
+	  category.  These options are subject to any restrictions
+	  listed above.	 The command line will over-ride any of	these
+	  options that are not listed as toggles.
+
+	  When invoked,	_t_o_d_o displays the menu on the upper half of
+	  the screen, and the GGGGeeeennnneeeerrrraaaallll to do list (or the one specified
+	  on the command line) on the lower half of the	screen.	 _T_o_d_o
+	  commands are entered as noted	below.	Information such as
+	  item numbers and due dates are prompted for as they are
+	  required.  The following is a	compressed representation of a
+	  typical _t_o_d_o list as displayed on the	screen:
+
+       ACTIONS:	ON CURRENT CATEGORY	  ON MULTIPLE CATEGORIES  MISC
+      [a]dd item	[p]rint	category     [c]hange category	  [C]ommand
+      [u]pdate item	[P]rint	archive	     [A]dd category	  [h]elp
+      [r]chive item	[f]ormat toggle	     [R]ename category	  [W]rite
+      [U]narchive item	   delete archive    [t]ransfer	item	  [q]uit
+      [d]elete item	   delete category   [T]rans2arch	     abort
+     Category: General [+archive]
+
+     ITEM DATE DUE   PRI CATEGORY DESCRIPTION
+       1  10/26/1990  1	 Develop design	proposal for Project X for J.B.
+       2  11/01/1990  9	 Make copy of design spec for Jim Smith.
+       4  11/06/1990  1	 Obtain	approvals for development letter.
+       3  11/06/1990  2	 Document status of requirements open items.
+       5  Unknown     9	 Start writing novel
+
+	  Certain parts	of the menu area are highlighted.  If the menu
+	  description is highlighted, then it is the current command.
+	  If the letter	before it is highlighted, then when that key
+	  is hit, that command will automatically be executed and made
+	  current.  Otherwise, the command simply becomes highlighted
+	  as current.
+
+	  If a category	has too	many lines for the lower part of the
+	  screen, the abstracts	are paged, with	an option to stop pag-
+	  ing.	Each _t_o_d_o item is displayed with an item number, due
+	  date,	and abstract.  The due date is highlighted if it is
+	  overdue (older than the current date)	or flashes if it is
+	  due on the current date.  Items are sorted and displayed in
+	  chronological-priority-lexical order.
+
+	  When the ----pppp or ----PPPP options are	used, _t_o_d_o will	use the	termi-
+	  nal attributes to hightlight or flash	an item	based on its
+	  due date as noted above.  If the output is redirected, the
+	  highlighting of a date changes to "*01/01/1991*" and flash-
+	  ing changes to "!01/01/1991!".
+
+
+
+     Page 4					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  When a todo list is printed in the alternate format, the
+	  output appears as:
+     ITEM DATE DUE   DAYS   PRI	CATEGORY DESCRIPTION
+       1  07/30/1991 +18     1	Lab picnic
+       2 *07/01/1991*-11     5	Camera should be ready (taken in 6/3)
+       3  Unknown     -	     9	sysend:	add options, see  /mail/dennis
+
+	  When an archive is printed in	the alternate format, the out-
+	  put appears as:
+     ITEM DATE DUE   DATE DONE	     ARCHIVE
+       1  12/31/1991 03/01/1991	     menu: add pattern matching
+       2  04/11/1991 04/12/1991	LATE Meet with Marlene at 10:30	2a258
+							+Had to	reschedule because of conflicts.
+       3  04/22/1991 04/22/1991	     getstring:	Home key getting thru
+       4  Unknown    03/22/1991	     getstring:	handle existing	cntrl chars
+
+     MMMMEEEENNNNUUUU CCCCOOOOMMMMMMMMAAAANNNNDDDDSSSS
+	  The following	commands in _i_t_a_l_i_c_s are	the menu options that
+	  are selectable by highlighting that entry and	hitting
+	  return.  BBBBoooolllldddd	items are keyboard input.  To move around in
+	  the menu, use	either the terminal's arrow keys, the numbers
+	  8(up), 2(down), 4(left) and 6(right) or the control charac-
+	  ters ^O(up), ^N(down), ^B(left) and ^F(right).  In addition,
+	  certain commands will	take a single character	as a shortcut.
+
+	  [[[[aaaa]]]]_d_d	_i_t_e_m	    This will add a new	item to	the current
+			    category.  If the abstract is zero length,
+			    the	add is aborted.	 A priority is
+			    prompted for next.	This may be any	number
+			    from 1 to 9	with 9 being the default
+			    (unless changed with the -x	option).  1 is
+			    the	most important.	 The date is asked for
+			    next.  The rules for date formation	are
+			    listed below.  In addition,	a '?' is
+			    allowed for	items that the due date	is not
+			    known.  A '?' is treated as	the date
+			    farthest in	the future for sorting pur-
+			    poses.  The	default	is the current date.
+
+	  [[[[uuuu]]]]_p_d_a_t_e _i_t_e_m	    This allows	the selected item to be	modi-
+			    fied.  Commands to edit will be explained
+			    below.  If the due date is changed,	the
+			    amount of change is	tracked	allowing slip-
+			    page to be tracked.	 It is possible	to
+			    clear to tracking, by setting the due date
+			    to unkwown,	the slippage factor is
+			    cleared.
+
+	  [[[[rrrr]]]]_c_h_i_v_e _i_t_e_m	    Move a selected item to the	archive.
+			    Before moving, a completed date and	com-
+			    ment are requested.	 The default date is
+			    the	current	date.  The due date for	the
+
+
+
+     Page 5					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+			    item is saved, however it is not displayed
+			    at this time.  The comment may be empty.
+
+	  [[[[UUUU]]]]_n_a_r_c_h_i_v_e _i_t_e_m  Move an item from the archive back to the
+			    active list.  If there is a	comment, it
+			    will not appear.  Comment's	are printed
+			    only for archived items.  However, the
+			    content is saved for when it is next
+			    archived.
+
+	  [[[[dddd]]]]_e_l_e_t_e _i_t_e_m	    After selecting the	item to	delete,	_t_o_d_o
+			    will ask:
+
+			    Are	you sure you want to delete item #?
+			    [ny] ->
+
+			    The	default	action is not to.
+
+	  [[[[pppp]]]]_r_i_n_t _c_a_t_e_g_o_r_y  Print the current category.
+
+	  [[[[PPPP]]]]_r_i_n_t _a_r_c_h_i_v_e   Print the current category's archive.
+
+	  [[[[ffff]]]]_o_r_m_a_t _t_o_g_g_l_e   Toggle the format used to print the
+			    categories.
+
+	  _d_e_l_e_t_e _a_r_c_h_i_v_e    Delete the current category's archive.
+			    _t_o_d_o will ask:
+
+			    Are	you sure you want to delete this
+			    archive? [ny] ->
+			    Do you want	to abort the deletion? [yn] ->
+
+			    The	default	action is the first one
+			    listed.
+
+	  _d_e_l_e_t_e _c_a_t_e_g_o_r_y   Delete the current category	and archive.
+			    _t_o_d_o will ask:
+
+			    Are	you sure you want to delete this
+			    category and archive? [ny] ->
+			    Are	you absolutely sure? [ny] ->
+			    One	more chance, do	you want to abort the
+			    deletion? [yn] ->
+
+			    The	default	action is the first one
+			    listed.
+
+	  [[[[cccc]]]]_h_a_n_g_e _c_a_t_e_g_o_r_y Change the current category.  A list of
+			    active categories are displayed with the
+			    number of active items and archived	items.
+			    Highlight the desired category and hit
+			    return to change it.  To move up, use the
+
+
+
+     Page 6					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+			    up arrow or	control-P.  To move down, use
+			    the	down arrow or control-N.  A control-D
+			    will return	without	changing.  A number
+			    may	be entered to shift up/down by more
+			    than one.  Items may also be searched for
+			    with characters.  The current search
+			    string is displayed	at the bottom of the
+			    menu.  When	a character is entered,	the
+			    first item matched is made current.	 If no
+			    matches are	found, it beeps	and discards
+			    that character.  Searchs will wrap around.
+			    Backspace may be used to alter the pat-
+			    tern.  A slash '/' may be used to search
+			    for	the next instance.
+
+	  [[[[AAAA]]]]_d_d	_c_a_t_e_g_o_r_y    Create a new category.  This becomes the
+			    active category.
+
+	  [[[[RRRR]]]]_e_n_a_m_e _c_a_t_e_g_o_r_y Change the name of the current category
+			    (and archive).
+
+	  [[[[tttt]]]]_r_a_n_s_f_e_r _i_t_e_m   Transfer the selected item from the
+			    current category to	a new one.  The
+			    selected category becomes the active one.
+
+	  [[[[TTTT]]]]_r_a_n_s_2_a_r_c_h	    Archive an item to a different category.
+			    This is useful if you want to keep every-
+			    thing you need to do in a single category,
+			    but	archive	according to content.  How-
+			    ever, categories must still	be created
+			    first to do	this.  The archiving process
+			    is the same	as '[r]chive item'.
+
+	  [[[[CCCC]]]]_o_m_m_a_n_d	    Enter a command string.  Invalid commands
+			    will cause a re-prompting, with the	excep-
+			    tion that using the	up/down	arrows will
+			    abort command string.  Once	a command is
+			    accepted, the command line is done.
+
+	  [[[[hhhh]]]]_e_l_p	    Display a quick listing of commands.  A
+			    ''''????''''	will also display the help listing.
+			    The	help listing shows three items of
+			    interest.  The first is the	shortcut
+			    key/menu listing.  The second is the com-
+			    mand string	that may be entered in
+			    _C_o_m_m_a_n_d. The last is a description.
+
+	  [[[[WWWW]]]]_r_i_t_e	    Write any pending changes to the data
+			    files.  By default,	this is	only done when
+			    the	_t_o_d_o quits normally.
+
+	  [[[[qqqq]]]]_u_i_t	    Quit.  If any categories have been
+
+
+
+     Page 7					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+			    modified, they will	be updated.
+
+	  _a_b_o_r_t		    Exit without making	any of the pending
+			    modifications.  _t_o_d_o will ask:
+
+			    Changes have been made, do you really want
+			    to quit? [ny] ->
+
+			    The	default	action is the first one
+			    listed.
+
+	  ^^^^LLLL		    Redraw the screen.	This is	useful if the
+			    screen gets	garbage	on it.
+
+	  !!!!		    Run	a subshell.  If	SSSSHHHHEEEELLLLLLLL is not set,
+			    ////bbbbiiiinnnn////sssshhhh is used.  Not available under
+			    MSDOS.
+
+     EEEEDDDDIIIITTTTIIIINNNNGGGG
+	  Whenever a string of data (date, priority or abstract) is
+	  requested, it	is possible to edit that string.  Editing
+	  style	is either emacs	or vi based.  The style	to use is
+	  defined by the environment variable LLLLNNNNEEEEDDDDIIIITTTT.... If it is set to
+	  _v_i, _e_x or _v_e_d_i_t vi-mode is used.  If it is set to _g_m_a_c_s,
+	  gmacs-mode is	used.  If it is	set to anything	else, emacs-
+	  mode is used.	 If LLLLNNNNEEEEDDDDIIIITTTT is not set, then EEEEDDDDIIIITTTTOOOORRRR is used.
+	  If that is not set, emacs-mode is used.  Gmacs-mode is the
+	  same as emacs	except in how they handle control-T.
+	  Currently, any practical emacs/vi ksh	command	has been
+	  implemented.	Commands dealing with histories, name comple-
+	  tion,	etc have no meaning.
+
+	  By default, the _k_i_l_l-_c_h_a_r and	_e_r_a_s_e-_c_h_a_r noted below are the
+	  @@@@ character and bbbbaaaacccckkkkssssppppaaaacccceeee key	respectively.  These may vary
+	  depending on your _s_t_t_y(1) settings.
+
+	GGGGeeeennnneeeerrrraaaallll	ccccoooommmmmmmmaaaannnnddddssss
+	  ^^^^LLLL		   Redraw the window.
+
+	  <<<<uuuupppp aaaarrrrrrrroooowwww>>>> <<<<ddddoooowwwwnnnn aaaarrrrrrrroooowwww>>>>
+				 Cancel	the editing.
+
+	  <<<<rrrreeeettttuuuurrrrnnnn>>>>	   Editing is complete.
+
+	EEEEmmmmaaaaccccssss MMMMooooddddeeee
+	  M- is	the emacs meta character, ESC (^[).
+
+	  ^^^^OOOO		   Editing is complete.
+
+	  ^^^^@@@@ MMMM----<<<<ssssppppaaaacccceeee>>>>	   Set mark.
+
+	  ^^^^XXXX^^^^XXXX		   Interchange cursor and mark.
+
+
+
+     Page 8					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  ^^^^AAAA		   Move	to the start of	the line.
+
+	  ^^^^EEEE		   Move	to the end of the line.
+
+	  ^^^^BBBB <<<<lllleeeefffftttt aaaarrrrrrrroooowwww>>>>  Move	left one character.
+
+	  ^^^^FFFF <<<<rrrriiiigggghhhhtttt aaaarrrrrrrroooowwww>>>> Move	right one character.
+
+	  MMMM----^^^^]]]]_c		   Move	backward to character _c.
+
+	  ^^^^]]]]_c		   Move	forward	to character _c.
+
+	  MMMM----bbbb		   Move	backward one word.  Emacs idea of a
+			   word	is a string of characters consisting
+			   of only letters, digits and underscores.
+
+	  MMMM----ffff		   Move	forward	one word.
+
+	  MMMM----cccc		   Capitalize the current word.
+
+	  MMMM----llll		   Change the current word to lower case.
+
+	  ^^^^CCCC		   Capitalize the current character.
+
+	  MMMM----pppp		   Push	the region from	the cursor to the mark
+			   into	the delete buffer and move the cursor
+			   to the end of the yanked region.
+
+	  ^^^^YYYY		   Restore (yank back) the last	item removed.
+
+	  ^^^^TTTT		   Transpose the current character with	the
+			   next	character in emacs mode.  Transpose
+			   the two previous characters in gmacs	mode.
+
+	  <_k_i_l_l-_c_h_a_r>	   Erase everything.
+
+	  ^^^^KKKK		   Delete from the cursor to the end of	the
+			   line.  If preceded by a numerical parameter
+			   whose value is less than the	current	cursor
+			   position, then delete from given position
+			   up to the cursor.  If preceded by a numeri-
+			   cal parameter whose value is	greater	than
+			   the current cursor position,	then delete
+			   from	cursor up to given cursor position.
+
+	  <_e_r_a_s_e-_c_h_a_r>	   Erase the previous character.
+
+	  ^^^^DDDD		   Delete the current character.
+
+	  MMMM----hhhh MMMM----^^^^HHHH MMMM----^^^^????	   Delete the previous word.  (Meta-DEL	will
+			   not work if your interrupt character	is set
+			   to DEL.)
+
+
+
+     Page 9					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  MMMM----dddd		   Delete the current word.
+
+	  ^^^^WWWW		   Kill	from the cursor	to the mark.
+
+	  MMMM----_d_i_g_i_t_s	   Define a numeric parameter for the next
+			   command.  Commands that accept parameters
+			   are:	^B ^F M-^] ^] M-b M-f M-c M-l ^C ^K
+			   <erase-char>	^D M-h M-d
+
+	VVVViiii IIIInnnnppppuuuutttt MMMMooooddddeeee
+	  ^^^^WWWW		   Delete the previous blank separated word.
+
+	  <_e_r_a_s_e-_c_h_a_r>	   Erase the previous character.
+
+	  <_k_i_l_l-_c_h_a_r>	   Erase everything.  This differs from	ksh-
+			   style editing where just what has been done
+			   is erased.  This is because during
+			   input/edit/input type mode changes, there
+			   is no distinction between what was done
+			   before and what has just been done.	Hence,
+			   if you input	new data in the	middle of a
+			   string, it is possible to backspace over
+			   (erase) data	that exists prior to the loca-
+			   tion	where the input	was started.
+
+	  EEEESSSSCCCC		   Enter edit mode.
+
+	VVVViiii EEEEddddiiiitttt	MMMMooooddddeeee
+	  0000		   Move	to the start of	the line.
+
+	  $$$$		   Move	to the end of the line.
+
+	  _nhhhh _n<_e_r_a_s_e-_c_h_a_r> _n<<<<lllleeeefffftttt aaaarrrrrrrroooowwww>>>> Move left one character.
+
+	  _nllll _n<<<<ssssppppaaaacccceeee>>>> _n<<<<rrrriiiigggghhhhtttt aaaarrrrrrrroooowwww>>>> Move right	one character.
+
+	  ^^^^		   Move	to the first non-blank character.
+
+	  _n||||		   Move	to column _n. If	_n is not given,	move
+			   to the first	column.
+
+	  _nFFFF_c		   Find	the previous character _c.
+
+	  _nTTTT_c		   Same	as _nFFFF_cllll....
+
+	  _nffff_c		   Find	the next character _c.
+
+	  _ntttt_c		   Same	as _nffff_chhhh....
+
+	  _nBBBB		   Move	to the preceding blank separated word.
+
+	  _nbbbb		   Move	backward one word.
+
+
+
+     Page 10					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  _nWWWW		   Move	to the beginning of the	next word that
+			   follows a blank.
+
+	  _nwwww		   Move	forward	one alpha-numeric word.
+
+	  _nEEEE		   Move	to the end of the current blank	delim-
+			   ited	word.
+
+	  _neeee		   Move	to the end of a	word.
+
+	  YYYY		   Same	as yyyy$$$$....
+
+	  _nyyyy[_n][_m_o_t_i_o_n]	   Yank	current	character through character
+			   that	motion would move to and put them into
+			   the delete buffer.  The text	and cursor are
+			   unchanged.  If the motion is	yyyy,,,, the entire
+			   line	will be	yanked.
+
+	  _nPPPP		   Place the previous text modification	before
+			   the cursor.
+
+	  _npppp		   Place the previous text modification	after
+			   the cursor.
+
+	  _n~~~~		   Invert the case of the current character
+			   and advance the cursor.
+
+	  _nrrrr_c		   Replace the current character with _c.
+
+	  _nXXXX		   Delete the previous character.
+
+	  _nxxxx		   Delete the current character.
+
+	  _ndddd[_n][_m_o_t_i_o_n]	   Delete current character through the	char-
+			   acter that motion would move	to.  If	the
+			   motion is dddd,,,,	the entire line	will be
+			   deleted.
+
+	  _ncccc[_n][_m_o_t_i_o_n]	   Delete current character through the	char-
+			   acter that motion would move	to and enter
+			   input mode.	If the motion is cccc,,,, the	entire
+			   line	will be	deleted	and input mode
+			   entered.
+
+	  DDDD		   Same	as dddd$$$$....
+
+	  CCCC		   Same	as cccc$$$$....
+
+	  SSSS		   Same	as cccccccc....
+
+	  _nssss		   Delete the current character, enter input
+			   mode.
+
+
+
+     Page 11					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  UUUU		   Undo	all the	text modifying commands.  If a
+			   default string has been given, this is
+			   used.
+
+	  uuuu		   Undo	last text modifying command.
+
+	  AAAA		   Same	as $$$$aaaa....
+
+	  aaaa		   Enter input mode.  Text is entered after
+			   the current character.
+
+	  IIII		   Same	as 0000iiii....
+
+	  iiii		   Enter input mode.  Text is inserted before
+			   the current character.
+
+     DDDDAAAATTTTEEEE FFFFOOOORRRRMMMMAAAATTTTIIIIOOOONNNN
+	  A date may be	specified as either mmmmmmmm////dddddddd,,,, mmmmmmmm////dddddddd////yyyyyyyy,,,, or
+	  mmmmmmmm////dddddddd////yyyyyyyyyyyyyyyy.... If the date is in	the first form,	the current
+	  year is assumed.  If it is in	the second form, the current
+	  century is determined	and is added to	the year.  In addi-
+	  tion,	the notation _n_u_m, ++++_n_u_m or ----_n_u_m may be used to
+	  increment/decrement today's date by _n_u_m days.
+
+	  A year may not be greater than 9999 (for formatting pur-
+	  poses).  In addition,	there is a sanity check	built in.  If
+	  the year specified is	more than 5 years in the future, _t_o_d_o
+	  will either prompt you if this is okay or print a warning
+	  message.  The	message	type depends on	whether	you are
+	  interacting with the program or not.
+
+     NNNNOOOOTTTTEEEESSSS
+	  _t_o_d_o only updates its	files when requested or	when it	exits.
+	  Causing the program to terminate abnormally (causing a
+	  SIGQUIT, logging off the system, etc)	will _n_o_t update	the
+	  files.  This can be of use if	you delete an item or category
+	  you did not want to.
+
+	  _t_o_d_o has a minimum requirement for the size of the window it
+	  is running in.  It requires at least 70 columns and 13 rows.
+
+	  The patterns generated in the	category change	menu are not
+	  regular expressions.	They are simple	matches.
+
+	  When printing	archives, the comment line begins with a '+'.
+	  This line may	be unexpectly truncated	at the bottom of a
+	  page when it is listed in the	interactive mode.
+
+	  When running _t_o_d_o interactively (in curses), the terminal's
+	  hardware tabstops should be set to 8.	 Otherwise the output
+	  may get garbled.  Curses attempts to optimize	cursor motion
+	  and will use tabs to position	that it	assumes	are set	at 8.
+
+
+
+     Page 12					      (printed 3/4/96)
+
+
+
+
+
+
+     TTTTOOOODDDDOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       TTTTOOOODDDDOOOO((((1111))))
+
+
+
+	  This is based	on a September 1986 version by M. J. Desch
+	  [AT&T	Network	Systems].  This	version	is _n_o_t compatible with
+	  that.	 The data file organization is different.
+
+	  The data in the todo files is	organized in sets.  The	first
+	  line defines how many	lines are in the data set.  Comments
+	  are allowed between sets of data, however they may not be
+	  nested within	a set.
+
+     MMMMSSSSDDDDOOOOSSSS NNNNOOOOTTTTEEEESSSS
+	  There	are a few minor	differences in the MSDOS version.
+
+	  ----  The HHHHOOOOMMMMEEEE environment variable does	not need to be set.
+	     If	not set, cccc::::\\\\ is	used.
+
+	  ----  The !!!! shell escape	command	is not available.
+
+	  ----  Category names are	limited	to 8 characters.
+
+	  ----  The directory name	used with the ----dddd option	may be an
+	     environment variable.  _t_o_d_o will expand $$$$nnnnaaaammmmeeee....
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  To print only	the items that are due in the next week:
+	       todo -p -O +D+7
+
+	  To print only	priority 1 items that are due in the next
+	  week:
+	       todo -x1	-p -O +D+7
+
+	  To print only	the items that were due	last week:
+	       todo -p -O -D-7 +D-1
+
+	  To print only	the items that are overdue in ascending	prior-
+	  ity order and	descending date	order:
+	       todo -p -o -s prd
+
+	  To print only	the items that were overdue last week:
+	       todo -p -o -D-7 +D-1
+
+	  To print items in ascending priority order, descending date
+	  order, and ascending abstract	order:
+	       todo -p -s prdra
+
+	  To summarize only the	items completed	in the current year:
+	       todo -D1/1 -S
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Peter	Fales
+	  ihgp!psfales
+
+
+
+
+
+     Page 13					      (printed 3/4/96)
+
+
+

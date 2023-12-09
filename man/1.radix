@@ -1,0 +1,594 @@
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+
+
+       NNNNAAAAMMMMEEEE
+            radix - preprocess document containing radix commands.
+
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            rrrraaaaddddiiiixxxx   [[[[----mmmm||||----pppp||||----HHHH||||----VVVV]]]]   [_m_m__s_r_c...]
+
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+            Radix decision tracing commands allow authors to write
+            documents in a format that will facilitate requirements
+            traceability. The commands are n/troff based and work
+            in conjunction with the Memorandum Macros (MM). Radix
+            commands allow decisions (requirements) in a document
+            to be broken down into partitioned units of
+            information. When the document is printed, the
+            decisions will be highlighted (printed in bold), aiding
+            reviewers in focusing on critical information.
+            Additionally, facilities are provided for printing
+            summary reports of the decisions.
+
+            The rrrraaaaddddiiiixxxx command prepares an mm document containing
+            radix commands for formatting with nroff/troff. rrrraaaaddddiiiixxxx
+            prints the result to the standard output. If no
+            arguments are given, the standard input is assumed to
+            contain the file to be processed.
+
+            There are two implementations of the rrrraaaaddddiiiixxxx command. One
+            implementation is a preprocessor, similar to pic or
+            tbl. The other implementation  is a macro package,
+            similar to the MM macros. Users may select which
+            implementation to use via command line flags. The
+            preprocessor is the default implementation. The macros
+            are being phased out and receive only limited support.
+
+            No conversion is necessary to use the preprocessor on
+            documents that were previously formatted with the
+            macros. However, the two implementations have different
+            restrictions and some minor behavioral differences. See
+            RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS and EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN for details.
+
+            There are three ways to use the rrrraaaaddddiiiixxxx command:
+
+              1.  Use the preprocessor implementation. This is the
+                  default, and is the recommended way to  use
+
+
+
+       Page 1                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+                  rrrraaaaddddiiiixxxx. Its use is similar to pic or tbl (see
+                  "EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS"). Previous versions of rrrraaaaddddiiiixxxx required
+                  a "-p" flag to get the preprocessor. The "-p"
+                  flag is no longer required, although it won't
+                  hurt anything if it is there.
+
+              2.  Use the macro implementation each time the memo
+                  is formatted. This use  is identical to method 1,
+                  above, except for the presence of the "-m" flag.
+
+              3.  Use the macro implementation as a "one-shot"
+                  processor. Previous releases of rrrraaaaddddiiiixxxx also
+                  allowed the command to  produce a new sourcefile,
+                  after which it was no longer necessary to use the
+                  rrrraaaaddddiiiixxxx command. This will still work if "-m" is
+                  specified; however, it is strongly  discouraged
+                  as it can tie the document to the macro
+                  implementation, which receives only limited
+                  support.
+
+            The benefits of the preprocessor are:
+
+               - The formatting job will run approximately 10 times
+                 faster (wall clock time).
+
+               - Many bugs and restrictions in the macro
+                 implementation will be eliminated.
+
+               - Better error checking/reporting will be provided
+                 by the preprocessor.
+
+               - The preprocessor is the supported version of
+                 rrrraaaaddddiiiixxxx. It receives bug-fixes and enhancements.
+
+               - Less chance of naming conflicts with troff
+                 register, macro, and string names.
+
+
+
+       PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+
+            ----HHHH        display a help message
+
+            ----VVVV        display the current version of the tool
+
+            ----mmmm        format the document using the macro
+                      implementation of rrrraaaaddddiiiixxxx.
+
+            ----pppp        format the document using the preprocessor
+                      implementation of rrrraaaaddddiiiixxxx.  This is the
+                      default.
+
+
+
+       Page 2                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+            mmmmmmmm____ssssrrrrcccc    the name of a file containing the input
+                      document. Default is standard input.
+
+
+       EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+
+            TTTTOOOOOOOOLLLLSSSS   must be set to `logdir exptools` and exported.
+
+
+       RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS ---- PPPPrrrreeeepppprrrroooocccceeeessssssssoooorrrr IIIImmmmpppplllleeeemmmmeeeennnnttttaaaattttiiiioooonnnn
+
+            If your document defines n/troff strings, registers, or
+            macros, you must use care in selecting their names. To
+            prevent name collisions with the rrrraaaaddddiiiixxxx preprocessor, do
+            not use names of the form:
+
+                              1st char   2nd char
+
+                              "d"        [A-Z]
+                              "g"        [A-Z]
+                              "r"        [A-Z]
+
+            The preprocesssor does not expand ".so" commands in the
+            source file. Use ssssooooeeeexxxxppppaaaannnndddd and pipe the output into the
+            preprocessor if the "sofiles" contain:
+
+               - radix commands
+
+               - MM commands related to section headers (".H",
+                 ".HU", or setting of the number registers "H[1-7]"
+                 or "Hu", via the troff ".nr" command.)
+
+            If you put a reference (using ".RS" and ".RF") inside
+            of a radix decision, AND you use either the ".dL" or
+            ".dP" summary reports, an extra entry in the reference
+            table will be generated by the reprint of the decision
+            text in the summary report. A solution is to put the
+            ".RS" and ".RF" outside of the decision, using the
+            following format:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 3                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+              .nr :R +1 \" increment reference number register
+              .RS xX    \" assign ref string (e.g. "[5]") to xX
+              A. N. Author,
+              "A Tutorial on Telephone Etiquette",
+              12345-010190-01TM.
+              .RF
+
+              .dS R-42V2
+              When the telephone rings, the user should
+              pick up the receiver and say "hello" \*(xX
+              .dE
+
+
+            (The string "xX" could be any valid troff string name)
+
+            If you put a footnote inside a radix decision, a
+            footnote will appear at the bottom of the page where
+            the decision originally prints, as expected. If you use
+            the ".dL" or ".dP" summary reports, the footnote will
+            also appear at the bottom of the page in the summary
+            report where the decision text is reprinted.
+
+            If you use the .dT command in your document, it will be
+            necessary to include tbl in the pipeline that processes
+            the document (only necessary if you are constructing
+            your own pipeline, rather than using a general-purpose
+            formatter, such as pppprrrrttttffffmmmmtttt, rrrruuuunnnnooooffffffff, or mmmmmmmmxxxx.)
+
+            With the macro implementation, it was possible for
+            users to change the output format of radix decisions by
+            redefining the ".dU" macro. This is not possible with
+            the preprocessor implementation.
+
+
+
+       RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS ---- MMMMaaaaccccrrrroooo IIIImmmmpppplllleeeemmmmeeeennnnttttaaaattttiiiioooonnnn
+
+            If your document has either the .dL or .dP command in
+            it, caution must be used when renaming the file. If the
+            file is renamed and the argument to the .dL or .dP
+            command (which is the name of the file) is not updated,
+            (sometimes subtly) erroneous output will occur.
+
+            If you put a ".ig" around rrrraaaaddddiiiixxxx decisions in your memo,
+            the .dP command will produce subtly erroneous output.
+
+            The macro implementation does not support the ".gO"
+            command. See EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN for details.
+
+            If your document defines n/troff strings, registers, or
+            macros, you must use care in selecting their names. To
+
+
+
+       Page 4                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+            prevent name collisions with rrrraaaaddddiiiixxxx, do not use names of
+            the forms:
+
+                      1st char   2nd char
+
+                      "d"        [A-Z]
+                      "f"        [0-9]
+                      "g"        [A-Z]
+                      "h"        [RPF] or [0-9]
+                      "m"        [A-Z] or [0-9] or "x"
+                      "r"        [A-Z] or [0-9] or [cik]
+                      "t"        [EFHMOPSefos]
+                      "D"        [se] or [0-9]
+                      "H"        "h"
+                      ")"        "d"
+
+
+
+            If you put a reference (using ".RS" and ".RF") inside a
+            radix decision, the reference may not show up on the
+            "REFERENCES" page at the end of the document. If this
+            is the only reference in the memo, it will not cause a
+            "REFERENCES" page to be printed.
+
+            If you put a footnote inside a radix decision, a
+            footnote will appear at the bottom of the page where
+            the decision originally prints, as expected. If you use
+            the ".dL" or ".dP" summary reports, the footnote will
+            also appear at the bottom of the page in the summary
+            report where the decision text is reprinted.
+
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            Using the preprocessor implementation of the rrrraaaaddddiiiixxxx
+            command (recommended):
+
+                 rrrraaaaddddiiiixxxx _m_y__m_e_m_o._m_m |||| pppprrrrttttffffmmmmtttt
+
+            Using the preprocessor implementation of the rrrraaaaddddiiiixxxx
+            command on a file that has ".so"'s in it (see
+            RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS ---- PPPPrrrreeeepppprrrroooocccceeeessssssssoooorrrr IIIImmmmpppplllleeeemmmmeeeennnnttttaaaattttiiiioooonnnn):
+
+                 ssssooooeeeexxxxppppaaaannnndddd _m_y__m_e_m_o._m_m |||| rrrraaaaddddiiiixxxx |||| pppprrrrttttffffmmmmtttt
+
+            Using the macro implementation of the rrrraaaaddddiiiixxxx command:
+
+                 rrrraaaaddddiiiixxxx ----mmmm _m_y__m_e_m_o._m_m |||| pppprrrrttttffffmmmmtttt
+
+
+
+
+
+
+       Page 5                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+       EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+            The preprocessor provides functionality that, as nearly
+            as possible, mimics the behavior of the macros. Some
+            enhancements have been provided. The differences in
+            behavior between the macros and the preprocessor are as
+            follows:
+
+               - The preprocessor does not put page numbers on the
+                 .dT and .dP reports. Sections numbers are
+                 provided, however.
+
+               - The .dL and .dP commands no longer require that
+                 the name of the mm sourcefile be included as a
+                 parameter. If this parameter is present, it
+                 ignored by the preprocessor.
+
+               - The preprocessor allows the use of ".ig" to
+                 comment out sections of the document containing
+                 rrrraaaaddddiiiixxxx commands.
+
+               - The preprocessor does much more detailed error
+                 checking than the macros do. The preprocessor
+                 checks for two classes of problems:
+
+                 errors:  serious problems for which there is no
+                          way to generate meaningful output. Errors
+                          are printed to stderr and stdout, so that
+                          they will appear in the document.
+
+                 warnings: things that may be correct, but are
+                          unusual or potentially dangerous. Often,
+                          a warning indicates that the preprocessor
+                          is having to make assumptions as to what
+                          the user wants done. The warning messages
+                          are only printed to stderr, and do not
+                          appear in the document.
+
+               - The reserved set of string/register names used by
+                 the preprocessor is much smaller than that used by
+                 the macros (see RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS).
+
+               - The preprocessor flags decisions having duplicate
+                 labels in the document, as well as to stderr.
+
+               - If you give a ".gC", ".gI", ".gK", or ".gP"
+                 command with no arguments, the preprocessor will
+                 unset the global clusters, initials, keywords, or
+                 prefix.
+
+
+
+
+
+       Page 6                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+               - If you give a ".gD" command with no arguments, the
+                 preprocessor will unset both  the global document
+                 ID (1st arg), and the global "referenced document"
+                 (2nd arg).
+
+               - If you give a ".dC" or "dK" command with no
+                 arguments, the preprocessor will  unset the global
+                 clusters or keywords for the current decision
+                 only.
+
+               - If you put troff strings in as part of a radix
+                 argument (e.g. "\*(vK"), subtle behavioral
+                 differences may occur. For example, if you put a
+                 string, such as "\*(vK" into the "label" field a
+                 radix ".dS" command, the order that the labels
+                 will be sorted into in the radix ".dT" summary
+                 report will not be what is expected. This is
+                 because the preprocessor has no way of knowing in
+                 advance what value troff will assign to a string.
+
+               - Certain characters are meaningless or harmful in a
+                 radix argument, and will  cause an error message.
+                 These are:
+
+             \b, \c, \D, \h, \k, \l, \L, \p, \v, \{, \}, \$
+
+               - The behavior of the .gF command has been modified
+                 as follows:
+
+                    +o All fields of the .gF command are now
+                      optional.
+
+                    +o a ".gF" with no arguments restores the field
+                      separators to their default values.
+
+                    +o The string "\&" may be used to set output
+                      field separators to an empty string. (May not
+                      be used for input field separators.)
+
+                    +o a null argument to .gF may be used to leave
+                      that field separator unchanged, except in the
+                      case of no arguments, which restores the
+                      field separators to their default values.
+
+               - An enhancement has been made to the preprocessor
+                 to provide two new output styles, the "paragraph"
+                 output style and the "superscript" output style.
+                 These output styles predominantly affect how
+                 decisions appear in the main text of the document.
+                 There are also some differences in the format of
+                 the ".dP" summary report, as noted below.
+
+
+
+       Page 7                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+                 The "paragraph" style causes the radix decisions
+                 to appear as paragraphs in the main body of the
+                 document. There are no markings to indicate that
+                 the text you are seeing is a radix decision. Also,
+                 if the "paragraph" style is selected, the ".dP"
+                 summary report will have the following changes:
+
+                    +o The document id and version will be omitted
+                      from the decision tag. Only the "label" field
+                      is printed in the tag.
+
+                    +o The references (".dR"'s) for the decision
+                      will be omitted.
+
+                    +o The decision text will be printed in the
+                      Roman font.
+
+                 The "superscript" output style causes the radix
+                 decisions to appear as ordinary text in the memo,
+                 with a small superscript containing the decision
+                 label appearing at the beginning of the decision.
+                 A "box" character is printed at the end of the
+                 main text of the decision. (If a decision has
+                 explanatory text, it will appear after the box.)
+                 Decisions formatted in this style do not cause a
+                 font change or a new paragraph. Thus it is
+                 possible to put more than one decision in the same
+                 paragraph using this style. Also, if the
+                 "superscript" style is selected, the ".dP" summary
+                 report will have the following changes:
+
+                    +o The standard ".dP" report prints the document
+                      ID, label, and the version of the decision.
+                      With the "superscript" style, the prefix is
+                      also printed in the decision tag.
+
+                    +o The references (".dR"'s) for the decision
+                      will be omitted.
+
+                    +o The decision text will be printed in the
+                      Roman font.
+
+                 The ".gO" ("global options") command is used to
+                 select the desired output style. To choose the
+                 ppppaaaarrrraaaaggggrrrraaaapppphhhh output style, put the following line in
+                 your document:
+
+                       ....ggggOOOO ssssttttyyyylllleeee ppppaaaarrrraaaaggggrrrraaaapppphhhh
+
+
+
+
+
+
+       Page 8                              (printed 11/13/90)
+
+
+
+
+
+
+
+
+       RRRRAAAADDDDIIIIXXXX((((1111))))                 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                 RRRRAAAADDDDIIIIXXXX((((1111))))
+
+
+                 To choose the ssssuuuuppppeeeerrrrssssccccrrrriiiipppptttt output style, put the
+                 following line in your document:
+
+                       ....ggggOOOO ssssttttyyyylllleeee ssssuuuuppppeeeerrrrssssccccrrrriiiipppptttt
+
+                 To reset to the ssssttttaaaannnnddddaaaarrrrdddd output style, put either
+                 of the following lines in your document:
+
+                       ....ggggOOOO ssssttttyyyylllleeee ssssttttaaaannnnddddaaaarrrrdddd
+
+                 or
+
+                       ....ggggOOOO
+
+                 If no ".gO" is found in the document, the style
+                 will default to the "ssssttttaaaannnnddddaaaarrrrdddd" style.
+
+
+
+
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+
+            rdxtag(exptools)
+
+
+
+
+       RRRREEEEFFFFEEEERRRREEEENNNNCCCCEEEESSSS
+
+            R. Rivetna, W. Yu, "Quick Guide to Using Radix Macros
+            in 5ESS Switch Documents," Internal Memorandum, 55632-
+            891009.01IM, October 9, 1989.  This document is also
+            available via the 5ESS Online Methodology (OLM).
+
+            W. Yu, S. R. Cook, P. Willnauer, "Radix Macros User's
+            Guide," File Case 40288-100, Internal Memorandum,
+            55321-890925.01IM, September 25, 1989.
+
+
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+            David A. Thomas,   ihlpn!dathomas
+
+
+
+
+
+
+
+
+
+
+
+       Page 9                              (printed 11/13/90)
+
+
+
+

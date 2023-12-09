@@ -1,0 +1,66 @@
+
+
+
+     DDDDMMMMDDDDTTTTOOOOOOOOLLLL((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDMMMMDDDDTTTTOOOOOOOOLLLL((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          dmdtool - determine 5620/630/730 type and execute tool
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          eeeexxxxeeeecccc $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ddddmmmmddddttttoooooooollllssss////ddddmmmmddddttttoooooooollll progname [prog_args]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ddddmmmmddddttttoooooooollll is a tool for use by providers of tools which run on
+          both the 5620 and the 630/730.  It implements a robust algo-
+          rithm to determine the terminal type and sets some environ-
+          ment variables before executing the individual tool.
+
+          All providers of 5620/630/730 tools are encouraged to use
+          'dmdtool' so all of these tools will behave similarly when
+          determining the terminal type.  Currently, all of the
+          'xdmdtools' use it.
+
+          ddddmmmmddddttttoooooooollll should be invoked by each tool with a line similar
+          to this:
+
+          exec $TOOLS/lib/dmdtools/dmdtool `basename $0` ${1+"$@"}
+
+          This executes ddddmmmmddddttttoooooooollll with the name of the program and
+          passes any other arguments along.  The funny ${1+"$@"} con-
+          struct is needed to avoid a bug in some old shells.
+
+          After ddddmmmmddddttttoooooooollll determines what the terminal type is, it sets
+          the following environment variables:
+
+                          5620            630/730
+                          ====            ========
+              DMDTERM     dmd              630
+              DMDLIB      $TOOLS/lib/dmd   $TOOLS/lib/630
+              DMDLD       $DMD/bin/32ld    $TOOLS/bin/xdmdld or $DMD/bin/dmdld
+
+          In addition, JPATH is set to $DMDLIB:$JPATH in both cases.
+
+          After setting these variables, ddddmmmmddddttttoooooooollll execs
+          $TOOLS/lib/dmdtools/dmdtool/$1 where "$1" is the name of the
+          program passed in as its first argument, and passes all
+          optional arguments along.  If that file does not exist but
+          $DMDLIB/$1.m does exist, it will go ahead and run "$DMDLD
+          $DMDLIB/$1.m" by default.
+
+          To aid in debugging, if the DMDTOOLS environment variable is
+          set, it will override the $TOOLS variable.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Dave Dykstra, iexist!dwd
+
+
+
+
+
+
+     Page 1                                           (printed 6/4/93)
+
+
+

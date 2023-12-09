@@ -1,0 +1,528 @@
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          pretree -- extract information from source files for drawing
+          trees
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          pppprrrreeeettttrrrreeeeeeee -l awk|c|make|nroff|prolog|prologxref [-I|-p] [-s]
+          [-F char] [-i file_of_files] [source_files]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _p_r_e_t_r_e_e extracts from program, _m_a_k_e(_1), or _n_r_o_f_f(_1) source
+          files information which can be used by the _d_t tool to draw
+          "tree" diagrams.  _p_r_e_t_r_e_e extracts function declarations,
+          calls, and #includes from C language programs, function
+          calls from _a_w_k scripts, and predicate dependencies from PRO-
+          LOG programs.
+
+          From _n_r_o_f_f files, it extracts file inclusions specified by
+          the ".so" macro.
+
+          It extracts dependencies from makefiles by calling _m_a_k_e(_1)
+          using make's -e option.  The environment variable $MAKEFLAGS
+          is also passed to _m_a_k_e.
+
+          Other types of source files may be supported in the future.
+
+          _p_r_e_t_r_e_e writes to standard output lines of the form:
+
+                                     p1 p2
+
+          which, for C (PROLOG) files means function (predicate) _p_1
+          refers to or calls function (predicate) _p_2.
+
+          For _n_r_o_f_f files, _p_1 and _p_2 are basenames of nroff source
+          files.
+
+          With no input source files specified, _p_r_e_t_r_e_e reads a pro-
+          gram from  standard input.
+
+
+          ----iiii_f_i_l_e__o_f__f_i_l_e_s
+                    Obtain file names from file _f_i_l_e__o_f__f_i_l_e_s which
+                    contains the names of source files, one name per
+                    line.
+
+
+          ----llll_l_a_n_g_u_a_g_e
+                    Describes the type of source file, which can be
+                    awk, c, make, nroff, prolog, or prologxref.
+                    pppprrrroooollllooooggggxxxxrrrreeeeffff means the file is the output from the
+                    Sun(R) PROLOG crossreference report.
+
+
+
+
+     Page 1                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+                    The current version of _p_r_e_t_r_e_e does not understand
+                    _n_a_w_k, the new version of _a_w_k.
+
+
+          ----IIII        For C language programs, output source file names
+                    and the source files they #include.  _p_r_e_t_r_e_e
+                    writes this information to standard output, one
+                    set per line, in the form:
+
+                                      file.c file.h
+
+                    meaning that source file _f_i_l_e._c contains the C
+                    preprocessor ####iiiinnnncccclllluuuuddddeeee directive to include file
+                    _f_i_l_e._h. Each file name is separated by field
+                    separator character (see -_F option).
+
+                    The -I and -p options are mutually exclusive, and
+                    -I is only valid for C language programs.
+
+                    _p_r_e_t_r_e_e does not recognize the difference between
+                    these two statements:
+
+                                    #include "file.h"
+                                           and
+                                    #include <file.h>
+
+
+          ----pppp        Output function names and parameters.  _p_r_e_t_r_e_e
+                    writes function names and parameters to standard
+                    output, one set per line, in the form:
+
+                                   p p(arg1,arg2,arg3)
+
+                    meaning that function _p uses the arguments _a_r_g_1,
+                    _a_r_g_2, and _a_r_g_3.
+
+                    To avoid possible conflict with the field separa-
+                    tor character, no spaces will be printed between
+                    the comma separated arguments.
+
+                    Without the -_p argument, _p_r_e_t_r_e_e writes function
+                    (predicate) pairs to standard output, one pair per
+                    line.
+
+                    Regardless of whether or not -_p is specified, each
+                    field is separated by field separator character
+                    (see -_F option).
+
+                    The -_p option is mutually exclusive with the -I
+                    option and is valid only for c language programs.
+
+
+
+
+
+     Page 2                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+          ----FFFF_c_h_a_r    Use _c_h_a_r as output field separator character.  If
+                    -_F is not specified, a space is used as the
+                    default.
+
+
+          ----ssss        Skip calls to UNIX subroutines or system calls.
+                    This may be specified only when processing C
+                    language programs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS::::
+          The first few examples make use of the following _P_R_O_L_O_G pro-
+          gram:
+
+
+          % Tower of Hanoi problem solver
+          %
+
+          % hanoi(number_of_rings)
+          hanoi(N) :- move(N,left,center,right).
+
+          move(0,_,_,_) :- !.
+          move(N,A,B,C) :-
+               M = N-1,
+               move(M,A,C,B),
+               inform(A,B),
+               move(M,C,B,A).
+
+          inform(X,Y) :- printf('move a disc from %s to %s0,X,Y).
+
+
+          _p_r_e_t_r_e_e, without any arguments, produces these lines:
+
+          hanoi move
+          move move
+          move inform
+          move move
+          inform printf
+
+                                  pretree -F:
+
+          produces these lines:
+
+          hanoi:move
+          move:move
+          move:inform
+          move:move
+          inform:printf
+
+                                   pretree -p
+
+          produces these lines:
+
+          hanoi hanoi(number_of_rings)
+          hanoi hanoi(N)
+          move move(0,_,_,_)
+          move move(N,A,B,C)
+          inform inform(X,Y)
+
+
+
+
+
+
+
+     Page 4                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE::::
+          To produce a structure chart of a C program or a predicate
+          dependency tree of a PROLOG program, one may execute:
+
+          pretree source_file | dt -mtu
+
+          To produce a structure chart of a C program including func-
+          tion input parameters, one may execute:
+
+          pretree -p source_file > tempfile
+          pretree source_file | dt -mtu -x tempfile
+
+          If file.c contains:
+
+          main()
+          {
+               int result;
+               result = f(1, 2, 3, 100);
+               printf ("Result is %d", result);
+          }
+
+          int f(a, b, c, x)
+          int a, b, c, x;
+          {
+               int f;
+               f = root(a * square(x) + b * x + fact(c));
+               return(f);
+          }
+
+          int square(n)
+          int n;
+          {
+               return(n * n);
+          }
+
+          Then,
+
+          pretree -lc -p file.c > params
+          pretree -lc file.c  | dt -mqu -x params
+
+          would display this function call tree on standard output:
+
+            main()
+                  \__f(a,b,c,x)
+                  |        \__root
+                  |        |__square(n)
+                  |        |__fact
+                  |__printf
+
+
+
+
+
+
+
+     Page 5                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE::::
+          If file _m_a_k_e_f_i_l_e contains the following:
+
+          all: 1.mrspawn 1.mrcreate  1.mymrs
+
+          1.mrspawn:     mrspawn.1
+               nroff -man -T37 mrspawn.1 > 1.mrspawn
+
+          1.mymrs:  mymrs.1
+               nroff -man -T37 mymrs.1 > 1.mymrs
+
+          1.mrcreate:    mrcreate.1
+               nroff -man -T37 mrcreate.1 > 1.mrcreate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+          Then:
+
+                    pretree -l make makefile | dt -mqu -l14
+
+          Draws the following dependency tree:
+
+            all___
+                  \__1.mrspawn
+                  |        \__mrspawn.1
+                  |__1.mrcreate
+                  |        \__mrcreate.1
+                  |__1.mymrs
+                           \__mymrs.1
+
+            markfile.o
+                  \__markfile
+
+            .SUFFIXES
+                  \__.o
+                  |__.c
+                  |__.c~
+                  |__.y
+                  |__.y~
+                  |__.l
+                  |__.l~
+                  |__.s
+                  |__.s~
+                  |__.sh
+                  |__.sh~
+                  |__.h
+                  |__.h~
+
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          The environment variable $MAKEFLAGS is passed to _m_a_k_e when
+          -_l _m_a_k_e
+           is specified on the command line.  Remember that MAKEFLAGS
+          must be exported for it to be accessible to _p_r_e_t_r_e_e.
+
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          All error messages are written to standard error and are
+          intended to be self-explanatory.
+
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          _p_r_e_t_r_e_e often uses a program database built by Joe Steffen's
+          _c_s_c_o_p_e exptool, thus changes in _c_s_c_o_p_e may affect _p_r_e_t_r_e_e.
+
+          _p_r_e_t_r_e_e will ignore pppprrrriiiinnnntttt and pppprrrriiiinnnnttttffff statements in _a_w_k
+          unless their arguments are enclosed within parentheses.  The
+          current version of _p_r_e_t_r_e_e does not understand _n_a_w_k, the new
+
+
+
+     Page 7                                          (printed 4/25/92)
+
+
+
+
+
+
+     PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPRRRREEEETTTTRRRREEEEEEEE((((1111))))
+
+
+
+          _a_w_k.
+
+          _p_r_e_t_r_e_e prints function parameters from the called function
+          point of view, rather than that of the caller function.
+
+          The -_p option has no effect on _n_r_o_f_f source files and may
+          not be particularly interesting for PROLOG programs.
+
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          The _p_r_e_t_r_e_e tool was written by Bob Parnass.
+
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          The _p_r_e_t_r_e_e tool is provided by Bob Parnass.
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _d_t - _A _P_r_o_g_r_a_m _f_o_r _V_i_s_u_a_l_i_z_i_n_g _C_o_m_p_l_e_x _P_r_o_b_l_e_m_s _U_s_i_n_g _S_i_m_p_l_e
+          _T_e_r_m_i_n_a_l_s, by R. S. Parnass, AT&T Bell Laboratories techni-
+          cal memorandum 55545-880516-01TM.
+
+          _d_t(_E_X_P_T_O_O_L_S), _c_s_c_o_p_e(_E_X_P_T_O_O_L_S), _c_c_a_l_l_s(_E_X_P_T_O_O_L_S), _m_a_k_e(_1),
+          _n_r_o_f_f(_1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8                                          (printed 4/25/92)
+
+
+

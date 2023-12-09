@@ -1,0 +1,200 @@
+(error "Please don't just use those whole example files as your .emacs file")
+Subject: Customization tips for your ".emacs" gnuemacs initialization file
+From: Dan_Jacobson@ATT.COM, Scott Thompson (sft@ihlpa.ATT.COM),
+	Chip Webb (Charles_A_Webb@ATT.COM)
+Date: 3/1991
+
+Here are shreds of code from our personal $HOME/.emacs files that
+might like to use too....  but as they are all thrown together here
+there is _no_ _guarantee_ one bunch of this is compatible with the
+next, or compatible with your particular situation.
+
+>>>>> In July, 1990 ihlpm!al1 (Altaf F Kagalwalla +1 708 979 8819) said:
+
+Altaf> Dan,
+
+Altaf> I am using this example init file you and others put together.
+Altaf> It does not work. I get an error message: "Error in init file".
+Altaf> Any problems with it?
+
+Yes!  these are just not-especially-mutually-compatible scraps...  And
+no, this is not an example init file, just pieces of some init files.
+Start using GNU Emacs with no init file an slowly add lines like these
+one by one after you fully understand the meaning of each one and have
+seasoned them to your tastes!
+
+------------------------------------------------------------------
+(setq default-major-mode 'text-mode)
+(setq text-mode-hook 'turn-on-auto-fill)
+
+;keep 2 newest backups
+(setq version-control t)		;backup version control
+(setq kept-old-versions 0)
+(setq dired-kept-versions 1)
+(setq trim-versions-without-asking t)	;delete excess backup versions silently
+
+(setq require-final-newline t)		;needed by some unix programs
+(setq backup-by-copying-when-linked t)	;don't destroy other hard links
+(setq backup-by-copying-when-mismatch t);preserves owner if not you
+
+(display-time)
+
+-- ha ha, this little line will screw people up who think they can use
+this as a .emacs file as is without heeding our warning at top!
+
+(setq	inhibit-local-variables t )	;security
+
+;;; split windows rather than replacing them and minimum height allowed
+;;;
+(setq split-height-threshold		2)
+(setq window-min-height			2)
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")
+
+
+;;; invoke dired if an attempt is made to visit a directory
+;;;
+(setq find-file-run-dired		t)
+
+;;; make backups by renaming except when linked
+;;;
+(setq backup-by-copying			nil)
+(setq backup-by-copying-when-linked	t)
+
+;;; select auto fill mode when entering text mode
+;;;
+(setq text-mode-hook
+      '(lambda ()
+	 (auto-fill-mode 1)))
+
+;;; slightly modify the text delimiters for nroff mode
+;;;
+(setq nroff-mode-hook
+      '(lambda ()
+	 (setq paragraph-start "^[.' \t\n\f]"
+	       paragraph-separate "^[.' \t\n\f]")))
+
+;;; append some patterns to the auto mode selection list
+;;;
+(setq auto-mode-alist
+      (append auto-mode-alist
+	      (list
+	       '("\\.mm$" . nroff-mode)
+	       '("Re[0-9]*" . text-mode)
+	       '("/\\..*emacs" . emacs-lisp-mode)
+	       '("/usr/tmp/[ab]aaa[0-9]*" . text-mode))))
+
+;;; select auto fill mode when entering C mode
+;;;
+(setq c-mode-hook
+      '(lambda ()
+	 (auto-fill-mode 1)))
+
+;;; setup the C mode defaults to my liking
+;;;
+(setq c-indent-level			8)
+(setq c-continued-statement-offset	8)
+(setq c-brace-offset			-8)
+(setq c-brace-imaginary-offset		0)
+(setq c-argdecl-indent			0)
+(setq c-label-offset			-8)
+;;; for c-fill mode
+(setq c-comment-starting-blank		t)
+(setq c-comment-indenting		t)
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")
+
+
+;;; ask about final newlines..., don't require one
+;;;
+(setq require-final-newline		'ask)
+
+;;; track end of line for vertical motion
+;;;
+(setq track-eol				t)
+
+;;; autoload lisp files, when a function defined in the file is called
+;;;
+(autoload 'explode-window-excursion-recursive "util" nil t nil)
+(autoload 'vm "vm" nil t)
+(autoload 'vm-visit-folder "vm" nil t)
+(autoload 'gnus "gnus" nil t nil)
+(autoload 'monkey-directory "monkey" nil t nil)
+(autoload 'ispell-word "ispell" "Check spelling of word at or before point" t)
+(autoload 'ispell-complete-word "ispell" "Complete word at or before point" t)
+(autoload 'ispell-region "ispell" "Check spelling of words in the region" t)
+(autoload 'ispell-buffer "ispell" "Check spelling of words in the buffer" t)
+(autoload 'select-another-buffer "select-buf" nil t)
+
+;;; setup some key bindings
+;;;
+(global-set-key "\M-g" 'goto-line)
+;;;
+(global-set-key "\M-$" 'ispell-word)
+(global-set-key "\C-ci" 'ispell-buffer)
+;;;
+(global-set-key "\C-cg" 'grep)
+;;;
+(global-set-key "\C-cb" 'select-another-buffer)
+;;;
+(global-set-key "\C-cc" 'compile)
+;;;
+(global-set-key "\C-ce" 'manual-entry)
+;;;
+(global-set-key "\C-cn" 'gnus)
+;;;
+(global-set-key "\C-cs" 'shell)
+;;;
+(global-set-key "\C-cm" 'vm)
+(global-set-key "\C-cf" 'vm-visit-folder)
+;;;
+;;; make BKSP backspace, and bind "help" to something more reasonable!
+;;;
+(global-set-key	"\C-h"	'backward-delete-char-untabify)
+(global-set-key	"\C-x?"	'help-command)
+;;;
+;;; explode current buffer to entire screen, uses util.el
+;;;
+(global-set-key "\C-x41" 'explode-window-excursion-recursive)
+;;;
+;;; use monkey directory mode, uses monkey.el
+;;;
+(global-set-key "\C-cd" 'monkey-directory)
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")
+
+
+
+;;; Always use vm instead of rmail
+;;;
+(fset 'rmail 'vm)
+
+;;; Set sent mail archive file name to outbox
+;;;
+(setq mail-archive-file-name (expand-file-name "~/mail/outbox"))
+
+;;; Strip junk from headers in reply, this includes post junk like:
+;;;
+;;;   To: machine!login	(first last 1+ ### ### ####)
+;;;                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+;;;                    this is stripped from reply buffer
+;;;
+(setq vm-strip-reply-headers t)
+
+;;; Causes vm to recognize some Berkeley Mail-isms like "Status:"
+;;;
+(setq vm-berkeley-mail-compatibility t)
+
+;;; Catch screw-ups
+(setq mail-interactive t)
+
+;;; load any local initializations
+;;;
+(load "local-init" t t)
+(load "exex" t t)
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")

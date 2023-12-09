@@ -1,0 +1,198 @@
+
+
+
+       PPPPOOOOSSSSTTTTCCCCPPPPRRRR((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPOOOOSSSSTTTTCCCCPPPPRRRR((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            postcpr - PostScript translator for ccccpppprrrr ----xxxx output
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            ppppoooossssttttccccpppprrrr [ options ] [ files ]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            _P_o_s_t_c_p_r translates ccccpppprrrr ----xxxx output _f_i_l_e_s into PostScript and
+            writes the results on the standard output.  If no _f_i_l_e_s are
+            specified, or if - is one of the input _f_i_l_e_s, the standard
+            input is read.  The following _o_p_t_i_o_n_s are understood:
+
+            ----cccc_n_u_m     Print _n_u_m copies of each page.  By default only
+                      one copy is printed.
+
+            ----ffff_n_a_m_e    Print _f_i_l_e_s using font _n_a_m_e. Any PostScript font
+                      could be used, the best results will only be
+                      obtained with constant width fonts.  Therefore the
+                      only valid font is Courier.
+
+            ----llll_n_u_m     Set the length of a page to _n_u_m lines.  By default
+                      _n_u_m is 66.  Setting _n_u_m to 0 is allowed, and will
+                      cause _p_o_s_t_c_p_r to guess a value, based on the point
+                      size that's being used.
+
+            ----mmmm_n_u_m     Magnify each logical page by the factor _n_u_m. Pages
+                      are scaled uniformly about the origin, which is
+                      located near the upper left corner of each page.
+                      The default magnification is 1.0.
+
+            ----nnnn_n_u_m     Print _n_u_m logical pages on each piece of paper,
+                      where _n_u_m can be any positive integer.  By default
+                      _n_u_m is set to 1.
+
+            ----oooo_l_i_s_t    Print pages whose numbers are given in the comma-
+                      separated _l_i_s_t.  The list contains single numbers
+                      _N and ranges _N_1----_N_2.  A missing _N_1 means the lowest
+                      numbered page, a missing _N_2 means the highest.
+
+            ----pppp_m_o_d_e    Print _f_i_l_e_s in either portrait or landscape _m_o_d_e.
+                      Only the first character of _m_o_d_e is significant.
+                      The default _m_o_d_e is portrait.
+
+            ----rrrr_n_u_m     Selects carriage return behavior.  Carriage
+                      returns are ignored if _n_u_m is 0, cause a return to
+                      column 1 if _n_u_m is 1, and generate a newline if
+                      _n_u_m is 2.  The default _n_u_m is 0.
+
+            ----ssss_n_u_m     Print _f_i_l_e_s using point size _n_u_m. When printing in
+                      landscape mode _n_u_m is scaled by a factor that
+                      depends on the imaging area of the device.  The
+                      default size for portrait mode is 10.
+
+
+
+       Page 1                                          (printed 2/22/94)
+
+
+
+
+
+
+       PPPPOOOOSSSSTTTTCCCCPPPPRRRR((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPOOOOSSSSTTTTCCCCPPPPRRRR((((1111))))
+
+
+
+            ----tttt_n_u_m     Assume tabs are set every _n_u_m columns, starting
+                      with the first column.  By default tabs are set
+                      every 8 columns.
+
+            ----xxxx_n_u_m     Translate the origin _n_u_m inches along the positive
+                      x axis.  The default coordinate system has the
+                      origin fixed near the upper left corner of the
+                      page, with positive x to the right and positive y
+                      down the page.  Positive _n_u_m moves everything
+                      right.  The default offset is 0.25 inches.
+
+            ----yyyy_n_u_m     Translate the origin _n_u_m inches along the positive
+                      y axis.  Positive _n_u_m moves text down the page.
+                      The default offset is 0.25 inches.
+
+            ----AAAA_f_i_l_e    Append a simple accounting record to _f_i_l_e after
+                      all the input _f_i_l_e_s have been successfully
+                      translated.  By default no accounting data is pro-
+                      duced.
+
+            ----LLLL_f_i_l_e    Use _f_i_l_e as the PostScript prologue, which by
+                      default is $TOOLS/lib/cpr/postcpr.ps.
+
+            In addition, three options allow the insertion of arbitrary
+            PostScript at controlled points in the translation process:
+
+            ----CCCC_f_i_l_e    Copy _f_i_l_e to the output file.  _F_i_l_e follows the
+                      prologue but precedes any job initialization com-
+                      mands.  _F_i_l_e becomes part of the job's global
+                      environment and must contain legitimate PostScript
+                      commands.
+
+            ----PPPP_s_t_r_i_n_g  Add _s_t_r_i_n_g to the output file.  _S_t_r_i_n_g follows the
+                      prologue but precedes any job initialization com-
+                      mands.  _S_t_r_i_n_g becomes part of the job's global
+                      environment and must be legitimate PostScript.
+
+            ----RRRR_a_c_t_i_o_n  Requests special _a_c_t_i_o_n (e.g. manualfeed) on a per
+                      page or global basis.  The _a_c_t_i_o_n string can be
+                      given as request, request:page, or
+                      request:page:file.  If page is omitted or given as
+                      0 the request applies to all pages.  If file is
+                      omitted the request lookup is done in
+                      /usr/lib/postscript/ps.requests.  The collection
+                      of recognized requests can be modified or extended
+                      by changing /usr/lib/postscript/ps.requests.  Mul-
+                      tiple occurrences of the ----RRRR option behave as
+                      expected.
+
+            A new logical page is started after 66 lines have been
+            printed on the current page, or whenever an ASCII form feed
+            character is read.  The number of lines per page can be
+
+
+
+       Page 2                                          (printed 2/22/94)
+
+
+
+
+
+
+       PPPPOOOOSSSSTTTTCCCCPPPPRRRR((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPOOOOSSSSTTTTCCCCPPPPRRRR((((1111))))
+
+
+
+            changed using the ----llll option.  Unprintable ASCII characters
+            are ignored, and lines that are too long are silently trun-
+            cated by the printer.
+
+            Currently recognized escape sequences are:
+
+                 _E_S_C_A_P_EOOOO Increment shading level
+
+                 _E_S_C_A_P_ENNNN Decrement shading level
+
+                 _E_S_C_A_P_ERRRR Courier font
+
+                 _E_S_C_A_P_EIIII Courier-Oblique font
+
+                 _E_S_C_A_P_EBBBB Courier-Bold font
+
+                 _E_S_C_A_P_EXXXX Courier-BoldOblique font
+
+            where _E_S_C_A_P_E is the escape character code set using the ----eeee
+            option.  Escape sequence changes persist across page boun-
+            daries.
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            Print file1 and file2 in landscape mode,
+
+                 postcpr -pland file1 file2
+
+            Print _c_p_r output of files file1 and file2 in portraait mode,
+
+                 cpr -x -w80 -l66 file1 file2 | postcpr -l 66
+
+            Print _c_p_r output of files file1 and file2 in landscape mode,
+            in 12 point font,
+                 cpr -x -l57 file1 file2 | postcpr -l57 -s12 -pland
+
+       DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+            0 exit status is returned if _f_i_l_e_s were successfully pro-
+            cessed.
+
+       FFFFIIIILLLLEEEESSSS
+            $TOOLS/lib/cpr/postcpr.ps
+            $TOOLS/lib/cpr/forms.ps
+            $TOOLS/lib/cpr/shade.ps
+            /usr/lib/postscript/ps.requests
+
+
+
+
+
+
+
+
+
+
+
+       Page 3                                          (printed 2/22/94)
+
+
+

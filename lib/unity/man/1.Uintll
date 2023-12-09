@@ -1,0 +1,330 @@
+
+
+
+     LLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVVLLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Uintll - Low Level Interface
+
+          check - check format of input file
+          comp - do comparison of two values based on operator
+          copy - copy one file to another
+          dirname - get directory name of pathname
+          error - print UNITY error message
+          getcond - compile UNITY conditional expression (where clause)
+          getfile - get description file name from table name
+          get2file - get auxiliary file name from table name
+          getop - get comparison operator code for operator
+          getrec - get next attribute value
+          indexch - check to see if index available for attribute on file
+          mklock - make lockfile for table
+          mktbl - read description file and fill in C-structure with information,
+                   throw away user-friendly names
+          mktbl2 - read description file and fill in C-structure with information,
+                    store user-friendly names in Uunames
+          mvgbt - memory copy based on memory addresses
+          ndcheck - compute checksum on b-tree node (block)
+          ndread - read node (block) on b-tree
+          newrec - initialize for reading new record
+          putrec - write next attribute value
+          rdindexed - read key value from index
+          rdnext - read next key value from index
+          scan - scan b-tree block for key value
+          selct - evaluate UNITY conditional expression (where clause)
+          setnum - get attribute number in table
+          ueval - evaluate UNITY arithmetic expression
+          uexpr - compile UNITY arithmetic expression
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          check(infile,table)
+          char *infile;      /* input file to check */
+          char *table;       /* table whose description file is used for check */
+
+          comp(op,s,v)
+          int op;            /* operator */
+          char *s;           /* first operand */
+          char *v;           /* second operand */
+
+          copy(prog,source, target)
+          char *prog;        /* main program */
+          char *source;      /* source file name */
+          char *target;      /* target file name */
+
+          char *
+          dirname(p)
+          char *p;           /* pathname */
+
+          error(n,s,a,b,c,d,e)
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     LLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVVLLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          int n;             /* UNITY error type */
+          char *s;           /* error string */
+
+          getcond(p,x,n,pr,dfile)
+          char **p;         /* expression */
+          char *pr;         /* main program name */
+          struct fmt x[];   /* array of format information for table */
+          int n;            /* number of attributes for table */
+          char *dfile;      /* description file name */
+
+          getfile(Dtable, table, dir)
+          char *Dtable;      /* output description file name */
+          char *table;       /* input table name  */
+          int dir;           /* if 0, check current directory
+                                if 1, check table directory
+                                if 2, check UNITYDFILES directory */
+
+          FILE *
+          get2file(type, prefix, iname, oname, amode)
+          int type;          /* if 0, check current directory
+                                if 1, check table directory
+                                if 2, check UNITYDFILES path directories */
+          char *prefix;      /* prefix to add to simple file name */
+          char *iname;       /* input file name */
+          char *oname;       /* output file name */
+          char *amode;       /* open mode (passed to fopen()) */
+
+          getop(s)
+          char *s;           /* operator string */
+
+          getrec(file,fmt)
+          FILE *file;        /* input file */
+          struct fmt *fmt;   /* format of next attribute */
+
+          indexch(file0, attr0, file1, attr1, list, btree)
+          char *file0;       /* first table to check */
+          char *attr0;       /* attribute on first table */
+          char *file1;       /* second table to check - may be NULL */
+          char *attr1;       /* attribute on second table */
+          struct index **btree; /* information about btree if found */
+          FILE **list;       /* file descriptor for list file with btree */
+
+          mklock(file,prog,lockfile)
+          char *file;         /* table name */
+          char *prog          /* main program name */
+          char *lockfile;     /* lock file name returned */
+
+          mktbl(prog, table, Dtable, fmt)
+          char *prog;         /* main program name */
+          char *table;        /* table name */
+          char *Dtable;       /* description file name returned */
+          struct fmt *fmt;    /* array with format of all attributes returned */
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     LLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVVLLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          mktbl2(prog, table, Dtable, fmt)
+          char *prog;         /* main program name */
+          char *table;        /* table name */
+          char *Dtable;       /* description file name returned */
+          struct fmt *fmt;    /* array with format of all attributes returned */
+
+          mvgbt(n, len, a, b)
+          int n;              /* number of items to move */
+          int size;           /* size of each item */
+          char *a;            /* to address */
+          char *b;            /* from address */
+
+          ndcheck(x)
+          int  *x;         /* buffer on which to compute checksum */
+
+          ndread(n,x,s)
+          int  n;          /* file descriptor */
+          long x;          /* seek offset */
+          struct hdr     *s; /* pointer to btree block */
+
+          newrec()            /* initialize for new record */
+
+          putrec(file, fmt)
+          FILE *file;         /* output file */
+          struct fmt *fmt;    /* format and value of next attribute */
+
+          rdindexed(ind, key, keyval, seekval)
+          struct index *ind;/* index information */
+          char *key;        /* search key */
+          char **keyval;    /* found key value returned */
+          long *seekval;    /* seek value in accession file returned */
+
+          rdnext(ind, keyval, seekval)
+          struct index *ind;/* index information */
+          char **keyval;    /* return address of key found */
+          long *seekval;    /* seek value associated with key */
+
+          scan(key, ind, seekval)
+          char *key;       /* key value to search for */
+          long *seekval;   /* seek value associated with found key */
+          struct    index *ind; /* btree block and information */
+
+          selct(x,r)
+          struct fmt x[];   /* array of format information and values */
+          int r;            /* record number */
+
+          setnum(fld, s, fldnum)
+          struct fmt *fld;  /* array of format information for table */
+          char *s;          /* attribute name */
+          int fldnum;       /* number of attributes for table (array limit) */
+
+          uexpr(e,x,n,pr,dfile)
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     LLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVVLLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          char **e;        /* expression */
+          char *pr;        /* main program name */
+          struct fmt x[];  /* array of format information for table */
+          int n;           /* number of attributes for table */
+          char *dfile;     /* description file name */
+
+          #ifdef INTCOMP
+          int
+          #else
+          float
+          #endif
+          ueval(x)
+          struct fmt x[];   /* array of format information and values */
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions are the low level functions used by all
+          UNITY programs.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          /* read table and print out only records specified
+             by where clause */
+          #include <stdio.h>
+          #include "db.h"
+          main(argc, argv)
+          char    *argv[];
+          int     argc;
+          {
+                  FILE    *utfp1;
+                  struct  fmt xx[MAXATT];
+                  int     nattr1, endf1, recordnr, i;
+                  char    Dtable1[MAXPATH],*prog, *p;
+
+                  recordnr = endf1 = 0;
+                  stdbuf = NULL;
+                  prog = argv[0];
+
+                  if ((utfp1 = fopen(argv[1],"r")) == NULL ) {
+                          error(E_DATFOPEN,prog,argv[1]);
+                          exit(1);
+                  }
+
+                  /* parse where clause and build evaluation tree */
+                  p = &argv[3];
+                  getcond(p,xx,nattr1,prog,Dtable1);
+
+                  recordnr = deleted = 0;
+                  for(;;) {
+                          /* get a new record */
+                          newrec();
+                          for(i=0; i<nattr1 && getrec(utfp1,&xx[i])!=ERR; i++);
+                          if (i<nattr1) break;
+                          if (endf1)
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+
+
+
+
+     LLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVVLLLLoooowwww LLLLeeeevvvveeeellll IIIInnnntttteeeerrrrffffaaaacccceeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+                                  while(!feof(utfp1) && getc(utfp1)!='\n');
+                          recordnr++;
+                          if(selct(xx,recordnr)) {        /* record selected */
+                                  /* write record unchanged */
+                                  for(i=0; i<nattr1; i++)
+                                          putrec(stdout,&xx[i]);
+                                  if (endf1)
+                                          putc('\n',stdout);
+                          }
+                          /* otherwise record not printed */
+                  }
+                  return(0);
+          }
+
+     FFFFIIIILLLLEEEESSSS
+          lib/dblib.a - archive file containing the object modules
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _I_n_t_r_o(UNITY), _U_i_n_t_h_l(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 1/19/90)
+
+
+

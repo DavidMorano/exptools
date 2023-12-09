@@ -1,0 +1,198 @@
+
+
+
+     SSSSFFFFIIIIXXXX((((1111))))                     EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS                      SSSSFFFFIIIIXXXX((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          sfix - interactive fixer of spelling errors (Version 1.3)
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ssssffffiiiixxxx [----dddd _c] [----iiii] [----vvvv] [----xxxx] [----gggg _g_r_o_p_e__p_a_t_h] file
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _S_f_i_x is an interactive spelling checker/fixer.  It finds
+          misspelled words in the file and presents them one at a
+          time, along with the context in which they were found.  _S_f_i_x
+          then makes a guess as to how the word should be spelled and
+          prompts the user.  The user may let the word stand, make the
+          suggested correction, supply the correct spelling, or insert
+          the word in a local dictionary so that the word will not be
+          flagged as mispelled in the future.
+
+        OOOOppppttttiiiioooonnnnssss....
+          ----dddd _c   Use the character following the -d as the default
+                 response (see carriage return entry (<cr>) in the
+                 commands section).  This value defaults to 'N' (see
+                 the commands section).
+
+          ----iiii     Suppress the interpretation of the nroff .so and .nx
+                 commands.  This is especially useful when the files
+                 concerned do not exist.
+
+          ----vvvv     Print the sfix version number and exit.
+
+          ----xxxx     Execute without suggesting alternate spellings for
+                 misspelled words.  This option may cause sfix to run
+                 more quickly on heavily loaded computer systems.
+
+          ----gggg _g_r_o_p_e__p_a_t_h
+                 Use the version of _g_r_o_p_e specified by the UNIX path
+                 _g_r_o_p_e__p_a_t_h.  The default path is
+                 $TOOLS/lib/sfix/grope.  This option is only useful on
+                 sytems such as the MH computer center machines that
+                 support a version of _g_r_o_p_e.
+
+        CCCCoooommmmmmmmaaaannnnddddssss....
+          The following replies may be given in response to the prompt
+          from _s_f_i_x:
+
+          hhhh      Print out a help message.
+
+          ????      Print out a help message.
+
+          yyyy      Yes, make the suggested change on this line only.
+                 (This command is not valid with the -x command line
+                 option).
+
+          YYYY      Yes, make the suggested change on every line with the
+
+
+
+     Page 1                                          (printed 4/15/92)
+
+
+
+
+
+
+     SSSSFFFFIIIIXXXX((((1111))))                     EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS                      SSSSFFFFIIIIXXXX((((1111))))
+
+
+
+                 error.  (This command is not valid with the -x com-
+                 mand line option).
+
+          nnnn      No, do not make the change, but suggest another
+                 alternate spelling.
+
+          NNNN      No, do not make the change, and move on to the next
+                 misspelled word from the spell list.
+
+          ffff      Have sfix prompt you for the letter to begin sug-
+                 gested spellings with.  (This command is not valid
+                 with the -x command line option).
+
+          iiii      Do not make the change, and insert this word into the
+                 local spelling dictionary.
+
+          IIII      Do not make the change, prompt for a word and insert
+                 this word into the local spelling dictionary.
+
+          rrrr      Have sfix prompt you for the replacement text to be
+                 used on this line only.
+
+          RRRR      Have sfix prompt you for the replacement text to be
+                 used on every line with the error.
+
+          ssss      Move on to the next occurence of this misspelled word
+                 within the text, without changing anything.
+
+          qqqq      Quit.  Sfix will ask whether to write out the
+                 changes.
+
+          !!!!      Send the rest of the line out to be executed by _s_h(_1)
+
+          <<<<ccccrrrr>>>>   Take the default response (see _O_p_t_i_o_n_s above).
+
+          Once sfix has completed editing a file, it will prompt you
+          to find out if you want your changes, if any, to be written
+          out or not.  If a 'y' or 'Y' response is returned, the
+          changes will be written out, otherwise they will not.  If no
+          changes were made, _s_f_i_x will terminate without writing to
+          the file being checked.
+
+     FFFFIIIILLLLEEEESSSS
+          $HOME/lib/wwb/spelldict (local dictionary)
+
+          This filename was chosen for compatibility with wwb(1).  If
+          the file (or directories) do not exist, sfix will create
+          them.  If you decide to manually add entries to this file,
+          remember to sort it using the sort(1) command.
+
+          _S_f_i_x uses the dictionary file used by spell,
+          /usr/src/cmd/spell/list.  If this file is not present, _s_f_i_x
+
+
+
+     Page 2                                          (printed 4/15/92)
+
+
+
+
+
+
+     SSSSFFFFIIIIXXXX((((1111))))                     EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS                      SSSSFFFFIIIIXXXX((((1111))))
+
+
+
+          will use $TOOLS/lib/sfix/list instead.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          When sfix is used upon formatted text, the fact that nroff
+          may underline or embolden an item by placing backspaces in
+          the middle of words may cause sfix to find some words that
+          are not in the input text.
+
+          Sfix defines a word "foo" as the beginning of a line or any
+          non-alphabetic character, followed immediately by "foo",
+          followed immediately by any non-alphabetic character, or end
+          of line.  This definition _a_l_m_o_s_t always works.
+
+          If nroff/troff control sequences are placed in the text sfix
+          will not be able to find some words (e.g. the following
+          method of emboldening the word would prevent _s_f_i_x from find-
+          ing the word:
+                    \fBword\fR
+
+          Sfix knows a little bit about capitalization: if the first
+          letter of a word in context is capitalized, the first letter
+          of the replacement text will also be capitalized.  If both
+          the first and second letters of a word in context are capi-
+          talized the whole replacement text will be capitalized.
+
+          If the nroff .so and .nx commands are used in the file, any
+          errors in the included files will be flagged, but sfix will
+          not offer to fix them.  Flagging of this misspellings can be
+          avoided using the -i option.
+
+          Since ed(1) does not handle files containing meta-
+          characters, sfix will act strangely on files that include
+          meta-characters.  The behavior will typically include not
+          prompting for some spelling changes and not writing out
+          changes that were made.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          spell(1), sort(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+           Eric Holtman (original sfix)
+           Bill Taylor (grope - suggest correct spellings)
+           Tom Clark (enhancements to sfix and grope)
+           Bob Moul (enhancements to sfix and grope)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Bob Moul; att!attmail!rmoul; LC x4723
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 4/15/92)
+
+
+

@@ -1,0 +1,848 @@
+[12/1991] Dan Jacobson has retired from being a tex provider.  He may
+possibly be on a leave of absence when you read this.  Use the
+"providers" exptool command to find the current providers.
+
+
+From ihlpe!hartman Sat Oct 26 20:00 CDT 1991
+
+The AMS symbol fonts (msam* and msbm*) are now available under
+Exptools TeX.  Add the following near the top of your document:
+
+\input{amssym.def}
+\input{amssym.tex}
+
+and you should be able to use the normal AMS symbol names with
+TeX or LaTeX.
+
+By sometime tomorrow, dviselect should be in $TOOLS/lib/tex/bin on
+all Exptools TeX machines.  The man page is already in $TOOLS/lib/tex/tips.
+
+I just removed the tips file "FontsAndDvips" and replaced it with a
+more general "Fonts" file.  This version has a more thorough
+discussion on private fonts, and also tells how to use the AMS Symbol
+fonts.
+
+Sat Oct  5 02:20:54 1991  45262-Jacobson  (danj1 at ihlpz)
+
+	* installed $TOOLS/bin/mf as an exptools top level executable...
+	man page will follow.
+
+	* we ought to start thinking of ${TeX_Tree:-${TOOLS:?}}
+	oriented front ends... more portable...
+
+From: ekrell@ulysses.att.com (Eduardo Krell)
+Newsgroups: att.text.tex
+Subject: Re: graphs/graphics with LaTeX
+Date: 30 Jul 91 16:56:57 GMT
+
+There's tpic which translates pic into TeX and \special commands.
+If you're using dvips or some other DVI translator which understand
+\special's, you will be able to preview/print the output of tpic.
+
+If you're printing on a PostScript printer and you're running dvips,
+you can include PostScript and Encapsulated PostScript files in your
+TeX document. Then you can use a number of interactive drawing tools
+which produce PostScript output (idraw, fig, xfig, etc.).
+
+[Dan Jacobson notes: we would like to downplay the tpic stuff, and
+promote the xfig stuff.  (xfig is free software, etc.)]
+
+From: Dan_Jacobson@ATT.COM
+Newsgroups: att.wanted,att.text.tex,att.exptools
+Subject: Re: macros + blank file for Bell Lab Voucher E1245
+Message-ID: <1991Jun24.1012.Dan_Jacobson@ATT.COM>
+Date: 24 Jun 91 15:13:34 GMT
+References: <1991Jun18.222927.24848@cbnewsh.att.com> <1991Jun19.155933.19174@cbfsb.att.com>
+	<MDK.91Jun23111744@cbnews.ATT.COM>
+	<1991Jun24.031908.15974@cbnewse.att.com>
+	<1991Jun24.special.Dan_Jacobson@ihlpz.ATT.COM>
+Sender: danj1@ulysses.att.com
+Reply-To: Dan_Jacobson@ihlpz.ATT.COM
+Organization: AT&T-BL, Naperville IL, USA
+Lines: 105
+
+>>>>> On Sun, 23 Jun 1991 16:17:44 GMT, mdk@cbddo2.ATT.COM (Shadow) said:
+
+Shadow> Can you recommend a good book on LaTeX?  I'd like to explore
+Shadow> using TeX, but I don't know how to code the raw files.  Where
+Shadow> do I find out what the commands are?
+
+No problem. I believe the current edition of _the_ LaTeX book is
+
+cn 655.28/L23l
+ti LATEX : a document preparation system / Leslie Lamport ; illustrations by
+    Duane Bibby.
+au Lamport, Leslie.
+pu Addison-Wesley Pub. Co., c1986. xiv, 242 p. : ill. ; 24 cm.
+no Includes index. Bibliography: p. 207.
+su LaTeX (Computer system); Computerized typesetting.
+ti LATEX: user's guide and reference manual.
+b-no 418128M  isbn 0-201-15790-X (pbk.)  lccn 85-19994   oclc 12550262
+Holdings: cb gc ho ih
+
+Do
+$ toolnews tex
+then
+$ toolman tex
+which tells about our "tips directory", where you'll find plenty of
+hints.
+
+And furthermore, Terry L Anderson had these helpful words for those who
+just want to try the voucher stuff [but read the tips directory files
+too...]:
+
+Terry> Dan is putting the voucher stuff in exptools so if you have access to
+Terry> a machine that gets automatic exptools updates you should have
+Terry> everything within a day or two. [completed -DJ]
+
+Terry> You need not learn all of LaTeX and TeX to use the voucher stuff,
+Terry> although I always encourage everyone to learn LaTeX (bacause it good
+Terry> for you).  There is a book on LaTeX: Leslie Lamport, LaTeX User's
+Terry> Guide and Reference Manual, Addison-Wesley, 1986, ISBN 0-201-15790-X.
+
+Terry> But for voucher, there is a sample voucher, vouchform.tex in the
+Terry> distribution.  (Most TeX & LaTeX files end in `.tex')  It is an empty
+Terry> voucher and you can just fill in the blanks.  Things starting with `\'
+Terry> are macros (ala troff's `.' commands but they do not need to start the
+Terry> line).  And in most cases arguments to the macro are enclosed with
+Terry> `{}'.  Many macros have more than one argument. `%' begin a comment.
+Terry> So you will see that some lines are commented out.  For example 
+
+Terry>      %\expense{date}{descr}{transp}{car}{park}{no meals}{meals}{lodging}{other}
+Terry>      % you may use \miles{num-miles} in car parameter; num-miles must
+Terry>      %   not be null.
+Terry>      % copy next line as a template
+Terry>      %\expense{}{}{}{}{}{}{}{}{}
+Terry>      %\expense{}{}{}{\miles{}}{}{}{}{}{}
+
+Terry> are all comments.  The first line documents the parameters for the
+Terry> \expense paramter which generates one expense line in the voucher.
+Terry> The first {} should contain the date for an expense.  The rest
+Terry> correspond to columns across the form.  Columns with no entry are left
+Terry> blank.  The car column contains the cost, but an alternative is to use
+Terry> the \miles macro to calculate the expense from the number of miles.
+Terry> The last two lines are prototype lines.  You remove the comment `%'
+Terry> and duplicate the lines as many times as necessary. 
+
+Terry> There is a voucher.README with more explanation.  
+
+Terry> foo.tex files are usually converted to foo.dvi files by the use of the
+Terry> command 
+
+Terry> 	latex foo
+Terry> Then these are printed by some dvixxx file where xxx depends on the
+Terry> kind of printer available.  Or foo.dvi is converted to PostScript
+Terry> using dvips or dvi2ps and the postscript printed.  There is a Makefile
+Terry> that can be adapted to do this along with a script `voucher' to call
+Terry> the Makefile while passing it some parameters.  
+
+[In our tips directory we explain the dvips & postscript aspects of
+our exptools set-up... simple. -DJ]
+
+Terry> If you try all of this and get overwhelmed or need help give me a
+Terry> call.
+
+Terry> 			     --	Terry L Anderson
+Terry> 				LC 4N-E01  BL 59112
+Terry> 				(908) 580-4428
+Terry> 				bartok!tla
+
+[You can also call me with most of your general questions on
+exptools LaTeX/TeX --DJ.]
+
+[Extra bonus:]
+
+Terry> Dan --
+
+Terry> Your last message reminded me about a book you ought to know about (to
+Terry> suggest to others at least):  TeX for the Impatient, Paul W. Abrahams,
+Terry> Addison-Wesley, 1990, ISBN 0-201-51375-7.
+
+Terry> For those interested in going beyond LaTeX and wanting some TeX, this
+Terry> book is a bit more readable than Knuth's.  It is a more task-oriented,
+Terry> a little more in the flavor of Lamport's book on LaTeX.
+Terry> 			-tla
+
+[I'll suggest that the Library buy this. -DJ]
+-- 
+Dan_Jacobson@ATT.COM  Naperville IL USA  +1 708 979 6364
+
+================================================================
+From: ihlpb!stroomer (Jeffrey D Stroomer +1 708 979 9587)
+To: Dan_Jacobson@ATT.COM
+Subject: AMS TeX fonts on IHLPB
+Status: RO
+
+The TeX file I have is one I got from some friends at UW-Madison.  It does a 
+
+			    \input mssymb
+
+which is intended to read in the AMS TeX fonts.  I captured a copy of
+mssymb.tex from Madison, but now when I TeX the file I get the
+following log:
+
+--------------------------------------------------------------------------------
+
+This is TeX, C Version 3.0 (format=plain 90.7.16)  3 JUN 1991 15:01
+**&plain master
+(master.tex (mssymb.tex
+! Font \tenmsx=msxm10 not loadable: Metric (TFM) file not found.
+<to be read again> 
+                   \font 
+l.9 \font
+
+From: ihlpm!hartman (Mark A Hartman +1 708 979 1216)
+To: Dan_Jacobson@ihlpz.ATT.COM, ihlpb!stroomer
+Subject: Re: AMS TeX fonts on IHLPB
+
+I'm afraid to say you have some work to do if you want to use AMSTeX fonts
+(and even more if you want to use AMSTeX itself).  I'm assuming that this
+macro file you picked up just redefines the fonts to use the AMS ones
+(there are other AMSTeX macro files).  If this is the case, you need:
+
+1.  .tfm files for the AMSTeX fonts
+
+2.  .mf files for the AMSTeX fonts
+
+Toss these files in your current directory.  If you have just the .mf
+files, you can create a corresponding .tfm file as follows:
+
+PATH=$PATH:~exptools/lib/tex/bin
+mf "\mode:=localfont; mag:=1.0; scrollmode; input fontname.mf"
+
+You will, however, have to do this for each font you want.  Your output
+file complained about msxm10.mf and msxm7.mf so far, so start with
+those.  You don't have to create the PK (bitmap) files, though.  Dvips
+will do this for you automatically when you run it.
+
+Give me a call if you need me to walk you through this a bit more.  It
+isn't too bad after you once get it set up, though.
+
+Mark Hartman
+ihlpm!hartman
+x91216
+
+==============================================================
+
+
+
+
+Newsgroups: att.sys.blit
+From: Dan_Jacobson@ATT.COM
+Subject: Re: postscript for 730
+Distribution: att
+Date: Wed, 13 Feb 91 19:51:45 GMT
+
+>>>>> On Tue, 12 Feb 91 20:10:57 GMT, elk@cbnews.att.com (Edwin L. King) said:
+
+Edwin> Does anyone know where I can get ahold of a postscript
+Edwin> interpretter that runs on my 730?
+
+I was just running GNU's ghostscript on my 730X (newsgroup:
+gnu.ghostscript.bug).  If you don't have X then I know there are some
+internal programs more or less usable...  but I'm not the best
+spokesperson for those.
+
+===
+
+Newsgroups: att.sys.blit
+From: hansen@pegasus.att.com (Tony L. Hansen)
+Subject: Re: postscript for 730
+Date: Mon, 18 Feb 91 04:28:54 GMT
+Summary: get psi from research
+Keywords: 730, postscript
+
+< From: elk@cbnews.att.com (Edwin L. King)
+< Does anyone know where I can get ahold of a postscript interpretter
+< that runs on my 730?  I know this is a FRAQ (I see it now and again), I
+< just don't see/have the answer.
+
+Do the following and it will be sent to you via mail:
+
+    echo "send psi from raster" | mail research!netlib
+
+I've been running it for quite some time and it works fairly well.
+
+
+----------
+
+2/1991
+Subject: check out my smarty crontab(1) thingy
+Reply-to: danj1@ihlpa.att.com
+
+#freshen TeX fonts, still cleaned up at reboot
+#need two ways, due to touch not being able to use a date if the owner is
+#not you -- ha!
+#44 4 * * * d=/usr/tmp/pk.imagen && test -d $d && find $d \( -type d -o -type f -user $LOGNAME \) -exec touch 1231235999 {} \;
+#44 4 * * 2-6 d=/usr/tmp/pk.imagen&&test -d $d&&find $d -exec touch 1231235999 {} \;
+44 4 * * * d=/usr/tmp/pk.imagen && test -d $d && find $d -user $LOGNAME -exec $DEBUG touch 1231235999 {} \; -o -exec $DEBUG touch {} \;
+
+-----------
+
+From ihlpm!hartman Mon Dec 31 14:57 CST 1990
+To: ihlpa!danj1, odyssey!gls
+Subject: Re: WB = nowhere
+
+>TeX produces DVI files.  What to do with them depends on the printer.
+>If you have a PS printer, you use dvi2ps.  If you have a LaserJet,
+>you use dvi2jet.  If (like us) you have QMS 1200s, you use dvi2qms.
+
+>I hardly think that WB is the only site without PS.
+
+Maybe not, but I'm willing to bet that you can count them on one hand...
+We have had several complaints about bugs in specific PostScript
+printers, but I think this is actually the first request for non-PostScript
+printer support in exptools.
+
+We currently only support PostScript printers with exptools TeX, and I
+don't see that changing in the near future.  The main reasons are:
+
+- lack of time, and
+- no way to really test and support other printers
+
+However, you are quite welcome to provide your own driver using the exptools
+TeX and Metafont as a base.  I would be happy to help where I can to make
+that as convenient as possible.
+
+>I suspect that Simpson's dvi2qms BSD lpd filter from labrea (great
+>name!) can be adapted to SysV by hacking out the daemon controls
+>and the BSD directory structure.  It's routine but not trivial.
+>Our lpd QMS driver does its own font management, so our sysadm
+>(genesis!barry) may want to incorporate TeX font management into that.
+
+If you were to do something like this yourself, the only problem you
+would probably find with the exptools distribution is fonts.  We don't
+distribute a full set of PK fonts due to the amount of disk space
+required.  dvips invokes a shell script (MakeTeXPK), which in turn
+invokes Metafont to generate any font it can't find "on the fly".
+You would probably either want to keep a full set of fonts around, or
+modify dvi2qms to call MakeTeXPK, or more likely some combination of
+the two.
+
+>The exptools' Metafont seems to work fine in QMS mode, but of course
+>I can't verify it.
+
+You are correct.  In fact, I use the QMS mode all the time, since I
+have a QMS PostScript printer down the hall.
+
+Sorry to have not been of more help.  Good luck on whatever you try.
+
+Mark Hartman
+ihlpm!hartman
+
+---------------------
+
+
+>From George_L_Sicherman@ATT.COM Sun Dec 30 11:10 EST 1990
+GLS> By the way, the nroff macro for TeX in tex.1 is leaving a space after
+GLS> each occurrence, even in phrases like _The TeXbook._ You ought to use
+GLS> a string instead of a macro.
+
+I will note this down, fix it, and even attempt to report it to
+someone@labrea [TeXhax digest, I guess], as it's all their fault. :-)
+-Dan J.
+
+-----------------
+
+From: danj1@ihlpa.att.com (Daniel Jacobson)
+Subject: ! exptools TeX package is ready ! [Yes, the Big Announcement]
+Date: Fri,  2 Nov 90 22:10:15 CST
+Newsgroups: att.text.tex,att.exptools
+
+With Mark_A_Hartman working late into the night in our TeX
+laboratories, cementing the new dvips into place, the final piece of
+the puzzle, we now feel confident to announce that the exptools TeX
+package, the 2nd largest exptool (gnuemacs is #1), is utterly,
+totally, completely "ready for the 1990's"... [the excitement of the
+occasion will be preserved in `toolnews' throughout exptool land, long
+after the 4 day life of articles on the cbnews machines' disks.]
+
+               -- Exptools TeX package toolnews page --
+[do "toolnews tex" to see it.]
+
+--------------
+Header of a helpful periodic posting you might catch the next time it
+is posted:
+
+From: raymond@math.berkeley.edu (Raymond Chen)
+Newsgroups: comp.text.tex
+Subject: Supplementary TeX information
+Date: 27 Oct 90 22:35:09 GMT
+Expires: 30 Nov 90 01:00:00 GMT
+
+--------------
+
+Wed Oct 24 15:32:31 1990  45262-Jacobson  (danj1 at ihlpa)
+
+	* I was talking to David_T_Miller and he was saying that the
+	reason printer ihkodak poops out on long jobs is that somewhere
+	in the process it tries to reverse the pages... but coughs on big
+	jobs (memory limitation).  He says Larry Haines is aware of the
+	problem... there might be a work-around by reversing the pages
+	yourself, and telling ihkodak not to reverse... but then watch out
+	about having it come out on holed paper...
+
+[2/1991: try dvips' "-Z"]
+
+--------------
+From: young@emx.utexas.edu (Young U. Ryu) 9/1990
+Subject: Where do I ftp such and such style files?
+Keywords: TeX/LaTeX macros/style files, ftp cites
+Organization: The University of Texas at Austin; Austin, Texas
+
+Regularly, it is asked: "How do I get such such TeX/LaTeX
+related facilities ?" The following is part of my own
+help note.
+
+My favorite cite is "sun.soe.clarkson.edu" where
+lots of LaTeX style files, such as fancyheading.sty,
+setspace.sty, etc., are available.
+
+Also I resort to "terminator.cc.umich.edu" to get
+TeX utilities provided by emTeX (e.x. TeXCad) and
+font libraries, and several drivers.
+
+
+anonymous@june.cs.washington.edu
+	- TeX
+	- TeXhax (Very useful E-documents for TeX)
+
+anonymous@cs.duke.edu
+	- especially gnutex (also available from june.washing...)
+
+anonymous@svax.cs.cornell.edu
+	- transfig, epic, eepic, etc.
+
+anonymous@venus.ycc.yale.edu
+	- SBxxTEX
+	  a PC version of TeX:
+	  The file name must be UPPERCASE LETTERS when transferred. (?)
+
+anonymous@labrea.stanford.edu
+	- TeX (D. Knuth)
+	- AmSTeX font .ms definitions
+	- AmSLaTeX
+
+anonynous@c.scs.uiuc.edu
+	- MS-Window .dvi previewer
+	  The file name must be UPPERCASE LETTERS when transferred.
+
+anonymous@sun.soe.clarkson.edu
+	- various style files and macros for TeX, LaTeX, AmSTeX, etc.
+	  very useful!!!
+	  ^^^^^^^^^^^
+
+anonymous@wuarchive.wustl.edu
+	- various MS-DOS programs
+	  including unarc'ing, dezip'ing utilities
+	  DosTeX
+
+anonymous@terminator.cc.umich.edu
+	- various MS-DOS programs
+	  emTeX
+	  DosTeX
+	  sbxxTeX
+	  .fli (font library for emTeX)
+
+anonymous@ymir.claremont.edu
+	- various TeX/LaTeX macros and styles
+
+
+Young (The Univ. of Texas at Austin)
+young@emx.utexas.edu
+
+
+
+
+To: ihlpm!hartman
+CC: houxa!hosein1
+Subject: Re: TeX preview
+--text follows this line--
+[this is going in the tips dir.]
+>>>>> "Mark" == Mark A Hartman +1 708 979 1216 writes:
+
+>Hi Mark, I would like to know if it is possible to preview a TeX document on a
+>630 terminal. If it is, then could you please let me know how it is done. 
+
+Mark> Bad news here.  In theory, it is possible.  In practice, I
+Mark> havent' seen anything that works yet.  There are several
+Mark> versions of a "dvidmd" program floating around that is supposed
+Mark> to work on a 5620 and 630.  I haven't seen one that really does
+Mark> work yet.  I have several copies of source, but I haven't had
+Mark> time to play with it yet.  Also, there is at least one
+Mark> Postscript previewer under construction.  I'm not sure how the
+Mark> output of dvips works with it.
+
+Mark> [ Dan -- please provide more details on these if you can, since I haven't
+Mark> had time to play with them yet. ]
+
+Yeah, Ed_Krell had it going on a BSD VAX, but I gave up after a few
+hours trying to make it work on SYSV.  Email Chris_Scussel about his
+630 PostScript previewer.  Soon I'm supposed to have Xwindows on my
+730, so...
+
+>Also I am preparing a paper for a conference and I would like to
+>print the paper in two column format in landscape mode so that I can
+>paste it directly on the mats. I use an HP Laserjet II at home to do
+>this. I first print the top of the two columns (in landscape mode)
+>and then the bottom of the two columns. I then paste them together. I
+>would like to find out how I can do this with a postscript printer.
+>If I choose landscape mode the top of the two columns will be
+>printed. How can I print the bottom of the two columns?
+
+[maybe post to *.tex.* newsgroups asking??? ]
+
+Mark> Yuck!!!  I wish I knew a nice "TeX" way to do this, but here is the
+Mark> Postscript solution (if I understand what you want correctly):
+
+Mark> 1.  Create filename.ps with "dvips -tlandscape filename".
+
+Mark> 2.  Print it to get the top half of the page.
+
+Mark> 3.  Edit the file and look for the definition of the landscape
+Mark> macro (near the top of the file).  It will contain a concat
+Mark> matrix something like [0 1 -1 0 0 0].  The fifth number is the
+Mark> X-translation -- set it to something like -300 and reprint the
+Mark> file.  -300 will shift it by about 1/2 page.  Use a larger
+Mark> number if you need to.
+
+>Finally, I use GNU emacs as my editor. TeX mode has some nice
+>features. However then I use "fill paragraph" GNU emacs does not
+>recognize the TeX commmands and to it fills the TeX commands as well
+>(this does not happen in nroff-mode on a troff document). Do you know
+>of any way to overcome this problem.
+
+Mark> The only gnuemacs mode I use is VI-mode.  Dan??
+
+hey, that's my other exptool!  When those "\"'s are in column 1
+everything seems ok with ESC Q for me...
+
+Dan_Jacobson@ATT.COM  Naperville IL USA  +1 708 979 6364
+
+-----
+
+Date: Fall 1990
+From: ihlpm!hartman (Mark A Hartman +1 708 979 1216)
+To: homxc!ihlpa!danj1, homxc!mtgun
+Subject: Re: latex and postscript
+
+>Hello!,
+>
+>I'm using LaTeX to write my master's thesis.  I have a few figures
+
+Glad to hear it -- so did I.
+
+>I created on the Macintosh which I need to include in my LaTeX
+>document.  I have MAC friends who can convert these MAC pictures into
+>Postscript files, so if I could just find out how to include a postscript
+>file in a LaTeX document, I would be in business.
+
+Check out the man page for dvips ("toolman dvips").  If your MAC friends
+have good tools, your Postscript files will have a "Bounding Box" at
+the top and you will be able to use:
+
+\input{epsf}
+\epsffile{filename}
+
+If not, you will have to use something like:
+
+\special{psfile="filename"}
+
+with lots of options on the end to handle the size and location on the page.
+Both are covered in the dvips manual page.
+
+Mark Hartman
+ihlpm!hartman
+
+-----
+
+Date: Fall 1990
+From: ihlpm!hartman (Mark A Hartman +1 708 979 1216)
+To: ihlpa!danj1, ihlpa!griffin (Aubrey Griffin +1 708 979 5801)
+Subject: Re: makeindex
+
+[ Dan -- here comes a policy discussion for the local guide... ]
+
+>My next question is on the subject of standard TeX macros and LaTeX style files
+>that are distributed with the exptools package. What is the basic policy for
+>deciding which macro file will be distributed? I am well aware that they are
+>plentiful and everything can't be distributed with exptools. But, I am looking
+>for what decides the cutoff point. The same thing can also be extended to the fonts
+>that are used.
+
+Policy?  What policy?  This is a dictatorship...  :-)
+
+Dan has always handled the macros directory, but I think he takes everything
+from the directory on labrea.stanford.edu + Terry Anderson's TM stuff.  This
+[yup --Dan]
+area seems similar to emacs .el files -- there is no such thing as having ALL
+of them.
+
+I do the fonts, and am still trying to get a complete and useful set out there.
+My real goals are:
+
+a)  All of the Computer Modern fonts (at least the Metafont sources for them).
+All the fonts used in the distributed plain.tex, lplain.tex, and splain.tex
+are already there; both Metafont sources and .tfm files.  Some fonts may
+require that the user create a two-line .mf file in their directory (see
+the README in the fonts directory).  Anything else that isn't out there should
+be considered an error and reported.
+
+b)  The AT&T logo from the TM macro package is there.
+
+[...]
+
+I'm willing to take other suggestions.  Please let me know when you find
+missing Computer Modern fonts, though.
+
+Mark Hartman
+ihlpm!hartman
+
+-------
+
+Mon Aug 13 08:46:57 1990  45262-Jacobson  (danj1 at ihlpa)
+
+
+To: ihlpy!dunlap
+Subject: Previewers [forwarded]
+--text follows this line--
+(Beth: "hope this helps" [but know it wont much])
+
+
+------- Start of forwarded message -------
+From: ihlpm!hartman (Mark A Hartman +1 708 979 1216)
+To: ihlpa!danj1
+Subject: Previewers
+
+
+I've seen two TeX previwers that I liked.  The first was Dirk Grunwald's
+previewer for the SUN (natually, since he was writing it while teaching
+me TeX).  The second is tex3b1, which is an excellent port of Dirk's
+previewer to the 3B1.
+
+If you want to sent me the code for the 630 previewer, I would like to
+look at it sometime.
+
+Mark
+------- End of forwarded message -------
+
+[630 previewer:  broken]
+Beth: also see netnews *.text.* groups...
+Dan_Jacobson@ATT.COM  Naperville IL USA  +1 708-979-6364
+
+[chris.scussel@att.com has a internal to AT&T 630 postrscript previewer, but
+it was slow on TeX fonts...  ed.krell has `dvidmd' working, but only on
+a BSD VAX. --Dan]
+
+----
+[Mark said, a while back:]
+
+I put the 10 "most frequently used" fonts based on a few of my documents
+(with TM macros) in the fonts directory.  The set will change/grow over time
+as necessary.
+
+----
+
+From: ihlpm!hartman (Mark A Hartman +1 708 979 1216)
+To: ihlpa!danj1, ihlpy!dunlap
+Subject: Re: Tex???
+
+Beth> Dan,
+Beth> 		I'm new to tex/latex and am wondering if I can get some
+Beth> info. from you.    I'm writing my thesis in tex and am looking for
+Beth> several things.   I'm wondering if there's some sort of pic to
+Beth> postscript converter or just a postscript diagram generator.  I
+Beth> know how to use xcip and thought that I could just convert a pic
+Beth> to postscript and do \include{psfig} & \include{psmacro}.
+Beth> But I'm at a lost how to convert to postscript.  
+
+How about a version of PIC that outputs LaTeX?
+
+It is called texpic (or tpic depending on your preference) and I'm
+sending a copy to your rje.  There are no options, just "texpic < filename.pic",
+and stick the output in a "figure" environment.  It does have a few problems,
+the most serious one is the handling of text.  If you generate your pictures
+with xcip, all of your text phrases will look like "\fR\s9Your text here\f1\s0",
+or something similar.  You have to go in and edit out all of the beginning and
+ending troff font jibberish by hand.  Of course you are free to add the
+corresponding LaTeX font jibberish as needed.
+
+The PIC replacement in the newest DWB (I think its called Picasso) will
+actually do what you describe above - i.e., output Postscript directly.
+I don't know when it will be on our machines.
+
+Dan -- here are the specifics on tpic/texpic.  It is not a publicly available
+tool, since it was built from the original PIC code.  Thus, you won't
+see it at the normal archive sites.  I don't have the latest version,
+although I do have the address to get it.  It is about 160K on an
+Amdahl and has no documentation or manual page.  However, it does do a
+decent job.
+
+Another alternative is the new gpic -- part of the groff (troff replacement)
+package from the Free Software Foundation.  It also generates TeX output,
+although I haven't gotten around to trying it.  I don't think it is extremely
+stable yet.
+
+There are several macro packages for drawing pictures in TeX/LaTeX.  They
+include epic, eepic, and the normal LaTeX picture environment.   None have the
+advantage of xcip for doing the drawing.  My favorite is still the FIG drawing
+package, but I've only seen it on SUNs.
+
+Beth, let me know if you have any problems with texpic.  And good luck with
+your thesis!
+
+Mark Hartman
+
+Tue Aug  7 10:32:46 1990  45262-Jacobson  (danj1 at ihlpa)
+
+To: ihlpm!hartman
+Subject: Re: tex to text? [forwarded]
+--text follows this line--
+Mark> Out of the batch, I have used screen.sty and dvi2tty.  They "almost"
+Mark> work.  The README file for them basically says that the NEXT release
+Mark> will be perfect...  None are to the point of being a "nroff" for TeX
+Mark> yet in my opinion.
+
+I tried dvi2tty, bla, broken.
+
+Mark> As for installing any of them, I think we should probably draw the
+Mark> line.  Even detex isn't part of any "official" distribution.
+
+cool, detex is as far as we'll dabble.
+
+
+Mark> In case you hadn't already noticed, slitex is out there, all 0.5 MB
+Mark> of it.  Give it a try, since I don't have anything to test with.
+
+mmm, ok
+
+Mark> Left on my TODO list:
+
+Mark> 1.  Make a last pass through the .mf files and try to find any missing
+Mark>     ones.
+
+I just read README.SAUTER, needs correction: cmmf --> mf
+
+[...]
+
+perhpas also have MakeTEXPK or something say, "hold on, gotta make a
+font or two"  But I bet on ihlpm, if you don't use it for 24 hours,
+/usr/tmp/pk is gone, no?
+
+[...]
+
+Mark> 2.  Dvips script
+
+> TEXFONTS=${TEXFONTS:+$TEXFONTS:}.:${TOOLS:?}/lib/tex/fonts
+> #new: ${:?}, and Mark, are you sure about ".", at least on the tex man
+> #page it said no go. Oh send me the fresh dvips man page so i can
+> #exptoolify it and install.
+
+Mark> Actually, you should read that man page again.  It specifically
+Mark> said that the only reason for not having "." in the path is to
+Mark> avoid confusing brain-damaged dvi-to-whatever programs.  Dvips
+Mark> does not fall into that category.  I think the intent of the man
+Mark> page was for the "user" not to put it in his environment if he
+
+cool, then I'll put it back in the tex script front end's path, and
+note this on the new tex 3.0 man page that your gonna send me... also
+got the fresh mf man page?  Should I put this in the tips dir, along
+with instrructions on how to turn mf.1 --> 1.mf, and how to run mf in
+our set up... or, let's make mf a exptools command?!?
+
+[...]
+
+> TEXPKS=${TEXPKS:+$TEXPKS:}.:/usr/tmp/pk:$TOOLS/lib/tex/fonts
+> #same here on "."... also put pk dir. at back?
+> 
+> export TEXFONTS TEXPKS
+
+Mark> Should match the decision above.  Wherever they can put their .tfm files,
+Mark> they should be able to put their private .pk files.  Just as long as its
+Mark> consistent.
+
+Mark> Also, all of this must be consistent with the TEXFONTS variable in the
+Mark> tex script.
+
+[...]
+
+Mark> know if you have problems.  The most common one is that mf (while
+Mark> using dvips) will stop and prompt you for a file that it can't find.
+Mark> This is intentional, so that the missing ones can be reported and
+
+[ok, but I always run tex via a makefile </dev/null in an GNU emacs window]
+
+Mark> fixed.  Let me know if you find any.  (Note that you can continue the
+Mark> dvips run by giving "null.mf" as the filename.)
+
+>say, maybe MakeTEXpk should do a touch * in the /usr/tmp/pk dir to
+>save them from the grim reaper... bla, never mind... but here's roots
+>crontab part:
+># "find /tmp /usr/tmp -type f -mtime +0 -exec rm {} \;" etc.
+>#at 02 06 12 18 hours.
+
+Mark> Yuck.  Wish we had a better hiding place for them...
+
+[no better place, really -DJ]
+
+[...]
+
+2.  The lib/tex/mf directory (.mf files for dvips) has been updated
+    considerably, although it is likely that there are several necessary fonts
+    still missing.  Please report any dvips font failures to the providers.
+
+
+Mon Jul  2 10:54:08 1990  45262-Jacobson  (danj1 at ihlpa)
+
+	* Mark Hartman writes:
+[...]
+
+2.  There is an "advanced user" readme in lib/tex/mf that explains
+how to create Computer Modern fonts that we (the providers) chose not
+to include.  The Metafont sources I am installing in that directory
+make it easy (a two-line file).
+
+Wed Jun 20 09:04:38 1990  45262-Jacobson  (danj1 at ihlpa)
+
+	* What's going on?  Well as a first step to robust-ifying
+	TeX/LaTeX/SLITeX I have taken the contents of
+	labrea.stanford.edu:tex/lib, labrea.stanford.edu:tex/latex, and
+	Terry_L_Anderson's (tla@bartok.ATT.COM) AT&T TM macro
+	distribution, and dumped them here according to this scheme:
+
+fontdir=distribution/all/lib/tex/fonts
+macrodir=distribution/all/lib/tex/macros
+mfdir=distribution/all/lib/tex/mf
+in-mac:
+	for i in $(SRCFILES); do \
+	case $$i in \
+	 *[0-9]pk|*[0-9]pk.[0-9]*|*.tfm|*.tfm.[0-9]*) $(DEBUG) ln $$i $(fontdir);; \
+	 *.mf|*.mf.[0-9]*|*.mft|*.base) $(DEBUG) ln $$i $(mfdir);;\
+	 *.dvi|*.bbl|*.bst|*.el|*.tex|*.sty|*.doc|*.bug|*.ins|*.amr|*.gid) $(DEBUG) ln $$i $(macrodir);;\
+	 */tla/*/README) $(DEBUG) ln $$i $(macrodir)/README.tla;;\
+	 *.pxl|*.pke) ;; \
+	 */tla/*) $(DEBUG) ln $$i $(macrodir);; \
+	 *) echo huh: $$i; esac; \
+	done
+
+= = = = = = = = = = =
+Well, you get the idea... this is a piece of the Makefile I used, and the
+directory names are slightly different... but you at least see why one
+file ended up in the mf directory vs. the macros directory, etc., and
+those links (ln) were just for my personal tree, etc.
+
+Directories: at first I wanted a many branched tree, files from different
+places or with different purposes would have different directories... what
+a headache!  Thanks to a little convincing from Mark_A_Hartman (why do I
+spell these names out like that?  So you can use them as post(1) e-mail
+addresses), I now wish there was one big directory where I could dump all
+the stuff in.  I was toying with the idea of having both the big directory
+and linking the files to other directories with these directories having
+more descriptive names, but that is the same headache.  Anyway, as a
+compromise I have just kept the structure that R. Rao Loka, former
+exptools TeX provider had, before he left the company (6/1990).
+
+If all the files here will have unique names, then we are able shorten
+TEXINPUTS, etc. search path names too, to just one directory long, as the
+manual pages warn us that these paths can't be too long, and we want to
+leave plenty of room for users to prepend their favorite directories.

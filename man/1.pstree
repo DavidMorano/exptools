@@ -1,0 +1,330 @@
+
+
+
+     PPPPSSSSTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPSSSSTTTTRRRREEEEEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          pstree -- report process status in tree form
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ppppssssttttrrrreeeeeeee [-F]  [-I]  [-P]  [-T]  [-U]  [ ps(1) options ]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _p_s_t_r_e_e shows information about active processes pictorially.
+          The tree-like diagram makes it easy to see the parent,
+          child, and sibling relationships among related processes.
+          This is especially useful when using layers.
+
+          _p_s_t_r_e_e combines features of the UNIX _p_s(_1) command with _d_t,
+          the experimental tree drawing tool.
+
+          _p_s_t_r_e_e tries to prevent its own subprocesses from apprearing
+          on the diagram.
+
+          Only the _p_s(_1) options detailed later are supported.  Note
+          that _p_s(_1) options must follow the ----IIII,,,, ----PPPP,,,, ----TTTT,,,, and ----UUUU
+          options.
+
+
+          ----FFFF        show full process name with arguements If ----FFFF is
+                    omitted, process arguments will not be shown.
+
+          ----IIII        supress process ids.  If ----IIII is omitted, process
+                    ids will be shown along with process names.
+
+
+          ----PPPP        show _p_s(_1) output along with process diagram
+
+
+          ----TTTT        show process time along with process names
+
+
+          ----UUUU        show process owner user ids along with names.
+                    This option is not available on Sun systems.
+
+
+          _p_s(_1)     options are:
+
+
+          ----aaaa        Print information about all processes, except
+                    process group leaders and processes not associated
+                    with a terminal.
+
+
+          ----cccc_c_o_r_e_f_i_l_e
+                    Use the file ccccoooorrrreeeeffffiiiilllleeee in place of ////ddddeeeevvvv////mmmmeeeemmmm .... This
+                    option is not available on Sun systems.
+
+
+
+     Page 1                                          (printed 5/13/91)
+
+
+
+
+
+
+     PPPPSSSSTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPSSSSTTTTRRRREEEEEEEE((((1111))))
+
+
+
+          ----dddd        Print information about all processes, except
+                    process group leaders.  This option is not
+                    available on Sun systems.
+
+
+          ----gggg_g_r_p_l_i_s_t Restrict listing to data about processes whose
+                    process group leaders are given in _g_r_p_l_i_s_t.  This
+                    option is not available on Sun systems.
+
+
+          ----GGGG_f_g_r_p_l_i_s_t
+                    Restrict listing to data about processes whose
+                    fair share group ID numbers or fair share group
+                    names are given in _f_g_r_p_l_i_s_t.  This option is not
+                    available on Sun systems.
+
+
+          ----nnnn_n_a_m_e_l_i_s_t
+                    The argument will be taken as the name of an
+                    alternate system nnnnaaaammmmeeeelllliiiisssstttt file in place of uuuunnnniiiixxxx....
+                    This option is not available on Sun systems.
+
+
+          ----ssss_s_w_a_p_d_e_v Use the file sssswwwwaaaappppddddeeeevvvv in place of ////ddddeeeevvvv////sssswwwwaaaapppp .... This
+                    is useful when examining a ccccoooorrrreeeeffffiiiilllleeee ;;;; a sssswwwwaaaappppddddeeeevvvv of
+                    ////ddddeeeevvvv////nnnnuuuullllllll will cause the user block to be zeroed
+                    out.  This option is not available on Sun systems.
+
+
+          ----tttt_t_e_r_m_l_i_s_t
+                    Restrict listing to data about the processes
+                    associated with the terminals given in _t_e_r_m_l_i_s_t.
+                    Terminal identifiers may be specified in one of
+                    two forms:  the device's file name (e.g., ttttttttyyyy00004444)
+                    or if the device's file name starts with ttttttttyyyy, just
+                    the digit identifier (e.g., 00004444).  This option is
+                    not available on Sun systems.
+
+
+          ----pppp_p_r_o_c_l_i_s_t
+                    Restrict listing to data about processes whose
+                    process ID numbers are given in _p_r_o_c_l_i_s_t.  This
+                    option is not available on Sun systems.
+
+
+          ----uuuu_u_i_d_l_i_s_t Restrict listing to data about processes whose
+                    user ID numbers or login names are given in
+                    _u_i_d_l_i_s_t.  This option is not available on Sun
+                    systems.
+
+
+
+
+
+
+     Page 2                                          (printed 5/13/91)
+
+
+
+
+
+
+     PPPPSSSSTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPSSSSTTTTRRRREEEEEEEE((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+                                    pstree
+
+          produced this:
+
+            17430_
+                  \__ksh~(17441)
+                           \__pstree~(16155)
+
+
+                                   pstree -F
+
+          produced this:
+
+            17430_
+                  \__[ksh]~(17441)
+                           \__pstree -F~(9408)
+
+
+                                pstree  -I -U -a
+
+          produced this:
+
+             init_
+                  \__errdemon~(root)
+                  |        \__operdemon 0~(root)
+                  |__sh updest~(root)
+                  |        \__sleep 300 for updest~(root)
+                  |__dkserver -s ihuxzm~(root)
+                  |__av -r~(root)
+                  |__UUXQT -smhuxd~(uucp)
+
+             1102_
+                  \__layers~(wcb)
+                           \__<defunct>~(wcb)
+                           |__<defunct>~(wcb)
+                           |__<defunct>~(wcb)
+                           |__<defunct>~(wcb)
+
+             2325_
+                  \__layers~(vadner)
+                           \__<defunct>~(vadner)
+
+            10053_
+                  \__b16pause~(jpbunt)
+
+            13494_
+                  \__hrdcpy~(jpbunt)
+
+            13850_
+                  \__pstree~(parnass)
+
+
+
+
+     Page 3                                          (printed 5/13/91)
+
+
+
+
+
+
+     PPPPSSSSTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPSSSSTTTTRRRREEEEEEEE((((1111))))
+
+
+
+            21499_
+                  \__hrdcpy~(jpbunt)
+
+            23710_
+                  \__lock~(geri)
+
+
+
+                                  pstree -U -a
+
+          produced this:
+
+             init_
+                  \__errdemon~(root,815)
+                  |        \__operdemon 0~(root,820)
+                  |__sh updest~(root,848)
+                  |        \__sleep 300 for updest~(root,14803)
+                  |__dkserver -s ihuxzm~(root,933)
+                  |__av -r~(root,972)
+
+             1102_
+                  \__layers~(wcb,4527)
+                           \__<defunct>~(wcb,4532)
+                           |__<defunct>~(wcb,4534)
+                           |__<defunct>~(wcb,4538)
+                           |__<defunct>~(wcb,5553)
+
+             2325_
+                  \__layers~(vadner,6246)
+                           \__<defunct>~(vadner,6270)
+
+            10053_
+                  \__b16pause~(jpbunt,13061)
+
+            13494_
+                  \__hrdcpy~(jpbunt,13495)
+
+            13850_
+                  \__pstree~(parnass,14882)
+
+            21499_
+                  \__hrdcpy~(jpbunt,13493)
+
+            23710_
+                  \__lock~(geri,14492)
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 5/13/91)
+
+
+
+
+
+
+     PPPPSSSSTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPSSSSTTTTRRRREEEEEEEE((((1111))))
+
+
+
+                                 pstree -P -U
+
+          produced this:
+
+               UID   PID  PPID  C    STIME TTY      TIME COMMAND
+           parnass 13850   933  0 17:58:49 dk094t   0:02 -ksh
+           parnass 14915 13850 29 18:25:05 dk094t   0:00 pstree
+
+
+              933_
+                  \__-ksh~(parnass,13850)
+                           \__pstree~(parnass,14915)
+
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          _p_s_t_r_e_e will pass all unrecognized arguments to _p_s(_1). This
+          might produce a garbled diagram.
+
+
+     FFFFIIIILLLLEEEESSSS
+          /usr/tmp/ps[1-6].$$ used for temporary storage.
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _d_t - _A _P_r_o_g_r_a_m _f_o_r _V_i_s_u_a_l_i_z_i_n_g _C_o_m_p_l_e_x _P_r_o_b_l_e_m_s _U_s_i_n_g _S_i_m_p_l_e
+          _T_e_r_m_i_n_a_l_s, by R. S. Parnass, AT&T Bell Laboratories
+          Technical Memorandum 55545-880516-01TM.
+
+          ps(1)
+
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          The process status tree drawing tool was written by Bob
+          Parnass and modified by Dennis Vadner.
+
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          The process status tree drawing tool is provided by Bob
+          Parnass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 5/13/91)
+
+
+

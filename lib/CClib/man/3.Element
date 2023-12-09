@@ -1,0 +1,198 @@
+
+
+
+     EEEELLLLEEEEMMMMEEEENNNNTTTT((((3333CCCC++++++++))))                 CCCCCCCClllliiiibbbb                 EEEELLLLEEEEMMMMEEEENNNNTTTT((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Element - object capable of representing objects of
+          different types at different times
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS OOOOFFFF EEEElllleeeemmmmeeeennnntttt
+          #include "Element.h"
+
+               //macros used to simulate parameterized types
+
+          #define Element1declare(A) ...
+          #define Element2declare(A,B) ...
+          #define Element3declare(A,B,C) ...
+          #define Element4declare(A,B,C,D) ...
+          #define Element5declare(A,B,C,D,E) ...
+
+          _E_x_p_a_n_d_i_n_g _E_l_e_m_e_n_t_2_d_e_c_l_a_r_e(_A,_B) _p_r_o_d_u_c_e_s _t_h_e _f_o_l_l_o_w_i_n_g _t_e_x_t:
+
+          class Element2(A,B) {
+          //private members
+          public:
+          //member functions
+               inline void put(A* a);
+               inline void put(B* b);
+               inline A* get(A*);
+               inline B* get(B*);
+               inline int operator==();
+               };
+
+          (_t_h_e _o_t_h_e_r _f_o_r_m_s _w_o_r_k _a_n_a_l_o_g_o_u_s_l_y).
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          An _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt is an object which can, at different times,
+          represent objects of different types.  This is desirable
+          when it is known that no two objects will be present at the
+          same time.  One obvious use of an _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt is as the type
+          parameter _TTTT for a _LLLL_iiii_ssss_tttt_((((_TTTT_)))): use of an _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt in this
+          application will create a List of heterogeneous types.  For
+          instance, it may be desirable to queue message Strings,
+          integer return values, etc.
+
+          The EEEElllleeeemmmmeeeennnntttt classes provide the ability to declare _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt_ssss
+          that will contain pointers to 1, 2, 3, 4, or 5 different
+          object types.  It will be easy to extend this to many more
+          types if that is found to be necessary.  Typically, the
+          _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt_1111 class would only be generated to create a uniform
+          interface in an application using several _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt classes.
+
+          The _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt_dddd_eeee_cccc_llll_aaaa_rrrr_eeee macros expect type names as parameters.
+          These types may be any built-in or user-defined type that
+          has been previously declared.  After the appropriate macro
+          invocation, the _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt class associated with that macro is
+          available for use.
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     EEEELLLLEEEEMMMMEEEENNNNTTTT((((3333CCCC++++++++))))                 CCCCCCCClllliiiibbbb                 EEEELLLLEEEEMMMMEEEENNNNTTTT((((3333CCCC++++++++))))
+
+
+
+        MMMMeeeemmmmbbbbeeeerrrr FFFFuuuunnnnccccttttiiiioooonnnnssss
+          inline void put(X* x);
+               Puts _xxxx into the _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt, keeping track of its type.
+               Type _XXXX must be one of the types declared for the
+               _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt.
+
+          inline X* get(X*);
+               If the _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt contains a variable of type _XXXX_****, _gggg_eeee_tttt will
+               return it, otherwise it will return 0.
+
+          inline int operator==();
+               Currently vacuous; included to satisfy a requirement
+               for _LLLL_iiii_ssss_tttt, a library with which an _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt is likely to
+               be used.
+
+        AAAAnnnn EEEExxxxaaaammmmpppplllleeee
+          The example below illustrates the use of an _EEEE_llll_eeee_mmmm_eeee_nnnn_tttt:
+          #include "Element.h"
+          #include <List.h>
+          #include <String.h>
+
+
+          Element2declare(int,String)
+
+          typedef Element2(int,String) Is;
+
+          Listdeclare(Is)
+          Listimplement(Is)
+
+          main() {
+               List(Is) lis;
+               Is element;
+               int i = 3;
+               element.put(&i);
+               lis.put(element);
+               String s = "hello";
+               element.put(&s);
+               lis.put(element);
+               i = 4;
+               element.put(&i);
+               lis.put(element);
+               s = "goodbye";
+               element.put(&s);
+               lis.put(element);
+               lis.reset(0);
+               while (lis.next(element)) {
+                    if (element.get((String*)0))
+                         cout << *element.get((String*)0) << endl;
+                    else if (element.get((int*)0))
+                         cout << *element.get((int*)0) << endl;
+                    }
+               };
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     EEEELLLLEEEEMMMMEEEENNNNTTTT((((3333CCCC++++++++))))                 CCCCCCCClllliiiibbbb                 EEEELLLLEEEEMMMMEEEENNNNTTTT((((3333CCCC++++++++))))
+
+
+
+          with output:
+               3
+               hello
+               4
+               goodbye
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+

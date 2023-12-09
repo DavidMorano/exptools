@@ -1,0 +1,49 @@
+#ident "@(#) /sable/sdb/ra/sblib/list/s.list.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+enum list_tag { LIST, LINK1, LINK2 };
+typedef enum list_tag List_tag;
+
+class List_item
+   {
+   friend class List;
+   friend class Link1;
+   friend class Link2;
+   friend class Link1_List_item;
+   friend class Link2_List_item;
+   const List_tag tag;
+   List *list;
+   List_item(List_tag t=LIST) : tag(t) { list = (List *) 0; }
+public:
+   void *data;
+   ~List_item();
+   };
+
+class List
+   {
+   const List_tag tag;
+   Boolean_t walking;
+public:
+   List(List_tag t=LIST) : tag(t) { walking = FALSE; }
+
+   virtual List_item *itemize(void *data)
+      { (void)data; return (List_item *)0; }
+   virtual Boolean_t append(List_item *li);
+   virtual Boolean_t remove(List_item *li);
+   virtual Boolean_t push(List_item *li);
+   virtual List_item *pop();
+
+   virtual Boolean_t startwalk();
+   virtual List_item *walk();
+   virtual Boolean_t endwalk();
+   };
+
+const int L_WRONG_LIST_TYPE = 0;
+const int L_ON_LIST = 1;
+const int L_STILL_ON_LIST = 2;
+const int L_NOT_ON_LIST = 3;
+const int L_IN_WALK = 4;
+const int L_NOT_IN_WALK = 5;
+const int L_NO_STARTWALK = 6;
+
+extern Error listerr;

@@ -1,0 +1,396 @@
+
+
+
+     CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          coverdoc - generate a cover sheet source file.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccoooovvvveeeerrrrddddoooocccc [ ----AAAAauxfile ] [ ----OOOOoutfile ] [ ----TTTTdevice ] [ ----dddddest ]
+          [ ----ssssstrings ] [ ----iiii ]]]] [ ----vvvv ]]]] file
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          ----AAAA _a_u_x_f_i_l_e Use _a_u_x_f_i_l_e to supply -_m_c_s(5) macros not included
+                     in the document file.
+
+          ----OOOO _o_u_t_f_i_l_e Use _o_u_t_f_i_l_e as the name of the _c_o_v_e_r_d_o_c output
+                     file.  The default is the file _t_e_m_p._c_o_v_e_r in the
+                     user's current directory.
+
+          ----TTTT _d_e_v_i_c_e  Generate a cover sheet on _d_e_v_i_c_e. If the
+                     information supplied in the document and
+                     auxiliary files is incomplete, the cover sheet
+                     will not be generated but _c_o_v_e_r_d_o_c informs you of
+                     the missing pieces of information.  Legal _d_e_v_i_c_es
+                     for _t_r_o_f_f output are: XXXX99997777 (Xerox high-speed
+                     printer), iiii11110000 (Imprint-10 laser printer), iiii333300000000
+                     (Imagen 8/300 laser printer), and ppppoooosssstttt
+                     (PostScript laser printer).  Supported _n_r_o_f_f
+                     _d_e_v_i_c_es are: XXXX (Xerox high-speed printer) and 444455550000
+                     (Dasi 450 or Diablo 630 terminal).
+
+          ----dddd _d_e_s_t    Send output to remote location _d_e_s_t where _d_e_s_t is
+                     a site code (Xerox output) or a specific
+                     PostScript or Imagen printer station.  By
+                     default, the destination is taken from the
+                     environment variable DEST.  For use with the ----TTTT
+                     option.
+
+          ----ssss _s_t_r_i_n_g_s Specify the full directory path for the
+                     _s_t_r_i_n_g_s._m_m file.  This file specifies the strings
+                     for the MM macros.  _c_o_v_e_r_d_o_c assumes that this
+                     file resides in the /_u_s_r/_l_i_b/_m_a_c_r_o_s directory.
+                     For sites that do not have the _s_t_r_i_n_g_s._m_m file
+                     installed in the standard place, this option must
+                     be used.
+
+          ----iiii         Invoke _c_o_v_e_r_d_o_c in interactive mode. _c_o_v_e_r_d_o_c
+                     prompts you for three required pieces of
+                     information if those items are missing from the
+                     input file.
+
+          ----vvvv         Verbose option.  Generate cover sheet source
+                     file; display format and print command line
+                     without execution.  For use with the ----TTTT option.
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+
+
+     PPPPaaaaggggeeee 1111                                          ((((pppprrrriiiinnnntttteeeedddd 11112222////9999////99991111))))
+
+
+
+
+
+
+     CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))
+
+
+
+          _c_o_v_e_r_d_o_c is designed to extract cover sheet information from
+          a Technical or Internal Memoranda source file that is
+          prepared with both Memorandum Macros (-_m_m) and Cover Sheet
+          Macros (-_m_c_s) in a specific way.  _c_o_v_e_r_d_o_c expects the -_m_m
+          macros within the source file to supply as much cover sheet
+          information as possible; the -_m_c_s macros, bracketed by a
+          _t_r_o_f_f(1) ._i_g/.. pair, supply the remaining cover sheet
+          information.  _c_o_v_e_r_d_o_c then prepares a cover sheet source
+          file (_t_e_m_p._c_o_v_e_r) that is correctly formatted for input to
+          the _d_o_c_s_e_n_d command.
+
+          If the ----TTTT option is used, and all the required information
+          is supplied, _c_o_v_e_r_d_o_c invokes the _d_o_c_s_e_n_d command to format
+          and print the cover sheet and forward an electronic copy to
+          the Library Network UNIX computer system.  See ``Automatic
+          Coversheet Generation'' below.
+
+          The following -_m_m macros are used by _c_o_v_e_r_d_o_c.  Those marked
+          by an asterisk (*) must be included in the memorandum file.
+          The macros, if present, should be ordered as shown:
+
+                   title *   .TL  work-project-number  filing-case
+                             <title text>
+            company name     .AF  [company-name]
+                  author *   .AU  name [init.] loc. dept. ext. room [affiliation]
+      document number(s) *   .TM  document-ID-number ...
+     proprietary marking     .PM  [code]
+          abstract start *   .AS  1
+                             <abstract text>
+            abstract end *   .AE
+          other keywords     .OK  keyword ...
+      memo type (TM, IM) *   .MT  [code]
+      copy-to list start     .NS  [code]
+                             <one or more lines of text>
+        copy-to list end     .NE
+
+          The following -_m_c_s macros are used by _c_o_v_e_r_d_o_c.  Those
+          marked by an asterisk must be included. Order is not
+          significant.  If the macros are included in the memorandum
+          file, they should be bracketed by the _t_r_o_f_f ._i_g/.. macro
+          pair shown at the beginning and end of the list.  Omit the
+          ._i_g/.. pair if the macros are supplied in an auxiliary file
+          (with the ----AAAA option):
+
+                       ignore (start) *   .ig
+                     affiliation code     .aC  code
+                   complete copy list     .cC
+                                          <list of names>
+                        copy list end     .cE
+                cover sheet only list     .cS
+
+
+
+
+
+     Page 2                                          (printed 12/9/91)
+
+
+
+
+
+
+     CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))
+
+
+
+                                          <list of names>
+                        copy list end     .cE
+                          cover sheet *   .CS  page-count
+                     earlier document     .eD  document-ID-number
+                  future distribution     .fA  code
+                            full date     .fD  yymmdd
+                  government security     .gS
+                         mercury code     .mC  code [code] [code]
+              organizational approval     .oA  name
+              responsible AT&T person     .rP  name
+                         ignore (end) *   ..
+
+          Normal -_m_m processing of the memorandum file ignores the
+          information in the ._i_g/.. block.
+
+          The -_m_c_s macros may be placed either within the ._i_g/.. block
+          in the document file or in an auxiliary file; the -_m_m macros
+          can be placed only in the document file.
+
+          If the ----iiii option is used, _c_o_v_e_r_d_o_c prompts the user with
+          questions about three required -_m_c_s macros:
+
+          .fD   full date (AT&T-TI only)
+          .mC   MERCURY codes (non-restricted TMs only)
+          .CS   total document pages
+
+          _c_o_v_e_r_d_o_c does not modify the memorandum file; the
+          information collected with the ----iiii option is placed in the
+          cover sheet source file only.
+
+        AAAAuuuuttttoooommmmaaaattttiiiicccc CCCCoooovvvveeeerrrrsssshhhheeeeeeeetttt GGGGeeeennnneeeerrrraaaattttiiiioooonnnn
+          If the ----TTTT option is used and all required cover sheet
+          information has been supplied, the command
+
+               ccccoooovvvveeeerrrrddddoooocccc ----TTTT_d_e_v_i_c_e ----OOOO_o_u_t_f_i_l_e _f_i_l_e
+
+          invokes in turn the following command to generate the cover
+          sheet:
+
+               ddddooooccccsssseeeennnndddd ----mmmmccccssss ----TTTT_d_e_v_i_c_e _o_u_t_f_i_l_e
+
+          Since format and print commands for each supported device
+          are set up within _d_o_c_s_e_n_d at the time of installation, in
+          most cases only the destination needs to be defined for
+          PostScript and Imagen printers.  No options need to be
+          defined for Xerox output unless "nohole" forms, multiple
+          copies, or a remote destination is needed.
+
+          _d_o_c_s_e_n_d, by default, takes the printer destination from the
+          environmental variable DEST. Therefore, to define a single
+          printer as the default destination, set DEST to the name of
+          that printer (either on the command line or in the ._p_r_o_f_i_l_e
+
+
+
+     Page 3                                          (printed 12/9/91)
+
+
+
+
+
+
+     CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))
+
+
+
+          file):
+
+               DDDDEEEESSSSTTTT====_p_r_i_n_t_e_r-_n_a_m_e;;;; eeeexxxxppppoooorrrrtttt DDDDEEEESSSSTTTT
+
+          Alternately, use the ----dddd option to define the destination.
+
+          To override the DEST default or to define additional _d_o_c_s_e_n_d
+          options, create a $_H_O_M_E/._D_O_C_D_A_T_A file with entries in the
+          following form:
+
+               pppprrrriiiinnnntttt::::<_d_o_c_s_e_n_d _o_p_t_i_o_n_s>::::_d_e_v_i_c_e
+
+          _c_o_v_e_r_d_o_c uses the <_d_o_c_s_e_n_d _o_p_t_i_o_n_s> string to build the
+          _d_o_c_s_e_n_d command line.  See _d_o_c_s_e_n_d(1) for information about
+          available options.  If no explicit match for _d_e_v_i_c_e is
+          found, _c_o_v_e_r_d_o_c accepts the options listed for an entry with
+          _d_e_v_i_c_e "ANY".
+
+          If your local Imagen or PostScript printer cannot be
+          accessed with the predefined print command (and your
+          destination definition), see the _d_o_c_s_e_n_d(1) man page for
+          instructions on tailoring the print command.
+
+          If you have other nonstandard formatting or printing
+          requirements, use the _c_o_v_e_r_d_o_c command (without the ----TTTT
+          option) to create the cover sheet input file.  Then, use the
+          _d_o_c_s_e_n_d command directly to format and print the cover
+          sheet.  See _d_o_c_s_e_n_d(1).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Generate cover sheet source file ``temp.cover'' from
+          document source file ``mydocument'' on the local Xerox
+          printer:
+
+               ccccoooovvvveeeerrrrddddoooocccc ----TTTTXXXX99997777 _m_y_d_o_c_u_m_e_n_t
+
+          Generate cover sheet source file ``mycover'' from document
+          source file ``mydocument'' and auxiliary file ``myaux'' and
+          generate a document cover sheet on local PostScript printer
+          "mypost" using environmental variable DEST to specify the
+          printer destination:
+
+               DDDDEEEESSSSTTTT====_m_y_p_o_s_t;;;; eeeexxxxppppoooorrrrtttt DDDDEEEESSSSTTTT
+               ccccoooovvvveeeerrrrddddoooocccc ----AAAA _m_y_a_u_x ----OOOO _m_y_c_o_v_e_r ----TTTTppppoooosssstttt _m_y_d_o_c_u_m_e_n_t
+
+          Generate cover sheet source file ``temp.cover'' from
+          document source file ``mydocument,'' prompting for required
+          -_m_c_s macros as necessary and generate a document cover sheet
+          on local Imagen 8/300 printer "my300":
+
+               ccccoooovvvveeeerrrrddddoooocccc ----iiii ----TTTTiiii333300000000 ----dddd _m_y_3_0_0 _m_y_d_o_c_u_m_e_n_t
+
+
+
+
+     Page 4                                          (printed 12/9/91)
+
+
+
+
+
+
+     CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))
+
+
+
+          Generate cover sheet source file ``temp.cover'' from
+          information in the document source file ``mydocument'' and
+          generate a document cover sheet on the Xerox high-speed
+          printer, producing two copies of "nohole" output:
+
+               1) Define the _d_o_c_s_e_n_d printer options by adding the
+               following line to $_H_O_M_E/._D_O_C_D_A_T_A:
+
+                         pppprrrriiiinnnntttt::::----cccc2222 ----ffffnnnnoooohhhhoooolllleeee::::XXXX99997777
+
+               2) At the system prompt type:
+
+                         ccccoooovvvveeeerrrrddddoooocccc ----TTTTXXXX99997777 _m_y_d_o_c_u_m_e_n_t
+
+          Generate the cover sheet source file ``temp.cover'' from
+          information in the document source file ``mydocument'' and
+          display the format and print command line used to generate a
+          cover sheet on the PostScript printer named "sierra":
+
+               ccccoooovvvveeeerrrrddddoooocccc ----vvvv ----TTTTppppoooosssstttt ----ddddssssiiiieeeerrrrrrrraaaa _m_y_d_o_c_u_m_e_n_t
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/lib/docsend/csmacros     -_m_c_s _n_r_o_f_f/_t_r_o_f_f macro
+                                          definition file
+
+          $TOOLS/lib/docsend/model.cs     model input for -_m_c_s
+
+          $HOME/.DOCDATA                  _d_o_c_s_e_n_d options definition
+                                          file
+
+     RRRREEEEFFFFEEEERRRREEEENNNNCCCCEEEE
+          _A _P_r_i_m_e_r _f_o_r _C_r_e_a_t_i_n_g _D_o_c_u_m_e_n_t _C_o_v_e_r _S_h_e_e_t_s _w_i_t_h _M_e_m_o_r_a_n_d_u_m
+          _a_n_d _C_o_v_e_r _S_h_e_e_t _M_a_c_r_o_s
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          docsend(1), mcs(5)
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          If any required data is missing, _c_o_v_e_r_d_o_c prints an
+          appropriate message and gives a synopsis of the missing
+          macro call and data.  Error messages are also issued about
+          duplicated macros.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          The device names recognized by the ----TTTT options of _c_o_v_e_r_d_o_c
+          and _d_o_c_s_e_n_d are not completely consistent with the device
+          names used with the respective ----TTTT options of _n_r_o_f_f and
+          _t_r_o_f_f.
+
+          Distribution lists may be defined with either the -_m_m
+          ._N_S/._N_E macros or the -_m_c_s ._c_C/._c_S/._c_E macros.  If the
+          ._c_C/._c_E or ._c_S/._c_E macros are included, _c_o_v_e_r_d_o_c ignores
+
+
+
+     Page 5                                          (printed 12/9/91)
+
+
+
+
+
+
+     CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          CCCCOOOOVVVVEEEERRRRDDDDOOOOCCCC((((1111))))
+
+
+
+          respective lists supplied with the ._N_S/._N_E macros.  A ._N_S
+          macro with null argument or first argument of "0", "1", "2",
+          "9", "10", "11", "13", or a string marks the beginning of
+          the distribution list for the complete memo.  ._N_S _1_2 marks
+          the beginning of the distribution list for the cover sheet
+          only.  Refer to the _m_c_s(5) manual page for information on
+          using the ._c_C and ._c_S macros.
+
+          _c_o_v_e_r_d_o_c interprets the argument to the -_m_m ._M_T (memorandum
+          type) macro as follows: an argument of null, "1", or
+          "TECHNICAL MEMORANDUM" is interpreted as Technical
+          Memorandum.  Any other argument is interpreted as Internal
+          Memorandum.
+
+          The -_m_c_s ._C_S macro has been redefined.  (Refer to the _m_c_s(5)
+          manual page.)  Only one argument is now recognized and all
+          other arguments are ignored.  The argument represents the
+          total page count of the document (NOT including the pages of
+          the cover sheet itself).  The -_m_c_s ._C_S macro should be
+          placed either within the ._i_g/.. block in the document file
+          or in the auxiliary file.
+
+          The -_m_m macro for abstract start (._A_S) should be used with
+          an argument of "1" to ensure that the abstract appears only
+          on the cover sheet. (The default action of ._A_S is to print
+          the abstract both on the cover sheet and on the first page
+          of the document.)
+
+          Only those -_m_m-like macros that are listed on the _m_c_s(5)
+          manual page can be used to format the document cover sheet
+          title and abstract text.  It should be noted, however, that
+          several of these macros may conflict with -_m_m.
+          (Specifically, the footnote macros may not be used within
+          the title and the display macros may not be used within
+          title or abstract.)  Refer to the _m_c_s(5) manual page.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Delma Puttress
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 12/9/91)
+
+
+

@@ -1,0 +1,264 @@
+
+
+
+     TTTTIIIIMMMM((((3333CCCC++++++++))))                     CCCCCCCClllliiiibbbb                     TTTTIIIIMMMM((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Tim -- Time interval manager
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<TTTTiiiimmmm....hhhh>>>>
+
+          ttttyyyyppppeeeeddddeeeeffff iiiinnnntttt    AAAAllllaaaarrrrmmmmIIIIdddd
+          ttttyyyyppppeeeeddddeeeeffff iiiinnnntttt    ((((****AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr))))((((AAAAllllaaaarrrrmmmmIIIIdddd,,,, TTTTiiiimmmmeeee))))
+
+          ccccllllaaaassssssss TTTTiiiimmmm{{{{
+          ppppuuuubbbblllliiiicccc::::
+                    TTTTiiiimmmm(((())));;;;
+               AAAAllllaaaarrrrmmmmIIIIdddd   aaaallllaaaarrrrmmmm((((DDDDuuuurrrraaaattttiiiioooonnnn,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr,,,, iiiinnnntttt))));;;;
+               AAAAllllaaaarrrrmmmmIIIIdddd   aaaallllaaaarrrrmmmm((((TTTTiiiimmmmeeee,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr,,,, iiiinnnntttt))));;;;
+
+               AAAAllllaaaarrrrmmmmIIIIdddd   ssssnnnnoooooooozzzzeeee((((DDDDuuuurrrraaaattttiiiioooonnnn,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr,,,, iiiinnnntttt))));;;;
+               AAAAllllaaaarrrrmmmmIIIIdddd   ssssnnnnoooooooozzzzeeee((((DDDDuuuurrrraaaattttiiiioooonnnn,,,, TTTTiiiimmmmeeee,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr,,,, iiiinnnntttt))));;;;
+
+               iiiinnnntttt  cccclllleeeeaaaarrrr((((AAAAllllaaaarrrrmmmmIIIIdddd))));;;;
+
+               TTTTiiiimmmmeeee ccccuuuurrrrrrrrTTTTiiiimmmmeeee(((())));;;;
+               TTTTiiiimmmmeeee rrrreeeeaaaallllTTTTiiiimmmmeeee(((())));;;;
+
+          }}}};;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The class Tim is a facility that allows the programmer to
+          schedule wake-up calls and interrupts without having to
+          manage the queuing of alarms.  The class consumer can define
+          an interval manager and supply a function to catch the
+          SIGALRM signals that are generated within the application.
+          The interval manager can be run faster/slower than the
+          actual (real) time in the system, and all scheduled alarms
+          and snooze facilities will be correspondingly modified.
+          Only one Tim object is required for each running process.
+          The object will maintain multiple alarms/snoozes.
+
+          The header file (Tim.h) includes a definition of an instance
+          of the class called ttttiiiimmmm.  To use this supplied object, you
+          do not need to define an object of type Tim in your code.
+
+     OOOOPPPPEEEERRRRAAAATTTTIIIIOOOONNNNSSSS
+          TTTTiiiimmmm(((())))
+          This constructor initializes the object.  If the environment
+          variable $_T_I_M__S_P_E_E_D is set to a non-zero value, then the
+          absolute value of this variable will be used as the speed
+          modification factor. $_T_I_M__S_P_E_E_D can be a fractional value.
+          It will be set to 1 by default.  If the environment variable
+          $_T_I_M__T_I_M_E is set, then the internal clock of the object will
+          use the value of this variable as the start time for the
+          object.  The default value for $_T_I_M__T_I_M_E is assumed to be
+          the current system time.  The format for the variable is
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     TTTTIIIIMMMM((((3333CCCC++++++++))))                     CCCCCCCClllliiiibbbb                     TTTTIIIIMMMM((((3333CCCC++++++++))))
+
+
+
+          "Day Mon Dt Hr:Mi:Se Tmz Year" e.g.  """"MMMMoooonnnn OOOOcccctttt 11110000 11114444::::44445555::::22221111
+          EEEEDDDDTTTT 1111999988889999"""".
+
+          AAAAllllaaaarrrrmmmmIIIIdddd aaaallllaaaarrrrmmmm((((DDDDuuuurrrraaaattttiiiioooonnnn iiiinnnntttteeeerrrrvvvvaaaallll,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr hhhhaaaannnnddddlllleeeerrrr,,,, iiiinnnntttt rrrreeeeaaaallll ==== 0000))))
+          This function takes an _i_n_t_e_r_v_a_l and generates an alarm at
+          (current_time + _i_n_t_e_r_v_a_l). The function specified by _h_a_n_d_l_e_r
+          is executed when the alarm goes off. If _r_e_a_l is set to
+          anything but 0, then the alarm will not be speeded up.  The
+          function returns the _A_l_a_r_m_I_d (>0) if it terminates
+          successfully and -1 if termination is unsuccessful.
+
+          AAAAllllaaaarrrrmmmmIIIIdddd aaaallllaaaarrrrmmmm((((TTTTiiiimmmmeeee wwwwhhhheeeennnn,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr hhhhaaaannnnddddlllleeeerrrr,,,, iiiinnnntttt rrrreeeeaaaallll ==== 0000))))
+          This function takes a _w_h_e_n and generates an alarm at the
+          specified time. The function specified by _h_a_n_d_l_e_r is
+          executed when the alarm goes off.  If _r_e_a_l is set to
+          anything but 0, then the alarm will be set to go off when
+          the system time equals _w_h_e_n, otherwise it is assumed that
+          _w_h_e_n is relative to the internal time.  The function returns
+          the _A_l_a_r_m_I_d (>0) if it terminates successfully and -1 if
+          termination is unsuccessful.
+
+          AAAAllllaaaarrrrmmmmIIIIdddd ssssnnnnoooooooozzzzeeee((((DDDDuuuurrrraaaattttiiiioooonnnn iiiinnnntttteeeerrrrvvvvaaaallll,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr hhhhaaaannnnddddlllleeeerrrr,,,, iiiinnnntttt rrrreeeeaaaallll ==== 0000))))
+          This function takes an _i_n_t_e_r_v_a_l and generates alarms at
+          regular intervals of time specified by _i_n_t_e_r_v_a_l.  The snooze
+          requests are synchronized so that the first one expires at
+          the next /fIinterval/fR boundary relative to midnight.  The
+          function specified by _h_a_n_d_l_e_r is executed when the alarm
+          goes off. If _r_e_a_l is set to anything but 0, then the alarm
+          will not be speeded up.  The function returns the _A_l_a_r_m_I_d
+          (>0) if it terminates successfully and -1 if termination is
+          unsuccessful.
+
+          AAAAllllaaaarrrrmmmmIIIIdddd ssssnnnnoooooooozzzzeeee((((DDDDuuuurrrraaaattttiiiioooonnnn iiiinnnntttteeeerrrrvvvvaaaallll,,,, TTTTiiiimmmmeeee wwwwhhhheeeennnn,,,, AAAAllllrrrrmmmmHHHHnnnnddddllllrrrr hhhhaaaannnnddddlllleeeerrrr,,,, iiiinnnntttt rrrreeeeaaaallll ==== 0000))))
+          This function takes an _i_n_t_e_r_v_a_l and generates alarms at
+          regular intervals of time specified by _i_n_t_e_r_v_a_l.  The first
+          interval starts at the time specified by _w_h_e_n. The function
+          specified by _h_a_n_d_l_e_r is executed when the alarm goes off. If
+          _r_e_a_l is set to anything but 0, then the time specified by
+          _w_h_e_n refers to system time, otherwise it is assumed that the
+          internal time is used.  The function returns the _A_l_a_r_m_I_d
+          (>0) if it terminates successfully and -1 if termination is
+          unsuccessful.
+
+          TTTTiiiimmmmeeee ccccuuuurrrrrrrrTTTTiiiimmmmeeee(((())))
+          This function returns the current time to the application.
+          This time is automatically adjusted for the speed-up factor.
+
+          TTTTiiiimmmmeeee rrrreeeeaaaallllTTTTiiiimmmmeeee(((())))
+          This function returns the system time to the application.
+          This time is not adjusted for the speed-up factor.
+
+          iiiinnnntttt cccclllleeeeaaaarrrr((((AAAAllllaaaarrrrmmmmIIIIdddd iiiiddddeeeennnnttttiiiiffffiiiieeeerrrr))))
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     TTTTIIIIMMMM((((3333CCCC++++++++))))                     CCCCCCCClllliiiibbbb                     TTTTIIIIMMMM((((3333CCCC++++++++))))
+
+
+
+          This function removes the alarm/snooze specified by
+          _i_d_e_n_t_i_f_i_e_r from the list of scheduled alarms/snoozes.  The
+          function returns an ERROR if the alarm/snooze id is invalid,
+          otherwise it returns a 0.
+
+
+          vvvvooooiiiidddd hhhhaaaannnnddddlllleeeerrrr((((AAAAllllaaaarrrrmmmmIIIIdddd iiiiddddeeeennnnttttiiiiffffiiiieeeerrrr,,,, TTTTiiiimmmmeeee eeeexxxxppppiiiirrrraaaattttiiiioooonnnn))))
+          The pointer to _h_a_n_d_l_e_r would invoke the function when the
+          particular alarm/snooze expires.  The parameter _i_d_e_n_t_i_f_i_e_r
+          is the id of the alarm/snooze that expired.  The parameter
+          _e_x_p_i_r_a_t_i_o_n is the time at which the alarm/snooze expired.
+          This time is the speeded up time.
+
+
+     EEEERRRRRRRROOOORRRRSSSS
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          The granularity of Tim is limited to the second boundary,
+          and the user should be careful to ensure that when the
+          internal clock is speeded up, the alarms and snoozes set for
+          different times are maintained as separate temporal events
+          (e.g.  if Tim is speeded up by a factor of 10, and a snooze
+          is set for 2 second intervals, the snooze will actually
+          expire only once every second).
+
+          Tim is designed to put an envelope around the UNIX alarm()
+          facility and the SIGALRM signal.  Since UNIX does not stack
+          alarm calls, using both Tim and the UNIX alarm() call in the
+          same program will result in chaos.  BBBByyyy nnnnoooo mmmmeeeeaaaannnnssss sssshhhhoooouuuulllldddd tttthhhheeee
+          TTTTiiiimmmm uuuusssseeeerrrr mmmmaaaakkkkeeee aaaannnnyyyy ccccaaaallllllllssss ttttoooo tttthhhheeee UUUUNNNNIIIIXXXX aaaallllaaaarrrrmmmm(((()))) ccccaaaallllllll.  All the
+          functionality provided by the UNIX alarm() facility is
+          available under Tim.
+
+          To make synchronization between processes simpler, Tim, on
+          starting up, uses the end of the last hour boundary as the
+          starting point.  This ensures that a 15 minute snooze set at
+          9:12 will always occur at 9:15, 9:30 etc. This in no way
+          affects the actual running of Tim, or the users view of the
+          world and time.  The default action for Tim is to assume
+          that the process wants to run on a synchronous boundary for
+          any snoozes, unless the user specifies a relative time at
+          which the snooze is to start.
+
+          To better understand the workings of Tim, refer to "_T_h_e _C++
+          _T_i_m_e _I_n_t_e_r_v_a_l _M_a_n_a_g_e_r (_T_i_m) _L_i_b_r_a_r_y" document.
+
+     FFFFIIIILLLLEEEESSSS
+          Tim.h, libTim.a, libm.a
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          Duration(3C++), Time(3C++).
+
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     TTTTIIIIMMMM((((3333CCCC++++++++))))                     CCCCCCCClllliiiibbbb                     TTTTIIIIMMMM((((3333CCCC++++++++))))
+
+
+
+          Isner, J. F., _I_t'_s _A_b_o_u_t _T_i_m_e: _T_h_e _C++ _T_i_m_e _L_i_b_r_a_r_y, AT&T
+          Bell Laboratories DRAFT February 10, 1989.
+
+          Patel, S. H., _T_h_e _C++ _T_i_m_e _I_n_t_e_r_v_a_l _M_a_n_a_g_e_r (_T_i_m) _L_i_b_r_a_r_y,
+          AT&T Bell Laboratories DRAFT August 1, 1989.
+
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Sanjay H. Patel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+     EEEEDDDDIIIITTTTPPPPAAAATTTTHHHH((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          EEEEDDDDIIIITTTTPPPPAAAATTTTHHHH((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          editpath - Edit a path list variable
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          eeeeddddiiiittttppppaaaatttthhhh [ _p_a_t_h_n_a_m_e [ _o_t_h_e_r _d_i_r_e_c_t_o_r_i_e_s _o_r _p_a_t_h_s ] ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function allows you to easily edit the value of a shell
+          or  environment  variable  that  contains a (directory) path
+          list.  (Actually it can be used on any variable.)
+
+          The first argument, if supplied, must be the valid  name  of
+          an  environment  or  shell  variable.   This is the variable
+          whose value is to be edited and replaced.  If  no  arguments
+          are  given, the command path list PPPPAAAATTTTHHHH is edited.  Any argu-
+          ments after the first argument, when given, may be more path
+          list   names   or   values,   which   are   also   given  to
+          _s_p_l_i_t_p_a_t_h(exptools) to be split up.
+
+          After splitting up the path list variable and any additional
+          arguments  to  this function, it calls on your favorite edi-
+          tor, as defined by your EEEEDDDDIIIITTTTOOOORRRR environment variable (_v_i,  if
+          not  assigned),  to edit the temporary file with the list of
+          directories or what-have-you.
+
+          After editing the file, if it is _n_o_t _e_m_p_t_y,  the  result  is
+          formed  back  into  a  path  [using _f_o_r_m_p_a_t_h(exptools)], and
+          placed in the specified path list variable, or  PPPPAAAATTTTHHHH  if  no
+          arguments  given.  Leaving the editor with the file empty is
+          a way to abort  _e_d_i_t_p_a_t_h  without  changing  the  variable's
+          value.
+
+          If the value of the variable was  actually  changed  by  the
+          edit session, a line is also placed in your _k_s_h history file
+          with the assignment, for future reference.
+
+          _e_d_i_t_p_a_t_h does not allow you to clear the given variable  (by
+          clearing  the  temporary  file) as a safety precaution.  You
+          can always do that from the command line with a simple
+             VARIABLE=
+
+        AAAAcccccccceeeessssssss
+          Since _e_d_i_t_p_a_t_h is a Korn Shell function, make sure that your
+          FFFFPPPPAAAATTTTHHHH  environment variable includes $TOOLS/fbin so that the
+          shell can locate this function.
+
+          If, by coincidence, there  is  also  an  executable  program
+          named   _e_d_i_t_p_a_t_h   in   a  directory  listed  in  your  PPPPAAAATTTTHHHH
+          (unlikely!), you may want to include an
+             autoload editpath
+          in your $$$$EEEENNNNVVVV file.
+
+
+
+
+     Page 1                                          (printed 6/10/92)
+
+
+
+
+
+
+     EEEEDDDDIIIITTTTPPPPAAAATTTTHHHH((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          EEEEDDDDIIIITTTTPPPPAAAATTTTHHHH((((1111))))
+
+
+
+          For older versions of the Korn shell that don't  have  auto-
+          load, you can use
+             . $TOOLS/fbin/editpath
+          to define the  _e_d_i_t_p_a_t_h  function,  rather  than  having  it
+          automatically loaded the first time you use it.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0 if the value of the variable is changed, or 1 if the value
+          did not change.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          # Edit my PATH:
+          editpath
+
+          # Edit my VPATH:
+          editpath VPATH
+
+          # Edit my CDPATH, adding some directories to the edit file first:
+          editpath CDPATH VPATH $DIR1 $DIR2 $DIR3:$DIR4
+
+          # Create a new variable named KPATH & start with CDPATH:
+          editpath KPATH CDPATH
+
+     NNNNOOOOTTTTEEEESSSS
+          _e_d_i_t_p_a_t_h does not automatically _e_x_p_o_r_t the variable for you,
+          since you may not want it exported.
+
+          If the given _p_a_t_h_n_a_m_e variable was not set (as in  the  last
+          example,  above),  _s_p_l_i_t_p_a_t_h  issues  a warning which can be
+          ignored.  The warning is not thrown away in  case  _s_p_l_i_t_p_a_t_h
+          complains  about  other  variables  that  you may want to be
+          warned about.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          splitpath(exptools), formpath(exptools),
+          checkpath(exptools), ksh(1)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEEDDDD BBBBYYYY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 6/10/92)
+
+
+

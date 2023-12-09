@@ -1,0 +1,310 @@
+# remote make interface for exptools
+
+# configurable entities	
+HOMEID=exptools
+TOOLS=`logdir $HOMEID`
+RHUBCMD=rhub
+pkg_cmd=$TOOLS/adm/upd1.1/lib/package		# packages up the file for upd
+mach_cmd=$TOOLS/adm/upd1.1/bin/machines	# maps types to machine lists
+net_cmd=$TOOLS/adm/upd1.1/lib/netcmd		# figures out networking to machines
+send_cmd=$TOOLS/adm/upd1.1/lib/sendjob	# executes network commands
+PATH=/usr/5bin:$PATH:$TOOLS/adm/bin	# use System V commands on Suns
+export PATH
+
+ulimit=4096				# minimum ulimit on hub and build machines
+sourcelimit=`expr $ulimit \* 512 - 100`	# allows 100 bytes for packaging overhead
+
+: ${LOGNAME:=`id | sed -n 's/.*uid=[0-9]*(\([^)]*\)).*/\1/p'`}
+mailaddr=`uuname -l`!${LOGNAME:?}
+retval=0
+cmd=$0
+case $cmd in
+*/*)
+	cmd=`basename $0`
+	;;
+esac
+
+usage="usage: $cmd [-cuvS] [-M mailaddr] [-P pwdfile] -p pkgid -s srcfile \\
+	-t target [-t target]... -m machinetype [-m machinetype]... [macrodefs]"
+
+case $# in
+0)
+	cat <<!
+$usage
+
+Examples:
+	$cmd -p compress -s compress.c -t compress -m ibm
+	$cmd -p dt -P ~/.p -s dt.cpio -t dt -m ibm -m 3b2 -v
+	$cmd -p emacs -s emacs.cpio -t emacs -t dired -m all
+	$cmd -p ksh -s ksh.cpio.Z -t ksh -m ibm "DEFS='-DSYSV -DVITERM'"
+	$cmd -p fmlife -s fmlife.cpio -t fmlife -m ibm -M att!hvlpa!ahilgers
+
+Sends the srcfile to a designated build machine of the given type(s).
+The command invoked remotely is "make target [macrodefs]" for each
+target specified.  A runlog is mailed back to you.  The resulting
+tools are sent back and the machinetype is appended to its name
+(e.g. compress.ibm is the name of the returned product in the first
+example above).  Note the double quoting needed on the DEFS argument.
+
+Cpio archives are valid srcfiles; they must be built with the -c option
+and must have a .Z suffix if compressed or .cpio if not compressed.
+
+Options:
+	-c override local password check
+	-m specifies machine type or "all" (required)
+	-M alternate return mail address (default ${mailaddr})
+	-P package password file
+	-p specifies the package ID for the update (required)
+	-S do not strip target (use only for debugging core dumps!)
+	-s source file name (required)
+	-t target for make(1) (required)
+	-u cpio unconditional copy option (rarely needed)
+	-v cpio verbose option
+!
+	exit 1
+	;;
+esac
+
+# get certain cpio options
+optletters=uv
+if options=`getopt "CcdM:m:N:P:p:Ss:t:$optletters" $*`
+then	:
+else
+	echo "$usage" >&2
+	exit 1
+fi
+set -- $options
+
+Debug=
+debug=
+machinetype=
+options=
+packargs=
+pkgid=
+pwdfile=
+srcfile=
+strip=strip
+target=
+targets=
+
+while :
+do
+	${1:+:} ${1:-break}
+	arg=$1
+	shift
+	case ${arg} in
+	-c)
+		packargs="${packargs} ${arg}"
+		;;
+	-d)
+		set -x
+		Debug="set -x"
+		debug=:
+		;;
+	-[$optletters])
+		options="$options`expr $arg : '.\(.\)'`"
+		;;
+	-M)
+		case $1 in
+		att!?*!?*) ;;
+		?*!?*!?*) echo "mail address [$1] must be machine!user or att!machine!user"
+			  retval=1; exit;;
+		?*!?*)	  ;;
+		*)	  echo "mail address [$1] must be machine!user or att!machine!user"
+			  retval=1; exit;;
+		esac
+		mailaddr=$1
+		shift
+		;;
+	-m)
+		if test "$1" = all
+		then	machinetype=`$mach_cmd types`
+		else	if test "`$mach_cmd type==$1`" = ''
+			then	echo "$1 is not a machine type; type \"machines types\" to list all types" >&2
+			else	machinetype="$machinetype $1"
+			fi
+		fi
+		shift
+		;;
+	-N)	# obsolete; uucp is the only network now
+		XNETPREF=$1
+		shift
+		export XNETPREF
+		;;
+	-P)
+		chmod 600 $1
+		pwdfile="-P ${1}"
+		shift
+		;;
+	-p)
+		pkgid=$1
+		packargs="${packargs} ${arg}${1}"
+		shift
+		;;
+	-S)
+		strip=:
+		shift
+		;;
+	-s)
+		srcfile=$1
+		shift
+		;;
+	-t)
+		targets="$targets $1"
+		target=${target:-$1}
+		shift
+		;;
+	--)
+		break
+		;;
+	esac
+done
+
+: ${machinetype:?"must specify -m machinetype
+$usage"}
+: ${pkgid:?"must specify -p pkgid
+$usage"}
+: ${srcfile:?"must specify -s srcfile
+$usage"}
+: ${target:?"must specify -t target
+$usage"}
+
+if [ ! -r ${srcfile} ]
+then
+	echo "$cmd: cannot find ${srcfile}" >&2
+	retval=1
+	exit
+fi
+
+fsize=`ls -dl ${srcfile} | sed 's/^[^ ]*  *[^ ]*  *[^ ]*  *[^ ]*  *\([^ ]*\) .*/\1/'`
+if [ "$fsize" -ge $sourcelimit ]
+then
+	echo "$cmd: ${srcfile} must be <= $sourcelimit bytes, \n\twhich is the uucp ulimit on small machines minus some rmake overhead" >&2
+	retval=1
+	exit
+fi
+
+macros="$*"
+
+destfile=$srcfile
+case $destfile in
+*/*)
+	destfile=`basename $srcfile`
+	;;
+esac
+
+case "$destfile" in
+*.Z)
+	unpack="zcat ../$destfile | cpio -icd$options | grep -v '^.$'"
+	;;
+*.cpio*)
+	unpack="cpio -icd$options <../$destfile | grep -v '^.$'"
+	;;
+*)
+	unpack="mv ../$destfile $destfile"
+	;;
+esac
+
+outdest= user=
+eval `echo "$mailaddr" | sed -n 's/^\(.*\)!\([^!]*\)$/outdest=\1 user=\2/p'`
+if [ -z "$outdest" -o -z "$user" ]
+then
+	echo "$cmd: cannot determine output destination from $mailaddr" >&2
+	retval=1
+	exit
+fi
+
+: ${MAKE:=make}
+
+lockfile=/tmp/$$rlock
+builddir=${LOGNAME}.$target
+
+tmpdir=/usr/tmp/$$rmake.d
+tmpjob=/usr/tmp/$$rmake.job
+tmpfile=/usr/tmp/$$rmake.pkg
+
+# Now is the time to arrange for certain temp files to disappear on exit.
+# From this point on, $retval controls the exit code for this command.
+trap 'retval=1; exit' 1 2 3 15
+trap "rm -rf $tmpdir $tmpjob $tmpfile; exit \$retval" 0
+
+mkdir $tmpdir
+cp $srcfile $tmpdir/$destfile
+
+# for each machine type
+for type in $machinetype
+do
+	machine=`$mach_cmd -f addr name==exphub | sed -n -e 's/ //g' -e '1p'`
+	echo "sending to $machine for type $type"
+	ACTION=build
+	if test \( $type = mips -o $type = i486 \) -a $outdest != $machine
+	then	hub=Xhub!
+		mailaddr=$hub$mailaddr
+	fi
+	cat <<-!EOJ! > $tmpdir/STARTUP
+		${Debug}
+		if [ -f $lockfile.$type ]
+		then	echo "lock file $lockfile.$type exists... duplicate build aborting"
+			exit
+		else
+			touch $lockfile.$type
+		fi
+		echo "Targets: $targets\n"
+		TZ="$TZ"
+		TOOLS=\`logdir exptools\`
+		HOME=\$TOOLS
+		SHELL=/bin/sh
+		export TOOLS HOME TZ SHELL
+		echo "Build home directory: \$HOME"
+		echo "Build submitted: `date`"
+		echo "Build executed:  \`date\`"
+		echo "Build system info: \`uname -a\`"
+		echo "Build PATH=\$PATH"
+		echo "Build disk free space info:"
+		df | sort | while read dir junk
+		     do
+			case \$HOME in
+			\$dir*)
+				echo "\$dir \$junk"
+				;;
+			esac
+		     done | tail -1
+		df / /tmp /usr/tmp 2>/dev/null
+		set -x
+		mkdir $builddir
+		cd $builddir
+		$unpack
+		for t in $targets
+		do
+		  nice $MAKE \$t $macros && \
+		    (
+			case \$t in
+			*.a) ;;
+			*) $strip \$t;;
+			esac
+			mv \$t \$t.$type
+			if test $type = hppa
+			then	# uuto is called with "sh /usr/bin/" to avoid core dump
+				sh /usr/bin/uuto -p \$t.$type $hub$outdest!$user
+			else	uuto -p \$t.$type $hub$outdest!$user
+			fi
+			# sleep a bit in case uuto -p can't spool a copy
+			sleep 30
+		    )
+		done
+		cd ..
+		rm -fr $builddir $destfile $lockfile.$type
+	!EOJ!
+	if uname -p >/dev/null 2>&1	# if SVR4
+	then	coption='H odc'
+	else	coption=c
+	fi
+	( cd $tmpdir; find . -print | cpio -o$coption > $tmpjob )
+	if ${pkg_cmd} -A$ACTION ${pwdfile} ${packargs} -M${mailaddr} ${tmpjob} > $tmpfile
+	then	: package ok
+	else	exit
+	fi
+	echo $machine \
+	| ${net_cmd} \
+	| ${send_cmd} -b -! "$RHUBCMD rmake $pkgid $type $outdest $user" -M $mailaddr $tmpfile
+done

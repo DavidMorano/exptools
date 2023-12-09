@@ -1,0 +1,2534 @@
+
+USAGE='timecards  [-acmotsbv] [-w mm-dd[-yy]] [-p pan] [-news]'
+VERSION=1.9
+ 
+SHELL=/usr/lbin/ksh
+test "$RANDOM" = "$RANDOM"  &&  {
+	test -x $SHELL  &&  exec $SHELL -c "$0 $*"  ||  exec ksh -c "$0 $*"
+	}
+
+
+prompt()
+{
+	while :
+	do
+		echo "$1 \c" >&2
+		read prompt
+		test $# -gt 1  &&  {
+			echo "$prompt" | $2 "$3" >/dev/null 2>&1  ||  {
+				echo "$4" >&2  &&  continue
+				}
+			}
+		echo "$prompt"
+		return 0
+	done
+}
+
+
+
+askif()
+{
+	while : 
+	do
+		case `prompt "$1 (y or n)?"` in
+		y)	return 0 ;;
+		n)	return 1 ;;
+		*)	echo "$BALERT answer must be y or n" >&2 ;;
+		esac
+	done
+}
+
+
+
+chkifnull()
+{
+	awk '
+		BEGIN { kludge = 0 }
+		{ print }
+		END { if ( NR == 0 ) exit 0; exit 1 }
+		' - && {
+			echo "$1"
+			return 0
+		}
+	return 1
+}
+
+
+
+debug()
+{
+	case $DEBUG in
+	-x)	set +x;	DEBUG=+x;;
+	+x)	set -x;	DEBUG=-x;;
+	*)	set -x;	DEBUG=-x;;
+	esac
+	return 0
+}
+
+
+
+printnews()
+{
+	test "`cut '-d ' -f 2 $LOG 2>/dev/null`" = "version$VERSION" -a "$1" = ""  &&
+		return 0
+
+	(
+	test "$VERSION" = 1.6  -o  "$1" != ""  &&  cat <<-!
+		Version 1.6 - $BALERT$BALERT entering a PDO will now allow
+		recording hours in increments from 1-8.  If no hours are entered
+		for a PDO, the default is the standard work day hours, currently
+		8 hours.  Along with this change, the vacation report will now
+		report the number of fractional PDOs, sick days, and personal
+		days.
+
+		!
+	) | eval $PAGER
+
+	logusage
+
+	return 0
+}
+
+
+
+logusage()
+{
+
+	echo "`date '+%y/%m'` version$VERSION" >$LOG
+	return 0
+}
+
+
+
+getweekinfo()
+{
+	zapresource WEEKCHARGE
+	WEEKDATES=`getweekend $1`  ||  return 1
+	WE=`echo $WEEKDATES | sed 's/^.* //'`
+	return 0
+}
+
+
+
+getweekend()
+{
+	thedate=$1
+	while :
+	do
+		test -z "$1"  &&
+			thedate=`prompt 'Weekending (mm-dd or mm-dd-yy):' \
+				egrep '^([0-9][0-9]?-[0-9][0-9]?|[0-9][0-9]?-[0-9][0-9]?-[0-9][0-9])$' \
+				"$BALERT check date input and try again"`
+
+		thedate=`yrmoday $thedate` || { test -z "$1"  &&  continue  ||  return 2; }
+		theweek=`weekdates $thedate` || { test -z "$1"  &&  continue  ||  return 2; }
+		case $thedate in
+		??-01-0[1-6])
+			cat >&2 <<-!
+				$BALERT$BALERT
+				If you are entering the weekending for
+				the LAST week of the year, you should use
+				12-31 as the weekending date.  You can
+				change the weekending date by using the
+				w option in the main menu.
+				!
+			;;
+		esac
+		echo $theweek $thedate
+		return 0
+	done
+}
+
+
+
+yrmoday()
+{
+	case $1 in
+	[0-9]-[0-9])				;;
+	[0-9]-[0-3][0-9])			;;
+	[01][0-9]-[0-9])			;;
+	[01][0-9]-[0-3][0-9])			;;
+	[0-9]-[0-9]-[0-9][0-9])			;;
+	[0-9]-[0-3][0-9]-[0-9][0-9])		;;
+	[01][0-9]-[0-9]-[0-9][0-9])		;;
+	[01][0-9]-[0-3][0-9]-[0-9][0-9])	;;
+	*)					return 1 ;;
+	esac
+
+	{ date +%y; echo $1; } | awk -F- '
+		NR == 1	{ year = $0; next }
+		{
+			month = $1+0; if ( month < 10 ) month = "0" month
+			day = $2+0;   if ( day < 10 ) day = "0" day
+			if ( NF > 2) year = $3
+			print year "-" month "-" day
+		}
+		'
+	return 0
+}
+
+
+
+getdates()
+{
+	thedays=`prompt "$1 (mon tue wed thu fri sat sun):" \
+			egrep '^ *((mon|tue|wed|thu|fri|sat|sun) *)+$' \
+			"$BALERT Days must be:  mon tue wed thu fri sat sun"`
+	echo $thedays
+	return 0
+}
+
+
+
+convdays()
+{
+	sed "
+		s/mon/$1/g
+		s/tue/$2/g
+		s/wed/$3/g
+		s/thu/$4/g
+		s/fri/$5/g
+		s/sat/$6/g
+		s/sun/$7/g
+		"
+	return 0
+}
+
+
+
+weekdates()
+{
+	yeardates `echo 19$1 | cut -d- -f1` 2>&1 |
+		sed 's/^\(..\)\(..\)/\1-\2-/' |
+		awk '
+			BEGIN	{ for ( i = 1; i <= 7; i++ ) wkdate[i] = "----" }
+			{
+				dayofwk = $NF+0
+				wkdate[dayofwk] = $1
+				if ( week == $1 ) {
+					if ( week ~ /^..-12-31$/ ) {
+						if ( dayofwk > 1) {
+							for ( i = dayofwk+1; i <= 7; i++ ) wkdate[i] = "----"
+							wkdate[1] = "----"
+						}
+					} else if ( $6 != "Sun" ) {
+						print "Weekending [" week "] must be a Sunday" | "cat >&2"
+						exit 2
+					}
+					for ( i = 2; i <= 7; i++ ) daysofwk = daysofwk " " wkdate[i]
+					print daysofwk, wkdate[1], week
+					exit 0
+				}
+			}
+			END	{
+				if ( daysofwk == "" ) {
+					print "Weekending [" week "] not a good date" | "cat >&2"
+					exit 2
+				}
+			}
+			' week=$1 -
+	return $?
+}
+
+
+
+yeardates()
+{
+	case $1 in
+	[0-9][0-9][0-9][0-9])	year=$1 ;;
+	?*)		
+		echo 'first parameter must be a year (eg, 1988)' >&2
+		return 2
+		;;
+	*)	year=19`date +%y` ;;
+	esac
+
+	{
+		date 01010101`echo $year | sed 's/^19//'` 2>/dev/null
+		for month in 1 2 3 4 5 6 7 8 9 10 11 12
+		do
+			echo "cal $month $year"
+			cal $month $year
+		done 
+	} |
+		awk '
+			BEGIN	{
+				month[ "01" ] = "Jan"; month[ 1 ] = "Jan"
+				month[ "02" ] = "Feb"; month[ 2 ] = "Feb"
+				month[ "03" ] = "Mar"; month[ 3 ] = "Mar"
+				month[ "04" ] = "Apr"; month[ 4 ] = "Apr"
+				month[ "05" ] = "May"; month[ 5 ] = "May"
+				month[ "06" ] = "Jun"; month[ 6 ] = "Jun"
+				month[ "07" ] = "Jul"; month[ 7 ] = "Jul"
+				month[ "08" ] = "Aug"; month[ 8 ] = "Aug"
+				month[ "09" ] = "Sep"; month[ 9 ] = "Sep"
+				month[ "10" ] = "Oct"; month[ 10 ] = "Oct"
+				month[ "11" ] = "Nov"; month[ 11 ] = "Nov"
+				month[ "12" ] = "Dec"; month[ 12 ] = "Dec"
+				day[ "01" ] = "Sun"; day[ 1 ] = "Sun"
+				day[ "02" ] = "Mon"; day[ 2 ] = "Mon"
+				day[ "03" ] = "Tue"; day[ 3 ] = "Tue"
+				day[ "04" ] = "Wed"; day[ 4 ] = "Wed"
+				day[ "05" ] = "Thu"; day[ 5 ] = "Thu"
+				day[ "06" ] = "Fri"; day[ 6 ] = "Fri"
+				day[ "07" ] = "Sat"; day[ 7 ] = "Sat"
+				daywk[ "Mon" ] = 1
+				daywk[ "Tue" ] = 2
+				daywk[ "Wed" ] = 3
+				daywk[ "Thu" ] = 4
+				daywk[ "Fri" ] = 5
+				daywk[ "Sat" ] = 6
+				daywk[ "Sun" ] = 7
+			}
+			NR == 1	{ start = daywk[ $1 ]; next }
+ 			/^cal/	{ mo = $2; year = $NF; next }
+			/[^ 	0-9]/	{ next }
+			{
+				for ( i = 1; i <= NF; i++ ) {
+					dayofyr++
+					week = int( (dayofyr + start - 1) / 7 ) + 1
+					dayofwk = i
+					if ( $i < 7 ) dayofwk = i + (7 - NF)
+					if ( mo < 10 ) mo = "0" mo + 0
+					if ( $i < 10 ) $i = "0" $i
+					print substr( year, 3 ) mo $i, \
+						year, month[ mo ], mo,\
+						week, day[ dayofwk ], \
+						dayofyr, $i, dayofwk
+				}
+			}
+			'
+	return 0
+}
+
+
+
+validwpn()
+{
+	thewpn=$1
+	while :
+	do
+		case $thewpn in
+		*[!0-9\-]*)
+			echo "$BALERT WPN must be 6 digit optionally followed by - and 4 digit number [$thewpn]" >&2
+			return 1
+			;;
+		esac
+
+		fgrep -x "$thewpn" $VALIDWPNS >/dev/null  &&  return 0
+		echo "${BALERT}WPN [$thewpn] not listed in valid WPN file(s)" >&2
+		askif 'Is it OK'  &&  return 0  ||  return 1
+	done
+}
+
+
+
+getdept()
+{
+	echo `prompt "$1:" \
+		egrep '^(\*|[0-9A-Za-z]+)$' \
+		"$BALERT department must contain only alphanumerics" |
+		tr '*' +`
+	return 0
+}
+
+
+
+getpan()
+{
+	test  -n "$2"  &&  PRMPT="$2"  ||  PRMPT='PAN or last name:'
+	while :
+	do
+		if [ "$1" = "" ]
+		then
+			thepan=`prompt "$PRMPT" \
+					egrep '^([0-9]+|[-a-zA-Z]+)$' \
+					"$BALERT check input and try again"`
+		else
+			thepan=$1
+			shift
+		fi
+
+		case $thepan in
+		[0-9][0-9][0-9][0-9][0-9][0-9])
+			if [ -f $WORKDB/$thepan ]
+			then
+				echo $thepan
+				return 0
+			else
+				echo "$BALERT$thepan not in timecards database" >&2
+			fi
+			;;
+		[a-zA-Z]*)
+			getresource ALLEMPLOYEES
+			thename=`echo $thepan | tr '[a-z]' '[A-Z]'`
+			grep "^1	$thename," $ALLEMPLOYEES |
+				while read num name pan rest
+				do
+					echo $pan
+					false
+				done  ||
+					return 0
+
+			grep "^[0-9]*	$thename," $ALLEMPLOYEES |
+				while read num name pan rest
+				do
+					echo "${BALERT}multiple matching names for $thename: name = $name, pan = $pan"
+				done |
+				chkifnull "${BALERT}no matching name for $thename" >&2
+			return 1
+			;;
+		*)
+			echo "${BALERT}PAN must be 6 digit number" >&2
+			;;
+		esac
+	done
+}
+
+
+
+getallnames()
+{
+	>$DEFAULTDEPT
+	getallwork |
+		xargs cat |
+		tr '. ' '~~' |
+		awk '-F~' '
+			BEGIN { kludge = 0 }
+			/^~tl|\(Supervisor\)$/	{
+				if ( $NF == "(Supervisor)" ) {
+					np = NF - 1
+				} else {
+					getline
+					pan = $NF
+					np = NF - 2
+				}
+				name = ""
+				if ( $1 ~ /,$/ ) {
+					name = $1
+					for ( i = 2; i <= np; i++ )
+						if ( $i != "" ) name = name " " $i
+				} else {
+					for ( i = 1; i <= np; i++ ) {
+						if ( $i ~ /,$/ ) {
+							name = $i
+							break
+						} else if ( i == np ) {
+							if ( length( $np ) <= 3  && \
+							     length( $(np-1) ) > 3 ) {
+								name = $(np-1) ","
+								i = np - 1
+							} else {
+								name = $np ","
+							}
+							break
+						}
+					}
+					for ( j = i+1; j <= np; j++ )
+						if ( $j != "" )
+							name = name " " $j
+					for ( j = 1; j < i; j++ )
+						if ( $j != "" )
+							name = name " " $j
+				}
+				if ( $NF == "(Supervisor)" )
+					supv[ pan ] = name
+				else {
+					emp[ pan ] = name
+					split( name, last, "," )
+					lastname[ pan ] = last[1]
+					lastcount[ last[1] ]++
+				}
+				next
+			}
+			/\(Department\)$/	{ dept[ pan ] = $1 }
+			/^~\\"STD/	{ wkhours[pan] = $3; dyhours[pan] = $4 }
+			END	{
+				if ( NR <= 0 ) {
+					print "No employees found" | "cat - >&2"
+					print "99999" >deptfile
+					exit(2)
+				}
+				for ( pan in emp ) {
+					name = emp[ pan ]
+					if ( name == "" ) name = "?"
+					else name = name "."
+					esup = supv[ pan ]
+					if ( esup == "" ) esup = "?"
+					else esup = esup "."
+					edep = dept[ pan ]
+					if ( edep == "" ) edep = "000000"
+					deptcount[edep]++
+					ewkhrs = wkhours[ pan ]
+					if ( ewkhrs == "" ) ewkhrs = "40"
+					edyhrs = dyhours[ pan ]
+					if ( edyhrs == "" ) edyhrs = "8"
+					print lastcount[lastname[pan]] ";" name ";" pan ";" esup ";" edep ";" ewkhrs ";" edyhrs
+				}
+				for (dpt in deptcount)
+					if ( deptcount[dpt] > maxdept ) {
+						thedept = dpt
+						maxdept = deptcount[dpt]
+					}
+				print thedept >deptfile
+			}
+			' deptfile=$DEFAULTDEPT - |
+		tr -s '. ' '..' |
+		tr '~;[a-z]' '.	[A-Z]' |
+		sed 's/,\./,/g'
+
+		test "$THEDEPT" = '+'  &&  THEDEPT=`cat $DEFAULTDEPT`
+}
+
+
+
+getempdata()
+{
+	getresource ALLEMPLOYEES
+	grep "	$1	" $ALLEMPLOYEES  ||  {
+			echo "${BALERT} employee not found for PAN=$1" >&2  &&
+			return  1
+		}
+	return 0
+}
+
+
+
+delemp()
+{
+	shift
+	name=$1
+	pan=$2
+	askif "Ready to delete employee $name [$pan]"  &&  {
+		test -w $WORKDB/$pan -a -w $ATTENDDB/$pan  &&  {
+			rm -f $WORKDB/$pan >/dev/null 2>&1
+			rm -f $ATTENDDB/$pan >/dev/null 2>&1
+		}
+		test -f $WORKDB/$pan -o -f $ATTENDDB/$pan  &&  {
+			cat  >&2 <<-!
+				Unable to delete employee,
+				check file permissions for:
+				  	$WORKDB/$pan
+				  	$ATTENDDB/$pan
+				!
+			return 1
+		}
+	}
+	return 0
+}
+
+
+
+listemp()
+{
+	getresource ALLEMPLOYEES
+	awk '{ printf "%-18s  %6d  %-18s  %5d  %2d  %2d\n", $2, $3, $4, $5, $6, $7 }' $ALLEMPLOYEES |
+		sort
+	return 0
+}
+	
+	
+
+getname()
+{
+	getworkfile $1 |
+		awk '
+			/^\.tl/	{ getline; print $1; exit }
+			' |
+		tr '~' ' '
+	return 0
+}
+	
+	
+
+isgone()
+{
+	if [ "$THEDEPT" = + ]
+	then
+		return 1
+	else
+		awk "\$3 == $1 { if ( \$5 == dept ) {exit(1)} else exit(0) }" dept=$THEDEPT $ALLEMPLOYEES 
+		return $?
+	fi
+}
+	
+	
+ 
+getalltime()
+{
+	getallwork | getworkdata + + | sed 's/^/work;/';
+	getallattend | getattdata + + | sed 's/^/attend;/';
+	return 0
+}
+	
+	
+ 
+getresource()
+{
+	for resource in $*
+	do
+		case $resource in
+		WE)		test -n "$WE"  ||  getweekinfo ;;
+		ALLTIME)	test -s $ALLTIME  ||  getalltime >$ALLTIME ;;
+		WEEKCHARGE)	test -s $WEEKCHARGE  ||  weekchrg >$WEEKCHARGE ;;
+		ALLEMPLOYEES)	test -s $ALLEMPLOYEES  ||  getallnames >$ALLEMPLOYEES ;;
+		esac
+	done
+	return 0
+}
+	
+	
+ 
+zapresource()
+{
+	for resource in $*
+	do
+		case $resource in
+		WE)		WE= ;;
+		ALLTIME)	>$ALLTIME ;;
+		WEEKCHARGE)	>$WEEKCHARGE ;;
+		ALLEMPLOYEES)	>$ALLEMPLOYEES ;;
+		esac
+	done
+	return 0
+}
+	
+	
+
+addyrtodate()
+{
+	ADDYRTODATE=$TIMECARDS/.yrtodate2
+	test -f $ADDYRTODATE  &&  return 0
+	return 0
+}
+	
+	
+
+getallwork()
+{
+	if [ "$1" = -b ]
+	then ( cd $WORKDB; ls [0-9][0-9][0-9][0-9][0-9][0-9] )
+	else find $WORKDB -name '[0-9][0-9][0-9][0-9][0-9][0-9]' -print
+	fi
+	return 0
+}
+	
+	
+
+getallattend()
+{
+	if [ "$1" = -b ]
+	then ( cd $ATTENDDB; ls [0-9][0-9][0-9][0-9][0-9][0-9] )
+	else find $ATTENDDB -name '[0-9][0-9][0-9][0-9][0-9][0-9]' -print
+	fi
+	return 0
+}
+	
+	
+
+getworkfile()
+{
+	case $1 in
+	*/*)	cat $WORKDB/`basename $1` ;;
+	*)	cat $WORKDB/$1 ;;
+	esac
+	return 0
+}
+	
+	
+
+getworkdata()
+{
+	if [ "$2" = + ]
+	then LOOKFOR='[0-9][0-9]-[01][0-9]-[0-3][0-9]'
+	else LOOKFOR="$2"
+	fi
+	
+	(
+		cd $WORKDB
+		sed 's!^.*/!!' |
+			if [ "$1" = + ]
+			then xargs grep "^[0-9]*;$LOOKFOR;" /dev/null
+			else xargs egrep "^$1;$LOOKFOR;" /dev/null
+			fi |
+			sed 's/:/;/'
+	)
+	return 0
+}
+	
+	
+
+getattfile()
+{
+	case $1 in
+	*/*)	cat $ATTENDDB/`basename $1` ;;
+	*)	cat $ATTENDDB/$1 ;;
+	esac
+	return 0
+}
+	
+	
+
+getattdata()
+{
+	if [ "$2" = + ]
+	then LOOKFOR='[0-9][0-9]-[01][0-9]-[0-3][0-9]'
+	else LOOKFOR="$2"
+	fi
+	
+	(
+		cd $ATTENDDB
+		sed 's!^.*/!!' |
+			if [ "$1" = + ]
+			then xargs grep "^[0-9]*;$LOOKFOR;" /dev/null
+			else xargs egrep "^$1;$LOOKFOR;" /dev/null
+			fi |
+			sed 's/:/;/'
+	)
+	return 0
+}
+	
+	
+
+getdaysoff()
+{
+	if [ "$1" = + ]
+	then getallattend | xargs grep '.' /dev/null
+	else getattfile $1 | sed "s/^/$1 /"
+	fi |
+		sed -n '
+			s/^[^:]*\/\([0-9]*\):/\1 /
+			/ VACATION/p
+			/ PDO/p
+			/ NFH/p
+			/;/p
+			' |
+		awk '
+			$1 != pan && pan != ""	{
+				printf "%s vac %d %d %s\n", pan, \
+					vac, taken[VAC], daylist[VAC]
+				printf "%s nfh %d %d %s\n", pan, \
+					nfh, taken[NFH], daylist[NFH]
+				printf "%s pdo %d %0.2f %s\n", pan, \
+					pdo, taken[PDO], daylist[PDO]
+				printf "%s sick 0 %0.2f %s\n", pan, \
+					taken[SICK], daylist[SICK]
+				printf "%s personal 0 %0.2f %s\n", pan, \
+					taken[PER], daylist[PER]
+				printf "%s other 0 %0.2f %s\n", pan, \
+					taken[OTHER], daylist[OTHER]
+				vac = 0; pdo = 0; nfh = 0
+				pan = $1
+				for ( i = 1; i <= 10; i++ ) taken[ i ] = 0
+				for ( i = 1; i <= 10; i++ ) daylist[ i ] = "NONE,"
+			}
+			GOTIT == "" && /;VAC;/	{
+				GOTIT = 1
+				pan = $1
+				nf = split( $2, daysoff, ";" )
+				for ( i = 1; i <= nf; i++ )
+					if ( daysoff[i] == "VAC" ) VAC = i
+					else if ( daysoff[i] == "NFH" ) NFH = i
+					else if ( daysoff[i] == "PDO" ) PDO = i
+					else if ( daysoff[i] == "HOL" ) HOL = i
+					else if ( daysoff[i] == "SICK" ) SICK = i
+					else if ( daysoff[i] == "PER" ) PER = i
+					else if ( daysoff[i] == "OTHER" ) OTHER = i
+				for ( i = 1; i <= 10; i++ ) daylist[ i ] = "NONE,"
+				next
+			}
+			$3 == "VACATION"	{ vac = $2; next }
+			$3 == "PDO(S)"		{ pdo = $2; next }
+			$3 == "NFH(S)"		{ nfh = $2; next }
+			$2 ~ /[01][0-9]-[0-3][0-9];/	{
+				nf = split( $0, daysoff, ";" )
+				for ( i = 2; i <= nf; i++ )
+					if ( daysoff[i] != "" ) {
+						split( daysoff[i], hoursoff )
+						hrs = hoursoff[2]
+						if ( hrs == "" ) {
+							taken[i]++
+						} else {
+							if ( hrs ~ /[NP]$/ )
+								hrs = substr( hrs, 1, length(hrs) - 1 )
+							taken[i] += hrs/8
+						}
+						if (taken[i] < 50)
+							daylist[i] = daylist[i] daysoff[i] ","
+						else if (taken[i] == 50)
+							daylist[i] = daylist[i] "..." ","
+					}
+				next
+			}
+			END	{
+				printf "%s vac %d %d %s\n", pan, \
+					vac, taken[VAC], daylist[VAC]
+				printf "%s nfh %d %d %s\n", pan, \
+					nfh, taken[NFH], daylist[NFH]
+				printf "%s pdo %d %0.2f %s\n", pan, \
+					pdo, taken[PDO], daylist[PDO]
+				printf "%s sick 0 %0.2f %s\n", pan, \
+					taken[SICK], daylist[SICK]
+				printf "%s personal 0 %0.2f %s\n", pan, \
+					taken[PER], daylist[PER]
+				printf "%s other 0 %0.2f %s\n", pan, \
+					taken[OTHER], daylist[OTHER]
+			}
+			' |
+		sed '
+			s/,$//
+			s/NONE,//
+			s/ /_/g
+			s/_/ /
+			s/_/ /
+			s/_/ /
+			s/_/ /
+			'
+	return 0
+}
+
+
+
+audittc()
+{
+	WE=$1
+	getresource WE ALLEMPLOYEES ALLTIME WEEKCHARGE
+
+	touch -a $VALIDWPNS 2> /dev/null
+	test ! -s $VALIDWPNS  &&
+		echo "${BALERT}Warning:  missing/empty valid WPN file [$VALIDWPNS]" >&2
+
+	awk '
+ 		BEGIN	{
+ 			stdday = 8
+ 			stdwk[ "01-01" ] = 0
+ 			stdwk[ "01-02" ] = 0
+ 			stdwk[ "01-03" ] = 1 * stdday
+ 			stdwk[ "01-04" ] = 2 * stdday
+ 			stdwk[ "01-05" ] = 3 * stdday
+ 			stdwk[ "01-06" ] = 4 * stdday
+		}
+		file == 1	{
+			if ( $5 != dept ) next
+			name[ $3 ] = $2
+			hours[ $3 ] = $6
+			next
+		}
+		file == 2	{ validwpn[ $1 ] = 1; next }
+		$1 == "work"	{
+			if ( validwpn[ $6 ] != 1 )
+				printf "Warning - WPN[%s] not in valid_wpns file for: %s [%s], line = %s\n", \
+					$6, $2, name[$2], substr($0,13) | "cat - >&2"
+			if ( $5 == "STD" ) stdtime[ $4 "/" $2 ] += $7
+			if ( $7 != $8 + $9 + $10 + $11 + $12 + $13 + $14 )
+				printf "Warning - individual day times not equal to total time for: %s [%s], line = %s\n", \
+					$2, name[$2], substr($0,13) | "cat - >&2"
+		}
+		$1 == "attend"	{ stdtime[ $4 "/" $2 ] += $7 }
+		END	{
+ 			time = stdwk[ substr( week, 4 ) ]
+ 			if ( time == "" ) time = 5 * stdday
+			name[""]++
+			for ( pan in name ) {
+				if ( pan != "" && stdtime[ week "/" pan ] != hours[ pan ] )
+					printf "Standard hours = %5.1f for %s, %s, %s\n", stdtime[ week "/" pan ], week, pan, name[ pan ]
+			}
+		}
+		' week=$WE dept=$THEDEPT file=1 FS='	' $ALLEMPLOYEES FS=';' file=2 $VALIDWPNS file=3 $WEEKCHARGE | {
+			sort -t, +2 -3;
+			getdaysoff + |
+				awk '
+					{
+						if ( $2 == "vac" ) {
+							if ( $3 < $4 ) print $1, "vacation", $3, $4
+						} else if ( $2 == "pdo" ) {
+							if ( $3 < $4 ) print $1, "PDO", $3, $4
+						} else if ( $2 == "nfh" ) {
+							if ( $3 < $4 ) print $1, "NFH", $3, $4
+						}
+					}
+					' |
+				while read pan type allowed taken
+				do
+					echo "$type taken ($taken) by `getname $pan` exceeds allowed ($allowed)"
+				done
+		} |
+		chkifnull 'No problems found by audit'
+	return 0
+}
+
+	
+
+missingtc()
+{
+	
+	WE=$1
+	getresource WE ALLTIME ALLEMPLOYEES
+
+	awk '
+		FILENAME == "-"	{ if ( $4 == week ) timecard[ $2 ] = 1; next }
+		{ if ( timecard[ $3 ] != 1 ) print $3, $2 }
+		' week=$WE FS=";" - FS="	" $ALLEMPLOYEES <$ALLTIME |
+		while read pan name rest
+		do
+			isgone $pan  &&  continue
+			echo "Missing timecard:  $WE, $pan, $name"
+		done |
+		sort -t, +2 -3 |
+		chkifnull 'No missing timecards'
+	return 0
+}
+
+
+
+getwrkatt()
+{
+	getresource ALLTIME
+	grep '^work' $ALLTIME
+	grep '^attend' $ALLTIME |
+		sed '
+			s/$/;/
+			s/;[0-9][0-9]-/&!/
+			s/;[0-9][0-9]-[0-9][0-9]-[0-9][0-9];/;8;/g
+ 			s/;[0-9][0-9]-[0-9][0-9]-[0-9][0-9] \([0-9]*\.\{0,1\}[0-9]*\)[NP];/;\1;/g
+			s/!//
+			s/;[a-zA-Z ]*;/;/
+			s/;[a-zA-Z ]*$/;/
+			'
+	return 0
+}
+
+
+
+printtime()
+{
+	WE=$1
+	getresource WE ALLEMPLOYEES ALLTIME WEEKCHARGE
+
+	awk '-F;' '
+		BEGIN	{ submap[ "" ]; wpnmap[ "" ] }
+		$1 == "work"	{
+			stdot = $5
+			split( $6, projandsub, "-" )
+			proj = projandsub[ 1 ]
+			subproj = projandsub[ 2 ]
+			tothrs = $7
+
+			total[ stdot ] += tothrs
+			worked[ stdot ] += tothrs
+			wpn[ proj "/" stdot ] += tothrs
+			wpnmap[ proj ] = 1
+			subcase[ proj "-" subproj "/" stdot ] += tothrs
+			submap[ proj "-" subproj ] = 1
+			if ( proj ~ /^9/ ) {
+				loading[ stdot ] += tothrs
+				loadwpn[ stdot ] += tothrs
+			} else workwpn[ stdot ] += tothrs
+			time[ stdot ] += tothrs
+			next
+		}
+		$1 == "attend"	{
+			total[ "STD" ] += $7
+			loading[ "STD" ] += $7
+			notworked += $7
+			next
+		}
+		END	{
+			if ( NR == 0 ) {
+				print "No time charging data for week " week
+				exit
+			}
+			format = "%d %-6s %-8s %-12s %7.1f\n"
+			format2 = "%d %-6s %-8s %-12s %7.1f %7.1f\n"
+			print 1, " "
+			for ( cs in submap ) {
+				if ( cs != "" ) printf format2, 1, week, "subcase", cs, subcase[ cs "/STD" ], subcase[ cs "/OT" ]
+			}
+			print 2, " "
+			for ( cs in wpnmap ) {
+				if ( cs != "" ) printf format2, 2, week, "case", cs, wpn[ cs "/STD" ], wpn[ cs "/OT" ]
+			}
+			print 3, " "
+			printf format2, 31, week, "time", "time", time[ "STD" ], time[ "OT" ]+0
+			printf format2, 33, week, "time", "worked", worked[ "STD" ], worked[ "OT" ]+0
+			printf format2, 34, week, "time", "notworked", notworked, 0
+			printf format2, 36, week, "time", "workcase", workwpn[ "STD" ], workwpn[ "OT" ]+0
+			printf format2, 37, week, "time", "loadcase", loadwpn[ "STD" ], loadwpn[ "OT" ]+0
+			printf format2, 38, week, "time", "loading", loading[ "STD" ], loading[ "OT" ]+0
+			printf format2, 39, week, "time", "total", total[ "STD" ], total[ "OT" ]+0
+		}
+		' week=$WE dept=$THEDEPT $WEEKCHARGE |
+	sort |
+	sed 's/^[0-9]* //'
+	return 0
+}
+
+	
+
+weekchrg()
+{
+	getresource WE ALLTIME
+
+	grep ";$THEDEPT;$WE;" $ALLTIME |
+		sed '
+			/^attend/s/;;*[^;]*$//
+			/^attend/s/[NP]*//g
+			/^attend/s/[ 	][ 	]*/;/g
+			' |
+		awk '-F;' '
+			BEGIN	{
+				OFS = ";"
+				attend[ 5] = "Vac"
+				attend[ 6] = "NFH"
+				attend[ 7] = "PDO"
+				attend[ 8] = "Hol"
+				attend[ 9] = "Sick"
+				attend[10] = "Per"
+				attend[11] = "Other"
+				attsum[""] = ""
+			}
+			/^attend/	{
+				for ( i = 5; i <= NF; i++ ) {
+					if ( $i != "" ) {
+						time = $(i+1) + 0
+						if ( time == 0 ) time = 8
+						attsum[$2 "/" attend[i]] += time
+						break
+					}
+				}
+				next
+			}
+			{ print }
+			END	{
+				for ( att in attsum ) {
+					if ( att != "" ) {
+						split( att, arr, "/" )
+						pan = arr[1]
+						type = arr[2]
+						printf "attend;%s;%s;%s;NW;%s;%0.1f;\n", pan, dept, week, type, attsum[att]
+					}
+				}
+			}
+			' week=$WE dept=$THEDEPT -
+	return 0
+}
+
+
+
+printchrg()
+{
+	WE=$1
+	OT=$2
+	TMP2=/usr/tmp/$$.tmp2
+
+	getresource WE ALLEMPLOYEES ALLTIME WEEKCHARGE
+
+	if [ -n "$OT" ]
+	then grep ";$OT;"
+	else cat -
+	fi <$WEEKCHARGE |
+		awk '
+			FILENAME != "-"	{
+				name[ $3 ] = $2
+				supv[ $3 ] = $4
+				emp++
+				next
+			}
+			{
+				printf "%s  %-16s  %-16s  %-12s %5.1f hours of %s\n", $4, supv[$2], name[$2], $6, $7, $5
+			}
+			' ot="$OT" FS="	" $ALLEMPLOYEES FS=";" - |
+		sort >$TMP2
+		chkifnull "No $OT charging data for $WE" <$TMP2  ||  {
+			echo
+			mgrsum <$TMP2
+		}
+	return 0
+}
+
+
+
+mgrsum()
+{
+	awk '
+		BEGIN	{ allweeks[""]++; allwpns[ "total" ]++ }
+
+		{
+			split( $4, arr, "-" )
+			wpn = arr[ 1 ]
+			allwpns[ wpn ]++
+			week = $1
+			allweeks[ week ]++
+			boss = $2
+			emp = $3
+			isaboss[boss]++
+			emptoboss[ emp ] = boss
+			if ( $NF == "NW" ) $NF = "STD"
+			pertime[ $NF "/" week "/" emp "/" wpn ] += $5
+			pertime[ $NF "/" week "/" emp "/total" ] += $5
+			rpttime[ $NF "/" week "/" boss "/" wpn ] += $5
+			rpttime[ $NF "/" week "/" boss "/total" ] += $5
+		}
+		END	{
+			printf "%-8s  %-14s  %-7s  %8s  %8s\n", " week", "manager", "WPN", "STD Hours", "OT Hours"
+			for ( emp in emptoboss ) {
+				reportsto[ emptoboss[emp] ] = reportsto[ emptoboss[emp] ] "/" emp
+			}
+			for ( boss in isaboss ) {
+				reportsto[ boss ] = substr( reportsto[boss], 2)
+				ns = split( reportsto[ boss ], arr, "/" )
+				for( i = 1; i <= ns; i++ )
+					if ( reportsto[ arr[i] ] != "" ) linemgr[ boss ]++
+				if ( linemgr[ boss ] == "" ) reportsto[ boss ] = ""
+			}
+			for ( week in allweeks ) {
+				if ( week != "" )
+				for ( wpn in allwpns ) {
+					for ( boss in isaboss ) {
+						stdsum = pertime[ "STD/" week "/" boss "/" wpn ] + \
+							rpttime[ "STD/" week "/" boss "/" wpn ]
+						otsum = pertime[ "OT/" week "/" boss "/" wpn ] + \
+							rpttime[ "OT/" week "/" boss "/" wpn ]
+						ns = split( reportsto[ boss ], arr, "/" )
+						subord = 0
+						for( i = 1; i <= ns; i++ ) {
+							if ( subord > 1000 ) {
+								printf "Warning - cycle found in manager-subordinate relationship somewhere under %s, data ignored\n", boss | "cat >&2"
+								stdsum = 0
+								otsum = 0
+								break
+							}
+							subord++
+							stdsum += rpttime[ "STD/" week "/" arr[i] "/" wpn ]
+							otsum += rpttime[ "OT/" week "/" arr[i] "/" wpn ]
+							if ( reportsto[ arr[i]] != "" ) {
+								list = reportsto[ arr[i] ]
+								for( j = i+1; j <= ns; j++ ) list = list "/" arr[j]
+								ns = split( list, arr, "/" )
+								i = 0
+							}
+						}
+						if ( stdsum != 0 || otsum != 0 )
+							printf "%s  %-14s  %-7s  %8.1f  %8.1f\n", week, boss, wpn, stdsum, otsum
+					}
+				}
+			}
+		}
+		' $* |
+		sort
+	return 0
+}
+
+
+
+reportmenu()
+{
+	getresource ALLEMPLOYEES
+
+	if [ "$1" != -batch ]
+	then
+		options=
+		WE=$2
+
+		while :
+		do
+			RMENU="`prompt '\nReport menu - enter a, m, w, t, s, o, b, f, v, d, q, !, or ? (for help):'`"
+			case "$RMENU" in
+			\?)
+				cat >&2 <<-'!'
+					a - audit timecards
+					m - missing timecard check
+					w - week charging by person & manager
+					c - same as w option
+					t - time summary charging information
+					s - standard weekly checks/reports (a+m+c+t+b)
+					o - overtime report
+					b - backup creation
+					f - forms printout for work/attendance
+					v - vacation/PDO/NFH information
+					d - set department number
+					q - quit
+					! - UNIX command escape (e.g., !ksh to get to command level and
+					    'exit' to get back to timecards)
+					? - help
+					!
+				;;
+			!*)	cmdescape "$RMENU";;
+			a)	getresource WE; audittc $WE | eval $PAGER;;
+			m)	getresource WE; missingtc $WE | eval $PAGER;;
+			[wc])	getresource WE; printchrg $WE | eval $PAGER;;
+			t)	getresource WE; printtime $WE | eval $PAGER;;
+			b)	backup  $WE ;;
+			s)	
+				{
+				missingtc $WE
+				audittc $WE
+				printchrg $WE
+				printtime $WE
+				backup  $WE
+				} | eval $PAGER
+				;;
+			o)	getresource WE; printchrg "$WE" OT | eval $PAGER;;
+			f)	printforms | eval $PAGER;;
+			v)
+				PAN=`prompt 'PAN or last name (* for all):' \
+						egrep '^(\*|[0-9]+|[-a-zA-Z]+)$' \
+						"$BALERT check input and try again"`
+				test "$PAN" = \*  &&  timeoff + | eval $PAGER  &&  continue
+				PAN=`getpan $PAN`  ||  continue
+				timeoff "$PAN" | eval $PAGER
+				;;
+			d)
+				THEDEPT=`getdept 'Enter department (i.e., BL0123450)'`
+				;;
+			q)	break ;;
+			debug)	debug ;;
+			*)	echo "${BALERT}unknown menu choice [$RMENU] - try again" >&2 ;;
+			esac
+		done
+		return 0
+	fi
+
+	WE=$3
+	options=$4
+
+	case $options in *a*)	audittc $WE  ;; esac
+	
+	case $options in *m*)	missingtc $WE ;; esac
+	
+	case $options in *[wc]*)	printchrg $WE ;; esac
+	
+	case $options in *t*)	printtime $WE ;; esac
+	
+	case $options in *b*)	backup  $WE ;; esac
+
+	case $options in
+	*s*)
+		missingtc $WE
+		audittc $WE
+		printchrg $WE
+		printtime $WE
+		backup  $WE
+		;;
+	esac
+
+	case $options in *o*)	printchrg "$WE" OT ;; esac
+	case $options in *f*)	printforms ;; esac
+	case $options in *v*)	timeoff "${PAN:-+}" ;; esac
+
+	return 0
+}
+
+
+
+backup()
+{
+	WE=$1
+
+	getresource WE ALLTIME
+
+	mkdir $BACKUPDB >/dev/null 2>&1
+	awk '-F;' '$4 == week { print }' week=$WE $ALLTIME >$BACKUPDB/$WE
+}
+
+
+
+entertimecard()
+{
+	logusage
+
+	getresource WE
+	while :
+	do
+		STDTIME=`prompt '\nHit return or enter standard hours (time;m;t;w;t;f;s;s):' \
+				egrep '^( *|[0-9]+[.]?[0-9]*;[0-9.;]*)$' \
+				"$BALERT standard hours must be time;m;t;w;t;f;s;s where m-s are hours for the days of the week"`
+
+		case $STDTIME in
+		[0-9]*)	;;
+		*)	STDTIME='40;8;8;8;8;8' ;;
+		esac
+		break
+	done
+
+	getresource ALLEMPLOYEES
+	zapresource ALLTIME
+
+	while :
+	do
+		thepan=`prompt '\nPAN or last name (q to quit):'`
+
+		case $thepan in
+		q)	return 0 ;;
+		*)
+			PAN=`getpan "$thepan"`  &&
+				INFO=`getempdata $PAN` && {
+					gettimecard $INFO $STDTIME || return 1
+				}
+			continue
+			;;
+		esac
+	done
+
+	return 0
+}
+
+
+
+gettimecard()
+{
+	shift
+	name=$1
+	pan=$2
+	supv=$3
+	dept=$4
+	wkhrs=$5
+	dayhrs=$6
+	stdtime=$7
+	work=$WORKDB/$pan
+	attend=$ATTENDDB/$pan
+	KEEPTC=
+	zapresource ALLTIME
+
+	echo "Timecard for: $name  $pan" >&2
+
+	while :
+	do
+		TMENU="`prompt '\nEnter s, m, o, n, a, q, t, r, d, p, or ? (for help):'`"
+		case $TMENU in
+		\?)
+			cat >&2 <<-'!'
+				s = Single WPN, 40 hour standard time
+				m = Multiple WPNs or multiple entries
+				o = Overtime
+				n = Standard time not worked
+				a = Add another timecard
+				q = Quit
+				t or t.tag = Tag timecard data for repeat
+				r or r.tag = Repeat timecard data
+				d or d.tag = Display repeat timecard data
+				p or p.tag = Preserve repeat timecard data permanently
+				!
+			;;
+		s)
+			while :
+			do
+				WPN=`prompt 'Enter WPN (work project number):' \
+					egrep '(^[0-9]+-?[0-9]*$|^$)' \
+					"$BALERT WPN must be a number optionally followed by a hyphen and a number (nnnnnn or nnnnnn-nnnn)"`
+				test -z "$WPN"  &&  break
+				validwpn  $WPN  ||  continue
+				WRK=";STD;$WPN;$stdtime"
+				echo "$dept;$WE$WRK" >> $work
+				test -n "$KEEPTC"  &&  echo $WRK >>$REPEAT_WRK
+				break
+			done
+			;;
+		m)
+			while :
+			do
+				STAN=`prompt 'Enter standard time data (WPN;time;m;t;w;t;f;s;s):'\
+					egrep '(^[0-9]+\-?[0-9]*(;[0-9]*\.?[0-9]*)+;*$|^$)' \
+					"$BALERT time data must be WPN;time;m;t;w;t;f;s;s"`
+				test -z "$STAN"  &&  break
+				validwpn  `echo $STAN | cut -f1 '-d;'` ||  continue
+				WRK=";STD;$STAN"
+				echo "$dept;$WE$WRK" >> $work
+				test -n "$KEEPTC"  &&  echo $WRK >>$REPEAT_WRK
+				break
+			done
+			;;
+		o)
+			while :
+			do
+				OTIME=`prompt 'Enter overtime data (WPN;time;m;t;w;t;f;s;s):'\
+					egrep '(^[0-9]+\-?[0-9]*(;[0-9]*\.?[0-9]*)+;*$|^$)' \
+					"$BALERT time data must be WPN;time;m;t;w;t;f;s;s"`
+				test -z "$OTIME"  &&  break
+				validwpn  `echo $OTIME | cut -f1 '-d;'` ||  continue
+				WRK=";OT;$OTIME"
+				echo "$dept;$WE$WRK" >> $work
+				test -n "$KEEPTC"  &&  echo $WRK >>$REPEAT_WRK
+				break
+			done
+			;;
+		n)	
+			ATT=`getnotworked $dayhrs`  &&  {
+				echo "$ATT" | sed "s/^/$dept;$WE/" | convdays $WEEKDATES >>$attend
+				test -n "$KEEPTC"  && echo "$ATT" >>$REPEAT_ATT
+			}
+			;;
+		t|t.*)
+			test -n "$KEEPTC"  && {
+				echo "${BALERT}Already in repeat tag mode" >&2
+				continue
+				}
+			KEEPTC=yes
+			KEEPTAG=`ktagcheck $TMENU`  ||  continue
+			REPEAT_WRK=/usr/tmp/w.${KEEPTAG}.$$
+			REPEAT_ATT=/usr/tmp/a.${KEEPTAG}.$$
+			>$REPEAT_WRK
+			>$REPEAT_ATT
+			echo 'Tagging in effect from now until end of timecard entry for current employee' >&2
+			;;
+		r|r.*)
+			keeptag=`ktagcheck $TMENU`  ||  continue
+			getrepeat $keeptag | {
+				read REPEAT_WRK REPEAT_ATT
+				test -s $REPEAT_WRK  && 
+					echo 'Adding work repeat data:'
+					sed "s/^[^;]*/$dept;$WE/" $REPEAT_WRK |
+						tee -a $work
+				test -s $REPEAT_ATT  && 
+					echo 'Adding attendance repeat data:'
+					sed "s/^[^;]*/$dept;$WE/" $REPEAT_ATT |
+						convdays $WEEKDATES |
+						tee -a $attend
+				} >&2
+			;;
+		d|d.*)
+			keeptag=`ktagcheck $TMENU`  ||  continue
+			getrepeat $keeptag | {
+				read REPEAT_WRK REPEAT_ATT
+				test -s $REPEAT_WRK  &&  {
+					echo 'Work repeat data:'
+					sed "s/^[^;]*/	$dept;$WE/" $REPEAT_WRK |
+					chkifnull '	no work data'
+					}
+				test -s $REPEAT_ATT  &&  {
+					echo 'Attendance repeat data:'
+					sed "s/^[^;]*/	$dept;$WE/" $REPEAT_ATT |
+						convdays $WEEKDATES |
+						chkifnull '	no attendance data'
+					}
+				} >&2
+			;;
+		p|p.*)
+			keeptag=`ktagcheck $TMENU`  ||  continue
+			REPEAT_WRK=/usr/tmp/w.${keeptag}.$$
+			REPEAT_ATT=/usr/tmp/a.${keeptag}.$$
+			if [ ! -r $REPEAT_WRK -a ! -r $REPEAT_ATT ]
+			then
+				echo "${BALERT}can't preserve - repeat data not found" >&2
+				continue
+			fi
+			mkdir $REPEATDB 2>/dev/null
+			cp $REPEAT_WRK $REPEATDB/`basename $REPEAT_WRK .$$` 2>/dev/null
+			cp $REPEAT_ATT $REPEATDB/`basename $REPEAT_ATT .$$` 2>/dev/null
+			;;
+		a)	return 0 ;;
+		q)	return 1 ;;
+		debug)	debug ;;
+		*)	echo "${BALERT}unknown menu choice [$TMENU] - try again" >&2 ;;
+		esac
+	done
+}
+
+
+
+getrepeat()
+{
+	if [ -r $REPEATDB/w.$1 -o -r $REPEATDB/a.$1 ]
+	then
+		rwork=$REPEATDB/w.$1
+		awork=$REPEATDB/a.$1
+	else
+		rwork=/usr/tmp/w.${1}.$$
+		awork=/usr/tmp/a.${1}.$$
+	fi
+	if [ ! -r $rwork -a ! -r $awork ]
+	then
+		echo "${BALERT}repeat data not found" >&2
+		return 1
+	fi
+
+	echo $rwork $awork
+	return 0
+}
+
+
+
+ktagcheck()
+{
+	TAG=`expr $1 : '[a-z].\(.*\)'`
+
+	case $TAG in
+	*[!a-zA-Z0-9]*)
+		echo "${BALERT}tag may contain only alphanumeric characters" >&2
+		return 1
+		;;
+	??????)
+		echo "${BALERT}tag must be 5 or less alphanumeric characters" >&2
+		return 1
+		;;
+
+	esac
+
+	echo $TAG
+	return 0
+}
+
+
+
+getnotworked()
+{
+	dayhrs=$1
+	NMENU=
+	DATE=
+	HOURS=
+	PN=
+	COM=
+
+	while :
+	do
+		NMENU=`prompt '\nEnter vac, nfh, pdo, hol, sick, per, other, <cr>, or ? (for help):'`
+
+		case $NMENU in
+		\?)
+			cat >&2 <<-'!'
+				vac = vacation
+				nfh = non fixed holiday
+				pdo = paid day off
+				hol = holiday
+				sick = sick time
+				per = personal time
+				other = other time
+				<carriage return> = continue
+				!
+			;;
+			
+		per|sick|other)
+			HOURS=`prompt Hours: egrep '^[0-9]+[.]*[0-9]*$' "$BALERT hours must be a number"`
+			PN=`prompt 'Pay or No Pay (p or n):'\
+				grep '^[npNP]$'\
+				'type p or n'  |
+				tr np NP`
+			DATES=`getdates  "$NMENU day(s)"`
+			COM=`prompt 'Enter up to 32 character comment:'\
+				grep '^.\{0,32\}$'\
+				"${BALERT}Comment too long - please shorten!"`
+			break
+			;;
+			
+		pdo)
+			HOURS=`prompt 'Hours from 1-8 or hit carriage return (default=8):' \
+				grep '^[0-8]*$' "$BALERT hours must be a number from 1-8 [default=8]"`
+			test -z "$HOURS"  &&  HOURS=" ${dayhrs}"
+			DATES=`getdates  "$NMENU day(s)"`
+			break
+			;;
+			
+		vac|nfh|hol)
+			DATES=`getdates  "$NMENU day(s)"`
+			break
+			;;
+			
+		?*)	echo "${BALERT}You must use vac, nfh, pdo, hol, sick, per, other, <cr>, or ?." >&2 ;;
+
+		*)	return 1 ;;
+		esac
+	done
+
+	stdday=
+	test "$dayhrs" -ne 8  &&  stdday=" ${dayhrs}P"
+
+	for DATE in $DATES
+	do
+		case $NMENU in
+		vac)	echo ";$DATE$stdday;;;;;;;"	  ;;
+		nfh)	echo ";;$DATE$stdday;;;;;;"	  ;;
+		pdo)	echo ";;;$DATE $HOURS;;;;;"	  ;;
+		hol)	echo ";;;;$DATE$stdday;;;;"	  ;;
+		sick)	echo ";;;;;$DATE $HOURS$PN;;;$COM" ;;
+		per)	echo ";;;;;;$DATE $HOURS$PN;;$COM" ;;
+		other)	echo ";;;;;;;$DATE $HOURS$PN;$COM" ;;
+		esac
+	done
+
+	return 0
+}
+
+
+
+addholiday()
+{
+	WE=$1
+	getresource WE
+	DATES=`getdates  'holiday(s)'`
+	echo "adding holiday\c" >&2
+
+	getallattend -b |
+		while read pan
+		do
+			getempdata $pan
+		done |
+		while read count name pan supv dept wkhrs dayhrs
+		do
+			echo ".\c" >&2
+			isgone $pan  &&  continue
+			case $dept in *[!0]*) ;; *) continue;; esac
+			for DATE in $DATES
+			do
+				holhrs=
+				test "$dayhrs" -ne 8  &&  holhrs=" ${dayhrs}P"
+				echo "$dept;$WE;;;;$DATE$holhrs;;;;"
+			done |
+				convdays $WEEKDATES >>$ATTENDDB/$pan
+		done
+	echo >&2
+	return 0
+}
+
+
+
+editdb()
+{
+	test ${EDITOR:-xyz} = xyz  &&
+		echo "Warning:  EDITOR shell variable not set, will use ed" >&2
+
+	while :
+	do
+		thepan=`prompt 'PAN or last name (q to quit):' \
+				egrep '^(q|[0-9]+|[-a-zA-Z]+)$' \
+				"$BALERT check input and try again"`
+
+		case $thepan in
+		q)
+			return 0
+			;;
+		*)
+			PAN=`getpan $thepan`
+			echo "edit: `getname $PAN`  $PAN" >&2
+			while :
+			do
+				case `prompt 'type w, a, n, q, or ? (for help):'` in
+				w)	${EDITOR:-ed} $WORKDB/$PAN ;;
+				a)	${EDITOR:-ed} $ATTENDDB/$PAN ;;
+				n)	break ;;
+				q)	return 0 ;;
+				\?)
+					cat <<-'!'
+						w - to edit work file
+						a - to edit attendance file
+						n - to edit another employee
+						q - to quit
+						!
+					;;
+				esac
+			done
+			;;
+		esac
+	done
+
+	return 0
+}
+
+
+
+putdb()
+{
+	SHIPTO=`prompt 'Enter user to ship to as system!user (eg, ihlpa!myid):' \
+			egrep '^([a-zA-Z0-9!]+[a-zA-Z0-9]+)$' \
+			"$BALERT check input and try again"`
+	SHIPDATA=/usr/tmp/$$.ship
+	mkdir $SHIPDATA
+	SHIPDATA=$SHIPDATA/`prompt 'Enter shipping filename (eg, my.ship):' \
+			egrep '^([a-zA-Z0-9._]+)$' \
+			"$BALERT check input and try again"`
+
+	while :
+	do
+		PMENU="`prompt 'Put menu - enter d, dw, da, de, w, ww, wa, q, or ? (for help):'`"
+		case "$PMENU" in
+		\?)
+			cat >&2 <<-'!'
+				d  - put work and attendance database
+				dw - put only work database
+				da - put only attendance database
+				de - put entire database (except backup & save)
+				w  - put weekly work and attendance data
+				ww - put only weekly work data
+				wa - put only weekly attendance data
+				q - quit menu
+				!
+			;;
+		d|da|dw|de|w|wa|ww)	break ;;
+		q)	return 0 ;;
+		*)	echo "${BALERT}unknown menu choice [$PMENU] - try again" >&2 ;;
+		esac
+	done
+	
+	panlist=`getpanlist`
+
+	case $PMENU in
+	d*)
+		{
+			case $PMENU in
+			d)	getallwork; getallattend ;;
+			dw)	getallwork ;;
+			da)	getallattend ;;
+			de)	find $TIMECARDS -type f -print ;;
+			esac |
+				sed "s!^$TIMECARDS/!!"
+		} |
+			keyfltr  "$panlist"  \+  2  /  |
+			( cd $TIMECARDS; cpio -ocdm >$SHIPDATA )
+		;;
+	w*)
+		echo 'Enter list of weeks' >&2
+		while :
+		do
+			thewk=`prompt 'Enter week (mm-dd or mm-dd-yy), * (for all weeks), or q (to quit list):'`
+			case $thewk in
+			q)	break ;;
+			\*)	echo '+'; break ;;
+			*)	yrmoday $thewk  &&  continue
+				echo 'Week must be mm-dd or mm-dd-yy format - try again' >&2 ;;
+			esac
+		done >$SHIPDATA
+		wklist=`cat $SHIPDATA`
+
+		zapresource ALLTIME
+		getresource ALLTIME
+
+		case $PMENU in
+		wa)	grep '^attend' ;;
+		ww)	grep '^work' ;;
+		w)	cat ;;
+		esac <$ALLTIME |
+			keyfltr  "$panlist"  \+  2  \;  |
+			keyfltr  "$wklist"  \+  4  \;  >$SHIPDATA
+		;;
+	esac
+
+	uuto -p -m $SHIPDATA $SHIPTO
+	echo "`basename $SHIPDATA` shipped to $SHIPTO via uuto" >&2
+
+	return 0
+}
+
+
+
+getpanlist()
+{
+	echo 'Enter list of PANs' >&2
+	while :
+	do
+		thepan=`prompt 'PAN or last name, * (for everyone), q (to end PAN list):'`
+
+		case $thepan in
+		q)	break ;;
+		\*)	echo '+'; break ;;
+		*)
+			PAN=`getpan "$thepan"`  ||  continue
+			echo $PAN
+			continue
+			;;
+		esac
+	done
+	return 0
+}
+
+
+
+keyfltr()
+{
+	test "$1" = "$2"  &&  cat  &&  return 0
+	awk '
+		NR == 1	{
+			nf = split( keylist, arr )
+			for ( i = 1; i <= nf; i++ ) key[arr[i]]++;
+			FS = fs;
+		}
+		{ if ( key[$keypos] > 0 ) print }
+		' keylist="$1" keypos="$3" fs="$4" -
+	return 0
+}
+
+
+
+takedb()
+{
+	cat >&2 <<-'!'
+		Before you can take any files someone has shipped to
+		you via the timecards put option, you must run the
+		uupick command first.  To do this, simply type:
+		    uupick
+		You will get prompted for any (all) files that have
+		been shipped to you and you can simply type:
+		    m .
+		to move a shipped file to your current directory.
+
+		!
+
+	while :
+	do
+		TAKEDB="`prompt 'Enter full pathname of Take file:'`"
+		TAKEDB=`eval echo $TAKEDB`
+		test ! -r "$TAKEDB"  &&
+			echo "Can't read file [$TAKEDB] - try again" >&2  && 
+			continue
+		cpio -ict <"$TAKEDB" >/dev/null 2>&1  &&  break
+		echo "Can't read (cpio) Take file [$TAKEDB] - try again" >&2
+	done
+
+	cat >&2 <<-!
+		${BALERT}${BALERT}
+		Warning - be sure you know what is in the take database
+		shipped to you before you take files from it!  These files
+		will overwrite any of your existing files you have of the
+		same name (PAN).  If in doubt, use the list (l) option
+		in the following menu to see what is in the take database
+		and what will be overwritten.
+
+		!
+
+
+	panlist=
+
+	while :
+	do
+		TMENU="`prompt 'Take menu - enter p, d, dw, da, l, q, or ? (for help):'`"
+		case "$TMENU" in
+		\?)
+			cat >&2 <<-'!'
+				p  - set list of PANs (default = all)
+				d  - take work and attendance database
+				dw - take only work database
+				da - take only attendance database
+				de - take EVERYTHING in database
+				l  - list take database files
+				q  - quit menu
+				!
+			;;
+		p)	panlist=`getpanlist | awk '{ print "work/" $0; print "attendance/" $0}'` ;;
+		d)	(
+			test -z "$panlist" && panlist=`echo 'work/*\nattendance/*'`
+			cd $TIMECARDS; cpio -uicdm `echo $panlist` <$TAKEDB
+			) ;;
+		dw)	(
+			test -z "$panlist" && panlist=`echo 'work/*\nattendance/*'`
+			cd $TIMECARDS; cpio -uicdm `echo $panlist | grep work` <$TAKEDB
+			) ;;
+		da)	(
+			test -z "$panlist" && panlist=`echo 'work/*\nattendance/*'`
+			cd $TIMECARDS; cpio -uicdm `echo $panlist | grep attendance` <$TAKEDB
+			) ;;
+		de)	( cd $TIMECARDS; cpio -uicdm `echo $panlist` <$TAKEDB ) ;;
+		l)	(
+				cd $TIMECARDS
+				cpio -ict `echo $panlist` <$TAKEDB |
+					while read file
+					do
+						echo "$file\c"
+						test -r "$file"  &&  echo ' - exists in your database & will be overwritten\c'
+						echo
+					done |
+					eval $PAGER >&2
+			)
+			;;
+		q)	return 0 ;;
+		*)	echo "${BALERT}unknown menu choice [$TMENU] - try again" >&2 ;;
+		esac
+	done
+
+	return 0
+}
+
+
+
+chgsupv()
+{
+	SUPV=`prompt 'New Supervisor (Super, N. A. or Vacant):' \
+		egrep '^([-a-zA-Z]+, [a-zA-Z. ]+|Vacant|VACANT)$' \
+		"$BALERT name must be Last, First Middle in upper or lower case" | tr ' [a-z]' '~[A-Z]'`
+
+	while :
+	do
+		thepan=`prompt 'Employee PAN or last name (q to quit):' \
+				egrep '^(q|[0-9]+|[-a-zA-Z]+)$' \
+				"$BALERT check input and try again"`
+
+		case $thepan in
+		q)
+			return 0
+			;;
+		*)
+			PAN=`getpan $thepan`
+			echo "changing supervisor for: `getname $PAN`  $PAN" >&2
+			ed $WORKDB/$PAN >/dev/null <<-!
+				/(Supervisor)/s/^.*(/$SUPV (/
+				w
+				q
+				!
+			;;
+		esac
+	done
+
+	return 0
+}
+
+
+
+addemployee()
+{
+	zapresource ALLEMPLOYEES
+
+	year=19`date +%y`
+	YEAR=`prompt "Enter the year (default=$year):" \
+		egrep '(^19[0-9][0-9]$|^$)' \
+		"$BALERT year must be 19nn"`
+	test -z "$YEAR"  &&  YEAR=$year
+	
+		PAN=`prompt 'PAN (6 digit payroll account #):' \
+			grep '^[0-9]\{6\}$' \
+			"$BALERT PAN must be 6 digit number"`
+	
+	
+		if [ -f $WORKDB/$PAN ]
+		then
+			echo "$PAN has already been added." >&2
+			exit 1
+		fi
+	
+		
+		NAME=`prompt 'Name (i.e., Doe, J. R.):' \
+			egrep '^[-a-zA-Z]+, [a-zA-Z. ]+$' \
+			"$BALERT name must be Last, First Middle in upper or lower case" |
+			tr ' [a-z]' '~[A-Z]'`
+		SRD=`prompt 'Service Record Date (i.e., 11-3-86):' \
+			egrep '^[0-9]+-[0-9]+-[0-9]+$' \
+			"$BALERT SRD must be mm-dd-yy"`
+		CLASS=`prompt 'Classification (TA,STA,MTS,SUPV,...):' \
+			egrep '^[a-zA-Z]+$' \
+			"$BALERT classification must be TA,STA,MTS,SUPV,... in upper or lower case" |
+			tr '[a-z]' '[A-Z]'`
+		DEPT=`getdept 'Department (i.e., BL0123450)'`
+		SUPV=`prompt 'Supervisor (Super, N. A. or Vacant):' \
+			egrep '^([-a-zA-Z]+, [a-zA-Z. ]+|Vacant|VACANT)$' \
+			"$BALERT name must be Last, First Middle in upper or lower case" |
+			tr ' [a-z]' '~[A-Z]'`
+		VAC=`prompt 'Number of vacation days:' \
+			egrep '^[0-9]+$' \
+			"$BALERT vacation days must be a number"`
+		PDO=`prompt 'Number of pdo(s):' \
+			grep '^[0-9]$' \
+			"$BALERT pdo(s) must be a number"`
+		NFH=`prompt 'Number of nfh(s):' \
+			grep '^[0-9]$' \
+			"$BALERT nfh(s) must be a number"`
+		
+		cat  >&2 <<-!
+
+			Is this information correct:
+			PAN: $PAN
+			Name: $NAME
+			SRD: $SRD
+			Classification: $CLASS
+			Department: $DEPT
+			Supervisor: $SUPV
+			Vacation Days: $VAC
+			PDO(S): $PDO
+			NFH(S): $NFH
+			!
+	
+	askif OK  || {
+			echo 'Employee not entered' >&2
+			return 0
+		}  &&  {
+	
+	
+		cat > $WORKDB/$PAN <<-!
+			.tr ~
+			.de TP
+			.sp 6
+			.nf
+			.tl 'Page %'''
+			$NAME $CLASS $PAN
+			$SRD (SRD)
+			$DEPT (Department)
+			$SUPV (Supervisor)
+			.fi
+			.sp 2
+			..
+			.pn 1
+			.SK
+			.TS H
+			tab (;);
+			c s s s s s s s s s s s.
+			.B
+			$YEAR LABORATORY RECORD SHEET
+			.sp
+			.T&
+			c c c c c c c c c c c c.
+			;WEEK-;;PROJECT
+			DEPT;ENDING;STD/OT;NUMBER;TOTAL;M;T;W;T;F;S;S
+			.R
+			_
+			.sp
+			.TH
+			.T&
+			l l l l n n n n n n n n.
+			.TE
+			!
+	
+		cat > $ATTENDDB/$PAN <<-!
+			.tr ~
+			.de TP
+			.sp 6
+			.nf
+			.tl 'Page %'''
+			$NAME $CLASS $PAN
+			$SRD (SRD)
+			$DEPT (Department)
+			$VAC VACATION DAY(S)
+			$PDO PDO(S)
+			$NFH NFH(S)
+			.fi
+			.sp 2
+			..
+			.pn 1
+			.SK
+			.TS H
+			tab (;);
+			c2 s2 s2 s2 s2 s2 s2 s2 s2 s2.
+			.B
+			$YEAR RECORD OF WORKING DAY ABSENCES
+			(P = Pay   N = No Pay)
+			.sp 2
+			.T&
+			c c c c c c c c c c.
+			;WEEK-;VAC;NFH;PDO;HOL;SICK;PER;OTHER
+			DEPT;ENDING;DATE;DATE;DATE;DATE;DATE/HRS;DATE/HRS;DATE/HRS;COMMENTS
+			_
+			.R
+			.TH
+			.T&
+			l| l| l| l| l| l| l| l| l| l.
+			.TE
+			!
+
+		echo 'Entered employee' >&2
+	}
+	
+	return 0
+}
+
+
+
+printforms()
+{
+	cat >&2 <<-'!'
+		Do you want to:
+		  w - print all work time?
+		  a - print all attendance time?
+		  b - print both of the above?
+		  n - print none of the above?
+		!
+
+	FORM=`prompt 'Enter w, a, b, or n:' \
+		grep '^[wabn]$' \
+		"$BALERT you must enter w, a, b, or n"`
+
+	case $FORM in
+	b)	FORM='w a' ;;
+	n)	return 0 ;;
+	esac
+
+	edit=/usr/tmp/$$.ed
+	cat >$edit <<-'!'
+		/^\.TE/d
+		$a
+		.TE
+		.
+		w
+		q
+		!
+	
+	getresource ALLEMPLOYEES
+	sort +1 -2 -o $ALLEMPLOYEES $ALLEMPLOYEES
+
+	sortform=/usr/tmp/s.$$.s
+	for form in $FORM
+	do
+		(
+		case $form in
+		w)	cd $WORKDB; echo "collecting work time\c" >&2 ;;
+		a)	cd $ATTENDDB; echo "collecting attendance time\c" >&2 ;;
+		esac
+
+		while read count name pan rest
+		do
+			echo ".\c" >&2
+			ed $pan <$edit >/dev/null
+			echo $pan
+		done < $ALLEMPLOYEES | xargs cat
+		echo >&2
+		)
+	done |
+		awk '
+			/^[0-9]+;[0-9][0-9]-[0-9][0-9]-[0-9][0-9];/ {
+				print sort + 1 ";" $0
+				next
+			}
+			{ print NR ";" $0; sort = NR }
+			' |
+		sort '-t;' +0n -1 +2 -3 +1 -2 +3 |
+		cut -f2- '-d;' |
+		sed '
+			s/;/;!/
+			s/;[0-9][0-9]-/;/g
+			s/;!/;/
+			' > $sortform
+
+	TCPRINT=${TCPRINT:-"mmx -i -rN0 -t -ybell "}
+	echo "batching print job\c" >&2
+	batch <<-!
+		$TCPRINT  $sortform
+		rm $sortform
+		!
+	
+	return 0
+}
+
+	
+
+timeoff()
+{
+	PAN="$1"
+
+	if [ "$PAN" = "" ]
+	then
+		PAN=`prompt 'PAN (* for all):' \
+			egrep '^(\*|[0-9]+)$' \
+			"$BALERT PAN must be a 6 digit number"`
+	fi
+
+	getresource ALLEMPLOYEES
+
+	if [ "$PAN" = + ]
+	then
+		getdaysoff +
+	else
+		if [ ! -f $ATTENDDB/$PAN ]
+		then
+			echo "${BALERT}Attendance info does not exist for $PAN" >&2
+			return 2
+		fi
+		getdaysoff "$PAN"
+	fi |
+		awk '
+			FILENAME != "-" { name[ $3 ] = $2; next }
+			{ print name[$1], NR, $0 }
+			' $ALLEMPLOYEES - |
+		sort '-t ' +0 -1 +1n -2 |
+		awk '
+			{
+				name = $1
+				if ( $4 == "vac" )
+					printf "%s is allowed %d, has taken %d, and has %d remaining vacation days:\n", name, $5, $6, $5 - $6
+				else if ( $4 == "nfh" )
+					printf "%s is allowed %d, has taken %d, and has %d remaining NFH days:\n", name, $5, $6, $5 - $6
+				else if ( $4 == "pdo" )
+					printf "%s is allowed %d, has taken %0.2f, and has %0.2f remaining PDO days:\n", name, $5, $6, $5 - $6
+				else if ( $4 == "sick" )
+					printf "%s has taken %0.2f sick days:\n", name, $6
+				else if ( $4 == "personal" )
+					printf "%s has taken %0.2f personal days:\n", name, $6
+				else if ( $4 == "other" )
+					printf "%s has taken %0.2f other days:\n", name, $6
+				list = $7
+
+				if ( list == "NONE" )
+					print "	NONE"
+				else {
+					nf = split( list, days, "," )
+					col1 = int( (nf + 3) / 4)
+					col2 = int( (nf + 2) / 4)
+					col3 = int( (nf + 1) / 4)
+					for ( j = 1; j <= col1; j++ ) {
+						printf "	%s", days[j]
+						printf "	%s", days[j + col1]
+						printf "	%s", days[j + col1 + col2]
+						printf "	%s", days[j + col1 + col2 + col3]
+						days[j + col1] = ""
+						days[j + col1 + col2] = ""
+						days[j + col1 + col2 + col3] = ""
+						printf "\n"
+					}
+				}
+			}
+			' |
+		sed 's/_/ /g'
+
+	return 0
+}
+
+
+
+endyear()
+{
+	cat >&2 <<-!
+
+		After this step is complete, you will need to edit the
+		attendance files in: $ATTENDDB
+		to supply the correct vacation, PDOs, & NFHs for each
+		employee.  You can use the e (edit) selection to do this
+		or you can edit the files directly with your favorite
+		editor.
+
+		!
+
+	OLD=`prompt 'What is the old year (i.e., 1986)?' \
+		grep '^19[0-9][0-9]$' \
+		"$BALERT year must be 19nn"`
+	NEW=`prompt 'What is the new year (i.e., 1987)?' \
+		grep '^19[0-9][0-9]$' \
+		"$BALERT year must be 19nn"`
+	echo "Old year: $OLD" >&2
+	echo "New year: $NEW" >&2
+	askif 'Is this information correct' || continue
+
+	SAVE=$TIMECARDS/save/$OLD
+	mkdir $TIMECARDS/save $SAVE 2>/dev/null
+
+	edit=/usr/tmp/$$.ed
+	cat >$edit <<-!
+		1,\$s/^$OLD/$NEW/
+		g/^[0-9]*;[0-9][0-9]-[0-9][0-9]-[0-9][0-9];/d
+		w
+		q
+		!
+
+
+	if askif 'Do you want to save the work sheet files'
+	then
+		cp $TIMECARDS/.* $SAVE 2>/dev/null
+		mkdir $SAVE/work
+		getallwork | xargs -i cp {} $SAVE/work
+		echo "The files have been saved under the directory $SAVE/work." >&2
+	fi
+
+	getallwork |
+		while read pan
+		do
+			echo "Editing $pan work for new year" >&2
+			ed $pan >/dev/null <$edit
+		done
+
+	if askif 'Do you want to save the record of working day absences files'
+	then
+		cp $TIMECARDS/.* $SAVE 2>/dev/null
+		mkdir $SAVE/attendance
+		getallattend | xargs -i cp {} $SAVE/attendance
+		echo "The files have been saved under the directory $SAVE/attendance." >&2
+	fi
+
+	getallattend |
+		while read pan
+		do
+			echo "Editing $pan attendance for new year" >&2
+			ed $pan >/dev/null <$edit
+		done
+	
+	( cd $BACKUPDB; rm -f [0-9][0-9]-[0-9][0-9] ) 2>/dev/null
+
+	cat >&2 <<-!
+
+		Now you need to edit all of the attendance files to
+		contain the correct vacation, PDOs & NFHs allowance.
+
+		!
+
+	return 0
+}
+
+
+
+deptconv()
+{
+	adddept=/usr/tmp/$$.adept
+	saveconv=/usr/tmp/$$.sconv
+	DEPTCONV=$TIMECARDS/.deptconv
+
+	test "$1" != -convert -a -f $DEPTCONV  &&  return 0
+
+	return 1
+}
+
+
+
+convtodept()
+{
+	return 0
+}
+
+
+
+cmdescape()
+{
+	eval `echo $1 | sed 's/^!//'`
+	return 0
+}
+
+
+
+adminmenu()
+{
+	while :
+	do
+		AMENU="`prompt '\nAdministrative menu - \n	enter a, s, b, m, d, e, p, t, l, n, q, !, or ? (for help):'`"
+		case "$AMENU" in
+		\?)
+			cat >&2 <<-'!'
+				a - add employee to database
+				s - set standard work time for employee (if not 40 hours)
+				b - change boss (supervisor) for employee(s)
+				m - moved employee (another dept or gone)
+				d - delete employee
+				e - edit employee work and/or attendance file
+				p - put (ship/send) database or work/attendance information
+				t - take (receive) a database shipped (put) to you
+				l - list all employees
+				n - new year setup
+				q - quit
+				! - UNIX command escape (e.g., !ksh to get to command level and
+				    'exit' to get back to timecards)
+				? - help
+				!
+			;;
+		!*)	cmdescape "$AMENU";;
+		a)	addemployee ;;
+		s)
+			PAN=`getpan`
+			wrkhrs=`prompt 'Enter standard weekly & daily work hours (eg, 25 5):' \
+				egrep '^[0-9]+\.?[0-9]*[ 	]+[0-9]+\.?[0-9]*$' \
+				"$BALERT must enter 2 numbers"`
+			ed $WORKDB/$PAN >/dev/null <<-!
+				g/^.\\\\"STD/d
+				/(Supervisor)/a
+				.\\"STD $wrkhrs
+				.
+				w
+				q
+				!
+			;;
+		b)	chgsupv ;;
+		m)
+			PANLIST=`prompt 'list of one or more PANs or last names of employee to move (eg, smith black ...)\n(use * to move all employees):' \
+				egrep '^(\*|[0-9]+|[-a-zA-Z]+|[-a-zA-Z0-9 	]+)$' \
+				"$BALERT check input and try again"`
+
+			newdept=`getdept 'Enter new department (use 00000 if no longer with ATT-BL)'`
+			olddept=`getdept 'Enter old department (use * if change should be made regardless of the old department)'`
+			test "$olddept" = +  &&  olddept='[0-9A-Za-z]*'
+			cat >&2 <<-!
+
+				The following question asks whether you want to change the
+				department number in existing time records.  If you say no
+				to this question, only future time records will show this
+				new department number.  If you say yes to this question,
+				any existing time records will be changed to this new
+				department number as well.
+
+				!
+			oldtcdept=donothingforsure
+			askif 'Do you want to change the department in existing time records'  &&  {
+				oldtcdept=$olddept
+				}
+			DEDIT=/usr/tmp/$$.dedit
+			cat >$DEDIT <<-!
+				g/(Department)\$/s/.*/$newdept (Department)/
+				g/^$oldtcdept;[0-9]/s/^$oldtcdept;/$newdept;/
+				w
+				q
+				!
+			test "$PANLIST" = \*  &&  PANLIST=+
+			echo $PANLIST | tr -s ' 	' '\012' |
+			while read PAN
+			do
+				if [ "$PAN" = \+ ]
+				then
+					getresource ALLEMPLOYEES
+					cut -f3 $ALLEMPLOYEES | sort
+				else
+					PAN=`getpan "$PAN"`  &&  echo $PAN
+				fi |
+				while read PAN
+				do
+					echo "changing department for $PAN" >&2
+					ed $WORKDB/$PAN >/dev/null <$DEDIT
+					ed $ATTENDDB/$PAN >/dev/null <$DEDIT
+				done
+				zapresource ALLEMPLOYEES
+			done
+			;;
+		d)
+			cat  >&2 <<-!
+				Warning!!  You should not normally delete
+				an employee unless the employee has not
+				been in your department at all in the
+				current year (reason:  you will lose the
+				record of their time charges against your
+				department).
+
+				!
+			PAN=`getpan '' 'Enter PAN or last name of employee to delete:'`
+			INFO=`getempdata $PAN`  ||  break
+			delemp $INFO
+			;;
+		l)	listemp | eval $PAGER ;;
+		e)	editdb ;;
+		p)	putdb ;;
+		t)	takedb ;;
+		n)	endyear ;;
+		q)	break ;;
+		debug)	debug ;;
+		*)	echo "${BALERT}unknown menu choice [$AMENU] - try again" >&2 ;;
+		esac
+	done
+
+	zapresource ALLEMPLOYEES ALLTIME WEEKCHARGE
+	return 0
+}
+
+
+
+
+
+mainmenu()
+{
+	while :
+	do
+		MMENU="`prompt '\nMain menu - enter e, h, p, w, r, a, q, !, or ? (for help):'`"
+	
+		case $MMENU in
+		\?)
+			cat >&2 <<-'!'
+				e - enter timecards
+				h - holiday entry
+				p - PAN to name
+				w - weekending
+				r - report menu
+				a - administrative menu
+				q - quit
+				! - UNIX command escape (e.g., !ksh to get to command level and
+				    'exit' to get back to timecards)
+				? - help
+				!
+			;;
+		!*)	cmdescape "$MMENU" ;;
+		e)
+			entertimecard
+			askif 'Do you want to check timecards' && reportmenu  -w $WE
+			;;
+		h)	addholiday ;;
+		p)
+			PAN=`getpan`
+			echo "	`getname $PAN`" >&2
+			;;
+		w)	getweekinfo ;;
+		r)	reportmenu -w $WE ;;
+		a)	adminmenu ;;
+		q)	break ;;
+		debug)	debug ;;
+		*)	echo "${BALERT}unknown menu choice [$MMENU] - try again" >&2 ;;
+		esac
+	done
+
+	return 0
+}
+
+
+
+TIMECARDS=${TIMECARDS:-$HOME/timecards}; export TIMECARDS
+WORKDB=$TIMECARDS/work
+ATTENDDB=$TIMECARDS/attendance
+VALIDWPNS=$TIMECARDS/valid_wpns
+REPEATDB=$TIMECARDS/repeat
+BACKUPDB=$TIMECARDS/backup
+export WORKDB ATTENDDB VALIDWPNS BACKUPDB WE WEEKDATES
+LOG=$TIMECARDS/.logusage
+LOGMAIL=att!ihlpm!drk
+ALLEMPLOYEES=/usr/tmp/$$.allemp
+ALLTIME=/usr/tmp/$$.time
+WEEKCHARGE=/usr/tmp/$$.wkchg
+WPNFILE=/usr/tmp/$$.wpn
+THEDEPT=${TCDEPT:-+}
+DEFAULTDEPT=/usr/tmp/$$.defdept
+PAGER=${PAGER:-'pg -e -p "--press <return> key to continue--"'}
+DEBUG=+x
+trap 'rm -rf /usr/tmp/$$.*' 0
+
+WE=
+OPT=
+PAN=
+BELL=""
+BALERT="$BELL$BELL"
+
+while [ $# -ne 0 ]
+do
+	case "$1 $2" in
+	-w\ [0-9]*)	WE=$2; shift ;;
+	-p\ *)		PAN=$2; shift ;;
+	-convert\ *)	break ;;
+	-[awcmotsbv]*\ *)
+			if [ "`echo $1 | tr -d awcmotsbv`" = "-" ]
+			then
+				OPT="$OPT$1"
+			else
+				echo "${BALERT}$0:  unknown argument [$1]" >&2
+				echo "Usage:  $USAGE" >&2
+				exit 1
+			fi
+			;;
+	-d\ *)		THEDEPT=$2; shift ;;
+	-news\ *)	echo "Version $VERSION"; printnews -news ;;
+	*)	
+			echo "${BALERT}$0:  unknown argument [$1]" >&2
+			echo "Usage:  $USAGE" >&2
+			exit 1
+			;;
+	esac
+	shift
+done
+
+if [ ! -d $TIMECARDS ]
+then
+	echo "Warning - timecards directory missing, creating timecards directory" >&2
+	mkdir $TIMECARDS || exit 2
+fi
+if [ ! -d $WORKDB ]
+then
+	echo "Warning - work directory missing, creating work directory" >&2
+	mkdir $WORKDB || exit 2
+fi
+if [ ! -d $ATTENDDB ]
+then
+	echo "Warning - attendance directory missing, creating attendance directory" >&2
+	mkdir $ATTENDDB || exit 2
+fi
+
+
+test -n "$TCWPNS"  &&  {
+	for file in `echo $TCWPNS`
+	do
+		test -r "$file"  ||
+			echo "Warning - WPN file [$file] not readable and ignored" >&2
+	done
+	cat $TCWPNS >$WPNFILE
+	VALIDWPNS=$WPNFILE
+}
+
+test -n "$WE"  &&  { getweekinfo  $WE  ||  exit 1; }
+
+test -t 0  &&  {
+	echo "version $VERSION"
+	printnews
+} >&2
+
+test -n "$OPT"  &&  { reportmenu  -batch -w "$WE" $OPT;  exit 0; }
+
+mainmenu
+
+exit 0

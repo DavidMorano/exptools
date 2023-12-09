@@ -1,0 +1,198 @@
+
+
+
+     qqqquuuueeeerrrryyyyeeeevvvvaaaallll((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                qqqquuuueeeerrrryyyyeeeevvvvaaaallll((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          queryeval - Find tuples matching a given query.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          iiiinnnntttt
+          qqqquuuueeeerrrryyyyeeeevvvvaaaallll(((( qqqquuuueeeerrrryyyy,,,, rrrreeeessssuuuulllltttt ))))
+          ssssttttrrrruuuucccctttt uuuuqqqquuuueeeerrrryyyy ****qqqquuuueeeerrrryyyy;;;;
+          ssssttttrrrruuuucccctttt qqqqrrrreeeessssuuuulllltttt ****rrrreeeessssuuuulllltttt;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The qqqquuuueeeerrrryyyyeeeevvvvaaaallll() routine finds tuples matching a given _q_u_e_r_y
+          produced by bbbbllllddddqqqquuuueeeerrrryyyy(3), mmmmkkkkqqqquuuueeeerrrryyyy(3), or ccccmmmmppppqqqquuuueeeerrrryyyy(1).
+          Normally, the tuples matching the _q_u_e_r_y are returned in the
+          _r_e_s_u_l_t parameter; however, sssseeeettttttttppppllllffffuuuunnnncccc(3) may be used to set
+          up a function to be called for each retrieved tuple.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _q_u_e_r_y
+               A pointer to the query data structure to be evaluated.
+               This structure should be obtained using bbbbllllddddqqqquuuueeeerrrryyyy(3),
+               mmmmkkkkqqqquuuueeeerrrryyyy(3), or ccccmmmmppppqqqquuuueeeerrrryyyy(1).  If ccccmmmmppppqqqquuuueeeerrrryyyy(1) is used,
+               the query's initialization function,
+               init<_q_u_e_r_y__n_a_m_e>(), must be called at run-time to bind
+               the query to its relations and initialize the query.
+               If an un-initialized query is passed to qqqquuuueeeerrrryyyyeeeevvvvaaaallll(), it
+               will always fail.
+
+          _r_e_s_u_l_t
+               A pointer to the structure where matching tuples will
+               be stored.  The structure must be allocated in the
+               application (usually as a local variable), but no
+               initialization need be done on the structure.  The
+               structure will be initialized each time qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3) is
+               called.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          Normally (i.e., when there are projected attribute values),
+          qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3) returns true (non-zero) if there was no error
+          in evaluating the query and false (zero) if an error
+          occurred.  If a single null attribute was supplied to
+          bbbbllllddddqqqquuuueeeerrrryyyy(3), mmmmaaaakkkkeeeeqqqquuuueeeerrrryyyy(3), or ccccmmmmppppqqqquuuueeeerrrryyyy(1), then qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3)
+          returns true (non-zero) if there were tuples that matched
+          the query and no error occurred.  Otherwise, it returns
+          false (zero).  In the case of an error, the variable uuuueeeerrrrrrrroooorrrr
+          will contain the error number.
+
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     qqqquuuueeeerrrryyyyeeeevvvvaaaallll((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                qqqquuuueeeerrrryyyyeeeevvvvaaaallll((((3333))))
+
+
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          No more than MAXRELATION (currently defined in _u_q_u_e_r_y._h as
+          8) relations may be used in the query.
+
+          At most MAXATT attributes can be retrieved by the query.
+          This is currently defined in _u_r_e_l_a_t_i_o_n._h as 200 from main
+          frames and 100 for other machines.  Any attributes over this
+          limit are not retrieved.  All relations must have less than
+          MAXATT _a_t_t_r_i_b_u_t_e_s, _a_l_s_o.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Evaluate a query built with mmmmkkkkqqqquuuueeeerrrryyyy(3) or bbbbllllddddqqqquuuueeeerrrryyyy(3).
+
+               #include "uquery.h"
+
+               extern int uerror;
+               struct uquery *query;
+               struct qresult result;
+               char *attrvals[MAXATT];
+                . . .
+               query = mkquery( . . . );     /* could also use bldquery() */
+               if ( query == NULL ) {
+                    pruerror( );
+                    /* Return failure. */
+               }
+               if ( ! queryeval( query, &result ) ) {
+                    if ( uerror )
+                         pruerror( );
+                    /* Return failure. */
+               }
+               if ( ! initresult( &result ) ) {
+                    if ( uerror )
+                         pruerror( );
+                    /* Return failure. */
+               }
+               while( nexttuple( query, &result, attrvals ) ) {
+                    /* Do something with each tuple */
+               }
+
+          Evaluate a query (``query1'') built using ccccmmmmppppqqqquuuueeeerrrryyyy(1).
+
+               #include "uquery.h"
+               #include "query1.h"
+
+               extern int uerror;
+               extern struct uquery query1;
+               struct urelation relation1;
+               struct qresult result;
+               char *attrvals[QUERY1_MAXATT];
+                . . .
+               if ( ! initquery1( &relation1 ) {
+                    pruerror( );
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     qqqquuuueeeerrrryyyyeeeevvvvaaaallll((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                qqqquuuueeeerrrryyyyeeeevvvvaaaallll((((3333))))
+
+
+
+                    /* Return failure. */
+               }
+               if ( ! queryeval( &query1, &result ) ) {
+                    if ( uerror )
+                         pruerror( );
+                    /* Return failure. */
+               }
+               if ( ! initresult( result ) ) {
+                    pruerror( );
+                    /* Return failure. */
+               }
+               while( nexttuple( query1, &result, attrvals ) ) {
+                    /* Do something with each tuple */
+               }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          bldquery(3), cmpquery(1), mkquery(3), nexttuple(3),
+          retrieve(1), and settplfunc(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+

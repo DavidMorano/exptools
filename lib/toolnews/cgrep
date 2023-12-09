@@ -1,0 +1,26 @@
+Date: Monday Oct. 11 93
+
+A bug was introduced into cgrep on some machines over the weekend.
+(The SUN cluster intgp1, intgp2, etc. at IH was unaffected.)
+A fix has been submitted, and should be distributed to most or all machines
+tonight (Monday Oct. 11).
+
+Since this news item was submitted with the fix, reading this
+should imply that the fix has reached the machine on which you ran "toolnews".
+
+The bug is only in version 7.05.  The corrected version is 7.06.
+Type "cgrep" with no arguments to see the version number.
+
+The symptoms of the bug is, under certain conditions, the extraneous
+output of the four character string "FIVE" at the beginning of the output
+to stdout.  (A diagnostic printf statement was left in the code in error).
+There are no other symptoms.  The remainder of the output is correct,
+and the return code is correct.
+
+The conditions for appearance of the extraneous string are either:
+1) A regular expression is used that does NOT contain a two or more
+character substring of ordinary (non-meta) characters;
+
+OR
+
+2) The -T, -t, or +t flag is used.

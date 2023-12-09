@@ -1,0 +1,66 @@
+          Sample macro file for "hybrowse -a"
+
+Jump to an absolute location
+%aj=@Help\^Named section\n
+
+Where am I?  (Demo of shell variables)
+%aw=!echo "Looking at $HYDOC section $HYSECT  (line $HYLINE)"\n
+
+Continuation lines
+%ac=!echo "This is the beginning \
+and the end"\n
+
+Edit the current source file:
+ - assumes the source ends with ".mm"
+ - assumes the source is in the directory with the formatted file
+ - won't enter the editor unless the file exists and can be written
+ - starts at the appropriate section header
+ - vi and emacs know about the "+" argument; other editors might have
+   problems with it.
+
+%ae=!!test -w $HYDOCP.mm  &&  \
+     ${EDITOR:-vi} "+/\^\\.H *[U1-9] *\\"*$HYSECT\\"* *$/" $HYDOCP.mm\n
+
+A reserved macro - redefinition is ignored
+%ah=!echo "Hello, world"\n
+
+A macro with a control-character name
+%a^H=!echo "Hello, world (version 2)"\n
+
+Nested macros:
+%ay=azaz
+%az=!echo "I'm the az macro"\n
+
+ap pretends to print the currently-displayed file.
+(An example of a hidden definition - look at the appcmds file)
+
+	WRITING (Test of -r interaction with macros)
+
+%as=!lf\n
+%ar=w ~/rje/temp.hy\n
+
+%al=!echo "this is a test of a very long macro definition" ;echo "this is a test of a very long macro definition" ;echo "this is a test of a very long macro definition" ;echo "this is a test of a very long macro definition"\n
+
+
+NOTES:
+
+  - The macros work from any document; you don't have to be
+    looking at the application-help section.
+
+  - Good choices for macros might be editing, printing, and
+    jumping to special documents (e.g., "an" for "News").
+
+  - You can format your macro file with nroff, but it's
+    easier to do it manually because of the escape sequences
+    and the requirement that definitions start in column 1.
+
+
+           REFERENCES
+
+Hybrowse never prints reference pages, so the following won't
+appear in the application-help displays.  However, it will be
+processed during the scan for macro definitions.
+
+%ap=!echo "pretending to: opr -pport $HYDOCP"\n
+
+sccs id =	@(#)  .sccs/s.appcmds  1.5  3/13/90

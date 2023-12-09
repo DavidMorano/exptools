@@ -1,0 +1,1223 @@
+Info file: calc.info,    -*-Text-*-
+produced by texinfo-format-buffer
+from file: calc.texinfo
+
+
+
+
+
+This file documents Calc, the GNU Emacs calculator.
+
+Copyright (C) 1990, 1991 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled "GNU General Public License" is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled "GNU General Public License" may be
+included in a translation approved by the author instead of in the
+original English.
+
+
+
+File: calc.info  Node: Algebra Tutorial, Prev: Types Tutorial, Up: Tutorial, Next: Programming Tutorial
+
+Algebra and Calculus Tutorial
+=============================
+
+This section shows how to use Calc's algebra facilities to solve
+equations, do simple calculus problems, and manipulate algebraic
+formulas.
+
+* Menu:
+
+* Basic Algebra Tutorial::
+* Rewrites Tutorial::
+
+
+File: calc.info  Node: Basic Algebra Tutorial, Prev: Algebra Tutorial, Up: Algebra Tutorial, Next: Rewrites Tutorial
+
+Basic Algebra
+-------------
+
+If you enter a formula in algebraic mode that refers to variables,
+the formula itself is pushed onto the stack.  You can manipulate
+formulas as regular data objects.
+
+     1:  2 x^2 - 6       1:  6 - 2 x^2       1:  (6 - 2 x^2) (3 x^2 + y)
+         .                   .                   .
+
+         ' 2x^2-6 RET        n                   ' 3x^2+y RET *
+
+(*{}) *Exercise 1.*  Do `' x RET Q 2 ^' and
+`' x RET 2 ^ Q' both wind up with the same result (`x')?
+Why or why not?  *Note 1: Algebra Answer 1. (*{})
+
+There are also commands for doing common algebraic operations on
+formulas.  Continuing with the formula from the last example,
+
+     1:  18 x^2 + 6 y - 6 x^4 - 2 x^2 y    1:  (18 - 2 y) x^2 - 6 x^4 + 6 y
+         .                                     .
+
+         a x                                   a c x RET
+
+First we "expand" using the distributive law, then we "collect"
+terms involving like powers of `x'.
+
+Let's find the value of this expression when `x' is 2 and `y'
+is one-half.
+
+     1:  17 x^2 - 6 x^4 + 3      1:  -25
+         .                           .
+
+         1:2 s l y RET               2 s l x RET
+
+The `s l' command means "let"; it takes a number from the top of
+the stack and temporarily assigns it as the value of the variable
+you specify.  It then evaluates (as if by the `=' key) the
+next expression on the stack.  After this command, the variable goes
+back to its original value, if any.
+
+(An earlier exercise in this tutorial involved storing a value in the
+variable `x'; if this value is still there, you will have to
+unstore it with `s u x RET' before the above example will work
+properly.)
+
+Let's find the maximum value of our original expression when `y'
+is one-half and `x' ranges over all possible values.  We can
+do this by taking the derivative with respect to `x' and examining
+values of `x' for which the derivative is zero.  If the second
+derivative of the function at that value of `x' is negative,
+the function has a local maximum there.
+
+     1:  17 x^2 - 6 x^4 + 3      1:  34 x - 24 x^3
+         .                           .
+
+         U DEL  s 1                  a d x RET   s 2
+
+Well, the derivative is clearly zero when `x' is zero.  To find
+the other root(s), let's divide through by `x' and then solve:
+
+     1:  (34 x - 24 x^3) / x    1:  34 x / x - 24 x^3 / x    1:  34 - 24 x^2
+         .                          .                            .
+
+         ' x RET /                  a x                          a s
+
+     1:  34 - 24 x^2 = 0        1:  x = 1.19023
+         .                          .
+
+         0 a =  s 3                 a S x RET
+
+Notice the use of `a s' to "simplify" the formula.  When the
+default algebraic simplifications don't do enough, you can use
+`a s' to tell Calc to spend more time on the job.
+
+Now we compute the second derivative and plug in our values of `x':
+
+     1:  1.19023        2:  1.19023         2:  1.19023
+         .              1:  34 x - 24 x^3   1:  34 - 72 x^2
+                            .                   .
+
+         a .                r 2                 a d x RET s 4
+
+(The `a .' command extracts just the righthand side of an equation.
+Another method would have been to use `v u' to unpack the equation
+`x = 1.19' to `x' and `1.19', then use `M-- M-2 DEL'
+to delete the `x'.)
+
+     2:  34 - 72 x^2   1:  -68.         2:  34 - 72 x^2     1:  34
+     1:  1.19023           .            1:  0                   .
+         .                                  .
+
+         TAB               s l x RET        U DEL 0             s l x RET
+
+The first of these second derivatives is negative, so we know the function
+has a maximum value at `x = 1.19023'.  (The function also has a
+local *minimum* at `x = 0'.)
+
+When we solved for `x', we got only one value even though
+`34 - 24 x^2 = 0' is a quadratic equation that ought to have
+two solutions.  The reason is that `a S' normally returns a
+single "principal" solution.  If it needs to come up with an
+arbitrary sign (as occurs in the quadratic formula) it picks `+'.
+If it needs an arbitrary integer, it picks zero.  We can get a full
+solution by pressing `H' (the Hyperbolic flag) before `a S'.
+
+     1:  34 - 24 x^2 = 0    1:  x = 1.19023 s1      1:  x = -1.19023
+         .                      .                       .
+
+         r 3                    H a S x RET  s 5        1 n  s l s1 RET
+
+Calc has invented the variable `s1' to represent an unknown sign;
+it is supposed to be either +1 or -1.  Here we have used
+the "let" command to evaluate the expression when the sign is negative.
+If we plugged this into our second derivative we would get the same,
+negative, answer, so `x = -1.19023' is also a maximum.
+
+To find the actual maximum value, we must plug our two values of `x'
+into the original formula.
+
+     2:  17 x^2 - 6 x^4 + 3    1:  24.08333 s1^2 - 12.04166 s1^4 + 3
+     1:  x = 1.19023 s1            .
+         .
+
+         r 1 r 5                   s l RET
+
+(Here we see another way to use `s l'; if its input is an equation
+with a variable on the lefthand side, then `s l' treats the equation
+like an assignment to that variable if you don't give a variable name.)
+
+It's clear that this will have the same value for either sign of
+`s1', but let's work it out anyway, just for the exercise:
+
+     2:  [-1, 1]              1:  [15.04166, 15.04166]
+     1:  24.08333 s1^2 ...        .
+         .
+
+       [ 1 n , 1 ] TAB            V M $ RET
+
+Here we have used a vector mapping operation to evaluate the function
+at several values of `s1' at once.  `V M $' is like `V M ''
+except that it takes the formula from the top of the stack.  The
+formula is interpreted as a function to apply across the vector at the
+next-to-top stack level.  Since a formula on the stack can't contain
+`$' signs, Calc assumes the variables in the formula stand for
+different arguments.  It prompts you for an "argument list", giving
+the list of all variables in the formula in alphabetical order as the
+default list.  In this case the default is `(s1)', which is just
+what we want so we simply press RET at the prompt.
+
+If there had been several different values, we could have used
+`V R X' to find the global maximum.
+
+Calc has a built-in `a P' command that solves an equation using
+`H a S' and returns a vector of all the solutions.  It simply
+automates the job we just did by hand.  Applied to our original
+cubic polynomial, it would produce the vector of solutions
+`[1.19023, -1.19023, 0]'.  (There is also an `a X' command
+which finds a local maximum of a function.  It uses a numerical search
+method rather than examining the derivatives, and thus requires you
+to provide some kind of initial guess to show it where to look.)
+
+(*{}) *Exercise 2.*  Find the values for which the
+original formula `17 x^2 - 6 x^4 + 3' is zero.  (There are
+four, two of which are complex numbers.)  Verify that these
+solutions are in fact correct.  *Note 2: Algebra Answer 2. (*{})
+
+The `m s' command enables "symbolic mode," in which formulas
+like `sqrt(5)' that can't be evaluated exactly are left in
+symbolic form rather than giving a floating-point approximate answer.
+Fraction mode (`m f') is also useful when doing algebra.
+
+     2:  34 x - 24 x^3        2:  34 x - 24 x^3
+     1:  34 x - 24 x^3        1:  [sqrt(51) / 6, sqrt(51) / -6, 0]
+         .                        .
+
+         r 2  RET     m s  m f    a P x RET
+
+One more mode that makes reading formulas easier is "Big mode."
+
+                    3
+     2:  34 x - 24 x
+
+           ____   ____
+          V 51   V 51
+     1:  [-----, -----, 0]
+            6     -6
+
+         .
+
+         d B
+
+Here things like powers, quotients and fractions, and square roots
+are displayed in a two-dimensional pictorial form.  Calc has other
+language modes as well, such as C mode, FORTRAN mode, and TeX mode.
+
+     2:  34*x - 24*pow(x, 3)               2:  34*x - 24*x**3
+     1:  {sqrt(51) / 6, sqrt(51) / -6, 0}  1:  /sqrt(51) / 6, sqrt(51) / -6, 0/
+         .                                     .
+
+         d C                                   d F
+
+     3:  34 x - 24 x^3
+     2:  [{\sqrt{51} \over 6}, {\sqrt{51} \over -6}, 0]
+     1:  {2 \over 3} \sqrt{5}
+         .
+
+         d T   ' 2 \sqrt{5} \over 3 RET
+
+As you can see, language modes affect both entry and display of
+formulas.  They affect such things as the names used for built-in
+functions, the set of arithmetic operators and their precedences,
+and notations for vectors and matrices.
+
+Notice that `sqrt(51)' may cause problems with older
+implementations of C and FORTRAN, which would require something more
+like `sqrt(51.0)'.  It is always wise to check over the formulas
+produced by the various language modes to make sure they are fully
+correct.
+
+Type `m s', `m f', and `d N' to reset these modes.  (You
+may prefer to remain in Big mode, but all the examples in the tutorial
+are shown in normal mode.)
+
+What is the area under the portion of this curve from `x = 1' to `2'?
+This is simply the integral of the function:
+
+     1:  17 x^2 - 6 x^4 + 3     1:  5.6666 x^3 - 1.2 x^5 + 3 x
+         .                          .
+
+         r 1                        a i x
+
+We want to evaluate this at our two values for `x' and subtract.
+One way to do it is again with vector mapping and reduction:
+
+     2:  [2, 1]            1:  [12.93333, 7.46666]    1:  5.46666
+     1:  5.6666 x^3 ...        .                          .
+
+        [ 2 , 1 ] TAB          V M $ RET                  V R -
+
+(*{}) *Exercise 3.*  Find the integral from 1 to `y'
+of `x sin(pi x)' (where the sine is calculated in radians).
+Find the values of the integral for integers `y' from 1 to 5.
+*Note 3: Algebra Answer 3. (*{})
+
+Calc's integrator can do many simple integrals symbolically, but many
+others are beyond its capabilities.  Suppose we wish to find the area
+under the curve `sin(x) ln(x)' over the same range of `x'.  If
+you entered this formula and typed `a i x RET' (don't bother to try
+this), Calc would work for a long time but would be unable to find a
+solution.  In fact, there is no closed-form solution to this integral.
+Now what do we do?
+
+One approach would be to do the integral numerically.  It is not hard
+to do this by hand using vector mapping and reduction.  It is rather
+slow, though, since the sine and logarithm functions take a long time.
+We can save some time by reducing the working precision.
+
+     3:  10                  1:  [1, 1.1, 1.2,  ...  , 1.8, 1.9]
+     2:  1                       .
+     1:  0.1
+         .
+
+      10 RET 1 RET .1 RET        C-u v x
+
+(Note that we have used the extended version of `v x'; we could
+also have used plain `v x' as follows:  `v x 10 RET 9 + .1 *'.)
+
+     2:  [1, 1.1, ... ]              1:  [0., 0.084941, 0.16993, ... ]
+     1:  sin(x) ln(x)                    .
+         .
+
+         ' sin(x) ln(x) RET  s 1    m r  p 5 RET   V M $ RET
+
+     1:  3.4195     0.34195
+         .          .
+
+         V R +      0.1 *
+
+(If you got wildly different results, did you remember to switch
+to radians mode?)
+
+Here we have divided the curve into ten segments of equal width;
+approximating these segments as rectangular boxes (i.e., assuming
+the curve is nearly flat at that resolution), we compute the areas
+of the boxes (height times width), then sum the areas.  (It is
+faster to sum first, then multiply by the width, since the width
+is the same for every box.)
+
+The true value of this integral turns out to be about 0.374, so
+we're not doing too well.  Let's try another approach.
+
+     1:  sin(x) ln(x)    1:  0.84147 x - 0.84147 + 0.11957 (x - 1)^2 - ...
+         .                   .
+
+         r 1                 a t x=1 RET 4 RET
+
+Here we have computed the Taylor series expansion of the function
+about the point `x=1'.  We can now integrate this polynomial
+approximation, since polynomials are easy to integrate.
+
+     1:  0.42074 x^2 + ...    1:  [-0.0446, -0.42073]      1:  0.3761
+         .                        .                            .
+
+         a i x RET            [ 2 , 1 ] TAB  V M $ RET         V R -
+
+Better!  By increasing the precision and/or asking for more terms
+in the Taylor series, we can get a result as accurate as we like.
+(Taylor series converge better away from singularities in the
+function such as the one at `ln(0)', so it would also help to
+expand the series about the points `x=2' or `x=1.5' instead
+of `x=1'.)
+
+(*{}) *Exercise 4.*  Our first method approximated the
+curve by stairsteps of width 0.1; the total area was then the sum
+of the areas of the rectangles under these stairsteps.  Our second
+method approximated the function by a polynomial, which turned out
+to be a better approximation than stairsteps.  A third method is
+"Simpson's rule", which is like the stairstep method except
+that the steps are not required to be flat.  Simpson's rule boils
+down to the formula,
+
+     (h/3) * (f(a) + 4 f(a+h) + 2 f(a+2h) + 4 f(a+3h) + ...
+                   + 2 f(a+(n-2)*h) + 4 f(a+(n-1)*h) + f(a+n*h))
+
+where `n' (which must be even) is the number of slices and `h'
+is the width of each slice.  These are 10 and 0.1 in our example.
+For reference, here is the corresponding formula for the stairstep
+method:
+
+     h * (f(a) + f(a+h) + f(a+2h) + f(a+3h) + ...
+               + f(a+(n-2)*h) + f(a+(n-1)*h))
+
+Compute the integral from 1 to 2 of `sin(x) ln(x)' using
+Simpson's rule with 10 slices.  *Note 4: Algebra Answer 4. (*{})
+
+Calc has a built-in `a I' command for doing numerical integration.
+It uses "Romberg's method", which is a more sophisticated cousin
+of Simpson's rule.  In particular, it knows how to keep refining the
+result until the current precision is satisfied.
+
+Aside from the commands we've seen so far, Calc also provides a
+large set of commands for operating on parts of formulas.  You
+indicate the desired sub-formula by placing the cursor on any part
+of the formula before giving a "selection" command.  Selections won't
+be covered in the tutorial; *Note Selecting Subformulas::, for
+details and examples.
+
+
+
+File: calc.info  Node: Rewrites Tutorial, Prev: Basic Algebra Tutorial, Up: Algebra Tutorial
+
+Rewrite Rules
+-------------
+
+No matter how many built-in commands Calc provided for doing algebra,
+there would always be something you wanted to do that Calc didn't have
+in its repertoire.  So Calc also provides a "rewrite rule" system
+that you can use to define your own algebraic manipulations.
+
+Suppose we want to simplify this trigonometric formula:
+
+     1:  1 / cos(x) - sin(x) tan(x)
+         .
+
+         ' 1/cos(x) - sin(x) tan(x) RET   s 1
+
+If we were simplifying this by hand, we'd probably replace the
+`tan' with a `sin/cos' first, then combine over a common
+denominator.  There is no Calc command to do the former; the `a n'
+algebra command will do the latter but we'll do both with rewrite
+rules just for practice.
+
+Rewrite rules are written with the `:=' symbol.
+
+     1:  1 / cos(x) - sin(x)^2 / cos(x)
+         .
+
+         a r tan(a) := sin(a)/cos(a) RET
+
+(The "assignment operator" `:=' has several uses in Calc.  All
+by itself the formula `tan(a) := sin(a)/cos(a)' doesn't do anything,
+but when it is given to the `a r' command, that command interprets
+it as a rewrite rule.)
+
+The lefthand side, `tan(a)', is called the "pattern" of the
+rewrite rule.  Calc searches the formula on the stack for parts that
+match the pattern.  Variables in a rewrite pattern are called
+"meta-variables", and when matching the pattern each meta-variable
+can match any sub-formula.  Here, the meta-variable `a' matched
+the actual variable `x'.
+
+When the pattern part of a rewrite rule matches a part of the formula,
+that part is replaced by the righthand side with all the meta-variables
+substituted with the things they matched.  So the result is
+`sin(x) / cos(x)'.  Calc's normal algebraic simplifications then
+mix this in with the rest of the original formula.
+
+To merge over a common denominator, we can use another simple rule:
+
+     1:  (1 - sin(x)^2) / cos(x)
+         .
+
+         a r a/x + b/x := (a+b)/x RET
+
+This rule points out several interesting features of rewrite patterns.
+First, if a meta-variable appears several times in a pattern, it must
+match the same thing everywhere.  This rule detects common denominators
+because the same meta-variable `x' is used in both of the
+denominators.
+
+Second, meta-variable names are independent from variables in the
+target formula.  Notice that the meta-variable `x' here matches
+the subformula `cos(x)'; Calc never confuses the two meanings of
+`x'.
+
+And third, rewrite patterns know a little bit about the algebraic
+properties of formulas.  The pattern called for a sum of two quotients;
+Calc was able to match a difference of two quotients by matching
+`a = 1', `b = -sin(x)^2', and `x = cos(x)'.
+
+We could just as easily have written `a/x - b/x := (a-b)/x' for
+the rule.  It would have worked just the same in all cases.  (If we
+really wanted the rule to apply only to `+' or only to `-',
+we could have used the `plain' symbol.  *Note Algebraic Properties of Rewrite Rules::, for some examples of this.)
+
+One more rewrite will complete the job.  We want to use the identity
+`sin(x)^2 + cos(x)^2 = 1', but of course we must first rearrange
+the identity in a way that matches our formula.  The obvious rule
+would be `1 - sin(x)^2 := cos(x)^2', but a little thought shows
+that the rule `sin(x)^2 := 1 - cos(x)^2' will also work.  The
+latter rule has a more general pattern so it will work in many other
+situations, too.
+
+     1:  (1 + cos(x)^2 - 1) / cos(x)           1:  cos(x)
+         .                                         .
+
+         a r sin(x)^2 := 1 - cos(x)^2 RET          a s
+
+You may ask, what's the point of using the most general rule if you
+have to type it in every time anyway?  The answer is that Calc allows
+you to store a rewrite rule in a variable, then give the variable
+name in the `a r' command.  In fact, this is the preferred way to
+use rewrites.  For one, if you need a rule once you'll most likely
+need it again later.  Also, if the rule doesn't work quite right you
+can simply Undo, edit the variable, and run the rule again without
+having to retype it.
+
+     ' tan(x) := sin(x)/cos(x) RET      s t tsc RET
+     ' a/x + b/x := (a+b)/x RET         s t merge RET
+     ' sin(x)^2 := 1 - cos(x)^2 RET     s t sinsqr RET
+
+     1:  1 / cos(x) - sin(x) tan(x)     1:  cos(x)
+         .                                  .
+
+         r 1                a r tsc RET  a r merge RET  a r sinsqr RET  a s
+
+To edit a variable, type `s e' and the variable name, use regular
+Emacs editing commands as necessary, then type `M-# M-#' or
+`C-c C-c' to store the edited value back into the variable.
+You can also use `s e' to create a new variable if you wish.
+
+Notice that the first time you use each rule, Calc puts up a "compiling"
+message briefly.  The pattern matcher converts rules into a special
+optimized pattern-matching language rather than using them directly.
+This allows `a r' to apply even rather complicated rules very
+efficiently.  If the rule is stored in a variable, Calc compiles it
+only once and stores the compiled form along with the variable.  That's
+another good reason to store your rules in variables rather than
+entering them on the fly.
+
+(*{}) *Exercise 1.*  Type `m s' to get symbolic
+mode, then enter the formula `(2 + sqrt(2)) / (1 + sqrt(2))'.
+Using a rewrite rule, simplify this formula by multiplying both
+sides by the conjugate `1 - sqrt(2)'.  The result will have
+to be expanded by the distributive law; do this with another
+rewrite.  *Note 1: Rewrites Answer 1. (*{})
+
+The `a r' command can also accept a vector of rewrite rules, or
+a variable containing a vector of rules.
+
+     1:  [tsc, merge, sinsqr]          1:  [tan(x) := sin(x) / cos(x), ... ]
+         .                                 .
+
+         ' [tsc,merge,sinsqr] RET          =
+
+     1:  1 / cos(x) - sin(x) tan(x)    1:  cos(x)
+         .                                 .
+
+         s t trig RET  r 1                 a r trig RET  a s
+
+Calc tries all the rules you give against all parts of the formula,
+repeating until no further change is possible.  (The exact order in
+which things are tried is rather complex, but for simple rules like
+the ones we've used here the order doesn't really matter.
+*Note Nested Formulas with Rewrite Rules::.)
+
+Calc actually repeats only up to 100 times, just in case your rule set
+has gotten into an infinite loop.  You can give a numeric prefix argument
+to `a r' to specify any limit.  In particular, `M-1 a r' does
+only one rewrite at a time.
+
+     1:  1 / cos(x) - sin(x)^2 / cos(x)    1:  (1 - sin(x)^2) / cos(x)
+         .                                     .
+
+         r 1  M-1 a r trig RET                 M-1 a r trig RET
+
+You can type `M-0 a r' if you want no limit at all on the number
+of rewrites that occur.
+
+Rewrite rules can also be "conditional".  Simply follow the rule
+with a `::' symbol and the desired condition.  For example,
+
+     1:  exp(2 pi i) + exp(3 pi i) + exp(4 pi i)
+         .
+
+         ' exp(2 pi i) + exp(3 pi i) + exp(4 pi i) RET
+
+     1:  1 + exp(3 pi i) + 1
+         .
+
+         a r exp(k pi i) := 1 :: k % 2 = 0 RET
+
+(Recall, `k % 2' is the remainder from dividing `k' by 2,
+which will be zero only when `k' is an even integer.)
+
+An interesting point is that the variables `pi' and `i' were matched
+literally rather than acting as meta-variables.  This is because they
+are special-constant variables.  The special constants `e', `phi', and
+so on also match literally.  A common error with rewrite rules is to
+write, say, `f(a,b,c,d,e) := g(a+b+c+d+e)', expecting to match any `f'
+with five arguments but in fact matching only when the fifth argument is
+literally `e'!
+
+Rewrite rules provide an interesting way to define your own functions.
+Suppose we want to define `fib(n)' to produce the Nth
+Fibonacci number.  The first two Fibonacci numbers are each 1;
+later numbers are formed by summing the two preceding numbers in
+the sequence.  This is easy to express in a set of three rules:
+
+     ' [fib(1) := 1, fib(2) := 1, fib(n) := fib(n-1) + fib(n-2)] RET  s t fib
+
+     1:  fib(7)               1:  13
+         .                        .
+
+         ' fib(7) RET             a r fib RET
+
+One thing that is guaranteed about the order that rewrites are tried
+is that, for any given subformula, earlier rules in the rule set will
+be tried for that subformula before later ones.  So even though the
+first and third rules both match `fib(1)', we know the first will
+be used preferentially.
+
+This rule set has one dangerous bug:  Suppose we apply it to the
+formula `fib(x)'?  (Don't actually try this.)  The third rule
+will match `fib(x)' and replace it with `fib(x-1) + fib(x-2)'.
+Each of these will then be replaced to get `fib(x-2) + 2 fib(x-3) +
+fib(x-4)', and so on, expanding forever.  What we really want is to apply
+the third rule only when `n' is an integer greater than two.  Type
+`s e fib RET', then edit the third rule to:
+
+     fib(n) := fib(n-1) + fib(n-2) :: integer(n) :: n > 2
+
+Now:
+
+     1:  fib(6) + fib(x) + fib(0)      1:  8 + fib(x) + fib(0)
+         .                                 .
+
+         ' fib(6)+fib(x)+fib(0) RET        a r fib RET
+
+We've created a new function, `fib', and a new command,
+`a r fib RET', which means "evaluate all `fib' calls in
+this formula."  To make things easier still, we can tell Calc to
+apply these rules automatically by storing them in the special
+variable `EvalRules'.
+
+     1:  [fib(1) := ...]    .                1:  [8, 13]
+         .                                       .
+
+         s r fib RET        s t EvalRules RET    ' [fib(6), fib(7)] RET
+
+It turns out that this rule set has the problem that it does far
+more work than it needs to when `n' is large.  Consider the
+first few steps of the computation of `fib(6)':
+
+     fib(6) =
+     fib(5)              +               fib(4) =
+     fib(4)     +      fib(3)     +      fib(3)     +      fib(2) =
+     fib(3) + fib(2) + fib(2) + fib(1) + fib(2) + fib(1) + 1 = ...
+
+Note that `fib(3)' appears three times here.  Unless Calc's
+algebraic simplifier notices the multiple `fib(3)'s and combines
+them (and, as it happens, it doesn't), this rule set does lots of
+needless recomputation.  To cure the problem, type `s e EvalRules'
+to edit the rules (or just `s E', a shorthand command for editing
+`EvalRules') and add another condition:
+
+     fib(n) := fib(n-1) + fib(n-2) :: integer(n) :: n > 2 :: remember
+
+If a `:: remember' condition appears anywhere in a rule, then if
+that rule succeeds Calc will add another rule that describes that match
+to the front of the rule set.  (Remembering works in any rule set, but
+for technical reasons it is most effective in `EvalRules'.)  For
+example, if the rule rewrites `fib(7)' to something that evaluates
+to 13, then the rule `fib(7) := 13' will be added to the rule set.
+
+Type `' fib(8) RET' to compute the eighth Fibonacci number, then
+type `s E' again to see what has happened to the rule set.
+
+With the `remember' feature, our rule set can now compute
+`fib(N)' in just N steps.  In the process it builds
+up a table of all Fibonacci numbers up to N.  After we have
+computed the result for a particular N, we can get it back
+(and the results for all smaller N) later in just one step.
+
+All Calc operations will run somewhat slower whenever `EvalRules'
+contains any rules.  You should type `s u EvalRules RET' now to
+un-store the variable.
+
+(*{}) *Exercise 2.*  Sometimes it is possible to reformulate
+a problem to reduce the amount of recursion necessary to solve it.
+Create a rule that, in about N simple steps and without recourse
+to the `remember' option, replaces `fib(N, 1, 1)' with
+`fib(1, X, Y)' where X and Y are the
+Nth and N+1st Fibonacci numbers, respectively.  This rule is
+rather clunky to use, so add a couple more rules to make the "user
+interface" the same as for our first version: enter `fib(N)',
+get back a plain number.  *Note 2: Rewrites Answer 2. (*{})
+
+There are many more things that rewrites can do.  For example, there
+are `&&&' and `|||' pattern operators that create "and"
+and "or" combinations of rules.  As one really simple example, we
+could combine our first two Fibonacci rules thusly:
+
+     [fib(1 ||| 2) := 1, fib(n) := ... ]
+
+That means "`fib' of something matching either 1 or 2 rewrites
+to 1."
+
+You can also make meta-variables optional by enclosing them in `opt'.
+For example, the pattern `a + b x' matches `2 + 3 x' but not
+`2 + x' or `3 x' or `x'.  The pattern `opt(a) + opt(b) x'
+matches all of these forms, filling in a default of zero for `a'
+and one for `b'.
+
+(*{}) *Exercise 3.*  Your friend Joe had `2 + 3 x'
+on the stack and tried to use the rule
+`opt(a) + opt(b) x := f(a, b, x)'.  What happened?
+*Note 3: Rewrites Answer 3. (*{})
+
+(*{}) *Exercise 4.*  Starting with an integer `a',
+divide `a' by two if it is even, otherwise compute `3 a + 1'.
+Now repeat this step over and over.  A famous unproved conjecture
+is that for any starting `a', the sequence always eventually
+reaches 1.  Given the formula `seq(A, 0)', write a set of
+rules that convert this into `seq(1, N)' where N
+is the number of steps it took the sequence to reach the value 1.
+Now enhance the rules to accept `seq(A)' as a starting
+configuration, and to stop with just the number N by itself.
+Now make the result be a vector of values in the sequence, from A
+to 1.  (The formula `X|Y' appends the vectors X
+and Y.)  For example, rewriting `seq(6)' should yield the
+vector `[6, 3, 10, 5, 16, 8, 4, 2, 1]'.
+*Note 4: Rewrites Answer 4. (*{})
+
+(*{}) *Exercise 5.*  Define, using rewrite rules, a function
+`nterms(X)' that returns the number of terms in the sum
+X, or 1 if X is not a sum.  (A "sum" for our purposes
+is one or more non-sum terms separated by `+' or `-' signs,
+so that `2 - 3 (x + y) + x y' is a sum of three terms.)
+*Note 5: Rewrites Answer 5. (*{})
+
+(*{}) *Exercise 6.*  A Taylor series for a function is an
+infinite series that exactly equals the value of that function at
+values of `x' near zero.
+
+     cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
+
+The `a t' command produces a "truncated Taylor series" which
+is obtained by dropping all the terms higher than, say, `x^6'.
+Calc represents the truncated Taylor series as a polynomial in `x'.
+Mathematicians often write a truncated series using a "big-O" notation
+that records what was the lowest term that was truncated.
+
+     cos(x) = 1 - x^2 / 2! + O(x^3)
+
+The meaning of `O(x^3)' is "a quantity which is negligibly small
+if `x^3' is considered negligibly small as `x' goes to zero."
+
+The exercise is to create rewrite rules that simplify sums and products of
+power series represented as `POLYNOMIAL + O(VAR^N)'.
+For example, given `1 - x^2 / 2 + O(x^3)' and `x - x^3 / 6 + O(x^4)'
+on the stack, we want to be able to type `*' and get the result
+`x - 2:3 x^3 + O(x^4)'.  Don't worry if the terms of the sum are
+rearranged or if `a s' needs to be typed after rewriting.  (This one
+is rather tricky; the solution at the end of this chapter uses 6 rewrite
+rules.  Hint:  The `constant(x)' condition tests whether `x' is
+a number.)  *Note 6: Rewrites Answer 6. (*{})
+
+*Note Rewrite Rules::, for the whole story on rewrite rules.
+
+
+File: calc.info  Node: Programming Tutorial, Prev: Algebra Tutorial, Up: Tutorial, Next: Answers to Exercises
+
+Programming Tutorial
+====================
+
+The Calculator is written entirely in Emacs Lisp, a highly extensible
+language.  If you know Lisp, you can program the Calculator to do
+anything you like.  Rewrite rules also work as a powerful programming
+system.  But Lisp and rewrite rules take a while to master, and often
+all you want to do is define a new function or repeat a command a few
+times.  Calc has features that allow you to do these things easily.
+
+One very limited form of programming is defining your own functions.
+Calc's `Z F' command allows you to define a function name and
+key sequence to correspond to any formula.  Programming commands use
+the shift-`Z' prefix; the user commands they create use the lower
+case `z' prefix.
+
+     1:  1 + x + x^2 / 2 + x^3 / 6         1:  1 + x + x^2 / 2 + x^3 / 6
+         .                                     .
+
+         ' 1 + x + x^2/2! + x^3/3! RET         Z F e myexp RET RET RET y
+
+This polynomial is a Taylor series approximation to `exp(x)'.
+The `Z F' command asks a number of questions.  The above answers
+say that the key sequence for our function should be `z e'; the
+`M-x' equivalent should be `calc-myexp'; the name of the
+function in algebraic formulas should be also be `myexp'; the
+default argument list `(x)' is acceptable; and finally `y'
+answers the question "leave it in symbolic form for non-constant
+arguments?"
+
+     1:  1.3495     2:  1.3495     3:  1.3495
+         .          1:  1.34986    2:  1.34986
+                        .          1:  myexp(a + 1)
+                                       .
+
+         .3 z e         .3 E           ' a+1 RET z e
+
+First we call our new `exp' approximation with 0.3 as an
+argument, and compare it with the true `exp' function.  Then
+we note that, as requested, if we try to give `z e' an
+argument that isn't a plain number, it leaves the `myexp'
+function call in symbolic form.  If we had answered `n' to the
+final question, `myexp(a + 1)' would have evaluated by plugging
+`a + 1' in for `x' in the defining formula.
+
+(*{}) *Exercise 1.*  Fresnel's function `C(x)' is
+defined by the integral of `cos(pi t^2 / 2)' for `t = 0' to
+`x' in radians.  (It was invented because this integral has no
+solution in terms of basic functions; if you give it to Calc's `a i'
+command, it will ponder it for a long time and then give up.)  We can use
+the numerical integration command, however, which in algebraic notation
+is written like `ninteg(f(t), t, 0, x)' with any integrand
+`f(t)'.  Define a `z c' command and `fresC' function
+that implements this.  You will need to edit the default argument list
+a bit.  As a test, `fresC(1)' should return 0.77989.  (Hint:
+`ninteg' will run a lot faster if you reduce the precision to, say,
+six digits beforehand.)  *Note 1: Programming Answer 1. (*{})
+
+(Calc doesn't have Fresnel functions built-in, but it does have the
+"error function" `erf(x)'.  It turns out Fresnel's `C(x)'
+and `S(x)' (the same integral but with `sin' instead of
+`cos') can be written in terms of `erf' and complex numbers
+as follows:  `C(x) + i S(x) = (i+1) erf(sqrt(pi) (1-i) x / 2) / 2'.
+If you are curious, you could implement an alternate `z c' command
+that uses this method and compare the speeds of the two approaches.)
+
+The simplest way to do real "programming" of Emacs is to define a
+"keyboard macro".  A keyboard macro is simply a sequence of
+keystrokes which Emacs has stored away and can play back on demand.
+For example, if you find yourself typing `H a S x RET' often,
+you may wish to program a keyboard macro to type this for you.
+
+     1:  y = sqrt(x)          1:  x = y^2
+         .                        .
+
+         ' y=sqrt(x) RET       C-x ( H a S x RET C-x )
+
+     1:  y = cos(x)           1:  x = s1 arccos(y) + 2 pi n1
+         .                        .
+
+         ' y=cos(x) RET           X
+
+When you type `C-x (', Emacs begins recording.  But it is also
+still ready to execute your keystrokes, so you're really "training"
+Emacs by walking it through the procedure once.  When you type
+`C-x )', the macro is recorded.  You can now type `X' to
+re-execute the same keystrokes.
+
+You can give a name to your macro by typing `Z K'.
+
+     1:  .              1:  y = x^4         1:  x = s2 sqrt(s1 sqrt(y))
+                            .                   .
+
+       Z K x RET            ' y=x^4 RET         z x
+
+Notice that we use shift-`Z' to define the command, and lower-case
+`z' to call it up.
+
+Keyboard macros can call other macros.
+
+     1:  abs(x)        1:  x = s1 y                1:  2 / x    1:  x = 2 / y
+         .                 .                           .            .
+
+      ' abs(x) RET   C-x ( ' y RET a = z x C-x )    ' 2/x RET       X
+
+(*{}) *Exercise 2.*  Define a keyboard macro to negate
+the item in level 3 of the stack, without disturbing the rest of
+the stack.  *Note 2: Programming Answer 2. (*{})
+
+(*{}) *Exercise 3.*  Define keyboard macros to compute
+the following functions:
+
+  1. Compute `sin(x) / x', where `x' is the number on the
+     top of the stack.
+
+  2. Compute the base-`b' logarithm, just like the `B' key except
+     the arguments are taken in the opposite order.
+
+  3. Produce a vector of integers from 1 to the integer on the top of
+     the stack.
+*Note 3: Programming Answer 3. (*{})
+
+(*{}) *Exercise 4.*  Define a keyboard macro to compute
+the average (mean) value of a list of numbers.
+*Note 4: Programming Answer 4. (*{})
+
+In many programs, some of the steps must execute several times.
+Calc has "looping" commands that allow this.  Loops are useful
+inside keyboard macros, but actually work at any time.
+
+     1:  x^6          2:  x^6        1: 360 x^2
+         .            1:  4             .
+                          .
+
+       ' x^6 RET          4         Z < a d x RET Z >
+
+Here we have computed the fourth derivative of `x^6' by
+enclosing a derivative command in a "repeat loop" structure.
+This structure pops a repeat count from the stack, then
+executes the body of the loop that many times.
+
+If you make a mistake while entering the body of the loop,
+type `Z C-g' to cancel the loop command.
+
+Here's another example:
+
+     3:  1               2:  10946
+     2:  1               1:  17711
+     1:  20                  .
+         .
+
+     1 RET RET 20       Z < TAB C-j + Z >
+
+The numbers in levels 2 and 1 should be the 21st and 22nd Fibonacci
+numbers, respectively.  (To see what's going on, try a few repetitions
+of the loop body by hand; `C-j', also on the Line-Feed or LFD
+key if you have one, makes a copy of the number in level 2.)
+
+A fascinating property of the Fibonacci numbers is that the `n'th
+Fibonacci number can be found directly by computing `phi^n / sqrt(5)'
+and then rounding to the nearest integer, where `phi', the
+"golden ratio," is `(1 + sqrt(5)) / 2'.  (For convenience, this constant is available
+from the `phi' variable, or the `I H P' command.)
+
+     1:  1.61803         1:  24476.0000409    1:  10945.9999817    1:  10946
+         .                   .                    .                    .
+
+         I H P               21 ^                 5 Q /                R
+
+(*{}) *Exercise 5.*  The "continued fraction"
+representation of `phi' is `1 + 1/(1 + 1/(1 + 1/( ... )))'.
+We can compute an approximate value by carrying this however far
+and then replacing the innermost `1/( ... )' by 1.  Approximate
+`phi' using a twenty-term continued fraction.
+*Note 5: Programming Answer 5. (*{})
+
+(*{}) *Exercise 6.*  Linear recurrences like the one for
+Fibonacci numbers can be expressed in terms of matrices.  Given a
+vector `[a, b]' determine a matrix which, when multiplied by this
+vector, produces the vector `[b, c]', where `a', `b' and
+`c' are three successive Fibonacci numbers.  Now write a program
+that, given an integer `n', computes the `n'th Fibonacci number
+using matrix arithmetic.  *Note 6: Programming Answer 6. (*{})
+
+A more sophisticated kind of loop is the "for" loop.  Suppose
+we wish to compute the 20th "harmonic" number, which is equal to
+the sum of the reciprocals of the integers from 1 to 20.
+
+     3:  0               1:  3.597739
+     2:  1                   .
+     1:  20
+         .
+
+     0 RET 1 RET 20         Z ( & + 1 Z )
+
+The "for" loop pops two numbers, the lower and upper limits, then
+repeats the body of the loop as an internal counter increases from
+the lower limit to the upper one.  Just before executing the loop
+body, it pushes the current loop counter.  When the loop body
+finishes, it pops the "step," i.e., the amount by which to
+increment the loop counter.  As you can see, our loop always
+uses a step of one.
+
+This harmonic number function uses the stack to hold the running
+total as well as for the various loop housekeeping functions.  If
+you find this disorienting, you can sum in a variable instead:
+
+     1:  0         2:  1                  .            1:  3.597739
+         .         1:  20                                  .
+                       .
+
+         0 t 7       1 RET 20      Z ( & s + 7 1 Z )       r 7
+
+The `s +' command adds the top-of-stack into the value in a
+variable (and removes that value from the stack).
+
+It's worth noting that many jobs that call for a "for" loop can
+also be done more easily by Calc's high-level operations.  Two
+other ways to compute harmonic numbers are to use vector mapping
+and reduction (`v x 20', then `V M &', then `V R +'),
+or to use the summation command `a +'.  Both of these are
+probably easier than using loops.  However, there are some
+situations where loops really are the way to go:
+
+(*{}) *Exercise 7.*  Use a "for" loop to find the first
+harmonic number which is greater than 4.0.
+*Note 7: Programming Answer 7. (*{})
+
+Of course, if we're going to be using variables in our programs,
+we have to worry about the programs clobbering values that the
+caller was keeping in those same variables.  This is easy to
+fix, though:
+
+         .        1:  0.6667       1:  0.6667     3:  0.6667
+                      .                .          2:  3.597739
+                                                  1:  0.6667
+                                                      .
+
+        Z `    p 4 RET 2 RET 3 /   s 7 s s a RET    Z '  r 7 s r a RET
+
+When we type `Z `' (that's a back-quote character), Calc saves
+its mode settings and the contents of the ten "quick variables"
+for later reference.  When we type `Z '' (that's an apostrophe
+now), Calc restores those saved values.  Thus the `p 4' and
+`s 7' commands have no effect outside this sequence.  Wrapping
+this around the body of a keyboard macro ensures that it doesn't
+interfere with what the user of the macro was doing.  Notice that
+the contents of the stack, and the values of named variables,
+survive past the `Z '' command.
+
+The "Bernoulli numbers" are a sequence with the interesting
+property that all of the odd Bernoulli numbers are zero, and the
+even ones, while difficult to compute, can be roughly approximated
+by the formula `2 n! / (2 pi)^n'.  Let's write a keyboard
+macro to compute (approximate) Bernoulli numbers.  (Calc has a
+command, `k b', to compute exact Bernoulli numbers, but
+this command is very slow for large `n' since the higher
+Bernoulli numbers are very large fractions.)
+
+     1:  10               1:  0.0756823
+         .                    .
+
+         10     C-x ( RET 2 % Z [ DEL 0 Z : ' 2 $! / (2 pi)^$ RET = Z ] C-x )
+
+You can read `Z [' as "then," `Z :' as "else," and
+`Z ]' as "end-if."  There is no need for an explicit "if"
+command.  For the purposes of `Z [', the condition is "true"
+if the value it pops from the stack is a nonzero number, or "false"
+if it pops zero or something that is not a number (like a formula).
+Here we take our integer argument modulo 2; this will be nonzero
+if we're asking for an odd Bernoulli number.
+
+The actual tenth Bernoulli number is `5/66'.
+
+     3:  0.0756823    1:  0          1:  0.25305    1:  0          1:  1.16659
+     2:  5:66             .              .              .              .
+     1:  0.0757575
+         .
+
+     10 k b RET c f   M-0 DEL 11 X   DEL 12 X       DEL 13 X       DEL 14 X
+
+Just to exercise loops a bit more, let's compute a table of even
+Bernoulli numbers.
+
+     3:  []             1:  [0.10132, 0.03079, 0.02340, 0.033197, ...]
+     2:  2                  .
+     1:  30
+         .
+
+      [ ] 2 RET 30          Z ( X | 2 Z )
+
+The vertical-bar `|' is the vector-concatenation command.  When
+we execute it, the list we are building will be in stack level 2
+(initially this is an empty list), and the next Bernoulli number
+will be in level 1.  The effect is to append the Bernoulli number
+onto the end of the list.  (To create a table of exact fractional
+Bernoulli numbers, just replace `X' with `k b' in the above
+sequence of keystrokes.)
+
+With loops and conditionals, you can program essentially anything
+in Calc.  One other command that makes looping easier is `Z /',
+which takes a condition from the stack and breaks out of the enclosing
+loop if the condition is true (non-zero).  You can use this to make
+"while" and "until" style loops.
+
+If you make a mistake when entering a keyboard macro, you can edit
+it using `Z E'.  First, you must attach it to a key with `Z K'.
+One technique is to enter a throwaway dummy definition for the macro,
+then enter the real one in the edit command.
+
+     1:  3                   1:  3           Keyboard Macro Editor.
+         .                       .           Original keys: 1 RET 2 +
+
+                                             type "1\r"
+                                             type "2"
+                                             calc-plus
+
+     C-x ( 1 RET 2 + C-x )    Z K h RET      Z E h
+
+This shows the screen display assuming you have the `macedit'
+keyboard macro editing package installed, which is usually the case
+since a copy of `macedit' comes bundled with Calc.
+
+A keyboard macro is stored as a pure keystroke sequence.  The
+`macedit' package (invoked by `Z E') scans along the
+macro and tries to decode it back into human-readable steps.
+If a key or keys are simply shorthand for some command with a
+`M-x' name, that name is shown.  Anything that doesn't correspond
+to a `M-x' command is written as a `type' command.
+
+Let's edit in a new definition, for computing harmonic numbers.
+First, erase the three lines of the old definition.  Then, type
+in the new definition (or use Emacs `M-w' and `C-y' commands
+to copy it from this page of the Info file; you can skip typing
+the comments that begin with `#').
+
+     calc-kbd-push         # Save local values (Z `)
+     type "0"              # Push a zero
+     calc-store-into       # Store it in variable 1
+     type "1"
+     type "1"              # Initial value for loop
+     calc-roll-down        # This is the TAB key; swap initial & final
+     calc-kbd-for          # Begin "for" loop...
+     calc-inv              #   Take reciprocal
+     calc-store-plus       #   Add to accumulator
+     type "1"
+     type "1"              #   Loop step is 1
+     calc-kbd-end-for      # End "for" loop
+     calc-recall           # Now recall final accumulated value
+     type "1"
+     calc-kbd-pop          # Restore values (Z ')
+
+Press `M-# M-#' to finish editing and return to the Calculator.
+
+     1:  20         1:  3.597739
+         .              .
+
+         20             z h
+
+If you don't know how to write a particular command in `macedit'
+format, you can always write it as keystrokes in a `type' command.
+There is also a `keys' command which interprets the rest of the
+line as standard Emacs keystroke names.  In fact, `macedit' defines
+a handy `read-kbd-macro' command which reads the current region
+of the current buffer as a sequence of keystroke names, and defines that
+sequence on the `X' (and `C-x e') key.  Because this is so
+useful, Calc puts this command on the `M-# m' key.  Try reading in
+this macro in the following form:  Press `C-@' (or `C-SPC') at
+one end of the text below, then type `M-# m' at the other.
+
+     Z ` 0 t 1
+         1 TAB
+         Z (  & s + 1  1 Z )
+         r 1
+     Z '
+
+(*{}) *Exercise 8.*  A general algorithm for solving
+equations numerically is "Newton's Method".  Given the equation
+`f(x) = 0' for any function `f', and an initial guess
+`x_0' which is reasonably close to the desired solution, apply
+this formula over and over:
+
+     new_x = x - f(x)/f'(x)
+
+where `f'(x)' is the derivative of `f'.  The `x'
+values will quickly converge to a solution, i.e., eventually
+`new_x' and `x' will be equal to within the limits
+of the current precision.  Write a program which takes a formula
+involving the variable `x', and an initial guess `x_0',
+on the stack, and produces a value of `x' for which the formula
+is zero.  Use it to find a solution of `sin(cos(x)) = 0.5'
+near `x = 4.5'.  (Use angles measured in radians.)  Note that
+the built-in `a R' (`calc-find-root') command uses Newton's
+method when it is able.  *Note 8: Programming Answer 8. (*{})
+
+(*{}) *Exercise 9.*  The "digamma" function `psi(z)'
+is defined as the derivative of `ln(gamma(z))'.  For large
+values of `z', it can be approximated by the infinite sum
+
+     psi(z) ~= ln(z) - 1/2z - sum(bern(2 n) / 2 n z^(2 n), n, 1, inf)
+
+where `sum' represents the sum over `n' from 1 to infinity
+(or to some limit high enough to give the desired accuracy), and
+the `bern' function produces (exact) Bernoulli numbers.
+While this sum is not guaranteed to converge, in practice it is safe.
+An interesting mathematical constant is Euler's gamma, which is equal
+to about 0.5772.  One way to compute it is by the formula,
+`gamma = -psi(1)'.  Unfortunately, 1 isn't a large enough argument
+for the above formula to work (5 is a much safer value for `z').
+Fortunately, we can compute `psi(1)' from `psi(5)' using
+the recurrence `psi(z+1) = psi(z) + 1/z'.  Your task:  Develop
+a program to compute `psi(z)'; it should "pump up" `z'
+if necessary to be greater than 5, then use the above summation
+formula.  Use looping commands to compute the sum.  Use your function
+to compute `gamma' to twelve decimal places.  (Calc has a built-in command
+for Euler's constant, `I P', which you can use to check your answer.)
+*Note 9: Programming Answer 9. (*{})
+
+(*{}) *Exercise 10.*  Given a polynomial in `x' and
+a number `m' on the stack, where the polynomial is of degree
+`m' or less (i.e., does not have any terms higher than `x^m'),
+write a program to convert the polynomial into a list-of-coefficients
+notation.  For example, `5 x^4 + (x + 1)^2' with `m = 6'
+should produce the list `[1, 2, 1, 0, 5, 0, 0]'.  Also develop
+a way to convert from this form back to the standard algebraic form.
+*Note 10: Programming Answer 10. (*{})
+
+(*{}) *Exercise 11.*  The "Stirling numbers of the
+first kind" are defined by the recurrences,
+
+     s(n,n) = 1   for n >= 0,
+     s(n,0) = 0   for n > 0,
+     s(n+1,m) = s(n,m-1) - n s(n,m)   for n >= m >= 1.
+
+This can be implemented using a "recursive" program in Calc; the
+program must invoke itself in order to calculate the two righthand
+terms in the general formula.  Since it always invokes itself with
+"simpler" arguments, it's easy to see that it will always
+eventually finish the computation.  Recursion is a little
+difficult with Emacs keyboard macros since the macro is executed
+before its definition is complete.  So here's the recommended
+strategy:  Create a "dummy macro" and assign it to a key with,
+e.g., `Z K s'.  Now enter the true definition, using the
+`z s' command to call itself recursively, then assign it to
+the same key with `Z K s'.  Now the `z s' command will
+run the complete recursive program.  (Another way is to use `Z E'
+or `M-# m' (`read-kbd-macro') to read the whole macro at once,
+thus avoiding the "training" phase.)  The task:  Write a program
+that computes Stirling numbers of the first kind, given `n' and
+`m' on the stack.  Test it with *small* inputs like
+`s(4,2)'.  (There is a built-in command for Stirling numbers,
+`k s', which you can use to check your answers.)
+*Note 11: Programming Answer 11. (*{})
+
+The programming commands we've seen in this part of the tutorial
+are low-level, general-purpose operations.  Often you will find
+that a higher-level function, such as vector mapping or rewrite
+rules, will do the job much more easily than a detailed, step-by-step
+program can.
+
+(*{}) *Exercise 12.*  Write another program for
+computing Stirling numbers of the first kind, this time using
+rewrite rules.  Once again, `n' and `m' should be taken
+from the stack.  *Note 12: Programming Answer 12. (*{})
+
+
+This ends the tutorial section of the Calc manual.  Now you know enough
+about Calc to use it effectively for many kinds of calculations.  But
+Calc has many features that were not even touched upon in this tutorial.
+The rest of this manual tells the whole story.
+
+

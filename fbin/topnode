@@ -1,0 +1,198 @@
+# fn - Last modified 12/2/92.
+# "find node" - cd to a node using the FNPATH as a CDPATH.
+# If there are any wildcards, go through the FNPATH a directory at a
+#	time to do expansion of wildcards at each step.
+# Always prints out the new directory, even if there's an error, in
+#   case it's being used in backquotes.
+# Written by David W. Dykstra.
+function fn
+{
+    case $# in
+	1) ;;
+	*) echo "Usage: fn nodepath" >&2; pwd; return 1;;
+    esac
+    typeset RETCODE ARG IFSSET SAVIFS SAVCDPATH DIR DIRS EXP
+    case ${FNPATH:-} in
+	"") echo "fn: error, FNPATH not set" >&2
+	    RETCODE=1
+	    ;;
+	*)  ARG=$1
+	    case $ARG in
+		/*) cd $ARG >/dev/null
+		    RETCODE=$?
+		    ;;
+		*\**|*\?*)
+		    IFSSET="${IFS+1}"
+		    SAVIFS="${IFS:-}"
+		    IFS=" :"
+		    DIRS=""
+		    for DIR in $FNPATH
+		    do
+			EXP="`echo $DIR/$ARG`"
+			case "$EXP" in
+			    "$DIR/$ARG")
+				;;
+			    *)  DIRS="$DIRS $EXP"
+				;;
+			esac
+		    done
+		    if [ "$IFSSET" = 1 ]
+		    then
+			IFS="$SAVIFS"
+		    else
+			unset IFS
+		    fi
+		    case "$DIRS" in
+			"") echo "fn: $ARG: not found" >&2
+			    RETCODE=1
+			    ;;
+			" "*" "*) 
+			    echo "fn: ambiguous $ARG:$DIRS" >&2
+			    RETCODE=1
+			    ;;
+			*)  cd $DIRS >/dev/null
+			    RETCODE=$?
+			    ;;
+		    esac
+		    ;;
+		*)  SAVCDPATH="${CDPATH:-}"
+		    CDPATH=$FNPATH
+		    cd $ARG >/dev/null
+		    RETCODE=$?
+		    if [ "$SAVCDPATH" = "" ]
+		    then
+			unset CDPATH
+		    else
+			CDPATH=$SAVCDPATH
+		    fi
+		    ;;
+	    esac
+	    ;;
+    esac
+    pwd
+    return $RETCODE
+}
+
+# topnode - Last modified 12/2/92.
+# Go to the top of the current node, or of the node directory
+#     passed in as an argument, and print out the top.
+# The top of a node is one level below a directory in the FNPATH.
+function topnode
+{
+    case $# in
+	0|1) ;;
+	*) echo "Usage: topnode [fullpath]" >&2; return 1;;
+    esac
+    typeset IFSSET SAVIFS FNDIR CURDIR TMP
+    CURDIR=${1:-$PWD}/
+    IFSSET="${IFS+1}"
+    SAVIFS="${IFS:-}"
+    IFS=" :"
+    for FNDIR in ${FNPATH:-}
+    do
+	case $CURDIR in
+	    $FNDIR/*/*)
+		if [ "$IFSSET" = 1 ]
+		then
+		    IFS="$SAVIFS"
+		else
+		    unset IFS
+		fi
+		TMP=${CURDIR#$FNDIR/*/}
+		cd ${CURDIR%/$TMP} >/dev/null
+		pwd
+		return
+		;;
+	esac
+    done
+    if [ "$IFSSET" = 1 ]
+    then
+	IFS="$SAVIFS"
+    else
+	unset IFS
+    fi
+    echo "topnode: ${CURDIR%/} not under a directory in FNPATH" >&2
+    return 1
+}
+
+# cn - Last modified 6/2/93.
+# cn: change to a corresponding directory in another node.
+# If the arg is "-", it goes back to the previous node.  If there are
+#   no arguments then go to the last node listed in the VPATH if
+#   set, else the last node of the DEFVPATH.
+# Always prints out the new directory, even if there's an error, in
+#   case it's being used in backquotes.
+# Written by David W. Dykstra.
+function cn
+{
+    case $# in
+	0|1) ;;
+	*) echo "Usage: cn [- | nodename]" >&2; pwd; return 1;;
+    esac
+    typeset NEWNODE TOPNODE SVPWD RETCODE
+    case ${1:-} in
+	-)  case ${OLDNODE:-} in
+		"") echo "cn: OLDNODE not set yet, no old node" >&2
+		    pwd; return 1
+		    ;;
+	    esac
+	    NEWNODE=$OLDNODE
+	    ;;
+	"") NEWNODE=${VPATH:-${DEFVPATH:-}}
+	    case $NEWNODE in
+		"") echo "cn: DEFVPATH and VPATH not set, no default node" >&2
+		    pwd; return 1
+		    ;;
+	    esac
+	    NEWNODE=${NEWNODE##*/}
+	    ;;
+	*)  NEWNODE=$1
+	    ;;
+    esac
+    TOPNODE=`topnode`
+    case $TOPNODE in
+	"") # must have been an error
+	    pwd; return 1
+	    ;;
+    esac
+    SVPWD=${OLDPWD:-}
+    fn ${NEWNODE}${PWD#$TOPNODE}
+    RETCODE=$?
+    OLDPWD=$SVPWD
+    OLDNODE=${TOPNODE##*/}
+    return $RETCODE
+}
+
+# setvpath - Last modified 4/13/90.
+# Sets a VPATH using the current node, any arguments, and the DEFVPATH.
+# Uses 'fn' to find the nodes.
+# Written by David W. Dykstra.
+function setvpath
+{
+    typeset EXTVPATH ARG NODE
+    EXTVPATH=`topnode`
+    case $EXTVPATH in
+	"") # must have been an error
+	    return 1
+	    ;;
+    esac
+    for ARG
+    do
+	NODE="`fn $ARG 2>/dev/null`"
+	case $NODE in
+	    "") echo "setvpath: warning, cannot find node $ARG!" >&2
+		;;
+	    *)  EXTVPATH=$EXTVPATH:$NODE
+		;;
+	esac
+    done
+    case ${DEFVPATH:-} in
+	"") echo "setvpath: warning, DEFVPATH not set" >&2
+	    VPATH=$EXTVPATH
+	    ;;
+	*)  VPATH=$EXTVPATH:$DEFVPATH
+	    ;;
+    esac
+    export VPATH
+    echo $VPATH
+}

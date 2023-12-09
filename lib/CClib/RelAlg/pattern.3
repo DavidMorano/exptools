@@ -1,0 +1,48 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/pattern/s.pattern.3"
+.\"
+.PH "'PATTERN(3SB)'SBLIB C++ Library'PATTERN(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Pattern - regular expression matching
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX 
+\#include <sblib.h>
+
+.SO pattern.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The \*(Pn class uses the regcmp(3X) regular expression matcher to test if
+a string conforms to a pattern.  The \fIpattern\fP is specified to the
+constructor.  The Pattern::match() operator returns TRUE if a \fIstring\fP
+matches the pattern and FALSE if it does not.  The constant
+\fIpattern_string\fP may be used to printout 
+Pattern's regular expression pattern.  Although regcmp(3X) allows assignment of 
+pieces of the matched string, Pattern does not.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The \*(Pn constructor fails and causes subsequent calls to \fBmatch()\fP to
+return FALSE under the following circumstances:
+.VL 10 5
+.LI "BAD ASSIGNMENT TEST"
+- the internal check for assignments within a pattern was itself an invalid
+pattern.  This error should not occur unless \*(Pn itself is broken.
+.LI "PATTERN ASSIGNMENT"
+- the \fIpattern\fP argument to the constructor contains assignments
+($n constructs).  Assignment is not allowed by \*(Pn since there is no way
+to pass the variable to be assigned.
+.LI "BAD PATTERN"
+- the \fIpattern\fP argument to the constructor was rejected by regcmp(3X).
+.LE
+.LI "\fBEXAMPLES\fP"
+.br
+.EX
+.SO patternE.ex
+.EE
+.LE

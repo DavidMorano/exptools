@@ -1,0 +1,462 @@
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    cdecl, c++decl - Compose C and C++ type declarations
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    ccccddddeeeeccccllll [-a |	-+ | -p	| -r] [-cidDV]
+		 [[_f_i_l_e_s ...] |	... | sssseeeetttt ... |	hhhheeeellllpppp ... | ???? ... ]
+	    cccc++++++++ddddeeeeccccllll [-a	| -+ | -p | -r]	[-cidDV]
+		 [[_f_i_l_e_s ...] |	... | sssseeeetttt ... |	hhhheeeellllpppp ... | ???? ... ]
+	    ...
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _C_d_e_c_l (and _c++_d_e_c_l ) is a program for encoding and decoding
+	    C (C++) type-declarations.	The C language (the default for
+	    _c_d_e_c_l, or with the ----aaaa option) is based on the ANSI/ISO C
+	    Standard; optionally, the C	language may be	based on the
+	    pre-ANSI definition	defined	by Kernighan & Ritchie's _T_h_e _C
+	    _P_r_o_g_r_a_m_m_i_n_g	_L_a_n_g_u_a_g_e book (the ----pppp option is	used), or the C
+	    language defined by	the Ritchie PDP-11 C compiler (the ----rrrr
+	    option is used).  The C++ language (the default for	_c++_d_e_c_l,
+	    or with the	----++++ option) is based on Stroustrup's _T_h_e	_C++
+	    _P_r_o_g_r_a_m_m_i_n_g	_L_a_n_g_u_a_g_e, plus the version 2.0 additions to the
+	    language.
+
+	    _C_d_e_c_l reads	the named files	for statements in the language
+	    described below.  A	transformation is made from that
+	    language to	C (C++)	or pseudo-English.  The	results	of this
+	    transformation are written on standard output.  If no files
+	    are	named, or a filename of	``-'' is encountered, standard
+	    input will be read.	 If standard input is coming from a ter-
+	    minal, (or the ----iiii option is	used), a prompt	will be	written
+	    to the terminal before each	line.  If _c_d_e_c_l	is invoked as
+	    _e_x_p_l_a_i_n, _d_e_c_l_a_r_e or	_c_a_s_t, or the first argument is one of
+	    the	commands discussed below, the argument list will be
+	    interpreted	according to the grammar shown below instead of
+	    as file names.
+
+	    You	can use	_c_d_e_c_l as you create a C	program	with an	editor
+	    like vi(1) or emacs(1).  You simply	type in	the pseudo-
+	    English version of the declaration and apply _c_d_e_c_l as a
+	    filter to the line.	 (In vi(1), type ``!!cdecl<cr>''.)
+
+	    If the _c_r_e_a_t_e _p_r_o_g_r_a_m option ----cccc is used, the output	will
+	    include semi-colons	after variable declarations and	curly
+	    brace pairs	after function declarations.
+
+	    The	----VVVV option will print out the version numbers of	the
+	    files used to create the process.  If the source is	compiled
+	    with debugging information turned on, the ----dddd option	will
+	    enable it to be output.  If	the source is compiled with YACC
+	    debugging information turned on, the ----DDDD option will	enable
+	    it to be output.
+
+
+
+
+       Page 1					       (printed	1/12/95)
+
+
+
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+       CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLAAAANNNNGGGGUUUUAAAAGGGGEEEE
+	    There are six statements in	the language.  The _d_e_c_l_a_r_e
+	    statement composes a C type-declaration from a verbose
+	    description.  The _c_a_s_t statement composes a	C type-cast as
+	    might appear in an expression.  The	_e_x_p_l_a_i_n	statement
+	    decodes a C	type-declaration or cast, producing a verbose
+	    description.  The _h_e_l_p (or ?)  statement provides a	help
+	    message.  The _q_u_i_t (or _e_x_i_t) statement (or the end of file)
+	    exits the program.	The _s_e_t	statement allows the command
+	    line options to be set interactively.  Each	statement is
+	    separated by a semi-colon or a newline.
+
+	    The	following grammar describes the	language.  In the gram-
+	    mar, words in "<>" are non-terminals, bare lower-case words
+	    are	terminals that stand for themselves.  Bare upper-case
+	    words are other lexical tokens: NOTHING means the empty
+	    string; NAME means a C identifier; NUMBER means a string of
+	    decimal digits; and	NL means the new-line or semi-colon
+	    characters.
+
+	    Some synonyms are permitted	during a declaration: character
+	    -> char, constant -> const,	enumeration -> enum, func ->
+	    function, integer -> int, ptr -> pointer, ref -> reference,
+	    ret	-> returning, structure	-> struct, and vector -> array.
+
+		 <program> ::= NOTHING
+			   | <program> <stmt> NL
+		 <stmt>	   ::= NOTHING
+			   | declare NAME as typedef for <opt_storage> <adecl>
+			   | declare NAME as <opt_storage> <adecl>
+			   | declare <opt_storage> <adecl>
+			   | cast NAME into <adecl>
+			   | cast <adecl>
+			   | explain <opttypedef> <optstorage> <opt_constvol_list> <type> <cdecl>
+			   | explain <opttypedef> <storage> <opt_constvol_list>	<opt_type> <cdecl>
+			   | explain <opt_typedef> <opt_storage> <constvol_list> <opt_type> <cdecl>
+			   | explain ( <opt_constvol_list> <type> <cast> ) optional-NAME
+			   | set <options>
+			   | help | ?
+			   | quit
+			   | exit
+		 <adecl>   ::= array of	<adecl>
+			   | array NUMBER of <adecl>
+			   | function returning	<adecl>
+			   | function (	<adecl-list> ) returning <adecl>
+			   | <opt_constvol_list> pointer to <adecl>
+			   | <opt_constvol_list> pointer to <opt_constvol_list>	member of
+			     class NAME	of <adecl>
+			   | <opt_constvol_list> reference to <adecl>
+			   | <opt_constvol_list> <type>
+		 <cdecl>   ::= <cdecl1>
+			   | * <opt_constvol_list> <cdecl>
+
+
+
+       Page 2					       (printed	1/12/95)
+
+
+
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+			   | NAME ::* <cdecl>
+			   | ( NAME ::*	NAME ) ( ) <opt_constvol_list>
+			   | ( NAME ::*	NAME ) ( <castlist> ) <opt_constvol_list>
+			   | & <opt_constvol_list> <cdecl>
+		 <cdecl1>  ::= <cdecl1>	( )
+			   | <cdecl1> (	<castlist> )
+			   | <cdecl1> [	]
+			   | <cdecl1> [	NUMBER ]
+			   | ( <cdecl> )
+			   | NAME
+		 <cast>	   ::= NOTHING
+			   | ( )
+			   | ( <cast> )	( )
+			   | ( <cast> )	( <castlist> )
+			   | ( <cast> )
+			   | NAME :: * <cast>
+			   | ( NAME :: * ) ( ) <opt_constvol_list>
+			   | ( NAME :: * ) ( <castlist>	) <opt_constvol_list>
+			   | * <cast>
+			   | & <cast>
+			   | <cast> [ ]
+			   | <cast> [ NUMBER ]
+		 <type>	   ::= <typename> | <modlist>
+			   | <modlist> <typename>
+			   | struct NAME | union NAME |	enum NAME | class NAME
+		 <castlist>::= <castarglist> , ...
+			   | <castarglist>
+		 <castarglist>::= <castarglist>	, <castarglist>
+			   | <opt_constvol_list> <type>	<cast>
+			   | <name>
+		 <adecllist>::=	<adecllist> , <adecllist>
+			   | NOTHING
+			   | <name>
+			   | <adecl>
+			   | <name> as <adecl>
+		 <typename>::= int | char | float | double | void
+		 <modlist> ::= <modifier> | <modlist> <modlist1>
+		 <modlist1>::= <modlist> | <cv>
+		 <modifier>::= unsigned	| signed | long	| short
+		 <cv>	   ::= const | volatile
+		 <storage> ::= auto | extern | static |	register
+		 <opt_constvol_list>::=	NOTHING	| <cv> <opt_constvol_list>
+		 <optstorage>::= NOTHING | <storage>
+		 <opttypedef>::= NOTHING | typedef
+		 <options> ::= NOTHING | <options>
+			   | create | nocreate
+			   | interactive | nointeractive
+			   | ritchie | preansi | ansi |	cplusplus
+			   | debug | nodebug | yydebug | noyydebug
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	    To declare an array	of pointers to functions like malloc(3),
+
+
+
+       Page 3					       (printed	1/12/95)
+
+
+
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+	    do
+
+		 declare fptab as array	of pointer to function returning
+		 pointer to char
+
+	    The	result of this command is
+
+		 char *(*fptab[])()
+
+	    When you see this declaration in someone else's code, you
+	    can	make sense out of it by	doing
+
+		 explain char *(*fptab[])()
+
+	    The	proper declaration for signal(2), ignoring function pro-
+	    totypes, is	easily described in _c_d_e_c_l's language:
+
+		 declare signal	as function returning pointer to func-
+		 tion returning	void
+
+	    which produces
+
+		 void (*signal())()
+
+	    The	function declaration that results has two sets of empty
+	    parentheses.  The author of	such a function	might wonder
+	    where to put the parameters:
+
+		 declare signal	as function (arg1,arg2)	returning
+		 pointer to function returning void
+
+	    provides the following solution:
+
+		 void (*signal(arg1,arg2))()
+
+	    If we want to add in the function prototypes, the function
+	    prototype for a function such as _exit(2) would be declared
+	    with:
+
+		 declare _exit as function (retvalue as	int) returning
+		 void
+
+	    giving
+
+		 void _exit(int	retvalue)
+
+	    As a more complex example using function prototypes, sig-
+	    nal(2) could be fully defined as:
+
+		 declare signal	as function(x as int, y	as pointer to
+		 function(int) returning void) returning pointer to
+		 function(int) returning void
+
+
+
+       Page 4					       (printed	1/12/95)
+
+
+
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+	    giving
+
+		 void (*signal(int x, void (*y)(int )))(int )
+
+	    Running _c_d_e_c_l with the -_c option on	the above declaration
+	    produces the following:
+
+		 void (*signal(int x, void (*y)(int )))(int ) {	}
+
+	    _C_d_e_c_l can help figure out the where	to put the "const" and
+	    "volatile" modifiers in declarations, thus
+
+		 declare foo as	pointer	to const int
+
+	    gives
+
+		 const int *foo
+
+	    while
+
+		 declare foo as	const pointer to int
+
+	    gives
+
+		 int * const foo
+
+	    _C++_d_e_c_l can	help with declaring references,	thus
+
+		 declare x as reference	to pointer to character
+
+	    gives
+
+		 char *&x
+
+	    _C++_d_e_c_l can	help with pointers to member of	classes, thus
+	    declaring a	pointer	to an integer member of	a class	X with
+
+		 declare foo as	pointer	to member of class X of	int
+
+	    gives
+
+		 int X::*foo
+
+	    and
+
+		 declare foo as	pointer	to const member	of class X func-
+		 tion (arg1, arg2) returning pointer to	class Y
+
+	    gives
+
+		 class Y *(X::*foo)(arg1, arg2)	const
+
+
+
+
+       Page 5					       (printed	1/12/95)
+
+
+
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+	    _C_d_e_c_l can help with	typedef	statements:
+
+		 declare x as typedef for pointer to int
+
+	    gives
+
+		 typedef int *x
+
+	    and
+
+		 explain typedef int *x
+
+	    gives
+
+		 declare x as typedef for pointer to int
+
+       DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+	    The	declare, cast and explain statements try to point out
+	    constructions that are not supported in C.	In some	cases, a
+	    guess is made as to	what was really	intended.  In these
+	    cases, the C result	is a toy declaration whose semantics
+	    will work only in Algol-68.	 The list of unsupported C con-
+	    structs is dependent on which version of the C language is
+	    being used (see the	ANSI, pre-ANSI,	and Ritchie options).
+	    The	set of supported C++ constructs	is a superset of the
+	    ANSI set.
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	    ANSI C National Standard X3J11
+
+	    ISO	C Standard ISO/IEC 9899:1990
+
+	    jf8.4 of the	C Reference Manual within _T_h_e _C	_P_r_o_g_r_a_m_m_i_n_g
+	    _L_a_n_g_u_a_g_e by	B. Kernighan & D. Ritchie.
+
+	    jf8 of the C++ Reference Manual within _T_h_e _C++ _P_r_o_g_r_a_m_m_i_n_g
+	    _L_a_n_g_u_a_g_e by	B. Stroustrup.
+
+       CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	    The	pseudo-English syntax is excessively verbose.
+
+	    There is a wealth of semantic checking that	isn't being
+	    done.
+
+	    _C_d_e_c_l'_s scope is intentionally small.  It doesn't help you
+	    figure out initializations.	 It expects storage classes to
+	    be at the beginning	of a declaration, followed by the the
+	    const and volatile modifiers, followed by the type of the
+	    variable.
+
+	    _C_d_e_c_l thinks all the declarations you utter	are going to be
+	    used as external definitions.  Some	declaration contexts in
+
+
+
+       Page 6					       (printed	1/12/95)
+
+
+
+
+
+
+       CCCCDDDDEEEECCCCLLLL((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		CCCCDDDDEEEECCCCLLLL((((1111))))
+
+
+
+	    C allow more flexibility than this.	 An example of this is:
+
+		 declare argv as array of array	of char
+
+	    where _c_d_e_c_l	responds with
+
+		 Warning: Unsupported in C -- 'Inner array of unspecified size'
+			 (maybe	you mean "array	of pointer")
+		 char argv[][]
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    Tony Hansen, hansen@pegasus.att.com, attmail!tony
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 7					       (printed	1/12/95)
+
+
+

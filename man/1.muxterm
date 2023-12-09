@@ -1,0 +1,264 @@
+
+
+
+     MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          muxterm - A X-Windows - AT&T 630/730 xt-layers emulator sys-
+          tem
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmuuuuxxxxtttteeeerrrrmmmm [xterm|etermx] [multiplexor_options]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The mmmmuuuuxxxxtttteeeerrrrmmmm is an X-windows interface to the AT&T 630/730
+          terminal llllaaaayyyyeeeerrrrssss((((1111)))) program, which enables text from upto
+          seven windows to be transmited down one serial link.
+
+          If you are running X-windows on your workstation/X-terminal
+          you may now run the _l_a_y_e_r_s command on a remote machine (or
+          locally) and enjoy the benefits of multiple windows on that
+          remote machine without having to login multiple times.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          xxxxtttteeeerrrrmmmm
+               This uses a colour xterm emulator. This is the default
+               emulator used if none is specified.
+
+          eeeetttteeeerrrrmmmmxxxx
+               This uses the eeeetttteeeerrrrmmmmxxxx emulator provided in _e_x_p_t_o_o_l_s
+               rather than the xterm front-end.
+
+          ----hhhhoooosssstttt____ccccoooommmmmmmmaaaannnndddd
+               This option specified a specific command that is exe-
+               cuted instead of a SHELL.
+
+          ----bbbbaaaasssseeee____llllaaaayyyyeeeerrrr____ssssiiiizzzzeeee
+               This is the X-windows geometry option for the window
+               emulator, which specifies the character size of the
+               initial window.
+
+          ----ppppoooossssiiiittttiiiioooonnnn
+               This is the X-windows geometry portion for the actual
+               positioning of the base layer, and is in the assumed to
+               be in the form +X+Y.  Where X,Y is the position of the
+               top-left hand corner of the base window.
+
+          ----llllaaaayyyyeeeerrrr____ssssiiiizzzzeeee
+               This is the X-windows geometry option for the window
+               emulator after llllaaaayyyyeeeerrrrssss has been run.
+
+          ----ddddeeeebbbbuuuugggg
+               This sets a debug level, with output going to the debug
+               file muxterm.bug. Currently, six levels are supported,
+               0 to 5. Level 0 is where no debugging information is
+               provided - even on serious error conditions, 1 is just
+               report of serious conditions - this is the recommended
+               setting, and is used by default. Level 2 provides ASCII
+
+
+
+     Page 1                                          (printed 8/23/94)
+
+
+
+
+
+
+     MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))
+
+
+
+               output for checking the link to the host, and levels 3+
+               allow varying degrees of output of the XT protocol
+               transmissions.
+
+          ----ddddbbbbuuuusssseeeerrrr
+               This option adds extra debugging options onto the mul-
+               tiplexor control panel. The DEBUG button will cycle
+               round the debug levels, whilst DUMP will dump the
+               status of the XT protocol at that time.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Here are a few examples on how to use mmmmuuuuxxxxtttteeeerrrrmmmm.
+
+          To use the xterm interface, run mmmmuuuuxxxxtttteeeerrrrmmmm like so,
+               muxterm xterm
+          or
+                    muxterm
+          As the default emulator interface is the colour xterm.
+
+          To run _r_l_o_g_i_n _m_l_s_m_d rather than a SHELL when you start the
+          emulator.
+               muxterm xterm -host_command rlogin mlsmd
+
+          If you wish to have the base window (ie the window prior to
+          running layers) 80 characters by 60 lines. While the default
+          size for windows created after running layers will be 80
+          characters by 24 lines.
+               muxterm xterm -base_layer_size 80x60 -layer_size 80x24
+
+     RRRREEEESSSSOOOOUUUURRRRCCCCEEEESSSS
+          mmmmuuuuxxxxtttteeeerrrrmmmm
+
+          Muxterm
+               This is the main multiplexor resource, the only real
+               resource worth changing is probable only the
+               "geometry".
+
+          Muxterm*text_area
+               This refers to the area on the control panel where text
+               information, such as a new window has been created, and
+               the actual protocol in use is displayed.
+
+          Muxterm*new_layer_button
+               This is the commandwidget which creates a new window
+               when running layers.
+          Muxterm*exit_layers_button
+               This is the commandwidget which exits the layers proto-
+               col.
+          Muxterm*Cancel_exit_button
+               This is the commandwidget which cancels the exit the
+               layers request originally made.
+          Muxterm*Confirm_exit_button
+
+
+
+     Page 2                                          (printed 8/23/94)
+
+
+
+
+
+
+     MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))
+
+
+
+               This is the commandwidget which accepts the exit the
+               layers request originally made.
+          Muxterm*debug_button, Muxterm*dump_button
+               These are the debug buttons available when running with
+               the "-dbuser" option.
+
+          Example recommended settings, but they are purely of per-
+          sonal taste, are as follows: (Add these settings to your
+          .Xdefaults file in your home directory):
+               Muxterm.geometry:260x125
+               ! Don't show the resize grips on
+               ! the title and button containers
+               Muxterm*showGrip: False
+
+               !For Colour Workstations,
+               !try these default colour definitions:
+               ! A wheat coloured background
+               ! to the buttons and title
+               Muxterm*background: wheat
+               ! The text area, however,
+               ! is black writing on white
+               Muxterm*text_area*background: white
+               Muxterm*text_area*foreground: black
+               ! And red for warning on the
+               !  exit layers button
+               Muxterm*exit_layers_button.background: red
+               ! And a Green on the new layer buton
+               Muxterm*new_layer_button.background: green
+               ! Another red warning,
+               !   for the button that confirms the exit layers
+               Muxterm*Confirm_exit_button.background: red
+               ! Green for the continue (cancel the exit layers)
+               Muxterm*Cancel_exit_button.background: green
+
+          eeeetttteeeerrrrmmmmxxxx
+
+          See the entries in _t_o_o_l_m_a_n _e_t_e_r_m_x.
+
+          xxxxtttteeeerrrrmmmm
+
+          See the entries in _m_a_n _x_t_e_r_m.
+
+          The following xterm resources are useful when defining the
+          PF1-4 function keys as the F5-8 keys. The F5-8 keys are on
+          the function keys on the top of SUN SPARC keyboards.
+               XTerm*VT100.Translations: #override \
+                       <Key>F5:string("\033OP")\n\
+                       <Key>F6:string("\033OQ")\n\
+                       <Key>F7:string("\033OR")\n\
+                       <Key>F8:string("\033OS")\n
+
+     BBBBUUUUGGGGSSSS////WWWWOOOORRRRKKKKRRRROOOOUUUUNNNNDDDDSSSS
+
+
+
+     Page 3                                          (printed 8/23/94)
+
+
+
+
+
+
+     MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMUUUUXXXXTTTTEEEERRRRMMMM((((1111))))
+
+
+
+          DDDDoooowwwwnnnnllllooooaaaaddddiiiinnnngggg ooooffff 666633330000////777733330000 pppprrrrooooggggrrrraaaammmmssss iiiissss nnnnooootttt ssssuuuuppppppppoooorrrrtttteeeedddd....  An
+          attempt to download a 630/730 programs will be refused.
+
+          When using mmmmuuuuxxxxtttteeeerrrrmmmm with the _x_t_e_r_m interface, please ensure
+          when you login into other machines, that the environment
+          variable TTTTEEEERRRRMMMM remains as TTTTEEEERRRRMMMM====xxxxtttteeeerrrrmmmm and does not change to
+          vt100, otherwise the _x_t_e_r_m window will not answer some
+          escape sequences correctly.
+
+          If you use a kkkksssshhhh shell, and when you run layers you do not
+          receive a prompt when you open a new layer, then in your
+          $ENV file add "set -o vi".
+
+          Set the following variables, the DMD path to the 630/730
+          layers code is system dependent (an example is shown) -
+          check with your system administrators if you are not sure of
+          the actual path, in your .profile before running layers:
+               DDDDMMMMDDDD====////uuuussssrrrr////aaaadddddddd----oooonnnn////666633330000
+               eeeexxxxppppoooorrrrtttt DDDDMMMMDDDD
+               PPPPAAAATTTTHHHH====$$$$PPPPAAAATTTTHHHH::::$$$$DDDDMMMMDDDD////bbbbiiiinnnn
+
+     OOOOTTTTHHHHEEEERRRR EEEEMMMMUUUULLLLAAAATTTTOOOORRRRSSSS
+          If you wish to see your favourite TTTTEEEERRRRMMMM type to be supported
+          by this emulator, then all you need to do is rather than
+          forking a shell on a separate pseudo-terminal (pty), just
+          change the emulators code to read/write on stdin/stdout
+          rather then the pty.
+
+     FFFFIIIILLLLEEEESSSS
+          If any errors are recorded during the mmmmuuuuxxxxtttteeeerrrrmmmm session, then
+          they will be logged in the file:-
+               $$$$HHHHOOOOMMMMEEEE////mmmmuuuuxxxxtttteeeerrrrmmmm....bbbbuuuugggg
+          It is recommended that users should delete this file on a
+          regular basis!
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRRSSSS
+          Keith Porteous, Steve Ramsay, and Dave Twelves, all of AT&T
+          Network Systems UK Ltd, Malmesbury, UK.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          llllaaaayyyyeeeerrrrssss(630MTG), aaaaggggeeeennnntttt(EXPTOOLS), eeeetttteeeerrrrmmmmxxxx(EXPTOOLS)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 8/23/94)
+
+
+

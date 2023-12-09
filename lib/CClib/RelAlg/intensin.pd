@@ -1,0 +1,33 @@
+#ident "@(#) /sable/sdb/ra/rel/intension/s.intensin.pd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+   friend ostream & operator<<(ostream &s, const Intension &i);
+   friend ostream & operator<<(ostream &s, Relation &r);
+   friend class AttributeValue;
+   friend class Combine_attributes;
+   friend class IntensionValue;
+   friend class Relation;
+   friend class AF_Relation;
+   friend class Form_Relation;
+
+   struct Attr_info
+      {
+      const Attribute *a;  // An Attribute of this Intension
+      Dlength offset;      // Attribute is offset bytes from Intension's front
+      const Aname *old_nm;
+      } attr_info[NATTR];
+
+   Degree_t key_degree;    // 0 indicates whole list is key
+   Degree_t degree;
+   Dlength tuple_size;
+   Dlength tuple_align;
+   unsigned int ref_cnt;
+
+   static const int integerLen;
+   static const int floatLen;
+
+   Intension();
+   Degree_t index(const Aname attr_nm) const;
+   Tuple *line2tuple(const char *, char); 
+   Int_t tuple2line(Tuple *, const char *, char *, Boolean_t fixedLen=TRUE,
+                                                  const char *terminator="\n");

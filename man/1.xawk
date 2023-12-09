@@ -1,0 +1,528 @@
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          xawk - latest version of awk language
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          xxxxaaaawwwwkkkk [ ----vvvvvar=val ] [ ----FFFFregex ] [ 'program' ] [ parameters ]
+          [ files ]
+
+          xxxxaaaawwwwkkkk [ ----vvvvvar=val ] [ ----FFFFregex ] [ -f programfile ] [ parame-
+          ters ] [ files ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _x_a_w_k is an expanded version of the _a_w_k pattern-scanning and
+          processing language.  The language has been augmented by the
+          addition of dynamically-defined regular expressions, user-
+          defined functions, improved input/output flexibility, and
+          new built-in functions.
+
+          _x_a_w_k scans each input _f_i_l_e for lines that match any of a set
+          of patterns specified in _p_r_o_g_r_a_m.  With each pattern in _p_r_o_-
+          _g_r_a_m there can be an associated action that will be per-
+          formed when a line of a file matches the pattern.  The set
+          of patterns may appear literally as _p_r_o_g_r_a_m, or in a file
+          specified as ----ffff _p_r_o_g_r_a_m_f_i_l_e.  The _p_r_o_g_r_a_m string should be
+          enclosed in single quotes ('''') to protect it from the shell.
+
+          _P_a_r_a_m_e_t_e_r_s, in the form x=... y=... etc., may be passed to
+          _x_a_w_k.
+
+          _F_i_l_e_s are read in order; if there are no _f_i_l_e_s, the standard
+          input is read.  The file name ---- means the standard input.
+          Each line is matched against the pattern portion of every
+          pattern-action statement; the associated action is performed
+          for each matched pattern.
+
+          An input line is made up of fields separated by white space
+          (tabs and blanks).  (This default can be changed by using FS
+          or the ----FFFF parameter; see below).  The fields are denoted $$$$1111,
+          $$$$2222, ...; $$$$0000 refers to the entire line.
+
+          A pattern-action statement has the form:
+
+               pattern { action }
+
+          A missing action means print the line; a missing pattern
+          always matches.
+
+          A pattern can be one of the following:
+
+               BEGIN               matches before any input is read
+
+               END                 matches after all input is read
+
+
+
+
+     Page 1                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+               _r_e_l_a_t_i_o_n_a_l _e_x_p_r     matches if the relation holds (e.g.
+                                   NR == 3)
+
+               /_r_e_g _e_x_p/ or _r_e_g _e_x_p
+                                   matches the regular expression
+
+               _p_a_t_t_e_r_n_1 && _p_a_t_t_e_r_n_2
+                                   matches if both patterns match
+
+               _p_a_t_t_e_r_n_1 || _p_a_t_t_e_r_n_2
+                                   matches if either pattern matches
+
+               ( _p_a_t_t_e_r_n )         grouping: matches _p_a_t_t_e_r_n
+
+               !_p_a_t_t_e_r_n            matches if _p_a_t_t_e_r_n does not match
+                                   (NOT operator)
+
+               _p_a_t_t_e_r_n_1, _p_a_t_t_e_r_n_2  matches from the line where _p_a_t_-
+                                   _t_e_r_n_1 matched up to (and including)
+                                   the line where _p_a_t_t_e_r_n_2 matched
+
+               func _n_a_m_e(_p_a_r_a_m_e_t_e_r _l_i_s_t) { _s_t_a_t_e_m_e_n_t }
+                                   defines a function called _n_a_m_e
+
+          An action is a sequence of statements.  Statements are ter-
+          minated by semicolons, new-lines, or right braces.  State-
+          ments include the following that affect control-flow:
+
+               if ( _c_o_n_d_i_t_i_o_n_a_l ) _s_t_a_t_e_m_e_n_t
+               if ( _c_o_n_d_i_t_i_o_n_a_l ) _s_t_a_t_e_m_e_n_t else _s_t_a_t_e_m_e_n_t
+               if ( _s_u_b_s_c_r_i_p_t in _a_r_r_a_y ) _s_t_a_t_e_m_e_n_t else _s_t_a_t_e_m_e_n_t
+               if ( _s_u_b_s_c_r_i_p_t in _a_r_r_a_y ) _s_t_a_t_e_m_e_n_t
+               while ( _c_o_n_d_i_t_i_o_n_a_l ) _s_t_a_t_e_m_e_n_t
+               for ( _e_x_p_r_e_s_s_i_o_n ; _e_x_p_r_e_s_s_i_o_n ; _e_x_p_r_e_s_s_i_o_n ) _s_t_a_t_e_m_e_n_t
+               for ( _v_a_r_i_a_b_l_e in _a_r_r_a_y ) _s_t_a_t_e_m_e_n_t
+               break
+               continue
+               { [ _s_t_a_t_e_m_e_n_t ] ... }
+               next
+               exit
+               exit _e_x_p_r_e_s_s_i_o_n
+               _f_u_n_c_t_i_o_n-_n_a_m_e( _e_x_p_r, _e_x_p_r, ... )
+               return
+               return _e_x_p_r_e_s_s_i_o_n
+
+          Input-output statements include:
+
+               close(_f_i_l_e_n_a_m_e)          close file
+
+               getline                  set $0 from next input record
+
+               getline <"_f_i_l_e"          set $0 from next record of
+
+
+
+     Page 2                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+                                        _f_i_l_e
+
+               getline _v_a_r              set _v_a_r from next input record
+
+               getline _v_a_r <"_f_i_l_e"      set _v_a_r from next record of
+                                        _f_i_l_e
+
+               print                    print current record
+
+               print _e_x_p_r_e_s_s_i_o_n-_l_i_s_t    print expressions
+
+               print _e_x_p_r_e_s_s_i_o_n-_l_i_s_t >"_f_i_l_e"
+                                        print expressions on _f_i_l_e
+
+               printf _f_o_r_m_a_t, _e_x_p_r_e_s_s_i_o_n-_l_i_s_t
+                                        format and print
+
+               printf _f_o_r_m_a_t, _e_x_p_r_e_s_s_i_o_n-_l_i_s_t >"_f_i_l_e"
+                                        format and print on _f_i_l_e
+
+               system(_c_m_d-_l_i_n_e)         execute command _c_m_d-_l_i_n_e,
+                                        return its exit status
+
+          Expressions take on string or numeric values as appropriate,
+          and are built using the operators (in increasing precedence)
+          _b_l_a_n_k (string concatenation), ++++/---- (addition/subtraction), ****
+          or //// or %%%% (multiplication/division/modulus), ^^^^ or ********
+          (exponentiation synonyms), ++++++++ or -------- (increment/decrement,
+          prefix and postfix), and $$$$ (field value).  The CCCC operators
+          ++++====, ----====, ****====, ////====, %%%%====, and ^^^^==== are also available in expres-
+          sions, sharing the lowest precedence with the assignment
+          operator ====.  Logical OR (||), logical AND (&&), regular
+          expression match (~) and non-match (!~), and relational
+          operators (<, <=, >, >=, ==, !=) are also available.
+
+          Variables may be scalars, array elements (denoted x[i]) or
+          fields.  Variables are initialized to the null string
+          (treated as zero numerically).  Array subscripts may be any
+          string, not necessarily numeric; this allows for a form of
+          associative memory.  String constants are quoted ("""").
+
+          printf format conversions that are supported:
+
+               %c     ASCII character
+               %d     decimal number
+               %e     [-]d.ddddddE[+-]dd
+               %f     [-]ddd.dddddd
+               %g     e or f conversion, whichever is shorter,
+                      with nonsignificant zeros suppressed
+               %o     unsigned octal number
+               %s     string
+               %x     unsigned hexadecimal number
+
+
+
+     Page 3                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+               %%     print a %; no argument is converted
+
+          Additional parameters may lie between the % and the control
+          letter:
+
+               - left-justify expression in its field
+               _w_i_d_t_h pad field to this width as needed; leading 0 _p_a_d_s
+          _w_i_t_h _z_e_r_o_s
+
+          Some of the built-in functions are:
+
+               gsub(_r_e_g_e_x, _s_t_r_i_n_g, _t_a_r_g_e_t)
+                              substitute _s_t_r_i_n_g for each substring
+                              matching regular expression _r_e_g_e_x in
+                              string _t_a_r_g_e_t, return number of substi-
+                              tutions. If _t_a_r_g_e_t is omitted, use $0.
+                              All ocurrences of & _i_n _s_t_r_i_n_g _a_r_e
+                              _r_e_p_l_a_c_e_d _b_y _t_h_e _s_u_b_s_t_r_i_n_g _m_a_t_c_h_e_d _b_y
+                              _r_e_g_e_x.  _T_h_e _s_p_e_c_i_a_l _m_e_a_n_i_n_g _o_f & _m_a_y _b_e
+                              _t_u_r_n_e_d _o_f_f _b_y _p_r_e_c_e_d_i_n_g _i_t _w_i_t_h _a
+                              _b_a_c_k_s_l_a_s_h, _a_s _i_n \&.
+
+               _i_n_d_e_x(_t_a_r_g_e_t, _s_t_r_i_n_g)
+                              return index of _s_t_r_i_n_g in string _t_a_r_g_e_t,
+                              or 0 if not present.  (The first charac-
+                              ter is at index 1.)
+
+               length(_s_t_r_i_n_g) return length of _s_t_r_i_n_g
+
+               match(_s_t_r_i_n_g, _r_e_g_e_x)
+                              return index of where _s_t_r_i_n_g matches
+                              _r_e_g_e_x or 0 if there is no match; set
+                              RSTART and RLENGTH.
+
+               split(_s_t_r_i_n_g, _a_r_r_a_y, _r_e_g_e_x)
+                              split _s_t_r_i_n_g into _a_r_r_a_y on regular
+                              expression _r_e_g_e_x, return number of
+                              fields.  If _r_e_g_e_x is omitted, FS is used
+                              in its place.
+
+               sprintf(_f_m_t, _e_x_p_r-_l_i_s_t)
+                              format _e_x_p_r-_l_i_s_t according to _f_m_t, and
+                              return the resulting string
+
+               sub(_r_e_g_e_x, _s_t_r_i_n_g, _t_a_r_g_e_t)
+                              like _g_s_u_b except only the first matching
+                              substring is replaced
+
+               substr(_s_t_r_i_n_g, _i_n_d_e_x, _n_u_m_b_e_r)
+                              return _n_u_m_b_e_r-character substring of
+                              _s_t_r_i_n_g starting at _i_n_d_e_x. (The first
+                              character is at index 1.)  If _n_u_m_b_e_r is
+
+
+
+     Page 4                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+                              omitted, the substring goes to end of
+                              _s_t_r_i_n_g.
+
+               tolower(_s_t_r_i_n_g)
+                              convert upper case characters in string
+                              to lower case and return the result.
+
+               toupper(_s_t_r_i_n_g)
+                              convert lower case characters in string
+                              to upper case and return the result.
+
+          There are also built-in arithmetic functions:
+
+               atan2(y,x)     arctangent of y/x in radians
+
+               cos(expr)      cosine (angle in radians)
+
+               exp(expr)      exponential (_e raised to expr)
+
+               int(_e_x_p_r)      truncate to integer
+
+               log(expr)      natural logarithm
+
+               rand()         random number between 0 and 1
+
+               sin(expr)      sine (angle in radians)
+
+               sqrt(expr)     square root
+
+               srand(expr)    new seed for random number generator.
+                              The time of day is used if there is no
+                              _e_x_p_r.
+
+          Patterns are regular expressions made of the following
+          pieces (increasing precedence):
+
+               c         match non-metacharacter c
+
+               \c        match literal character c
+
+               .         matches any character but newline
+
+               ^         matches beginning of line or string
+
+               $         matches end of line or string
+
+               [abc...]  character class matches any one of abc...
+
+               [^abc...] negated character class matches any but one
+                         of abc...  and newline
+
+               r1|r2     alternation; matches either r1 or r2
+
+
+
+     Page 5                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+               r1r2      concatenation; matches r1, then r2
+
+               r+        matches one or more r's
+
+               r*        matches zero or more r's
+
+               r?        matches zero or one r's
+
+               (r)       grouping: matches r
+
+          Regular expression constants must be surrounded by slashes;
+          dynamic regular expressions may be the values of variables
+          or strings.
+
+          A pattern _r_e_g_e_x may be used to specify the field
+          separator(s) by starting the program with:
+
+               BEGIN { FS = _r_e_g_e_x }
+
+          or by using the ----FFFF_r_e_g_e_x option.
+
+          Other variable names with special meanings include:
+
+               ARGC        number of command-line arguments
+
+               ARGV        array of command-line arguments (0..ARGC-1)
+
+               FILENAME    the name of the current input file;
+
+               FNR         input record number in current file
+
+               NF          the number of fields in the current record;
+
+               NR          the ordinal number of the current record;
+
+               OFMT        the output format for numbers (default
+                           %%%%....6666gggg).
+
+               OFS         the output field separator (default blank);
+
+               ORS         the output record separator (default new-
+                           line);
+
+               RLENGTH     length of string matched by regular expres-
+                           sionin match()
+
+               RS          the input record separator (default new-
+                           line);
+
+               RSTART      beginning position of string matched in
+                           match()
+
+
+
+
+     Page 6                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+               SUBSEP      separator for array subscripts of form
+                           [_i,_j,...] (default "\034")
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Print lines longer than 72 characters:
+
+               length > 72
+
+          Print first two fields in opposite order:
+
+               { print $2, $1 }
+
+          Add up first column, print sum and average:
+
+                    { s += $1 }
+               END  { print "sum is", s, " average is", s/NR }
+
+          Print fields in reverse order:
+               { for (i = NF; i > 0; --i) print $i }
+
+          Print all lines between start/stop pairs:
+
+               /start/, /stop/
+
+          Print all lines whose first field is different from previous
+          one:
+
+               $1 != prev { print; prev = $1 }
+
+          Print file, filling in page numbers starting at 5:
+
+               /Page/ { $2 = n++; }
+                      { print }
+
+               command line:  xawk -f program n=5 input
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          awk(1), grep(1), lex(1), sed(1)
+
+          _A_w_k - _A _P_a_t_t_e_r_n _S_c_a_n_n_i_n_g _a_n_d _P_r_o_c_e_s_s_i_n_g _L_a_n_g_u_a_g_e
+          _P_r_o_g_r_a_m_m_e_r'_s _M_a_n_u_a_l, A. V. Aho, B. W. Kernighan, P. J. Wein-
+          berger, 11272-850619-06TM (or Computing Science Technical
+          Report No. 118)
+
+     BBBBUUUUGGGGSSSS
+          Input white space is not preserved on output if fields are
+          involved.
+
+          There are no explicit conversions between numbers and
+          strings.  To force an expression to be treated as a number
+          add 0 to it; to force it to be treated as a string concaten-
+          ate the null string ("""""""") to it.
+
+
+
+     Page 7                                          (printed 5/26/92)
+
+
+
+
+
+
+     XXXXAAAAWWWWKKKK((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXAAAAWWWWKKKK((((1111))))
+
+
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Alan Hastings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8                                          (printed 5/26/92)
+
+
+

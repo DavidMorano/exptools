@@ -1,0 +1,42 @@
+2/2/94 news
+
+On SVR4, Sun and Solaris systems which support job control, ^X-^C is now
+bound to "suspend-emacs" instead of "exit-emacs". This actually is the way
+that Gosling originally bound ^X-^C, but it hasn't been supported in the
+exptools version because of lack of support for job control within UNIX
+System V until now.
+
+In a previous news item, I suggested binding suspend-emacs to ^X-^C, but
+didn't realize that there was code already in there that hadn't been enabled
+until now which already did the binding. This has been causing problems for
+a few people, for which I apologize.
+
+If you see the message
+
+	[1] + Stopped (signal)         gmacs
+
+from the shell, it means that you've suspended the gmacs session, and can
+restart it again by typing the "fg" shell command.
+
+If you wish to rebind ^X-^C back to "exit-emacs", add the following line to
+your .emacs_pro file:
+
+        (bind-to-key "exit-emacs" "\^X\^C")
+
+If you don't have a .emacs_pro file, you are loading the default profile. If
+you want to rebind ^X-^C back to "exit-emacs", create a .emacs_pro.ml file
+with the following two lines:
+
+        (bind-to-key "exit-emacs" "\^X\^C")
+        (load "profile")
+
+----------------------------------------------------------------
+
+1/26/94 news
+
+When using alternation within regular expression searches, as in "abc\|def",
+there was no checking on the number of \|'s, even though internally, only
+room for 9 was allocated. The limit has been raised to 31, and it now checks
+to make sure you don't go past that limit.
+
+Old news may be found in $TOOLS/lib/gmacs/man/1.gmacs.news.

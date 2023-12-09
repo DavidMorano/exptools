@@ -1,0 +1,506 @@
+(error "Please don't just use those whole example files as your .emacs file")
+From: Chip Webb (Charles_A_Webb@ATT.COM) [& Dan Jacobson]
+Subject: dot-emacs file (examples and information)
+Date: 20 Nov 89, 3/1991
+
+Here is an introduction to writing .emacs files. I'm putting it
+in the tips directory with the other stuff. Just read and send comments
+to me. It is based on the dot-emacs file I got from Dan.
+
+Chip
+
+;;;-----------------------------------------------------------------
+;;; Example GNU EMACS init file (~/.emacs)
+;;;
+;;; This file contains an example init file that illustrates some
+;;; of the things that you can do with it, and a VERY verbose description
+;;; of what it is doing. In some cases, appropriate sections of the
+;;; manuals are excerpted here, so that you don't have to go looking
+;;; for them (since if you are reading this file, you probably don't
+;;; know where to look in the first place).
+;;;
+;;; Your .emacs file basically contains lisp commands that emacs
+;;; reads in and executes when it starts up. Writing and modifying
+;;; does not require extensive knowledge of lisp, since most of it
+;;; is only setting variables and hooks (more on that later).
+;;; 
+;;;  When GNU Emacs is started, it normally loads the file `.emacs' in your
+;;; home directory.  This file, if it exists, should contain Lisp code.  It is
+;;; called your "init file".  The command line switches `-q' and
+;;; `-u' can be used to tell Emacs whether to load an init file.
+;;;
+;;; One of the most important commands in lisp is `setq'
+;;; It is what you use to assign a value to a variable.
+;;; It is used as follows:
+;;;
+;;;     (setq  foo 5)
+;;;
+;;; This statement assigns the value 5 to the variable foo; note
+;;; that the parentheses are necessary.
+;;;
+;;; This file tests the comment feature too :-); a comment
+;;; starts with a semicolon and ends at the end of the line that
+;;; has the semicolon.
+;;;
+;;; There are MANY MANY different variables that you can set to
+;;; customize the way that emacs works for you. This file illustrates
+;;; setting a few of the more useful variables. You probably don't
+;;; want to copy this file verbatim, since it takes a long time to
+;;; scan all of the comments.
+;;; ------------------------------------------------------------------
+
+;;; ------------------------------------------------------------------
+;;; Let's set the default major mode. Emacs has several different modes that
+;;; it can operate in, each of which is optimized for different types
+;;; of editing. Emacs usually guesses what mode to use based on the 
+;;; name of the file that you are editing. However, if emacs can't 
+;;; determine which major mode to use from the filename, it assumes
+;;; that you want to use Lisp-Interaction mode, which is essentially
+;;; a conversation with emacs's lisp interpreter. It is useful for
+;;; testing out some code, but is otherwise not so useful. A mode that is
+;;; more generally useful is text mode. Given below is the command to tell 
+;;; emacs to use text-mode as the default instead of (Lisp-Interaction).
+;;; This command sets the variable default-major-mode to be text-mode.
+;;; Note the single quote before the name text-mode; this is important,
+;;; since without it, emacs would try to evaluate text-mode as a variable
+;;; and put the value of that variable into default-major-mode. You don't
+;;; (normally) want emacs to evaluate text-mode so you `quote' it
+;;; with a single quote. 
+;;; ------------------------------------------------------------------
+(setq default-major-mode 'text-mode)
+
+;;;
+;;; ------------------------------------------------------------------
+;;;   Along with the major mode for editing, there are minor modes
+;;;
+;;;   Minor modes are options which you can use or not.  For example, Auto Fill
+;;; mode is a minor mode in which SPC breaks lines between words as you
+;;; type.  All the minor modes are independent of each other and of the
+;;; selected major mode.  Most minor modes say in the mode line when they are
+;;; on; for example, `Fill' in the mode line means that Auto Fill mode is on.
+;;; 
+;;; Three common minor modes are auto-fill, overwrite, and abbreviation.
+;;; Usually, you just want to enable one of these minor modes in a 
+;;; particular major mode. In the case of text mode, it is useful to
+;;; use auto fill mode, which automatically inserts carriage returns as you
+;;; type to keep paragraphs formatted nicely.
+;;;
+;;; Let's say that you want to turn on auto fill mode every time that
+;;; you are in text-mode. This brings up the concept of a `hook'
+;;;
+;;;   A "hook" is a variable whose value is a "hook function" or a list of
+;;; hook functions.  These functions are called by parts of Emacs on
+;;; well-defined occasions.
+;;; 
+;;;   Hooks are used for customization.  The functions referenced by a hook
+;;; may be changed by the user or by other functions.
+;;; 
+;;;   Most modes run hooks as the last step in the modes' initialization.
+;;; This makes its easy for a user to customize the behavior of a mode.  But
+;;; hooks may also be used in other contexts.  For example, the functions
+;;; named by `find-file-not-found-hooks' are called whenever a file is not
+;;; found by `find-file'.
+;;; 
+;;;   Typically, the hooks for a mode are run after the mode has completed
+;;; all its other initialization.  You may, for example, use a hook to
+;;; change the initial values of buffer-local variables.
+;;; 
+;;;   For example, you can put the following expression in your `.emacs'
+;;; file if you want to turn on Auto Fill mode in Lisp Interaction mode:
+;;; 
+;;;      (setq lisp-interaction-mode-hook 'turn-on-auto-fill)
+;;; 
+;;;   The following example shows how to use a hook to customize the way
+;;; Emacs formats C code.  (People often have strong personal preferences
+;;; for one format compared to another.)  Here the hook function is an
+;;; anonymous `lambda' expression.
+;;; 
+;;;      (setq c-mode-hook 
+;;;            (function (lambda ()
+;;;                        (setq c-indent-level 4
+;;;                              c-argdecl-indent 0
+;;;                              c-label-offset -4
+;;;                              c-continued-statement-indent 0
+;;;                              c-brace-offset 0
+;;;                              comment-column 40
+;;;                              ))))
+;;; 
+;;;      (setq c++-mode-hook c-mode-hook)
+;;; 
+;;;   Finally, here is an example of how to use the Text mode hook to
+;;; provide a customized mode line for buffers in Text mode.  This hook
+;;; displays the directory in addition to the standard components of the
+;;; mode line.  (If you have very long path names or display the time and
+;;; load, you may run out of space on the mode line.)
+;;; 
+;;;      (setq text-mode-hook
+;;;            (function (lambda ()
+;;;                        (setq mode-line-format
+;;;                              (list ""
+;;;                                    'mode-line-modified
+;;;                                    "Emacs: %14b"
+;;;                                    "  "  
+;;;                                    'default-directory
+;;;                                    " "
+;;;                                    'global-mode-string
+;;;                                    "%[(" 
+;;;                                    'mode-name 
+;;;                                    'minor-mode-alist 
+;;;                                    "%n" 
+;;;                                    'mode-line-process  
+;;;                                    ") %]---"
+;;;                                    '(-3 . "%p")
+;;;                                    "-%-")))))
+;;; 
+;;;   Turning on a major mode calls a user-supplied function called the "mode
+;;; hook", which is the value of a Lisp variable.  For example, turning on C
+;;; mode calls the value of the variable `c-mode-hook' if that value exists and
+;;; is non-`nil'.  Mode hook variables for other programming language modes
+;;; include `lisp-mode-hook', `emacs-lisp-mode-hook',
+;;; `lisp-interaction-mode-hook', `scheme-mode-hook' and `muddle-mode-hook'.
+;;; The mode hook function receives no arguments.
+;;; 
+;;; And now back to the original problem of getting into auto-fill-mode
+;;; every time that you use text-mode:
+;;; --------------------------------------------------------------------------
+(setq text-mode-hook 'turn-on-auto-fill)
+
+
+;;; ---------------------------------------------------------------------
+;;; One of the nicest features of emacs is its ability to associate
+;;; any function with any keystroke sequence. In fact, every time
+;;; you type a key, emacs looks up what to do and executes the
+;;; specified function. The association between a keystroke sequence and
+;;; a function is called a binding, and the binding is represented
+;;; by what is known as a `keymap.' There are global keymaps
+;;; and keymaps that are only active when you are using a particular
+;;; buffer. The regular alphabetic keys are bound to a function that
+;;; causes them to self-insert. You can bind (almost) any key to 
+;;; any function by using the function `global-set-key.
+;;;
+;;; The emacs manual is full of passages that tell you what particular keys do.
+;;; But Emacs does not assign meanings to keys directly.  Instead, Emacs
+;;; assigns meanings to "functions", and then gives keys their meanings by
+;;; "binding" them to functions. 
+;;; 
+;;;   A function is a Lisp object that can be executed as a program.  Usually
+;;; it is a Lisp symbol which has been given a function definition; every
+;;; symbol has a name, usually made of a few English words separated by dashes,
+;;; such as `next-line' or `forward-word'.  It also has a
+;;; "definition" which is a Lisp program; this is what makes the function
+;;; do what it does.  Only some functions can be the bindings of keys; these
+;;; are functions whose definitions use `interactive' to specify how to
+;;; call them interactively.  Such functions are called "commands", and
+;;; their names are "command names".  More information on this subject is
+;;; in the GNU Emacs Lisp Manual. The bindings between keys and functions 
+;;; are recorded in various tables called "keymaps".  
+;;; 
+;;;   When we say that "`C-n' moves down vertically one line" we are glossing
+;;; over a distinction that is irrelevant in ordinary use but is vital in
+;;; understanding how to customize Emacs.  It is the function `next-line' that
+;;; is programmed to move down vertically.  `C-n' has this effect because it is
+;;; bound to that function.  If you rebind `C-n' to the function `forward-word'
+;;; then `C-n' will move forward by words instead.  Rebinding keys is a common
+;;; method of customization.
+;;;
+;;;   The way to redefine an Emacs key is to change its entry in a keymap.
+;;; You can change the global keymap, in which case the change is effective in
+;;; all major modes (except those that have their own overriding local
+;;; definitions for the same key).  Or you can change the current buffer's
+;;; local map, which affects all buffers using the same major mode.
+;;; 
+;;; (global-set-key  KEY CMD)            ; Defines KEY globally to run CMD.
+;;; (local-set-key KEY CMD)              ; Defines KEY locally (in the 
+;;;                                      ;   major mode now in effect) to run
+;;;                                      ;   CMD.
+;;; 
+;;;   For example,
+;;; 
+;;; (global-set-key "\C-f" next-line)
+;;; 
+;;; would redefine `C-f' to move down a line. One of the annoying features
+;;; of emacs is that is defines C-h to invoke the help feature. Since
+;;; many terminals send C-h when you type backspace, you might get annoyed
+;;; by inappropriately invoking the help system when all you wanted to do
+;;; was delete a character. No problem, you can redefine how you get to
+;;; the help system. The following set of commands binds the delete
+;;; command to the backspace (C-h) key, and binds the help-command
+;;; on the keystroke sequence C-x h (thats control-X followed by a normal h)
+;;; -------------------------------------------------------------------------
+(global-set-key "\C-h" 'delete-backward-char)
+(global-set-key "\C-xh" 'help-command)
+
+
+;;; --------------------------------------------------------------------------
+;;; Emacs automatically makes a backup copy of any file that you edit.
+;;; Because Unix does not provide version numbers in file names, rewriting a
+;;; file in Unix automatically destroys all record of what the file used to
+;;; contain.  Thus, saving a file from Emacs throws away the old contents of
+;;; the file---or it would, except that Emacs carefully copies the old contents
+;;; to another file, called the "backup" file, before actually saving.
+;;; (Provided the variable `make-backup-files' is non-`nil'.
+;;; Backup files are not written if this variable is `nil').
+;;; 
+;;;   At your option, Emacs can keep either a single backup file or a series of
+;;; numbered backup files for each file that you edit.
+;;; 
+;;;   Emacs makes a backup for a file only the first time the file is saved
+;;; from one buffer.  No matter how many times you save a file, its backup file
+;;; continues to contain the contents from before the file was visited.
+;;; Normally this means that the backup file contains the contents from before
+;;; the current editing session; however, if you kill the buffer and then visit
+;;; the file again, a new backup file will be made by the next save.
+;;; 
+;;;   The choice of single backup or numbered backups is controlled by the
+;;; variable `version-control'.  Its possible values are
+;;; 
+;;; `t'     
+;;;      Make numbered backups.
+;;; `nil'     
+;;;      Make numbered backups for files that have numbered backups already.
+;;;      Otherwise, make single backups.
+;;; `never'     
+;;;      Do not in any case make numbered backups; always make single backups.
+;;; 
+;;;
+;;; * User Option: kept-old-versions
+;;; 
+;;;        The value of this variable is the number of oldest versions to
+;;;      keep when a new numbered backup is made.  If there are backups
+;;;      numbered 1, 2, 3, 5, and 6, and the value of `kept-old-versions' is
+;;;      2, then the ``oldest'' backups 1 and 2 will be kept, and 3 will be
+;;;      flagged for deletion, unless (in this example) the value of
+;;;      `kept-new-versions' is greater than 2.
+;;; 
+;;; * User Option: kept-new-versions
+;;; 
+;;;        The value of this variable is the number of a file's most recent
+;;;      versions to keep when a new numbered backup is made.  It includes
+;;;      the new backup.  It must be greater than 0.  Thus, if the value of
+;;;      `kept-new-versions' is 2, then the two most recent backups of a
+;;;      file will be kept.
+;;; 
+;;;   If `trim-versions-without-asking' is non-`nil', the excess
+;;; middle versions are deleted without a murmur.  If it is `nil', the
+;;; default, then you are asked whether the excess middle versions should
+;;; really be deleted.
+;;;
+;;; With that said, here are some commands to enable version control
+;;; for backup files, and to control the number of backups kept.
+;;; ------------------------------------------------------------------------
+(setq version-control t)		; Enable numbered backups
+(setq kept-old-versions 0)              ; Throw out originals
+(setq kept-new-versions 3)              ; Keep the three most recent versions
+(setq trim-versions-without-asking t)	; delete excess backups silently
+(setq dired-kept-versions 1)            ; Number of versions to keep when
+                                        ; deleting files with dired
+                                        ; (a special mode for editing 
+                                        ; directories)
+
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")
+
+
+;;; ------------------------------------------------------------------------
+;;;   If the variable `require-final-newline' is non-`nil', Emacs
+;;; puts a newline at the end of any file that doesn't already end in one,
+;;; every time a file is saved or written.
+;;; 
+;;;   You can implement other ways to write files, and other things to be done
+;;; before writing them, using the hook variable `write-file-hooks'.  The
+;;; value of this variable should be a list of Lisp functions. 
+;;; ------------------------------------------------------------------------
+(setq require-final-newline t)		;needed by some unix programs
+
+;;; ------------------------------------------------------------------------
+;;;   Backup files can be made by copying the old file or by renaming it.  This
+;;; makes a difference when the old file has multiple names.  If the old file
+;;; is renamed into the backup file, then the alternate names become names for
+;;; the backup file.  If the old file is copied instead, then the alternate
+;;; names remain names for the file that you are editing, and the contents
+;;; accessed by those names will be the new contents.
+;;; 
+;;;   The method of making a backup file may also affect the file's owner
+;;; and group.  If copying is used, these do not change.  If renaming is used,
+;;; you become the file's owner, and the file's group becomes the default
+;;; (different operating systems have different defaults for the group).
+;;; 
+;;;   Having the owner change is usually a good idea, because then the owner
+;;; always shows who last edited the file.  Also, the owners of the backups
+;;; show who produced those versions.  Occasionally there is a file whose
+;;; owner should not change; it is a good idea for such files to contain
+;;; local variable lists to set `backup-by-copying-when-mismatch' for
+;;; them alone.
+;;; 
+;;;   The choice of renaming or copying is controlled by three variables.
+;;; Normally, renaming is done.  If the variable `backup-by-copying' is
+;;; non-`nil', copying is used.  Otherwise, if the variable
+;;; `backup-by-copying-when-linked' is non-`nil', then copying is done for
+;;; files that have multiple names, but renaming may still done when the file
+;;; being edited has only one name.  If the variable
+;;; `backup-by-copying-when-mismatch' is non-`nil', then copying is done if
+;;; renaming would cause the file's owner or group to change.
+;;; ------------------------------------------------------------------------
+(setq backup-by-copying-when-linked t)	   ;don't destroy other hard links
+(setq backup-by-copying-when-mismatch t)   ;preserves owner if not you
+
+
+;;; ---------------------------------------------------------------------
+;;; Portably set the mode line to display the system name 
+;;; so that you know which machine you are on... (no matter what)
+;;;
+;;; global-mode-string is a list of strings to be put into
+;;; the mode line. We don't want to trash anything that was already there
+;;; if there was already something, so first check, then append.
+;;; For more information, see the GNU emacs lisp reference manual
+;;; info node "Mode Line Format." It has an excellent explanation of
+;;; the elements of the components of the mode line format list.
+;;; ---------------------------------------------------------------------
+(or global-mode-string (setq global-mode-string '("")))
+(setq global-mode-string
+      (append global-mode-string 
+	      (list 
+	       (substring (system-name) 0 (string-match "\\." (system-name)))
+	       "  ")))
+
+
+;;; ---------------------------------------------------------------------
+;;; Most people like to have the current time displayed on the modeline
+;;; Here is the command to turn on that feature. On some machines, this
+;;; also displays the system load and disk activity. Note that 
+;;; this does not delete the above setting of the system name in
+;;; the mode line, since we were careful when we did that. 
+;;; ---------------------------------------------------------------------
+(setq display-time-day-and-date t)  ; A flag to make the display more verbose
+(display-time)                      ; Display the current time on the modeline
+
+
+;;; ---------------------------------------------------------------------
+;;; When you start reading the newsgroup gnu.emacs or comp.emacs
+;;; you will start seeing code that other people have written that you
+;;; want to use. You may also write some of your own code. You will have
+;;; to have a place to put that code; say that you put it in a subdirectory
+;;; of your home directory. You need a way for emacs to automatically
+;;; find that code. One way to do it is to use the EMACSLOADPATH
+;;; environment variable, which is similar to the Unix PATH environment
+;;; variable. You can also set the path for loading emacs lisp files
+;;; inside emacs, by changing the value of the load-path variable.
+;;; ---------------------------------------------------------------------
+(setq load-path
+      (append
+       (list (concat (getenv "HOME") "/lisp") 
+	     (expand-file-name "~rld/lisp"))
+       load-path))
+
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")
+
+
+;;; ---------------------------------------------------------------------
+;;; On many systems there is difficulty passing the characters Control-S
+;;; and Control-Q, as they are used by the computer/terminal to tell one
+;;; side to start/stop sending characters to prevent buffer overflow.
+;;; 
+;;; Early on I decided to always use Control-] for Control-S, and
+;;; Control-\ for Control-Q (set in my ".emacs" file), (i.e. I hit a
+;;; Control-] and emacs sees a Control-S, I don't hit Control-S on my
+;;; keyboard anymore... same with the Control-\ Control-Q pair) here's
+;;; how:
+;;;
+;;; (This is sort of like magic; it causes the keys to be translated
+;;;  at a very low level. Read the documentation on keyboard translation
+;;;  tables for an explanation of this.)
+;;; ---------------------------------------------------------------------
+(setq term-setup-hook
+      (function (lambda ()
+	;always use C-] for C-s, and C-\ for C-q for uniformity, even though
+	;some terminals and baud rates do not have a "flow control" problem
+	(set-input-mode nil t)
+	(let ((the-table (make-string 128 0)) (i 0))
+	  (while (< i 128)
+	    (aset the-table i i)
+	    (setq i (1+ i)))
+	  (aset the-table ?\C-\\ ?\C-q)
+	  (aset the-table ?\C-\] ?\C-s)
+	  (setq keyboard-translate-table the-table))
+	(message "Using C-] for C-s, and C-\\ for C-q")
+      )))
+
+;;; ---------------------------------------------------------------------
+;;; Another useful feature of emacs is its ability to dynamically
+;;; load programs when they are needed. Good examples of this are
+;;; Rectangle mode and Picture mode. You can add you own programs that
+;;; should be autoloaded whenever they are needed.
+;;;
+;;; Autoloaded programs are found by using the load-path variable.
+;;;
+;;; The following is an excerpt of the commands I added to my .emacs
+;;; file for several packages. These commands make them automatically 
+;;; load whenever they are needed.
+;;;
+;;; I have commented them out since you might not have them,
+;;; but they are good examples of what you might use.
+;;; ---------------------------------------------------------------------
+;;;(autoload 'hexl-find-file "hexl"
+;;;   "Edit file FILENAME in hexl-mode." t)
+;;; 	
+;;; (global-set-key "\C-c\C-h" 'hexl-find-file)
+;;; 
+;;; (autoload 'vm "vm" nil t)
+;;; (autoload 'vm-visit-folder "vm" nil t)
+;;; (autoload 'ispell-word "ispell" 
+;;;	"Check the spelling of word in buffer." t)
+;;; (autoload 'ispell-region "ispell" 
+;;;	"Check the spelling of region in buffer." t)
+;;; (autoload 'ispell-complete-word "ispell" 
+;;; 	"Complete word at or before point" t)
+;;; (global-set-key "\e$" 'ispell-word)
+;;; (global-set-key "\e#" 'ispell-region)
+;;; (global-set-key "\e?" 'ispell-complete-word)
+
+
+;;; ---------------------------------------------------------------------
+;;; Emacs also keeps an automatic running copy of the file that
+;;; you are editing in a file called the autosave file. If for some
+;;; reason the machine ou are using crashes, this feature will minimize
+;;; the loss of work. You can adjust how often emacs makes
+;;; backup files by changing the auto-save-interval as follows.
+;;; The autosave interval is the number of keystrokes between 
+;;; performing an autosave.
+;;; ---------------------------------------------------------------------
+(setq auto-save-interval 125)		
+
+;;; ---------------------------------------------------------------------
+;;; By default, emacs scrolls by half of a screen when you move the cursor
+;;; off the edge of the screen. You can change this by setting  scroll-step
+;;; to a different value (usually 0, meaning 1/2 screen) The following
+;;; command sets smooth scrolling.
+;;; ---------------------------------------------------------------------
+(setq scroll-step 1)	
+			  
+
+;;; ---------------------------------------------------------------------
+;;; If you are really daring, you can even writ your own simple
+;;; functions and bind them to keys. Here is an example of how to
+;;; do this.
+;;; ---------------------------------------------------------------------
+(defun insert-double-quotes ()
+  "Make a pair of double quotes and be poised to type inside of them."
+  (interactive)
+  (insert ?\")
+  (save-excursion
+    (insert ?\")))
+
+(global-set-key "\e\"" 'insert-double-quotes)
+
+;hide one of these here
+(error "Please don't just use those whole example files as your .emacs file")
+
+;;From: roland@ai.mit.edu (Roland McGrath) [via Dan Jacobson]
+;;Date: 21 Oct 90 23:03:15
+;;The simplest way to debug your init file (.emacs) is to do:
+;;emacs -q
+;;(setq debug-on-error t)
+;;(load-file "~/.emacs")

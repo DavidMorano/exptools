@@ -1,0 +1,598 @@
+Subject: Known bugs particular to exptools GNU Emacs
+Synopsis: err... Sorry for now...
+From: Dan_Jacobson@ATT.COM
+Date: 9/1991
+
+-------------
+9/1991: Dan Jacobson seeks funding from Comp Centers....
+-------------
+
+Though the cbnews machines don't carry exptools (as of 1/1991) they do
+carry our gnuemacs.  You might want to try GNU Emacs' GNUS newsreader
+there.  Make sure to do "man gnuemacs" there to find our CBnews tips
+directory, and read about special CBnews gnuemacs bugs/caveats, etc.
+
+[9/1991: This should change in 1992: ftp archive site for the .el's and only
+an exptools gnuemacs on cbnews.]
+
+
+-----
+[9/1991: Doug Tiarks sent Stallman the magic fix... should be in 18.58?]
+
+[THE COMMANDS-SOMETIMES-STICK-ON-IBM/AMDAHL BUG --Dan J.:]
+
+From: jot@FIG.CRAY.COM (Otto Tennant)
+Date: 10/1/1990
+Newsgroups: gnu.emacs.bug
+
+No one here (Cray Research) seems to have an opinion.  Thanks to 
+Mr. Stallman posting a note, I learned of bug-gnu-emacs.  
+
+I posted this to "local.mendota-only" and "local.emacs" a day or so a
+go and got no response.  I really am interested in this topic.
+Perhaps those of you who receive this by e-mail can forward it to
+other folks you know who might have an opinion.
+
+
+        A QUESTION ABOUT UNICOS AND EMACS
+
+
+The first "production" release of GNU Emacs for UNICOS will
+be included with UNICOS 6.0.  As we were preparing the
+product, we found that Emacs would hang intermittently
+whenever one attempted a 'dired' or 'man' command.
+"Intermittent" here just means "not every time."  The hangs
+were frequent enough to make the implementation useless.
+
+We are pretty sure what the problem is.  UNICOS is a "USG"
+type system (whatever that means.)  However, if we are
+correct, the problem should occur with greater or lesser
+frequency on any "USG" type system.
+
+Under normal circumstances, Emacs is prepared to handle the
+SIGCLD signal (death of a child process) with a little
+routine which calls 'wait3' and then re-establishes itself
+as the signal handler.  (This is routine 'sig_chld'.)  So
+far as I can tell, this is morally equivalent to discarding
+the signal and the zombie process into which the child may
+have been transformed.
+
+As Emacs is preparing to fork a child process to run, for
+example, an 'ls' command, it changes the SIGCLD handler to
+SIG_DFL, the default value.  This means that when a child
+process terminates, it will be transformed into a zombie and
+the event will *not* be signalled.
+
+After the fork, the parent does a minor bit of housekeeping
+and then re-establishes the original signal handler.  In the
+normal course of events, it calls a routine named
+'wait_for_termination' to await the completion of the child
+process.  
+
+The 'wait_for_termination' routine enters a loop in which it
+checks to see if the process id it has remains valid.  The
+only way out of this loop is for the process id to become
+invalid. 
+
+However, it appears to be possible for the child process to
+execute, terminate, and be transformed into a zombie before
+the parent has a chance to re-establish the old signal
+handler.  This means that the process id will never become
+invalid, since nothing will ever happen to kick Emacs out of
+its 'wait_for_termination' loop.
+
+This behaviour should be possible on any "USG" type
+implementation.  Of course, the relative speed of execution
+of the two processes can be affected by exogenous factors
+including memory availability, swapping devices, and
+scheduler policies.  We do not understand why this failure
+should strike UNICOS 6.0 with such a high frequency.
+
+Does anyone have any suggestions which might confirm our
+refute our hypothesis?
+
+(Oh, our fix.  We took out all of the signal handling stuff
+and changed 'wait_for_termination' to simply call 'waitpid'.
+I suspect that 'wait_for_termination' was written as it was
+in the hope that a ^G would break the loop; it won't, so no
+real functionality has been lost.)
+
+Date: Wed,  3 Oct 90 09:36:34 CDT
+From: danj1@ihlpa.att.com (Daniel Jacobson)
+Distribution: gnu
+Organization: GNUs Not Usenet
+
+>>>>> On 1 Oct 90 21:32:59 GMT, jot@FIG.CRAY.COM (Otto Tennant) said:
+
+Otto> product, we found that Emacs would hang intermittently
+Otto> whenever one attempted a 'dired' or 'man' command.
+Otto> "Intermittent" here just means "not every time."  The hangs
+Otto> were frequent enough to make the implementation useless.
+Well, for us it's "hit ^G and try again"
+
+Otto> We are pretty sure what the problem is.  UNICOS is a "USG"
+Otto> type system (whatever that means.)  However, if we are
+Otto> correct, the problem should occur with greater or lesser
+Otto> frequency on any "USG" type system.
+
+Yes, this is what we have in our local tips file:
+
+|in 3/1990 Boris_B_Kofman@ATT.COM wrote:
+|>I am using [exptools] GNU Emacs 18.55. Every so often a function hangs. 
+|>This most often happens to 'vm', when it starts getting new mail, 
+|>but never finishes. I've  also seen 'dired' and 'rmail' hang.
+|>Does anybody else have that problem? Any idea what the fix is?
+|
+|Yeah, I bet you're using an Amdahl/IBM, we thought we had a fix, but no,
+|no fix.  There is also something called, I believe, `Doug Gwyn's
+|directory accessing functions for System V,' but this is a big effort
+|or we have to be superuser or something...
+|
+|For now I just use Control-G [once], then do my command again...  when
+|it stalls sending mail in VM I check to see if the mail got sent with
+|"fgrep $LOGNAME /usr/mail/mail.log | tail" from a shell.  It usually
+|did get sent, so I then kill the "*mail*" buffer.  Of course there are
+|other mail sending variable settings you should use for now too, like
+|mail-interactive and vm-strip-reply-headers... see the other tips
+|directory files.
+|
+|Other potential hangers on an Amdahl/IBM (do a Control-G and try again):
+|Dired (C-x d), shell-command (M-!), shell-command-on-region (M-|),
+|ispell stuff.
+
+Oh, the Amdahl's `uname` says "uts ihlpa 5.2.6b 5 5890" a localism,
+meaning based on "SYS V.2" with some SYS V.3 add-on's or something.
+
+It doesn't seem to occur on System V "3.2.2 3 3B2" (`uname` output).
+
+[I'm just reporting the symptoms.]
+
+>>>>> On Tue, 8 Jan 91 20:24:06 -0500, rms@ai.mit.edu (Richard Stallman) said:
+
+Richard> It seems clear that what hangs is the call-process function.  Perhaps
+Richard> a Unix wizard (of which you must have many) would be able to figure
+Richard> out why.
+
+[DANJ1:]
+Well, I'll post this on our local netnews, catching more attention
+that way... but I doubt Mr./Ms. Miracle Woman/Man will come to our
+rescue... as we also don't have a super record of attending to local
+gnuemacs repairs too...
+
+[9/1991: Doug Tiarks sent Stallman the magic fix... should be in 18.58?]
+
+JAN 15 1991: Larry A. Shurr (att!cbnmva!las)
+I wish I were that Miracle Man... unfortunately, I'm not and I'm
+having this problem on VAX Sys V running on our SMP VAXen.  Help!!!
+I, too, can ^G and try again, it's just a damned nuisance.
+
+Dan J. Sun Mar 17 20:23:09 CST 1991: Hope seems on the horizon, as the
+netnews machines are System V.3, without this bug... so perhaps when
+one upgrades to "RDS UNIX SYS V.3" this problem goes away [?]
+
+To: gnus-boys
+Subject: 3.1.1 no cure (amdahl)
+Reply-to: Dan_Jacobson@ihlpz.ATT.COM
+Date: Sat17Aug1991
+--slap your rap below here, jack--
+well, I'm using 3.1.1 RDS unix ("uts ihlpz systemV 2.1 5890") and can
+report the sticking upon geting new mail, etc. is still broke (IBM/amdahl)
+----------
+
+More mail stuff: here in AT&T our mail messages sometimes aren't too
+standard, i.e., I believe there always should be a blank line
+separating the head from the body of the message.  When there is none,
+it becomes uncomfortable to read in VM (use the t and < keys).  "Fix":
+the VM people said we should have more standard mail software here.
+
+----------
+
+[Not exptools gnuemacs specific:]
+To: bug-gnu-emacs@prep.ai.mit.edu
+Subject: mail to multiple recipients: no commas ==> no alias expansion
+--text follows this line--
+Sending mail: I notice that if I forget to put commas, and just put
+spaces between multiple recipients (on e.g., the To: line), my .mailrc
+aliases don't get expanded. [version 18.55 on Sun, SysV]
+
+[ah-ha:]
+
+From: jbw@zeb.uswest.com (Joe Wells)
+Newsgroups: gnu.emacs.bug
+In article <GOW.90Jul13101253@sakari.mrceg> gow@sakari.mrceg (Ed Gow) writes:
+
+   The function expand-mail-aliases doesn't work when there is more than
+   one recipient specified on a To: line.  This is due to bad REGEXPs in
+   the function for breaking out the addresses for (assoc .. ...) to
+   match.
+
+I would guess the people who wrote the code don't consider this a bug.
+Following RFC822, you're supposed to separate multiple addresses with
+commas.  If you put commas between the addresses, Emacs will expand all of
+the aliases.
+
+[9/1991: feedmail can show you the expansion before sending]
+
+------------
+
+I notice on a modem line (with an Amdahl) rapid type-ahead with plenty
+of ^G's will sometimes stall GNU Emacs, so you have to login again,
+though the mode line clock still gets updated every minute.  Or maybe
+it was my clunker modem.
+
+------------
+
+ispell: words with apostrophes (e.g., wouldn't) sometime cause
+difficulties [due to a filter we use, I think].
+
+[12/2990] It has been reported to us that our shell script front end,
+~exptools/bin/gnuemacs, ruins your personal spell dictionary,
+overwriting it each time you start up gnuemacs.  One would hope that
+provider ihlpa!sft will quickly get around to fixing it, as it is in
+his territory of the project. ( 1/2 :-) )
+
+To: homxc!tbaer
+From: Dan Jacobson 1/3/1990
+
+TB> 1.  When I use ispell and choose the "a" option, meaning add this word
+TB> to my personal word list, something strange happens.  When I exit
+TB> gnuemacs, my word list ($HOME/lib/wwb/spelldict) will contain the word
+TB> "gnuemacs", plus all the words that were added during the last ispell
+TB> session...but *only* these words.  How can I get ispell to add words
+TB> to what's already there?
+
+Yo Scott, you fixed this yet?  I put this into our tips bugs file... I
+suppose Scott will fix it soon, now that complaints are 4/week...
+[danj1's "Why don't I fix it" cop-out: "scott owns thoses files"]
+
+
+From Dan_Jacobson@ATT.COM Wed Jan  9 18:19:31 1991
+Newsgroups: att.emacs
+Subject: exptools gnuemacs: [ispell] no more injured spell dictionaries!
+
+Well, I sent out a freshend frond-end (~exptools/bin/gnuemacs) that
+won't overwrite ${HOME}/lib/wwb/spelldict anymore... now hopefully it
+will stay fixed :-) ...  [I didn't include the 3B2 exptool machines...
+the one I looked at had an older, pre-broken version.]
+
+------------
+
+[12/1990] Exptools has requested that we remember to strip all the
+executables, [not just the biggie].  Hopefully the other two providers
+will remember next time it's fresh distribution time.  (3/4 :-) )
+
+------------
+
+Not a really a bug, but transient:
+
+From danj1 Mon Jul 23 11:49:17 1990
+Subject: named-shell
+Summary: hack city
+
+Scott, I now get "full smoking enjoyment and flavour" by putting
+
+(defun named-shell (shell-name)
+  "Named shells"
+  (interactive "sShell name: ") 
+  (cond ((get-buffer shell-name) (switch-to-buffer shell-name))
+        (t (shell) (rename-buffer shell-name))))
+
+in my .emacs file... noting that you have beefed up shell.elc in the
+local/lisp directory, which is searched first before dist/lisp, giving
+a more ksh-like shell mode (Do C-h m to see the key bindings),
+[mostly] upwardly compatible with the documented shell-mode.
+
+and I did do
+$ ln $HISTFILE $HOME/.history (a hack)
+
+I understand that you have plans to revise the shell-mode scene further...
+
+[12/1990] The link keeps on getting unlinked, so now I just did "touch
+~/.history" making a 0 byte file so it will shut up.
+
+----
+
+When reporting a exptools version specific GNU Emacs bug to us, the
+providers, check: Is your exptools gnuemacs fresh?  look in the the
+tips directory for things just a few weeks old, because that seems to
+be the place most frequently updated.  [Occasionally machines get cut
+off from the exptools blood flow...]  What? everything in the whole
+gnuemacs tree is the same recent age, [but still buggy]?  Perhaps an
+old version was cloned on to your machine.  Are the exptools old
+crusty non-maintained ones copied over one day by somebody to your
+backwater testing-only machine, or are they fresh and officially
+maintained?  Also sometimes exptools updates have to be done manually
+by the exptools administrators, so you might get monthly[?] clones of
+a fresher file tree.
+
+[9/1991: the "ruginfo" exptools command will show freshness.]
+
+-----
+A general question about how to turn on arrow keys.  (If your terminal
+isn't in .../lisp/term/*.el, then you might want to explicitly
+(load "term/vt100")
+[assuming your terminal has vt100 style arrow keys, etc.] in
+term-setup-hook below.):
+
+Newsgroups: att.emacs
+From: Dan_Jacobson@ATT.COM
+Subject: Re: [How do I set up gnuemacs to recognize the 630 cursor keys?]
+Date: Wed, 15 Aug 90 15:41:54 GMT
+
+ellson@cbnewsk.att.com (john.ellson) writes:
+>How do I set up gnuemacs to recognize the 630 cursor keys please?
+
+Anyway, take a look at .../lisp/term/*.el, .../lisp/keypad.el in the
+gnuemacs file tree.
+
+[9/1990 news flash:] Ed_Lewis_King@ATT.COM is leading a 630/730.el
+development effort.
+
+[12/1990: Ed made a 630.el, and 730.el, but it didn't win Dan J.'s
+seal of approval because it ignored the "2-tierd keypad.el approach",
+etc.]
+
+"Back before his effort, I did":
+
+in my .emacs file, I put $HOME/.emacs_/term/* in my GNU Emacs
+search path.  I've got a 630.el which is almost a copy of vt100.el.
+In my .emacs I have
+
+(setq term-setup-hook
+      (function (lambda ()
+        (if (fboundp 'enable-arrow-keys)(enable-arrow-keys)) 
+        )))
+
+
+-------
+
+10/1990, (System V) Robert_W_Haddleton reports that if you set
+$USER different than your login name or maybe different than $LOGNAME,
+you'll get "error in init-file" etc.  [He was setting $USER for some
+hardcopy printer header banner, and now will put this just in a shell
+script so we don't have to worry about fixing it.]
+
+-------
+
+To: mhuxo!ktw
+CC: gnus-boys, Antonio_Desimone
+Subject: STRAIGHTENING OUT MAIL ON 3B2's etc. SENDMAIL/FAKEMAIL
+Date: 10/1990
+--text follows this line--
+A 3b2 exptools gnuemacs release was compiled expecting the sendmail
+program to be present, if that's not the case:
+
+TDS> This is what I do in .emacs to get mail working respectably on our 3b.
+TDS> As always, I'm open to suggestions.
+TDS> (setq sendmail-program "fakemail")
+
+[nowadays, use feedmail, metioned elsewhere here -8/91 DJ]
+
+-------
+
+(The following was fixed in VM 5.XX.. still beta testing as of 10/1990)
+
+From danj1 Wed Jul  4 19:22:59 1990
+To: info-vm@cs.odu.edu
+CC: sft@ihlpa.ATT.COM, cwebb@pixels.ATT.COM
+Subject: remember to quit reading your FCC file before sending mail
+
+Don't you hate when you send a message with the FCC: set to your usual
+`outbox' file, but you forgot that today was one of those rare days
+that you were looking at those outbound messages you sent and you
+forgot to vm-quit (q) reading your outbox file before sending a
+message.  Result: the copy is inserted in the outbox wherever you
+happend to be positioned, instead of at the rear... now the dates are
+out of order... boo hoo.
+
+On the other hand, VM wins my gold medal of reliability---months with
+no blunders, even with this whopper (emacs `list buffers' output):
+ *  INBOX	   2193405 VM		/a119/danj1/.mail/INBOX.
+
+Dan_Jacobson@ATT.COM  Naperville IL USA  +1 708-979-6364
+
+---------
+
+>>>>> On Tue, 30 Oct 90 12:31:16 EST, lied@ihlpf.att.com (Robert Lied) said:
+Bob> To: danj1@ihlpa.att.com
+[...]
+Bob> P.S.  This is your fault for getting me started on gnuemacs.
+Bob> I used to *teach* vi, for God's sake :-).
+
+---------
+Tue Nov 20 11:49:22 CST 1990
+
+Several interesting things appear when you use a program (GNU Emacs)
+compiled in a different time zone... e.g., the *compilation* buffer
+has the wrong timestamp at bottom when compiled under SunOS.  The FSF
+has been informed.  -Dan J.
+
+
+------------
+[1/1991 Dan J.]
+VM users on most of our machines, remember, use:
+
+(setq mail-interactive t) [9/1991: going to be our new default.]
+(setq vm-strip-reply-headers t) [nowadays, use feedmail, metioned
+elsewhere here -8/91 DJ]
+
+(The first line I would have even if I wasn't a VM user.)
+
+Also you can check to see if the mail got sent with
+"fgrep $LOGNAME /usr/mail/mail.log | tail"
+from a shell.
+
+---------------------
+2/1991, Dan J.
+
+> when are you guys going to upgrade to 18.57?
+
+Ho ho ho... let's let the others debug this for us, then maybe in a
+few months we'll get aroud to it.
+--------------------
+
+From danj1 Wed Feb 20 21:02:35 1991
+To: att!cbddo2!mdk
+Subject: SuperCite
+Reply-to: Dan_Jacobson@ATT.COM
+
+>>>>> On Wed, 20 Feb 91 19:46:34 EST, mdk@cbddo2.att.com (Michael D King) said:
+
+Michael> Dan, I got supercite to load, but how do I get it to suck in
+Michael> the correct citations?  When I start it up, I get Anon, and
+Michael> >>>>> On mumble, mumble said:
+
+Michael> Mike King [aka Shadow]
+
+I believe the problem lies with how much "meat" the person sent you.
+You'll have nothing to cite with this message, as I'm not giving you
+much to work with.
+
+But, if you send yourself an e-mail like this one I'm replying to, you
+get beautiful results citing on it.
+
+See, we (AT&T) use minimalist uucp (non industry standard) headers.
+[Post(1) does throw some more info in the header, when replying to
+those who use post you'll get better results.]
+
+[next day: he reports back that he followed all our tips dir supercite
+tips, aminly on the netnews machine, and now he's citing netnews
+replies fine.]
+
+------
+
+From danj1 Thu Feb 21 13:16:57 1991
+From: Dan_Jacobson@ATT.COM
+To: bug-gnu-emacs@prep.ai.mit.edu
+CC: Kenneth.T.Wolman@att.com, Charles_A_Webb, sft@ihlpa.ATT.COM, William_J_Carpenter
+Subject: Something odd with VIP mode
+Reply-to: Dan_Jacobson@ATT.COM
+
+>>>>> Kenneth.T.Wolman@att.com said:
+
+Ken> Is it my imagination or does have VIP upset some of the normal functions?
+Ken> Often, I use the regional indent feature ESC-number-ctrl-x-i to push
+Ken> everything over about four spaces.  With VIP enabled, it doesn't seem to
+Ken> work: it thinks I'm asking for a file insert.  Is this normal, or just
+Ken> some glitch in the Gnuemacs running on this infernal machine.
+
+Hmmm, I'm forwarding this to bug-gnu-emacs@prep.ai.mit.edu.  Though
+the vip mode documentation says that C-x i and C-x C-i are now
+insert-file, one would think that once one switched back to emacs
+mode, C-x C-i would hopefully be still indent-rigidly.
+
+Infact, in the vip manual it says:
+
+
+!Emacs Mode
+!----------
+!
+!You will be in this mode just after you loaded VIP.  You can do all
+!normal Emacs editing in this mode.  Note that the key `C-z' is
+!globally bound to `vip-change-mode-to-vi'.  So, if you type `C-z' in
+!this mode then you will be in vi mode.
+
+and C-x C-i was a normal command.
+
+Maybe a
+
+(global-set-key "\C-x\C-i" 'indent-rigidly)
+
+in your .emacs file after the vip stuff is loaded will fix this bug
+[for you only, for now].
+
+[Seen in 18.55,18.57]
+
+[Stallman fixed it, 3/1991] 
+
+Dan_Jacobson@ATT.COM  Naperville IL USA  +1 708 979 6364
+
+----------
+[9/1991: feedmail allows restoration of "From:" header dignity in
+outgoing mail:
+From: Dan_Jacobson@ATT.COM  <=== keen, no?  try feedmail!
+[but shell command (most post/upas systems)
+$ mail -#d Dan_Jacobson@ATT.COM
+shows why you want
+Reply-to: Dan_Jacobson@ihlpz.ATT.COM
+unless you want all your inter-AT&T mail to take a trip to the att
+gateway and back...  ain't gnuemacs' fault...]
+
+-------------------------
+From: Dan_Jacobson@ATT.COM
+To: rms@gnu.ai.mit.edu
+CC: bug-gnu-emacs@prep.ai.mit.edu
+In-reply-to: <9103270616.AA12424@mole.gnu.ai.mit.edu>
+Subject: server-start when su'd under Sys V [found the answer]
+--slap your rap below here, jack--
+>>>>> On Wed, 27 Mar 91 01:16:49 -0500, rms@gnu.ai.mit.edu (Richard Stallman) said:
+
+Dan> [On SYS V]
+Dan> 1. start emacs and do (server-start) in one window.
+Dan> 2. in another window
+Dan>  	    su some_other_user
+Dan>  	    start emacs & do server-start
+Dan> that second emacs, though it runs ok, has "garbage collecting"
+Dan> messages every few seconds...
+
+Richard> I can't reproduce it, but it sounds like the filter of the server
+Richard> process is running frequently.  Make a buffer named *server*
+Richard> and see what text accumulates in it.  Then see why server.c
+Richard> outputs that text.
+
+It outputs millions of "msgrcv: Permission denied".
+The cause is server.c's
+
+  while (1)
+    {
+      if ((fromlen = msgrcv (s, msgp, BUFSIZ - 1, 1, 0)) < 0)
+        {
+	  perror ("msgrcv");
+        }
+
+Yup, somebody forgot the exit(1) at least.
+Dan_Jacobson@ATT.COM  Naperville IL USA  +1 708 979 6364
+
+---------------------
+Sat Mar 30 19:37:45 CST 1991 Dan J.
+
+Post(1) has a known bug that if you use the undocumented "set from"
+you will have difficulty with (e.g., messages generated from gnuemacs'
+mail with CC: and Reply-to: headers.  Michael.Scott.Baldwin reports
+he will try to get attunix to fix it too in SYS V.4.  [Summary: this
+bug affects a few non-gnuemacs users.]
+
+-----
+Thu Aug 22 10:15:53 CDT 1991
+[DanJ] NNTP Gnus left overnight might loop... [Sun 18.57]
+Due to 18.57 code.
+
+From danj1 Wed Sep  4 17:19:50 1991
+To: cwebb@allegra.att.com, Scott_F_Thompson@ihlpa.ATT.COM,
+	William_J_Carpenter@hos1cad.ATT.COM
+CC: doug.tiarks
+Subject: lib/wwb/spelldict: cannot create
+Reply-to: Dan_Jacobson@ihlpz.ATT.COM
+
+Scott we gotta reduce that ugly hack.  Today emacs bombed when I
+logged into the special server machine under a setuid thingy ...
+
+/y16/pssrvr/lib/wwb/spelldict: cannot create
+
+Ispell 3.??? will probably save us.  I'll put this in our bug list.
+We'll get to it in 18.58, were Mr. Doug Tiarks has sent Stallman the IBM
+stuck subprocess fix!
+
+
+p> Fri Sep 27 10:50:24 CDT 1991  gnuemacs rmail
+p> I just tried to send email to someone, and I used an alias from my
+p> .mailrc in the Bcc: field.  Unfortuantely, the alias was not expanded
+p> and the mail went (embarrassingly) to someone else.  An alias that I
+p> used in the To: field *was* expanded.  Did I do something wrong, or
+p> does rmail not search for aliases in the Bcc: field?
+p> <---------------<>---------<>------<>---------->
+p>  Paul J. Nadolny  ihlpe!pjn  x90503  ihp 1e-337
+
+Try the feedmail command!  we're gonna make it the default...
+[I can't believe this hasn't been discovered sooner... Stallman never
+used BCC's too much?]  Maybe report it to bug-gnu-emacs....?

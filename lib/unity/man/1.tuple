@@ -1,0 +1,198 @@
+
+
+
+     ttttuuuupppplllleeee((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           ttttuuuupppplllleeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          tuple - converts data from packet to tuple format
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _t_u_p_l_e [-q] [-Itable] [-Otable] [-n[<newline>]] [-u] table1 \
+           [_i_n_t_o table2]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _t_u_p_l_e converts data in stream packet format into the tuples
+          required for a UNITY table.  _t_u_p_l_e reads a packet stream
+          from the input table, matches the attribute names in the
+          packet against the names in the description file associated
+          with the packet file, and converts the attribute values into
+          tuple format.
+
+          Attributes in the packet must come in the order they are
+          listed in the description file.  Not all attributes in the
+          table need be present in the packet; missing attributes will
+          be created.  Missing fixed width attributes will be blank
+          filled.  Missing variable width attributes will have a null
+          value.  All attributes in the packet, however, must be
+          listed in the description file; if not, an error is
+          generated.
+
+          If the "-u" option is specified, then the program expects to
+          find the "user-friendly" names instead of the attribute
+          names in the packets, if they exist in the description file
+          (see _t_a_b_l_e(UNITY)).  If the "user-friendly" names do not
+          exist, then the program matches against the attribute names.
+          This option is necessary to read packets created by a _p_a_c_k_e_t
+          command run with the "-u" option.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          _t_u_p_l_e performs a limited amount of validation on the data
+          when converting it to tuple format.  The program will check
+          the length of the fixed width attributes, flagging
+          attributes of incorrect length as errors.  The values of
+          variable length or terminator type attributes are checked to
+          insure they do not contain the terminating character (the
+          appropriate attribute terminator will be added by _t_u_p_l_e)
+          Data containing unprintable characters or ones with special
+          meaning (the UNITY "newline" character as discussed below)
+          will be flagged with an error.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ttttuuuupppplllleeee((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           ttttuuuupppplllleeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command or converting back to packets.
+          Otherwise, the "into clause" should not be used so that the
+          output will be written to the standard output but a
+          description file is not created.
+
+          The -n[newline] option will cause the character "newline" to
+          be placed in the attribute value if the value for the
+          attribute in packet format extends more than a line (i.e.,
+          newline-tab sequence).  The default newline character is
+          tilde (~).  If -n is specified with no argument, then the
+          newline character is assumed to be null and no newline
+          character is inserted (i.e., the newline option is
+          effectively turned off).
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are converted to tuples.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ cat packets
+
+          #####   1
+          snumber s1
+          pnumber p1
+          qty     300
+
+          #####   2
+          snumber s1
+          pnumber p2
+          qty     200
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     ttttuuuupppplllleeee((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           ttttuuuupppplllleeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          $ display packets description
+          The table description is:
+          snumber   t|   3l
+          pnumber   t|   3l
+          qty  t\n  4r
+
+          $ tuple packets
+          tuple: 2 records converted
+          s1|p1|300
+          s1|p2|200
+
+     FFFFIIIILLLLEEEESSSS
+          unity/tuple.c, ztuple.c - the C source program
+          bin/tuple - the executable program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _u_e_d_i_t(UNITY), _u_e_n_t_e_r(UNITY), _p_a_c_k_e_t(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

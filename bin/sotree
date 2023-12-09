@@ -1,0 +1,163 @@
+USAGE='Usage: '$0
+USAGE=${USAGE}' Master_file_name|-h|-u(long usage message)|-V'
+
+if [ $# -ne 1 ]; then echo ${USAGE} >&2 ; exit 1; fi
+
+VERSION=06/05/92
+
+# Process command line parameter
+for PARM in $*
+do
+ case ${PARM} in
+  -h ) echo ${USAGE} ; exit                                     ;;
+  -u ) echo ${USAGE}
+        sed -n -e '/^# BEGIN USAGE/,/^# END   USAGE/{
+                   /^# BEGIN USAGE/d
+                   /^# END   USAGE/d
+                   p
+                  }' `where $0 |head -1`
+        exit                                                    ;;
+  -V ) echo $0': Version Number = '${VERSION} ; exit            ;;
+  -* ) echo $0': <'${PARM}'> unrecognized option flag'  >&2
+        exit 2                                                  ;;
+   * ) if [ ! -r $1 ]
+        then echo $0': <'${PARM}'> not a readable file' >&2
+             exit 3
+       fi                                                       ;;
+ esac
+done
+
+# This program creates a primitive tree showing the .so structure
+# of a troff document.
+
+# It flags inclusion cycles and file names of files it cannot find.
+# Full description below.
+
+nawk '   BEGIN { printf "%s\n" , FILENAME 
+                Bad_file_read = -1
+                Done [ ARGV [ 1 ] ] = "Cycle"
+                Depth  = 0
+                End_of_file = 0
+                Spaces = "   "
+                Indent = Spaces "|"
+               }
+
+function Prt_name( File_name, Depth, Comment )
+         { for ( i=1 ;i<= Depth ; i++ )  printf "%s" ,Indent
+           printf "%s%s\n", File_name, Comment
+         }
+
+function read_next_so ( File_name, Depth ) {
+        if (Done[ File_name ] == "Cycle" )
+          { Prt_name(File_name, Depth, " <<inclusion cycle detected>>" )
+            return 3
+          }
+          else { Done [ File_name ] = "Cycle" }
+
+        Get_return = getline < File_name
+        if ( Get_return == Bad_file_read )
+             {Prt_name(File_name, Depth," <<could not read>>"); return 2 }
+        else {Prt_name(File_name, Depth, "" ) }
+
+        if ( Get_return == End_of_file )
+         { Done[ File_name ] = ""
+           close File_name
+           return 1
+         }
+
+        do
+        { if ( $1 == "\.so" ) read_next_so( $2 , Depth + 1)
+        } while ( End_of_file <  ( getline < File_name ) )
+
+        Done[ File_name ] = ""
+        close( File_name)
+       }
+
+        /^\.so / { read_next_so( $2 , 1 ) }
+' $1
+
+exit 0
+# This exit 0 should not be removed since it keeps the shell from
+# reading through all the comments that follow.
+
+# BEGIN USAGE
+
+# INPUT:
+#         Only one command line argument is permitted.
+#         Choices:
+#               Name of first file in the troff document
+#               -h requests a short help message
+#               -u requests a long usage message
+#               -V requests the version designation
+
+# OUTPUT:
+#         An indented list of the files in the .so hierarchy.
+#         The original file name is printed against the left margin
+#         and all others are indented (successively) by "Spaces"
+#         blanks and a pipe symbol, "|". This creates a series of
+#         lines that ease tracing the hierarchy for deeply nested
+#         files.
+
+# ERRORS:
+#         1       Any number of command line arguments other than one
+#                 results in an immediate exit with return code 1.
+
+#         2       An unrecognized option flag on the command line.
+
+#         3       The file name specified on the command line does
+#                 not belong to a readable file.
+
+# END   USAGE
+
+# OPERATION:
+#         The nawk program uses a recursive descent to find all the
+#         files in a .so sequence.
+#         There is one subroutine (read_next_so) that does all the work.
+
+#         The program searches for the first .so in the argument file.
+#         If it finds one, it calls read_next_so which prints the
+#         current file name and starts a search of the file named in
+#         the .so. This descent continues as long as there are .so
+#         inclusions. read_next_so closes files as it goes up the
+#         descent path to help avoid the open file limits of nawk.
+
+#         The cycle detection is primitive but easy for this type of
+#         program. Each file name is used as an index into a character
+#         array. When the file is first read an entry is made that puts
+#         the literal "Cycle" in the File_name entry of the array Done[].
+#         Each time a new included file is encountered the array, Done[],
+#         is checked to see if it was included before. If so the program
+#         generates an appropriate message and continues to process files
+#         but does not read the file that would have led to the cycle.
+#         Once all the explicit and implicit (nested includes) have been
+#         processed for a file the DONE[] entry for the current file is
+#         set to NULL. This permits multiple inclusion of a file as long
+#         as it does not lead to a cycle.
+
+# SOME THOUGHTS:
+#         Spaces and Indent were created to permit easy ways to change
+#         the structure of the output without too much digging. It will
+#         not permit having different symbols for different levels of
+#         indent or other fancy things. However, removing the pipes, "|",
+#         is easy this way.
+
+#         To use as a .so expander, rather than gc2pic or one of the
+#         newer UNISON tools, it is necessary to remove the
+#               printf "%s\n" , FILENAME
+#         line in the BEGIN block and to set both Spaces and Indent
+#         to null strings or to just remove the entire "for" loop that
+#         prints the Indents.
+
+# CHANGE HISTORY:
+#       10/19/90 Program first created and distributed.
+
+#       05/06/92 Added code to remove bug of accidentally leaving open
+#               files when leaving read_next_so at an end-of-file.
+#               Also corrected a problem with the cycle detection
+#               code that occurred because of a similar oversight.
+
+#       06/05/92 Added
+#               -h short help message
+#               -u long usage message
+#               -V version flag as suggested in the exptools
+#                       submitters guide (toolsubmit -h)

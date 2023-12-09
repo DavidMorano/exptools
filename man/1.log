@@ -1,0 +1,792 @@
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          log - logging terminal I/O
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          log  [-p|-P] logid           - create a log file (via hrdcpy)
+                                         (-p or -P is passed onto hrdcpy)
+          log  [-p|-P] -a 'cmd' logid  - above + append 'cmd' output to log file
+          log  -i|r [logid]            - init | restart a log file
+          log  -l                      - list logids in use
+          log  -z xxx                  - zap files older than xxx days
+          log  -T f1 f2                - tail (not intended for general use)
+          log                          - command usage (mini-manual page
+          loga [arguments]             - append annotation/assert onto log file
+          logc command                 - issue a command
+          logd    [logid]              - set or display the default logid
+          loge    [logid]              - enter your EDITOR to view log file
+          loge -m [logid]              - above + copy slave file to master file
+          loge -l                      - LIST: menu of files to edit in LOGDIR
+          logn 'one-line-note'         - append one-line note to log file
+          logn                         - append multi-line note to log file
+
+                VERSIONS SUPPORTED:
+                     AT&T UN*X    - all log versions
+                     Berkley UN*X - log versions 12/5/91 & later
+
+     EEEEXXXXPPPPOOOORRRRTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          The following export variables are supported. Of these, only
+          EDITOR is required before loge can be used. The other export
+          variables are optional.
+
+          EDITOR  - Specifies the editor to be used by loge.
+          LOGDIR  - Specifies the directory to hold the log files.
+                    (default: $HOME/logdir)
+          LOGANO  - Specifies the command to be executed by loga.
+                    (default: qasrt)
+          LOGOPTS - Specifies a comma separated list of options.
+                    (default: ',30')
+
+              LOGOPTS=[a],[b]
+
+              a = Form feed option. If set to nff, no form feed will
+                  be issued by logn. Example: LOGOPTS=nff
+
+              b = The number of days old that a file in the LOGDIR
+                  directory must be before it is reported by
+                  log logid or log -l as being too old. This is meant
+                  to be a handy reminder to consider removing old files
+                  (see log -z). Example: LOGOPTS=,20 will report files
+                  that are older than 20 days old.
+
+          If you specify any of these variables,  remember  to  export
+          them.   Refer  to  the  rest  of  these pages for additional
+
+
+
+     Page 1                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+          details.
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _L_o_g records (i.e., logs) terminal  transactions  in  a  file
+          called  the 'log file'.  _L_o_g does this by issuing the _h_r_d_c_p_y
+          command.  _L_o_g and the supporting utilities make it  easy  to
+          append  notes  (_l_o_g_n) or other annotations (_l_o_g_a) to the log
+          file. In addition, you can look at the log file,  using  the
+          editor  of  your choice, by specifying _l_o_g_e. See OPTIONS for
+          details and other capabilities.
+
+          These commands may be issued from any directory. All, termi-
+          nal  transactions  are  recorded  in log file(s) stored in a
+          fixed directory defined by the LOGDIR exported variable.  If
+          LOGDIR is not defined (or is not exported), the fixed direc-
+          tory defaults to $HOME/logdir.
+
+          For  the  default  case,  log  will  create  the   directory
+          $HOME/logdir  if  it  does  not exist. If LOGDIR is set (and
+          exported), _l_o_g will not create the directory if it does  not
+          exist. Instead, it is upto you to create the directory.
+
+          CAUTION: It is NOT recommended that $HOME be chosen  as  the
+          LOGDIR.   Instead,  it is preferred to designate a directory
+          for use by log.  The reason is that you can issue log -z  to
+          remove files from the LOGDIR directory (this includes remov-
+          ing files not created by log). See _l_o_g -_z _f_o_r _d_e_t_a_i_l_s.
+
+          When compared to _h_r_d_c_p_y, _l_o_g increases the overhead of  ter-
+          minal interactions only slightly.  This is because one addi-
+          tional low overhead process is created to maintain  a  _s_l_a_v_e
+          copy of the 'log file' (see _l_o_g_e for details).
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+
+          Don't be afraid to experiment.   _L_o_g  and  related  commands
+          (loge,  logn,  ...)  provide  "friendly" error messages that
+          often include helpful corrective actions.
+
+          log
+
+               Prints a brief summary of each command and  prints  out
+               the VERSION date.
+
+          log [-p|-P] [-a 'cmd'] logid
+
+               Record terminal transactions in  a  log  file  via  the
+               _h_r_d_c_p_y  command.  The _l_o_g_i_d is a shorthand way of iden-
+               tifying the filename of the log file.  The _l_o_g_i_d is any
+               arbitrary  arrangement  of lower case letters, numbers,
+               '-', '_', and  '.'.   It  must  contain  at  least  one
+               letter.   If  the machine supports long filenames, then
+
+
+
+     Page 2                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               the the _l_o_g_i_d may be upto 15 characters in length;  all
+               other machines, support upto 5 characters in length.
+
+               The -p  and  -P  options  are  not  processed  by  log.
+               Instead,  -p  or  -P  is  passed onto _h_r_d_c_p_y. Here is a
+               brief summary (refer to hrdcpy for details):
+
+               The choice to use -p or -P depends in part on the  sys-
+               tem  you  are on and the program that you are trying to
+               run thru  _h_r_d_c_p_y.  Noramlly,  run  log  (i.e.,  hrdcpy)
+               without  -p  or  -P  unless:  (1)  you  observe  weired
+               behavior (i.e., some program does not run correctly) or
+               (2)  the  program  you are using has a line editor that
+               doesn't work as expected.
+
+               Without the -p or -P option, log  (i.e.,  hrdcpy)  uses
+               pseudo  ttys  (if  available on the machine) to process
+               input  and  output.  If  psuedo  ttys  are   supported,
+               hrdcpy's tty line editor is conditionaly enabled (refer
+               to hrdcpy manual page).  If the machine does  not  sup-
+               port  psuedo  ttys,  hrdcpy  behaves  as if -p had been
+               specified.
+
+               The -p option causes hrdcpy to use pipe(2)s rather than
+               pseudo  ttys  to process input and output data. -p also
+               enables hrdcpy's line editor.  Certain commands  (e.g.,
+               csh(1),  its(5ESS), ...) have a builtin tty line editor
+               that conflict with hrdcpy's line editor.  To get around
+               this  conflict,  you  may try the -p option (which uses
+               pipes) to disable MOST builtin tty  line  editors.   If
+               you  observe  behavior  different  than  expected, then
+               either drop the -p option or try the -P option.
+
+               The -P option uses pseudo ttys (on machines  that  sup-
+               port  psuedo  ttys)  to process input and output.  How-
+               ever, hrdcpy does NOT  disable  its  tty  line  editor.
+               This  works  without conflict providing any program you
+               try to run doesn't also have a tty line editor.  If the
+               machine does not support psuedo ttys, hrdcpy behaves as
+               if -p had been specified.
+
+               The bottom line is that you have three choices: -p,  -P
+               or  neither.   Choose  the  one that works the best for
+               you. If none of these work to your satisfaction, find a
+               new job!
+
+               The exptool _h_r_d_c_p_y manual page  (toolman  hrdcpy)  pro-
+               vides  a  more detailed explanation of the behavior and
+               limitations surrounding the use (or lack of use) of the
+               -p and -P options.  The -p and -P options were added to
+               log VERSION 11/26/95 and 1/9/96, respectively.
+
+
+
+
+     Page 3                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               Typical usage:
+
+                         _l_o_g [-_p|-_P] [-_a '_c_m_d'] _j_u_n_k
+
+               will create the following log file filename:
+
+                              MMDDa.junk
+
+               Where: MMDD is the month (01-12) and day  (01-31).  'a'
+               is  a  uniqueness character and is described below. The
+               _l_o_g_i_d is appended to MMDDa. to form the unique filename
+               (MMDDa.junk). If this filename already exists, then the
+               'a' is replaced with  a  'b'  to  form  MMDDb.junk.  If
+               MMDDb.junk  already exists, 'b' is replaced with a 'c',
+               and so on until a unique filename is found.
+
+               You can 'log' terminal transactions from more than  one
+               terminal  (or  dmd  layer)  at a time.  For example, to
+               monitor two read-only printers,  you  could  issue  the
+               following  from  two  different  terminals for the same
+               login:
+
+                              log rop1
+                              log rop2
+
+
+               The -a 'cmd'  instructs  'log'  to  issue  the  command
+               'cmd'.  The standard output from cmd is appended to the
+               beginning of the log file.  If  cmd  contains  embedded
+               blanks  or  other  special  characters (e.g., '|', '<',
+               ';', etc.), enclose cmd in quotes (single  or  double).
+               Examples:
+
+                              log -a date rop1
+                              log -a "cat $xyz" rop2
+                              log -a '(date;ls -al)' rop2
+                              log -a 'env|sort' iits
+
+               The -a 'cmd' option is typically used by shell  scripts
+               which  invoke  log  and test systems (e.g., DART, IITS,
+               etc.) automatically and  wish  to  record  the  current
+               'environment'  and  or  other  data  as part of the log
+               file.
+
+               You exit from _l_o_g the same way you  exit  from  _h_r_d_c_p_y;
+               issue CTRL-d or exit. See _h_r_d_c_p_y(_1) for details.
+
+               NOTE: Any of the 'log' commands (log, loga, logd, loge,
+               ...) may be issued from any terminal or dmd layer. How-
+               ever, if you issue these commands from  a  terminal  or
+               dmd  layer  from  which the _h_r_d_c_p_y prompt is displayed,
+               you will be able to precede the command with the  shell
+
+
+
+     Page 4                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               escape  character '!' (e.g., !log, !loga, !logd, !loge,
+               ...) provided  that  hrdcpy  (or  log)  was  originally
+               issued  with the -p option.  If -p had been invoked and
+               you forget the escape, you will be  reminded  when  you
+               issue  the  command.  The  escape  is not required when
+               issuing other commands (e.g., cat, ls, post, etc.).
+
+               NOTE: As might  be  expected,  the  chosen  _l_o_g_i_d  also
+               becomes  the  default  logid  for this terminal (or DMD
+               layer). See _l_o_g_d for details.
+
+
+          log -i [logid]
+
+               INIT: Frees the current in-use  _l_o_g_i_d  for  re-use.  If
+               more  than  one logid is in-use than the _l_o_g_i_d argument
+               must be specified to identify which one is to be  init-
+               ed.  Typically,  this  command  is used when _l_o_g (i.e.,
+               _h_r_d_c_p_y ) was not exited  cleanly  previously.  A  clean
+               exit means user issued CTRL-d or exit.
+
+               WARNING: If the _l_o_g_i_d was actually in-use when  log  -i
+               is  issued,  you  will  lose all access to the log file
+               associated with this _l_o_g_i_d via any of  the  'log'  com-
+               mands. However, the terminal transactions will continue
+               to be logged into the master log  file  (see  _l_o_g_e  for
+               definition of the _m_a_s_t_e_r log file).
+
+          log -r [logid]
+
+               RESTART: Sets the log file corresponding  to  _l_o_g_i_d  to
+               '0'  length.  If more than one logid is in-use than the
+               _l_o_g_i_d argument must be specified to identify which  one
+               is  to be re-started.  This is handy if the log file is
+               getting too large or you wish to logically segment your
+               activities into several files.
+
+               Before the file is set to '0' length, you will be asked
+               if  you  wish  to save the file. If you answer yes, the
+               contents of the current log file will be  copied  to  a
+               file with a name of the form:
+
+                              1224a.rop1.xx      where: xx=00-99
+
+               xx is incremented each time you issue _l_o_g  -_r  and  you
+               wish  to  save the file. Notice that the _s_a_v_e_d filename
+               is the log file filename with a '.xx'  appended.   Here
+               are some examples of a _s_a_v_e_d file:
+
+                              1224a.rop1.00
+                              1224a.rop1.01
+
+
+
+
+     Page 5                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+          log -z xxx
+
+               ZAP: Remove all files (except non-log files that  begin
+               with  a period '.') from the directory $HOME/logdir. If
+               LOGDIR is not null and is exported, than the files from
+               $LOGDIR  will be removed instead. Only files older than
+               xxx days old will be removed.  xxx  was  added  to  log
+               VERSION 12/5/91.
+
+          log -l
+
+               LIST: Lists all the _l_o_g_i_d_s currently in-use.
+
+          loga [arguments]
+
+               Appends the _a_r_g_u_m_e_n_t_s to any command  you  have  previ-
+               ously specified (see LOGANO below).  The resulting com-
+               mand is then issued. The response to  this  command  is
+               displayed  on  the terminal and appended as an 'annota-
+               tion' onto the log  file  for  the  default  _l_o_g_i_d  (as
+               defined  by  _l_o_g_d).  If no default has been defined and
+               only one _l_o_g_i_d is in-use, then that one will  be  used;
+               otherwise,  just the copy to the terminal is displayed.
+               A 'reminder' message is printed if no default has  been
+               defined and there are more than one _l_o_g_i_d in-use.
+
+               The command issued is the one  defined  by  the  export
+               variable  LOGANO. If LOGANO is null or is NOT exported,
+               the following command is assumed:
+
+                              qasrt         (a 5ESS command)
+
+               If you specify a different command you need not specify
+               the  full  pathname unless the command can not be found
+               by searching the directories defined by  your  exported
+               PATH  variable.   You  may specify any command or shell
+               script. Trivial examples might be:
+
+                              LOGANO=echo
+                              LOGANO='ls -a'
+                              LOGANO=date
+                              LOGANO=/l1/xxxx/mycmd
+
+
+          logc command
+
+               Issues the command 'command'. Before issuing 'command',
+               the  user  will  be prompted (via a menu) for a list of
+               filenames. These filenames will be  appended  to  'com-
+               mand'  and  the  result  will  be  issued.  The menu of
+               filenames are taken from the directory $HOME/logdir  or
+               $LOGDIR.  LOGDIR  will be used if it is not null and is
+
+
+
+     Page 6                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               exported.
+
+               Here are a few examples: To selectively  clear-out  un-
+               wanted  log  filenames  or  to  send  files  to another
+               machine or the line printer or grep something or append
+               a big note:
+
+                              logc rm
+                              logc nusend -d dest -u user
+                              logc egrep 'ERR|err'
+                              logc "cat file1 >>"
+
+          logd [logid]
+
+               Prints or changes the default _l_o_g_i_d for  this  terminal
+               (or  DMD  layer).   If the _l_o_g_i_d is not specified, _l_o_g_d
+               prints the current default _l_o_g_i_d. If  _l_o_g_i_d  is  speci-
+               fied, it becomes the new default.
+
+               This default is used by the loga, loge, and  logn  com-
+               mands  to  identify  which logid is to be accessed when
+               more than one logid is in-use.   For  convenience,  the
+               loge command can explicitly specify a logid as an argu-
+               ment to override this default.
+
+               Of course, the same default can be set  for  more  than
+               one terminal (or dmd layer) if desired.  Don't worry if
+               you forget to issue the _l_o_g_d command.  You will be rem-
+               inded the first time you use loga, loge, or logn.
+
+               The _l_o_g_d default is not used by log -i  or  log  -r  to
+               avoid the possibility of inadvertently doing an init or
+               restart for the wrong _l_o_g_i_d by mistake.
+
+          loge  [logid]
+
+               Enters your editor (i.e., the  editor  defined  by  the
+               exported  variable  EDITOR) to look at the log file for
+               the specified _l_o_g_i_d. If  no  _l_o_g_i_d  is  specified,  the
+               default  _l_o_g_i_d  as defined by the _l_o_g_d command is used.
+               If no default has been defined and only  one  _l_o_g_i_d  is
+               in-use, then that one will be used; otherwise, an error
+               message is printed.
+
+               NOTE: In reality, there are  two  identical  log  files
+               created  whenever  _l_o_g  _l_o_g_i_d is specified. One file is
+               the _m_a_s_t_e_r file; here are three examples:
+
+                              1224a.junk
+                              1224a.rop1
+                              1224a.rop2
+
+
+
+
+     Page 7                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               The other file is the corresponding  _s_l_a_v_e  file;  here
+               are the corresponding three _s_l_a_v_e examples:
+
+                              1224a.JUNK
+                              1224a.ROP1
+                              1224a.ROP2
+
+               Notice that the _s_l_a_v_e filenames are  the  same  as  the
+               _m_a_s_t_e_r filenames with the exception that the _l_o_g_i_d por-
+               tion of the filename is capitalized.
+
+               _L_o_g_e invokes your  editor  using  the  _s_l_a_v_e  filename.
+               This  way  if you contaminate or even destroy the _s_l_a_v_e
+               copy when in your editor, you still will  have  a  good
+               copy  laying  around. In fact, if you do contaminate or
+               destroy the _s_l_a_v_e file, _l_o_g_e will reconstruct  it  from
+               the _m_a_s_t_e_r file the next time you use _l_o_g_e.
+
+               As a matter of convenience, if there are no  log  files
+               in-use  and no _l_o_g_i_d is specified, a menu of all previ-
+               ous log file filenames  is  displayed.   Selecting  any
+               menu item will put you into your editor with that file.
+
+          loge  -m  [logid]
+
+               Normally, _L_o_g_e only allows you to view your slave  file
+               (any  edits  you  may make will be ignored).  If you do
+               not want your edits ignored, use the -m (the copy slave
+               to  Master) option.  This option is expected to be used
+               infrequently (but I could be wrong!!!).
+
+               The -m option will copy the slave file  to  the  master
+               file upon exiting your editor.  Of course, any notes or
+               changes you make must be  written  to  the  slave  file
+               before  you exit.  By contrast, _l_o_g_n only allows you to
+               append a note to the end of the log file.
+
+          loge -l
+
+               The -l option presents the user with a  menu  of  files
+               that  exist in the LOGDIR directory. You will be placed
+               in your editor (based on the EDITOR exported  variable)
+               for the file selected from the menu.
+
+               For files associated with in-use logids, it  is  recom-
+               mended  that _l_o_g_e [_l_o_g_i_d] be used instead of _l_o_g_e -_l to
+               avoid the possibility that you may corrupting an in-use
+               logid  file  by  accidently  overwriting  the  file. To
+               safely overwrite an  in-use  logid  file  use  _l_o_g_e  -_m
+
+
+
+
+
+
+     Page 8                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               [_l_o_g_i_d] instead.
+
+          logn ['one-line-note']
+
+               Logn without any arguments  will  allow  you  to  enter
+               multi-line notes.  Simply enter 'logn' and start enter-
+               ing your note.  The  note  is  terminated  by  entering
+               CTRL-d  on a line by itself.  The note will be appended
+               onto the log file.
+
+               Logn with arguments will cause the  'arguments'  to  be
+               your  note.   That  is, the argument(s) of _l_o_g_n will be
+               appended onto the log file.
+
+               The one-line or multi-line note will be  appended  onto
+               the  log  file  for the default _l_o_g_i_d as defined by the
+               _l_o_g_d command. If no default has been defined  and  only
+               one _l_o_g_i_d is in-use, then that one will be used; other-
+               wise, a 'reminder' message is  printed.  If  'one-line-
+               note'  format  is used, it is recommended that the note
+               be enclosed in quotes (single or double)  to  keep  the
+               UN*X  SHELL  from  interpreting certain characters like
+               ';', '|', '*', etc.
+
+               A form feed (CTRL-l)  character  is  prepended  to  the
+               one-line-note  before  it  is appended to the log file.
+               This means the note will appear at top of a  page  when
+               you  opr  the  file.  No form feed will be prepended if
+               LOGOPTS=nff (Don't forget to export LOGOPTS).
+
+               See loge -m [logid] for another way to add  changes  to
+               the log file.
+
+          log -T f1 f2
+
+               _l_o_g -_T delivers the last part  of  a  file  to  another
+               file.   log  -T  f1  f2  is similar to tail -f f1 > f2.
+               While _l_o_g -_T is general in purpose, it was intended for
+               internal use by _l_o_g and _l_o_g_e.
+
+               Unlike tail  -f  ...,  log  -T  ...  looks  to  see  if
+               'delivering'  has stopped. If so, log -T will terminate
+               (kill itself).  Delivering will stop anytime  the  file
+               f2  is  deleted  or  the  modification  time is changed
+               (e.g., echo xxx >> f2).  Files f1  and  f2  are  inter-
+               preted as follows.
+
+               If f2 does not exist, deliver all of f1 onto f2.  If f2
+               does  exist,  deliver  from  end  of f1 onto end of f2.
+               Unless full pathnames are specified, the files  f1  and
+               f2 are assumed to be relative to $HOME/logdir (or $LOG-
+
+
+
+
+     Page 9                                           (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+               DIR if it is exported and not null).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Here is how the log commands may be used:
+
+          1. You can be in any directory or  even  change  directories
+          ANYTIME and the log commands still work.
+
+          2. You can create a log file (i.e., a hrdcpy file) by simply
+          issuing:
+                    log junk
+
+          3. You can look at your log file by simply issuing:
+                    loge
+
+          Note, if you issue loge from the same  terminal  you  issued
+          log,  you  must use the escape '!' (e.g., !loge). The escape
+          '!' is only supported if hrdcpy (or log) was issued with the
+          -p option.
+
+          4. Should you accidentally contaminate or  even  delete  the
+          log  file  while  in  your  editor, the log file will be re-
+          created the next time you use loge.
+
+          5. You can append any one-line-note onto your  log  file  by
+          issuing something like:
+                    logn "Beginning TEST #1"
+
+          6. You can print any 'annotation' of your choice (assume the
+          default  'assert')  description at the terminal AND append a
+          copy to your log file by issuing:
+                    loga 24000 25340 ...
+
+          7. To get a paper copy of your current log file, just  issue
+          the following line printer command (or an equivalent):
+                    logc lp
+
+          8. If you need more logids (say, one for the rop and one for
+          iits),  login  on two more terminals (or set up two more dmd
+          layers). Then issue:
+                    log  rop    from one terminal or dmd layer
+                    log  iits   from the other terminal or layer
+
+          9. Now things are only slightly  more  complicated:  If  you
+          chose  to issue the 'log' commands from terminals other then
+          the ones from which you issued _l_o_g _r_o_p and  _l_o_g  _i_i_t_s,  then
+          you  must  identify  the  log  files  you wish to reference.
+          First, login on two more terminals (or set up two  more  dmd
+          layers). Then issue:
+                    logd rop    from one terminal or dmd layer
+                    logd iits   from the other terminal or layer
+
+
+
+
+     Page 10                                          (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+          Logd sets the default log file to  be  referenced  from  the
+          respective  terminals or dmd layers. Now you can issue loga,
+          loge, and logn from these terminals or dmd layers  as  shown
+          in steps 3, 5, and 6 above.
+
+          Don't worry if you forget to issue each logd.  You  will  be
+          reminded the first time you try to use loga, loge, or logn.
+
+          10. For convenience, loge can be issued as:
+                    loge junk
+                    loge rop
+                    loge iits
+
+          This does not change the current default (defined by  logd).
+          You  can  re-start  a  log file to '0' length and optionally
+          save the current log file with log -r.
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          All error messages and other output are written on the stan-
+          dard  error  output. One exception, output from 'log' (i.e.,
+          the mini-manual page) is printed on  standard  output.   All
+          commands  return  a  0 if the command executed successfully,
+          and greater than 0 otherwise.
+
+     FFFFIIIILLLLEEEESSSS
+                    /usr/tmp/*
+
+                    $HOME/logdir/.../.b.*
+                    or   $LOGDIR/.../.b.*      (byte count)
+
+                    $HOME/logdir/.../.d.*
+                    or   $LOGDIR/.../.d.*      (window default)
+
+                    $HOME/logdir/.log.MMDD*xxxx...
+                    or   $LOGDIR/.log.MMDD*xxxx...  (long filename detection)
+
+                    $HOME/logdir/.log.*
+                    or   $LOGDIR/.log.*        (logid info)
+
+                    where: /.../ is a period followed by hostname.
+                           (e.g., .labc01).
+
+     BBBBUUUUGGGGSSSS
+          _L_o_g has the same capabilities  and  limitations  as  _h_r_d_c_p_y.
+          Refer to the exptool hrdcpy(1) for more details.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+
+
+
+
+
+
+
+
+     Page 11                                          (printed 1/9/96)
+
+
+
+
+
+
+     LLLLOOOOGGGG((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               LLLLOOOOGGGG((((1111))))
+
+
+
+          Hrdcpy(1) command in exptools.
+
+     AAAACCCCKKKKNNNNOOOOWWWWLLLLEEEEDDDDGGGGMMMMEEEENNNNTTTTSSSS
+          Thanks to Mike Veach (author of hrdcpy)  for  his  continued
+          support and recommendations.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          G. P. Zahorodny - 1/9/96
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 12                                          (printed 1/9/96)
+
+
+

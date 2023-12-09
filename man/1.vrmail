@@ -1,0 +1,1914 @@
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  vrmail - a visual interface to electronic mail
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  vvvvrrrrmmmmaaaaiiiillll [[[[----ssssccccFFFFffffrrrrlllleeeebbbb]]]] [[[[----aaaa mmmmaaaasssskkkk]]]] [[[[----dddd ddddeeeellllaaaayyyy]]]]
+	  vvvvrrrrmmmmaaaaiiiillll ----PPPP [[[[----oooo	ffffiiiilllleeee]]]] llllooooggggiiiinnnnssss
+	  $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////vvvvrrrrmmmmaaaaiiiillll////ccccoooommmmppppffffaaaacccceeee iiiiccccoooonnnn----ffffiiiilllleeee >>>>ttttmmmmppppffffiiiilllleeee
+	  $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////vvvvrrrrmmmmaaaaiiiillll////uuuunnnnccccoooommmmppppffffaaaacccceeee ccccoooommmmpppprrrreeeesssssssseeeedddd----ffffiiiilllleeee >>>>iiiiccccoooonnnn----ffffiiiilllleeee
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _V_r_m_a_i_l provides a visual, mouse based	interface to elec-
+	  tronic mail on the 630/730 terminals.	 The interface con-
+	  sists	of two parts.  The host	part is	in charge of interfac-
+	  ing with UUUUNNNNIIIIXXXX	to manipulate the electronic mail and provide
+	  information needed to	manipulate the display on the terminal
+	  screen.  The terminal	part allows the	user to	select a mes-
+	  sage and to then have	some (mostly user defined) function
+	  performed on that message.
+
+	  Other	programs such as _v_i_e_w_m_a_i_l(_1) (from which _v_r_m_a_i_l	was
+	  derived) and _x_v_i_s_m_a_i_l(_1) only	provide	a notification facil-
+	  ity.	_V_r_m_a_i_l provides	the ability to interact	with the mail
+	  messages.  Messages can be read, replied to, forwarded and
+	  other	such actions.
+
+	  The user can define what happens to messages by creating a
+	  menu and assigning a particular operation to each menu item.
+	  A default menu and the associated set	of operations is pro-
+	  vided	as a base.  The	user can expand	the menu and associ-
+	  ated operations as desired.
+
+	  _V_r_m_a_i_l recognizes the	command	line options described below:
+
+
+	  -a mask   MMMMaaaasssskkkk is a value representing the type of alarm
+		    that vrmail	should use to indicate you have	new
+		    mail.  The following values	can be added together
+		    to create a	combination of any or all of events.
+
+			  ______________________________________
+			 | Value|  Action when new-mail	arrives|
+			 |_______|_______________________________|
+			 |_______|_______________________________|
+			 | 1	|  Terminal bell will be       |
+			 |	|  sounded		       |
+			 |_______|_______________________________|
+			 | 2	|  Layer will be flashed       |
+			 |_______|_______________________________|
+			 | 4	|  Siren will be sounded       |
+			 |_______|_______________________________|
+
+		    The	default	value for mmmmaaaasssskkkk is 3.  A	value of 0
+
+
+
+     Page 1					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+		    disables any special alert when new	mail arrives.
+
+		    There are three text strings present at the	top of
+		    the	screen.	 The version, the date and the time.
+		    These strings can be eliminated to allow the
+		    vrmail window to be	smaller.  The -a flag can be
+		    used to eliminate these pieces of the header
+		    adding the following values	to the value deter-
+		    mined above	for the	alarm.
+
+			       ___________________________
+			      |	Value|	Eliminates string|
+			      |_______|____________________|
+			      |_______|____________________|
+			      |	8    |	Version	string	 |
+			      |_______|____________________|
+			      |	16   |	Date string	 |
+			      |_______|____________________|
+			      |	32   |	Time string.	 |
+			      |_______|____________________|
+
+		    With all of	these disabled,	the vrmail window can
+		    be reduced to only contain two faces.
+
+	  -b	    When this argument is present, _v_r_m_a_i_l will include
+		    the	body of	the message with the subject informa-
+		    tion to fill out the Subject: box.	The subject
+		    and	body are separated by the string " <<".
+
+	  -c	    Causes _v_r_m_a_i_l to NOT be cached after it is loaded.
+		    By default,	_v_r_m_a_i_l will cache itself on startup.
+
+	  -P	    This option	causes _v_r_m_a_i_l to look for the path to
+		    the	face image of the login(s) specified.  One
+		    line of output is generated	which identifies where
+		    _v_r_m_a_i_l first found a face image for	the login(s).
+
+	  -o file   If ----PPPP is specified,	this option causes the face
+		    image of the indicated logins (if found) to	be
+		    placed into	ffffiiiilllleeee.  Multiple	faces will be written
+		    into this one file if more than one	login is
+		    specified.
+
+	  -d delay  Causes _v_r_m_a_i_l to wait ddddeeeellllaaaayyyy	seconds	between	each
+		    scan of the	mail file for updating the terminal
+		    information.  If ddddeeeellllaaaayyyy is zero, mailbox changes
+		    will never be updated in the terminal.  i.e. no
+		    new	mail will be displayed and no icons associated
+		    with delete	mail messages will be removed from the
+		    display.
+
+	  -e	    Normally the current position in the face list is
+
+
+
+     Page 2					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+		    updated to the current face	when updates occur
+		    (either new	mail or	deleted	mail).	The ----eeee option
+		    causes this	repositioning to not occur beyond the
+		    range of the currently visible faces.
+
+	  -s	    On the 730,	this option will cause the _v_r_m_a_i_l win-
+		    dow	to switch to the current screen	whenever a new
+		    screen is selected (the logical screen swapping
+		    mechanism is unique	to the 730 terminal).
+
+	  -f	    When new mail arrives, this	option will cause
+		    _v_r_m_a_i_l to pop itself to the	top of all other win-
+		    dows.
+
+	  -r	    This option	causes the face	icons to be reversed.
+		    This option	should be used when the	screen is
+		    reversed.
+
+	  -l	    This option	causes the host	and login associated
+		    with the active login session to be	displayed in
+		    the	vrmail layer.  When the	----ffff option is used with
+		    mutiple host connections, this option makes	it
+		    possible to	identify which host the	particular
+		    vrmail layer is associated with.
+
+	  -F	    This option	causes the host	program	to require
+		    that mail files contain a blank line preceding the
+		    UUCP 'From ' line.	Normally, this blank line is
+		    not	required.
+
+	  To use _v_r_m_a_i_l, you must first	set some environment variables
+	  to help determine where certain files	and directories	of
+	  needed information are.  Operations as described in this
+	  manual require that $$$$TTTTOOOOOOOOLLLLSSSS and $$$$VVVVMMMM____DDDDEEEELLLLDDDDIIIIRRRR be set.
+
+	  The descriptions of these variables given below outline the
+	  values that can be assigned to each.	_V_r_m_a_i_l requires	that
+	  at least $$$$TTTTOOOOOOOOLLLLSSSS (or $$$$VVVVMMMM____DDDDIIIIRRRR) be set to find the files
+	  required to load and start.
+
+	  There	are two	distinct types of variables that _v_r_m_a_i_l	uses.
+	  Those	which are used to initialize, and those	that are used
+	  to perform host functions.  Variables	which are used prior
+	  to execution of the host interface must be set prior to
+	  starting _v_r_m_a_i_l.  The	variables which	control	the operations
+	  of the _v_r_m_a_i_l	host interface can be set in the file named
+	  $$$$HHHHOOOOMMMMEEEE////....vvvvmmmmeeeennnnvvvv (or the file indicated by $$$$VVVVMMMM____EEEENNNNVVVV).
+
+	  The following	is a list of environment variables that	_v_r_m_a_i_l
+	  recognizes.  Each can	be set to specific values to change
+	  the default behavior,	or extend the operations beyond	what
+	  is described in this manual.
+
+
+
+     Page 3					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  VM_MAILFILE	 This variable contains	the name of the
+			 current mail file.  If	set when _v_r_m_a_i_l	is
+			 started, it overrides the value in the
+			 environment variable, $$$$MMMMAAAAIIIILLLL.  This variable
+			 is set	prior to starting the host interface
+			 and specifies which mail file is currently
+			 loaded.
+
+	  VM_MAILCMD	 This variable holds the name of the mail pro-
+			 gram to use to	manipulate the mailbox.	 If
+			 _p_o_s_t(_1) is installed it will be used, other-
+			 wise _m_a_i_l_x(_1) is selected.  Setting
+			 $$$$VVVVMMMM____MMMMAAAAIIIILLLLCCCCMMMMDDDD will override this	selection.
+
+	  VM_TERM	 This variable overides	the search of $$$$JJJJPPPPAAAATTTTHHHH
+			 for the terminal program to download (see
+			 discussion of $$$$JJJJPPPPAAAATTTTHHHH below).  The file	named
+			 by the	value of this variable will be loaded
+			 into the terminal.
+
+	  VM_HOST	 This variable contains	the name of the	file
+			 which provides	the host interface to the menu
+			 actions.  If not set, the files,
+			 $$$$VVVVMMMM____DDDDIIIIRRRR/lib/vrmail/host and
+			 $$$$TTTTOOOOOOOOLLLLSSSS/lib/vrmail/host	are searched for, in
+			 that order.
+
+	  VM_MENU	 This variable contains	the name of the	file
+			 which provides	the menu definition to be
+			 loaded.  If not set, the files,
+			 $$$$VVVVMMMM____DDDDIIIIRRRR/lib/vrmail/menu and
+			 $$$$TTTTOOOOOOOOLLLLSSSS/lib/vrmail/menu	are searched for, in
+			 that order.
+
+	  VM_PAGER	 Is used by the	default	interface to page mail
+			 messages.  See	the description	of $$$$PPPPAAAAGGGGEEEERRRR too.
+
+	  PAGER		 Is used by the	default	interface to page mail
+			 messages if $$$$VVVVMMMM____PPPPAAAAGGGGEEEERRRR is not defined.	If
+			 neither $$$$VVVVMMMM____PPPPAAAAGGGGEEEERRRR nor $$$$PPPPAAAAGGGGEEEERRRR is defined,
+			 _p_g(_1) will be used.
+
+	  VM_OUTBOX	 Used by the default host interface.  This
+			 environment variable holds the	name of	the
+			 outbox	file where copies of outgoing mail
+			 should	be stored.
+
+	  VM_DIR	 Provides a means of overriding	the use	of
+			 $$$$TTTTOOOOOOOOLLLLSSSS.  If set, the host interface and the
+			 menu definition can be	placed in this direc-
+			 tory.	As long	as the other overiding
+			 environment variables,	$$$$VVVVMMMM____MMMMEEEENNNNUUUU, $$$$VVVVMMMM____TTTTEEEERRRRMMMM and
+
+
+
+     Page 4					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 $$$$VVVVMMMM____HHHHOOOOSSSSTTTT are not set, $$$$VVVVMMMM____DDDDIIIIRRRR will be used.
+
+	  VM_LOC	 This variable contains	the size and location
+			 information for the window that the host
+			 interface creates for those menu items
+			 requiring a window.  It should	contain	four
+			 blank separated numbers which represent the
+			 origin-x, origin-y, corner-x and corner-y
+			 values, respectively of the rectangle which
+			 defines the window.  By default, this window
+			 is of the correct size	for a mmmmeeeeddddiiiiuuuummmm ffffoooonnnntttt win-
+			 dow 24x80 characters on the 630 and 730 ter-
+			 minals.
+
+	  VM_TRASH	 This variable contains	the name of a file or
+			 directory where deleted mail should saved.
+			 This mail can be later	retrieved if needed.
+			 When $$$$VVVVMMMM____TTTTRRRRAAAASSSSHHHH	is a directory,	file names
+			 generated have	names of the form MMMMMMMMDDDDDDDDYYYYYYYY....NNNN,
+			 where MMMMMMMM is the current month,	DDDDDDDD is the
+			 current day of	the month, and YYYYYYYY is the year
+			 modulo	100.  NNNN	represents an ever increasing
+			 sequence number for all messages deleted on a
+			 particular day.  Another file,	MMMMMMMMDDDDDDDDYYYYYYYY....sssseeeeqqqq
+			 holds the ever	increasing sequence number for
+			 each days mail.  The contents of this direc-
+			 tory can be kept purged to within nnnn days by
+			 executing the command
+
+			     find $VM_TRASH -mtime +nnnn \
+				  -exec	rm -f {} \;
+
+			 when logging in.
+
+	  VM_DELDIR	 This variable must be set to make use of the
+			 uuuunnnnddddeeeelllleeeetttteeee command.  It points to a working
+			 directory where the host interface can	put
+			 the deleted mail messages until the host and
+			 terminal program syncronize.  The files
+			 created in this directory are vm_save.nnnn where
+			 nnnn is a	sequence number, and vvvvmmmm____ssssttttaaaattttuuuussss which
+			 contains the information to determine how
+			 each message can be restored.	Each time that
+			 the terminal and host resyncronize, these
+			 files are deleted because they	then become
+			 invalid.
+
+	  VM_ENV	 This variable holds the name of a script
+			 which the host	program	will execute prior to
+			 processing the	passed mail command.  This
+			 script	can contain variable assignments for
+			 many of the variables which _v_r_m_a_i_l uses.
+
+
+
+     Page 5					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 Variables like	$$$$VVVVMMMM____LLLLOOOOCCCC, $$$$VVVVMMMM____TTTTEEEERRRRMMMM, $$$$VVVVMMMM____MMMMEEEENNNNUUUU,
+			 $$$$VVVVMMMM____HHHHOOOOSSSSTTTT and similiar variables which are
+			 used before the host script is	envoked	must
+			 be set	prior to starting _v_r_m_a_i_l.  $$$$VVVVMMMM____EEEENNNNVVVV can
+			 also be used to supplant or add to the	com-
+			 mands that _v_r_m_a_i_l understands.	 The original
+			 arguments to the hhhhoooosssstttt script are passed to
+			 $$$$VVVVMMMM____EEEENNNNVVVV.
+
+	  VM_REPLYEDIT	 When the rrrreeeeppppllllyyyy	or RRRREEEEPPPPLLLLYYYY commands are used,
+			 this variable can be use to specify a set of
+			 keystroke that	should be interpreted before
+			 prompting the user.  See the discussion on
+			 these commands	below.
+
+	  VM_REPLYBODY	 This variable is used by the default
+			 hostscript.  It specifies a string to prepend
+			 to each non-blank line	in the generated
+			 reply.	 See the reply command description for
+			 more information.
+
+	  VM_FORWEDIT	 Used like $$$$VVVVMMMM____RRRREEEEPPPPLLLLYYYYEEEEDDDDIIIITTTT.  See the description
+			 of the	FFFFoooorrrrwwwwaaaarrrrdddd	command	below for more infor-
+			 mation.
+
+	  VM_FORWBODY	 Used like $$$$VVVVMMMM____RRRREEEEPPPPLLLLYYYYBBBBOOOODDDDYYYY.  See the description
+			 of the	FFFFoooorrrrwwwwaaaarrrrdddd	command	below for more infor-
+			 mation.
+
+	  VM_COMPEDIT	 Used like $$$$VVVVMMMM____RRRREEEEPPPPLLLLYYYYEEEEDDDDIIIITTTT.  See the description
+			 of the	CCCCoooommmmppppoooosssseeee	command	below for more infor-
+			 mation.
+
+	  VM_FACELINE	 This variable should contain the name of a
+			 file which will be read and placed into out-
+			 going mail.  This file	typically contains an
+			 X-Face: header	line which is the compressed
+			 and encoded face icon for the sender of the
+			 mail.	See the	section	below on SENDING/USING
+			 FACES IN MAIL for more	information.
+
+	  VM_SIGNATURE	 This variable holds the name of a file	which
+			 contains a signature line that	should be
+			 appended at the end of	all outgoing mail.
+			 The default value of $$$$VVVVMMMM____SSSSIIIIGGGGNNNNAAAATTTTUUUURRRREEEE is
+			 $$$$HHHHOOOOMMMMEEEE/.signature.  A blank line is always
+			 inserted prior	to the signature file's	con-
+			 tents.
+
+	  FACEPATH	 This variable contains	a colon	separated list
+			 of specifications where face icons can	be
+			 found.	 An icon should	be provided for	each
+
+
+
+     Page 6					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 users name from which mail will be received.
+			 Icons are either contained in files, or are
+			 generated by certain programs or as a result
+			 of consulting a certain "face server".	 Files
+			 are located based on directory	names which
+			 are specified in $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH.  The other
+			 sources are described later.
+
+			 In a directory	specified in $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH,	the
+			 name of an icon file can be one of two
+			 things.  It is	either the users login as in
+			 johnnyb, or it	is the string 44448888xxxx44448888xxxx1111.	This
+			 will be further described below.
+
+			 Typically, a directory	given in $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH is
+			 precisely where _v_r_m_a_i_l	will search for	face
+			 icons.	 If multiple users have	the same login
+			 but are on different machines,	subdirectories
+			 with the name of the users machine can	be
+			 created to place the users face icon in.  For
+			 example, the login jjjjoooohhhhnnnnnnnnyyyybbbb exists on machines
+			 mmmmaaaacccchhhhaaaa and mmmmaaaacccchhhhbbbb, and does not refer to	the
+			 same user.  If	$$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH contains the direc-
+			 tory name, $$$$HHHHOOOOMMMMEEEE/lib/faces, the following
+			 files could be	created	to differentiate
+			 between the two users.
+
+			     $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////ffffaaaacccceeeessss////mmmmaaaacccchhhhaaaa////jjjjoooohhhhnnnnnnnnyyyybbbb
+			     $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////ffffaaaacccceeeessss////mmmmaaaacccchhhhbbbb////jjjjoooohhhhnnnnnnnnyyyybbbb
+
+			 Some machines may contain more	than one par-
+			 ticular representation	of a users icon.  In
+			 this case, an alternate structure exists.  If
+			 access	to the alternate structure is desired,
+			 then the directory name in $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH must be
+			 appended with the string '#2'.	 If the	path
+			 is (as	above),	$$$$HHHHOOOOMMMMEEEE/lib/faces, then
+			 $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH would contain the string
+			 "$$$$HHHHOOOOMMMMEEEE/lib/faces#2".  The following files
+			 would then need to exist to locate the	face
+			 icons for the example above.
+
+			     $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////ffffaaaacccceeeessss////mmmmaaaacccchhhhaaaa////jjjjoooohhhhnnnnnnnnyyyybbbb////44448888xxxx44448888xxxx1111
+			     $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////ffffaaaacccceeeessss////mmmmaaaacccchhhhbbbb////jjjjoooohhhhnnnnnnnnyyyybbbb////44448888xxxx44448888xxxx1111
+
+			 So if a single	user uses a particular login ,
+			 the file
+
+			     $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////ffffaaaacccceeeessss////jjjjoooohhhhnnnnnnnnyyyybbbb
+
+			 would suffice to allow	_v_r_m_a_i_l to find a face
+			 icon for any mail from	the user jjjjoooohhhhnnnnnnnnyyyybbbb on an
+
+
+
+     Page 7					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 machine.  In the case of the alternate	form,
+			 the file,
+
+			     $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////ffffaaaacccceeeessss////jjjjoooohhhhnnnnnnnnyyyybbbb////44448888xxxx44448888xxxx1111
+
+			 would need to exist to	allow _v_r_m_a_i_l to	find a
+			 face icon.
+
+			 The following text describes what is neces-
+			 sary to access	the face icon sources which
+			 are not files accessable from the current
+			 machine through a one to one mapping
+			 (although the %group operation	does make use
+			 of local face icon files, its use does	not
+			 usually result	in a one to one	mapping).
+
+			 If the	string "%dksrv"	is encountered in
+			 $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH (as in
+			 "%dksrv,loc/org/server.face") the datakit
+			 address following the initial "%dksrv,"
+			 string	and up to a colon or the end of	string
+			 will be used to access	a face server over
+			 datakit.  The server should respond with the
+			 face for an address given in the format,
+			 host/user, with a NUL byte included at	the
+			 end of	the string.
+
+			 If the	string "%group," is encountered	in
+			 $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH (as in "%group,$HOME/.facemap") the
+			 file whose name is given following the	comma
+			 will be loaded	as a login to face mapping
+			 specification.	 The format of the file	is
+			 expected to be	as described below in the
+			 GGGGRRRROOOOUUUUPPPP MMMMAAAAPPPPPPPPIIIINNNNGGGG SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCAAAATTTTIIIIOOOONNNN section.  The
+			 functionality provided	is also	described
+			 there.
+
+			 If an element of $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH begins with	'!',
+			 the subsequent	string will be take as the
+			 path to a program which will generate the
+			 path to the face file.	 e.g.  if
+			 '!/usr/users/gregg/bin/gface' is in
+			 $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH, then _v_r_m_a_i_l	would read through a
+			 pipe from the command line
+
+			     .../gface user host from subject TO|CC
+
+			 The program should emit either	two lines on
+			 stdout, or nothing if there is	no face	for
+			 the indicated user.  If there is a face, the
+			 first line should be a	face cache key which
+			 will identify the face	in the terminal.  The
+
+
+
+     Page 8					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 second	line should be the path	to the file
+			 containing the	face icon.  Thus the output
+			 lines,
+
+			     expproject
+			     /usr/users/gregg/lib/faces/expfolks
+
+			 would cause the face,
+			 ////uuuussssrrrr////uuuusssseeeerrrrssss////ggggrrrreeeegggggggg////lllliiiibbbb////ffffaaaacccceeeessss////eeeexxxxppppffffoooollllkkkkssss, to be
+			 cached	in the terminal	under the name eeeexxxxpppppppprrrroooo----
+			 jjjjeeeecccctttt.	Future references to this face would
+			 be satisfied from the cache.
+
+			 If a face does	not exist in any of the	places
+			 indicated by $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH, the face icon file
+			 uuuunnnnkkkknnnnoooowwwwnnnn will be used.
+
+			 If $$$$FFFFAAAACCCCEEEEPPPPAAAATTTTHHHH is not set then
+			 $$$$HHHHOOOOMMMMEEEE/lib/faces:$$$$TTTTOOOOOOOOLLLLSSSS/lib/faces: will	be
+			 used by default.
+
+	  DEAD		 $$$$DDDDEEEEAAAADDDD is used to indicate where mail should
+			 be discarded if the composition and sending
+			 process is aborted.  The default is
+			 $$$$HHHHOOOOMMMMEEEE/dead.letter.  $$$$DDDDEEEEAAAADDDD should be expli-
+			 citly set to /_d_e_v/_n_u_l_l	to disable the saving
+			 of aborted compositions.
+
+	  JPATH		 $$$$JJJJPPPPAAAATTTTHHHH	is used	to load	the correct version of
+			 the terminal program.	It must	point at a
+			 directory which contains _v_r_m_a_i_l._m, or that
+			 file must be in the directory that _v_r_m_a_i_l is
+			 started in.
+
+	  TOOLS		 This is where _v_r_m_a_i_l is based in exptools
+			 land.
+
+	  MAIL		 The default mail file to be loaded.
+
+	  LOGNAME	 If MAIL is not	defined, then
+			 /usr/mail/$$$$LLLLOOOOGGGGNNNNAAAAMMMMEEEE might be used as the mail-
+			 box name if cuserid(3), and getlogin(3) do
+			 not return reasonable values.
+
+	  SHELL		 The value of this variable is used to execute
+			 the host interface program.  /bin/sh is
+			 recommended when using	_v_r_m_a_i_l.	 If $$$$SSSSHHHHEEEELLLLLLLL is
+			 not set, /bin/sh is used.
+
+
+     LLLLAAAAYYYYEEEERRRR IIIINNNNTTTTEEEERRRRAAAACCCCTTTTIIIIOOOONNNNSSSS
+	  Once the environment variables are set, _v_r_m_a_i_l should	load
+
+
+
+     Page 9					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  the terminal part and	start properly.
+
+	  After	the terminal part is loaded, the menu description will
+	  be located and loaded	into the terminal.  Then, the $$$$MMMMAAAAIIIILLLL
+	  file (or what	is determined to be the	mail file as described
+	  above) will be read.
+
+	  _V_r_m_a_i_l assumes that the format of the	$$$$MMMMAAAAIIIILLLL file is the
+	  standard _U_U_C_P	format.	 That is, mail messages	are separated
+	  by an	optional blank line (see the ----FFFF	option)	followed by
+	  the five letters "From " beginning on	the following line.
+	  Mail files which do not meet this format will	not be recog-
+	  nized	correctly by _v_r_m_a_i_l.
+
+	  Each message's header	information will be sent to the	termi-
+	  nal along with any needed face icon.	Face icons are cached
+	  to speed the display process.	 Only one copy of a particular
+	  face is ever in the terminal.	 The display contains boxes
+	  for the icons	which are filled from left to right on the
+	  screen.  When	all displayed boxes are	used, the displayed
+	  faces	will be	shifted	to the left in the window so that more
+	  faces	can be displayed.  This	will continue until all	the
+	  mail messages	in the mail file have had their	header infor-
+	  mation sent to the terminal.
+
+	  While	the messages are being loaded (or later	reloaded), the
+	  mouse	can be used to select messages or perform other	opera-
+	  tions.
+
+
+     MMMMOOOOUUUUSSSSEEEE OOOOPPPPEEEERRRRAAAATTTTIIIIOOOONNNNSSSS
+	  There	are several "gadgets" or interaction points on the
+	  _v_r_m_a_i_l layer.	 These gadgets perform 3 different functions.
+
+	  The Arrow gadgets allow displayed faces to be	scrolled
+	  through when there are more messages in the $$$$MMMMAAAAIIIILLLL file than
+	  can be displayed in the _v_r_m_a_i_l layer.
+
+	  The scroll bar below the faces (or above when	the layer is
+	  below	the middle of the screen) shows	the position of	the
+	  displayed faces in relation to the total mail	messages in
+	  the $$$$MMMMAAAAIIIILLLL file.  It can also be dragged to scroll through
+	  the face list.
+
+	  The face gadgets correspond to a particular message.	Click-
+	  ing on the face with either bbbbuuuuttttttttoooonnnn----1111 or bbbbuuuuttttttttoooonnnn----3333 will	per-
+	  form any associated action that the menu file	describes.  By
+	  default, these actions are bbbbuuuuttttttttoooonnnn----1111 shows the	selected mes-
+	  sage,	and bbbbuuuuttttttttoooonnnn----3333 deletes the selected message.
+
+	  Just pointing	at a face with the mouse will cause the	header
+	  information for that message to be displayed in the
+
+
+
+     Page 10					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  appropriately	labeled	boxes (subject in the box labeled Sub-
+	  ject:	etc).
+
+	  Pressing button one and releasing it will (by	default) cause
+	  a new	window to be created (a	host to	terminal channel must
+	  be available).  The selected message will be "Shown" in the
+	  new window.  An appropriate pager (as	selected from the
+	  environment variables	listed above) will be used to allow
+	  the message to be read one screen full at a time.  When the
+	  pager	process	exits, the message "[Press return to delete
+	  this window]"	will be	displayed.  Pressing the enter/return
+	  key in that window will cause	the window to be deleted.
+
+	  Pressing button three	and releasing it will (by default)
+	  cause	the indicated message to become	"marked".  The selec-
+	  tions	in the MMMMuuuullllttttiiii---->>>> submenu which have an XXXX icon on the
+	  left can then	be used	on messages which are marked.  Specif-
+	  ically, a set	of messages can	be "marked" and	then deleted
+	  all at once.	However, these messages	ccccaaaannnn nnnnooootttt	be later
+	  "undeleted".
+
+	  Double clicking a message with bbbbuuuuttttttttoooonnnn----1111 causes the message
+	  to be	selected with a	checkmark.  The	selections in the
+	  MMMMuuuullllttttiiii---->>>> submenu which	have a checkmark icon on the left can
+	  then be used on messages which are "selected".  Specifi-
+	  cally, a set of messages can be "selected" and then shown
+	  all at once.
+
+	  The reading gadget provides a	means of sending a select set
+	  of characters	to a layer which _v_r_m_a_i_l	has created.  The
+	  reading gadget will appear in	the lower left corner (or
+	  upper	left if	below the middle of the	screen)	of the _v_r_m_a_i_l
+	  layer.  With the mouse in this box, either a space character
+	  (mouse button	1), a carriage return (mouse button 2),	or a
+	  'q' character	(mouse button 3) can be	sent to	the window
+	  number printed in the	box.  A	message	of the form "Reading
+	  in x"	is displayed in	the reading box	to tell	you which win-
+	  dow _v_r_m_a_i_l is	currently talking to.  When multiple windows
+	  are opened, the most recent opened is	the one	_v_r_m_a_i_l will
+	  select.
+
+	  When the mouse pointer is not	inside the reading gadget,
+	  pressing button two will display the menu loaded from	the
+	  menu file specified by the environment variables as
+	  explained above.  Some selections, such as RRRReeeeppppllllyyyy, RRRREEEEPPPPLLLLYYYY and
+	  FFFFoooorrrrwwwwaaaarrrrdddd, deal	with individual	messages.  Others, such	as
+	  MMMMaaaaiiiillll and SSSShhhheeeellllllll start other programs that do not actually
+	  deal with a specific message that you	would have selected.
+	  If you are not pointing at a face, the items which deal with
+	  a specific mail message will be greyed in the	menu.
+
+	  The default menu hierarchy is	shown here as a	series of
+
+
+
+     Page 11					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  menus.  There	are multiple menu levels, which	are accessed
+	  by the entries which have right arrows (---->>>>) on them.
+
+
+	       The mmmmaaaaiiiinnnn	menu
+
+				   ______________
+				  | Msgs      ->|
+				  |______________|
+				  | Multi     ->|
+				  |______________|
+				  | Others    ->|
+				  |______________|
+				  | Utils     ->|
+				  |______________|
+				  | Options   ->|
+				  |______________|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 12					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	       The MMMMssssggggssss	submenu
+
+				   _______________
+				  | Show	 |
+				  |_______________|
+				  | Refile     ->|
+				  |_______________|
+				  | Compose	 |
+				  |_______________|
+				  | Reply	 |
+				  |_______________|
+				  | REPLY	 |
+				  |_______________|
+				  | Forward	 |
+				  |_______________|
+				  | Undelete	 |
+				  |_______________|
+				  | Delete	 |
+				  |_______________|
+				  | Edit	 |
+				  |_______________|
+
+
+	       The MMMMssssggggssss---->>>>RRRReeeeffffiiiilllleeee	submenu
+
+			       ______________________
+			      |	To MBOX		    |
+			      |______________________|
+			      |	To senders name	    |
+			      |______________________|
+			      |	To mail	file	  ->|
+			      |______________________|
+			      |	Without	header	  ->|
+			      |______________________|
+
+
+	       The MMMMuuuullllttttiiii submenu
+
+				 ___________________
+				| v/   Show	   |
+				|___________________|
+				| v/   Pipe	 ->|
+				|___________________|
+				| X   Undelete	   |
+				|___________________|
+				| X   Delete	   |
+				|___________________|
+				| v/   Refile	 ->|
+				|___________________|
+
+
+
+
+
+
+     Page 13					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	       The MMMMuuuullllttttiiii---->>>>RRRReeeeffffiiiilllleeee submenu
+
+			       ______________________
+			      |	To MBOX		    |
+			      |______________________|
+			      |	To senders name	    |
+			      |______________________|
+			      |	To mail	file	  ->|
+			      |______________________|
+			      |	Without	header	  ->|
+			      |______________________|
+
+
+	       The OOOOtttthhhheeeerrrrssss submenu
+
+				   ______________
+				  | Mailcmd	|
+				  |______________|
+				  | Pipe      ->|
+				  |______________|
+				  | Copy      ->|
+				  |______________|
+				  | Load      ->|
+				  |______________|
+				  | Shell	|
+				  |______________|
+
+
+	       The OOOOtttthhhheeeerrrrssss---->>>>CCCCooooppppyyyy	submenu
+
+			       ______________________
+			      |	To MBOX		    |
+			      |______________________|
+			      |	To senders name	    |
+			      |______________________|
+			      |	To mail	file	  ->|
+			      |______________________|
+			      |	Without	header	  ->|
+			      |______________________|
+
+
+	       The UUUUttttiiiillllssss submenu
+				    _____________
+				   | Purge Faces|
+				   |_____________|
+				   | Reload Mail|
+				   |_____________|
+				   | Reload Menu|
+				   |_____________|
+
+
+
+
+
+
+     Page 14					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	       The OOOOppppttttiiiioooonnnnssss submenu
+
+				  ________________
+				 | Inverse Video |
+				 |________________|
+				 | Follow Swapper|
+				 |________________|
+				 |     Cache	 |
+				 |________________|
+				 | Mail	To Front |
+				 |________________|
+				 |  Reload Delay |
+				 |________________|
+				 | End on Newmail|
+				 |________________|
+				 |   Show Login	 |
+				 |________________|
+
+	  The actions associated with these selections is described
+	  below.
+
+	  Msgs->Show	 This selection	functions the same as clicking
+			 button	one while pointing at the face.	 The
+			 indicated mail	message	is displayed in	a new
+			 window.
+
+	  Msgs->Refile->To MBOX
+			 This selection	will refile the	selected mes-
+			 sage into the mail file specified by the MBOX
+			 variable in your _p_o_s_t(_1) ....mmmmaaaaiiiillllrrrrcccc file.
+
+			 The selected message is deleted from the
+			 current mail file after it is copied into the
+			 indicated file.  An XXXX is drawn	through	the
+			 face to signify that it has been deleted.
+			 Further access	to that	message	is denied.
+
+	  Msgs->Refile->To senders name
+			 This selection	uses the _m_a_i_l_x(_1) SSSS command to
+			 refile	the message into a mail	file which has
+			 a name	corresponding to that of the senders
+			 login name.
+
+			 The selected message is deleted from the
+			 current mail file after it is copied into the
+			 indicated file.  An XXXX is drawn	through	the
+			 face to signify that it has been deleted.
+			 Further access	to that	message	is denied.
+
+	  Msgs->Refile->To mail	file
+			 This selection	has a dynamic submenu which
+			 allows	file names to be entered and then
+
+
+
+     Page 15					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 later referenced as places to save messages.
+			 The initial item in the submenu is NNNNEEEEWWWW.  When
+			 you select it,	a box will appear across the
+			 faces with a cursor in	it.  Type the name of
+			 the mail file that you	wish to	save the mail
+			 in.  The typed	name will appear as an addi-
+			 tional	item in	the TTTToooo mmmmaaaaiiiillll ffffiiiilllleeee submenu next
+			 time it is selected.  This allows these file
+			 names to be reused easily.
+
+			 The selected message is deleted from the
+			 current mail file after it is copied into the
+			 indicated file.  An XXXX is drawn	through	the
+			 face to signify that it has been deleted.
+			 Further access	to that	message	is denied.
+
+			 NNNNooootttteeee::::	The program select as described	above
+			 under $$$$VVVVMMMM____MMMMAAAAIIIILLLLCCCCMMMMDDDD is used to save the mes-
+			 sage.	The file name given for	aaaallllllll of the
+			 rrrreeeeffffiiiilllleeee	or ccccooooppppyyyy	selections must	be relative to
+			 the environment that $$$$VVVVMMMM____MMMMAAAAIIIILLLLCCCCMMMMDDDD will run in
+			 as a child process of _v_r_m_a_i_l.	I.e.  if your
+			 .mailrc file uses cd, or you start _v_r_m_a_i_l in
+			 a specific directory other than $$$$HHHHOOOOMMMMEEEE,	the
+			 path must be relative to that directory.
+
+	  Msgs->Refile->Without	header
+			 This selection	uses the _m_a_i_l_x(_1) wwww command to
+			 write the selected mail message's body	to the
+			 indicated file.  Unlike the other refile com-
+			 mands,	this one does nnnnooootttt delete the message.
+
+	  Msgs->Compose	 This selection	invokes	a mail composition
+			 facility that provides	the ability to compose
+			 a mail	message	to send	to a list of reci-
+			 pients.
+
+	  Msgs->Reply	 This selection	invokes	a mail Replying	facil-
+			 ity that provides the ability to reply	to
+			 mail messages sending mail only to the	sender
+			 by default.  The list can be modified while
+			 editing.
+
+	  Msgs->REPLY	 This selection	invokes	a mail Replying	facil-
+			 ity that provides the ability to reply	to
+			 mail messages sending mail to the sender and
+			 all other recipients.	The list can be	modi-
+			 fied while editing.
+
+	  Msgs->Forward	 This selection	invokes	a mail forwarding
+			 facility that provides	the ability to forward
+			 a mail	message	to a list of recipients.
+
+
+
+     Page 16					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  Msgs->Undelete The indicated mail message, which was previ-
+			 ously deleted,	is restored to the end of the
+			 current mail file.
+
+	  Msgs->Delete	 The indicated mail message is deleted from
+			 the current mail file.	 The $$$$VVVVMMMM____DDDDEEEELLLLDDDDIIIIRRRR	vari-
+			 able points to	where the deleted message is
+			 saved for undelete.  If $$$$VVVVMMMM____DDDDEEEELLLLDDDDIIIIRRRR is not
+			 set, there will be no means of	using
+			 MMMMssssggggssss---->>>>UUUUnnnnddddeeeelllleeeetttteeee	to restore the message.	 If
+			 $$$$VVVVMMMM____TTTTRRRRAAAASSSSHHHH is defined, a copy of the message
+			 is saved in that file (or directory).
+
+			 In any	case, an XXXX is drawn across the face to
+			 signify that the message has been deleted.
+			 Further actions (other	than Undelete) on this
+			 message are prohibited.
+
+	  Msgs->Edit	 This selection	will start the program given
+			 in the	environment variable, $$$$EEEEDDDDIIIITTTTOOOORRRR, in a
+			 new window to let you browse and edit the
+			 indicated message.  When the editor is
+			 exited, the mail message will be appended to
+			 the current mail file.
+
+	  Multi->Show	 This selection	allows multiple	sssseeeelllleeeecccctttteeeedddd mes-
+			 sages (those marked with a checkmark) to be
+			 viewed	simultaneously,	after using the	double
+			 click of button-1, select function to select
+			 a set of messages.
+
+	  Multi->Pipe	 This selection	is like	the OOOOtttthhhheeeerrrrssss---->>>>PPPPiiiippppeeee func-
+			 tion and shares the command menu with it.  It
+			 allows	multiple sssseeeelllleeeecccctttteeeedddd messages to be piped
+			 to a single command.
+
+	  Multi->Undelete
+			 This selection	manipulates only messages
+			 mmmmaaaarrrrkkkkeeeedddd	with an	XXXX (as indicated	by the XXXX in
+			 the menu item).  TTTThhhhiiiissss sssseeeelllleeeeccccttttiiiioooonnnn ccccaaaannnn oooonnnnllllyyyy ffffoooollll----
+			 lllloooowwww aaaa pppprrrreeeevvvviiiioooouuuussss	_M_u_l_t_i->_D_e_l_e_t_e wwwwiiiitttthhhh tttthhhheeee ssssaaaammmmeeee
+			 mmmmeeeessssssssaaaaggggeeeessss mmmmaaaarrrrkkkkeeeedddd aaaassss wwwweeeerrrreeee mmmmaaaarrrrkkkkeeeedddd	wwwwhhhheeeennnn
+			 _M_u_l_t_i->_D_e_l_e_t_e wwwwaaaassss sssseeeelllleeeecccctttteeeedddd....
+
+	  _M_u_l_t_i->_D_e_l_e_t_e	 This selection	manipulates only messages
+			 mmmmaaaarrrrkkkkeeeedddd	with an	XXXX (as indicated	by the XXXX in
+			 the menu item).  All messages that are	marked
+			 will be deleted.
+
+	  Multi->Refile	 This selection	manipulates only messages
+			 mmmmaaaarrrrkkkkeeeedddd	with an	XXXX (as indicated	by the XXXX in
+			 the menu item).  All messages that are	marked
+
+
+
+     Page 17					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 will be refiled to the	selected destination
+			 base on the use of the	RRRReeeeffffiiiilllleeee sub menu.  See
+			 the description of MMMMssssggggssss---->>>>RRRReeeeffffiiiilllleeee for informa-
+			 tion on the RRRReeeeffffiiiilllleeee submenu.
+
+	  Others->Mailcmd
+			 This selection	starts the $$$$VVVVMMMM____MMMMAAAAIIIILLLLCCCCMMMMDDDD program
+			 in a new window, with the current mail	file
+			 selected with the ----ffff option.  The command
+			 line executed is composed as
+
+			 $$$${{{{VVVVMMMM____MMMMAAAAIIIILLLLCCCCMMMMDDDD}}}} ----ffff $$$${{{{VVVVMMMM____MMMMAAAAIIIILLLLFFFFIIIILLLLEEEE}}}}
+
+
+	  Others->Pipe	 The selected message will be piped to the
+			 indicated program without creating a window.
+			 Typically, commands such as _p_r_t(_1) or _l_p(_1)
+			 which provide printing	services are used
+			 here.	Like RRRReeeeffffiiiilllleeee---->>>>TTTToooo	mmmmaaaaiiiillll ffffiiiilllleeee, this	option
+			 uses a	dynamic	sub-menu which allows you to
+			 type the strings needed only once.  Later,
+			 selecting the appropriate sub-menu item will
+			 make use of that string.
+
+	  Others->Copy->To MBOX
+			 This selection	is exactly like	its counter
+			 part, RRRReeeeffffiiiilllleeee---->>>>TTTToooo MMMMBBBBOOOOXXXX except that is does nnnnooootttt
+			 delete	the message.
+
+	  Others->Copy->To senders name
+			 This selection	is exactly like	its counter
+			 part, RRRReeeeffffiiiilllleeee---->>>>TTTToooo sssseeeennnnddddeeeerrrrssss nnnnaaaammmmeeee except that is
+			 does nnnnooootttt delete the message.
+
+	  Others->Copy->To mail	file->
+			 This selection	is exactly like	its counter
+			 part, RRRReeeeffffiiiilllleeee---->>>>TTTToooo mmmmaaaaiiiillll ffffiiiilllleeee except that	is
+			 does nnnnooootttt delete the message.
+
+	  Others->Load	 This selection	provides a dynamic sub-menu
+			 which allows you to specify the name of a new
+			 mail file to load.  Initially,	the only
+			 selection is NNNNEEEEWWWW.  This selection will	prompt
+			 you for the name of the mail file to load.
+			 Once the filename is typed, loading will com-
+			 mence.	 After a NNNNEEEEWWWW name is entered, it will
+			 remain	in the sub-menu	for future reference.
+
+	  Others->Shell	 This selection	starts the program given in
+			 $$$$SSSSHHHHEEEELLLLLLLL	in a newly created window.
+
+	  Utils->Purge Faces
+
+
+
+     Page 18					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 This selection	purges the face	cache, login
+			 cache and loaded mail messages.  It then
+			 forces	the current mail file to be reloaded.
+			 This selection	is typically used to update a
+			 face that is stored in	the cache, but has
+			 been changed on the host, or a	mapping	from a
+			 login to a particular face icon.
+
+	  Utils->Reload	Mail
+			 This selection	forces the entire mail file to
+			 be reloaded into the terminal.	 Cached	faces
+			 are not affected.
+
+	  Utils->Reload	Menu
+			 This selection	forces the menu	to be reloaded
+			 from the menu description file	on the host.
+			 NNNNooootttteeee:::: all dynamic menus are cleared.
+
+	  Options->Inverse Video
+			 This selection	reverses the use of any	previ-
+			 ous selection of this selection or the	----rrrr
+			 command line switch.
+
+	  Options->Follow Swapper
+			 This selection	reverses the use of any	previ-
+			 ous selection of this selection or the	----ssss
+			 command line switch.
+
+	  Options->Cache This selection	reverses the use of any	previ-
+			 ous selection of this selection or the	----cccc
+			 command line switch.
+
+	  Options->Mail	To Front
+			 This selection	reverses the use of any	previ-
+			 ous selection of this selection or the	----ffff
+			 command line switch.
+
+	  Options->Reload Delay
+			 Provides an interactive means of setting the
+			 time between mail box syncronization between
+			 the host and the terminal.  An	input box is
+			 opened.  Typing a number in and hitting
+			 return	will set the time interval to that
+			 value in seconds.  The	value entered must be
+			 either	0 or greater than or equal to 15.  A
+			 value of 0 disables automatic checking	for
+			 new mail or deleted mail.  The	RRRReeeellllooooaaaadddd MMMMaaaaiiiillll
+			 option	from the UUUUttttiiiillllssss menu will check for new
+			 or deleted mail and resyncronize the terminal
+			 and host.
+
+	  Options->End on Newmail
+
+
+
+     Page 19					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			 This option causes the	face display to	be
+			 updated to the	current	position as the	termi-
+			 nal is	updated	or sent	new mail.  If turned
+			 off, the faces	will not move as new mail
+			 arrives or the	terminal is updated.
+
+	  Options->Show	Login
+			 Causes	a box containing the host and login
+			 for the host active user to be	displayed in
+			 the _v_r_m_a_i_l layer.  This is useful when	more
+			 than one version of _v_r_m_a_i_l is active and it
+			 is necessary to know what host	each is
+			 attached to.
+
+
+     RRRREEEEPPPPLLLLYYYY AAAANNNNDDDD FFFFOOOORRRRWWWWAAAARRRRDDDD
+	  The ffffoooorrrrwwwwaaaarrrrdddd and rrrreeeeppppllllyyyy	commands share a similar interface to
+	  the composition of the mail message to be sent.  The com-
+	  mands	described below	can be typed manually, or the environ-
+	  ment variables, $$$$VVVVMMMM____RRRREEEEPPPPLLLLYYYYEEEEDDDDIIIITTTT	and $$$$VVVVMMMM____FFFFOOOORRRRWWWWEEEEDDDDIIIITTTT, for the
+	  rrrreeeeppppllllyyyy	and ffffoooorrrrwwwwaaaarrrrdddd commands respectively, can be set to a
+	  comma	separated list of these	commands.  This	will cause the
+	  specified commands to	be executed immediately	upon start up.
+	  For example, if $$$$VVVVMMMM____RRRREEEEPPPPLLLLYYYYEEEEDDDDIIIITTTT	was set	to """"ffff,,,,eeee"""", then the
+	  body of the original message would be	annotated and the pro-
+	  gram given in	the environment	variable, $$$$EEEEDDDDIIIITTTTOOOORRRR, would be
+	  started on the resulting file	each time that a message is
+	  replied to.  A description of	the available commands is
+	  given	below.
+
+
+	  x or q	 Aborts	the rrrreeeeppppllllyyyy operation.
+
+	  b or body	 Annotates the body of the message being
+			 replied to with the string in the environment
+			 variable $$$$VVVVMMMM____RRRREEEEPPPPLLLLYYYYBBBBOOOODDDDYYYY	(or $$$$VVVVMMMM____FFFFOOOORRRRWWWWBBBBOOOODDDDYYYY for
+			 the forward command) at the beginning of each
+			 non-blank line.  Note that the	bbbbooooddddyyyy command
+			 implies the ffffiiiilllleeee command.  The	body command
+			 is done automatically for the ffffoooorrrrwwwwaaaarrrrdddd com-
+			 mand.	$$$$VVVVMMMM____FFFFOOOORRRRWWWWBBBBOOOODDDDYYYY is	automatically inserted
+			 at the	beginning of each non-blank line.
+
+	  v or e	 Envokes the program in	the environment	vari-
+			 able $$$$EEEEDDDDIIIITTTTOOOORRRR with the current message content
+			 as the	parameter.
+
+	  f or file	 Includes the body of the replied to message
+			 in the	response message.
+
+	  h, help or ?	 Prints	out the	help information.
+
+
+
+
+     Page 20					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  o		 Saves a copy of the message into the users
+			 "outbox" as defined by	$$$$VVVVMMMM____OOOOUUUUTTTTBBBBOOOOXXXX.  If
+			 $$$$VVVVMMMM____OOOOUUUUTTTTBBBBOOOOXXXX is not set,	the message will saved
+			 in mmmmbbbbooooxxxx.  Setting the environment variable,
+			 $$$$VVVVMMMM____OOOOUUUUTTTTBBBBOOOOXXXX, will cause	this to	happen
+			 automatically prior to	sending	mail.
+
+	  l or list	 Lists the content of the composed message
+			 using the pager set with the environment
+			 variables as described	above.
+
+	  s or send or . Sends the message as composed to the
+			 recipient(s).
+
+	  d or display	 Displays the original message that is being
+			 replied to using the pager set	with the
+			 environment variables as described above.
+			 NNNNooootttteeee::::	only the rrrreeeeppppllllyyyy command recognizes this
+			 option.
+
+	  R		 Attaches a return receipt request to the mes-
+			 sage being composed.
+
+
+     MMMMEEEENNNNUUUU SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCAAAATTTTIIIIOOOONNNN
+	  The format of	the menu file is a series of lines with	fields
+	  separated by colons.	The default menu provides some insight
+	  into the required information.  More detail is provided
+	  here.
+
+	  The first field represents the menu level.  0	is always the
+	  first	level.	1 is the second, 2 is the third	and so on.  As
+	  an example, consider the following lines which represent a
+	  possible menu.
+
+
+	       0:item 0.1:n,y,n:item-1
+	       1:submenu 1:n,y,n:not used but required
+	       1:subitem 1.1:n,y,n:item-s1-1
+	       1:subitem 1.2:n,y,n:item-s1-2
+	       -1:submenu 2:n,y,n:not used but required
+	       1:subitem 2.1:n,y,n:item-s2-1
+	       1:subitem 2.2:n,y,n:item-s2-2
+	       0:item 0.2:n,y,n,item-2
+
+	  The lllleeeevvvveeeellll field for the item,	"ssssuuuubbbbmmmmeeeennnnuuuu 2222" has	a '-' prefix-
+	  ing it.  This	is necessary whenever two selections which
+	  provide submenus follow one after the	other on their parent
+	  menu.	 I.e.  the main	menu for this description is
+
+
+
+
+
+
+     Page 21					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+				________________
+			       | item 0.1      |
+			       |________________|
+			       | submenu 1   ->|
+			       |________________|
+			       | submenu 2   ->|
+			       |________________|
+			       | item 0.2      |
+			       |________________|
+
+	  The selection	giving access to a submenu always has the same
+	  level	value as all members of	that submenu.  Thus, the '-'
+	  character marks where	a new menu should begin.  Without the
+	  '-' character, the main menu would appear as
+
+				________________
+			       | item 0.1      |
+			       |________________|
+			       | submenu 1   ->|
+			       |________________|
+			       | item 0.2      |
+			       |________________|
+
+	  And "submenu 1" would	appear as
+
+				________________
+			       | subitem 1.1   |
+			       |________________|
+			       | subitem 1.2   |
+			       |________________|
+			       | submenu 2     |
+			       |________________|
+			       | subitem 2.1   |
+			       |________________|
+			       | subitem 2.2   |
+			       |________________|
+
+	  instead of the desired
+
+				________________
+			       | subitem 1.1   |
+			       |________________|
+			       | subitem 1.2   |
+			       |________________|
+
+
+     MMMMEEEENNNNUUUU TTTTEEEEXXXXTTTT
+	  The second field is the text to be displayed in the menu
+	  selection.  This text	is displayed in	the menu and usually
+	  provides the description of what a particular	selection
+	  does.
+
+
+
+
+     Page 22					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+     MMMMEEEENNNNUUUU OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  The third field contains a list of option settings.  These
+	  options are comprised	of a list of comma separated values as
+	  described below.  Option fields which	are not	specified are
+	  assumed to contain the value 'n'.  All fields	up to a	field
+	  must have either an 'n' or a 'y' in them.  Consective	','
+	  characters will be considered	as one.	 I.e. nnnn,,,,nnnn,,,,nnnn,,,,nnnn,,,,nnnn,,,,nnnn,,,,yyyy is
+	  correct for selecting	option seven, but ,,,,,,,,,,,,,,,,,,,,,,,,yyyy does not
+	  selection option seven.
+
+	  The ffffiiiirrrrsssstttt option determines whether or not the reading
+	  gadget appears when a	new window is created.	A 'y' means
+	  yes, an 'n' means no.
+
+	  The sssseeeeccccoooonnnndddd option determines whether or not the item
+	  requires a new window.  A 'y'	means yes and a	'n' means no.
+
+	  The tttthhhhiiiirrrrdddd option identifies selections which deal with
+	  specific mail	messages.  A 'y' means this item does, a 'n'
+	  means	it does	not.  This option controls the greying of the
+	  selection when the mouse is not pointing at a	face, but is
+	  in the _v_r_m_a_i_l	layer.
+
+	  The ffffoooouuuurrrrtttthhhh option determines whether this selection removes
+	  the indicated	message	from the mail file.  This option is
+	  specifically for use with actions such as DDDDeeeelllleeeetttteeee and RRRReeeeffffiiiilllleeee
+	  which	actually remove	messages from the mail file.  IIIImmmmpppprrrrooooppppeeeerrrr
+	  uuuusssseeee ooooffff tttthhhhiiiissss ooooppppttttiiiioooonnnn rrrreeeessssuuuullllttttssss iiiinnnn	tttthhhheeee tttteeeerrrrmmmmiiiinnnnaaaallll aaaannnndddd hhhhoooosssstttt nnnnooootttt
+	  kkkknnnnoooowwwwiiiinnnngggg wwwwhhhhiiiicccchhhh	mmmmeeeessssssssaaaaggggeeee	tttthhhheeee ooootttthhhheeeerrrr iiiissss ttttaaaallllkkkkiiiinnnngggg aaaabbbboooouuuutttt.
+
+	  The ffffiiiifffftttthhhh option determines whether the [[[[PPPPrrrreeeessssssss rrrreeeettttuuuurrrrnnnn	ttttoooo
+	  ddddeeeelllleeeetttteeee tttthhhhiiiissss wwwwiiiinnnnddddoooowwww]]]] prompt is	displayed in a created window
+	  or the window	closes immediately after the action completes.
+	  A 'y'	means display the prompt and require that rrrreeeettttuuuurrrrnnnn be
+	  pressed.  A 'n' means	close the window immediately.
+
+	  The ssssiiiixxxxtttthhhh option determines whether this selection only acts
+	  on deleted messages.	A 'y' indicates	that it	does, an 'n'
+	  indicates that it can	not.
+
+	  The sssseeeevvvveeeennnntttthhhh option indicates that this menu item will	mark
+	  messages with	an XXXX.
+
+	  The eeeeiiiigggghhhhtttthhhh option indicates that this	menu item acts on mes-
+	  sages	which have been	marked with an XXXX.
+
+	  The nnnniiiinnnntttthhhh option indicates that this menu item will mark
+	  messages with	a check	mark.
+
+	  The tttteeeennnntttthhhh option indicates that this menu item acts on mes-
+	  sages	which have been	marked (selected) with a checkmark.
+
+
+
+
+     Page 23					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+     MMMMEEEENNNNUUUU AAAACCCCTTTTIIIIOOOONNNNSSSS
+	  The fourth field is the action command name or builtin to be
+	  performed when this item is selected.	 Builtins begin	with a
+	  '$' and are described	below.	When the builtin, $$$$aaaauuuuttttoooo, is
+	  used,	a fifth	field is used to specify the action command
+	  name.	 The builtin commands are described here.
+
+
+	  $auto		  This builtin results in a dynamic menu being
+			  attached to this selection.  The fifth argu-
+			  ment must be supplied	to specify the appli-
+			  cation command.  A dynamic menu allows the
+			  user to enter	arbitrary strings once.	 The
+			  entered strings are stored in	the menu for
+			  later	reference.  An initial list of items
+			  for the menu may be specified	in a comma
+			  separated list following $$$$aaaauuuuttttoooo.  An example
+			  is the PPPPiiiippppeeee ---->>>> selection which has
+
+			      $$$$aaaauuuuttttoooo((((ccccmmmmddddssss)))),,,,pppprrrrttttmmmmaaaaiiiillll,,,,pppprrrrtttt,,,,pppprrrrttttffffmmmmtttt::::ppppiiiippppeeee
+
+			  in the action	command	field.	The string
+			  inside the parenthesis gives the indicated
+			  menu a name.	A later	reload of the menu
+			  will link this item to any existing $$$$aaaauuuuttttoooo
+			  menu by this name.  This allows multiple
+			  items	to share the same sub-menu.  The
+			  MMMMssssggggssss---->>>>RRRReeeeffffiiiilllleeee---->>>>TTTToooo MMMMaaaaiiiillll	FFFFiiiilllleeee and
+			  OOOOtttthhhheeeerrrrssss---->>>>CCCCooooppppyyyy---->>>>TTTToooo MMMMaaaaiiiillll	FFFFiiiilllleeee menus share a
+			  list of mail file names using	this facility.
+			  NNNNOOOOTTTTEEEE::::	this means that	a change to any	menu
+			  list in the menu file	will be	ignored	during
+			  a reload.  It	will be	necessary to exit
+			  _v_r_m_a_i_l and restart it	to get any new menu
+			  definition loaded.
+
+			  The contents of the menu can be specified in
+			  a separate menu using	the following notation
+
+			      $$$$aaaauuuuttttoooo((((ccccmmmmddddssss)))),,,,$$$$<<<<////ppppaaaatttthhhh////ttttoooo////ffffiiiilllleeee
+	  Inside of the	indicated file should be the following
+	  (exactly as specified	here).
+
+			       prtmail,
+			       prt,
+			       prtfmt:pipe\
+
+	  The lastline must contain a backslash	at the end to indicate
+	  that the newline should be preserved.
+
+	  $bttn1	  This builtin is used to describe what	should
+			  happen when button one is pressed while the
+
+
+
+     Page 24					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+			  mouse	cursor is pointing at a	face icon.  No
+			  menu item will be generated for this line,
+			  but the action command will be mapped	to
+			  button 1.  The host interface	will be
+			  invoked with the command bbbbttttttttnnnn1111.
+
+	  $dbttn1	  This builtin is used to describe what	should
+			  happen when button one is double clicked
+			  while	the mouse cursor is pointing at	a face
+			  icon.	 No menu item will be generated	for
+			  this line, but the action command will be
+			  mapped to to double clicking button 1.  The
+			  host interface will be invoked with the com-
+			  mand ddddbbbbttttttttnnnn1111.
+
+	  $bttn3	  This builtin is used to describe what	should
+			  happen when button three is pressed while
+			  the mouse cursor is pointing at a face icon.
+			  No menu item will be generated for this
+			  line,	but the	action command will be mapped
+			  to button three.  Button three is only
+			  recognized while the mouse cursor is point-
+			  ing at a face.  Elsewhere in the layer, the
+			  terminals button three menu will appear.
+			  The host interface will be invoked with the
+			  command bbbbttttttttnnnn3333.
+
+	  $dbttn3	  This builtin is used to describe what	should
+			  happen when button one is double clicked
+			  while	the mouse cursor is pointing at	a face
+			  icon.	 No menu item will be generated	for
+			  this line, but the action command will be
+			  mapped to to double clicking button 3.  The
+			  host interface will be invoked with the com-
+			  mand ddddbbbbttttttttnnnn3333.
+
+	  $purge	  This builtin results in the face cache being
+			  purged.  This	results	in all mail being
+			  reloaded.  This is provided to allow new
+			  face icons to	be associated with existing
+			  mail messages.
+
+	  $reload_mail	  This builtin results in the currently
+			  selected mail	file being reloaded.
+
+	  $reload_menu	  This builtin results in the named menu file
+			  being	loaded.	 A dynamic submenu is avail-
+			  able for specifying the menu to reload.  The
+			  name of the initially	selected menu will be
+			  placed into this menu	when _v_r_m_a_i_l first
+			  starts up.
+
+
+
+
+     Page 25					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  $options	  This builtin results in the Options menu
+			  being	attached as a submenu to this menu
+			  item.
+
+	  When a selection is made that	is not a builtin, the host
+	  interface program, as	specified in the environment variables
+	  discussed above, is invoked.	The first argument is the
+	  action command name.	The second argument is the message
+	  number of the	selected message relative to the beginning of
+	  the mail file.  Any third argument is	the string from	a
+	  dynamic menu as designated by	the $$$$aaaauuuuttttoooo builtin above.  The
+	  forth	argument is the	absolute message number	of the message
+	  when the mail	file was last synchronized with	the terminal.
+	  As messages are deleted, this	value stays the	same.  How-
+	  ever,	the second argument will decrement by one for each
+	  message that occurs before it	in the mail file which has
+	  been deleted.	 This value is used to implement the undelete
+	  function.
+
+	  The menu item	and the	associated host	interface must,	of
+	  course, be coordinated on what each command expects and
+	  gets.	 As an example,	consider the following example of a
+	  simple menu which allows mail	to be "saved" via strings
+	  entered in a dynamic menu.
+
+
+	       0:Save Mail:n,n,y,n,n,n:$auto:save
+
+	  We might write the following shell script to provide the
+	  ssssaaaavvvveeee functionality.
+
+
+	       #
+	       # example script	to save	mail
+	       #
+	       VM_MAILCMD=mailx
+	       cmd=$1
+	       msg=$2
+	       file=/dev/null
+	       if [ $# -eq 3 ];	then file=$3; fi
+	       ridx=$4
+	       case $cmd in
+		   save)
+		       eval "echo s $msg $file | ${VM_MAILCMD} -N -f ${VM_MAILFILE}"
+		       ;;
+		   *)
+		       ;;
+	       esac
+
+	  In this example, _e_v_a_l(_1) is used so that we can use expres-
+	  sions	like $$$$HHHHOOOOMMMMEEEE////mmmmaaaaiiiillll////ssssttttuuuuffffffff as file names, and have the
+	  environment variables	expanded before	use.
+
+
+
+     Page 26					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+     GGGGRRRROOOOUUUUPPPP MMMMAAAAPPPPPPPPIIIINNNNGGGG SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCAAAATTTTIIIIOOOONNNN
+	  A group mapping file provides	a mechanism to map a list of
+	  logins to a single face icon.	 A line	in a mapping file has
+	  the following	syntax.
+
+	      ffffaaaacccceeeennnnaaaammmmeeee::::ooooppppttttiiiioooonnnnssss::::lllliiiisssstttt
+
+	  where	ffffaaaacccceeeennnnaaaammmmeeee is the	name of	the icon to use, ooooppppttttiiiioooonnnnssss is a
+	  comma	separated list of options (described below), and lllliiiisssstttt
+	  is a comma and/or blank separated list of llllooooggggiiiinnnn or
+	  hhhhoooosssstttt!!!!llllooooggggiiiinnnn strings that should be mapped to ffffaaaacccceeeennnnaaaammmmeeee.	 Com-
+	  ments	are allowed in the file.  Any line beginning with a
+	  '#' is considered a comment.	If there are many members in
+	  lllliiiisssstttt,	the line can be	continued by placing a '\' at the end
+	  of the line, as in:
+
+	      important:y:boss,secretary,sup1,sup2,sup3	\
+		  sup4,sup5,sup6
+
+	  The ooooppppttttiiiioooonnnnssss field contains a list of comma separated options
+	  which	are defined as follows.
+
+
+	  option 1  A 'y' in this field	means that the login name
+		    should be written across the bottom	of the face
+		    icon.  An 'n' in this field	means that the login
+		    name should	nnnnooootttt be written across the face icon.
+
+
+     SSSSEEEENNNNDDDDIIIINNNNGGGG////UUUUSSSSIIIINNNNGGGG FFFFAAAACCCCEEEESSSS IIIINNNN MMMMAAAAIIIILLLL
+	  _V_r_m_a_i_l recognizes the	XXXX----FFFFaaaacccceeee header line as a	compressed
+	  encoding of a	48x48, single bitplane icon image.  The
+	  $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////vvvvrrrrmmmmaaaaiiiillll////ccccoooommmmppppffffaaaacccceeee tool will compress	a 48x48x1 icon
+	  file into the	recognized format.  The	presence of an XXXX----FFFFaaaacccceeee
+	  headerline will cause	_v_r_m_a_i_l to decode the associated
+	  line(s) and use that face for	that host!user login.
+
+	  If the environment variable, VVVVMMMM____FFFFAAAACCCCEEEELLLLIIIINNNNEEEE is set, it is
+	  expected to point at a file that contains lines which	are as
+	  follows
+
+	    X-Face: line one of	compressed face	image
+	     [line two of compressed face image]
+	     [line three of compressed face image]
+	     [etc...]
+
+	  Only the first line is required, and the second and subse-
+	  quent	lines must contain a leading 'space or tab'.  _V_r_m_a_i_l
+	  will insert the contents of this file	into outgoing messages
+	  so that others will have instant access to the senders face
+	  icon.
+
+
+
+
+     Page 27					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  The following	shell script demonstrates how
+	  $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////vvvvrrrrmmmmaaaaiiiillll////ccccoooommmmppppffffaaaacccceeee can be used to generate a X-Face
+	  line.
+
+
+		    (echo "X-Face: \c" ;$TOOLS/lib/vrmail/compface \
+			 $HOME/lib/faces/gregg)	>$HOME/.faceline
+		    echo 'export VM_FACELINE=$HOME/.faceline' >>$HOME/.vmenv
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  dmdld(1), 32ld(1), sh(1), mail(1), post(1), mailx(1),
+	  viewmail(1).
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+	  _V_r_m_a_i_l may sometimes have problems getting the host to do
+	  something like "create a window", "fork a process" etc.  If
+	  this is the case, a message will be displayed	across the
+	  faces	describing the problem.	 Pressing the rrrreeeettttuuuurrrrnnnn key or
+	  clicking a mouse button while	_v_r_m_a_i_l is "current" will
+	  remove the message and allow _v_r_m_a_i_l to continue.
+
+	  The message "Unable to access	controlling tty	for agent"
+	  probably means that _v_r_m_a_i_l does not understand how the xxxxtttt
+	  terminal devices are setup on	the host.  Contact the pro-
+	  vider	if this	occurs.
+
+	  The message "Can not create a	new window" means that either
+	  there	are too	many layers already open, or that there	is not
+	  enough memory	in the terminal	to create a new	layer.
+
+	  There	are other diagnostics which should be self-
+	  explanitory.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	  It is	possible that addresses	which contain only login names
+	  without a host specification might be	magically translated
+	  via the post lookup mechanism	to a different person than the
+	  original recepient.  I.e.  if	the address is simply 'res'
+	  and there is such a person on	the local machine and a	single
+	  person exists	in post	with this surname, the mail will go to
+	  the address specified	in post	for this person, not to	the
+	  local	user 'res'.
+
+	  Some race conditions when accessing the same mail box	simul-
+	  taneously from different _v_r_m_a_i_l instances are	not guarded
+	  against.  Beware that	due to the randomness of CPU schedul-
+	  ing you might	not get	what you thought you would when
+	  attempting this.
+
+	  The %%%%ddddkkkkssssrrrrvvvv mechanism is only supported on some versions of
+	  _v_r_m_a_i_l and then only if there	is a datakit service
+
+
+
+     Page 28					  (last	mod. 11/29/94)
+
+
+
+
+
+
+     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     VVVVRRRRMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	  available.  Use $TOOLS/lib/vrmail/isdk to determine if
+	  datakit support is available.	 _I_s_d_k will print out "yyyyeeeessss"
+	  (exit	code of	0) if datakit access is	supported, and "nnnnoooo"
+	  (exit	code of	1) if not.
+
+	  A length of 1000 characters per line in the menu file	is
+	  silently enforced as the menu	is loaded.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  _V_r_m_a_i_l started life as _v_i_e_w_m_a_i_l(_1) written by	Felix Lugo.
+	  _V_i_e_w_m_a_i_l(_1) was enhanced to be _v_r_m_a_i_l	by Gregg Wonderly.
+
+	  Many others tested and provided insight to features, too
+	  many to list here.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  _V_r_m_a_i_l is provided by	Gregg Wonderly
+
+	  @(#)vrmail.1,	1.34 - gregg.g.wonderly@att.com	- 15:31:03,
+	  11/29/94
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 29					  (last	mod. 11/29/94)
+
+
+

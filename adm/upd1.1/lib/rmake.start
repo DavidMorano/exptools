@@ -1,0 +1,61 @@
+# remote make startup interface
+# Solaris 2 version 9/9/93
+
+# cpio archive for build is on stdin
+
+PATH=/usr/ccs/bin:/opt/SUNWspro/bin:/bin:/usr/bin:/usr/ucb:/opt/bin:/opt/rds/bin:/opt/exptools/adm/bin
+
+TOOLS=`logdir exptools`
+PATH=$PATH:$TOOLS/bin:.
+export TOOLS PATH
+
+cmd=`basename $0`
+pkgid=${1:-RMAKE}
+mailaddr=${2:-exptools}
+
+tmpdir=$TOOLS/rje/BLD`echo "$pkgid" | sed 's/\(......\).*/\1/'`$$
+
+retval=0
+trap "retval=1; exit" 1 2 3 15
+trap "rm -rf $tmpdir; exit \$retval" 0
+
+if test -r .machtype
+then	. ./.machtype
+elif test -r .cronprofile
+then	eval `grep TYPE= .cronprofile`
+else	TYPE=`uname -n`
+fi
+(
+	echo "Subject: rmake of $pkgid on type $TYPE"
+	echo	# \n doesn't work on some BSD-based types
+
+	# for R&D UTS
+	CCS=native
+	export CCS
+
+	# for 3b2, compile such that a MAU is not used
+	if test -x /bin/u3b2 && u3b2
+	then	CC='cc -Kc'
+		export CC
+	fi
+
+	umask 000
+
+	mkdir $tmpdir
+	cd $tmpdir
+
+	echo "Build archive: \c"
+	cpio -icmud
+	echo
+
+	if [ ! -s STARTUP ]
+	then
+		echo "$cmd: cannot find startup file\n"
+		retval=2
+	else
+		/bin/sh ./STARTUP
+		retval=$?
+	fi
+
+	cd $TOOLS
+) 2>&1 | /bin/mail $mailaddr

@@ -1,0 +1,1584 @@
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          task - coroutines, multiple threads of control, C++ task
+          library
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _####_iiii_nnnn_cccc_llll_uuuu_dddd_eeee _<<<<_tttt_aaaa_ssss_kkkk_...._hhhh_>>>>
+
+          _tttt_yyyy_pppp_eeee_dddd_eeee_ffff _iiii_nnnn_tttt _((((_****_PPPP_FFFF_IIII_OOOO_))))_((((_iiii_nnnn_tttt_,,,,_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+          _tttt_yyyy_pppp_eeee_dddd_eeee_ffff _vvvv_oooo_iiii_dddd _((((_****_PPPP_FFFF_VVVV_))))_((((_))))_;;;;
+          _eeee_xxxx_tttt_eeee_rrrr_nnnn    _iiii_nnnn_tttt ______hhhh_wwww_mmmm_;;;;
+
+          _cccc_llll_aaaa_ssss_ssss _oooo_bbbb_jjjj_eeee_cccc_tttt _{{{{
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+               _eeee_nnnn_uuuu_mmmm _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee _{{{{ _OOOO_BBBB_JJJJ_EEEE_CCCC_TTTT_,,,, _TTTT_IIII_MMMM_EEEE_RRRR_,,,, _TTTT_AAAA_SSSS_KKKK_,,,, _QQQQ_HHHH_EEEE_AAAA_DDDD_,,,, _QQQQ_TTTT_AAAA_IIII_LLLL_,,,, _IIII_NNNN_TTTT_HHHH_AAAA_NNNN_DDDD_LLLL_EEEE_RRRR _}}}}_;;;;
+
+               _oooo_bbbb_jjjj_eeee_cccc_tttt_****        _oooo______nnnn_eeee_xxxx_tttt_;;;;
+                         _oooo_bbbb_jjjj_eeee_cccc_tttt_((((_))))_;;;;
+                         _~~~~_oooo_bbbb_jjjj_eeee_cccc_tttt_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _aaaa_llll_eeee_rrrr_tttt_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ffff_oooo_rrrr_gggg_eeee_tttt_((((_tttt_aaaa_ssss_kkkk_****_))))_;;;;
+               _vvvv_iiii_rrrr_tttt_uuuu_aaaa_llll _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee     _oooo______tttt_yyyy_pppp_eeee_((((_))))_;;;;
+               _vvvv_iiii_rrrr_tttt_uuuu_aaaa_llll _iiii_nnnn_tttt    _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))_;;;;
+               _vvvv_iiii_rrrr_tttt_uuuu_aaaa_llll   _vvvv_oooo_iiii_dddd _pppp_rrrr_iiii_nnnn_tttt_((((_iiii_nnnn_tttt_,,,, _iiii_nnnn_tttt _====_0000_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _rrrr_eeee_mmmm_eeee_mmmm_bbbb_eeee_rrrr_((((_tttt_aaaa_ssss_kkkk_****_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _iiii_nnnn_tttt     _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_iiii_nnnn_tttt_,,,, _oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+               _iiii_nnnn_tttt       _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_iiii_nnnn_tttt_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _tttt_aaaa_ssss_kkkk_****   _tttt_hhhh_iiii_ssss______tttt_aaaa_ssss_kkkk_((((_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc    _PPPP_FFFF_IIII_OOOO _eeee_rrrr_rrrr_oooo_rrrr______ffff_cccc_tttt_;;;;
+          _}}}}_;;;;
+
+          _cccc_llll_aaaa_ssss_ssss _ssss_cccc_hhhh_eeee_dddd _:::: _pppp_uuuu_bbbb_llll_iiii_cccc _oooo_bbbb_jjjj_eeee_cccc_tttt _{{{{
+          _pppp_rrrr_oooo_tttt_eeee_cccc_tttt_eeee_dddd_::::
+                         _ssss_cccc_hhhh_eeee_dddd_((((_))))_;;;;
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+               _eeee_nnnn_uuuu_mmmm _ssss_tttt_aaaa_tttt_eeee_tttt_yyyy_pppp_eeee _{{{{ _IIII_DDDD_LLLL_EEEE_====_1111_,,,, _RRRR_UUUU_NNNN_NNNN_IIII_NNNN_GGGG_====_2222_,,,, _TTTT_EEEE_RRRR_MMMM_IIII_NNNN_AAAA_TTTT_EEEE_DDDD_====_4444 _}}}}_;;;;
+
+               _ssss_tttt_aaaa_tttt_iiii_cccc    _tttt_aaaa_ssss_kkkk_****     _cccc_llll_oooo_cccc_kkkk______tttt_aaaa_ssss_kkkk_;;;;
+               _vvvv_oooo_iiii_dddd      _cccc_aaaa_nnnn_cccc_eeee_llll_((((_iiii_nnnn_tttt_))))_;;;;
+               _iiii_nnnn_tttt       _dddd_oooo_nnnn_tttt______wwww_aaaa_iiii_tttt_((((_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _llll_oooo_nnnn_gggg    _gggg_eeee_tttt______cccc_llll_oooo_cccc_kkkk_((((_))))_;;;;
+               _ssss_cccc_hhhh_eeee_dddd_****         _gggg_eeee_tttt______pppp_rrrr_iiii_oooo_rrrr_iiii_tttt_yyyy______ssss_cccc_hhhh_eeee_dddd_((((_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _ssss_cccc_hhhh_eeee_dddd_****  _gggg_eeee_tttt______rrrr_uuuu_nnnn______cccc_hhhh_aaaa_iiii_nnnn_((((_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _iiii_nnnn_tttt     _gggg_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_((((_))))_;;;;
+               _iiii_nnnn_tttt       _kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_))))_;;;;
+               _iiii_nnnn_tttt       _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _pppp_rrrr_iiii_nnnn_tttt_((((_iiii_nnnn_tttt_,,,, _iiii_nnnn_tttt _====_0000_))))_;;;;
+               _ssss_tttt_aaaa_tttt_eeee_tttt_yyyy_pppp_eeee _rrrr_dddd_ssss_tttt_aaaa_tttt_eeee_((((_))))_;;;;
+               _llll_oooo_nnnn_gggg      _rrrr_dddd_tttt_iiii_mmmm_eeee_((((_))))_;;;;
+               _iiii_nnnn_tttt       _rrrr_eeee_ssss_uuuu_llll_tttt_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_cccc_llll_oooo_cccc_kkkk_((((_llll_oooo_nnnn_gggg_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _vvvv_oooo_iiii_dddd    _ssss_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_((((_iiii_nnnn_tttt_))))_;;;;
+               _vvvv_iiii_rrrr_tttt_uuuu_aaaa_llll _vvvv_oooo_iiii_dddd   _ssss_eeee_tttt_wwww_hhhh_oooo_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               _ssss_tttt_aaaa_tttt_iiii_cccc    _PPPP_FFFF_VVVV  _eeee_xxxx_iiii_tttt______ffff_cccc_tttt_;;;;
+          _}}}}_;;;;
+
+          _####_dddd_eeee_ffff_iiii_nnnn_eeee   _DDDD_EEEE_FFFF_AAAA_UUUU_LLLL_TTTT______MMMM_OOOO_DDDD_EEEE   _DDDD_EEEE_DDDD_IIII_CCCC_AAAA_TTTT_EEEE_DDDD
+
+          _cccc_llll_aaaa_ssss_ssss _tttt_aaaa_ssss_kkkk _:::: _pppp_uuuu_bbbb_llll_iiii_cccc _ssss_cccc_hhhh_eeee_dddd _{{{{
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+               _eeee_nnnn_uuuu_mmmm _mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _{{{{ _DDDD_EEEE_DDDD_IIII_CCCC_AAAA_TTTT_EEEE_DDDD_====_1111_,,,, _SSSS_HHHH_AAAA_RRRR_EEEE_DDDD_====_2222 _}}}}_;;;;
+          _pppp_rrrr_oooo_tttt_eeee_cccc_tttt_eeee_dddd_::::
+               _tttt_aaaa_ssss_kkkk_((((_cccc_hhhh_aaaa_rrrr_**** _nnnn_aaaa_mmmm_eeee_====_0000_,,,, _mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _mmmm_oooo_dddd_eeee_====_DDDD_EEEE_FFFF_AAAA_UUUU_LLLL_TTTT______MMMM_OOOO_DDDD_EEEE_,,,, _iiii_nnnn_tttt _ssss_tttt_aaaa_cccc_kkkk_ssss_iiii_zzzz_eeee_====_SSSS_IIII_ZZZZ_EEEE_))))_;;;;
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+               _tttt_aaaa_ssss_kkkk_****          _tttt______nnnn_eeee_xxxx_tttt_;;;;
+               _cccc_hhhh_aaaa_rrrr_****          _tttt______nnnn_aaaa_mmmm_eeee_;;;;
+                         _~~~~_tttt_aaaa_ssss_kkkk_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _cccc_aaaa_nnnn_cccc_eeee_llll_((((_iiii_nnnn_tttt_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _dddd_eeee_llll_aaaa_yyyy_((((_iiii_nnnn_tttt_))))_;;;;
+               _ssss_tttt_aaaa_tttt_iiii_cccc _tttt_aaaa_ssss_kkkk_****   _gggg_eeee_tttt______tttt_aaaa_ssss_kkkk______cccc_hhhh_aaaa_iiii_nnnn_((((_))))_;;;;
+               _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee        _oooo______tttt_yyyy_pppp_eeee_((((_))))_;;;;
+               _iiii_nnnn_tttt       _pppp_rrrr_eeee_eeee_mmmm_pppp_tttt_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _pppp_rrrr_iiii_nnnn_tttt_((((_iiii_nnnn_tttt_,,,, _iiii_nnnn_tttt _====_0000_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _rrrr_eeee_ssss_uuuu_llll_tttt_iiii_ssss_((((_iiii_nnnn_tttt_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_wwww_hhhh_oooo_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_llll_eeee_eeee_pppp_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_**** _====_0000_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _wwww_aaaa_iiii_tttt_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+               _iiii_nnnn_tttt       _wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_**** _...._...._...._))))_;;;;
+               _iiii_nnnn_tttt       _wwww_aaaa_iiii_tttt_vvvv_eeee_cccc_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_****_))))_;;;;
+               _oooo_bbbb_jjjj_eeee_cccc_tttt_****        _wwww_hhhh_oooo______aaaa_llll_eeee_rrrr_tttt_eeee_dddd______mmmm_eeee_((((_))))_;;;;
+          _}}}}_;;;;
+
+          _cccc_llll_aaaa_ssss_ssss _tttt_iiii_mmmm_eeee_rrrr _:::: _pppp_uuuu_bbbb_llll_iiii_cccc _ssss_cccc_hhhh_eeee_dddd _{{{{
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+                         _tttt_iiii_mmmm_eeee_rrrr_((((_iiii_nnnn_tttt_))))_;;;;
+                         _~~~~_tttt_iiii_mmmm_eeee_rrrr_((((_))))_;;;;
+               _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee        _oooo______tttt_yyyy_pppp_eeee_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _pppp_rrrr_iiii_nnnn_tttt_((((_iiii_nnnn_tttt_,,,, _iiii_nnnn_tttt _====_0000_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _rrrr_eeee_ssss_eeee_tttt_((((_iiii_nnnn_tttt_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_wwww_hhhh_oooo_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+          _}}}}_;;;;
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          A _tttt_aaaa_ssss_kkkk is an object with an associated program and thread of
+          control.  To use the task system, the programmer must derive
+          a class from class _tttt_aaaa_ssss_kkkk, and supply a constructor to serve
+          as the _tttt_aaaa_ssss_kkkk's main program.  Control in the task system is
+          based on a concept of operations which may succeed
+          immediately or be blocked, and _oooo_bbbb_jjjj_eeee_cccc_tttts which may be _r_e_a_d_y or
+          _p_e_n_d_i_n_g (not ready).  When a _tttt_aaaa_ssss_kkkk executes a blocking
+          operation on an _oooo_bbbb_jjjj_eeee_cccc_tttt that is ready, the operation succeeds
+          immediately and the _tttt_aaaa_ssss_kkkk continues running, but if the
+          _oooo_bbbb_jjjj_eeee_cccc_tttt is pending, the _tttt_aaaa_ssss_kkkk waits.  Control then returns to
+          the scheduler, which chooses the next _tttt_aaaa_ssss_kkkk from the ready
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          list or _r_u_n _c_h_a_i_n.  Eventually, the pending _oooo_bbbb_jjjj_eeee_cccc_tttt may
+          become ready, and it will notify all the _tttt_aaaa_ssss_kkkks that are
+          waiting for it, causing the waiting _tttt_aaaa_ssss_kkkks to be put back on
+          the _r_u_n _c_h_a_i_n.
+
+          A _tttt_aaaa_ssss_kkkk can be in one of three states:
+
+          RUNNING        The _tttt_aaaa_ssss_kkkk is running or it is ready to run.
+
+          IDLE           The _tttt_aaaa_ssss_kkkk is waiting for a pending _oooo_bbbb_jjjj_eeee_cccc_tttt.
+
+          TERMINATED     The _tttt_aaaa_ssss_kkkk has completed its work.  It cannot
+                         be resumed, but its result can be retrieved.
+
+          The function _ssss_cccc_hhhh_eeee_dddd_::::_::::_rrrr_dddd_ssss_tttt_aaaa_tttt_eeee_((((_)))) returns the state.  These
+          states are enumerations of type _ssss_tttt_aaaa_tttt_eeee_tttt_yyyy_pppp_eeee.  These
+          enumerations are in the scope of class _ssss_cccc_hhhh_eeee_dddd.
+
+          Most classes in the task system are derived from class
+          _oooo_bbbb_jjjj_eeee_cccc_tttt.  Each different kind of _oooo_bbbb_jjjj_eeee_cccc_tttt can have its own way
+          of determining whether it is ready, which makes it easy to
+          add new capabilities to the system.  However, each kind of
+          _oooo_bbbb_jjjj_eeee_cccc_tttt can have only one criterion for readiness (although
+          it may have several blocking operations).  The criterion for
+          readiness is defined by the virtual function _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_)))).  For
+          all classes derived from _oooo_bbbb_jjjj_eeee_cccc_tttt, _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_)))) returns TRUE if
+          the _oooo_bbbb_jjjj_eeee_cccc_tttt is not ready.  This invariant should be
+          maintained for user-defined derived classes as well.
+
+          Each pending _oooo_bbbb_jjjj_eeee_cccc_tttt contains a list (the _r_e_m_e_m_b_e_r _c_h_a_i_n) of
+          the _tttt_aaaa_ssss_kkkks that are waiting for it.  When a _tttt_aaaa_ssss_kkkk attempts an
+          operation on a pending _oooo_bbbb_jjjj_eeee_cccc_tttt (that is, it calls a blocking
+          function), that _tttt_aaaa_ssss_kkkk is put on the _r_e_m_e_m_b_e_r _c_h_a_i_n for the
+          _oooo_bbbb_jjjj_eeee_cccc_tttt via _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_rrrr_eeee_mmmm_eeee_mmmm_bbbb_eeee_rrrr_((((_)))), and the _tttt_aaaa_ssss_kkkk is suspended.
+          When the state of an _oooo_bbbb_jjjj_eeee_cccc_tttt changes from pending to ready,
+          _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_aaaa_llll_eeee_rrrr_tttt_((((_)))) must be called for the _oooo_bbbb_jjjj_eeee_cccc_tttt.  (Note, this
+          is done for classes in the task system.  Programmers who
+          write classes for which _tttt_aaaa_ssss_kkkks can wait, must ensure that
+          _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_aaaa_llll_eeee_rrrr_tttt_((((_)))) is called on a state change.)  _aaaa_llll_eeee_rrrr_tttt_((((_))))
+          changes the state of all _tttt_aaaa_ssss_kkkks "remembered" by the _oooo_bbbb_jjjj_eeee_cccc_tttt
+          from IDLE to RUNNING and puts them on the scheduler's _r_u_n
+          _c_h_a_i_n.
+
+          The base class _ssss_cccc_hhhh_eeee_dddd is responsible for scheduling and for
+          the functionality that is common to _tttt_aaaa_ssss_kkkks and _tttt_iiii_mmmm_eeee_rrrrs.  Class
+          _ssss_cccc_hhhh_eeee_dddd can only be used as a base class, that is, it is
+          illegal to create objects of class _ssss_cccc_hhhh_eeee_dddd.  Class _ssss_cccc_hhhh_eeee_dddd also
+          provides facilities for measuring simulated time.  A unit of
+          simulated time can represent any amount of real time, and it
+          is possible to compute without consuming simulated time.
+          The system clock is initialized to 0 and can be set with
+          _ssss_cccc_hhhh_eeee_dddd_::::_::::_ssss_eeee_tttt_cccc_llll_oooo_cccc_kkkk_((((_)))) once only.  Thereafter, only a call to
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          _tttt_aaaa_ssss_kkkk_::::_::::_dddd_eeee_llll_aaaa_yyyy_((((_)))) will cause the clock to advance.
+          _ssss_cccc_hhhh_eeee_dddd_::::_::::_gggg_eeee_tttt_cccc_llll_oooo_cccc_kkkk_((((_)))) can be used to read the clock.
+
+          Class _tttt_iiii_mmmm_eeee_rrrr provides a facility for implementing time-outs
+          and other time-dependent phenomena.  A _tttt_iiii_mmmm_eeee_rrrr is similar to a
+          _tttt_aaaa_ssss_kkkk with a constructor consisting of the single statement
+          _dddd_eeee_llll_aaaa_yyyy_((((_dddd_))))_;;;; That is, when a _tttt_iiii_mmmm_eeee_rrrr is created it simply waits
+          for the number of time units given to it as its argument,
+          and then wakes up any _tttt_aaaa_ssss_kkkks waiting for it.  A _tttt_iiii_mmmm_eeee_rrrr's state
+          can be either RUNNING or TERMINATED.
+
+          A _tttt_aaaa_ssss_kkkk cannot return a value with the usual function return
+          mechanism.  Instead, a _tttt_aaaa_ssss_kkkk sets the value of its _r_e_s_u_l_t
+          (using _tttt_aaaa_ssss_kkkk_::::_::::_rrrr_eeee_ssss_uuuu_llll_tttt_iiii_ssss_((((_)))) or _tttt_aaaa_ssss_kkkk_::::_::::_cccc_aaaa_nnnn_cccc_eeee_llll_((((_))))), at which time
+          the _tttt_aaaa_ssss_kkkk becomes TERMINATED.  Then this result can be
+          retrieved by other _tttt_aaaa_ssss_kkkks via a call to _ssss_cccc_hhhh_eeee_dddd_::::_::::_rrrr_eeee_ssss_uuuu_llll_tttt_((((_)))).
+
+          The _tttt_aaaa_ssss_kkkk constructor takes three optional arguments: a name,
+          a mode, and a stacksize.  The name is a character string
+          pointer, which is used to initialize the class _tttt_aaaa_ssss_kkkk variable
+          _tttt______nnnn_aaaa_mmmm_eeee.  This name can be used to provide more readable
+          output and does not affect the behavior of the _tttt_aaaa_ssss_kkkk.
+
+          The mode argument can be DEDICATED (the default when none is
+          specified) or SHARED, (the enumerations of type _mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee in
+          class _tttt_aaaa_ssss_kkkk's scope).  DEDICATED _tttt_aaaa_ssss_kkkks each have their own
+          stack, allocated from the free store.  SHARED _tttt_aaaa_ssss_kkkks share
+          stack space with the _tttt_aaaa_ssss_kkkk that creates them.  When a SHARED
+          _tttt_aaaa_ssss_kkkk is running, it occupies the shared stack space, while
+          copies of the active portions of the other _tttt_aaaa_ssss_kkkks' stacks
+          occupy save areas.  SHARED _tttt_aaaa_ssss_kkkks trade speed for space: they
+          use less storage than DEDICATED _tttt_aaaa_ssss_kkkks use, but task switches
+          among SHARED _tttt_aaaa_ssss_kkkks often involve copying stacks to and from
+          the save area.
+
+          The stacksize argument to the _tttt_aaaa_ssss_kkkk constructor represents
+          the maximum space that a _tttt_aaaa_ssss_kkkk's stack can occupy.  The
+          default is 750 machine words.  Overflowing the stack is a
+          fatal error.
+
+          When an object of a class derived from class _tttt_aaaa_ssss_kkkk is
+          created, its constructor becomes a new _tttt_aaaa_ssss_kkkk that runs in
+          parallel with the other _tttt_aaaa_ssss_kkkks that have been created.  When
+          the first _tttt_aaaa_ssss_kkkk is created, _mmmm_aaaa_iiii_nnnn_((((_)))) automatically becomes a
+          _tttt_aaaa_ssss_kkkk itself.
+
+          The public member functions supplied in the task system
+          classes _tttt_aaaa_ssss_kkkk, _oooo_bbbb_jjjj_eeee_cccc_tttt, _ssss_cccc_hhhh_eeee_dddd, and _tttt_iiii_mmmm_eeee_rrrr are listed and
+          described in the next four sections.  The following symbols
+          are used:
+
+                    _tttt   a _tttt_aaaa_ssss_kkkk object
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+                    _oooo   an _oooo_bbbb_jjjj_eeee_cccc_tttt object
+
+                    _ssss   a _ssss_cccc_hhhh_eeee_dddd object
+
+                    _tttt_mmmm  a _tttt_iiii_mmmm_eeee_rrrr object
+
+                    _oooo_pppp  a pointer to an _oooo_bbbb_jjjj_eeee_cccc_tttt
+
+                    _tttt_pppp  a pointer to a _tttt_aaaa_ssss_kkkk
+
+                    _ssss_pppp  a pointer to a _ssss_cccc_hhhh_eeee_dddd
+
+                    _cccc_pppp  a pointer to a _cccc_hhhh_aaaa_rrrr
+
+                    _iiii_,,,,_jjjj _iiii_nnnn_tttts
+
+                    _llll   a _llll_oooo_nnnn_gggg _iiii_nnnn_tttt
+
+                    _eeee_oooo  an _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee enumeration
+
+                    _eeee_ssss  a _ssss_tttt_aaaa_tttt_eeee_tttt_yyyy_pppp_eeee enumeration
+
+                    _eeee_mmmm  a _mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee enumeration
+
+        CCCCllllaaaassssssss TTTTaaaasssskkkk
+          Class _tttt_aaaa_ssss_kkkk has one form of constructor, which is protected:
+
+          _tttt_aaaa_ssss_kkkk _tttt_(((( _cccc_pppp_,,,, _eeee_mmmm_,,,, _jjjj _))))
+               Constructs a _tttt_aaaa_ssss_kkkk object, _tttt.  All three arguments are
+               optional and have default values.  If _cccc_pppp is given, the
+               character string it points to is used as _tttt's name.  _eeee_mmmm
+               represents the _m_o_d_e (see above), and can be DEDICATED
+               or SHARED. DEDICATED is the default.  The default mode
+               can be changed to SHARED by recompiling the task
+               library with _SHARED_ONLY defined.  See the NOTES
+               section.  _jjjj represents the maximum size of _tttt's stack;
+               the default is 750 machine words.
+
+          Most public member functions of class _tttt_aaaa_ssss_kkkk are conditional
+          or unconditional requests for suspension.  They are (in
+          alphabetical order):
+
+          _tttt_...._cccc_aaaa_nnnn_cccc_eeee_llll_(((( _iiii _))))
+               Puts _tttt into the TERMINATED state, without suspending
+               the calling _tttt_aaaa_ssss_kkkk (that is, without invoking the
+               scheduler), and sets _tttt's result (or "return value") to
+               _iiii.
+
+          _tttt_...._dddd_eeee_llll_aaaa_yyyy_(((( _iiii _))))
+               Suspends _tttt for the time specified by _iiii.  A delayed _tttt_aaaa_ssss_kkkk
+               is in the RUNNING state.  _tttt will resume at the current
+               time on the task system clock + _iiii.  Only a call to
+
+
+
+     Page 5                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               ddddeeeellllaaaayyyy(((()))) causes the clock to advance.
+
+          _tttt_pppp _==== _tttt_aaaa_ssss_kkkk_::::_::::_gggg_eeee_tttt______tttt_aaaa_ssss_kkkk______cccc_hhhh_aaaa_iiii_nnnn_((((_))))
+          _tttt_pppp _==== _tttt_...._gggg_eeee_tttt______tttt_aaaa_ssss_kkkk______cccc_hhhh_aaaa_iiii_nnnn_((((_))))
+               Returns a pointer to the first _tttt_aaaa_ssss_kkkk on the list of all
+               _tttt_aaaa_ssss_kkkks (linked by _tttt______nnnn_eeee_xxxx_tttt pointers).
+
+          _eeee_oooo _==== _tttt_...._oooo______tttt_yyyy_pppp_eeee_((((_))))
+               Returns the class type of _tttt (_oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_TTTT_AAAA_SSSS_KKKK).  _oooo______tttt_yyyy_pppp_eeee_((((_))))
+               is a virtual function.
+
+          _iiii _==== _tttt_...._pppp_rrrr_eeee_eeee_mmmm_pppp_tttt_((((_))))
+               Suspends RUNNING _tttt_aaaa_ssss_kkkk _tttt, making it IDLE.  Returns the
+               number of time units left in _tttt's delay.  Calling
+               _pppp_rrrr_eeee_eeee_mmmm_pppp_tttt_((((_)))) for an IDLE or TERMINATED _tttt_aaaa_ssss_kkkk causes a
+               runtime error.
+
+          _tttt_...._pppp_rrrr_iiii_nnnn_tttt_(((( _iiii _))))
+               Prints the contents of _tttt on _ssss_tttt_dddd_oooo_uuuu_tttt.  The first
+               argument, _iiii, specifies the amount of information to be
+               printed.  It can be 0, for the minimum amount of
+               information, VERBOSE, for more information, CHAIN, for
+               information about each object on the chain of all
+               _tttt_aaaa_ssss_kkkks, or STACK, for information about the runtime
+               stack.  These argument constants can be combined with
+               the or operator, e.g.,  _pppp_rrrr_iiii_nnnn_tttt_((((_VVVV_EEEE_RRRR_BBBB_OOOO_SSSS_EEEE_||||_CCCC_HHHH_AAAA_IIII_NNNN_)))).  A second
+               integer argument is for internal use and defaults to 0.
+               _pppp_rrrr_iiii_nnnn_tttt_((((_)))) is a virtual function.
+
+          _tttt_...._rrrr_eeee_ssss_uuuu_llll_tttt_iiii_ssss_(((( _iiii _))))
+               Sets the result (or "return value") of _tttt to be the
+               value of _iiii and puts _tttt in the TERMINATED state.  The
+               result can be examined by calling _tttt_...._rrrr_eeee_ssss_uuuu_llll_tttt_((((_)))) (_rrrr_eeee_ssss_uuuu_llll_tttt_((((_))))
+               is a member function of class _ssss_cccc_hhhh_eeee_dddd).  _tttt_aaaa_ssss_kkkks cannot
+               return a value using the usual function return
+               mechanism.  A call to _tttt_aaaa_ssss_kkkk_::::_::::_rrrr_eeee_ssss_uuuu_llll_tttt_iiii_ssss_((((_)))) should appear at
+               the end of every _tttt_aaaa_ssss_kkkk constructor body (unless the
+               constructor will execute infinitely).  A _tttt_aaaa_ssss_kkkk is
+               _p_e_n_d_i_n_g (see _ssss_cccc_hhhh_eeee_dddd_::::_::::_pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))) until it is TERMINATED.
+
+          _tttt_...._ssss_eeee_tttt_wwww_hhhh_oooo_(((( _oooo_pppp _))))
+               Records the _oooo_bbbb_jjjj_eeee_cccc_tttt denoted by _oooo_pppp as the one that
+               alerted _tttt when it was IDLE.  _****_oooo_pppp is meant to be the
+               _oooo_bbbb_jjjj_eeee_cccc_tttt whose state change from pending to ready caused
+               _tttt to be put back on the _r_u_n _c_h_a_i_n.  This information
+               can be retrieved with _tttt_aaaa_ssss_kkkk_::::_::::_wwww_hhhh_oooo______aaaa_llll_eeee_rrrr_tttt_eeee_dddd______mmmm_eeee_((((_)))).
+
+          _tttt_...._ssss_llll_eeee_eeee_pppp_(((( _oooo_pppp _))))
+          _tttt_...._ssss_llll_eeee_eeee_pppp_((((_))))
+               Suspends _tttt unconditionally (puts the _tttt in the IDLE
+               state).  The _oooo_pppp argument is optional.  If _tttt_aaaa_ssss_kkkk_::::_::::_ssss_llll_eeee_eeee_pppp_((((_))))
+               is given a pointer to a pending _oooo_bbbb_jjjj_eeee_cccc_tttt as an argument,
+
+
+
+     Page 6                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               _tttt will be "remembered" by the denoted _oooo_bbbb_jjjj_eeee_cccc_tttt, so that
+               when that _oooo_bbbb_jjjj_eeee_cccc_tttt becomes ready, _tttt will be "alerted" and
+               put back on the _r_u_n _c_h_a_i_n (via _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_aaaa_llll_eeee_rrrr_tttt_((((_))))).  If no
+               argument is given to _tttt_aaaa_ssss_kkkk_::::_::::_ssss_llll_eeee_eeee_pppp_((((_)))), the event that will
+               cause _tttt to be resumed is unspecified.  Contrast _ssss_llll_eeee_eeee_pppp_((((_))))
+               with _wwww_aaaa_iiii_tttt_((((_)))), which suspends a _tttt_aaaa_ssss_kkkk conditionally.
+               _tttt_aaaa_ssss_kkkk_::::_::::_ssss_llll_eeee_eeee_pppp_((((_)))) does not check whether the _oooo_bbbb_jjjj_eeee_cccc_tttt denoted
+               by _oooo_pppp is pending.
+
+          _tttt_...._wwww_aaaa_iiii_tttt_(((( _oooo_pppp _))))
+               If _oooo_pppp points to a pending _oooo_bbbb_jjjj_eeee_cccc_tttt, then _tttt will be
+               suspended (put in the IDLE state) until that _oooo_bbbb_jjjj_eeee_cccc_tttt is
+               ready.  If _oooo_pppp points to an _oooo_bbbb_jjjj_eeee_cccc_tttt that is not pending
+               (that is ready), then _tttt will not be suspended at all.
+               Any class derived from class _oooo_bbbb_jjjj_eeee_cccc_tttt that is ever going
+               be waited for must have rules for when it is pending
+               and ready.  Each _oooo_bbbb_jjjj_eeee_cccc_tttt can only have one definition of
+               pending.
+
+          _iiii _==== _tttt_...._wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt_(((( _oooo_pppp _...._...._...._))))
+               Suspends _tttt to wait for one of a list of _oooo_bbbb_jjjj_eeee_cccc_tttts to
+               become ready.  _wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt_((((_)))) takes a list of _oooo_bbbb_jjjj_eeee_cccc_tttt
+               pointers terminated by a 0 argument.  If any of the
+               arguments points to a "ready" _oooo_bbbb_jjjj_eeee_cccc_tttt, then _tttt will not
+               be suspended at all.  _wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt_((((_)))) returns when one of
+               the _oooo_bbbb_jjjj_eeee_cccc_tttts on the list is ready.  It returns the
+               position in the list of the _oooo_bbbb_jjjj_eeee_cccc_tttt that caused the
+               return, with positions numbered starting from 0.  Note
+               that _oooo_bbbb_jjjj_eeee_cccc_tttts on the list other than the one denoted by
+               the return value might also be ready.
+
+          _iiii _==== _tttt_...._wwww_aaaa_iiii_tttt_vvvv_eeee_cccc_(((( _oooo_pppp_**** _))))
+               Is the same as _wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt_((((_)))), except that it takes as an
+               argument the address of a vector holding a list of
+               _oooo_bbbb_jjjj_eeee_cccc_tttt pointers.  This function should be used in
+               preference to _wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt_((((_)))).
+
+          _oooo_pppp _==== _tttt_...._wwww_hhhh_oooo______aaaa_llll_eeee_rrrr_tttt_eeee_dddd______mmmm_eeee_((((_))))
+               Returns a pointer to the _oooo_bbbb_jjjj_eeee_cccc_tttt whose state change from
+               _p_e_n_d_i_n_g to _r_e_a_d_y caused _tttt to be put back on the _r_u_n
+               _c_h_a_i_n (put in the RUNNING state).
+
+          ______hhhh_wwww_mmmm _==== _1111_;;;;
+               Causes the task system to keep track of the "high water
+               mark" for each _tttt_aaaa_ssss_kkkk's stack; that is, the most stack
+               ever used by each _tttt_aaaa_ssss_kkkk.  This information is printed by
+               _tttt_aaaa_ssss_kkkk_::::_::::_pppp_rrrr_iiii_nnnn_tttt_((((_SSSS_TTTT_AAAA_CCCC_KKKK_)))).  This information is intended
+               primarily for debugging purposes, and will affect
+               performance speed.  ______hhhh_wwww_mmmm must be set before any _tttt_aaaa_ssss_kkkks
+               whose high water marks are of interest are created.
+               Note that two _tttt_aaaa_ssss_kkkks are created by a static
+               constructor: the internal _I_n_t_e_r_r_u_p_t _a_l_e_r_t_e_r _tttt_aaaa_ssss_kkkk and
+
+
+
+     Page 7                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               the "main" _tttt_aaaa_ssss_kkkk.  If you need accurate information
+               about the high water mark for "main," then ______hhhh_wwww_mmmm must be
+               set by a static constructor which is called before that
+               for the _I_n_t_e_r_r_u_p_t _a_l_e_r_t_e_r _tttt_aaaa_ssss_kkkk.
+
+        CCCCllllaaaassssssss OOOObbbbjjjjeeeecccctttt
+          Class _oooo_bbbb_jjjj_eeee_cccc_tttt has one form of constructor:
+
+          _oooo_bbbb_jjjj_eeee_cccc_tttt _oooo_;;;;
+               Construct an _oooo_bbbb_jjjj_eeee_cccc_tttt object, _oooo, which is not on any
+               lists.  The constructor takes no arguments.
+
+          Public member functions of class _oooo_bbbb_jjjj_eeee_cccc_tttt are (in alphabetical
+          order):
+
+          _oooo_...._aaaa_llll_eeee_rrrr_tttt_((((_))))
+               Changes the state of all _tttt_aaaa_ssss_kkkks "remembered" by _oooo from
+               IDLE to RUNNING, puts them on the scheduler's _r_u_n
+               _c_h_a_i_n, and removes them from _oooo's _r_e_m_e_m_b_e_r _c_h_a_i_n.
+
+          _oooo_...._ffff_oooo_rrrr_gggg_eeee_tttt_(((( _tttt_pppp _))))
+               Removes all occurrences of the _tttt_aaaa_ssss_kkkk denoted by _tttt_pppp from
+               _oooo's _r_e_m_e_m_b_e_r _c_h_a_i_n.
+
+          _eeee_oooo _==== _oooo_...._oooo______tttt_yyyy_pppp_eeee_((((_))))
+               Returns the class type of the object, _oooo
+               (_oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_OOOO_BBBB_JJJJ_EEEE_CCCC_TTTT).  _oooo______tttt_yyyy_pppp_eeee_((((_)))) is a virtual function.
+
+          _iiii _==== _oooo_...._pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))
+               Returns the ready status of an _oooo_bbbb_jjjj_eeee_cccc_tttt.  It returns
+               FALSE if _oooo is ready, and TRUE if it is pending.
+               Classes derived from class _oooo_bbbb_jjjj_eeee_cccc_tttt must define _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))
+               if they are to be waited for.  _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))
+               returns TRUE by default.  _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_)))) is a virtual
+               function.
+
+          _oooo_...._pppp_rrrr_iiii_nnnn_tttt_(((( _iiii _))))
+               Prints the contents of _oooo on _ssss_tttt_dddd_oooo_uuuu_tttt.  It is called by
+               the _pppp_rrrr_iiii_nnnn_tttt_((((_)))) functions for classes derived from _oooo_bbbb_jjjj_eeee_cccc_tttt.
+               See _tttt_aaaa_ssss_kkkk_::::_::::_pppp_rrrr_iiii_nnnn_tttt_((((_)))) for a description of the arguments.
+               _pppp_rrrr_iiii_nnnn_tttt_((((_)))) is a virtual function.
+
+          _oooo_...._rrrr_eeee_mmmm_eeee_mmmm_bbbb_eeee_rrrr_(((( _tttt_pppp _))))
+               Adds the _tttt_aaaa_ssss_kkkk denoted by _tttt_pppp to _oooo's _r_e_m_e_m_b_e_r _c_h_a_i_n.
+               Remembered _tttt_aaaa_ssss_kkkks will be alerted when _oooo's state becomes
+               ready.
+
+          _iiii _==== _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_(((( _iiii_,,,, _oooo_pppp _))))
+          _iiii _==== _oooo_...._tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_(((( _iiii_,,,, _oooo_pppp _))))
+               The central error function called by task system
+               functions when a run time error occurs.  _iiii represents
+               the error number (see the DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS section for a
+
+
+
+     Page 8                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               list of error numbers and their meanings).  _oooo_pppp is meant
+               to be a pointer to the _oooo_bbbb_jjjj_eeee_cccc_tttt which called _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_))))
+               or 0.  _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_)))) examines the variable
+               _eeee_rrrr_rrrr_oooo_rrrr______ffff_cccc_tttt, and if this variable denotes a function,
+               that function will be called with _iiii and _oooo_pppp as
+               arguments, respectively.  (See _eeee_rrrr_rrrr_oooo_rrrr______ffff_cccc_tttt, below.)
+               Otherwise, _iiii will be given as an argument to
+               _pppp_rrrr_iiii_nnnn_tttt______eeee_rrrr_rrrr_oooo_rrrr_((((_)))), which will print an error message on
+               _ssss_tttt_dddd_eeee_rrrr_rrrr and call _eeee_xxxx_iiii_tttt_((((_iiii_)))), terminating the program.  The
+               non-static, single argument form of _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_)))) is
+               obsolete, but remains for compatibility.
+
+          _tttt_pppp _==== _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_tttt_hhhh_iiii_ssss______tttt_aaaa_ssss_kkkk_((((_))))
+          _tttt_pppp _==== _oooo_...._tttt_hhhh_iiii_ssss______tttt_aaaa_ssss_kkkk_((((_))))
+               Returns a pointer to the _tttt_aaaa_ssss_kkkk that is currently
+               running.
+
+          _PPPP_FFFF_IIII_OOOO _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_rrrr_rrrr_oooo_rrrr______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn_;;;;_""""
+          _eeee_rrrr_rrrr_oooo_rrrr______ffff_cccc_tttt _====  _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_rrrr_rrrr_oooo_rrrr______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn
+               _eeee_rrrr_rrrr_oooo_rrrr______ffff_cccc_tttt is a pointer to a function that returns an
+               _iiii_nnnn_tttt and takes two arguments: an _iiii_nnnn_tttt representing the
+               error number and an _oooo_bbbb_jjjj_eeee_cccc_tttt_**** representing the _oooo_bbbb_jjjj_eeee_cccc_tttt_****
+               that called _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr.  If _eeee_rrrr_rrrr_oooo_rrrr______ffff_cccc_tttt is set,
+               _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_)))) will call the _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_rrrr_rrrr_oooo_rrrr______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn
+               with the error number and the _oooo_bbbb_jjjj_eeee_cccc_tttt_**** as arguments.
+               (The _oooo_bbbb_jjjj_eeee_cccc_tttt_**** will be 0 if _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr was not called by
+               an _oooo_bbbb_jjjj_eeee_cccc_tttt.)  If _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_rrrr_rrrr_oooo_rrrr______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn does not
+               return 0, _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_)))) will call _eeee_xxxx_iiii_tttt_((((_iiii_)))).  If the
+               _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_rrrr_rrrr_oooo_rrrr______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn does return 0, _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_))))
+               will retry the operation that caused the error.
+
+        CCCCllllaaaassssssss SSSScccchhhheeeedddd
+          Both class _tttt_aaaa_ssss_kkkk and class _tttt_iiii_mmmm_eeee_rrrr are derived from class
+          _ssss_cccc_hhhh_eeee_dddd.  Class _ssss_cccc_hhhh_eeee_dddd provides one form of constructor, which
+          is protected:
+
+          _ssss_cccc_hhhh_eeee_dddd _ssss_;;;;
+               Constructs a _ssss_cccc_hhhh_eeee_dddd object, _ssss, initialized to be IDLE
+               and to have a 0 delay.
+
+          Class _ssss_cccc_hhhh_eeee_dddd is responsible for the functionality that is
+          common to _tttt_aaaa_ssss_kkkks and _tttt_iiii_mmmm_eeee_rrrrs.  Class _ssss_cccc_hhhh_eeee_dddd provides the
+          following public member functions:
+
+          _ssss_...._cccc_aaaa_nnnn_cccc_eeee_llll_(((( _iiii _))))
+               Puts _ssss into the TERMINATED state, without suspending
+               the caller (that is, without invoking the scheduler),
+               and sets the result of _ssss to be _iiii.
+
+          _iiii _==== _ssss_...._dddd_oooo_nnnn_tttt______wwww_aaaa_iiii_tttt_((((_))))
+               Returns the number of times _kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_)))) has been
+               called, minus the number of times _dddd_oooo_nnnn_tttt______wwww_aaaa_iiii_tttt_((((_)))) has been
+
+
+
+     Page 9                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               called (excluding the current call).  If these
+               functions are used as intended, the return value
+               represents the number of _oooo_bbbb_jjjj_eeee_cccc_tttts that were waiting for
+               external events before the current call.  See
+               _kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_)))).  See iiiinnnntttteeeerrrrrrrruuuupppptttt((((3333KKKK++++++++)))) for a description
+               of how _tttt_aaaa_ssss_kkkks can wait for external events.
+
+          _llll _==== _ssss_cccc_hhhh_eeee_dddd_::::_::::_gggg_eeee_tttt______cccc_llll_oooo_cccc_kkkk_((((_))))
+          _llll _==== _ssss_...._gggg_eeee_tttt______cccc_llll_oooo_cccc_kkkk_((((_))))
+               Returns the value of the task system clock.
+
+          _iiii _==== _ssss_cccc_hhhh_eeee_dddd_::::_::::_gggg_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_((((_))))
+          _iiii _==== _ssss_...._gggg_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_((((_))))
+               Returns the _e_x_i_t _s_t_a_t_u_s of the task program.  When a
+               task program terminates normally (that is, _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr
+               is not called), the program will call _eeee_xxxx_iiii_tttt_((((_iiii_)))), where _iiii
+               is the value passed by the last caller of
+               _ssss_cccc_hhhh_eeee_dddd_::::_::::_ssss_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_((((_)))).
+
+          _ssss_pppp _==== _ssss_...._gggg_eeee_tttt______pppp_rrrr_iiii_oooo_rrrr_iiii_tttt_yyyy______ssss_cccc_hhhh_eeee_dddd_((((_))))
+               Returns a pointer to a system _tttt_aaaa_ssss_kkkk, _iiii_nnnn_tttt_eeee_rrrr_rrrr_uuuu_pppp_tttt______aaaa_llll_eeee_rrrr_tttt_eeee_rrrr,
+               if a signal that was being waited for has occurred.  If
+               no interrupt has occurred, _gggg_eeee_tttt______pppp_rrrr_iiii_oooo_rrrr_iiii_tttt_yyyy______ssss_cccc_hhhh_eeee_dddd_((((_)))) returns
+               0.
+
+          _ssss_pppp _==== _ssss_cccc_hhhh_eeee_dddd_::::_::::_gggg_eeee_tttt______rrrr_uuuu_nnnn______cccc_hhhh_aaaa_iiii_nnnn_((((_))))
+          _ssss_pppp _==== _ssss_...._gggg_eeee_tttt______rrrr_uuuu_nnnn______cccc_hhhh_aaaa_iiii_nnnn_((((_))))
+               Returns a pointer to the _r_u_n _c_h_a_i_n, the linked list of
+               ready _ssss_cccc_hhhh_eeee_dddd objects (_tttt_aaaa_ssss_kkkks and _tttt_iiii_mmmm_eeee_rrrrs).
+
+          _iiii _==== _ssss_...._kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_))))
+               Returns the number of times _kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_)))) has been
+               called (not counting the current call), minus the
+               number of times _dddd_oooo_nnnn_tttt______wwww_aaaa_iiii_tttt_((((_)))) has been called.
+               _kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_)))) is meant to be called when an _oooo_bbbb_jjjj_eeee_cccc_tttt
+               that will wait for an external event is created.  For
+               example, it is called when an _IIII_nnnn_tttt_eeee_rrrr_rrrr_uuuu_pppp_tttt______hhhh_aaaa_nnnn_dddd_llll_eeee_rrrr object
+               is created by the _IIII_nnnn_tttt_eeee_rrrr_rrrr_uuuu_pppp_tttt______hhhh_aaaa_nnnn_dddd_llll_eeee_rrrr constructor (see
+               iiiinnnntttteeeerrrrrrrruuuupppptttt((((3333KKKK++++++++))))).  The inverse function, _dddd_oooo_nnnn_tttt______wwww_aaaa_iiii_tttt_((((_)))),
+               should be called when such an _oooo_bbbb_jjjj_eeee_cccc_tttt is deleted.
+               _kkkk_eeee_eeee_pppp______wwww_aaaa_iiii_tttt_iiii_nnnn_gggg_((((_)))) causes the scheduler to keep waiting
+               (not to exit) when there are no runnable _tttt_aaaa_ssss_kkkks (because
+               an external event may make an IDLE _tttt_aaaa_ssss_kkkk runnable).
+
+          _iiii _==== _ssss_...._pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))
+               Returns FALSE if _ssss (_tttt_aaaa_ssss_kkkk or _tttt_iiii_mmmm_eeee_rrrr) is in the TERMINATED
+               state, TRUE otherwise.  ppppeeeennnnddddiiiinnnngggg(((()))) is a virtual
+               function.
+
+          _ssss_...._pppp_rrrr_iiii_nnnn_tttt_(((( _iiii _))))
+               Prints the contents of _ssss on _ssss_tttt_dddd_oooo_uuuu_tttt.  It is called by
+               the _pppp_rrrr_iiii_nnnn_tttt_((((_)))) functions for classes derived from _ssss_cccc_hhhh_eeee_dddd.
+
+
+
+     Page 10                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               See _tttt_aaaa_ssss_kkkk_::::_::::_pppp_rrrr_iiii_nnnn_tttt_((((_)))) and _tttt_iiii_mmmm_eeee_rrrr_::::_::::_pppp_rrrr_iiii_nnnn_tttt_((((_)))) for a description
+               of the arguments.  _pppp_rrrr_iiii_nnnn_tttt_((((_)))) is a virtual function.
+
+          _eeee_ssss _==== _ssss_...._rrrr_dddd_ssss_tttt_aaaa_tttt_eeee_((((_))))
+               Returns the state of _ssss: RUNNING, IDLE, or TERMINATED.
+
+          _llll _==== _ssss_...._rrrr_dddd_tttt_iiii_mmmm_eeee_((((_))))
+               Returns the clock time at which _ssss is to run.
+
+          _iiii _==== _ssss_...._rrrr_eeee_ssss_uuuu_llll_tttt_((((_))))
+               Returns the result of _ssss (as set by _tttt_aaaa_ssss_kkkk_::::_::::_rrrr_eeee_ssss_uuuu_llll_tttt_iiii_ssss_((((_)))),
+               _tttt_aaaa_ssss_kkkk_::::_::::_cccc_aaaa_nnnn_cccc_eeee_llll_((((_)))), or _ssss_cccc_hhhh_eeee_dddd_::::_::::_cccc_aaaa_nnnn_cccc_eeee_llll_((((_))))).  If _ssss is not yet
+               TERMINATED, the calling _tttt_aaaa_ssss_kkkk will be suspended to wait
+               for _ssss to terminate.  If a _tttt_aaaa_ssss_kkkk calls _rrrr_eeee_ssss_uuuu_llll_tttt_((((_)))) for
+               itself, it will cause a run time error.
+
+          _ssss_cccc_hhhh_eeee_dddd_::::_::::_ssss_eeee_tttt_cccc_llll_oooo_cccc_kkkk_(((( _llll _))))
+          _ssss_...._ssss_eeee_tttt_cccc_llll_oooo_cccc_kkkk_(((( _llll
+               Initializes the system clock to the time given by _llll.
+               Causes a run time error if used more than once.
+
+          _ssss_cccc_hhhh_eeee_dddd_::::_::::_ssss_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_(((( _iiii _))))
+          _ssss_...._ssss_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_(((( _iiii _))))
+               Sets the _e_x_i_t _s_t_a_t_u_s of the task program.  When a task
+               program terminates normally (that is, _tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr is not
+               called), the program will call _eeee_xxxx_iiii_tttt_((((_iiii_)))), where _iiii is the
+               value passed by the last caller of _ssss_eeee_tttt______eeee_xxxx_iiii_tttt______ssss_tttt_aaaa_tttt_uuuu_ssss_((((_)))).
+
+          _ssss_...._ssss_eeee_tttt_wwww_hhhh_oooo_(((( _oooo_pppp _))))
+               Is a virtual function defined for _tttt_aaaa_ssss_kkkks and _tttt_iiii_mmmm_eeee_rrrrs; see
+               its definition for those classes.  The argument is
+               meant to be a pointer to the _oooo_bbbb_jjjj_eeee_cccc_tttt that caused _ssss to be
+               alerted.
+          _PPPP_FFFF_VVVV _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_xxxx_iiii_tttt______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn_;;;;
+          _eeee_xxxx_iiii_tttt______ffff_cccc_tttt _==== _uuuu_ssss_eeee_rrrr______dddd_eeee_ffff_iiii_nnnn_eeee_dddd______eeee_xxxx_iiii_tttt______ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn
+               _eeee_xxxx_iiii_tttt______ffff_cccc_tttt is a pointer to a function taking no arguments
+               and returning void.  If set, the task system scheduler
+               will call the _uuuu_ssss_eeee_rrrr_----_dddd_eeee_ffff_iiii_nnnn_eeee_dddd_----_eeee_xxxx_iiii_tttt_----_ffff_uuuu_nnnn_cccc_tttt_iiii_oooo_nnnn before the
+               program exits.
+
+          _cccc_llll_oooo_cccc_kkkk______tttt_aaaa_ssss_kkkk _==== _tttt_pppp_;;;;
+               Sets _tttt_pppp to be a _tttt_aaaa_ssss_kkkk that will be scheduled each time
+               the system clock advances, before any other _tttt_aaaa_ssss_kkkks.  The
+               _cccc_llll_oooo_cccc_kkkk______tttt_aaaa_ssss_kkkk must be IDLE when it is resumed by the
+               scheduler.  The _cccc_llll_oooo_cccc_kkkk______tttt_aaaa_ssss_kkkk can suspend itself by
+               calling _tttt_aaaa_ssss_kkkk_::::_::::_ssss_llll_eeee_eeee_pppp_((((_)))) to ensure this.
+
+        CCCCllllaaaassssssss TTTTiiiimmmmeeeerrrr
+          Class _tttt_iiii_mmmm_eeee_rrrr provides one form of constructor:
+
+          _tttt_iiii_mmmm_eeee_rrrr _tttt_mmmm_(((( _iiii _))))_;;;;
+               Constructs a _tttt_iiii_mmmm_eeee_rrrr object, _tttt_mmmm, and inserts it on the
+
+
+
+     Page 11                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               scheduler's _r_u_n _c_h_a_i_n.
+
+          The following public member functions are provided for
+          _tttt_iiii_mmmm_eeee_rrrrs:
+
+          _eeee_oooo _==== _tttt_mmmm_...._oooo______tttt_yyyy_pppp_eeee_((((_))))
+               Returns the class type of the object (_oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_TTTT_IIII_MMMM_EEEE_RRRR).
+               _oooo______tttt_yyyy_pppp_eeee_((((_)))) is a virtual function.
+
+          _tttt_mmmm_...._rrrr_eeee_ssss_eeee_tttt_(((( _iiii _))))
+               Resets _tttt_mmmm's delay to This makes repeated use of _tttt_iiii_mmmm_eeee_rrrrs
+               possible.  A _tttt_iiii_mmmm_eeee_rrrr can be reset even when it is
+               TERMINATED.
+
+          _tttt_mmmm_...._ssss_eeee_tttt_wwww_hhhh_oooo_(((( _oooo_pppp _))))
+               Is defined to be null for _tttt_iiii_mmmm_eeee_rrrrs.  _ssss_eeee_tttt_wwww_hhhh_oooo_((((_)))) is a
+               virtual function.
+
+          _tttt_mmmm_...._pppp_rrrr_iiii_nnnn_tttt_(((( _iiii _))))
+               Prints the contents of _tttt_mmmm on _ssss_tttt_dddd_oooo_uuuu_tttt.  The argument is
+               ignored.  _pppp_rrrr_iiii_nnnn_tttt_((((_)))) is a virtual function.
+
+     NNNNOOOOTTTTEEEESSSS
+          The task library is supplied only for the following
+          machines: WE32000-series machines (e.g., the AT&T 3B2), AT&T
+          3B20, AT&T 6386 WGS, Sun-2, Sun-3 and Sun-4, and the VAX.
+          It must be ported to work on other platforms.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          Beware of optimizing compilers that inline constructors for
+          classes derived from class _tttt_aaaa_ssss_kkkk!
+
+          Although the task library was engineered to be as free as
+          possible from dependencies on compilation systems and
+          dynamic call chains, it does depend on the existence of
+          stack frames for the _tttt_aaaa_ssss_kkkk constructor and constructors for
+          classes derived from class _tttt_aaaa_ssss_kkkk.  If these constructors are
+          inlined by an optimizing compiler, unpredictable behavior
+          will result.
+
+          For related reasons, although you must derive a class from
+          class _tttt_aaaa_ssss_kkkk to use the task library, you can only have one
+          level of derivation from class _tttt_aaaa_ssss_kkkk.  That is, the system
+          will not work reliably if you derive a class from a class
+          derived from class _tttt_aaaa_ssss_kkkk.
+
+          The sparc has larger stack frames than CISC processors.  The
+          default sparc size is 2048 (same as the Amdahl), rather than
+          750.  Beware of programs that consume much stack space with
+          automatic variables.  It is best to allocate automatic
+          arrays with the _nnnn_eeee_wwww operator.  The stack-overflow test is
+          not reliable if there is a huge overflow (core dump with
+
+
+
+     Page 12                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          trashed stack pointer).
+
+          The _wwww_aaaa_iiii_tttt_llll_iiii_ssss_tttt function is nonportable; the original version
+          cannot work on a sparc, which passes function arguments
+          through registers and the stack frame.  A sparc version is
+          supplied that uses the _ssss_tttt_dddd_aaaa_rrrr_gggg syntax and which constructs a
+          legitimate array of pointers, but it has not been tested.
+
+     BBBBUUUUGGGGSSSS
+          DEDICATED tasks are implemented by building task stacks in
+          the free store.  Because UNIX System V Release 2 (SVR2) for
+          the WE32000-series machines does not allow stack pointers to
+          point into the free store, DEDICATED _tttt_aaaa_ssss_kkkks cannot be used on
+          these machines with SVR2.  In such cases, compile the task
+          library with _SHARED_ONLY defined, which will make SHARED
+          the default mode for _tttt_aaaa_ssss_kkkk_ssss.  (Note:  it is insufficient to
+          declare all _tttt_aaaa_ssss_kkkks as SHARED without compiling a _SHARED_ONLY
+          version of the task library, because there is an internal
+          system _tttt_aaaa_ssss_kkkk (the _i_n_t_e_r_r_u_p_t _a_l_e_r_t_e_r _tttt_aaaa_ssss_kkkk_,,,, _ssss_eeee_eeee
+          iiiinnnntttteeeerrrrrrrruuuupppptttt((((3333KKKK++++++++))))) wwwwhhhhiiiicccchhhh iiiissss DDDDEEEEDDDDIIIICCCCAAAATTTTEEEEDDDD bbbbyyyy ddddeeeeffffaaaauuuulllltttt....))))
+
+          UNIX System V Releases 3.1 and 3.2 (SVR3.1 and SVR3.2) for
+          the Intel 386 machine will not call a signal handler when
+          the current _tttt_aaaa_ssss_kkkk is running on a stack in the free store,
+          that is, when the current _tttt_aaaa_ssss_kkkk has a DEDICATED stack.  If
+          you need to use the signal handling mechanisms (described in
+          ttttaaaasssskkkkssssiiiimmmm((((3333KKKK++++++++))))) on that configuration, you cannot use tasks
+          which have DEDICATED stacks.  In this case, compile the task
+          library with _SHARED_ONLY defined, which will make SHARED
+          the default mode for _tttt_aaaa_ssss_kkkk_ssss.
+
+          The sparc port dumps core for SHARED stacks.  The author
+          fixed obvious bugs in the original port, which changed where
+          the program aborts.  Thus, one must use the default of
+          DEDICATED stacks on the sparc.
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          When a task system function encounters a run time error, it
+          calls _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_tttt_aaaa_ssss_kkkk______eeee_rrrr_rrrr_oooo_rrrr_((((_)))), with one of the following error
+          numbers as an argument.  The table below lists the run time
+          errors the task system detects, the associated error
+          messages, and explanations of the errors.
+
+          center;
+          c c c
+          l l l.
+          EEEErrrrrrrroooorrrr NNNNaaaammmmeeee     MMMMeeeessssssssaaaaggggeeee   EEEExxxxppppllllaaaannnnaaaattttiiiioooonnnn
+
+          1  E_OLINK     "object::delete(): has chain" T{
+          Attempt to delete an object which remembers a task.
+          T}
+          2  E_ONEXT     "object::delete(): on chain"  T{
+
+
+
+     Page 13                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          Attempt to delete an object which is still on some chain.
+          T}
+          3  E_GETEMPTY  "qhead::get(): empty"    T{
+          Attempt to get from an empty queue in E_MODE.
+          T}
+          4  E_PUTOBJ    "qtail::put(): object on other queue"   T{
+          Attempt to put an object already on some queue.
+          T}
+          5  E_PUTFULL   "qtail::put(): full"     T{
+          Attempt to put to a full queue in E_MODE.
+          T}
+          6  E_BACKOBJ   T{
+          "qhead::putback(): object on other queue"
+          T}   T{
+          Attempt to putback an object already on some queue.
+          T}
+          7  E_BACKFULL  "qhead::putback(): full" T{
+          Attempt to putback to a full queue in E_MODE.
+          T}
+          8  E_SETCLOCK  "sched::setclock(): clock!=0" T{
+          Clock was non-zero when setclock() was called.
+          T}
+          9  E_CLOCKIDLE "sched::schedule(): clock_task not idle"     T{
+          The clock_task was not IDLE when the clock was advanced.
+          T}
+          10 E_RESTERM   "sched::schedule: terminated" T{
+          Attempt to resume a TERMINATED task.
+          T}
+          11 E_RESRUN    "sched::schedule: running"    T{
+          Attempt to resume a RUNNING task.
+          T}
+          12 E_NEGTIME   "sched::schedule: clock<0"    T{
+          Negative argument to delay().
+          T}
+          13 E_RESOBJ    T{
+          "sched::schedule: task or timer on other queue"
+          T}   T{
+          Attempt to resume task or timer already on some queue.
+          T}
+          14 E_HISTO     "histogram::histogram(): bad arguments" T{
+          Bad arguments for histogram constructor.
+          T}
+          15 E_STACK     "task::restore(): stack overflow"  T{
+          Task run time stack overflow.
+          T}
+          16 E_STORE     "new: free store exhausted"   T{
+          No more free store--new() failed.
+          T}
+          17 E_TASKMODE  "task::task(): bad mode" T{
+          Illegal mode argument for task constructor.
+          T}
+          18 E_TASKDEL   "task::~task(): not terminated"    T{
+
+
+
+     Page 14                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          Attempt to delete a non-TERMINATED task.
+          T}
+          19 E_TASKPRE   "task::preempt(): not running"     T{
+          Attempt to preempt a non-RUNNING task.
+          T}
+          20 E_TIMERDEL  "timer::~timer(): not terminated"  T{
+          Attempt to delete a non-TERMINATED timer.
+          T}
+          21 E_SCHTIME   "schedule: bad time"     T{
+          Scheduler run chain is corrupted:  bad time.
+          T}
+          22 E_SCHOBJ    "sched object used directly (not as base)"   T{
+          Sched object used directly instead of as a base class.
+          T}
+          23 E_QDEL "queue::~queue(): not empty"  T{
+          Attempt to delete a non-empty queue.
+          T}
+          24 E_RESULT    "task::result(): thistask->result()"    T{
+          A task attempted to obtain its own result().
+          T}
+          25 E_WAIT "task::wait(): wait for self" T{
+          A task attempted to wait() for itself to TERMINATE.
+          T}
+          26 E_FUNCS     T{
+          "FrameLayout::FrameLayout(): function start"
+          T}   T{
+          Internal error--cannot determine the call frame layout.
+          T}
+          27 E_FRAMES    T{
+          "FrameLayout::FrameLayout(): frame size"
+          T}   T{
+          Internal error--cannot determine frame size.
+          T}
+          28 E_REGMASK   T{
+          "task::fudge_return(): unexpected register mask"
+          T}   T{
+          Internal error--unexpected register mask.
+          T}
+          29 E_FUDGE_SIZE     "task::fudge_return(): frame too big"   T{
+          Internal error--fudged frame too big.
+          T}
+          30 E_NO_HNDLR  "sigFunc - no handler for signal"  T{
+          No handler for the generated signal.
+          T}
+          31 E_BADSIG    "illegal signal number"  T{
+          Attempt to use a signal number that is out of range.
+          T}
+          32 E_LOSTHNDLR "Interrupt_handler::~Interrupt_handler():
+               signal handler not on chain"
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          iiiinnnnttttrrrroooo((((3333KKKK++++++++)))), iiiinnnntttteeeerrrrrrrruuuupppptttt((((3333KKKK++++++++)))), qqqquuuueeeeuuuueeee((((3333KKKK++++++++)))), ttttaaaasssskkkkssssiiiimmmm((((3333KKKK++++++++)))).
+
+
+
+     Page 15                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          Stroustrup, B. and Shopiro, J. E., "A Set of C++ Classes for
+          Co-routine Style Programming," in _A_T&_T _C++ _T_r_a_n_s_l_a_t_o_r _2._0
+          _R_e_l_e_a_s_e _N_o_t_e_s.
+          Shopiro, J. E., "Extending the C++ Task System for Real-Time
+          Control," in _A_T&_T _C++ _T_r_a_n_s_l_a_t_o_r _2._0 _R_e_l_e_a_s_e _N_o_t_e_s.
+          Keenan, S. A., "A Porting Guide for the C++ Coroutine
+          Library," in _A_T&_T _C++ _T_r_a_n_s_l_a_t_o_r _2._0 _R_e_l_e_a_s_e _N_o_t_e_s.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 16                                         (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          queue - qheads and qtails for the C++ task library
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _####_iiii_nnnn_cccc_llll_uuuu_dddd_eeee _<<<<_tttt_aaaa_ssss_kkkk_...._hhhh_>>>>
+
+          _eeee_nnnn_uuuu_mmmm _qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _{{{{ _EEEE_MMMM_OOOO_DDDD_EEEE_,,,, _WWWW_MMMM_OOOO_DDDD_EEEE_,,,, _ZZZZ_MMMM_OOOO_DDDD_EEEE _}}}}_;;;;
+
+          _cccc_llll_aaaa_ssss_ssss _qqqq_hhhh_eeee_aaaa_dddd _:::: _pppp_uuuu_bbbb_llll_iiii_cccc _oooo_bbbb_jjjj_eeee_cccc_tttt _{{{{
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+                         _qqqq_hhhh_eeee_aaaa_dddd_((((_qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _====_WWWW_MMMM_OOOO_DDDD_EEEE_,,,, _iiii_nnnn_tttt _====_1111_0000_0000_0000_0000_))))_;;;;
+                         _~~~~_qqqq_hhhh_eeee_aaaa_dddd_((((_))))_;;;;
+               _qqqq_hhhh_eeee_aaaa_dddd_****         _cccc_uuuu_tttt_((((_))))_;;;;
+               _oooo_bbbb_jjjj_eeee_cccc_tttt_****        _gggg_eeee_tttt_((((_))))_;;;;
+               _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee        _oooo______tttt_yyyy_pppp_eeee_((((_))))_;;;;
+               _iiii_nnnn_tttt       _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _pppp_rrrr_iiii_nnnn_tttt_((((_iiii_nnnn_tttt_,,,, _iiii_nnnn_tttt _====_0000_))))_;;;;
+               _iiii_nnnn_tttt       _pppp_uuuu_tttt_bbbb_aaaa_cccc_kkkk_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+               _iiii_nnnn_tttt       _rrrr_dddd_cccc_oooo_uuuu_nnnn_tttt_((((_))))_;;;;
+               _iiii_nnnn_tttt       _rrrr_dddd_mmmm_aaaa_xxxx_((((_))))_;;;;
+               _qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _rrrr_dddd_mmmm_oooo_dddd_eeee_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_mmmm_oooo_dddd_eeee_((((_qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_mmmm_aaaa_xxxx_((((_iiii_nnnn_tttt_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_pppp_llll_iiii_cccc_eeee_((((_qqqq_tttt_aaaa_iiii_llll_****_))))_;;;;
+               _qqqq_tttt_aaaa_iiii_llll_****         _tttt_aaaa_iiii_llll_((((_))))_;;;;
+          _}}}}_;;;;
+
+          _cccc_llll_aaaa_ssss_ssss _qqqq_tttt_aaaa_iiii_llll _:::: _pppp_uuuu_bbbb_llll_iiii_cccc _oooo_bbbb_jjjj_eeee_cccc_tttt _{{{{
+          _pppp_uuuu_bbbb_llll_iiii_cccc_::::
+                         _qqqq_tttt_aaaa_iiii_llll_((((_qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _====_WWWW_MMMM_OOOO_DDDD_EEEE_,,,, _iiii_nnnn_tttt _====_1111_0000_0000_0000_0000_))))_;;;;
+                         _~~~~_qqqq_tttt_aaaa_iiii_llll_((((_))))_;;;;
+               _qqqq_tttt_aaaa_iiii_llll_****         _cccc_uuuu_tttt_((((_))))_;;;;
+               _qqqq_hhhh_eeee_aaaa_dddd_****         _hhhh_eeee_aaaa_dddd_((((_))))_;;;;
+               _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee        _oooo______tttt_yyyy_pppp_eeee_((((_))))_;;;;
+               _iiii_nnnn_tttt       _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _pppp_rrrr_iiii_nnnn_tttt_((((_iiii_nnnn_tttt_,,,, _iiii_nnnn_tttt _====_0000_))))_;;;;
+               _iiii_nnnn_tttt       _pppp_uuuu_tttt_((((_oooo_bbbb_jjjj_eeee_cccc_tttt_****_))))_;;;;
+               _iiii_nnnn_tttt       _rrrr_dddd_ssss_pppp_aaaa_cccc_eeee_((((_))))_;;;;
+               _iiii_nnnn_tttt       _rrrr_dddd_mmmm_aaaa_xxxx_((((_))))_;;;;
+               _qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee _rrrr_dddd_mmmm_oooo_dddd_eeee_((((_))))_;;;;
+               _vvvv_oooo_iiii_dddd           _ssss_pppp_llll_iiii_cccc_eeee_((((_qqqq_hhhh_eeee_aaaa_dddd_****_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_mmmm_oooo_dddd_eeee_((((_qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee_))))_;;;;
+               _vvvv_oooo_iiii_dddd      _ssss_eeee_tttt_mmmm_aaaa_xxxx_((((_iiii_nnnn_tttt_))))_;;;;
+          _}}}}_;;;;
+
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Classes _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll enable a wide range of message-
+          passing and data-buffering schemes to be implemented simply
+          with the C++ task system.  Both classes are derived from the
+          base class _oooo_bbbb_jjjj_eeee_cccc_tttt, which is described in ttttaaaasssskkkk((((3333KKKK++++++++)))).  In
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          general, class _qqqq_hhhh_eeee_aaaa_dddd provides facilities for taking objects
+          off a queue, and class _qqqq_tttt_aaaa_iiii_llll provides facilities for putting
+          objects on a queue.  The objects transmitted through a queue
+          must be of class _oooo_bbbb_jjjj_eeee_cccc_tttt or of some class derived from it.
+
+          A queue is a data structure with an associated list of
+          _oooo_bbbb_jjjj_eeee_cccc_tttts in first-in, first-out order.  Each queue also has
+          associated _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll objects attached (one of each).
+          No public functions are provided to operate on queues
+          directly.  Rather all access to a queue is through either
+          the attached _qqqq_hhhh_eeee_aaaa_dddd or the attached _qqqq_tttt_aaaa_iiii_llll.  To create a
+          queue, the programmer must declare a _qqqq_hhhh_eeee_aaaa_dddd object and then
+          use that object to call _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_tttt_aaaa_iiii_llll_((((_)))) or must declare a
+          _qqqq_tttt_aaaa_iiii_llll object and then use that object to call _qqqq_tttt_aaaa_iiii_llll_::::_::::_hhhh_eeee_aaaa_dddd_((((_)))).
+          For example:
+               _qqqq_hhhh_eeee_aaaa_dddd _qqqq_hhhh_;;;;
+               _qqqq_tttt_aaaa_iiii_llll_**** _qqqq_tttt_pppp _==== _qqqq_hhhh_...._tttt_aaaa_iiii_llll_((((_))))_;;;;
+          Once the queue is established, _oooo_bbbb_jjjj_eeee_cccc_tttts are added to it with
+          _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) and _oooo_bbbb_jjjj_eeee_cccc_tttts are removed from it with
+          _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))).
+
+          Objects derived from class _oooo_bbbb_jjjj_eeee_cccc_tttt have definitions of when
+          they are _r_e_a_d_y and _p_e_n_d_i_n_g (not ready).  _qqqq_hhhh_eeee_aaaa_dddd objects are
+          ready when the queue is not empty and pending when the queue
+          is empty.  _qqqq_tttt_aaaa_iiii_llll objects are ready when the queue is not
+          full, and pending when the queue is full.
+
+          Queues have three attributes:  mode, maximum size, and
+          count.  The size and count attributes apply to the queue
+          itself, while the mode attribute applies independently to
+          the _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll of a queue.  These attributes are
+          described below.
+
+          Both classes _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll have a mode (set by the
+          constructor) that controls what happens when an object of
+          that class is pending.  The default is WMODE (wait mode).
+          With WMODE, a _tttt_aaaa_ssss_kkkk that executes _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) on an empty
+          queue will be suspended until that queue becomes non-empty.
+          Similarly, with WMODE a _tttt_aaaa_ssss_kkkk that executes _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) on a
+          full queue will be suspended until that queue has room for
+          the _oooo_bbbb_jjjj_eeee_cccc_tttt to be added to the queue.  In EMODE (error mode),
+          calling _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) for an empty queue or calling
+          _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) for a full queue will cause a run time error.
+          In ZMODE (zero mode), if _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) is executed on an
+          empty queue it will return the NULL pointer instead of a
+          pointer to an object.  In ZMODE, if _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) is executed
+          on a full queue, it will return 0 instead of 1.  The modes
+          of a queue's head and tail need not be the same.  Classes
+          _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll both provide a function, _ssss_eeee_tttt_mmmm_oooo_dddd_eeee_((((_)))), which
+          will reset the mode.
+
+          Queues also have a maximum size, which is set to 10000 by
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          default.  That is, the queue can hold up to 10000 pointers
+          to objects.  It does not, however, preallocate space.  The
+          size of a queue can be reset with either _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_ssss_eeee_tttt_mmmm_aaaa_xxxx_((((_)))) or
+          _qqqq_tttt_aaaa_iiii_llll_::::_::::_ssss_eeee_tttt_mmmm_aaaa_xxxx_((((_)))).
+
+          The count is the number of objects on a queue.
+
+          Both the _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll constructors optionally take mode
+          and size arguments.
+
+          The public member functions supplied in the task system
+          classes _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll are listed and described in the next
+          two sections.  The following symbols are used:
+
+                    _qqqq_hhhh  a _qqqq_hhhh_eeee_aaaa_dddd object
+
+                    _qqqq_tttt  a _qqqq_tttt_aaaa_iiii_llll object
+
+                    _tttt   a _tttt_aaaa_ssss_kkkk object
+
+                    _qqqq_hhhh_pppp a pointer to a _qqqq_hhhh_eeee_aaaa_dddd
+
+                    _qqqq_tttt_pppp a pointer to a _qqqq_tttt_aaaa_iiii_llll
+
+                    _oooo_pppp  a pointer to an _oooo_bbbb_jjjj_eeee_cccc_tttt
+
+                    _tttt_pppp  a pointer to a _tttt_aaaa_ssss_kkkk
+
+                    _iiii_,,,,_jjjj _iiii_nnnn_tttts
+
+                    _eeee_oooo  an _oooo_bbbb_jjjj_tttt_yyyy_pppp_eeee enumeration
+
+                    _eeee_qqqq  a _qqqq_mmmm_oooo_dddd_eeee_tttt_yyyy_pppp_eeee enumeration
+
+        CCCCllllaaaassssssss qqqqhhhheeeeaaaadddd
+          Class _qqqq_hhhh_eeee_aaaa_dddd has one form of constructor:
+
+          _qqqq_hhhh_eeee_aaaa_dddd _qqqq_hhhh_(((( _eeee_qqqq_,,,, _jjjj _))))
+               Constructs a _qqqq_hhhh_eeee_aaaa_dddd object, _qqqq_hhhh.  Both arguments are
+               optional and have default values.  _eeee_qqqq represents the
+               _m_o_d_e (see above), which can be WMODE, EMODE, or ZMODE.
+               WMODE is the default.  _jjjj represents the maximum length
+               of the queue attached to _qqqq_hhhh; the default is 10000.
+
+          The public member functions of class _qqqq_hhhh_eeee_aaaa_dddd are (in
+          alphabetical order):
+
+          _qqqq_hhhh_pppp _==== _qqqq_hhhh_...._cccc_uuuu_tttt_((((_))))
+               Splits _qqqq_hhhh in two.  _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_cccc_uuuu_tttt_((((_)))) returns a pointer to a
+               new _qqqq_hhhh_eeee_aaaa_dddd, which is attached to the original queue.
+               _oooo_bbbb_jjjj_eeee_cccc_tttts that are already on the queue and _oooo_bbbb_jjjj_eeee_cccc_tttts that
+               are _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) on the original queue, must be
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               retrieved via _qqqq_hhhh_pppp.  _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_cccc_uuuu_tttt_((((_)))) modifies _qqqq_hhhh to point
+               to a new empty queue.  A new _qqqq_tttt_aaaa_iiii_llll must be established
+               for _qqqq_hhhh (with _qqqq_hhhh_...._tttt_aaaa_iiii_llll_((((_)))) ).  _oooo_bbbb_jjjj_eeee_cccc_tttts that are
+               _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) to the new _qqqq_tttt_aaaa_iiii_llll, can be retrieved via a
+               _qqqq_hhhh_...._gggg_eeee_tttt_((((_)))).
+
+               Thus, _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_cccc_uuuu_tttt_((((_)))) can be used to insert a filter into
+               an existing queue, without changing the appearance of
+               the queue to anyone using it, and without halting the
+               flow of _oooo_bbbb_jjjj_eeee_cccc_tttts through the queue.  The filter will
+               intercept _oooo_bbbb_jjjj_eeee_cccc_tttts that are _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) on the original
+               _qqqq_tttt_aaaa_iiii_llll when it does a _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) on the new _qqqq_hhhh_eeee_aaaa_dddd.
+               Then the filter can _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) _oooo_bbbb_jjjj_eeee_cccc_tttts on the new
+               _qqqq_tttt_aaaa_iiii_llll, where execution of _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) on the original
+               _qqqq_hhhh_eeee_aaaa_dddd will retrieve them.  In other words, the filter
+               _tttt_aaaa_ssss_kkkk uses the newly established _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll, while
+               other _tttt_aaaa_ssss_kkkk_ssss continue to _pppp_uuuu_tttt_((((_)))) and _gggg_eeee_tttt_((((_)))) from the
+               original _qqqq_tttt_aaaa_iiii_llll and _qqqq_hhhh_eeee_aaaa_dddd.  _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) can be used
+               to restore the queue to its original configuration.
+
+          _oooo_pppp _==== _qqqq_hhhh_...._gggg_eeee_tttt_((((_))))
+               Returns a pointer to the _oooo_bbbb_jjjj_eeee_cccc_tttt at the head of the
+               queue, if the queue is not empty.  If the queue is
+               empty, _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_))))'s behavior depends on the mode of
+               _qqqq_hhhh.  In WMODE, a _tttt_aaaa_ssss_kkkk that executes _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) on an
+               empty queue will be suspended until that queue becomes
+               non-empty, when the operation can complete
+               successfully.  In EMODE, it will cause a run time
+               error.  In ZMODE, it will return the NULL pointer
+               instead of a pointer to an _oooo_bbbb_jjjj_eeee_cccc_tttt.
+
+          _eeee_oooo _==== _qqqq_hhhh_...._oooo______tttt_yyyy_pppp_eeee_((((_))))
+               Returns the class type of the object (_oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_QQQQ_HHHH_EEEE_AAAA_DDDD).
+               _oooo______tttt_yyyy_pppp_eeee_((((_)))) is a virtual function.
+
+          _iiii _==== _qqqq_hhhh_...._pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))
+               Returns TRUE if the queue attached to _qqqq_hhhh is empty, and
+               FALSE otherwise.  _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_)))) is a virtual function.
+
+          _qqqq_hhhh_...._pppp_rrrr_iiii_nnnn_tttt_(((( _iiii _))))
+               Prints the contents of _qqqq_hhhh on _ssss_tttt_dddd_oooo_uuuu_tttt.  It calls the
+               _pppp_rrrr_iiii_nnnn_tttt_((((_)))) function for the _oooo_bbbb_jjjj_eeee_cccc_tttt base class.  _iiii
+               specifies the amount of information to be printed.  It
+               can be 0, for the minimum amount of information, or
+               VERBOSE, for more information.  A second integer
+               argument is for internal use and defaults to 0.
+               _pppp_rrrr_iiii_nnnn_tttt_((((_)))) is a virtual function.
+
+          _iiii _==== _qqqq_hhhh_...._pppp_uuuu_tttt_bbbb_aaaa_cccc_kkkk_(((( _oooo_pppp _))))
+               Puts the _oooo_bbbb_jjjj_eeee_cccc_tttt denoted by _oooo_pppp back on the head of the
+               queue attached to _qqqq_hhhh, and returns 1 on success.  This
+               allows a _qqqq_hhhh_eeee_aaaa_dddd to operate as a stack.  A _tttt_aaaa_ssss_kkkk calling
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_pppp_uuuu_tttt_bbbb_aaaa_cccc_kkkk_((((_)))) competes for queue space with _tttt_aaaa_ssss_kkkks
+               using _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))).  Calling _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_pppp_uuuu_tttt_bbbb_aaaa_cccc_kkkk_((((_)))) for a
+               full queue causes a run time error in both EMODE and
+               WMODE, and returns NULL in ZMODE.
+
+          _iiii _==== _qqqq_hhhh_...._rrrr_dddd_cccc_oooo_uuuu_nnnn_tttt_((((_))))
+               Returns the current number of _oooo_bbbb_jjjj_eeee_cccc_tttts in the queue
+               attached to _qqqq_hhhh.
+
+          _iiii _==== _qqqq_hhhh_...._rrrr_dddd_mmmm_aaaa_xxxx_((((_))))
+               Returns the maximum size of the queue attached to _qqqq_hhhh.
+
+          _eeee_qqqq _==== _qqqq_hhhh_...._rrrr_dddd_mmmm_oooo_dddd_eeee_((((_))))
+               Returns the current mode of _qqqq_hhhh, WMODE, EMODE, or ZMODE.
+
+          _qqqq_hhhh_...._ssss_eeee_tttt_mmmm_oooo_dddd_eeee_(((( _eeee_qqqq _))))
+               Sets the mode of _qqqq_hhhh to _eeee_qqqq, which can be WMODE, EMODE,
+               or ZMODE.
+
+          _qqqq_hhhh_...._ssss_eeee_tttt_mmmm_aaaa_xxxx_(((( _iiii _))))
+               Sets the maximum size of the queue attached to _qqqq_hhhh to _iiii.
+               It is legal to decrease the maximum below the current
+               number of _oooo_bbbb_jjjj_eeee_cccc_tttt_ssss on the queue.  Doing so means that no
+               more _oooo_bbbb_jjjj_eeee_cccc_tttts can be put on the queue until the queue
+               has been drained below the new limit.
+
+          _qqqq_hhhh_...._ssss_pppp_llll_iiii_cccc_eeee_(((( _qqqq_tttt_pppp _))))
+               Reverses the action of a previous _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_cccc_uuuu_tttt_((((_)))).
+               _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) merges the queue attached to _qqqq_hhhh with
+               the queue attached to _qqqq_tttt_pppp.  The list of _oooo_bbbb_jjjj_eeee_cccc_tttt_ssss on the
+               latter queue precede those on the former queue in the
+               merged list.  _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) deletes _qqqq_hhhh and _qqqq_tttt_pppp.  _qqqq_hhhh
+               is meant to be a _qqqq_hhhh_eeee_aaaa_dddd that was previously _cccc_uuuu_tttt_((((_)))), and
+               _qqqq_tttt_pppp is meant to be the pointer returned by that _cccc_uuuu_tttt_((((_)))).
+               If in merging the queues _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) causes an
+               empty queue to become non-empty or a full queue to
+               become non-full, it will alert all _tttt_aaaa_ssss_kkkks waiting for
+               that state change, and add them to the scheduler's _r_u_n
+               _c_h_a_i_n.  (See the description of _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_aaaa_llll_eeee_rrrr_tttt_((((_)))) in
+               ttttaaaasssskkkk((((3333KKKK++++++++)))).)
+
+          _qqqq_tttt_pppp _==== _qqqq_hhhh_...._tttt_aaaa_iiii_llll_((((_))))
+               Creates a _qqqq_tttt_aaaa_iiii_llll object for the queue attached to _qqqq_hhhh (if
+               none exists) and returns a pointer, _qqqq_tttt_pppp, to the new
+               _qqqq_tttt_aaaa_iiii_llll object.
+
+        CCCCllllaaaassssssss qqqqttttaaaaiiiillll
+          Class _qqqq_tttt_aaaa_iiii_llll has one form of constructor:
+
+          _qqqq_tttt_aaaa_iiii_llll _qqqq_tttt_(((( _eeee_qqqq_,,,, _jjjj _))))
+               Constructs a _qqqq_tttt_aaaa_iiii_llll object, _qqqq_tttt.  Both arguments are
+               optional and have default values.  _eeee_qqqq represents the
+
+
+
+     Page 5                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               _m_o_d_e (see above), which can be WMODE, EMODE, or ZMODE.
+               WMODE is the default.  _jjjj represents the maximum length
+               of the queue attached to _qqqq_tttt; the default is 10000.
+
+          The public member functions of class _qqqq_tttt_aaaa_iiii_llll are (in
+          alphabetical order):
+
+          _qqqq_tttt_pppp _==== _qqqq_tttt_...._cccc_uuuu_tttt_((((_))))
+               Splits the queue to which it is applied in two.
+               _qqqq_tttt_aaaa_iiii_llll_::::_::::_cccc_uuuu_tttt_((((_)))) returns a pointer to a new _qqqq_tttt_aaaa_iiii_llll, which is
+               attached to the original queue.  _oooo_bbbb_jjjj_eeee_cccc_tttts already on the
+               original queue can still be retrieved with a
+               _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) to the original _qqqq_hhhh_eeee_aaaa_dddd.  (This is the
+               primary functional difference between _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_cccc_uuuu_tttt_((((_)))) and
+               _qqqq_tttt_aaaa_iiii_llll_::::_::::_cccc_uuuu_tttt_((((_)))).)  _qqqq_tttt_aaaa_iiii_llll_::::_::::_cccc_uuuu_tttt_((((_)))) modifies _qqqq_tttt to point to a
+               new empty queue.  A new _qqqq_hhhh_eeee_aaaa_dddd must be established for
+               _qqqq_tttt.  _oooo_bbbb_jjjj_eeee_cccc_tttts that are _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) to _qqqq_tttt must be
+               retrieved via the new _qqqq_hhhh_eeee_aaaa_dddd.  _oooo_bbbb_jjjj_eeee_cccc_tttts that are
+               _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) to _qqqq_tttt_pppp will be retrieved via the original
+               _qqqq_hhhh_eeee_aaaa_dddd.
+
+               Thus, _qqqq_tttt_aaaa_iiii_llll_::::_::::_cccc_uuuu_tttt_((((_)))) can be used to insert a filter into
+               an existing queue, without changing the appearance of
+               the queue to anyone using it, and without halting the
+               flow of _oooo_bbbb_jjjj_eeee_cccc_tttts through the queue.  The filter will
+               intercept _oooo_bbbb_jjjj_eeee_cccc_tttts that are _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) on the original
+               _qqqq_tttt_aaaa_iiii_llll when it does a _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) on the new _qqqq_hhhh_eeee_aaaa_dddd.
+               Then the filter can _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) _oooo_bbbb_jjjj_eeee_cccc_tttts on the new
+               _qqqq_tttt_aaaa_iiii_llll, where execution of _qqqq_hhhh_eeee_aaaa_dddd_::::_::::_gggg_eeee_tttt_((((_)))) on the original
+               _qqqq_hhhh_eeee_aaaa_dddd will retrieve them.  In other words, the filter
+               _tttt_aaaa_ssss_kkkk uses the newly established _qqqq_hhhh_eeee_aaaa_dddd and _qqqq_tttt_aaaa_iiii_llll, while
+               other _tttt_aaaa_ssss_kkkk_ssss continue to _pppp_uuuu_tttt_((((_)))) and _gggg_eeee_tttt_((((_)))) from the
+               original _qqqq_tttt_aaaa_iiii_llll and _qqqq_hhhh_eeee_aaaa_dddd.  _qqqq_tttt_aaaa_iiii_llll_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) can be used
+               to restore the queue to its original configuration.
+
+          _qqqq_hhhh_pppp _==== _qqqq_tttt_...._hhhh_eeee_aaaa_dddd_((((_))))
+               Creates a _qqqq_hhhh_eeee_aaaa_dddd object for the queue attached to _qqqq_tttt (if
+               none exists) and returns a pointer to the new _qqqq_hhhh_eeee_aaaa_dddd
+               object.
+
+          _eeee_oooo _==== _qqqq_tttt_...._oooo______tttt_yyyy_pppp_eeee_((((_))))
+               Returns the class type of the object (_oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_QQQQ_TTTT_AAAA_IIII_LLLL).
+               _oooo______tttt_yyyy_pppp_eeee_((((_)))) is a virtual function.
+
+          _iiii _==== _qqqq_tttt_...._pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_))))
+               Returns TRUE if the queue attached to _qqqq_tttt is full, and
+               FALSE otherwise.  _pppp_eeee_nnnn_dddd_iiii_nnnn_gggg_((((_)))) is a virtual function.
+
+          _qqqq_tttt_...._pppp_rrrr_iiii_nnnn_tttt_(((( _iiii _))))
+               Prints the contents of _qqqq_tttt on _ssss_tttt_dddd_oooo_uuuu_tttt. It calls the
+               _pppp_rrrr_iiii_nnnn_tttt_((((_)))) function for the _oooo_bbbb_jjjj_eeee_cccc_tttt base class.  _iiii
+               specifies the amount of information to be printed.  It
+
+
+
+     Page 6                                          (printed 11/9/90)
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+               can be 0, for the minimum amount of information, or
+               VERBOSE, for more information.  A second integer
+               argument is for internal use and defaults to 0.
+               _pppp_rrrr_iiii_nnnn_tttt_((((_)))) is a virtual function.
+
+          _iiii _==== _qqqq_tttt_...._pppp_uuuu_tttt_(((( _oooo_pppp _))))
+               Adds the _oooo_bbbb_jjjj_eeee_cccc_tttt denoted by _oooo_pppp to the tail of the queue
+               attached to _qqqq_tttt, and returns 1 on success.  If the queue
+               is full, _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) 's behavior depends on the mode
+               of _qqqq_tttt.  In WMODE, a _tttt_aaaa_ssss_kkkk that executes _qqqq_tttt_aaaa_iiii_llll_::::_::::_pppp_uuuu_tttt_((((_)))) on
+               a full queue will be suspended until that queue becomes
+               non-full, when the operation can complete successfully.
+               In EMODE, it will cause a run time error.  In ZMODE, it
+               will return NULL.
+
+          _iiii _==== _qqqq_tttt_...._rrrr_dddd_ssss_pppp_aaaa_cccc_eeee_((((_))))
+               Returns the number of _oooo_bbbb_jjjj_eeee_cccc_tttts that can be inserted into
+               the queue attached to _qqqq_tttt before it becomes full.
+
+          _iiii _==== _qqqq_tttt_...._rrrr_dddd_mmmm_aaaa_xxxx_((((_))))
+               Returns the maximum size of the queue attached to _qqqq_tttt.
+
+          _eeee_qqqq _==== _qqqq_tttt_...._rrrr_dddd_mmmm_oooo_dddd_eeee_((((_))))
+               Returns the current mode of _qqqq_tttt, WMODE, EMODE, or ZMODE.
+
+          _qqqq_tttt_...._ssss_pppp_llll_iiii_cccc_eeee_(((( _qqqq_hhhh_pppp _))))
+               Reverses the action of a previous _qqqq_tttt_aaaa_iiii_llll_::::_::::_cccc_uuuu_tttt_((((_))))_....
+               _qqqq_tttt_aaaa_iiii_llll_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) merges the queue attached to _qqqq_tttt with
+               the queue attached to _qqqq_hhhh_pppp.  The list of _oooo_bbbb_jjjj_eeee_cccc_tttt_ssss on the
+               former queue precede those on the latter queue in the
+               merged list.  _qqqq_tttt_aaaa_iiii_llll_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) deletes _qqqq_tttt and _qqqq_hhhh_pppp.  _qqqq_tttt
+               is meant to be a _qqqq_tttt_aaaa_iiii_llll that was previously _cccc_uuuu_tttt_((((_))))_,,,, and
+               _qqqq_hhhh_pppp is meant to be the pointer returned by that _cccc_uuuu_tttt_((((_))))_....
+               If in merging the queues _qqqq_tttt_aaaa_iiii_llll_::::_::::_ssss_pppp_llll_iiii_cccc_eeee_((((_)))) causes an
+               empty queue to become non-empty or a full queue to
+               become non-full, it will alert all _tttt_aaaa_ssss_kkkks waiting for
+               that state change, and add them to the scheduler's _r_u_n
+               _c_h_a_i_n.  (See the description of _oooo_bbbb_jjjj_eeee_cccc_tttt_::::_::::_aaaa_llll_eeee_rrrr_tttt_((((_)))) in
+               ttttaaaasssskkkk((((3333KKKK++++++++)))).)
+
+          _qqqq_tttt_...._ssss_eeee_tttt_mmmm_oooo_dddd_eeee_(((( _eeee_qqqq _))))
+               Sets the mode of _qqqq_tttt to _eeee_qqqq, which can be WMODE, EMODE,
+               or ZMODE.
+
+          _qqqq_tttt_...._ssss_eeee_tttt_mmmm_aaaa_xxxx_(((( _iiii _))))
+               Sets the maximum size of the queue attached to _qqqq_tttt to _iiii.
+               It is legal to decrease the maximum below the current
+               number of _oooo_bbbb_jjjj_eeee_cccc_tttts on the queue.  Doing so means that no
+               more _oooo_bbbb_jjjj_eeee_cccc_tttts can be put on the queue until the queue
+               has been drained below the new limit.
+
+     NNNNOOOOTTTTEEEESSSS
+
+
+
+     PPPPaaaaggggeeee 7777                                          ((((pppprrrriiiinnnntttteeeedddd 11111111////9999////99990000))))
+
+
+
+
+
+
+     NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   NNNNTTTTAAAASSSSKKKK((((3333CCCC++++++++))))
+
+
+
+          The queue-splicing mechanism works even if applied to a pair
+          of queues that were not produced by cutting one queue.  It
+          is not sensible to splice a queue onto itself, head-to-tail.
+          Adding the following inline function to _qqqq_tttt_aaaa_iiii_llll will permit a
+          program to determine whether a head and a tail point to the
+          same queue:
+               _iiii_nnnn_tttt       _ssss_aaaa_mmmm_eeee_qqqq_((((_qqqq_hhhh_eeee_aaaa_dddd _****_qqqq_hhhh_)))) _{{{{ _rrrr_eeee_tttt_uuuu_rrrr_nnnn _qqqq_tttt______qqqq_uuuu_eeee_uuuu_eeee _====_==== _qqqq_hhhh_----_>>>>_qqqq_hhhh______qqqq_uuuu_eeee_uuuu_eeee_;;;; _}}}}
+
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          See ttttaaaasssskkkk((((3333KKKK++++++++)))).
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          iiiinnnnttttrrrroooo((((3333KKKK++++++++)))), ttttaaaasssskkkk((((3333KKKK++++++++)))), iiiinnnntttteeeerrrrrrrruuuupppptttt((((3333KKKK++++++++)))), ttttaaaasssskkkkssssiiiimmmm((((3333KKKK++++++++)))).
+          Stroustrup, B. and Shopiro, J. E., "A Set of C++ Classes for
+          Co-routine Style Programming," in _A_T&_T _C++ _T_r_a_n_s_l_a_t_o_r _2._0
+          _R_e_l_e_a_s_e _N_o_t_e_s.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8                                          (printed 11/9/90)
+
+
+

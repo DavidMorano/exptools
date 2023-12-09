@@ -1,0 +1,1334 @@
+%
+% beginning of prologue
+%
+/aspectratio 1 def
+/font /Helvetica def
+/landscape false def
+/magnification 1 def
+/margin 0.25 def
+/orientation 0 def
+/pointsize 10 def
+/xoffset 0.25 def
+/yoffset 0.25 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [ 0 0 612 792 ] def
+
+/in	{ 72.0 mul }		def
+/mm	{ 2.8346456 mul }	def
+/min	{ 2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape { /orientation 90 orientation add def } if
+	font findfont pointsize scalefont setfont
+	/charwidth (M) stringwidth pop def
+	/linespace pointsize pointsize .10 mul add neg def
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotate
+	width 2 div neg height 2 div translate
+	xoffset in yoffset in neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	height width div 1 min dup scale
+	0 linespace translate
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and
+			{roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape { 4 2 roll } if
+
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/pagesetup { /page exch def 0 0 moveto 0 } bind def
+
+
+%
+% phone voucher specific prolog
+%
+/NormLineWidth	0.002 in		def
+/BoldLW	0.02 in		def
+/BoldBoldLW 0.04 in	def
+%
+%	Sets the current font, computes and saves the current font height
+%
+/Font {
+	setfont
+	/_strtmp (X) def
+	gsave
+		newpath
+		0 0 moveto
+		_strtmp true charpath flattenpath pathbbox
+	grestore
+	% Stack now has llx lly urx ury
+	/_ury exch def		pop % urx
+	/_lly exch def		pop % llx
+	/FontHeight _ury _lly sub 	def
+%endif
+	/vs FontHeight 1.4 mul		def
+}def
+
+/Expand { % Expand ratio string
+	/my_string exch def
+	/my_ratio exch def
+	save
+	my_ratio 1 scale
+	my_string show
+	1 1 scale
+	restore
+} def
+
+/Remove-dash {
+	/str1 exch def
+	/n str1 length def
+	% check for zero length input string
+	n 0 gt
+	{
+		/str2 n string def
+		/i 0 def
+		/j 0 def
+		/dash (-) 0 get def
+		{
+			str1 i get dup dash ne
+				{ str2 exch j exch put /j j 1 add def }
+				{ pop }
+			ifelse
+			/i i 1 add def
+			n i eq { exit } if
+		} loop
+		str2
+	}
+	{ () }
+	ifelse
+} def
+
+
+%
+% Fonts...
+
+/HBF	/Helvetica-Bold findfont	def
+/HB18	HBF	18 scalefont		def
+/HB12	HBF	12 scalefont		def
+/HB11	HBF	11 scalefont		def
+/HB10	HBF	10 scalefont		def
+/HB9	HBF	 9 scalefont		def
+/HB8	HBF	 8 scalefont		def
+/HB7	HBF	 7 scalefont		def
+/HB6	HBF	 6 scalefont		def
+
+/HF	/Helvetica	findfont	def
+/H12	HF	12	scalefont	def
+/H11	HF	11	scalefont	def
+/H10	HF	10	scalefont	def
+/H9	HF	9	scalefont	def
+/H8.5	HF	8.5	scalefont	def
+/H8	HF	8	scalefont	def
+/H7.5	HF	7.5	scalefont	def
+/H7	HF	7	scalefont	def
+/H6	HF	6	scalefont	def
+/tiny	HBF	BoldLW 	.8 mul scalefont def
+
+/BIF	/Times-BoldItalic	findfont	def
+/BI12	BIF	12		scalefont	def
+/BI10	BIF	10		scalefont	def
+/BI8	BIF	8		scalefont	def
+
+/CF	/Courier		findfont	def
+/C18	CF	18		scalefont	def
+/CBF	/Courier-Bold		findfont	def
+/CB18	CBF	18		scalefont	def
+/CB12	CBF	12		scalefont	def
+
+%
+% Centering ...
+%
+/Hcenter	{ dup stringwidth pop -2 div 0		rmoveto show }	def
+/Vcenter { 0 			     FontHeight -2 div 	rmoveto show }	def
+/HVcenter{ dup stringwidth pop -2 div FontHeight -2 div	rmoveto show }	def
+/HULcenter {
+    dup stringwidth pop /svwidth exch def
+    svwidth -2 div 0 rmoveto show
+    0 vfudge neg rmoveto
+    svwidth neg 0 rlineto
+    } def
+
+
+%
+% Lines ...
+
+/H-Line		{ 0	 rlineto stroke }		def
+/H-Line-go	{ 0	 rlineto }			def
+/V-Line		{ 0 exch rlineto stroke } 		def
+/V-Line-ret     { /yleng exch def
+		  currentpoint
+		  0 yleng rlineto stroke
+		  moveto
+		}					def
+/Dash-Line	{ [ 8 4 ] 0 setdash 0 rlineto stroke [ ] 0 setdash } def
+/BoldLine	{ 	currentlinewidth exch
+				BoldLW setlinewidth
+				0 rlineto stroke
+			setlinewidth
+		}						def
+/BoldBoldLine	{ 	currentlinewidth exch
+				BoldBoldLW setlinewidth
+				0 rlineto stroke
+			setlinewidth
+		}						def
+/BoldVLine	{ 	currentlinewidth exch
+				BoldLW setlinewidth
+				0 exch rlineto stroke
+			setlinewidth
+		}						def
+/Rule		{ 0 exch moveto R-Margin H-Line }		def
+/BoldRule	{ 0 exch moveto R-Margin BoldLine }		def
+/BoldBoldRule	{ 0 exch moveto R-Margin BoldBoldLine }		def
+/Box	{	dup 0 exch rlineto
+		exch 0 rlineto
+		neg 0 exch rlineto
+		closepath
+	}						def
+
+/ChkBox { gsave 2 mm dup Box stroke grestore }		def
+
+/Box1Pos { 0.27 in S1-L3 vs sub vs sub vs sub }		def
+/Box2Pos { 0.27 in Dash2 vs sub }			def
+/Box3Pos { 0.27 in Dash1 vs sub }			def
+
+/Line		{ /LinePos exch def TextLmargin LinePos moveto }		def
+/Print-Leftof	{ dup stringwidth pop neg 0 rmoveto show }			def
+/NL		{ currentpoint exch pop vs sub TextLmargin exch moveto }	def
+/PL		{ currentpoint exch pop vs add TextLmargin exch moveto }	def
+
+/Places	{	
+	/PlaceWidth exch def 
+		{
+			PlaceWidth 0 rmoveto
+			dup 0 exch rmoveto
+			0 exch neg rlineto
+		} forall
+	} def
+
+/EqWidth	{ { pop /charcode exch def
+			( ) dup 0 charcode put
+			stringwidth pop neg 0.25 in add 0 rmoveto } } def
+/Eq2Width	{ { pop /charcode exch def
+			( ) dup 0 charcode put
+			stringwidth pop neg 0.125 in add 0 rmoveto } } def
+		
+/vfudge .5 mm def
+/vfudge2 vfudge 2 mul def
+		
+NormLineWidth setlinewidth
+
+
+%
+%	Places on the page
+%
+%	vertical line positions:
+
+%/v0	Bottom 15 mm add def
+%/v3	v0 35  mm add def
+
+/Bottom	       0	mm def
+/v0	Bottom 12	mm add def
+% /v1	Bottom 20	mm add def
+% /v2	Bottom 25	mm add def
+/v3	Bottom 61.25	mm add def
+/v4	Bottom 67.5	mm add def
+/v5	Bottom 73.75	mm add def
+/v6	Bottom 80	mm add def
+/v7	Bottom 86.25	mm add def
+/v8	Bottom 92.5	mm add def
+/v9	Bottom 98.75	mm add def
+/v10	Bottom 105	mm add def
+/v11	Bottom 111.25	mm add def
+/v12	Bottom 117.5	mm add def
+/v13	Bottom 123.75	mm add def
+/v14	Bottom 130	mm add def
+/v15	Bottom 137	mm add def
+/v16	Bottom 148	mm add def
+/v17	Bottom 158	mm add def
+/v18	Bottom 166	mm add def
+/v19	Bottom 173.5	mm add def
+/v20	Bottom 183	mm add def
+/v21	Bottom 189	mm add def
+
+
+%	horizontal line positions:
+
+/Left	        -3	mm def
+/h0	Left	0	mm add def
+/h1	Left	20.25	mm add def
+/h2	Left	25	mm add def
+/h3	Left	41	mm add def
+/h4	Left	67.75	mm add def
+/h5	Left	77	mm add def
+/h6	Left	88	mm add def
+/h7	Left	104	mm add def
+/h8	Left	113.5	mm add def
+/h9	Left	129	mm add def
+/h10	Left	140.25	mm add def
+/h11	Left	150	mm add def
+/h12	Left	158	mm add def
+/h13	Left	177	mm add def
+/h14	Left	186	mm add def
+/h15	Left	189.5	mm add def
+/h16	Left 	213	mm add def
+/h17	Left	222.75	mm add def
+/h18	Left	249.5	mm add def
+/h19	Left	259	mm add def
+
+/R-Margin	h19		def
+/NormalMargin	6 mm		def
+/TextLmargin	NormalMargin	def
+
+/LogoY v21 11 mm add def
+/LogoX h0  10 mm add def
+
+% Name and SSN section.
+/v_emplast	v17  5   mm add def
+/h_emplast	h0  21.5 mm add def
+/v_empinit	v17  5   mm add def
+/h_empinit	h0  97   mm add def
+
+% name and signature sections
+/v_s_sig_line	v3  15   mm sub def
+/v_s_note	v3  19   mm sub def
+/h_s_sect	h0   0   mm add def
+
+/v_e_spacing	4.75 mm def
+/v_e_sig_line	v3  10.00   mm sub def
+/v_e_wk_addr1	v_e_sig_line v_e_spacing 1 mul sub def
+/v_e_wk_addr2	v_e_sig_line v_e_spacing 2 mul sub def
+/v_e_wk_addr3	v_e_sig_line v_e_spacing 3 mul sub def
+/v_e_wk_addr4	v_e_sig_line v_e_spacing 4 mul sub def
+/v_e_wk_phone	v_e_sig_line v_e_spacing 5 mul sub def
+/h_e_sect	h9  2   mm add def
+
+% Weekly/Monthly check boxes
+% section label and boxes
+/v_checkone	v21  4.5  mm sub def
+/v_checktop	v21  8.5  mm sub def
+/v_checkbot	v21  12.5 mm sub def
+/h_checkone	h0   2    mm add def
+/h_check_col_1	h0   2    mm add def
+
+
+
+
+
+
+%%EndProlog
+%%BeginSetup
+mark
+/landscape true def
+/magnification 1.3 def
+/xoffset 0.5 def
+/yoffset 8.1 def
+setup
+%%EndSetup
+%%Page: 1 1
+save
+mark
+1 pagesetup
+%
+%	Body of PostScript Program to format Telephone Discount Voucher
+%
+
+%	All the Horizontal lines that go clear across the page
+v3	BoldRule
+v17	BoldRule
+v21	BoldBoldRule
+
+ v4 Rule  v5 Rule  v6 Rule  v7 Rule  v8 Rule  v9 Rule
+v10 Rule v11 Rule v12 Rule v13 Rule v14 Rule v15 Rule
+v19 Rule
+
+
+% The line between month and year.
+/leng v16 v3 sub def
+	h1 v3 moveto leng V-Line
+% The line above month and year.
+/leng h3 h0 sub def
+	h0 v16 moveto leng H-Line
+% The lines between columns C thru I.
+/leng v17 v3 sub def
+	h3 v3 moveto leng V-Line
+	h5 v3 moveto leng V-Line
+	h8 v3 moveto leng V-Line
+	h11 v3 moveto leng V-Line
+	h14 v3 moveto leng V-Line
+	h17 v3 moveto leng V-Line
+% The lines between the dollars and cents.
+/leng v15 v3 sub def
+	h4 v3 moveto leng V-Line
+	h7 v3 moveto leng V-Line
+	h10 v3 moveto leng V-Line
+	h13 v3 moveto leng V-Line
+	h16 v3 moveto leng V-Line
+	h18 v3 moveto leng V-Line
+% The line between employee name and the phone number block.
+/leng v19 v17 sub def
+	h9 v17 moveto leng V-Line
+% The line between between the phone number and the Universal Card No.
+/leng R-Margin h9 sub def
+	h9 v18 moveto leng H-Line
+% The vertical lines separating the top row of blocks.
+/leng v21 v19 sub def
+	h2 v19 moveto leng V-Line
+	h6 v19 moveto leng V-Line
+	h15 v19 moveto leng V-Line
+% The horizonal line in the FOR PAYROLL USE ONLY block.
+/leng h15 h6 sub def
+	h6 v20 moveto leng H-Line
+% The vertical line in the FOR PAYROLL USE ONLY block.
+/leng v20 v19 sub def
+	h12 v19 moveto leng V-Line
+
+
+% The Title of the form.
+HB18 Font
+	126 mm v21 11 mm add moveto
+		(Telephone Reimbursement Program) show
+	126 mm v21 5  mm add moveto
+		(Statement of Employee Incurred Cost) show
+
+% The fine print at the bottom.
+H8 Font
+	R-Margin Bottom 13.5 mm add moveto
+	(Retention Requirements) dup stringwidth pop neg 0 rmoveto
+	currentpoint pop /h_ret_req exch def
+	show
+	h_ret_req Bottom 10 mm add moveto (Preparer - 1 Year) show
+	h_ret_req Bottom 7  mm add moveto (Processor - 15 Years) show
+
+% The form number and version date.
+H8 Font
+	R-Margin v21 14 mm add moveto
+	(GN-92-600) dup stringwidth pop neg 0 rmoveto show
+	R-Margin v21 11 mm add moveto
+	(\(07-94\)) dup stringwidth pop neg 0 rmoveto show
+
+% A notation that says the tdc program created this form.
+	h0 Bottom 7 mm add moveto (Prepared by "tdc" Exptool) show
+
+
+% Employee signature section
+	H8 Font
+	h_e_sect v_e_sig_line moveto
+	(Employee's Signature: ) show 
+	currentpoint pop /h_e_sig_line exch def
+	58 mm 0 rlineto
+	( Date ) show
+	% save currentpoint to get back here for the current date
+	currentpoint
+	currentpoint pop R-Margin exch sub H-Line
+
+% see the "currentpoint" on the line by itself just above
+% this prints today's date in the data field
+	HB12 Font
+	vfudge add moveto Today show
+
+	H8 Font
+	h_e_sect v_e_wk_addr1 moveto
+	(Employee's Complete Work Address: ) show
+	currentpoint pop /h_e_wk_addr1 exch def
+	currentpoint pop R-Margin exch sub H-Line
+	h_e_sect v_e_wk_addr2 moveto
+	currentpoint pop R-Margin exch sub H-Line
+	h_e_sect v_e_wk_addr3 moveto
+	currentpoint pop R-Margin exch sub H-Line
+	h_e_sect v_e_wk_addr4 moveto
+	currentpoint pop R-Margin exch sub H-Line
+	h_e_sect v_e_wk_phone moveto
+	(Employee's Work Telephone Number: ) show
+	currentpoint pop /h_e_wk_phone exch def
+	currentpoint pop R-Margin exch sub H-Line
+
+% Bold vertical line separating signature sections.
+	h9 v_e_wk_phone 1 mm sub moveto 27 mm BoldVLine
+
+% Supervisor signature section
+H8 Font
+	h_s_sect v_s_sig_line moveto
+	(Supervisor's Signature: \(J\)) show 53 mm 0 rlineto
+	( Date ) show
+	currentpoint pop h9 exch sub 3 mm sub H-Line
+H7.5 Font
+	h_s_sect v_s_note moveto
+	(\(Required only if BU/D Schedule of Authorizations ) show
+	(requires supervisory approval of personal calls.\)) show
+
+H9 Font
+	h0 98 mm add v0 moveto
+	(Instructions for Completion of Form on Reverse Side.) show
+
+H8.5 Font
+	h0 v3 3 mm sub moveto
+	(I certify that the entries on this form ) show
+	(are accurate and comply with the provisions ) show
+	(of the applicable Toll Discount Program.  ) show
+	(I understand that violation of the provisions ) show
+	(of the program may result) show
+	h0 v3 6.5 mm sub moveto
+	(in loss of program eligibility ) show
+	(and disclipinary action, including possible dismissal.) show
+
+H7 Font
+% numbers over columns
+	h0  1 mm add v15 0.5 mm add moveto (25) show
+	h1  1 mm sub v15 0.5 mm add moveto (26) Print-Leftof
+	h1  1 mm add v15 0.5 mm add moveto (27) show
+	h3  1 mm sub v15 0.5 mm add moveto (28) Print-Leftof
+	h17 3 mm add v15 0.5 mm add moveto (52) show
+	h19 1 mm sub v15 0.5 mm add moveto (57) Print-Leftof
+
+% Billing Date column label
+HB9 Font
+	h0 h3 h0 sub 2 div add v17 4 mm sub moveto
+	(C.) Hcenter
+H9 Font
+	h0 h3 h0 sub 2 div add v17 8 mm sub moveto
+	(Billing Date\(s\)) Hcenter
+	h0 h1 h0 sub 2 div add v15 7 mm add moveto (Month) Hcenter
+	h0 h1 h0 sub 2 div add v15 4 mm add moveto (\(MM\)) Hcenter
+	h1 h3 h1 sub 2 div add v15 7 mm add moveto (Year) Hcenter
+	h1 h3 h1 sub 2 div add v15 4 mm add moveto (\(YY\)) Hcenter
+
+% other columns
+HB9 Font
+/ycoord1 v17  4 mm sub def
+/ycoord2 v17 10 mm sub def
+/ycoord3 v17 13 mm sub def
+
+/X_center h3 h5 h3 sub 2 div add def
+	X_center ycoord1 moveto (D.) Hcenter
+	X_center ycoord2 moveto (Residence) Hcenter
+	X_center ycoord3 moveto (Telephone Calls) Hcenter
+/X_center h5 h8 h5 sub 2 div add def
+	X_center ycoord1 moveto (E.) Hcenter
+	X_center ycoord2 moveto (AT&T Universal) Hcenter
+	X_center ycoord3 moveto (Card Calls) Hcenter
+/X_center h8 h11 h8 sub 2 div add def
+	X_center ycoord1 moveto (F.) Hcenter
+	X_center ycoord2 moveto (Other AT&T) Hcenter
+	X_center ycoord3 moveto (Telephone Bills) Hcenter
+/X_center h11 h14 h11 sub 2 div add def
+	X_center ycoord1 moveto (G.) Hcenter
+	X_center ycoord2 moveto (Gross) Hcenter
+	X_center ycoord3 moveto (\(Cols D & E & F\)) Hcenter
+/X_center h14 h17 h14 sub 2 div add def
+	X_center ycoord1 moveto (H.) Hcenter
+	X_center ycoord2 moveto (Voucherable and) Hcenter
+	X_center ycoord3 moveto (Private Business Calls) Hcenter
+/X_center h17 h19 h17 sub 2 div add def
+	X_center ycoord1 moveto (I.) Hcenter
+	X_center ycoord2 moveto (Net) Hcenter
+	X_center ycoord3 moveto (\(Col G Minus H\)) Hcenter
+
+
+% Employee's Name
+HB9 Font
+	h0 v17 11 mm add moveto (Employee's) show
+	h0 v17  7 mm add moveto (Name) show
+	h0 v17  3 mm add moveto (\(Print\)) show
+	h_emplast v_emplast moveto 63 mm H-Line
+	h_empinit v_empinit moveto 22 mm H-Line
+H6 Font
+	h_emplast 27 mm add v_emplast 3 mm sub moveto (Last) Hcenter
+	h_empinit 7  mm add v_empinit 3 mm sub moveto (Initials) Hcenter
+
+% Billing and U-Card numbers
+H9 Font
+	h9 2 mm add v18 3 mm add moveto
+	(A. Residence's Billing Telephone Number) show
+	h9 2 mm add v17 3 mm add moveto
+	(B. AT&T Universal Card Number) show
+H8 Font
+	h9 62 mm add v17 3.5 mm add moveto (\(Last 8) show
+	h9 62 mm add v17 1   mm add moveto (Digits\)) show
+
+
+% The boxes for Billing and U-Card numbers
+	h9 62 mm add v18 1   mm add moveto
+	6.0 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	6.0 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	6.0 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	6.0 mm V-Line-ret stroke
+
+	h9 75 mm add v17 1   mm add moveto
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret 6.0 mm H-Line-go
+	4 mm V-Line-ret stroke
+	
+% The boxes for SSN.
+	h2 3 mm add v19 4 mm add moveto
+	5 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret stroke
+	
+H9 Font
+	h2 h6 h2 sub 2 div add v19 1 mm add moveto (Soc. Sec. No.) Hcenter
+H8 Font
+	h2  8 mm add v19 1 mm add moveto (1) show
+	h2 56 mm add v19 1 mm add moveto (9) show
+
+% Payroll Use Only
+HB9 Font
+	h6 h15 h6 sub 2 div add v20 v21 v20 sub 2 div add moveto
+	(FOR PAYROLL USE ONLY) HVcenter
+
+	h6 6 mm add v20 5 mm sub moveto
+	5 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret stroke
+H10 Font
+	/Y_center v20 2.5 mm sub def
+	/X_center h6 9 mm add def
+	X_center  0 mm add Y_center moveto (0) HVcenter
+	X_center  6 mm add Y_center moveto (3) HVcenter
+	X_center 12 mm add Y_center moveto (0) HVcenter
+	X_center 18 mm add Y_center moveto (0) HVcenter
+	X_center 24 mm add Y_center moveto (0) HVcenter
+	X_center 30 mm add Y_center moveto (0) HVcenter
+	X_center 36 mm add Y_center moveto (3) HVcenter
+	X_center 42 mm add Y_center moveto (2) HVcenter
+	X_center 48 mm add Y_center moveto (7) HVcenter
+H8 Font
+	X_center           v20 8 mm sub moveto (13) Hcenter
+	X_center 48 mm add v20 8 mm sub moveto (21) Hcenter
+
+
+	h12 6 mm add v20 5 mm sub moveto
+	5 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	3 mm V-Line-ret 6 mm H-Line-go
+	5 mm V-Line-ret stroke
+
+/Y_center v20 2.5 mm sub def
+/X_center h12 9   mm add def
+H10 Font
+	X_center  0 mm add Y_center moveto (9) HVcenter
+	X_center  6 mm add Y_center moveto (3) HVcenter
+	X_center 12 mm add Y_center moveto (5) HVcenter
+H8 Font
+	X_center           v20 8 mm sub moveto (22) Hcenter
+	X_center 12 mm add v20 8 mm sub moveto (24) Hcenter
+
+% Organization Number
+H9 Font
+	h15 21 mm add v21 3 mm sub moveto
+	(Organization Number) show
+	h15 6 mm add v19 4 mm add moveto
+	6.0 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	3 mm V-Line-ret 6.0 mm H-Line-go
+	6.0 mm V-Line-ret stroke
+
+% Check Entity, Check Salary
+HB9 Font
+	h_checkone v_checkone moveto
+	(Check One:)	show
+
+H9 Font
+	h_check_col_1          v_checktop moveto
+	ChkBox HB8 Font BoxWeekly show
+	h_check_col_1 3 mm add v_checktop moveto
+	H8 Font (Weekly Paid) show
+
+	h_check_col_1          v_checkbot moveto
+	ChkBox HB8 Font BoxMonthly show
+	h_check_col_1 3 mm add v_checkbot moveto
+	H8 Font (Monthly Paid) show
+
+
+% Fill in the answers supplied by front end program.
+
+HB18 Font
+h_emplast v_emplast vfudge add moveto LastName show
+h_empinit v_empinit vfudge add moveto
+	FirstName show (  ) show MiddleInit show
+
+
+HB12 Font
+h_e_wk_phone v_e_wk_phone vfudge add moveto
+OfficePhone show
+
+HB12 Font
+h_e_wk_addr1 v_e_wk_addr1 vfudge add moveto
+WorkAddress1 show
+h_e_wk_addr1 v_e_wk_addr2 vfudge add moveto
+WorkAddress2 show
+h_e_wk_addr1 v_e_wk_addr3 vfudge add moveto
+WorkAddress3 show
+h_e_wk_addr1 v_e_wk_addr4 vfudge add moveto
+WorkAddress4 show
+
+CB18 Font
+
+h15 6.5 mm add v19 5 mm add moveto 1.55  OrganizationNo Expand
+h2  3.5 mm add v19 5 mm add moveto 1.55  SSN Remove-dash Expand
+h9  63.0 mm add v18 2 mm add moveto 1.55  HomeTelNo Remove-dash Expand
+h9  76.0 mm add v17 2 mm add moveto 1.55  UniversalCard Remove-dash Expand
+
+HB12 Font
+% A "macro" to print any string to the upper left of any coordinate
+/Ans {	% ans x y
+	vfudge add exch
+	2 mm   sub exch
+	moveto Print-Leftof
+}def
+
+/Ans$ {	% ans$ x y
+	vfudge add exch
+	(.) stringwidth pop 2 div (00) stringwidth pop add add exch
+	moveto Print-Leftof
+}def
+ 
+% For each column in each row of table, call macro.
+
+currentdict /Line1BillMon known
+{
+	Line1BillMon			h1  v14 Ans
+	Line1BillYr			h3  v14 Ans
+	Line1ResidencePhoneCalls	h4  v14 Ans$
+	Line1UCardCalls			h7  v14 Ans$
+	Line1OtherATTBills		h10 v14 Ans$
+	Line1Gross			h13 v14 Ans$
+	Line1VoucherableCalls		h16 v14 Ans$
+	Line1Net			h18 v14 Ans$
+} if
+
+
+currentdict /Line2BillMon known
+{
+	Line2BillMon			h1  v13 Ans
+	Line2BillYr			h3  v13 Ans
+	Line2ResidencePhoneCalls	h4  v13 Ans$
+	Line2UCardCalls			h7  v13 Ans$
+	Line2OtherATTBills		h10 v13 Ans$
+	Line2Gross			h13 v13 Ans$
+	Line2VoucherableCalls		h16 v13 Ans$
+	Line2Net			h18 v13 Ans$
+} if
+
+
+currentdict /Line3BillMon known
+{
+	Line3BillMon			h1  v12 Ans
+	Line3BillYr			h3  v12 Ans
+	Line3ResidencePhoneCalls	h4  v12 Ans$
+	Line3UCardCalls			h7  v12 Ans$
+	Line3OtherATTBills		h10 v12 Ans$
+	Line3Gross			h13 v12 Ans$
+	Line3VoucherableCalls		h16 v12 Ans$
+	Line3Net			h18 v12 Ans$
+} if
+
+
+currentdict /Line4BillMon known
+{
+	Line4BillMon			h1  v11 Ans
+	Line4BillYr			h3  v11 Ans
+	Line4ResidencePhoneCalls	h4  v11 Ans$
+	Line4UCardCalls			h7  v11 Ans$
+	Line4OtherATTBills		h10 v11 Ans$
+	Line4Gross			h13 v11 Ans$
+	Line4VoucherableCalls		h16 v11 Ans$
+	Line4Net			h18 v11 Ans$
+} if
+
+
+currentdict /Line5BillMon known
+{
+	Line5BillMon			h1  v10 Ans
+	Line5BillYr			h3  v10 Ans
+	Line5ResidencePhoneCalls	h4  v10 Ans$
+	Line5UCardCalls			h7  v10 Ans$
+	Line5OtherATTBills		h10 v10 Ans$
+	Line5Gross			h13 v10 Ans$
+	Line5VoucherableCalls		h16 v10 Ans$
+	Line5Net			h18 v10 Ans$
+} if
+
+
+currentdict /Line6BillMon known
+{
+	Line6BillMon			h1  v9 Ans
+	Line6BillYr			h3  v9 Ans
+	Line6ResidencePhoneCalls	h4  v9 Ans$
+	Line6UCardCalls			h7  v9 Ans$
+	Line6OtherATTBills		h10 v9 Ans$
+	Line6Gross			h13 v9 Ans$
+	Line6VoucherableCalls		h16 v9 Ans$
+	Line6Net			h18 v9 Ans$
+} if
+
+
+currentdict /Line7BillMon known
+{
+	Line7BillMon			h1  v8 Ans
+	Line7BillYr			h3  v8 Ans
+	Line7ResidencePhoneCalls	h4  v8 Ans$
+	Line7UCardCalls			h7  v8 Ans$
+	Line7OtherATTBills		h10 v8 Ans$
+	Line7Gross			h13 v8 Ans$
+	Line7VoucherableCalls		h16 v8 Ans$
+	Line7Net			h18 v8 Ans$
+} if
+
+
+currentdict /Line8BillMon known
+{
+	Line8BillMon			h1  v7 Ans
+	Line8BillYr			h3  v7 Ans
+	Line8ResidencePhoneCalls	h4  v7 Ans$
+	Line8UCardCalls			h7  v7 Ans$
+	Line8OtherATTBills		h10 v7 Ans$
+	Line8Gross			h13 v7 Ans$
+	Line8VoucherableCalls		h16 v7 Ans$
+	Line8Net			h18 v7 Ans$
+} if
+
+
+currentdict /Line9BillMon known
+{
+	Line9BillMon			h1  v6 Ans
+	Line9BillYr			h3  v6 Ans
+	Line9ResidencePhoneCalls	h4  v6 Ans$
+	Line9UCardCalls			h7  v6 Ans$
+	Line9OtherATTBills		h10 v6 Ans$
+	Line9Gross			h13 v6 Ans$
+	Line9VoucherableCalls		h16 v6 Ans$
+	Line9Net			h18 v6 Ans$
+} if
+
+
+currentdict /Line10BillMon known
+{
+	Line10BillMon			h1  v5 Ans
+	Line10BillYr			h3  v5 Ans
+	Line10ResidencePhoneCalls	h4  v5 Ans$
+	Line10UCardCalls		h7  v5 Ans$
+	Line10OtherATTBills		h10 v5 Ans$
+	Line10Gross			h13 v5 Ans$
+	Line10VoucherableCalls		h16 v5 Ans$
+	Line10Net			h18 v5 Ans$
+} if
+
+
+currentdict /Line11BillMon known
+{
+	Line11BillMon			h1  v4 Ans
+	Line11BillYr			h3  v4 Ans
+	Line11ResidencePhoneCalls	h4  v4 Ans$
+	Line11UCardCalls		h7  v4 Ans$
+	Line11OtherATTBills		h10 v4 Ans$
+	Line11Gross			h13 v4 Ans$
+	Line11VoucherableCalls		h16 v4 Ans$
+	Line11Net			h18 v4 Ans$
+} if
+
+
+currentdict /Line12BillMon known
+{
+	Line12BillMon			h1  v3 Ans
+	Line12BillYr			h3  v3 Ans
+	Line12ResidencePhoneCalls	h4  v3 Ans$
+	Line12UCardCalls		h7  v3 Ans$
+	Line12OtherATTBills		h10 v3 Ans$
+	Line12Gross			h13 v3 Ans$
+	Line12VoucherableCalls		h16 v3 Ans$
+	Line12Net			h18 v3 Ans$
+} if
+
+
+%	@(#)logo.ps	3.3 - 1/30/92
+%
+%	The AT&T Logo...
+%
+LogoX LogoY moveto
+/bar1 {
+	0 setgray
+	newpath
+	10.2 16.87 M
+	60.247 119.466 a
+	5.5 17.01 l
+	6.1 17.08 l
+	6.6 17.11 l
+	7.1 17.12 l
+	7.5 17.12 l
+	8.0 17.09 l
+	8.5 17.03 l
+	8.9 16.99 l
+	9.3 16.94 l
+	9.6 16.9 l
+	closepath
+	fill
+} def
+/bar2 {
+	newpath
+	12.6 15.39 M
+	44.5 55.961 a
+	11.54 16.51 l
+	7.76 16.11 l
+	5.44 16.11 l
+	127.557 133.276 a
+	4.82 15.8 l
+	7.96 15.8 l
+	closepath
+	fill
+} def
+/bar3 {
+	newpath
+	13.52 13.87 M
+	32.067 41.319 a
+	12.91 15.03 l
+	8.77 14.6 l
+	3.86 14.6 l
+	140.969 145.953 a
+	3.63 14.3 l
+	8.93 14.3 l
+	closepath
+	fill
+} def
+/bar4 {
+	newpath
+	13.74 12.37 M
+	21.241 29.436 a
+	13.41 13.52 l
+	9.46 13.09 l
+	3.15 13.09 l
+	152.573 157.207 a
+	3.3 12.78 l
+	9.52 12.78 l
+	closepath
+	fill
+} def
+/bar5 {
+	newpath
+	13.8 10.85 M
+	11.044 18.781 a
+	13.9 12.01 l
+	9.35 11.59 l
+	2.63 11.59 l
+	162.784 167.604 a
+	2.83 11.28 l
+	9.6 11.28 l
+	closepath
+	fill
+} def
+/bar6 {
+	newpath
+	13.6 9.34 M
+	1.287 8.785 a
+	14.0 10.5 l
+	9.18 10.08 l
+	2.82 10.08 l
+	172.516 177.748 a
+	2.96 9.76 l
+	9.3 9.76 l
+	closepath
+	fill
+} def
+/bar7 {
+	newpath
+	13.4 9.0 M
+	0.901 8.458 a
+	13.2 7.83 l
+	8.39 8.25 l
+	3.8 8.25 l
+	172.444 178.069 a
+	3.72 8.55 l
+	8.29 8.55 l
+	closepath
+	fill
+} def
+/bar8 {
+	newpath
+	12.37 7.48 M
+	10.742 18.455 a
+	11.47 6.32 l
+	6.7 6.68 l
+	5.2 6.68 l
+	161.829 168.942 a
+	4.84 7.04 l
+	7.13 7.04 l
+	closepath
+	fill
+} def
+/bar9 {
+	newpath
+	11.3 5.98 M
+	20.797 28.98 a
+	10.68 4.82 l
+	6.03 4.97 l
+	150.933 159.346 a
+	6.2 5.78 l
+	closepath
+	fill
+} def
+/bar10 {
+	newpath
+	1.66 4.47 M
+	31.637 40.866 a
+	139.15 148.363 a
+	closepath
+	fill
+} def
+/bar11 {
+	newpath
+	2.86 2.95 M
+	44.0 55.402 a
+	124.60 135.911 a
+	closepath
+	fill
+} def
+/bar12 {
+	newpath
+	4.78 1.435 M
+	59.864 120.136 a
+	closepath
+	fill
+} def
+/deathstar {
+	/xo 9.25 def
+	/yo 9.14 def
+	/r 8.91 def
+	/a { xo yo r 5 -2 roll arc } def
+	bar1 bar2 bar3 bar4 bar5 bar6
+	/s { 360 exch sub } def
+	/a { xo yo r 5 -1 roll s 5 -1 roll s arcn } def
+	bar7 bar8 bar9 bar10 bar11 bar12
+} def
+/draw_A {
+	newpath
+	0.5 0.75 M
+	2.92 7.6 l
+	4.8 7.6 l
+	7.0 0.75 l
+	5.16 0.75 l
+	4.81 1.98 l
+	2.7 1.98 l
+	2.3 0.75 l
+	closepath
+	fill
+	newpath
+	3.2 3.36 M
+	3.82 5.54 l
+	4.44 3.36 l
+	closepath
+	1 setgray
+	fill
+	0 setgray
+} def
+/draw_1T {
+	newpath
+	7.4 0.75 M
+	7.4 6.2 l
+	5.6 6.2 l
+	5.6 7.6 l
+	11 7.6 l
+	11 6.2 l
+	9.2 6.2 l
+	9.2 0.75 l
+	closepath
+	fill
+} def
+/ampersand1 {
+	newpath
+	15.5 0.80 M
+	15.4 0.79 l
+	15.3 0.78 l
+	15.2 0.79 l
+	15.1 0.80 l
+	15.0 0.81 l
+	14.9 0.83 l
+	14.8 0.86 l
+	14.7 0.89 l
+	14.6 0.93 l
+	14.5 0.98 l
+	14.4 1.04 l
+	14.28 1.1 l
+	14.1 1.05 l
+	14.0 0.99 l
+	13.9 0.93 l
+	13.8 0.88 l
+	13.7 0.83 l
+	13.6 0.79 l
+	13.5 0.76 l
+	13.4 0.73 l
+	13.3 0.71 l
+	13.2 0.69 l
+	13.1 0.68 l
+	12.9 0.67 l
+	12.7 0.66 l
+	12.5 0.66 l
+	12.3 0.67 l
+	12.1 0.69 l
+	12.0 0.70 l
+	11.9 0.72 l
+	11.8 0.74 l
+	11.7 0.76 l
+	11.6 0.78 l
+	11.5 0.80 l
+	11.4 0.84 l
+	11.3 0.88 l
+	11.2 0.93 l
+	11.1 0.97 l
+	11.0 1.02 l
+	10.89 1.1 l
+	10.74 1.2 l
+	10.62 1.3 l
+	10.53 1.4 l
+	10.46 1.5 l
+	10.39 1.6 l
+	10.33 1.7 l
+	10.29 1.8 l
+	10.26 1.9 l
+	10.22 2.0 l
+	10.20 2.1 l
+	10.18 2.2 l
+	10.16 2.3 l
+	10.15 2.4 l
+	10.14 2.5 l
+	10.15 2.6 l
+	10.16 2.7 l
+	10.18 2.8 l
+	10.20 2.9 l
+	10.22 3.0 l
+	10.24 3.1 l
+	10.27 3.2 l
+	10.32 3.3 l
+	10.38 3.4 l
+	10.44 3.5 l
+	10.51 3.6 l
+	10.59 3.7 l
+	10.66 3.8 l
+	10.74 3.89 l
+} def
+/ampersand2 {
+	10.67 4.0 l
+	10.60 4.1 l
+	10.56 4.2 l
+	10.52 4.3 l
+	10.50 4.4 l
+	10.48 4.5 l
+	10.45 4.6 l
+	10.44 4.7 l
+	10.43 4.8 l
+	10.43 4.9 l
+	10.44 5.0 l
+	10.46 5.1 l
+	10.49 5.2 l
+	10.52 5.3 l
+	10.56 5.4 l
+	10.62 5.5 l
+	10.68 5.6 l
+	10.75 5.7 l
+	10.83 5.8 l
+	10.96 5.9 l
+	11.10 6.0 l
+	11.2 6.06 l
+	11.3 6.11 l
+	11.4 6.15 l
+	11.5 6.17 l
+	11.6 6.20 l
+	11.7 6.22 l
+	11.8 6.24 l
+	11.9 6.27 l
+	12.0 6.29 l
+	12.1 6.30 l
+	12.3 6.30 l
+	12.4 6.30 l
+	12.5 6.29 l
+	12.6 6.29 l
+	12.7 6.28 l
+	12.8 6.26 l
+	12.9 6.24 l
+	13.0 6.20 l
+	13.1 6.16 l
+	13.2 6.12 l
+	13.3 6.08 l
+	13.4 6.03 l
+	13.46 6.0 l
+	13.56 5.9 l
+	13.66 5.8 l
+	13.73 5.7 l
+	13.78 5.6 l
+	13.82 5.5 l
+	13.85 5.4 l
+	13.87 5.3 l
+	13.88 5.2 l
+	13.89 5.1 l
+	13.89 4.13 l
+	12.6 4.13 l
+	12.6 5.0 l
+	12.55 5.1 l
+	12.5 5.16 l
+	12.4 5.22 l
+	12.3 5.24 l
+	12.2 5.24 l
+	12.1 5.22 l
+	11.96 5.11 l
+	11.92 5.0 l
+	11.90 4.9 l
+	11.90 4.8 l
+	11.92 4.7 l
+	11.96 4.6 l
+	12.01 4.5 l
+	12.09 4.4 l
+	12.19 4.28 l
+	13.89 2.9 l
+	13.96 2.88 l
+	14.0 2.9 l
+	14.0 4.09 l
+	15.19 4.09 l
+	15.19 2.6 l
+	15.17 2.5 l
+	15.15 2.4 l
+	15.13 2.3 l
+	15.11 2.2 l
+	15.08 2.1 l
+	15.08 2.0 l
+	15.1 1.98 l
+	15.2 1.97 l
+	15.3 1.97 l
+	15.4 1.98 l
+	15.5 1.99 l
+	closepath
+	fill
+} def
+/ampersand_hole {
+	newpath
+	12.96 1.93 M
+	12.94 1.91 l
+	12.9 1.90 l
+	12.8 1.88 l
+	12.3 1.88 l
+	12.2 1.89 l
+	12.1 1.90 l
+	12.0 1.92 l
+	11.9 1.96 l
+	11.8 2.03 l
+	11.75 2.1 l
+	11.70 2.2 l
+	11.67 2.3 l
+	11.65 2.4 l
+	11.63 2.5 l
+	11.62 2.6 l
+	11.64 2.7 l
+	11.66 2.8 l
+	11.70 2.86 l
+	11.74 2.9 l
+	closepath
+	1 setgray
+	fill
+	0 setgray
+} def
+/draw_ampersand {
+	ampersand1
+	ampersand2
+	ampersand_hole
+} def
+/draw_2T {
+	newpath
+	15.94 0.75 M
+	15.94 6.2 l
+	14.14 6.2 l
+	14.14 7.6 l
+	19.54 7.6 l
+	19.54 6.2 l
+	17.74 6.2 l
+	17.74 0.75 l
+	closepath
+	fill
+} def
+/att {
+	draw_A
+	draw_1T
+	draw_ampersand
+	draw_2T
+} def
+/attlogo {
+	gsave
+	currentpoint translate
+	-29 -20 translate
+	21 21 scale
+	ptsize 36 div dup scale
+	/l { lineto } def
+	/M { moveto } def
+	deathstar
+	19.17 5.06 translate
+	att
+	grestore
+} def
+/ptsize 3.0 def
+attlogo
+%
+%
+
+%Sig: gsave
+%Sig: h_e_sig_line v_e_sig_line translate
+%Sig: 0.25 0.25 scale
+%Sig: .so $HOME/.sign.ps
+%Sig: grestore
+
+%
+%
+cleartomark
+showpage
+restore
+%%EndPage: 1 1
+%%Trailer
+%%Pages: 1
+

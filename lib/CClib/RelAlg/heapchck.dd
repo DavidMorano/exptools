@@ -1,0 +1,12 @@
+#ident "@(#) /sable/sdb/ra/sblib/heapcheck/s.heapchck.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+class Heapcheck
+   {
+   char * _limit;
+public:
+   Heapcheck() { _limit = (char *) ulimit(3,0L); }
+   unsigned long remaining() { return ( _limit - breakpoint() ); }
+   char * breakpoint() { return sbrk(0); }
+   char * limit() { return _limit; }
+   };

@@ -1,0 +1,218 @@
+#!/bin/sh
+
+#####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1990, 1991, 1992
+#			AT&T Bell Laboratories
+#####################################################################
+
+# Habit chains a dog to its vomit.
+
+####################################################################
+# Annotate jump/branch statements in program source file
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				October 1990
+#
+#
+# USAGE:  showloop [-l amdahl|bal|b16|c|epl|epll|eplf|mica|mc68
+#		|procdef|snobol|spitbol|3b|4escc|4escu]
+#		[-nsv] [-c column] [-m minsize]  [-M maxsize]  files
+#
+# NOTES:
+#	languages supported:
+#		amdahl	- Amdahl assembly language
+#		bal	- IBM 370 basic assembly language like
+#				used on TSS
+#		b16	- b16 compiler for Intel 8086
+#		c	- C language source (default)
+#		epl	- epl, swap macros, and 1A assembly language
+#			used in the 4 ESS project
+#		eplf	- annotate features (INFOR/RESUME,
+#				OUTFOR/RESUME pairs) in epl source
+#		epll	- epl assembly listing (not available yet)
+#		mica	- assembly language
+#		mc68	- mc68 compiler for Motorola MC68000
+#			(release 3.1 6/1/84)
+#		procdef	- TSS procdef. Each line can start with
+#			an option line number in ddddd.dddd format
+#		snobol	- snobol or spitbol language
+#		spitbol	- snobol or spitbol language
+#		3b	- 3b assembly language
+#		4escc	- assembly language from MICA micro
+#			assembler generator used in the 4 ESS
+#			Service Circuit Controller
+#		4escu	- assembly language from MICA micro
+#			assembler generator used in the 4 ESS
+#			Service Circuit Controller
+####################################################################
+VERSION="4.0"
+LANGOPTIONS="amdahl|bal|b16|c|epl|eplf|epll|mc68|procdef|snobol|spitbol|3b|4escc|4escu"
+PGM=`basename $0`
+LIBDIR=`logdir exptools`/lib/${PGM}/
+#LIBDIR=
+
+: ${TOOLS:?"environment variable is not set or is not exported"}
+
+ALLARGS=`echo $*| awk '{ printf("%s\n", substr($0, 1, 80)) }'`
+
+
+TMP=/usr/tmp
+
+# set temporary files
+TMPF1=$TMP/1sl$$
+TMPF2=$TMP/2sl$$
+TMPCF=$TMP/3sl$$
+CCFILE=$TMP/4sl$$
+
+TMPFILES="$TMPF1 $TMPF2 $TMPCF $CCFILE"
+
+# trap unexpected signals so we clean up temp files
+#trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+FORHELP="\n\t(Type 'toolman showloop' for a manual page, then contact Bob Parnass\n\tif you need help.)\n"
+USAGE="USAGE:  ${PGM}  [-l language] [-nsv] [-c column] [-m minsize]  [-M maxsize]  files\nlanguage options are: $LANGOPTIONS\nVersion ${VERSION}\n${FORHELP}"
+
+EXIT_CODE=0
+LANGANALYZER=c		# default to using C language
+
+# parse command line arguments 
+set -- `getopt c:m:M:nsvl: $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	ARROWARGS=
+	for i in $*
+	do
+		case $i in
+		-n|-s|-v)
+			# supress lines numbering
+			ARROWARGS=${ARROWARGS}" ${i}"
+			shift 1;;
+		-c|-m|-M)
+			ARROWARGS="${ARROWARGS} $i $2"
+			shift 2;;
+		--)
+			shift; break;;
+		-l)
+			case $2 in
+			bal|b16|c|mc68|procdef|amdahl|snobol|3b|epl|eplf|4escc|4escu)
+				LANGANALYZER=$2
+				shift 2;;
+			spitbol)
+				LANGANALYZER=snobol
+				shift 2;;
+			epll)
+				echo "\n${PGM}: epl assembly listing analyzer not yet available." 1>&2
+				echo "\n\tPerhaps you could use epl source analyzer instead." 1>&2
+				exit 1
+				LANGANALYZER=
+				shift 2;;
+			*)
+				echo "\n${PGM}: language must be: ${LANGOPTIONS}" 1>&2
+				echo ${USAGE} 1>&2
+				exit 1
+				;;
+			esac
+		esac
+	done
+fi
+
+if [ "$LANGANALYZER" ]
+then
+	:
+else
+	echo "\n${PGM}: Must specify language\n" 1>&2
+	echo ${USAGE} 1>&2
+	exit 1
+fi
+
+# see if a public version of the newform program exists
+test -x /usr/bin/newform
+if [ $? -eq 0 ]
+then
+	# use public version
+	NEWFORM=/usr/bin/newform
+else
+	# use private version
+	NEWFORM=$TOOLS/lib/comment/newform
+fi
+
+NFILES=$#
+
+if [ $# -eq 0 ]
+then
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	${NEWFORM} -i $CFILE > $CCFILE
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: ${NEWFORM} failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1;
+		> $CCFILE
+	fi
+	
+	
+	${LIBDIR}$LANGANALYZER $CCFILE > $TMPF1
+	if [ $? -ne 0 ]
+	then
+
+		echo "Error in ${PGM}: $LANGANALYZER analyzer failed on file '${CFILE}'." 1>&2
+		> $TMPF1
+		EXIT_CODE=1;
+	fi
+	echo "${ARROWARGS}" \
+		| fgrep -e "-m" > /dev/null
+
+	if [ $? -ne 0 ]
+	then
+		ARROWARGS='-m1 '"${ARROWARGS}"
+	fi
+
+	echo "${ARROWARGS}" \
+		| fgrep -e "-M" > /dev/null
+
+	if [ $? -ne 0 ]
+	then
+		ARROWARGS='-M1000 '"${ARROWARGS}"
+	fi
+
+	arrow $ARROWARGS -a $TMPF1 $CCFILE
+	
+	
+
+	if [ $? -ne 0 ]
+	then
+		echo "Error in ${PGM}: arrow failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1
+	fi
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`expr ${NFILES} - 1`
+
+	# set next source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}

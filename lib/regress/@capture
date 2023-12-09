@@ -1,0 +1,19 @@
+#  @(#)  SID: 1.3;  module: @capture;  last changed: 6/9/91  18:56:04
+
+USAGE="USAGE:  $0  case  [ case ... ]"
+
+CMD=`basename $0`			# The basic command name
+ERRMSG="$CMD: ERROR: not running under ksh88 -- aborting!"
+
+KSHTEST=""
+echo OK | read KSHTEST
+if test "$KSHTEST" != "OK"; then
+    echo "$ERRMSG"
+    exit 2
+fi
+
+if test -z "$MODULES"; then
+    @error@ 1
+else
+    REGRESS -g "$@"
+fi

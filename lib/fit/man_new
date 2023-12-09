@@ -1,0 +1,1595 @@
+==========================================================================
+                            #[ comment ]#
+==========================================================================
+
+A block comment begins with #[ and ends with ]#.  This type of
+comment may appear in the middle of a line, or extend across lines.
+   
+Example
+
+#[
+Hey diddle diddle,
+the cat and the fiddle.
+The cow jumped over the moon,
+and the cat ran away with the spoon.
+]#
+
+==========================================================================
+                                Append
+==========================================================================
+
+Append appends a record to another record so that the new record has
+the keys and field values of both.
+
+Syntax
+    <new> Append <old> <addendum>
+
+    where
+        <new> is a <old> with <addendum> appended
+
+        <old> is original record
+
+        <addendum> is record appended to <old>
+
+Example
+
+> Set a["one" "two"] 1 2
+> Set b["ten" "twenty"] 10 20
+> Append a b
+{
+  one     1
+  two     2
+  ten     10
+  twenty  20
+}
+
+The usual method of appending with $+ doesn't preserve the keys of the
+appended record.
+> Set x["one" "two"] 1 2
+> Set y["ten" "twenty"] 10 20
+> x
+{
+  one  1
+  two  2
+       10
+       20
+}
+
+==========================================================================
+                                Chron additions
+==========================================================================
+
+A chron object now has the following relational predicates as methods:
+    Eq  NE  LE  LT  GE  GT
+They all take two or more chron objects as arguments.
+
+The Text method has two new options: |"unix"| generates time and date in
+Unix style, and |"1 jan 93"| generates a date in military style.
+
+Example
+
+> Text |"unix"| Chron
+"Mon Mar 29 11:34:46 EST 1993"
+> Text |"1 jan 93"| Chron
+"30 March 1993"
+
+==========================================================================
+                                Columnize
+==========================================================================
+
+Columnize puts items in a list into a sequence with the items arranged in
+multiple columns.
+
+Syntax
+    <columns> Columnize || <list>
+
+    where
+        <columns> is a sequence with items arranged in columns
+
+        <list> is a list of sequences
+
+Option
+    |<width>| makes <width> the line width spanned by the columns
+
+Example
+
+> Print Columnize Cut ":" environment["PATH"]
+.                             /usr/new
+/home/abc/bin                 /usr/bin/X11
+/usr/local/bin                /usr/local/lib/graphon
+/bin                          /usr/new/mh
+/usr/bin                      /usr/local/exptools/bin
+/usr/ucb                      /usr/local/exptools/adm/bin
+
+==========================================================================
+                                command_name
+==========================================================================
+
+The system variable command_name is the name of the first module loaded.
+Its value depends on how the program is evoked.
+
+Example
+
+# file name.t
+Main
+    Global command_name
+    Print "My name is " command_name "\n"
+
+$ fit name.t -o foo
+$ foo
+My name is foo
+$ mv foo bar
+$ bar
+My name is bar
+$ fit name.t -x
+My name is name.t
+
+==========================================================================
+                                ExpandPath
+==========================================================================
+
+The ExpandPath function converts a path name, possibly containing
+shell parameters and metacharacters, into a list of matching path names.
+
+Syntax
+    <paths> ExpandPath <path>
+
+    where
+        <paths> is a list of path names matching <path> (returns
+                With {<path>} false if no file is found)
+
+        <path> is a path name, possibly containing shell parameters and
+               metacharacters
+
+Examples
+
+> ExpandPath "$HOME/*.t"
+{"/usr/lwr/foo.t" /usr/lwr/bar.t"}
+> ExpandPath "~/*.t"
+{"/usr/lwr/foo.t" /usr/lwr/bar.t"}
+
+==========================================================================
+                                FilePath
+==========================================================================
+
+The FilePath function searches a list of path directories for a file.
+Both the path names and file name may contain shell parameters and
+metacharacters.
+
+Syntax
+    <file path> FilePath || <name>
+    <file path> FilePath || <paths> <name>
+
+    where
+        <file path> is the path to the first file found in the directories
+                    of <paths> that matches <name> (returns With <name> false
+                    if no file is found)
+
+        <paths> is a list of directories to search
+
+        <name> is a file name, possibly containing shell metacharacters
+
+    options
+        |<access>| where <access> is the access permissions that the
+            file must have (see Access function)
+
+        |"dir"| indicates that the search is for a directory
+
+Example
+
+> FilePath |"x"| (Cut ":" environment["PATH"]) "who"
+"/bin/who"
+
+==========================================================================
+                                fit_prompt
+==========================================================================
+
+The system variable fit_prompt is a reference to a Fit function that
+displays the interpreter prompt.  Its input are the current interpreter level
+(or depth) and line number.  If fit_prompt is set to nil, the default prompt
+is displayed.
+
+Examples
+
+> Set fit_prompt '(level line Caution "fit" (Set x<Thru 1 level> ">") " ")
+fit>
+
+> Set fit_prompt '(level line Caution line (Set x<Thru 1 level> ">") " ")
+2>
+
+==========================================================================
+                                GetTill
+==========================================================================
+
+The GetTill function reads from stdin or a source sequence until a
+a subsequence matching a regular expression is found.
+
+Syntax
+    <data> GetTill || <re>
+    <data> GetTill || <re> <source>
+
+    where
+        <data> is a sequence read from the input
+
+        <re> is a regular expression to match
+
+        <source> is the source sequence (default: stdin)
+
+    options
+        |"no block"| causes immediate return if there is nothing to read
+
+        |"at"| sets the cue of the source sequence at the beginning
+            of the match (default: cue is after the match)
+
+        |"include"| includes the matched expression in <data> (default:
+            exclude match)
+
+Examples
+
+Set line GetTill "\n"          # same as GetLine
+Set field GetTill "[ \t\n]"    # get next field from stdin
+Set field GetTill "[ \t\n]" f  # get next field from sequence f
+
+==========================================================================
+                                Monitor (changed)
+==========================================================================
+ 
+The Monitor function controls monitoring of the execution of a program.
+ 
+Syntax
+    <monitoring> Monitor ||
+    <previous> Monitor || <on_off>
+    <monitoring> Monitor || <func> <allow>
+    <monitoring> Monitor |"clear"|
+    <profile> Monitor |"data"|
+ 
+    where
+        <monitoring> (boolean): current monitoring state (on if true)
+
+        <on_off> (boolean): true turns on monitoring, false turns it  off
+
+        <previous> (boolean) indicating the previous on-off state of Monitor.
+
+        <func> (function reference) is function to allow or disallow
+
+        <allow> (boolean): true allows <func> to be monitored, false
+             disallows it.  By default, all functions are allowed except
+             that Profile disallows all library functions.
+
+        <profile> is the profile data.
+
+    options
+        |"data"| gets profile data for all loaded functions
+        |"data" <func>| gets profile data for function specified by
+             function reference <func>
+        |"data" <module>| gets profile data for all functions in
+             module file specified by <module>
+        |"clear"| clears profile data
+        |"real"| sets monitoring to use real time clock
+        |"user"| sets monitoring to use  user time clock
+        |"system"| sets monitoring to use  system time clock
+        |"cpu"| sets monitoring to use system+user time clock
+        |"full"| profiles function time and calls, line time, and line count
+        |"partial"| profiles function time and calls, and line count
+        |"scant"| profiles function time and calls
+
+See also: Profile, SeeProfile
+
+==========================================================================
+                                O
+==========================================================================
+
+The O (over) function is a debugging function that executes all the lines in
+the current function, and stops when the calling function is reached again.
+When single stepping with S, O gets you quickly  through functions that
+you don't want to step through.
+
+==========================================================================
+                            OSS and OCS
+==========================================================================
+
+OSS (Object Set Stop) and (Object Clear Stop) sets and clears stops in
+object methods,  They are the counterparts of of SS (Set Stop) and CS
+(Clear Stop) which work for functions but not for methods.
+
+==========================================================================
+                            Pack and Unpack
+==========================================================================
+
+The Pack function packs data into a sequence in a given format.
+The Unpack function is the inverse.  These functions are useful
+for writing and interpreting binary data, especially when
+interfacing to other programs (such as those written in C).
+
+Syntax
+    <seq> Pack <format> <arg>[]
+    <list> Unpack || <format> <seq>
+
+    where
+        <seq> is the sequence resulting from packing <arg>
+
+        <format> is format sequence (see below)
+
+        <arg>[] is one or more data values to be packed
+
+        <list> is a list of data values unpacked <seq>
+
+    <format> is a sequence describing the format of the data using
+    the following letter and number codes to convert Fit data types
+    into machine data types with Pack and vice versa with Unpack:
+
+Code   Fit type     Machine type                    Description
+----   ---------   --------------   -------------------------------------------
+c      whole       char             Machine independent
+C      whole       unsigned char
+s      whole       short
+S      whole       unsigned short
+i      whole       int
+I      whole       unsigned int
+d      decimal     double float
+f      decimal     single float
+t      sequence    char, string     Machine independent
+[n]    number      short, int       n is a number composed of m digits
+                                    corresponding to the rightmost m bytes of
+                                    whole number W.  The value of the digit
+                                    (ranging from 1 to 8) at a given position
+                                    in n specifies the mapping of the byte at
+                                    that position in W to the position of a
+                                    character in a packed sequence S relative
+                                    to the current position of S's cue.  A 0
+                                    digit is special.  When packing, a 0 is
+                                    simply a placeholder, but when unpacking,
+                                    it sets the byte at its corresponding
+                                    position in W to zero.  Afterwards, S's cue
+                                    is positioned after the rightmost character
+                                    accessed by a digit of n.
+[rn]   whole       short, int       Like [n] except that the order of the bits
+                                    of each byte is reversed.
+W      whole       int              Machine independent, 32-bit integer
+D      decimal     double float     Machine independent, double precision float
+T      sequence    string           Machine independent string prefixed with
+                                    its character count (4-byte integer)
+G      all         -                Data is packed in a self-descriptive
+                                    representation that allows the data to be
+                                    unpacked without knowledge of their count
+                                    or types.  The packed representation
+                                    includes not only the value, but also the
+                                    status and tag (and for a sequence, the
+                                    size and cue) of each datum.  All standard
+                                    types are handled; nil, boolean, function
+                                    reference, whole, decimal, sequence, array,
+                                    record, and object.
+x      -           -                Move cue of packed forward by 1
+X      -           -                Move cue of packed backward by 1
+F      number or   -                data is stored with header that allows Fit
+       sequence                     to unpack without need of complete format.
+
+    An optional count may precede a format code, and indicates the
+    number of repetitions of that conversion.  (For the t format,
+    the meaning of count differs for Pack and Unpack.  For Pack,
+    the count is the number of sequences to process.  For Unpack,
+    the count is the number of bytes to unpack.)
+
+    If there are more data than format codes, the format is recycled.
+
+Examples
+
+> Set d {1 1.5 "test"}
+> Set s Pack "F" d[]
+> Unpack "F" s
+{ 1 1.5 "test" }
+> Set s Pack "WDT" d[]
+> Unpack "WDT" s
+{ 1 1.5 "test" }
+> Set s Pack "t" "test"
+> Unpack "t" s
+{ "t" }
+> Unpack "tttt" s
+{ "t" "e" "s" "t" }
+> Unpack "4t" s
+{ "test" }
+> '(Hex x[] Print |" "| (DoEach 'Text |"base" 16| x)[] "\n")
+> Set s Pack "[1234]" 11223344:16
+> Hex (Unpack "[12]" s)[]
+1122 3344
+> Hex (Unpack "[4321]" s)[]
+44332211
+> Set x Pack "G" 1 2 (Acos -1) "four" !tty
+> # x is a sequence which can be stored to a file for later use,
+> # transferred to another program via a pipe, or whatever.
+> Set y Unpack "G" x
+> # y is an array with the original arguments from the Pack line.
+
+These are some equivalences:
+(Char x) == (Pack "C" x)
+(Ascii x) == (Unpack "C" x)[]
+(DoEach 'Ascii Cut 1 s) == (Unpack "C" s)
+
+==========================================================================
+                                PasswordFile
+==========================================================================
+
+The PasswordFile function returns a record of the entries given by
+the unix passwd file.
+
+Example
+
+> (PasswordFile)["lwr"]
+{
+  login     "lwr"
+  password  "pZQY4zCcxpbBY"
+  uid       "549"
+  gid       "20"
+  info      ""
+  home      "/usr/lwr"
+  shell     "/usr/local/bin/ksh"
+}
+
+==========================================================================
+                                Profile (changed)
+==========================================================================
+
+The Profile function calls a given function and returns profile information.
+
+Syntax
+    <obj> Profile ||
+    <obj> Profile || <func> <args>[]
+
+    where
+        <obj> is an object containing tabulated profile information.  If
+              Profile is issued at the Fit prompt (by itself) the information
+              will be printed to stderr.  Otherwise <obj> may be treated like
+              a sequence value.
+ 
+        <func> is a reference to the function to be profiled.  If <func>
+               is not supplied, the data from the previous call to
+               Profile is returned.
+
+        <args> are the arguments to pass to *<func>
+
+    options
+        |<count>| is the number of times to repeat *<func> (default:
+            <func> is called enough times to get an accurate profile)
+        |"time"| sorts profile data by total time (default)
+        |"function"| sorts by function name
+        |"module"| sorts by module name
+        |"calls"| sorts by number of calls to function
+        |"secs/call"| sorts by function call time
+        |"lines"| sorts by number of lines executed
+        |"lines/call"| sorts by number of lines executed per function call
+
+Example
+
+> Load "examples/bridge.t"
+> Set save Give stdout   # so we don't see what bridge normally prints
+> Profile 'Main
+                                %     time                               lines/
+function       module          time  seconds   calls  secs/call   lines    call
+-------------------------------------------------------------------------------
+HandPicture    bridge.t        50.3     4.97     372     0.0134   15996      43
+DisplayHands   bridge.t        32.9     3.25      93     0.0349    8835      95
+DealHands      bridge.t        16.2     1.60      93     0.0172     558       6
+Main           bridge.t         0.5     0.05      93     0.0005      93       1
+
+To save the data to a file:
+> Set f File |"w"| "prof.out"
+> Set f<$+> Profile   # With no arg, previous profile of Main is returned
+
+See also: Monitor, SeeProfile
+
+==========================================================================
+                                QuoteChar
+==========================================================================
+
+The QuoteChar function converts non-visible characters to visible
+representations that can be printed.
+
+Syntax
+    <quoted> QuoteChar <seq>
+
+Example
+
+> Print "\n"
+
+> QuoteChar "\n"
+"\\n"
+> Print QuoteChar "\n"
+\n>
+
+==========================================================================
+                                RecordList
+==========================================================================
+
+The RecordList function creates a record defined by an enumeration of
+key-value pairs.
+
+Syntax
+    <record> RecordList (<key1> <value1>) (<key1> <value2>) ...
+
+    where
+        <record> is a record with keys <key1>, <key2>, ...
+
+        (<key1> <value1>) key and value for first field
+
+        (<key2> <value2>) key and value for second field
+
+Example
+
+> RecordList "one" 1 "two" 2
+{
+  one  1
+  two  2
+}
+
+==========================================================================
+                                SeeProfile
+==========================================================================
+
+The SeeProfile function returns profile data merged with the code
+of a function or an entire module file.  SeeProfile uses the path
+specified by the FIT_DEBUG_PATH environment variable to locate the
+code if it is not in the current directory (see Debug below).
+
+Syntax
+    <obj> SeeProfile <func>
+    <obj> SeeProfile <module>
+
+    where
+        <obj> is an object containing profile data merged with code.  If
+              SeeProfile is issued at the Fit prompt (by itself) the
+              information will be printed to stderr.  Otherwise <obj>
+              may be treated like a sequence value.
+
+        <func> is reference to a function to see profile for function
+
+        <module> is the module file to see profile of all functions in module
+
+Example
+
+> Load "examples/bridge.t"
+> Set save Give stdout   # So we don't see bridge's normal output
+> Profile 'Main
+                                %     time                               lines/
+function       module          time  seconds   calls  secs/call   lines    call
+-------------------------------------------------------------------------------
+HandPicture    bridge.t        50.3     4.97     372     0.0134   15996      43
+DisplayHands   bridge.t        32.9     3.25      93     0.0349    8835      95
+DealHands      bridge.t        16.2     1.60      93     0.0172     558       6
+Main           bridge.t         0.5     0.05      93     0.0005      93       1
+>
+> SeeProfile 'HandPicture 
+         |HandPicture position cards[]
+         |   Local suits
+0.00 0   |   Constant face { "2" "3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A" }
+0.18 372 |   Set hand[suits[]] {}
+0.88 5208|   ForEach card cards
+1.07 4836|      Set hand[card[1]][$+] card[2]
+0.13 372 |   Set pic[$+] Splice "   " position
+0.40 1860|   ForEach suit suits
+0.25 1488|      Set pic[$+] Splice suit ": " \
+1.78 1488|                     Splice |" "| face[ (Reverse Sort hand[suit])[] ]
+0.15 372 |   Return pic
+>
+The numbers before a line are the execution time in seconds and the
+execution count.  For example, the last line of HandPicture was executed
+372 times, and the executions took 0.15 seconds in all.
+
+To save the data to a file:
+> Set f File |"w"| "merge.out"
+> Set f<$+> SeeProfile "bridge.t"  # See all functions in module file
+
+See also: Monitor, Profile
+
+==========================================================================
+                                TabToSpace
+==========================================================================
+
+Convert tabs in a sequence to blank spaces (detabulate sequence).
+
+Syntax
+    <spaced> TabToSpace || <tabulated>
+
+Option
+    |<tab width>| is the spacing between tab stops
+
+Example
+
+> Set t "       one             two     three four five six\n"
+> t
+"\tone\t\ttwo\tthree four five\tsix\n"
+> Set s TabToSpace |8| t
+> s
+"        one             two     three four five six\n"
+> Print t
+        one             two     three four five six
+> Print s
+        one             two     three four five six
+
+==========================================================================
+                                Timer
+==========================================================================
+
+The Timer function calls a given function and prints the time required
+to execute the function.  Timer may call the function repeatedly, if
+necessary, to obtain accurate timing.
+
+Syntax
+    Timer <func> || <args>[]
+
+    where
+        <func> is reference to function to be timed
+
+        <args> are the arguments to pass to *<func>
+
+Example
+
+> Timer 'FilePath |"x"| (Cut ":" environment["PATH"]) "who"
+21 repetitions
+Time (once):
+real   46.7ms
+user    4.2ms
+sys    15.0ms
+
+==========================================================================
+                                Debug Functions
+==========================================================================
+
+These functions will help you debug a program by making the code of the
+program readily accessible during interactive use of the Fit interpreter.
+They are especially useful when using Fit interactively on a dumb terminal.
+Most of the functions below turn on the debug mode automatically.  In the
+debug mode (manually enabled with Debug):
+  . the program code line is automatically displayed when the program stops
+  . the next line to execute is automatically displayed when single stepping
+  . the program code with line numbers can be displayed with See, U and D
+  . a module file can be edited with either the Vi, Emacs or Gmacs editors
+  . the module file can be reloaded with Reload
+  . the functions defined in a module file can be listed
+  . a directory can be listed
+
+The environment variable FIT_DEBUG_PATH specifies the directories to
+search for a module file; the paths can be edited with DebugPath.
+
+Manually turn on debug mode (automatically turned on by other functions):
+    Debug
+
+The debug path (directories containing Fit module files) is set by default
+to the value of the environment variable FIT_DEBUG_PATH or to the current
+directory.  DebugPath is used to edit the debug path:
+    DebugPath            # Return paths
+    DebugPath |"clear"|  # Clear path and return old paths
+    DebugPath "/home/abc/project/src" "/home/abc/lib/src"
+                         # Append paths to exiting paths
+Paths specified either in FIT_DEBUG_PATH or with DebugPath may contain
+metacharacters such as * to specify families of directories.
+
+Display attributes of variable
+    A foo          # Display value, status, tag, etc. of foo
+
+Display program code with line numbers:
+    See            # Display focal function or focal module file
+    See 8          # Display focal function or focal module file at line 8
+    See 'Foo       # Display Foo
+    See 'Foo 8     # Display Foo at line 8
+    See mod_file   # Display module file
+    See mod_file 8 # Display module file at line 8
+    See |30|       # Display focal function or focal module file and
+                   # change display size to 30 lines (default is 20)
+By default, the focal function is the one in which the program halted, and
+is at the top of the function trace.  More generally, the current examination
+level points at the focal function.  The focal module file contains the
+definition of the focal function.
+
+Move code display:
+    U              # Move display up
+    U |30|         # Move up and change display size to 30 lines
+    D              # Move display down
+    D |30|         # Move down and change display size to 30 lines
+
+Edit function definition using vi:
+    Vi             # Edit focal function or focal module file at offending line
+    Vi 8           # Edit focal function or focal module file at line 8
+    Vi 'Foo        # Edit Foo
+    Vi 'Foo 8      # Edit Foo at line 8
+    Vi mod_file    # Edit module file
+    Vi mod_file 8  # Edit module file at line 8
+
+Edit function definition using emacs:
+    Emacs          # Same arguments as Vi
+
+Edit function definition using gmacs:
+    Gmacs          # Same arguments as Vi
+
+Reload the focal module file:
+    Reload
+
+List functions in:
+    Lf             # Focal module file
+    Lf 'Foo        # Module file containing Foo
+    Lf mod_file    # Module file named mod_file
+
+List directory:
+    Ls             # Current directory
+    Ls ".."        # Parent directory
+    Ls "~/src"     # Subdirectory src of home directory
+
+===========================================================================
+                         Layout Function
+===========================================================================
+
+The Layout function makes it easy to generate neatly formatted reports
+(see examples at the end of this document) that would be difficult or
+tedious to generate using Frame.  With Layout, you can generate elaborate
+reports with practically no programming beyond computing the information
+the reports contain.  See the examples at the end of this section.
+
+Layout is especially good for reports that must be well formatted but best
+kept as softcopy rather than typeset hardcopy.  For typeset hardcopy, you
+might use Layout as an aid to generate input for troff, tbl or other text
+formatting systems.
+ 
+The Layout function populates a layout with data extracted from an array or
+record, and generates a report.
+
+Syntax
+    <report> Layout || <data>[] <layout>
+
+    where
+        <report> is a sequence that represents <layout> populated with
+            field values extracted from <data>
+
+        <data>[] is one or more data records or data arrays (see Data
+            description in Layout Syntax for details)
+
+        <layout> is a layout sequence (see Layout Syntax for details)
+
+    options
+        |<rule>| where <rule> is a sequence that separates rows of the report
+
+        |"column"| enables a calculator to get an entire column rather
+            than a field value as an argument
+
+        |"label"| puts the verbatim fields of a field line only once
+            (on the first line) when a row generates multiple lines
+
+        |"path separator" <separator>| sets the separator between indices
+            of a path to <separator> (default is "/")
+
+
+===========================================================================
+                         MakeLayout Function
+===========================================================================
+
+The MakeLayout function compiles a layout into a form that makes repeated
+use more efficient.  Unfortunately, a compiled layout usually can't be saved
+in a file with SaveData because it will likely contain function definitions
+generated on the fly.
+
+Syntax
+    <compiled layout> MakeLayout <layout>
+
+    where
+        <compiled layout> is an array of sections
+
+        <layout> is a layout sequence
+
+
+===========================================================================
+                  Syntax of <layout> (layout specification)
+===========================================================================
+
+Layout
+    One or more sections
+
+Section
+    A verbatim line
+    OR
+    A field line
+    OR
+    A field line followed by an indexer line
+
+Verbatim line
+    Any line that is not a field line or indexer line
+
+Field line
+    A line that contains one or more fields
+
+Indexer line
+    A line that begins with { and ends with }, and contains zero or more
+    indices and zero or more calculators.  The line may have leading and
+    trailing blanks and tabs.
+
+Field
+    A verbatim field
+    OR
+    A rigid field
+    OR
+    An elastic field
+    OR
+    A superfield
+
+Verbatim field
+    Any text that is not a rigid, elastic or superfield
+
+    The width of a verbatim field is the size of the text
+
+Rigid field
+    One or more identical justifiers (eg, <<<<<<<)
+    OR
+    A justifier followed by a filler (eg, <...........).
+    OR
+    A justifier followed by a decimalizer (eg, >9999.99)
+
+    The width of a rigid field is the size of the field including
+    the justifier
+
+    A rigid field is terminated by a blank, tab, end-of-line, [, ], or \,
+    or by the beginning of another field.  If the end of one field cannot
+    be distinguished from the beginning of the next, the fields should be
+    separated by \.  For example, the fields of
+        <<<<<~~~~~>>>>>
+    are distinct, but
+        <<<<\<99.99
+    requires a \ to separate the two fields.
+
+    If field line consists only of rigid fields whose field values are taken
+    in order from the data row, then the indexer line is optional
+
+    A field line that includes a rigid field and also an elastic field or
+    superfield must be followed by an indexer line specifying the field
+    value for the rigid field.  Otherwise, Layout will not know what field
+    value to put into the rigid field.
+
+Elastic field
+    A justifier followed by an index (eg, <street)
+    OR
+    A justifier followed by a path (eg, <name/first)
+    OR
+    A justifier followed by calculator (eg, <(Whole time*count))
+
+    The width of an elastic field is determined by the size of the value
+    put into the field (ie, the size of the field value)
+
+    An elastic field is terminated by a blank, tab, end-of-line, [, ], or \,
+    or by the end of the calculator
+
+    A caluculator must be enclosed in parentheses
+
+Superfield
+    A field beginning with [ and ending with ], and containing
+    zero or more verbatim fields and zero or more elastic fields
+    (eg, [<section     ~title       >page])
+
+    A superfield is terminated by a ]
+
+    The width of a superfield is the size of the entire field including the
+    initial [ and final ]
+
+    Because the purpose of a superfield is to specify the width of a field
+    containing one or more elastic subfields, the superfield should not
+    contain a rigid field.  If it does, the entire superfield will be replaced
+    by a blank space of the same width.
+
+    If a superfield is not populated with a field value, then the entire
+    superfield is replaced with a blank space of the same width, even if
+    the superfield contains verbatim fields.  This is useful for conditional
+    fields such as
+        <street[, <apt          ]
+    where nothing follows the street address if the address does not have an
+    apartment number.
+
+Justifier
+    < (left justifier)
+    OR
+    ~ (center justifier)
+    OR
+    > (right justifier)
+
+Filler
+    A string of three or more repeated characters (eg, ----).  The filler
+    character cannot be a justifier or the numeral 9.
+
+Calculator
+    Any valid Fit expression enclosed within ( and ) (eg, (UpperCase name)).
+    The expression may include user-supplied functions.
+
+    Variables in an expression is a key or an ordinal prefixed with _ that
+    index the data array to get the value for a variable.  A variable may
+    not be a path.  When |"column"| is given, the variable value is an array
+    corresponding to the indexed column of a data array.
+
+    A calculator appearing in a field line must contain variables indexing
+    the field values to be used in the calculation.
+
+    A calculator appearing in an indexer line with no variable is given
+    the ordinal of the corresponding field in the row as the variable.
+    For example, in the section
+        <9999.99 <9999.99
+        { (Total) (Total) }
+    the first and second calculators are given ordinals 1 and 2 as variables
+    by default, so the it is equivalent to the section
+        <9999.99 <9999.99
+        { (Total _1) (Total _2) }
+
+    In an indexer line, the empty calculator, (), is a placeholder that consumes
+    a column of the data but puts no value into the corresponding field.  For
+    example,
+        <<< <<< <<<
+        { 1 ()  3 }
+    puts no field value into the second field.
+
+Decimalizer
+    A string of zero or more 9s representing the whole part of the numerical
+    field value, followed optionally by a decimal point followed by zero or
+    more 9s representing the decimal part of a numerical field value
+    (eg, 999.99).
+
+    A decimalizer without a decimal part must contain at least two 9s.
+
+Index
+    Any text that is not a filler, calculator, or decimalizer, and is a legal
+    index of the data array.  An index is either
+    An ordinal
+    OR
+    A key
+    OR
+    A path
+
+    An index may not contain a justifier, blank, tab, (, ), [, or ]
+
+Ordinal
+    An index that is a number
+
+    An ordinal is the ordinal index of a column of the data array
+
+Key
+    An index that is not an ordinal (eg, street) and does not contain a
+    path separator
+
+    A key is a key index of a data record
+
+Path
+    A series of one or more indices separated by / (eg, address/street),
+    where an index is either a key or an ordinal.  The path separator
+    (default: /) may be changed with the path separator option.
+
+    The components of a path are indices into a nested data array.
+
+    The final index of a path must be the index of a field value.
+
+    A path beginning is / is rooted at the top level of a data array.
+    For example, the path /name/first extracts the value
+        d["name"]["first"]
+    from the data array d.
+
+    A path not beginning with / is series of contiguous indices of the
+    data array.  For example, the path name/first extracts the value
+        d...["name"]["first"]
+    where ... stands for zero or more indices of the data array d.
+
+    A wildcard index, *, stands for any key or any ordinal.  For example,
+    the path /person/*/phone extracts the value
+        d["person"][*]["phone"]
+    where * stands for any single key or ordinal.
+
+Data
+    A row
+    OR
+    An array of rows
+
+    If two or more one data arrays are given as arguments to Layout, the data
+    arrays must be records, and field values must be indexed by keys or paths.
+
+Row
+    An array of columns
+
+Column
+    A field value
+    OR
+    An array of field values
+
+Field value
+    A number
+    OR
+    Text
+
+    If there is more than one data array, the first value corresponding to
+    an index found in an data array, searched in order from first to last,
+    is taken as the field value
+
+    The field value is "" if the indexed value is missing in a row,
+    that is, if d[.] is void where . stands for any index or series
+    of indices
+
+    Text that is wider than the field width wraps and fills multiple
+    lines.  An array of text does not wrap and fill, and a line of a
+    text array is truncated if it is wider than the field width.
+
+
+===========================================================================
+                             Examples
+===========================================================================
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Generate an order form and compute the total cost.
+
+REPORT:
+                      Order                               
+Quan  Description                            Price    Cost
+   2  InfoWiz Reference Manual including     25.00   50.00
+      Installation Manual
+   1  InfoWiz Software                      150.00  150.00
+                                             Total  200.00
+
+PROGRAM:
+Record Item quantity desc price cost
+    "quantity"  quantity
+    "desc"      desc
+    "price"     price
+    "cost"      cost
+
+Main
+    Set data {
+        (Item 2 "InfoWiz Reference Manual including Installation Manual" 25 50)
+        (Item 1 "InfoWiz Software" 150 150)
+    }
+    Print Layout data ~[
+                      Order                               
+Quan  Description                            Price    Cost
+>999  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  >999.99 >999.99
+{ quantity desc price cost }
+]~
+
+    Print Layout |"column" true| data ~[
+                                             Total >999.99
+{                                              (Total cost) }
+]~
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Generate the layout of a check including the spoken representation of
+the amount.
+
+REPORT:
+ 
+Peter Pico                                                        333
+123 Main Street
+Westville, New Jersey 07900                          December 3, 1992
+908/555-8765
+
+Pay to the order of  *** Joe Jammer ***                     $123.00
+One hundred twenty-three dollars and zero cent***********************
+
+                                             Peter Pico
+
+PROGRAM:
+Macro CHECK ~[
+ 
+[<name/first <name/last                     ]          [>number     ]
+[<address/street                            ]
+[<address/town\, <address/state <address/zip]      [>date           ]
+<phone
+
+Pay to the order of  [<(Splice "*** " payee " ***")       ] $<9999.99
+                                                          { amount }
+<********************************************************************
+{ (Change "^." 'UpperCase SayMoney amount) }
+
+                                             <name/first <name/last
+]~
+
+Record Payer
+    "name"
+        "first" "Peter"
+        "last"  "Pico"
+    "address"
+        "street"    "123 Main Street"
+        "town"      "Westville"
+        "state"     "New Jersey"
+        "zip"       "07900"
+    "phone"     "908/555-8765"
+
+Record Check
+    "date"      (Text |"jan 1, 00"| Chron)
+    "number"    333
+    "amount"    123
+    "payee"     "Joe Jammer"
+
+Main
+    Print Layout (Payer) (Check) CHECK
+
+SayMoney amount
+    Set (dollars cents) (Whole amount) (Mod amount*100 100)
+    Return Splice (SayNum dollars) \
+                  (Either (LE dollars 1) " dollar and " " dollars and ") \
+                  (SayNum cents) \
+                  (Either (LE cents 1) " cent" " cents")
+
+SayNum number
+    Constant label {"" " thousand" " million" " billion"}
+    Return Either (Eq number 0) "zero" Splice |", "| SayNumAux number label
+
+SayNumAux number label
+    Eq number 0
+        Return
+    Else
+        Return (SayNumAux (Whole number/1000) {label[Thru 2 $]}) \
+               Splice (SayUpTo999 Mod number 1000) label[1]
+
+SayUpTo999 num
+    Constant digits {"one" "two" "three" "four" "five"
+                     "six" "seven" "eight" "nine"}
+    Constant teens {"ten" "eleven" "twelve" "thirteen" "fourteen" "fifteen"
+                    "sixteen" "seventeen" "eighteen" "nineteen"}
+    Constant decades {"" "twenty-" "thirty-" "forty-" "fifty-"
+                      "sixty-" "seventy-" "eighty-" "ninety-"}
+    Set hundreds Whole num/100
+    Set tens Whole (Mod num 100)/10
+    Set units Mod num 10
+    GT hundreds 0
+        Set spoken<$+> Splice digits[hundreds] " hundred "
+    GE tens 2
+        Set spoken<$+> Splice decades[tens] digits[units]
+    Else Eq tens 1
+        Set spoken<$+> teens[Inc units]
+    Else
+        Set spoken<$+> digits[units]
+    Return Delete "[ -]$" spoken
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Deal and display four bridge hands.
+
+REPORT:
+                    North
+                 S: A Q 3 2
+                 H: 2
+                 D: A K 10 7 5 4
+                 C: K 2
+   West                               East
+S: 9 8 7                           S: K 5 4
+H: J 6 4 3                         H: A 10 8 5
+D: J 9                             D: Q 8 6
+C: J 10 9 7                        C: 8 6 3
+                    South
+                 S: J 10 6
+                 H: K Q 9 7
+                 D: 3 2
+                 C: A Q 5 4
+
+PROGRAM:
+Main
+    PrintHands DealHands
+
+DealHands
+    Local Constant suits { "s" "h" "d" "c" }
+    Constant suit[Thru 1 52] suits[]
+    Constant value[Thru 1 52] Thru 1 13
+    Constant deck Transpose { (Sort suit) value }
+    Set shuffled_deck Permute deck
+    Set north Hand "n" shuffled_deck[Thru 1 13]
+    Set west Hand "w" shuffled_deck[Thru 14 26]
+    Set east Hand "e" shuffled_deck[Thru 27 39]
+    Set south Hand "s" shuffled_deck[Thru 40 52]
+    Return north west east south
+
+Hand position cards[]
+    Local suits
+    Constant face { "2" "3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A" }
+    ForEach card cards
+        Set hand[ card[1] ][$+] card[2]
+    ForEach key DoEach 'Splice position suits
+        Set hands[key] Splice |" "| face[ (Reverse Sort hand[key<2>] {})[] ]
+    Return hands
+
+PrintHands north west east south
+    Print Layout north west east south ~[
+                    North
+                 S: [<ns                      ]
+                 H: [<nh                      ]
+                 D: [<nd                      ]
+                 C: [<nc                      ]
+   West                               East
+S: [<ws                      ]     S: [<es                      ]
+H: [<wh                      ]     H: [<eh                      ]
+D: [<wd                      ]     D: [<ed                      ]
+C: [<wc                      ]     C: [<ec                      ]
+                    South
+                 S: [<ss                      ]
+                 H: [<sh                      ]
+                 D: [<sd                      ]
+                 C: [<sc                      ]
+]~
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Generate a complex table with filled text blocks and multi-line cell entries.
+
+REPORT:
+                        Some Interesting Places
+--------------------------------------------------------------------------------
+  Place               Description                   Practical Information
+----------  ------------------------------  ------------------------------------
+American    The collections fill 11.5           Hours  10-5, ex. Sun 11-5, Wed.
+Museum of   acres (Michelin) or 25 acres               to 9
+Natural     (MTA) of exhibit halls on four   Location  Central Park West & 79th
+History     floors.  There is a full-sized             St.
+            replica of a blue whale and     Admission  Donation: $1.00 asked
+            the world's largest star           Subway  AA to 81st St.
+            sapphire (stolen in 1964).     Telephone  212-873-4225
+
+Bronx Zoo   About a mile long and .6 mile       Hours  10-4:30 winter, to 5:00
+            wide, this is the largest zoo              summer
+            in America.  The lion eats 18    Location  185th St. & Southern
+            pounds of meat a day while a               Blvd, the Bronx
+            sea lion eats 15 pounds of      Admission  $1.00, but Tu, We, Th
+            fish.                                      free
+                                               Subway  2, 5 to East Tremont Ave.
+                                            Telephone  212-933-1759
+
+PROGRAM:
+Record NaturalHistory
+    "name"       "American Museum of Natural History"
+    "desc"       ~[
+The collections fill 11.5 acres (Michelin) or 25 acres (MTA)
+of exhibit halls on four floors.  There is a full-sized replica
+of a blue whale and the world's largest star saphire (stolen
+in 1964).
+]~
+    "hours"      "10-5, ex. Sun 11-5, Wed. to 9"
+    "location"   "Central Park West & 79th St."
+    "admission"  "Donation: $1.00 asked"
+    "subway"     "AA to 81st St."
+    "phone"      "212-873-4225"
+
+Record BronxZoo
+    "name"       "Bronx Zoo"
+    "desc"       ~[
+About a mile long and .6 mile wide, this is the largest zoo in
+America.  The lion eats 18 pounds of meat a day while a sea lion
+eats 15 pounds of fish.
+]~
+    "hours"      "10-4:30 winter, to 5:00 summer"
+    "location"   "185th St. & Southern Blvd, the Bronx"
+    "admission"  "$1.00, but Tu, We, Th free"
+    "subway"     "2, 5 to East Tremont Ave."
+    "phone"      "212-933-1759"
+
+Main
+    Set data { (NaturalHistory) (BronxZoo) }
+    ForEach k Thru 1 $data
+        Set data[k]["info"] Lines Layout |"label" true| data[k] ~[
+    Hours  [<hours                 ]
+ Location  [<location              ]
+Admission  [<admission             ]
+   Subway  [<subway                ]
+Telephone  [<phone                 ]
+]~
+    Print Layout |"\n"| data ~[
+                        Some Interesting Places
+--------------------------------------------------------------------------------
+  Place               Description                   Practical Information
+----------  ------------------------------  ------------------------------------
+[<name   ]  [<desc                       ]  [<info                             ]
+]~
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Generate a tabular report with column sums (contributed by Karen Groeschler).
+
+REPORT:
+
+SUMMARY OF TICKETS FOR YESTERDAY
+AT&T GATEWAY : ATLNGATL01T
+|-----------------------------------------------------------------------------|
+|                                                                             |
+|                      SUMMARY OF TICKETS FOR YESTERDAY                       |
+|                             SWITCH: ATLNGATL01T                             |
+|                              Fri Nov 20, 1992                               |
+|                               Time: 10:09 AM                                |
+|                                                                             |
+|=============================================================================|
+|                 |                                                           |
+|                 |                      NUMBER of TICKETS                    |
+|     FAR-END     |                                                           |
+|      CLLI       |CREATED| AUTO  |CREATED|     TERESA    |BACK TO|  CLEARED  |
+|                 |       |CLEARED|BY TECH|PROCESD|CLEARED| TECH  |  BY TECH  |
+|                 |       |       |       |       |       |       |           |
+|-----------------------------------------------------------------------------|
+|   BRCKENBK01T   |    38 |     0 |    37 |       |    12 |       |     12    |
+|   CRCSVEZA03T   |     0 |     0 |     0 |       |     0 |       |     12    |
+|   GNCYGTZA01T   |    24 |     4 |     5 |       |     5 |       |     15    |
+|   GNCYGTZA02T   |    12 |     0 |     0 |       |     0 |       |     12    |
+|   JCVLFLCL03T   |     4 |     0 |     2 |       |     1 |       |      1    |
+|   LONDENKB01T   |     1 |     0 |     1 |       |     0 |       |      0    |
+|   MANGNGZA02T   |     1 |     0 |     0 |       |     1 |       |      1    |
+|   MXCYMXSJ02T   |     4 |     0 |     2 |       |     0 |       |      0    |
+|   NYCMNYBW24T   |    44 |     4 |    26 |       |    25 |       |     13    |
+|   NYCMNYBW55T   |     2 |     0 |     1 |       |     0 |       |      0    |
+|   SCRMCA0404T   |     1 |     0 |     0 |       |     0 |       |      0    |
+|-----------------------------------------------------------------------------|
+|      TOTAL      |   131 |     8 |    74 |     0 |    44 |     0 |     66    |
+|-----------------------------------------------------------------------------|
+ERROR in database select to obtain trunk information for TKT 16183
+ and trunk accesskey 11112222 in function proc_trk.  Skipping this trunk tkt.
+The SQL Error Code is: 100
+END OF REPORT
+
+PROGRAM:
+Main
+    Set heading (RecordList
+            "report"    "SUMMARY OF TICKETS FOR YESTERDAY"
+            "gateway"   "ATLNGATL01T"
+            "day"       "Fri"
+            "date"      "Nov 20, 1992"
+            "time"      "10:09 AM"
+    )
+    Print Layout heading ~[
+<report
+AT&T GATEWAY : <gateway
+|-----------------------------------------------------------------------------|
+|                                                                             |
+|[                                ~report                                    ]|
+|[                             SWITCH: <gateway                              ]|
+|[                              ~day ~date                                   ]|
+|[                               Time: <time                                 ]|
+|                                                                             |
+|=============================================================================|
+|                 |                                                           |
+|                 |                      NUMBER of TICKETS                    |
+|     FAR-END     |                                                           |
+|      CLLI       |CREATED| AUTO  |CREATED|     TERESA    |BACK TO|  CLEARED  |
+|                 |       |CLEARED|BY TECH|PROCESD|CLEARED| TECH  |  BY TECH  |
+|                 |       |       |       |       |       |       |           |
+|-----------------------------------------------------------------------------|
+]~
+
+    Set data {
+              {"BRCKENBK01T" 38 0 37 "" 12 "" 12}
+              {"CRCSVEZA03T" 0 0 0 "" 0 "" 12}
+              {"GNCYGTZA01T" 24 4 5 "" 5 "" 15}
+              {"GNCYGTZA02T" 12 0 0 "" 0 "" 12}
+              {"JCVLFLCL03T" 4 0 2 "" 1 "" 1}
+              {"LONDENKB01T" 1 0 1 "" 0 "" 0}
+              {"MANGNGZA02T" 1 0 0 "" 1 "" 1}
+              {"MXCYMXSJ02T" 4 0 2 "" 0 "" 0}
+              {"NYCMNYBW24T" 44 4 26 "" 25 "" 13}
+              {"NYCMNYBW55T" 2 0 1 "" 0 "" 0}
+              {"SCRMCA0404T" 1 0 0 "" 0 "" 0}
+            }
+    Print Layout data ~[
+| ~~~~~~~~~~~~~~~ | >9999 | >9999 | >9999 | >9999 | >9999 | >9999 |  >9999    |
+]~
+
+    Print Layout |"column" true| data ~[
+|-----------------------------------------------------------------------------|
+|      TOTAL      | >9999 | >9999 | >9999 | >9999 | >9999 | >9999 |  >9999    |
+{(Total _2) (Total _3) (Total _4) (Total _5) (Total _6) (Total _7)  (Total _8)}
+|-----------------------------------------------------------------------------|
+]~
+
+    Print ~[
+ERROR in database select to obtain trunk information for TKT 16183
+ and trunk accesskey 11112222 in function proc_trk.  Skipping this trunk tkt.
+The SQL Error Code is: 100
+END OF REPORT
+]~
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Generate a tree showing the history of a tournament.
+
+REPORT:
+    Ohio State 97
+            |--------Ohio State 65
+  Towson State 86            |
+                             |-----Ohio State 74
+  Georgia Tech 87            |             |
+            |------Georgia Tech 61         |
+        DePaul 70                          |
+                                           |---St. John's
+         Texas 73                          |
+            |-------------Texas 76         |
+   St. Peter's 65            |             |
+                             |-----St. John's 91
+    St. John's 75            |
+            |--------St. John's 84
+   N. Illinois 68
+
+PROGRAM:
+Macro OUTCOME ~[
+[         >/1   ]   
+            |>--------------------
+                 { /9/1 }
+[         >/2   ]            |
+                             |>-----------------
+                                { /9/5/1 }
+[         >/3   ]            |             |
+            |>--------------------         |
+                 { /9/2 }
+[         >/4   ]                          |
+                                           |---</9/5/3/1
+[         >/5   ]                          |
+            |>--------------------         |
+                 { /9/3 }
+[         >/6   ]            |             |
+                             |>----------------- 
+                                { /9/5/2 }
+[         >/7   ]            |
+            |>--------------------
+                 { /9/4 }
+[         >/8   ]      
+]~
+
+Main
+    Set tourney {
+        "Ohio State 97"
+        "Towson State 86"
+        "Georgia Tech 87"
+        "DePaul 70"
+        "Texas 73"
+        "St. Peter's 65"
+        "St. John's 75"
+        "N. Illinois 68"
+            {
+            "Ohio State 65"
+            "Georgia Tech 61"
+            "Texas 76"
+            "St. John's 84"
+                {
+                "Ohio State 74"
+                "St. John's 91"
+                    {
+                    "St. John's"
+                    }
+                }
+            }
+        }
+    Print Layout tourney OUTCOME
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+Generate an SQL query from a template with slots that must be filled with
+data (contributed by Jason Tishler)
+
+REPORT:
+
+insert into ecorders (
+ec_pco, ec_ordnum, ec_clfi, ec_orgact, ec_activity, ec_wotdate,
+ec_duedate, ec_cutcode, ec_pon, ec_ucr, ec_control, ec_id, ec_procdate,
+ec_rcvdate, ec_wrk_stat,
+ec_a_office, ec_a_pwi, ec_a_frame, ec_a_sdg, ec_a_options,
+ec_a_clei, ec_a_wstate,
+ec_z_office, ec_z_pwi, ec_z_frame, ec_z_sdg, ec_z_options,
+ec_z_clei, ec_z_wstate,
+ec_a_epwi, ec_a_eopts, ec_a_eclei,
+ec_z_epwi, ec_z_eopts, ec_z_eclei
+) values (
+"DNGNCA0101T", "EXAQSU01", "2    T1         AUSTTXGR07TDNGNCA0101T", "A", "A", "
+02/24/1993",
+"03/02/1993", "", "LLWE938500626", "M.1", "CONTROL", 0, 0,
+0, 2,
+"AUSTTXGR", "*", "040473.11", "4-6", "DZ/EZ/61202",
+"ESEC6BAC", "MAN",
+"DNGNCA01", "*", "001701.11", "3-6", "DZ/EZ/61202/0",
+"ESEC6B0C", "MAN",
+"", "", "",
+"", "", ""
+)
+
+
+PROGRAM:
+
+Process anOrder &anInformix
+        Constant aQuery ~[
+insert into ecorders (
+ec_pco, ec_ordnum, ec_clfi, ec_orgact, ec_activity, ec_wotdate,
+ec_duedate, ec_cutcode, ec_pon, ec_ucr, ec_control, ec_id, ec_procdate,
+ec_rcvdate, ec_wrk_stat,
+ec_a_office, ec_a_pwi, ec_a_frame, ec_a_sdg, ec_a_options,
+ec_a_clei, ec_a_wstate,
+ec_z_office, ec_z_pwi, ec_z_frame, ec_z_sdg, ec_z_options,
+ec_z_clei, ec_z_wstate,
+ec_a_epwi, ec_a_eopts, ec_a_eclei,
+ec_z_epwi, ec_z_eopts, ec_z_eclei
+) values (
+"<pco\", "<ordnum\", "<clfi\", "<orgact\", "<activity\", "<wotdate\",
+"<duedate\", "<cutcode\", "<pon\", "<ucr\", "<control\", <id\, <procdate\,
+<rcvdate\, <wrk_stat\,
+"<A/office\", "<A/pwi\", "<A/frame\", "<A/sdg\", "<A/options\",
+"<A/clei\", "<A/wstate\",
+"<Z/office\", "<Z/pwi\", "<Z/frame\", "<Z/sdg\", "<Z/options\",
+"<Z/clei\", "<Z/wstate\",
+"<A'/pwi\", "<A'/options\", "<A'/clei\",
+"<Z'/pwi\", "<Z'/options\", "<Z'/clei\"
+)
+]~
+
+        Set aRequest Layout anOrder[] aQuery
+        Insert &anInformix aRequest   # Use query to insert data
+
+
+DATA:
+This is the value of argument anOrder as it would appear when  displayed
+with PP.
+{
+  method        {
+                  Process  'Process
+                }
+  theHeader     {
+                  Jseqnum    "1187358"
+                  pco        "DNGNCA0101T"
+                  ordnum     "EXAQSU01"
+                  clfi       "2    T1         AUSTTXGR07TDNGNCA0101T"
+                  orgact     "A"
+                  activity   "A"
+                  wotdate    "02/24/1993"
+                  duedate    "03/02/1993"
+                  cutcode    ""
+                  pon        "LLWE938500626"
+                  ucr        "M.1"
+                  Jnumequip  "2"
+                  control    "CONTROL"
+                  id         "0"
+                  procdate   "0"
+                  rcvdate    "0"
+                  wrk_stat   "2"
+                }
+  theEquipment  {
+                  A   {
+                        office    "AUSTTXGR"
+                        frame     "040473.11"
+                        sdg       "4-6"
+                        unknown1  "OWN:LL   QTY:01"
+                        options   "DZ/EZ/61202"
+                        unknown2  ""
+                        pwi       "*"
+                        clei      "ESEC6BAC"
+                        seqnum    "6"
+                        wstate    "MAN"
+                      }
+                  Z   {
+                        office    "DNGNCA01"
+                        frame     "001701.11"
+                        sdg       "3-6"
+                        unknown1  "OWN:LL   QTY:01"
+                        options   "DZ/EZ/61202/0"
+                        unknown2  ""
+                        pwi       "*"
+                        clei      "ESEC6B0C"
+                        seqnum    "24"
+                        wstate    "MAN"
+                      }
+                  A'  {
+                        office    ""
+                        frame     ""
+                        sdg       ""
+                        unknown1  ""
+                        options   ""
+                        unknown2  ""
+                        pwi       ""
+                        clei      ""
+                        seqnum    ""
+                        wstate    ""
+                      }
+                  Z'  {
+                        office    ""
+                        frame     ""
+                        sdg       ""
+                        unknown1  ""
+                        options   ""
+                        unknown2  ""
+                        pwi       ""
+                        clei      ""
+                        seqnum    ""
+                        wstate    ""
+                      }
+                }
+}

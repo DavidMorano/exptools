@@ -1,0 +1,767 @@
+# kshdb - ksh script debugger
+# _debug - workhorse of the debugger
+# last modified 10/17/91.
+# Major limitations:
+#	creates debug-augmented version of script in /usr/tmp.
+#	uses error output channel with 2> /dev/tty and 2> /dev/null.
+#	uses trap ... DEBUG and set -x.
+#	cannot break at all points of a script with conditional execution.
+#
+# Update History:
+#
+#	10/17/91: Problem found and debugged by Dave Dykstra.  The line 
+#		  typeset -ir _kshdb_length=$(wc -l ${_kshdb_SCRIPT} | cut -c1-7)
+#		proved to be not strictly portable.  Dave Korn suggested the following:
+#		  typeset -ir _kshdb_length=$(wc -l < ${_kshdb_SCRIPT})
+#		which uses I/O redirection to suppress the file name from the output
+#		of wc.  Tony Hansen (pegasus!hansen) also suggested the solution.
+#	3/26/92: Several capabilities for debugging scripts with functions in them
+#		have been added.  Some known deficiencies have been fixed.
+#		Additions:
+#		(1) The notion of scope has been defined.  The top level script now
+#		    executes as if within an outer function "main".  The list (l),
+#		    break (b) and delete (d) commands are now defined relative to the
+#		    current "display" scope.  The "execute" scope defines the function
+#		    which is currently executing.
+#		(2) Added a new "S" command to step "into", rather than "over", a
+#		    function call.
+#		(3) Debug command history can be turned on using the "kshdb" -k
+#		    switch.  The debug history is saved to/accessed from the user's
+#		    k-shell history file.
+#		Changes:
+#		(1) The "e" (examine scope) command has been changed to be more 
+#		    compatible with sdb.
+#		(2) The new "x" (eXamine variable) command replaces the old "e"
+#		    (examine) command.
+#		(3) The "b" (break) and "d" (delete) commands can now take a breakpoint
+#		    specification of the form <function>.<line>, where <line> is a line
+#		    number defined relative to function <function>.
+#		(4) Deleted the "t" (trace) command to enable function tracing with
+#		    typeset -ft <function>.
+#		Fixes:
+#		(1) The "a" command correctly lists argument ${0} as the command name
+#		    and later ${n} (n=1,2,...) as arguments.
+#		(2) Problems with undocumented feature of "b" (break) command have
+#		    been fixed.  This command feature is now "documented".
+trap - DEBUG
+# exec 2> /dev/tty
+alias a="_kshdb_arguments"
+alias b="_kshdb_break"
+alias c="_kshdb_calls"
+alias d="_kshdb_delete"
+alias e="_kshdb_set_scope"
+alias g="_kshdb_go \${1}"
+alias h="_kshdb_help"
+alias l="_kshdb_list"
+alias p="_kshdb_window +0 +0"
+alias q="_kshdb_exit"
+alias r="_kshdb_run"
+alias s="_kshdb_step"
+alias S="_kshdb_trace"
+alias w="_kshdb_window -5 +5"
+alias x="_kshdb_examine"
+alias z="_kshdb_window +0 +9"
+typeset -r _kshdb_HELP="
+
+	                 kshdb Help
+	
+	Note: This help file is being read via ${PAGER:-pg}.
+
+	a                -- display current values of arguments.
+	b <line> [\"cmd\"] -- set a (b)reakpoint at line <line>.  Trigger \"cmd\".
+	c                -- (c)alls - display the function call stack.
+	d <line>         -- delete breakpoint (and command) at line <line>.
+	e <function>     -- examine (set display scope of) function <function>.
+	g                -- go to the next breakpoint or go to the end.
+	h                -- print out this help message.
+	l <l1> <l2>      -- list script from l1 through l2 specified lines.
+	p [<line>]       -- print the current (executed) or specified line.
+	q                -- quit to the shell.
+	r <args,...>     -- run script with specified args.  ( go with args )
+	s <steps>        -- step through <steps> steps.  Step over functions.
+	S <steps>        -- step through <steps> steps.  Step into functions.
+	w                -- print the ten lines around the current line.
+	x <var,...>      -- e(x)amine the value(s) of environment variable(s).
+	z                -- print the current line + next 9.
+	other ksh cmd    -- execute any legal ksh command, such as assignment.
+
+	Note: (1) kshdb reservers the use of above single-character aliases,
+	          and reserves the use of environment variables and function 
+	          names beginning with \"_kshdb\".  kshdb also defines the 
+	          function _debug although the user may define his/her own 
+	          version.
+
+	      (2) Optional command(s), \"cmd\", may be specified in the \"b\"
+	          command.  \"cmd\" triggers when the specified breakpoint is
+	          reached.  \"cmd\" must be in quotes.  Use the \"b\" command
+	          without arguments to show the currently active breakpoints.
+
+	      (3) The initial \"display scope\" and \"execution scope\" are set to
+	          \"main\".  Use of \"e\" without an argument shows the current
+	          scope.
+
+	      (4) <line> in \"break\" and \"delete\" may be of the form <number>
+	          or <function>.<number>.  If <function> is given, then the
+	          <number> is defined relative to the start of the definition
+	          of the <function>.  If <function> is not given, then <line>
+	          is defined relative to the currently active display scope."
+typeset -r _kshdb_MAIN="${0}"
+typeset -r _kshdb_NAME="${_kshdb_MAIN##@(*/*([0-9.])|d.)}"
+typeset _kshdb_TRACE=false
+typeset -ir _kshdb_MAX_ARGS=100
+typeset _kshdb_arg[${_kshdb_MAX_ARGS}]
+typeset _kshdb_arglist
+typeset _kshdb_in_step=false
+typeset _kshdb_in_loop=true
+typeset _kshdb_newscope=false
+typeset _kshdb_in_main=false
+typeset _kshdb_quit=false
+typeset _kshdb_exit=false
+typeset _kshdb_read_options
+typeset _kshdb_dscope="main"
+typeset _kshdb_xscope="${_kshdb_MAIN}"
+typeset _kshdb_xtrace=true
+typeset _kshdb_tscope
+if [[ "${_kshdb_MAIN}" = "${_kshdb_MAIN#/}" ]]
+then
+	typeset -r _kshdb_SCRIPT="${PWD}/${_kshdb_MAIN}"
+else
+	typeset -r _kshdb_SCRIPT="${_kshdb_MAIN}"
+fi
+typeset -ir _kshdb_length=$(wc -l < ${_kshdb_SCRIPT})
+typeset -i _kshdb_STEPS=0
+typeset -i _kshdb_curline
+typeset -i _kshdb_index
+typeset -i _kshdb_brkpnt[${_kshdb_length}]
+typeset _kshdb_brkscp[${_kshdb_length}]
+typeset -ix _kshdb_bindex=0
+typeset -ix _kshdb_eindex=0
+typeset -ix _kshdb_bbeg=0
+typeset -ix _kshdb_bend=0
+typeset -i _kshdb_line
+typeset -i _kshdb_ebreak=0
+typeset -i _kshdb_scopes=0
+typeset -i _kshdb_depth=0
+typeset -i _kshdb_bscope[100]
+typeset -i _kshdb_escope[100]
+typeset _kshdb_scope[100]
+typeset _kshdb_fstack[20]
+typeset _kshdb_lstack[20]
+typeset _kshdb_tstack[20]
+typeset -i _kshdb_pstack[20]
+typeset -i _kshdb_ostack[20]
+typeset _kshdb_brkcmd[${_kshdb_length}]
+set -o nolog
+
+#####################
+# Utility functions #
+#####################
+typeset -fx _kshdb_add_scope
+typeset -fx _kshdb_find_scope
+typeset -fx _kshdb_get_scope
+typeset -fx _kshdb_get_bscope
+typeset -fx _kshdb_not
+typeset -fx _kshdb_print
+typeset -fx _kshdb_read
+typeset -fx _kshdb_set_scope
+function _kshdb_add_scope
+{
+	typeset _kshdb_bpatt
+	typeset _kshdb_epatt
+	typeset -i _kshdb_inc
+
+	if [[ "${1}" = "main" ]]
+	then
+		_kshdb_bpatt="/^function main/"
+		_kshdb_epatt="/^}; _debug 0\$/"
+	else
+		_kshdb_bpatt="/^[ 	]*(function ${1})|(${1} \\(\\))/"
+		_kshdb_epatt="/^[ 	]*}$/"
+	fi
+	awk "
+		BEGIN { n=0 }
+		${_kshdb_bpatt}, ${_kshdb_epatt} {
+			if (n == 0) {
+				printf \"%d \", NR
+			}
+			n++ }
+		END { printf \"%d\", n }
+		" ${_kshdb_SCRIPT} | read _kshdb_ebreak _kshdb_inc
+	if ((_kshdb_inc == 0))
+	then
+		_kshdb_print "...invalid scope=${1}."
+		return 1
+	fi
+	_kshdb_index=_kshdb_scopes
+	_kshdb_scope[${_kshdb_scopes}]=${1}
+	_kshdb_bscope[${_kshdb_scopes}]=_kshdb_ebreak
+	_kshdb_ebreak=_kshdb_ebreak+_kshdb_inc
+	_kshdb_escope[${_kshdb_scopes}]=_kshdb_ebreak-1
+	_kshdb_scopes=_kshdb_scopes+1
+	return 0
+}
+function _kshdb_find_scope
+{
+	typeset -i _kshdb_save_index=_kshdb_index
+
+	_kshdb_tscope=${1}
+	_kshdb_index=0
+	while ((_kshdb_index < _kshdb_scopes))
+	do
+		if [[ ${_kshdb_tscope} = ${_kshdb_scope[${_kshdb_index}]} ]]
+		then
+			return 0
+		else
+			_kshdb_index=_kshdb_index+1
+		fi
+	done
+	_kshdb_index=_kshdb_save_index
+	return 1
+}
+function _kshdb_get_cmd
+{
+	typeset _kshdb_command
+
+	_kshdb_curline=${1}
+	while _kshdb_read _kshdb_command?"DBG> "
+	do
+		trap "" 0
+		trap "_kshdb_signal ERR \${LINENO} \$?; trap - ERR" ERR
+		eval "${_kshdb_command}"
+	done
+}
+function _kshdb_get_scope
+{
+	_kshdb_tscope=${1}
+	if _kshdb_not _kshdb_find_scope ${_kshdb_tscope}
+	then
+		if _kshdb_not _kshdb_add_scope ${_kshdb_tscope}
+		then
+			_kshdb_print "...scope ${_kshdb_tscope} was not found."
+			return 1
+		fi
+	fi
+	if (($? == 0))
+	then
+		eval ${2}=_kshdb_bscope[${_kshdb_index}]
+		eval ${3}=_kshdb_escope[${_kshdb_index}]
+		return 0
+	else
+		return 1
+	fi
+}
+function _kshdb_get_bscope
+{
+	typeset ifs="${IFS}"
+
+	case ${1} in
+	?*.*([0-9]))
+		IFS="."
+		print "${1}" | read _kshdb_tscope _kshdb_bline
+		IFS="${ifs}"
+		;;
+	*([0-9]))
+		_kshdb_tscope="${_kshdb_dscope}"
+		_kshdb_bline=${1}
+		;;
+	*)
+		_kshdb_print "...invalid argument ${1} in parse of function scope."
+		return 1
+		;;
+	esac
+	_kshdb_get_scope ${_kshdb_tscope} ${2} ${3}
+}
+function _kshdb_not {
+
+	eval ${@}
+	if (($? == 0))
+	then
+		return 1
+	else
+		return 0
+	fi
+}
+function _kshdb_read
+{
+	read ${_kshdb_read_options} "${*}" < /dev/tty 2> /dev/tty
+}
+function _kshdb_print
+{
+	case ${1} in
+	-p) print "${2}\c"
+	    shift 2;;
+	+p) print "\c"
+	    shift;;
+	*)  print "DBG: \c"
+	esac
+	print "${*}" > /dev/tty
+}
+####################
+# _debug functions #
+####################
+typeset -fx _kshdb_arguments
+typeset -fx _kshdb_break
+typeset -fx _kshdb_calls
+typeset -fx _kshdb_delete
+typeset -fx _kshdb_examine
+typeset -fx _kshdb_go
+typeset -fx _kshdb_help
+typeset -fx _kshdb_list
+typeset -fx _kshdb_pause
+typeset -fx _kshdb_run
+typeset -fx _kshdb_signal
+typeset -fx _kshdb_step
+typeset -fx _kshdb_trace
+typeset -fx _kshdb_window
+function _kshdb_arguments
+{
+	typeset -i argnum
+	typeset arg
+
+	argnum=0
+	while ((argnum < _kshdb_MAX_ARGS))
+	do
+		arg="${_kshdb_arg[${argnum}]}"
+		if [[ -n "${arg}" ]]
+		then
+			_kshdb_print "\${${argnum}}=${arg}"
+			argnum=argnum+1
+		else
+			break
+		fi
+	done
+}
+function _kshdb_break
+{
+	typeset -i _kshdb_bidx
+	typeset _kshdb_command
+	typeset -i _kshdb_index
+	typeset -i _kshdb_breaks=0
+	typeset _kshdb_ifs="${IFS}"
+
+	if (($# == 0))
+	then
+		_kshdb_index=0
+		while ((_kshdb_index < _kshdb_scopes))
+		do
+			_kshdb_bidx=_kshdb_bscope[${_kshdb_index}]
+			_kshdb_bend=_kshdb_escope[${_kshdb_index}]
+			_kshdb_tscope=${_kshdb_scope[${_kshdb_index}]}
+			while ((_kshdb_bidx <= _kshdb_bend))
+			do
+				if [[ -n "${_kshdb_brkpnt[${_kshdb_bidx}]}" ]] \
+				&& [[ "${_kshdb_brkscp[${_kshdb_bidx}]}" = "${_kshdb_tscope}" ]]
+				then
+					_kshdb_breaks=_kshdb_breaks+1
+					_kshdb_bline=${_kshdb_brkpnt[${_kshdb_bidx}]}
+					_kshdb_print "...${_kshdb_tscope}.${_kshdb_bline}\c"
+					_kshdb_command="${_kshdb_brkcmd[${_kshdb_bidx}]}"
+					if [ -n "${_kshdb_command}" ]
+					then
+						_kshdb_print +p ": \"${_kshdb_command}\"."
+					else
+						_kshdb_print +p "."
+					fi
+				fi
+				_kshdb_bidx=_kshdb_bidx+1
+			done
+			_kshdb_index=_kshdb_index+1
+		done
+		if ((_kshdb_breaks == 0))
+		then
+			_kshdb_print "...no breakpoints defined."
+		fi
+		return
+	else
+		_kshdb_get_bscope ${1} _kshdb_bbeg _kshdb_bend
+		_kshdb_index=_kshdb_bline+_kshdb_bbeg
+		if ((_kshdb_index >= _kshdb_bbeg)) \
+		&& ((_kshdb_index <= _kshdb_bend))
+		then
+			_kshdb_brkpnt[${_kshdb_index}]=${_kshdb_bline}
+			_kshdb_brkscp[${_kshdb_index}]=${_kshdb_tscope}
+			if (($# > 0))
+			then
+				shift 1
+				_kshdb_brkcmd[${_kshdb_index}]="${@}"
+			fi
+			return 0
+		else
+			_kshdb_print "...${_kshdb_tscope}:${_kshdb_bline} is out of range."
+			return 1
+		fi
+	fi
+}
+function _kshdb_calls
+{
+	typeset -i _kshdb_index
+	typeset -L32 _kshdb_function
+	typeset _kshdb_srchfunc
+	typeset -i _kshdb_funcline
+	typeset -i _kshdb_offset
+	typeset -i _kshdb_record
+	typeset -i _kshdb_inc
+
+	if _kshdb_not ${_kshdb_in_main}
+	then
+		_kshdb_print "...start ${_kshdb_NAME} with the \"r\" (run) command."
+	fi
+	if ((_kshdb_depth >= 1))
+	then
+		_kshdb_print "...function call stack:" > /dev/tty
+		print "" > /dev/tty
+		print "	depth	function				line #" > /dev/tty
+		print "" > /dev/tty
+		_kshdb_index=_kshdb_depth+1
+		_kshdb_function="${_kshdb_xscope}"
+		print "	${_kshdb_index}	${_kshdb_function}	${_kshdb_line}" > /dev/tty
+		_kshdb_srchfunc=${_kshdb_xscope}
+		_kshdb_index=_kshdb_depth
+	else
+		_kshdb_print "...no calls on the stack."
+		return 0
+	fi
+	while ((_kshdb_index >= 1))
+	do
+		_kshdb_function=${_kshdb_fstack[${_kshdb_index}]}
+		_kshdb_funcline=${_kshdb_pstack[${_kshdb_index}]}
+		_kshdb_offset=${_kshdb_ostack[${_kshdb_index}]}
+		_kshdb_record=_kshdb_offset+_kshdb_funcline
+		_kshdb_inc=$(awk "BEGIN { n = 0 }
+			 NR == ${_kshdb_record}, /${_kshdb_srchfunc}($|#| |	)/ {	n++ }
+			 END { printf \"%d\", n }" ${_kshdb_SCRIPT})
+		_kshdb_funcline=_kshdb_funcline+_kshdb_inc-1
+		print "	${_kshdb_index}	${_kshdb_function}	${_kshdb_funcline}" > /dev/tty
+		_kshdb_srchfunc=${_kshdb_fstack[${_kshdb_index}]}
+		_kshdb_index=_kshdb_index-1
+	done
+	print "" > /dev/tty
+}
+function _kshdb_delete
+{
+	typeset -i _kshdb_bidx
+	typeset -i _kshdb_index
+	typeset -i _kshdb_breaks=0
+	typeset _kshdb_break
+
+	if (($# == 0))
+	then
+		_kshdb_print "...delete takes at least one argument."
+		return 0
+	fi
+	_kshdb_get_bscope ${1} _kshdb_bbeg _kshdb_bend
+	_kshdb_index=_kshdb_bline+_kshdb_bbeg
+	_kshdb_break="${_kshdb_tscope}:${_kshdb_bline}"
+	if ((_kshdb_index >= _kshdb_bbeg)) \
+	&& ((_kshdb_index <= _kshdb_bend))
+	then
+		if [[ -n "${_kshdb_brkpnt[${_kshdb_index}]}" ]]
+		then
+			unset _kshdb_brkpnt[${_kshdb_index}]
+			unset _kshdb_brkcmd[${_kshdb_index}]
+		else
+			_kshdb_print "...breakpoint ${_kshdb_break} is not defined."
+		fi
+	else
+		_kshdb_print "...${_kshdb_break} is out of range."
+	fi
+}
+function _kshdb_examine
+{
+	case ${1} in
+	*\[*)
+		eval value="\${${1}}"
+		;;
+	*)
+		eval value="\${${1}[*]}"
+		;;
+	esac
+	_kshdb_print "...${1}=${value}"
+}
+function _kshdb_exit
+{
+	_kshdb_quit=true
+	\exit 0
+}
+function _kshdb_go
+{
+	if ${_kshdb_in_main}
+	then
+		_kshdb_in_loop=false
+		_kshdb_xtrace=false
+		_kshdb_in_step=false
+		exec 2> /dev/null
+	else
+		_kshdb_print "...start ${_kshdb_NAME} with the \"r\" (run) command."
+		return 0
+	fi
+}
+function _kshdb_help
+{
+	print "Help: $_kshdb_HELP" | ${PAGER:-pg} 2> /dev/tty
+	return 0
+}
+function _kshdb_list
+{
+	typeset -i _kshdb_lstart
+	typeset -i _kshdb_lend
+	typeset _kshdb_bpatt
+	typeset _kshdb_epatt
+
+	_kshdb_lstart=${1}
+	_kshdb_lend=${2}
+	if (( _kshdb_lstart > _kshdb_lend ))
+	then
+		_kshdb_print "...no lines to print."
+		return 0
+	fi
+	if [[ "${_kshdb_dscope}" = "main" ]]
+	then
+		_kshdb_bpatt="/^function main/"
+		_kshdb_epatt="/^}; _debug 0\$/"
+	else
+		_kshdb_bpatt="/^[ 	]*(function ${_kshdb_dscope})|(${_kshdb_dscope} \\(\\))/"
+		_kshdb_epatt="/^[ 	]*}\$/"
+	fi
+	awk "
+		BEGIN { n=0 }
+		${_kshdb_bpatt}, ${_kshdb_epatt} {
+			if (n >= ${_kshdb_lstart} && n <= ${_kshdb_lend}) {
+				printf \"%4d:%s\n\", n, \$0
+			}
+			n++ }
+		" ${_kshdb_SCRIPT} 2> /dev/tty
+}
+function _kshdb_pause
+{
+	typeset _kshdb_command
+
+	_kshdb_curline=${1}
+	while ((_kshdb_STEPS == 0)) && ${_kshdb_in_loop} \
+	&& _kshdb_read _kshdb_command?"DBG> "
+	do
+		trap "" 0
+#		trap "_kshdb_print \"Help: ${_kshdb_HELP}\"; trap - ERR" ERR
+		trap "_kshdb_signal ERR \${LINENO} \$?; trap - ERR" ERR
+		eval "${_kshdb_command}"
+	done
+	if $_kshdb_in_loop && ((_kshdb_STEPS == 0))
+	then
+		print
+		_kshdb_exit
+	fi
+	if (( _kshdb_STEPS < 0 ))
+	then
+		_kshdb_STEPS=0
+	fi
+}
+function _kshdb_run
+{
+	if ${_kshdb_in_main}
+	then
+		_kshdb_print "...already executing ${_kshdb_NAME}."
+		return 0
+	else
+		_kshdb_xtrace=false
+		_kshdb_in_main=true
+		_kshdb_in_loop=false
+		main "${@}"
+		_kshdb_in_main=false
+		_kshdb_print "...returning from execution of ${_kshdb_NAME}."
+		_kshdb_in_loop=true
+		_kshdb_STEPS=0
+		_kshdb_xscope="${_kshdb_MAIN}"
+		_kshdb_exit=false
+		_kshdb_depth=0
+	fi
+}
+function _kshdb_set_scope
+{
+	typeset -i _kshdb_index
+	typeset -i _kshdb_inc
+	typeset _kshdb_bpatt
+	typeset _kshdb_epatt
+
+	if [[ -z "${1}" ]]
+	then
+		_kshdb_print "...display scope=${_kshdb_dscope}"
+		if [[ "${_kshdb_xscope}" = "${_kshdb_MAIN}" ]]
+		then
+			_kshdb_print "...execute scope=main"
+		else
+			_kshdb_print "...execute scope=${_kshdb_arg[0]}"
+		fi
+	else
+		if _kshdb_get_scope ${1} _kshdb_bindex _kshdb_eindex
+		then
+			_kshdb_dscope=${1}
+		fi
+	fi
+}
+function _kshdb_signal
+{
+#	typeset -i signal
+	typeset signal
+
+	unalias exit
+	exec 2> /dev/tty
+	signal=${1}
+	case ${signal} in
+	0)	_kshdb_print "...Exit Trap signal received."OQ;;
+	1)	_kshdb_print "...Hangup signal received.";;
+	2)	_kshdb_print "...Interrupt (Delete) signal received.";;
+	3)	_kshdb_print "...Quit signal received.";;
+	4)	_kshdb_print "...Illegal instruction signal received.";;
+	5)	_kshdb_print "...Trace Trap signal received.";;
+	6)	_kshdb_print "...IOT instruction signal received.";;
+	7)	_kshdb_print "...EMT instruction signal received.";;
+	8)	_kshdb_print "...Floating Point Exception signal received.";;
+	10)	_kshdb_print "...Bus Error signal received.";;
+	12)	_kshdb_print "...System Call error signal received."
+		_kshdb_print "...Bad argument to system call.";;
+	13)	_kshdb_print "...Pipe Error signal received."
+		_kshdb_print "...Writing process, but no reading process.";;
+	14)	_kshdb_print "...Software Termination signal received.";;
+	ERR)
+		_kshdb_print "...Error signal received at line ${2}."
+		_kshdb_print "...Error number is ${3}."
+		_kshdb_pause ${LINENO}
+		;;
+	esac
+	_kshdb_STEPS=0
+	_kshdb_pause ${LINENO}
+}
+function _kshdb_stack_push
+{
+#	_kshdb_print "...pushing ${_kshdb_xscope}."
+	_kshdb_depth=_kshdb_depth+1
+	_kshdb_fstack[${_kshdb_depth}]="${_kshdb_xscope}"
+	_kshdb_lstack[${_kshdb_depth}]="${_kshdb_in_loop}"
+	_kshdb_tstack[${_kshdb_depth}]="${_kshdb_xtrace}"
+	if ((_kshdb_line <= (_kshdb_eindex-_kshdb_bindex)))
+	then
+		_kshdb_pstack[${_kshdb_depth}]=${_kshdb_line}
+	else
+		_kshdb_pstack[${_kshdb_depth}]=1
+	fi
+	_kshdb_ostack[${_kshdb_depth}]=${_kshdb_bindex}
+}
+function _kshdb_stack_pop
+{
+	if ((_kshdb_depth == 0))
+	then
+		_kshdb_print "...bug in debugger, already popped all functions!"
+	else
+		if ${_kshdb_in_loop}
+		then
+			_kshdb_xtrace=true
+		else
+			_kshdb_xtrace="${_kshdb_tstack[${_kshdb_depth}]}"
+		fi
+		if ${_kshdb_lstack[${_kshdb_depth}]}
+		then
+			_kshdb_in_loop=true
+		fi
+		_kshdb_xscope="${_kshdb_fstack[${_kshdb_depth}]}"
+		_kshdb_depth=_kshdb_depth-1
+	fi
+#	_kshdb_print "...popped ${_kshdb_xscope}."
+}
+function _kshdb_step
+{
+	if _kshdb_not ${_kshdb_in_main}
+	then
+		_kshdb_print "...start ${_kshdb_NAME} with the \"r\" (run) command."
+		return 0
+	fi
+	if [ -z "${1}" ]
+	then
+		_kshdb_STEPS=1
+	else
+		_kshdb_STEPS=${1}
+	fi
+	_kshdb_in_loop=true
+	_kshdb_xtrace=false
+}
+function _kshdb_trace
+{
+	if _kshdb_not ${_kshdb_in_main}
+	then
+		_kshdb_print "...start ${_kshdb_NAME} with the \"r\" (run) command."
+		return 0
+	fi
+	if [ -z "${1}" ]
+	then
+		_kshdb_STEPS=1
+	else
+		_kshdb_STEPS=${1}
+	fi
+	_kshdb_in_loop=true
+	_kshdb_xtrace=true
+}
+function _kshdb_window
+{
+	typeset -i _kshdb_pstart
+	typeset -i _kshdb_pend
+
+	if [ -n "${3}" ]
+	then
+		_kshdb_curline=${3}
+	fi
+	_kshdb_pstart=_kshdb_curline${1}
+	_kshdb_pend=_kshdb_curline${2}
+	_kshdb_list ${_kshdb_pstart} ${_kshdb_pend}
+	if [ -n "${3}" ]
+	then
+		_kshdb_curline=${3}
+	else
+		_kshdb_curline=_kshdb_curline${1}${2}
+	fi
+}
+function _kshdb_xstep
+{
+	if ${_kshdb_xtrace}
+	then
+		_kshdb_STEPS=_kshdb_STEPS+2
+	else
+		_kshdb_STEPS=_kshdb_STEPS+1
+		_kshdb_xtrace=true
+	fi
+}
+function _kshdb_trap
+{
+#	_kshdb_print "..._kshdb_STEPS=${_kshdb_STEPS}"
+#	_kshdb_print "..._kshdb_in_loop=${_kshdb_in_loop}"
+	_kshdb_line=${1}
+	_kshdb_STEPS=_kshdb_STEPS-1
+	_kshdb_index=_kshdb_line+_kshdb_bindex
+#	_kshdb_print "..._kshdb_brkpnt[${_kshdb_index}]=${_kshdb_brkpnt[${_kshdb_index}]}"
+	if (( _kshdb_brkpnt[${_kshdb_index}] > 0 || _kshdb_STEPS == 0 ))
+	then
+		_kshdb_STEPS=0
+		if (( _kshdb_brkpnt[${_kshdb_index}] > 0 ))
+		then
+			_kshdb_in_loop=true
+			_kshdb_in_step=true
+			_kshdb_print "...break at ${_kshdb_xscope}.${_kshdb_line}."
+			if [ -n "${_kshdb_brkcmd[${_kshdb_index}]}" ]
+			then
+				eval "${_kshdb_brkcmd[${_kshdb_index}]}"
+			fi
+		fi
+		_kshdb_pause ${_kshdb_line}
+	fi
+	if ((_kshdb_STEPS < 0))
+	then
+		_kshdb_STEPS=0
+	fi
+}
+function _debug
+{
+	_kshdb_print "...loaded _debug script for ${_kshdb_NAME}."
+	_kshdb_line=${1}
+	_kshdb_set_scope main
+	_kshdb_arg[0]=${_kshdb_xscope}
+	_kshdb_pause ${_kshdb_line}
+}
+exec 2> /dev/tty

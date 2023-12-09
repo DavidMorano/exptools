@@ -1,0 +1,519 @@
+
+#	@(#)dcs:docsend.sh	2.14
+
+#*************************     DOCSEND     *************************
+#
+# docsend invokes the special nroff/troff macros needed to format a document
+# source file, generates a paper copy of the document, and sends an electronic
+# copy of the document to the Center 7911 (Library and Information Systems)
+# UNIX system at MH. Both hardcopy and electronic versions are time-stamped
+# to permit subsequent matching.
+#
+#			Site-Dependent Changes
+#
+# The following shell variables should be checked and changed if necessary:
+#	NODE - use "`/bin/uname -n`" (System V) or "`/bin/hostname`" (4.xBSD) or
+#		the actual system nodename if the commands do not exist
+#	MKHEAD - use "docsend.mkhd" or full pathname of docsend.mkhd (if placed
+#		in a directory other than the one in which docsend resides)
+#	NETWORK - use "uucp1", "uucp2", "usend", or "nusend" as explained below:
+#	    use "uucp1" for those systems selecting uucp network - AND uucp BY
+#		DEFAULT copies source files to the spool directory ("uucp -C"
+#		is usually illegal on these systems)
+#	    use "uucp2" for those systems selecting uucp network - AND uucp
+#		does NOT by default copy source files to the spool directory
+#		(invokes "-C" option of uucp)
+#	    use "usend" for those systems selecting usend network (must have
+#		proper entry in /usr/asp/udest)
+#	    use "nusend" for those systems selecting nusend network (must
+#		have NSC link to MHCC dedicated UNIX)
+#	DEVICE - use "aps", "i10", "i300", "post", "X97", "X", "450" as explained below:
+#	    use "aps" - if default device is APS-5 phototypesetter
+#	    use "i10" -       "       "      Imagen imprint-10 laser printer
+#	    use "i300"-       "       "      Imagen 8/300
+#	    use "post" -      "       "      PostScript laser printer (such as QMS PS-800)
+#	    use "X97" -       "       "      Xerox 9700 (with troff)
+#	    use "X"   -       "       "      Xerox 9700 (with nroff)
+#	    use "450" -       "       "      DASI 450
+#	DWB - use "1" if DOCUMENTER'S WORKBENCH Software precedes Release 2.0A;
+#		use "2" for DWB Release 2.0A or later.
+#
+# Check and change if necessary the site-dependent "send" command strings:
+#	send_aps may be set to "apsend" or "photo" (whichever is used locally);
+#		other values have not been tested;
+#		set to "NA" if no public mechanism available for APS-5 output.
+#	send_i10 should be set to local command
+#		set to "NA" if no public mechanism available for imagen output.
+#	send_i300 should be set to local command
+#		set to "NA" if no public mechanism available for imagen 8/300 output.
+#	send_post should be set to local command
+#		set to "NA" if no public mechanism available for postscript output.
+#	send_X97 should be left unchanged or set to "NA" (if "dx9700"
+#		and/or "opr" commands not available)
+#	send_X should be left unchanged or set to "NA" (if  "x9700"
+#		    and/or "opr" commands not available)
+#	send_450 should be left set to "none".
+#
+# To set up one special local device:
+#    Define default values for the following three variables which will be
+#    used if DEVICE is set to "local" or with the "-Tlocal" option:
+#	LOCFORMAT - set to local formatting command
+#	LOCEQN - set to local eqn command
+#	LOCPRINT - set to local print command
+#    The variables may be overriden by setting and exporting variables
+#    DOCFORMAT, DOCEQN, and DOCPRINT in the environment.
+#
+# To set up two or more special local devices:
+#    Set up a table (in a separate file) to be used by docsend to define
+#    the LOCFORMAT, LOCEQN, and LOCPRINT commands when "docsend -T<device>" is
+#    invoked. The table must have the following format:
+#		<device>:<format command>:<eqn command>:<print command>
+#	    Example (for use with "docsend -Tabc"):
+#		abc:/usr/local/bin/troff:eqn:dpost | postreverse | lpr -Pabc
+#    Define the full pathname of the table file in the variable LOCTABLE below.
+#
+# No other changes should be made to the shell script. The first line of the
+#	script should be left blank.
+#
+VERS=020293E
+#
+if test -r /bin/uname		# System V
+    then NODE=`/bin/uname -n`
+elif test -r /bin/hostname	# 4.xBSD
+    then NODE=`/bin/hostname`
+else
+    NODE=unknown
+fi
+
+if test -d "/usr/add-on/dwb"
+then
+	DWBROOT=/usr/add-on/dwb
+else
+	DWBROOT=/usr
+fi
+MACRODIR=${DWBROOT}/lib/macros
+DWBLIB=${DWBROOT}/lib/dwb
+UUCPPUBLIC=/usr/spool/uucppublic
+UNISONBIN=/usr/add-on/unison/bin
+
+MKHEAD=docsend.mkhd
+NETWORK=uucp2
+DEVICE=X97
+DWB=2
+SIDE=1
+#
+#	special local command defaults (to define one local device)
+#
+LOCFORMAT=""
+LOCEQN=""
+LOCPRINT=""
+#
+#	full pathname of table containing formatting, eqn, and print commands
+#		for two or more special local devices
+#
+LOCTABLE=""
+#
+#	special handling for exptools
+#	look for non-exptools version of docsend; if found, transfer control
+#		because it probably has been tailored to the local environment
+#
+ETOOLS=`echo $VERS | sed s/......//`
+if test "x$ETOOLS" = "xE"
+    then
+	DOCPATH=`for name in \`echo $PATH | sed 's/^:/.:/
+						s/::/:.:/g
+						s/:$/:./
+						s/:/ /g'\`
+	    do
+		if test -x $name/docsend
+		    then
+			if [ $name = $TOOLS/bin -o ! -x $name/docsend -o $name = $TOOLS/lib ]
+			    then
+				:
+			    else
+				echo $name/docsend
+				break
+			fi
+		fi
+	    done`
+
+	if test -n "$DOCPATH"
+	    then
+		exec  $DOCPATH $*
+	fi
+
+	MKHEAD=$TOOLS/lib/docsend/docsend.mkhd
+	NETWORK=uucp2
+	DEVICE=X97
+	GREPLH=`/bin/sh -c "grep '\\\(LH' ${MACRODIR}/strings.mm 2>/dev/null"`; GREPSTAT="$?"
+	if test -d "$DWBLIB" -a -f "${MACRODIR}/strings.PM" -a "$GREPSTAT" = "0"
+	    then
+		DWB="2"
+	    else
+		DWB="1"
+	fi
+fi
+#
+#	special handling for word processing
+#
+WRD_PRC=${WRD_PRC:-`echo $VERS | sed s/......//`}
+if test "x$WRD_PRC" = "xW"
+    then
+	NETWORK=uucp2
+	DEVICE=UNDEF
+fi
+#
+#	special handling for nw systems
+#
+SYS_2=`echo $NODE | sed 's/\(..\).*/\1/'`
+if test $SYS_2 = "nw"
+    then
+	ACCOUNT="NWRJPR"; export ACCOUNT
+fi
+#
+#	fixed values
+#
+TYPE=mcs
+DDEST=library
+LOG=$HOME/.DOCLOG
+USAGE="Usage: docsend [options] [file]"
+umask 022
+#
+# parse command line arguments one at a time
+#
+set -- `getopt T:D:m:b:a:d:f:c:12exv "$@"`
+if test $? != 0
+then
+    echo $USAGE
+    RETURN=2
+    exit $RETURN
+fi
+for i in $*
+do
+    case $i in
+	-m)		if test $2 = "c" -o $2 = "cs"
+			    then
+				TYPE=mcs
+			fi
+			if test $2 = "r" -o $2 = "rr"
+			    then
+				TYPE=mrr
+			fi
+			shift 2
+			;;
+	-T)		if test $2 != "aps" -a $2 != "i10" -a $2 != "i300" -a $2 != "post" -a $2 != "X97" -a $2 != "X" -a $2 != "450" -a $2 != "local"
+			    then
+				if test "x$LOCTABLE" != "x"
+				    then
+					if test -s "$LOCTABLE"
+					    then
+						DEVICE="local"
+						LOCFORMAT=`grep "^$2:" $LOCTABLE | awk -F: '{print $2}'`; export LOCFORMAT
+						LOCEQN=`grep "^$2:" $LOCTABLE | awk -F: '{print $3}'`; export LOCEQN
+						LOCPRINT=`grep "^$2:" $LOCTABLE | awk -F: '{print $4}'`; export LOCPRINT
+					    else
+						echo "docsend: can't open $LOCTABLE"
+						RETURN=2
+						exit $RETURN
+					fi
+				    else
+					echo "docsend: undefined option -T$2"
+					RETURN=2
+					exit $RETURN
+				fi
+			fi
+			if test "x$DEVICE" != "xlocal"
+			    then
+				DEVICE=$2
+			fi
+			shift 2;
+			;;
+	-D)		if test $2 != "i10"
+			    then
+				echo "docsend: undefined option -D$2"
+				exit 2
+			fi
+			if test $2 = "i10"
+			    then
+				DEVICE="a.i"
+			fi
+			shift 2
+			;;
+	-b)		BBIN="$2"
+			shift 2
+			for j in $*
+			do
+			    case $j in
+				-*) break ;;
+				*)  BBIN="$BBIN $1"; shift;;
+			    esac
+			done
+			export BBIN
+			;;
+	-a)		ACCOUNT=$2; shift 2; export ACCOUNT
+			;;
+	-d)		REMOTEDEST=$2; shift 2; export REMOTEDEST
+			;;
+	-f)		FORMS=$2; shift 2; export FORMS
+			;;
+	-c)		COPIES=$2; shift 2; export COPIES
+			;;
+	-1)		SIDE=1; shift;;
+	-2)		SIDE=2; shift;;
+	-e)		EQN=1; export EQN; shift;;
+	-x)		DRAFT=1; shift;;
+	-v)		DEBUG=1; export DEBUG; shift;;
+	--)		shift; break;;
+    esac
+done
+#
+#	define TARGET - based on TYPE
+#
+TARGET=${UUCPPUBLIC}/doc.$TYPE
+#
+#	format and device command strings
+#
+troff="troff -$TYPE 2>err.$$"
+nroff="nroff -$TYPE 2>err.$$"
+dx9700="dx9700 2>dxerr.$$"
+opr="opr"
+npf="npf"
+x9700="9700"
+
+#
+#	special handling for exptools
+#
+if test "x$ETOOLS" = "xE"
+    then
+	troff="troff 2>err.$$"
+	nroff="nroff 2>err.$$"
+fi
+
+#
+#	site-dependent command strings - change "send" commands as necessary;
+#
+format_aps="$troff -Taps";		send_aps="apsend"
+format_i10="$troff -Ti10";		send_i10="NA"
+format_i300="$troff -Ti300";		send_i300="NA"
+format_post="$troff -Tpost";		send_post="${UNISONBIN}/prt -ltroff -o \"dpost -C${DWBROOT}/lib/postscript/roundpage.ps -x0.25 -y0.05\" -K \"STAPLES n\" -d/post"
+format_X97="$troff -TX97.tim10p";	send_X97="$dx9700 -TX97.tim10p | $opr -txr -r -o0"
+format_X="$nroff -TX -rX1 -u1";		send_X="$npf -l66 -b -X | $x9700 -ib -ypica -pport | $opr -txr -r"
+format_450="$nroff -T450";		send_450="none"
+#
+#	special handling for DWB2.0 or 2.0A
+#
+if test "$DWB" = "2"
+    then
+	format_X97="$troff -TX97.ti10p"
+	send_X97="$dx9700 -TX97.ti10p | $opr -txr -r -o0"
+	send_X="x9700 -TX -oport -spica | $opr -txr -r"
+fi
+#
+#	more special handling for exptools
+#
+if test "x$ETOOLS" = "xE"
+    then
+	send_aps="photo"
+	send_i10="i10 "
+	send_i300="NA"
+	send_post="NA"
+	export ETOOLS
+fi
+#
+#	more special handling for word processing
+#
+if test "x$WRD_PRC" = "xW"
+    then
+	send_i10="lp -n1 -oimpress -oI"
+	send_i300="lp -n1 -oimpress -oI"
+	send_post="lp -oP"
+	export WRD_PRC
+fi
+#
+#	more special handling for "nw" machines
+#
+if test $SYS_2 = "nw"
+    then
+	if test "$DWB" = "2"
+	    then
+		send_X97="$dx9700 -TX97.ti10p | nopr -r -o0"
+		send_X="x9700 -TX -oport -spica | nopr -r -o0"
+	    else
+		send_X97="$dx9700 -TX97.tim10p | nopr -r -o0"
+		send_X="$npf -l66 -b -X | $x9700 -ib -ypica -pport | nopr -r -o0"
+	fi
+fi
+#
+#	special handling to setup DOCFORMAT, DOCPRINT, and DOCEQN for "local"
+#
+if test $DEVICE = "local"
+    then
+	DOCFORMAT=${DOCFORMAT:-$LOCFORMAT}
+	DOCPRINT=${DOCPRINT:-$LOCPRINT}
+	DOCEQN=${DOCEQN:-$LOCEQN}
+	if test "x$DOCFORMAT" != "x"
+	    then
+		DOCFORMAT="$DOCFORMAT 2>err.$$"
+	fi
+	export DOCFORMAT DOCEQN DOCPRINT
+fi
+#
+#	if environmental variable DOCPRINT has been set and exported, redefine send_i10, send_i300, and send_post
+#
+if test "x$DOCPRINT" != "x"
+    then
+	send_i10=$DOCPRINT
+	send_i300=$DOCPRINT
+	send_post=$DOCPRINT
+fi
+#
+#	set up format and send commands - depending on device
+#
+if test $DEVICE = "local"
+    then
+	if test -z "$DOCFORMAT"
+	    then
+		echo "docsend: format command for local device has not been defined"
+		exit
+	    else
+		FCMD="$DOCFORMAT"
+	fi
+	if test -z "$DOCPRINT"
+	    then
+		echo "docsend: print command for local device has not been defined"
+		exit
+	    else
+		SCMD="$DOCPRINT"
+	fi
+	if test "$EQN" = "1" -a -z "$DOCEQN"
+	    then
+		echo "docsend: eqn command for local device has not been defined"
+		exit
+	fi
+elif test $DEVICE = "aps"
+    then
+	FCMD=$format_aps
+	SCMD=$send_aps
+elif test $DEVICE = "i10"
+    then
+	FCMD=$format_i10
+	SCMD=$send_i10
+elif test $DEVICE = "a.i"
+    then
+	FCMD=$format_aps
+	SCMD=$send_i10
+elif test $DEVICE = "i300"
+    then
+	FCMD=$format_i300
+	SCMD=$send_i300
+elif test $DEVICE = "post"
+    then
+	FCMD=$format_post
+	SCMD=$send_post
+elif test $DEVICE = "X97"
+    then
+	FCMD=$format_X97
+	SCMD=$send_X97
+elif test $DEVICE = "X"
+    then
+	FCMD=$format_X
+	SCMD=$send_X
+elif test $DEVICE = "450"
+    then
+	FCMD=$format_450
+	SCMD=$send_450
+elif test $DEVICE = "UNDEF"
+    then
+	echo "docsend: use -T or -D option to specify device (no default on this system)"
+	exit
+else
+	echo "docsend: undefined device $DEVICE"
+	exit
+fi
+#
+#	if send command = "NA", send message and exit
+#
+if test "$SCMD" = "NA"
+    then
+	if test $DEVICE = "aps"
+	    then
+		echo "docsend: APS-5 output not available on this system"
+		exit
+	elif test $DEVICE = "i10"
+	    then
+		echo "docsend: print command for Imprint-10 has not been defined on this system;"
+		echo "         to define, use environment variable DOCPRINT; see docsend(1) man page."
+		exit
+	elif test $DEVICE = "i300"
+	    then
+		echo "docsend: print command for Imagen 8/300 has not been defined on this system;"
+		echo "         to define, use environment variable DOCPRINT; see docsend(1) man page."
+		exit
+	elif test $DEVICE = "post"
+	    then
+		echo "docsend: print command for PostScript has not been defined on this system;"
+		echo "         to define, use environment variable DOCPRINT; see docsend(1) man page."
+		exit
+	elif test $DEVICE = "X97" -o $DEVICE = "X"
+	    then
+		echo "docsend: Xerox 9700 output not available on this system"
+		exit
+	fi
+fi
+#
+# if no other arguments, use temp.cover for input file if TYPE=mcs 
+#	(or temp.clear if TYPE=mrr); otherwise, use argument
+#
+if test $# = 0
+    then
+	if test -r "temp.cover" -a $TYPE = "mcs"
+	    then
+		INFILE="temp.cover"
+	elif test -r "temp.clear" -a $TYPE = "mrr"
+	    then
+		INFILE="temp.clear"
+	    else
+		echo docsend: input file not designated
+		echo $USAGE
+		RETURN=2
+		exit $RETURN
+	fi
+    else
+	INFILE=$1
+fi
+export DEVICE SIDE INFILE NETWORK NODE TYPE VERS DDEST TARGET LOG FCMD SCMD DWB
+#
+#	construct and prepend header record; timestamp header & input file;
+#	if cover sheet, store first document number in header
+#
+PID=$$
+export PID
+RETURN=0
+trap 'rm -f dxerr.$$ tmpmail /tmp/doc*$PID $NODE*$PID* ; exit $RETURN' 0 1 2 3 15
+rm -f tmpmail
+if $MKHEAD
+    then
+	RETURN=0
+    else
+	ERROR=$?
+	if test $ERROR -ne 2
+	    then
+		echo "docsend: mkhd error $ERROR - document not submitted"
+	fi
+	RETURN=4
+	exit $RETURN
+fi
+if test -s tmpmail
+    then
+	mail < tmpmail $NODE!$LOGNAME
+fi
+if test -s dxerr.$$
+    then
+	cat dxerr.$$ >>err.$$
+fi
+if test -s err*$PID
+    then
+	exit
+    else
+	rm -f err*$PID
+fi

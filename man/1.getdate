@@ -1,0 +1,1386 @@
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          getdate - get a date and time and print it according to a
+          supplied format
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ggggeeeettttddddaaaatttteeee [[[[----vvvv]]]] [[[[----eeee]]]] [[[[----pppp]]]] [[[[----ffff _o_u_t__f_o_r_m_a_t]]]] [[[[++++_o_u_t__f_o_r_m_a_t]]]] [[[[_d_a_t_e_-
+          _s_t_r_i_n_g]]]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _g_e_t_d_a_t_e is a general purpose date and time interpreter.
+          Input can be free-form:  _g_e_t_d_a_t_e will fill in unspecified
+          information.  _g_e_t_d_a_t_e recognizes most common date and time
+          notations such as "March 17, 1997" and "10:24 pm," less com-
+          mon ones such as "unix time" and "day of year," increments
+          such as "+4 weeks" or "next Tuesday," and many common holi-
+          days, e.g., "Thanksgiving" and "Easter."  By specifying
+          optional output formats, conversion between arbitrary
+          date/time representations can also be performed.
+
+          ----vvvv            (vvvv____erbose) prints _d_a_t_e_s_t_r_i_n_g using a detailed,
+                        preset output format on stderr.
+
+          ----eeee            (eeee____arly) by default, _g_e_t_d_a_t_e fills in unspeci-
+                        fied information with the _l_a_t_e_s_t time con-
+                        sistent with the rest of the input; ----eeee makes
+                        _g_e_t_d_a_t_e use the _e_a_r_l_i_e_s_t date/time.  See the
+                        section below on """"WWWWhhhhaaaatttt _g_e_t_d_a_t_e RRRReeeettttuuuurrrrnnnnssss....""""
+
+          ----pppp            (pppp____ast or pppp____resent) by default, _g_e_t_d_a_t_e looks
+                        forward in time to fill in unspecified
+                        date/time information; ----pppp makes _g_e_t_d_a_t_e look
+                        backwards to fill in the date/time.  See the
+                        section below on """"WWWWhhhhaaaatttt _g_e_t_d_a_t_e RRRReeeettttuuuurrrrnnnnssss....""""
+
+          ----ffff _o_u_t__f_o_r_m_a_t (ffff____ormat) specifies how to print the date, ala
+                        _p_r_i_n_t_f(3S).  See the section below on """"OOOOuuuuttttppppuuuutttt
+                        FFFFoooorrrrmmmmaaaattttssss....""""
+
+          ++++_o_u_t__f_o_r_m_a_t   the ++++ option is identical to the ----ffff option,
+                        and is included for compatibility with _d_a_t_e.
+
+          _d_a_t_e_s_t_r_i_n_g    a _t_i_m_e, _d_a_t_e, or _i_n_c_r_e_m_e_n_t in most common for-
+                        mats.  If no _d_a_t_e_s_t_r_i_n_g or _d_a_t_e_s_t_r_i_n_g__f_i_l_e is
+                        supplied, _d_a_t_e_s_t_r_i_n_g defaults to the present
+                        date and time.
+
+     DDDDAAAATTTTEEEESSSSTTTTRRRRIIIINNNNGGGG
+          _D_a_t_e_s_t_r_i_n_g can consist of _d_a_t_e_s (e.g., "8/14/96" or
+          "second Wednesday in September"), _t_i_m_e_s (e.g., "9:45 am"),
+          or _i_n_c_r_e_m_e_n_t_s (e.g., "next week" or "-6 hours").  Upper and
+          lower case letters are equivalent, as are singulars and
+          plurals.  Missing information is generated as explained in
+
+
+
+     Page 1                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          the next section.  Contradictory information is resolved as
+          explained in the section on """"CCCCoooommmmbbbbiiiinnnnaaaattttiiiioooonnnnssss"""" below.
+
+          As a special case, when no _d_a_t_e_s_t_r_i_n_g is given, the current
+          time nnnnoooowwww is used; this makes _g_e_t_d_a_t_e consistent with
+          _d_a_t_e(_1).
+
+     WWWWhhhhaaaatttt _g_e_t_d_a_t_e RRRReeeettttuuuurrrrnnnnssss:::: DDDDeeeeaaaaddddlllliiiinnnneeeessss
+          Usually, the _d_a_t_e and _t_i_m_e information in _d_a_t_e_s_t_r_i_n_g is
+          incomplete.  For instance, the _d_a_t_e_s_t_r_i_n_g """"JJJJaaaannnn.... 22223333 1111::::44443333 aaaammmm"""",
+          while fairly complete, still does not specify seconds.  The
+          _d_a_t_e_s_t_r_i_n_g """"1111999999997777"""" is even less complete -- month, day, hour,
+          minute, and second must all be filled in by _g_e_t_d_a_t_e. (After
+          the date/time has been filled in, it is then modified by the
+          _i_n_c_r_e_m_e_n_t_s.  See the section below on """"CCCCoooommmmbbbbiiiinnnnaaaattttiiiioooonnnnssss"""" for
+          clarification of combining date/times with _i_n_c_r_e_m_e_n_t_s.)
+
+          By default, _g_e_t_d_a_t_e fills in the date/time using a "latest
+          possible deadline" model.  To understand the intuition of
+          how _g_e_t_d_a_t_e fills in the date and time, think of the dead-
+          line of submitting your taxes by April 15; you will assume
+          _n_e_x_t April 15, and you will also assume the deadline reaches
+          as _l_a_t_e as possible into April 15, namely 11:59:59 PM (the
+          last second in April 15).  _g_e_t_d_a_t_e fills in the llllaaaatttteeeesssstttt time
+          consistent with the given information.
+
+        TTTThhhheeee ----eeee OOOOppppttttiiiioooonnnn
+          When the ----eeee (early) option is given, _g_e_t_d_a_t_e will fill in
+          the eeeeaaaarrrrlllliiiieeeesssstttt possible time consistent with the rest of the
+          provided information.  That is, _g_e_t_d_a_t_e uses an "earliest
+          possible deadline" model.  An intuitive example for an ear-
+          liest deadline would be scheduling an appointment.  For
+          instance, if you schedule an appointment for 2 PM, you would
+          assume that the time is for 2:00:00 PM rather than
+          2:59:59 PM.
+
+        TTTThhhheeee ----pppp OOOOppppttttiiiioooonnnn
+          When the ----pppp (past or present) option is given, _g_e_t_d_a_t_e will
+          again fill in the latest possible time, but will make
+          interpretations looking bbbbaaaacccckkkk in time.  With ----pppp,,,, _g_e_t_d_a_t_e will
+          never fill in a date/time beyond the present.  For instance,
+          "_g_e_t_d_a_t_e -_p _A_p_r_i_l _1_5" would result in the _p_r_e_v_i_o_u_s April 15,
+          while "_g_e_t_d_a_t_e _A_p_r_i_l _1_5" would return with the _n_e_x_t April
+          15.  Another way to think of ----pppp is that it infers the key-
+          word "last" onto date/time (e.g., "last April 15"), while
+          the default infers the keyword "next" (e.g., "next April
+          15").  Future dates/times are truncated to the present.
+
+          The ----pppp option is useful for applications in which the
+          intended date/time is implicitly in the past, so that the
+          user does not have to provide extra information to constrain
+          the date/time.  For example, a file archive program that
+
+
+
+     Page 2                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          retrieves files might ask the user for the retrieval date
+          and then use _g_e_t_d_a_t_e -_p to make sure that the user's
+          date/time input is in the past.  The advantage is that the
+          user does not have to provide additional information such as
+          the year.
+
+        CCCCoooommmmbbbbiiiinnnniiiinnnngggg tttthhhheeee ----eeee aaaannnndddd ----pppp OOOOppppttttiiiioooonnnnssss
+          When both ----eeee and ----pppp are used, the result is the earliest
+          date/time looking back.  For example, "_g_e_t_d_a_t_e -_e -_p _2 _p_m"
+          would result in the _p_r_e_v_i_o_u_s 2:00:00 pm.
+
+        DDDDaaaatttteeee
+          _D_a_t_e specifies the month, day and year.  The usual month
+          names and abbreviations are recognized:  jjjjaaaannnnuuuuaaaarrrryyyy,,,, jjjjaaaannnn,,,,
+          ffffeeeebbbbrrrruuuuaaaarrrryyyy,,,, ffffeeeebbbb,,,, mmmmaaaarrrrcccchhhh,,,, mmmmaaaarrrr,,,, aaaapppprrrriiiillll,,,, aaaapppprrrr,,,, mmmmaaaayyyy,,,, jjjjuuuunnnneeee,,,, jjjjuuuunnnn,,,, jjjjuuuullllyyyy,,,,
+          jjjjuuuullll,,,, aaaauuuugggguuuusssstttt,,,, aaaauuuugggg,,,, sssseeeepppptttteeeemmmmbbbbeeeerrrr,,,, sssseeeepppptttt,,,, sssseeeepppp,,,, ooooccccttttoooobbbbeeeerrrr,,,, oooocccctttt,,,,
+          nnnnoooovvvveeeemmmmbbbbeeeerrrr,,,, nnnnoooovvvv,,,, ddddeeeecccceeeemmmmbbbbeeeerrrr,,,, and ddddeeeecccc.... The year cannot be earlier
+          than the year 1 nor later than 9999.  The twentieth century
+          is assumed if only two digits are used for the year in for-
+          mats such as "5/30/88" or "4-12-95".
+
+          nnnnoooowwww is a special _d_a_t_e and _t_i_m_e; ttttooooddddaaaayyyy,,,, ttttoooommmmoooorrrrrrrroooowwww,,,, and
+          yyyyeeeesssstttteeeerrrrddddaaaayyyy are special _d_a_t_e_s.
+
+          _U_n_i_x _t_i_m_e (seconds since 00:00:00 January 1, 1970 GMT) can
+          be entered as a number followed by uuuunnnniiiixxxxttttiiiimmmmeeee or uuuunnnniiiixxxx.... (Unix-
+          time through 4294967295 can be entered.)  Also, any
+          uncharacterized number larger than 9999 (13760 if we are
+          intrepreting for the Hebrew calendar) is automatically
+          interpreted as a uuuunnnniiiixxxxttttiiiimmmmeeee,,,, even if the the keyword uuuunnnniiiixxxxttttiiiimmmmeeee
+          is missing.  Note that a uuuunnnniiiixxxxttttiiiimmmmeeee is both a _d_a_t_e and a _t_i_m_e.
+
+          Certain _h_o_l_i_d_a_y_s are recognized as special dates.  See the
+          section below on """"HHHHoooolllliiiiddddaaaayyyyssss"""".
+
+          The n-th ddddaaaayyyy ooooffff yyyyeeeeaaaarrrr can be specified, e.g., """"111199991111 ddddaaaayyyy ooooffff
+          yyyyeeeeaaaarrrr"""" will be interpreted as July 10 (in a non-leap year).
+          The abbreviation ddddooooyyyy can be used.
+
+          A JJJJuuuulllliiiiaaaannnn ddddaaaatttteeee can be input, for example, "jjjjuuuulllliiiiaaaannnn ddddaaaayyyy
+          2222444444448888222266668888...."  (Formally, the Julian day is the number of days
+          since 12 noon GMT Jan 1, 4713 BC and is unrelated to the
+          Julian calendar.  Note that the Julian Day changes at _n_o_o_n
+          _G_M_T (Greenwich Mean Time -- usually about 4-8 hours ahead of
+          times in the US) and does _n_o_t change at midnight.  Further
+          note that JJJJuuuulllliiiiaaaannnn ddddaaaayyyy should not be confused with ddddaaaayyyy ooooffff
+          yyyyeeeeaaaarrrr.)  Also accepted is the abbreviation jjjjdddd or the word
+          jjjjuuuulllliiiiaaaannnn followed by optional words/symbol ddddaaaayyyy,,,, ddddaaaatttteeee,,,, nnnnuuuummmmbbbbeeeerrrr,,,,
+          and/or #### (watch for conflicts with the Unix comment symbol).
+          Conforming with JJJJDDDD notational conventions, the Julian day
+          phrase must _p_r_e_c_e_d_e the actual number, e.g., JJJJDDDD 2222444444448888000044442222.
+
+
+
+
+     Page 3                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          Suppose it is now May 30, 1990 10:09:24 pm, and that the
+          local system is in Chicago (Central Time).  Then the follow-
+          ing are legal formats and examples for _d_a_t_e (the date and
+          time that _g_e_t_d_a_t_e returns are also shown):
+
+                  %%%% ggggeeeettttddddaaaatttteeee
+                  Fri May 30 22:09:24 CDT 1990
+                  (_D_e_f_a_u_l_t_s _t_o _t_h_e _p_r_e_s_e_n_t.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee NNNNoooovvvveeeemmmmbbbbeeeerrrr 2222,,,, 1111999999992222
+                  Mon Nov  2 23:59:59 CST 1992
+                  (_m_o_n_t_h _d_a_y, _y_e_a_r)
+                  (_N_o_t_e _t_h_a_t _t_h_e _h_o_u_r, _m_i_n_u_t_e_s, _a_n_d _s_e_c_o_n_d_s
+                  _a_r_e _t_h_e _l_a_t_e_s_t _p_o_s_s_i_b_l_e _t_h_a_t _a_r_e _c_o_n_s_i_s_t_e_n_t
+                  _w_i_t_h _N_o_v_e_m_b_e_r _2, _1_9_9_2, _i._e., _t_h_e _d_e_a_d_l_i_n_e _w_e _g_e_t
+                  _i_s _t_h_e _l_a_s_t _s_e_c_o_n_d _o_f _t_h_e _d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ddddeeeecccc 7777 1111999944441111
+                  Sun Dec  7 23:59:59 CST 1941
+                  (_m_o_n_t_h _d_a_y _y_e_a_r)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ffffeeeebbbbrrrruuuuaaaarrrryyyy 1111999988884444
+                  Wed Feb 29 23:59:59 CST 1984
+                  (_m_o_n_t_h _y_e_a_r)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 1111////3333////88883333
+                  Mon Jan  3 23:59:59 CST 1983
+                  (_m_m/_d_d/_y_y)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11116666----ffffeeeebbbb----1111999999995555
+                  Thu Feb 16 23:59:59 CST 1995
+                  (_d_d-_m_o_n_t_h-_y_y)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11112222----11112222----99999999
+                  Sun Dec 12 23:59:59 CST 1999
+                  (_m_m-_d_d-_y_y)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 8888////11115555
+                  Wed Aug 15 23:59:59 CDT 1990
+                  (_m_m/_d_d)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 6666----11110000
+                  Sun Jun 10 23:59:59 CDT 1990
+                  (_m_m-_d_d)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11110000 MMMMaaaayyyy
+                  Fri May 10 23:59:59 CDT 1991
+                  (_d_a_y _m_o_n_t_h)
+                  (_N_o_t_e _t_h_a_t _w_e _g_e_t _M_a_y _1_0 _o_f _n_e_x_t _y_e_a_r.)
+
+
+
+
+
+
+     Page 4                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11112222 DDDDeeeecccceeeemmmmbbbbeeeerrrr 1111999966660000
+                  Mon Dec 12 23:59:59 CST 1960
+                  (_d_a_y _m_o_n_t_h _y_e_a_r)
+
+                  %%%% ggggeeeettttddddaaaatttteeee AAAAuuuugggg 11119999
+                  Sun Aug 19 23:59:59 CDT 1990
+                  (_m_o_n_t_h _d_a_y)
+
+                  %%%% ggggeeeettttddddaaaatttteeee AAAAuuuugggg 33332222
+                  Sun Aug 31 23:59:59 CDT   32
+                  (_m_o_n_t_h _y_e_a_r -- _n_o_t_e _t_h_i_s _i_s nnnnooootttt _m_o_n_t_h _d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee OOOOccccttttoooobbbbeeeerrrr
+                  Wed Oct 31 23:59:59 CST 1990
+                  (_m_o_n_t_h)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 1111999999995555
+                  Sun Dec 31 23:59:59 CST 1995
+                  (_y_e_a_r)
+                  (_N_o_t_e _w_e _g_e_t _t_h_e _l_a_s_t _s_e_c_o_n_d _o_f _t_h_e _y_e_a_r.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee """"SSSSeeeepppptttt 9999 1111777755552222""""
+                  getdate: 9 - bad day for the month September in the year 1752
+                  (_T_h_i_s _w_a_s _t_h_e _m_o_n_t_h _t_r_a_n_s_i_t_i_o_n_i_n_g _t_h_e _J_u_l_i_a_n
+                  _a_n_d _G_r_e_g_o_r_i_a_n _c_a_l_e_n_d_a_r_s.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee """"MMMMaaaarrrrcccchhhh 11115555 6666""""
+                  Mon Mar 15 23:59:59 CDT    6
+                  (_N_o_t_e _t_h_a_t _t_h_i_s _i_s _t_h_e _y_e_a_r _6.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee nnnnoooowwww
+                  Wed May 30 22:09:24 CDT 1990
+                  (_R_i_g_h_t _n_o_w.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ttttooooddddaaaayyyy
+                  Wed May 30 23:59:59 CDT 1990
+                  (_N_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _l_a_t_e_s_t _p_o_s_s_i_b_l_e _t_i_m_e
+                  _f_o_r _t_o_d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee yyyyeeeesssstttteeeerrrrddddaaaayyyy
+                  Tue May 29 23:59:59 CDT 1990
+                  (_N_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _l_a_t_e_s_t _p_o_s_s_i_b_l_e _t_i_m_e
+                  _f_o_r _y_e_s_t_e_r_d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ttttoooommmmoooorrrrrrrroooowwww
+                  Thu May 31 23:59:59 CDT 1990
+                  (_N_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _l_a_t_e_s_t _p_o_s_s_i_b_l_e _t_i_m_e
+                  _f_o_r _t_o_m_o_r_r_o_w.)
+
+
+
+
+
+
+
+     Page 5                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee  555566668888999922220000333399994444 uuuunnnniiiixxxxttttiiiimmmmeeee
+                  Mon Jan 11 11:26:34 CST 1988
+                  (_u_n_i_x _t_i_m_e)
+
+                  %%%% ggggeeeettttddddaaaatttteeee  555566668888999922220000333399994444
+                  Mon Jan 11 11:26:34 CST 1988
+                  (_A_n_y _n_u_m_b_e_r > _9_9_9_9 _i_s _a _u_n_i_x_t_i_m_e.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee  111199991111 ddddaaaayyyy ooooffff yyyyeeeeaaaarrrr
+                  Tue Jul 10 22:09:24 CDT 1990
+                  (_n-_t_h _D_a_y _o_f _t_h_e _y_e_a_r)
+
+                  %%%% ggggeeeettttddddaaaatttteeee  jjjjdddd 2222444444445555777700000000
+                  Sun Jan  1 05:59:59 CST 1984
+                  (_A _J_u_l_i_a_n _d_a_t_e.  _N_o_t_e _t_h_e _t_i_m_e _i_s
+                  _1_1:_5_9:_5_9 _G_M_T.)
+
+
+          When the ----eeee option is used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee sssseeeepppptttt
+                  Sat Sep  1 00:00:00 CDT 1990
+                  (_n_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _f_i_r_s_t _s_e_c_o_n_d _i_n
+                  _n_e_x_t _S_e_p_t_e_m_b_e_r.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee 1111999955555555
+                  Sat Jan  1 00:00:00 CST 1955
+                  (_n_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _f_i_r_s_t _s_e_c_o_n_d _i_n _1_9_5_5.)
+
+
+          When the ----pppp option is used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp NNNNoooovvvveeeemmmmbbbbeeeerrrr 2222,,,, 2222000044440000
+                  Fri May 30 22:09:24 CDT 1990
+                  (----pppp _o_p_t_i_o_n -- _c_a_p_p_e_d _t_o _t_h_e
+                  _p_r_e_s_e_n_t -- _1_9_9_2 _i_s _i_n _t_h_e _f_u_t_u_r_e, _s_o _w_e
+                  _g_e_t _t_h_e _p_r_e_s_e_n_t _d_a_t_e/_t_i_m_e)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp 8888////11115555
+                  Tue Aug 15 23:59:59 CDT 1989
+                  (_w_e _g_e_t _t_h_e _8/_1_5 _f_r_o_m last _y_e_a_r)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp OOOOccccttttoooobbbbeeeerrrr
+                  Tue Oct 31 23:59:59 CST 1989
+                  (_n_o_t_e _t_h_i_s _i_s _O_c_t_o_b_e_r _o_f last _y_e_a_r)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp ttttooooddddaaaayyyy
+                  Wed May 30 22:09:24 CDT 1990
+                  (_n_o_t_e _t_h_a_t _w_e _g_e_t now.)
+
+
+
+
+
+
+     Page 6                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp ttttoooommmmoooorrrrrrrroooowwww
+                  Wed May 30 22:09:24 CDT 1990
+                  (_w_e _g_e_t now.)
+
+
+          When both the ----eeee and ----pppp options are used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee ----pppp ffffeeeebbbb 2222
+                  Fri Feb  2 00:00:00 CST 1990
+                  (----pppp _o_p_t_i_o_n -- _c_a_p_p_e_d _t_o _t_h_e
+                  _p_r_e_s_e_n_t -- _w_e _g_e_t _t_h_e _f_i_r_s_t _s_e_c_o_n_d _i_n _t_h_e
+                  _p_r_e_v_i_o_u_s _F_e_b_r_u_a_r_y _2.)
+
+
+        TTTTiiiimmmmeeee
+          _T_i_m_e specifies the hours, minutes, and seconds.  _T_i_m_e must
+          have either a colon (HH:MM) or a period (HH.MM), or must be
+          followed by am, a.m., pm, or p.m.  Seconds can also be indi-
+          cated by using a second colon or period, e.g., HH:MM:SS.
+          Unless the am or pm suffixes are used, the hours are inter-
+          preted in 24 hour format.  Timezones are nnnnooootttt recognized.
+
+          nnnnoooooooonnnn and mmmmiiiiddddnnnniiiigggghhhhtttt are special _t_i_m_e_s.  nnnnoooowwww is a special _t_i_m_e
+          and _d_a_t_e.  _U_n_i_x _t_i_m_e_s are also special _t_i_m_e_s and _d_a_t_e_s.
+          (See the uuuunnnniiiixxxx ttttiiiimmmmeeee description in the """"DDDDaaaatttteeee"""" section above.)
+
+          Again, suppose it is now May 30, 1990 10:09:24 pm CDT:
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11112222::::11119999::::22224444
+                  Thu May 31 12:19:24 CDT 1990
+                  (_H_H:_M_M:_S_S)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 22223333::::00007777
+                  Wed May 30 23:07:59 CDT 1990
+                  (_H_H:_M_M)
+                  (_r_e_m_e_m_b_e_r _t_h_a_t _s_i_n_c_e _s_e_c_o_n_d_s _a_r_e _n_o_t _s_p_e_c_i_f_i_e_d,
+                  _g_e_t_d_a_t_e _a_s_s_u_m_e_s _t_h_e _m_a_x_i_m_u_m _s_e_c_o_n_d_s _c_o_n_s_i_s_t_e_n_t
+                  _w_i_t_h _2_3:_0_7.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 8888 aaaammmm
+                  Thu May 31 08:59:59 CDT 1990
+                  (_h_o_u_r _a_m)
+
+                  %%%% ggggeeeettttddddaaaatttteeee nnnnoooowwww
+                  Wed May 30 22:09:24 CDT 1990
+
+                  %%%% ggggeeeettttddddaaaatttteeee nnnnoooooooonnnn
+                  Thu May 31 12:00:00 CDT 1990
+                  (_N_o_t_e _w_e _g_e_t _n_o_o_n _o_n _t_h_e _n_e_x_t _d_a_y.)
+
+
+
+
+
+
+     Page 7                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee mmmmiiiiddddnnnniiiigggghhhhtttt
+                  Thu May 31 00:00:00 CDT 1990
+                  (_N_o_t_e _w_e _g_e_t _m_i_d_n_i_g_h_t _o_n _t_h_e _n_e_x_t _d_a_y.)
+
+
+
+          When the ----eeee option is used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee 2222 ppppmmmm
+                  Thu May 31 14:00:00 CDT 1990
+                  (_2 _o'_c_l_o_c_k _t_o_m_o_r_r_o_w _a_f_t_e_r_n_o_o_n.)
+
+
+          When the ----pppp option is used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp mmmmiiiiddddnnnniiiigggghhhhtttt
+                  Wed May 30 00:00:00 CDT 1990
+                  (_n_o_t_e _w_e _g_e_t _m_i_d_n_i_g_h_t _t_o_d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp 8888 aaaammmm
+                  Wed May 30 08:59:59 CDT 1990
+                  (_n_o_t_e _w_e _g_e_t _n_o_w.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp nnnnoooooooonnnn
+                  Wed May 30 12:00:00 CDT 1990
+                  (_n_o_t_e _w_e _g_e_t _n_o_o_n _t_o_d_a_y.)
+
+
+          When both the ----eeee and ----pppp options are used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee ----pppp 2222 ppppmmmm
+                  Wed May 30 14:00:00 CDT 1990
+                  (_w_e _g_e_t _t_h_e _f_i_r_s_t _s_e_c_o_n_d _i_n _t_h_e
+                  _p_r_e_v_i_o_u_s _2 _p_m.)
+
+
+        HHHHoooolllliiiiddddaaaayyyyssss
+          ggggeeeettttddddaaaatttteeee recognizes certain civil and religious holidays as
+          _d_a_t_e_s. The trailing word DDDDaaaayyyy is optional for all holidays,
+          as is any apostrophe (') or apostrophe ssss ('s).  The word
+          BBBBiiiirrrrtttthhhhddddaaaayyyy is also optional, or can be abbreviated by bbbbddddaaaayyyy....
+          Upper and lower case letters are equivalent.  Only the last
+          holiday in _d_a_t_e_s_t_r_i_n_g is interpreted.
+
+          The following are the ten current US public legal holidays.
+          (Note: _g_e_t_d_a_t_e recognizes US public legal holidays in the
+          years (and on the days) in which the holidays were either
+          federally designated or popularly observed.  Some holidays
+          were observed locally or in certain states prior to the
+          indicated years.  The rules for defining the holidays are
+          also given below, so occurrences in other years can be con-
+
+
+
+
+     Page 8                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          structed.)
+
+          NNNNeeeewwww YYYYeeeeaaaarrrr''''ssss DDDDaaaayyyy      January 1 for the years 1754 - 9999.
+                              March 25 for the years 1151 - 1753.
+                              December 25 for the interval 801 - 1150.
+                              January 1 for the years 1 - 800.
+                              The boundary years of 800 and 1150 are
+                              somewhat arbitrary, as the celebration
+                              of the New Year varied locally within
+                              England.  Also note that since the year
+                              did not always start in January,
+                              _g_e_t_d_a_t_e'_s association of years with
+                              months is not always correct through
+                              1754.  However, to be consistent with
+                              _c_a_l, the year is always considered to
+                              begin January 1.  See the """"CCCCAAAAVVVVEEEEAAAATTTTSSSS"""" sec-
+                              tion below.
+
+          MMMMaaaarrrrttttiiiinnnn LLLLuuuutttthhhhoooorrrr KKKKiiiinnnngggg DDDDaaaayyyy
+                              (MMMMaaaarrrrttttiiiinnnn and LLLLuuuutttthhhhoooorrrr are optional.)
+                              The third Monday in January for the
+                              years 1986 - 9999.
+                              Undefined prior to 1986.
+
+          WWWWaaaasssshhhhiiiinnnnggggttttoooonnnn''''ssss BBBBiiiirrrrtttthhhhddddaaaayyyy
+                              The third Monday in February for the
+                              years 1971 - 9999.
+                              February 22 for the years 1832 - 1970.
+                              (WWWWaaaasssshhhh can be used in place of
+                              WWWWaaaasssshhhhiiiinnnnggggttttoooonnnn.... Also, PPPPrrrreeeessssiiiiddddeeeennnntttt''''ssss DDDDaaaayyyy is
+                              recognized.)
+
+          MMMMeeeemmmmoooorrrriiiiaaaallll DDDDaaaayyyy        The last Monday in May for the years
+                              1971 - 9999.
+                              May 30 for 1868 - 1970.
+                              Undefined prior to 1868
+
+          IIIInnnnddddeeeeppppeeeennnnddddeeeennnncccceeee DDDDaaaayyyy    (Alternatively, FFFFoooouuuurrrrtttthhhh ooooffff JJJJuuuullllyyyy,,,, 4444tttthhhh ooooffff
+                              JJJJuuuullllyyyy,,,, FFFFoooouuuurrrrtttthhhh,,,, or 4444tttthhhh may be used.
+                              Beware using FFFFoooouuuurrrrtttthhhh followed by a _d_a_y _o_f
+                              _t_h_e _w_e_e_k .)
+                              July 4 for the years 1777 - 9999.
+                              Undefined prior to 1777
+
+          LLLLaaaabbbboooorrrr DDDDaaaayyyy           The first Monday in September for the
+                              years 1894 - 9999.
+                              Undefined prior to 1894.
+
+          CCCCoooolllluuuummmmbbbbuuuussss DDDDaaaayyyy        (Alternatively, DDDDiiiissssccccoooovvvveeeerrrreeeerrrrssss'''' DDDDaaaayyyy or
+                              PPPPiiiioooonnnneeeeeeeerrrrssss'''' DDDDaaaayyyy can be used.)
+                              Second Monday in October for the years
+                              1971 - 9999.
+
+
+
+     Page 9                                         (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                              October 12 for 1892 - 1970.
+                              Undefined prior to 1892.
+
+          VVVVeeeetttteeeerrrraaaannnnssss'''' DDDDaaaayyyy       (Alternatively, AAAArrrrmmmmiiiissssttttiiiicccceeee DDDDaaaayyyy ....))))
+                              November 11 for the years 1919 - 1970
+                              and 1978 - 9999.
+                              The fourth Monday in October for 1971 -
+                              1977.
+                              Undefined prior to 1919.
+                              (Technically, the day is AAAArrrrmmmmiiiissssttttiiiicccceeee DDDDaaaayyyy
+                              1919 to 1953, and VVVVeeeetttteeeerrrraaaannnnssss'''' DDDDaaaayyyy
+                              thereafter.)
+
+          TTTThhhhaaaannnnkkkkssssggggiiiivvvviiiinnnngggg DDDDaaaayyyy    (The abbreviation TTTThhhhaaaannnnkkkkssss DDDDaaaayyyy can be
+                              used.)
+                              The fourth Thursday in November for the
+                              years 1942 - 9999,
+                              the next to last Thursday in November
+                              for 1939 - 1941,
+                              the last Thursday in November for the
+                              years 1863 - 1938,
+                              except for 1865 (first Thursday in
+                              December) and
+                              1869 (third Thursday in December).
+                              Undefined prior to 1863.
+
+          CCCChhhhrrrriiiissssttttmmmmaaaassss DDDDaaaayyyy       December 25.  (The abbreviation XXXXmmmmaaaassss DDDDaaaayyyy
+                              can be used.)
+
+          The following are other popular days observed in the US and
+          recognized by _g_e_t_d_a_t_e:
+
+          EEEElllleeeeccccttttiiiioooonnnn DDDDaaaayyyy        First Tuesday after the first Monday in
+                              November.  Defined for the years 1845 -
+                              9999.
+
+          For the following Christian holidays, the day of the week
+          (e.g., SSSSuuuunnnnddddaaaayyyy)))) is optional, except where noted.  _G_e_t_d_a_t_e
+          recognizes these Christian holidays for all years 1 - 9999,
+          even though for early years the dates are obscure.
+
+          EEEEaaaasssstttteeeerrrr DDDDaaaayyyy          For the years 1-1752, the rule of the
+                              Council of Nicea is used.  (The true
+                              dates for Easter for the years 1 - 324
+                              are vague.)  From 1753 onward, the modi-
+                              fied Gregorian rules are used.
+
+          SSSSeeeeppppttttuuuuaaaaggggeeeessssiiiimmmmaaaa SSSSuuuunnnnddddaaaayyyy 63 days before Easter.
+
+
+
+
+
+
+
+     Page 10                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          SSSSeeeexxxxaaaaggggeeeessssiiiimmmmaaaa SSSSuuuunnnnddddaaaayyyy   56 days before Easter.
+
+          SSSShhhhrrrroooovvvveeee SSSSuuuunnnnddddaaaayyyy       ((((""""SSSSuuuunnnnddddaaaayyyy"""" required.)  49 days before
+                              Easter.
+
+          SSSShhhhrrrroooovvvveeee MMMMoooonnnnddddaaaayyyy       ((((""""MMMMoooonnnnddddaaaayyyy"""" required.)  48 days before
+                              Easter.
+
+          SSSShhhhrrrroooovvvveeee TTTTuuuueeeessssddddaaaayyyy      ((((""""TTTTuuuueeeessssddddaaaayyyy"""" required.)  47 days before
+                              Easter.
+
+          AAAAsssshhhh WWWWeeeeddddnnnneeeessssddddaaaayyyy       46 days before Easter.
+
+          PPPPaaaassssssssiiiioooonnnn SSSSuuuunnnnddddaaaayyyy      14 days before Easter.
+
+          PPPPaaaallllmmmm SSSSuuuunnnnddddaaaayyyy         7 days before Easter.
+
+          MMMMaaaauuuunnnnddddyyyy TTTThhhhuuuurrrrssssddddaaaayyyy     3 days before Easter.
+
+          GGGGoooooooodddd FFFFrrrriiiiddddaaaayyyy         2 days before Easter.
+
+          RRRRooooggggaaaattttiiiioooonnnn SSSSuuuunnnnddddaaaayyyy     35 days after Easter.
+
+          AAAAsssscccceeeennnnssssiiiioooonnnn DDDDaaaayyyy       39 days after Easter.
+
+          PPPPeeeennnntttteeeeccccoooosssstttt           (Alternatively, WWWWhhhhiiiittttssssuuuunnnnddddaaaayyyy....)))) 49 days
+                              after Easter.
+
+          WWWWhhhhiiiittttmmmmuuuunnnnddddyyyy           50 days after Easter.
+
+          TTTTrrrriiiinnnniiiittttyyyy SSSSuuuunnnnddddaaaayyyy      56 days after Easter.
+
+          CCCCoooorrrrppppuuuussss CCCChhhhrrrriiiissssttttiiii      60 days after Easter.
+
+          AAAAddddvvvveeeennnntttt              Four Sundays before Christmas.
+
+          EEEEppppiiiipppphhhhaaaannnnyyyy            12 days after Christmas.
+
+          AAAAssssssssuuuummmmppppttttiiiioooonnnn          August 15 (Catholic and Eastern Ortho-
+                              dox).
+
+        DDDDaaaayyyy ooooffff tttthhhheeee WWWWeeeeeeeekkkk
+          _D_a_y_s _o_f _t_h_e _w_e_e_k and common abbreviations are recognized:
+
+               ssssuuuunnnnddddaaaayyyy,,,, ssssuuuunnnn,,,, mmmmoooonnnnddddaaaayyyy,,,, mmmmoooonnnn,,,, ttttuuuueeeessssddddaaaayyyy,,,, ttttuuuueeeessss,,,, ttttuuuueeee,,,, wwwweeeeddddnnnneeeessss----
+               ddddaaaayyyy,,,, wwwweeeedddd,,,, tttthhhhuuuurrrrssssddddaaaayyyy,,,, tttthhhhuuuurrrrssss,,,, tttthhhhuuuurrrr,,,, tttthhhhuuuu,,,, ffffrrrriiiiddddaaaayyyy,,,, ffffrrrriiii,,,,
+               ssssaaaattttuuuurrrrddddaaaayyyy,,,, and ssssaaaatttt.
+
+          _D_a_y_s _o_f _t_h_e _w_e_e_k can be preceded by llllaaaasssstttt or nnnneeeexxxxtttt.... Only the
+          last _d_a_y _o_f _t_h_e _w_e_e_k on the input line is interpreted -- all
+          others are ignored.
+
+
+
+
+     Page 11                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          Assuming nnnnoooowwww is May 30, 1990 10:09:24 pm CDT, the following
+          are some examples of _i_n_c_r_e_m_e_n_t_s:
+                  %%%% ggggeeeettttddddaaaatttteeee ttttuuuueeee
+                  Tue Jun  5 10:09:24 CDT 1990
+                  (_N_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _n_e_x_t _T_u_e_s_d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee llllaaaasssstttt SSSSaaaatttt
+                  Sat May 26 22:09:24 CDT 1990
+                  (_N_o_t_e _t_h_a_t _w_e _g_e_t _t_h_e _p_r_e_v_i_o_u_s _S_a_t_u_r_d_a_y.)
+
+
+        NNNN----tttthhhh DDDDaaaayyyy ooooffff tttthhhheeee WWWWeeeeeeeekkkk iiiinnnn aaaa MMMMoooonnnntttthhhh
+          Dates such as ffffoooouuuurrrrtttthhhh TTTThhhhuuuurrrrssssddddaaaayyyy iiiinnnn NNNNoooovvvveeeemmmmbbbbeeeerrrr or ffffiiiirrrrsssstttt MMMMoooonnnnddddaaaayyyy
+          can be specified:  ffffiiiirrrrsssstttt,,,, sssseeeeccccoooonnnndddd,,,, tttthhhhiiiirrrrdddd,,,, ffffoooouuuurrrrtttthhhh,,,, ffffiiiifffftttthhhh,,,, and
+          llllaaaasssstttt are recognized.  When using the ordinal llllaaaasssstttt, the
+          preposition """"iiiinnnn"""" (e.g., llllaaaasssstttt SSSSuuuunnnnddddaaaayyyy iiiinnnn AAAAuuuugggguuuusssstttt) _m_u_s_t be used
+          to avoid confusion with the simple _d_a_y _o_f _t_h_e _w_e_e_k llllaaaasssstttt SSSSuuuunnnn----
+          ddddaaaayyyy.  Thus, """"llllaaaasssstttt SSSSuuuunnnnddddaaaayyyy iiiinnnn AAAAuuuugggguuuusssstttt"""" may not be the same as
+          """"llllaaaasssstttt SSSSuuuunnnnddddaaaayyyy AAAAuuuugggguuuusssstttt"""" when used in _c_o_m_b_i_n_a_t_i_o_n_s. (See the
+          example in the section below on """"CCCCoooommmmbbbbiiiinnnnaaaattttiiiioooonnnnssss...."""")
+
+          The _m_o_n_t_h may be omitted, in which case the month is derived
+          from other information in _d_a_t_e_s_t_r_i_n_g, or, if no other month
+          is specified, the current month is used.
+
+          Again, suppose it is now May 30, 1990 10:09:24 pm CDT:
+
+                  %%%% ggggeeeettttddddaaaatttteeee llllaaaasssstttt mmmmoooonnnnddddaaaayyyy iiiinnnn mmmmaaaayyyy 1111999999993333
+                  Mon May 31 23:59:59 CDT 1993
+                  (_n-_t_h _d_a_y _o_f _t_h_e _w_e_e_k _i_n _a _m_o_n_t_h.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ffffiiiifffftttthhhh MMMMoooonnnn iiiinnnn jjjjuuuullllyyyy 2222000000005555
+                  the month July does not have 5 Mondays in the year 2005
+                  (_A_n _e_r_r_o_r _c_a_s_e _f_o_r _n-_t_h _d_a_y _o_f _t_h_e _w_e_e_k _i_n _a _m_o_n_t_h.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ffffiiiirrrrsssstttt wwwweeeedddd
+                  Wed May  1 23:59:59 CDT 1991
+                  (_T_h_e _m_o_n_t_h _o_f _M_a_y _i_s _f_i_r_s_t _f_i_l_l_e_d _i_n, _t_h_e_n _t_h_e _f_i_r_s_t
+                  _W_e_d_n_e_s_d_a_y _i_s _d_e_t_e_r_m_i_n_e_d.)
+
+
+        IIIInnnnccccrrrreeeemmmmeeeennnnttttssss
+          _I_n_c_r_e_m_e_n_t_s are intervals that modify the filled in _d_a_t_e and
+          _t_i_m_e. The specific _i_n_c_r_e_m_e_n_t_s that _g_e_t_d_a_t_e recognizes are:
+
+               mmmmiiiilllllllleeeennnnnnnniiiiuuuummmm,,,, mmmmiiiilllllllleeeennnnnnnniiiiuuuummmmssss,,,, mmmmiiiilllllllleeeennnnnnnniiiiaaaa,,,, cccceeeennnnttttuuuurrrryyyy,,,, cccceeeennnnttttuuuurrrryyyyssss,,,,
+               cccceeeennnnttttuuuurrrriiiieeeessss,,,, ddddeeeeccccaaaaddddeeee,,,, ddddeeeeccccaaaaddddeeeessss,,,, yyyyeeeeaaaarrrr,,,, yyyyeeeeaaaarrrrssss,,,, mmmmoooonnnntttthhhh,,,, mmmmoooonnnntttthhhhssss,,,,
+               ffffoooorrrrttttnnnniiiigggghhhhtttt,,,, ffffoooorrrrttttnnnniiiigggghhhhttttssss,,,, wwwweeeeeeeekkkk,,,, wwwweeeeeeeekkkkssss,,,, ddddaaaayyyy,,,, ddddaaaayyyyssss,,,, hhhhoooouuuurrrr,,,,
+               hhhhoooouuuurrrrssss,,,, mmmmiiiinnnnuuuutttteeee,,,, mmmmiiiinnnnuuuutttteeeessss,,,, mmmmiiiinnnn,,,, mmmmiiiinnnnssss,,,, sssseeeeccccoooonnnndddd,,,, sssseeeeccccoooonnnnddddssss,,,,
+               sssseeeecccc,,,, and sssseeeeccccssss.  dddd,,,, hhhh,,,, mmmm,,,, and ssss can also be used for
+               ddddaaaayyyy,,,, hhhhoooouuuurrrr,,,, mmmmiiiinnnnuuuutttteeee,,,, and sssseeeeccccoooonnnndddd.
+
+
+
+
+     Page 12                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          Plurals and singulars are interpreted identically.  _U_n_i_t_s
+          can be preceded by llllaaaasssstttt,,,, nnnneeeexxxxtttt,,,, or an integer signed with
+          either a "+" or "-".  (The "+" is necessary to prevent the
+          integer from being interpreted as a yyyyeeeeaaaarrrr,,,, ddddaaaayyyy, or uuuunnnniiiixxxxttttiiiimmmmeeee.)
+
+          _I_n_c_r_e_m_e_n_t_s can be specified in any order on the input line.
+          _U_n_i_t_s are cumulative, e.g., """"++++2222 ddddaaaayyyyssss ++++1111 ddddaaaayyyy"""" is equivalent
+          to """"++++3333 ddddaaaayyyyssss"""".
+
+          When _d_a_t_e_s_t_r_i_n_g contains only _i_n_c_r_e_m_e_n_t_s, the current date
+          and time (nnnnoooowwww) is used as the base.
+
+          Assuming nnnnoooowwww is May 30, 1990 10:09:24 pm CDT, the following
+          are some examples of _i_n_c_r_e_m_e_n_t_s:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ++++1111 yyyyeeeeaaaarrrr
+                  Thu May 30 23:59:59 CDT 1991
+                  (_R_e_t_u_r_n_s _t_h_e _s_a_m_e _d_a_y _a_n_d _m_o_n_t_h, _p_l_u_s _o_n_e _y_e_a_r.)
+                  (_N_o_t_e _w_e _g_e_t _t_h_e _l_a_s_t _s_e_c_o_n_d _i_n _t_h_e _d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----11110000 ddddaaaayyyyssss
+                  Sun May 20 23:59:59 CDT 1990
+                  (_1_0 _d_a_y_s _a_g_o -- _l_a_t_e_s_t _p_o_s_s_i_b_l_e _t_i_m_e.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee nnnneeeexxxxtttt wwwweeeeeeeekkkk
+                  Wed Jun  6 23:59:59 CDT 1990
+                  (_E_q_u_i_v_a_l_e_n_t _t_o +_1 _w_e_e_k _o_r +_7 _d_a_y_s.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee llllaaaasssstttt mmmmoooonnnntttthhhh
+                  Mon Apr 30 22:09:24 CDT 1990
+                  (_T_h_e _p_r_e_v_i_o_u_s _m_o_n_t_h.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee llllaaaasssstttt wwwweeeeeeeekkkk
+                  Wed May 23 23:59:59 CDT 1990
+                  (_7 _d_a_y_s _a_g_o.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ++++1111 hhhhoooouuuurrrr ----3333 ddddaaaayyyyssss ----2222 yyyyeeeeaaaarrrrssss ++++6666 mmmmiiiinnnn ----2222 ssss
+                  Fri May 27 23:15:22 CDT 1988
+                  (_C_o_m_b_i_n_a_t_i_o_n _o_f _i_n_c_r_e_m_e_n_t_s.)
+
+
+        CCCCoooommmmbbbbiiiinnnnaaaattttiiiioooonnnnssss
+          _D_a_t_e_s, _t_i_m_e_s, and _i_n_c_r_e_m_e_n_t_s can be specified anywhere on
+          the input line.  All entries are first read and stored, and
+          are then interpreted.  Once a year, month, day, hour,
+          minute, or second has been fixed, only directed changes can
+          be made to it, i.e., _g_e_t_d_a_t_e will not fill it in again
+          unless some item in _d_a_t_e_s_t_r_i_n_g explicitly requires it.  The
+
+
+
+
+
+
+
+     Page 13                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          order of interpretations is as follows:
+
+          1111....  _D_a_t_e_s _a_n_d _t_i_m_e_s: UUUUnnnniiiixxxxttttiiiimmmmeeee, nnnnoooowwww,,,, JJJJuuuulllliiiiaaaannnn ddddaaaayyyy, _d_a_t_e_s, and
+              _t_i_m_e_s are interpreted from left to right.  If contradic-
+              tory date/time information is given (e.g., more than one
+              year or more than one month is specified), only the
+              left-most entry is interpreted.
+
+          2222....  Any unspecified portions of the date and time are then
+              filled in.  If there were no _d_a_t_e_s or _t_i_m_e_s specified in
+              step 1, then today's date is used to fill in _d_a_t_e.
+
+          4444....  The _d_a_y _o_f _y_e_a_r is then calculated.  (If more than one
+              is specified, only the last one is interpreted.)
+
+          4444....  The _h_o_l_i_d_a_y is then calculated.  (Again, if more than
+              one is specified, only the last one is interpreted.)
+
+          5555....  The _n-_t_h _d_a_y _o_f _t_h_e _w_e_e_k _i_n _a _m_o_n_t_h is calculated.  (If
+              more than one is specified, only the last one is inter-
+              preted.)
+
+          6666....  If there were no _t_i_m_e_s specified in step 1, then nnnnoooowwww is
+              used to fill in _t_i_m_e.
+
+          7777....  _D_a_y _o_f _t_h_e _w_e_e_k is applied -- _d_a_t_e is shifted forward,
+              if necessary, to make it consistent with _d_a_y _o_f _t_h_e
+              _w_e_e_k.  (Again, if more than one is specified, only the
+              last one is interpreted.)
+
+          8888....  If the ----pppp flag is set and the calculated _d_a_t_e/_t_i_m_e is in
+              the future, the _d_a_t_e/_t_i_m_e is truncated to nnnnoooowwww.
+
+          9999....  _I_n_c_r_e_m_e_n_t_s are added.  _I_n_c_r_e_m_e_n_t_s are cumulative and are
+              applied in the order seconds, minutes, hours, days,
+              weeks, months, and years.
+
+          For steps 1-6, if the ----pppp flag is set, the interpretations
+          are made looking back in time.
+
+        _A _R_a_t_i_o_n_a_l_e _f_o_r _t_h_e _E_v_a_l_u_a_t_i_o_n _O_r_d_e_r
+          At first glance, the above ordering may seem somewhat arbi-
+          trary and difficult to remember.  This section provides a
+          rationale and explanation to make the ordering more intui-
+          tive.
+
+          Determining the intended meaning of complex combinations of
+          dates, times, holidays, increments, etc.  is difficult.  For
+          example, there is no easy, obvious, and intuitive way to
+          interpret a _d_a_t_e_s_t_r_i_n_g such as "tttthhhhaaaannnnkkkkssssggggiiiivvvviiiinnnngggg tttthhhhiiiirrrrdddd ssssaaaattttuuuurrrrddddaaaayyyy
+          ++++6666 wwwweeeeeeeekkkkssss aaaapppprrrriiiillll eeeeaaaasssstttteeeerrrr ffffrrrriiiiddddaaaayyyy ----3333 ddddaaaayyyyssss 1111999933338888 nnnneeeexxxxtttt ttttuuuueeeessssddddaaaayyyy."
+          Such strings are unlikely to occur in typical applications,
+
+
+
+     Page 14                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          and people have little experience with trying to make sense
+          of them.
+
+          At least two approaches exist for evaluating complex
+          strings.  The first approach is to attempt to interpret each
+          and every component of _d_a_t_e_s_t_r_i_n_g, while the second is to
+          ignore contradictory information.  An example of the first
+          approach is to interpret cumulatively each component, left
+          to right.  Unfortunately, an undesirable quality with these
+          strategies is that the order of words in _d_a_t_e_s_t_r_i_n_g becomes
+          artificially important.  For instance, a phrase such as
+          """"ttttuuuueeeessssddddaaaayyyy aaaapppprrrriiiillll 1111999999990000" may not be interpreted the same as
+          """"1111999999990000 aaaapppprrrriiiillll ttttuuuueeeessssddddaaaayyyy."  In general, strategies of the first
+          type do not work well for common, natural language
+          _d_a_t_e_s_t_r_i_n_g_s. (Experimental versions of _g_e_t_d_a_t_e tried several
+          of these schemes, with little success.)
+
+          Since a goal of _g_e_t_d_a_t_e is to interpret vernacular phrases,
+          the following reflections were made:
+
+          iiii....  Components of the same type are assumed unlikely to be
+              repeated (e.g., the year is usually not specified
+              twice).  If a type is repeated, _g_e_t_d_a_t_e ignores all but
+              the last entry.
+
+          iiiiiiii.... A desirable feature is that the resulting date be as
+              independent as possible of the order of the components.
+
+          The resulting strategy works well for the short, common
+          phrases that are typically used to specify dates; the scheme
+          is intuitive, natural, and predictable:
+
+          AAAA....  First, "absolute" date/times (step 1) are calculated.
+              These are date/times that are specified directly and do
+              not vary from year to year.  Then missing information is
+              derived (step 2).  Next, since the year has been deter-
+              mined by step 2, _d_a_y _o_f _y_e_a_r is evaluated (step 3).
+
+          BBBB....  "Variable" dates (steps 3 through 7) are determined
+              next.  These are dates that vary from year to year and
+              may depend on the absolute dates determined above.  The
+              order in which variable dates are evaluated is based on
+              their possible impact on the absolute date.  Since the
+              _h_o_l_i_d_a_y may cause the date to vary widely (e.g., Eas-
+              ter), it is evaluated next (step 4), then the _n-_t_h _d_a_y
+              _o_f _t_h_e _w_e_e_k _i_n _a _m_o_n_t_h (step 5), and then the _d_a_y _o_f _t_h_e
+              _w_e_e_k (step 7), which may cause only a few days' shift in
+              the date.  Note that if by step 6, no _t_i_m_e has been
+              specified, the current _t_i_m_e is defaulted (before _d_a_y _o_f
+              _t_h_e _w_e_e_k and _i_n_c_r_e_m_e_n_t_s are evaluated).  This is because
+              semantically _d_a_y _o_f _t_h_e _w_e_e_k is almost an _i_n_c_r_e_m_e_n_t and
+              so we allow both _d_a_y _o_f _t_h_e _w_e_e_k and _i_n_c_r_e_m_e_n_t_s to be
+
+
+
+     Page 15                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+              treated the same for default _t_i_m_e.
+
+          CCCC....  The ----pppp flag is examined for _d_a_t_e/_t_i_m_e truncation (step
+              8).  Increments are allowed to push _d_a_t_e/_t_i_m_e into the
+              future.
+
+          DDDD....  Finally, increments (step 9) are applied only after the
+              absolute and variable time/dates are nailed down.
+
+        _E_x_a_m_p_l_e_s _o_f _C_o_m_b_i_n_a_t_i_o_n_s
+          Assume it is now May 30, 1990 10:09:24 pm CDT:
+
+                  %%%% ggggeeeettttddddaaaatttteeee JJJJuuuunnnneeee 1111 6666::::11113333::::44445555
+                  Sun Jun  1 06:13:45 CDT 1986
+                  (_d_a_t_e _t_i_m_e)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11110000 ppppmmmm ffffeeeebbbb
+                  TTTThhhhuuuu FFFFeeeebbbb 22228888 22222222::::55559999::::55559999 CCCCSSSSTTTT 1111999999991111
+                  (_d_a_t_e _t_i_m_e)
+
+                  %%%% ggggeeeettttddddaaaatttteeee 11116666::::33330000 jjjjuuuullllyyyy 4444,,,, 1111777777776666
+                  TTTThhhhuuuu JJJJuuuullll  4444 00004444::::33330000::::55559999 CCCCDDDDTTTT 1111777777776666
+                  (_t_i_m_e _d_a_t_e)
+
+                  %%%% ggggeeeettttddddaaaatttteeee mmmmaaaarrrrcccchhhh 11115555 3333 aaaammmm ----2222 ddddaaaayyyyssss
+                  WWWWeeeedddd MMMMaaaarrrr 11113333 00003333::::55559999::::55559999 CCCCSSSSTTTT 1111999999991111
+                  (_d_a_t_e _t_i_m_e _i_n_c_r_e_m_e_n_t)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ffffrrrriiiiddddaaaayyyy ++++4444 wwwweeeeeeeekkkkssss
+                  FFFFrrrriiii JJJJuuuunnnn 22229999 22223333::::55559999::::55559999 CCCCDDDDTTTT 1111999999990000
+                  (_W_e _f_i_r_s_t _g_e_t _n_e_x_t _f_r_i_d_a_y [_w_h_i_c_h _i_s _J_u_n_e _1], _t_h_e_n
+                  _w_e _g_e_t +_4 _w_e_e_k_s _f_r_o_m _t_h_e_n.  _N_o_t_e, _t_o_o, _t_h_a_t _w_e _g_e_t
+                  _t_h_e _l_a_s_t _s_e_c_o_n_d _o_f _t_h_e _d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee nnnnoooowwww 1111////1111////99991111 ----55552222 wwwweeeeeeeekkkkssss
+                  TTTTuuuueeee JJJJaaaannnn  2222 22222222::::00009999::::22224444 CCCCSSSSTTTT 1111999999990000
+                  (_F_i_r_s_t, _w_e _g_e_t _t_h_e _p_r_e_s_e_n_t _t_i_m_e _a_n_d _d_a_t_e.  _T_h_e_n _t_h_e
+                  _d_a_t_e _w_a_s _c_h_a_n_g_e_d _t_o _1/_1/_9_1, _a_n_d _5_2 _w_e_e_k_s _s_u_b_t_r_a_c_t_e_d.
+                  _N_o_t_e _t_h_a_t _w_e _k_e_p_t _t_h_e _p_r_e_s_e_n_t _t_i_m_e.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ffffiiiirrrrsssstttt MMMMoooonnnnddddaaaayyyy iiiinnnn NNNNoooovvvveeeemmmmbbbbeeeerrrr TTTTuuuueeeessssddddaaaayyyy
+                  TTTTuuuueeee NNNNoooovvvv  6666 22223333::::55559999::::55559999 CCCCSSSSTTTT 1111999999990000
+                  (_T_h_e _f_i_r_s_t _T_u_e_s_d_a_y _a_f_t_e_r _t_h_e _f_i_r_s_t _M_o_n_d_a_y _i_n
+                  _N_o_v_e_m_b_e_r -- _e_l_e_c_t_i_o_n _d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee  2222////4444////88885555 sssseeeepppptttt
+                  WWWWeeeedddd SSSSeeeepppp  4444 22223333::::55559999::::55559999 CCCCDDDDTTTT 1111999988885555
+                  (_T_h_e sssseeeepppptttt _o_v_e_r_w_r_i_t_e_s _t_h_e FFFFeeeebbbbrrrruuuuaaaarrrryyyy -- _l_e_f_t _t_o _r_i_g_h_t.)
+
+
+
+
+
+
+
+     Page 16                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee sssseeeepppptttt 2222////4444////88885555
+                  MMMMoooonnnn FFFFeeeebbbb  4444 22223333::::55559999::::55559999 CCCCSSSSTTTT 1111999988885555
+                  (_T_h_e FFFFeeeebbbbrrrruuuuaaaarrrryyyy _o_v_e_r_w_r_i_t_e_s _t_h_e sssseeeepppptttt -- _l_e_f_t _t_o _r_i_g_h_t.)
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee  sssseeeepppptttt 1111999999990000 2222////4444////88885555
+                  MMMMoooonnnn FFFFeeeebbbb  4444 22223333::::55559999::::55559999 CCCCSSSSTTTT 1111999988885555
+                  (_F_i_r_s_t _w_e _g_e_t _S_e_p_t_e_m_b_e_r _3_0, _1_9_9_0, _t_h_e_n _F_e_b_r_u_a_r_y _4, _1_9_8_5.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee  555566668888999922220000333399994444 uuuunnnniiiixxxxttttiiiimmmmeeee aaaauuuugggg 1111999999999999
+                  MMMMoooonnnn MMMMaaaayyyy 22227777 11111111::::22226666::::33334444 CCCCDDDDTTTT 1111999999991111
+                  (_N_o_t_e _t_h_a_t _t_h_e uuuunnnniiiixxxxttttiiiimmmmeeee _g_i_v_e_s _u_s _b_o_t_h
+                  _a _d_a_t_e aaaannnndddd _t_i_m_e, _b_u_t aaaauuuugggg 1111999999999999
+                  _o_v_e_r_w_r_i_t_e_s _t_h_e _m_o_n_t_h _a_n_d _y_e_a_r.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee  aaaauuuugggg 1111999999999999   555566668888999922220000333399994444 uuuunnnniiiixxxxttttiiiimmmmeeee
+                  MMMMoooonnnn JJJJaaaannnn 11111111 11111111::::22226666::::33334444 CCCCSSSSTTTT 1111999988888888
+                  (_T_h_e uuuunnnniiiixxxxttttiiiimmmmeeee _o_v_e_r_w_r_i_t_e_s _t_h_e aaaauuuugggg 1111999999999999.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee ddddeeeecccc 11112222,,,, 1111999999996666 5555::::44448888::::11119999 aaaammmm yyyyeeeesssstttteeeerrrrddddaaaayyyy
+                  TTTTuuuueeee MMMMaaaayyyy 22229999 00005555::::44448888::::11119999 CCCCSSSSTTTT 1111999999990000
+                  (_T_h_e yyyyeeeesssstttteeeerrrrddddaaaayyyy _o_v_e_r_w_r_i_t_e_s _t_h_e ddddeeeecccc 11112222,,,, 1111999966666666.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee jjjjuuuunnnneeee 11115555 llllaaaasssstttt SSSSuuuunnnn iiiinnnn AAAAuuuugggguuuusssstttt
+                  SSSSuuuunnnn AAAAuuuugggg 22226666 22223333::::55559999::::55559999 CCCCDDDDTTTT 1111999999990000
+                  (_W_e _g_e_t _t_h_e _l_a_s_t _S_u_n_d_a_y _i_n _A_u_g_u_s_t.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee jjjjuuuunnnneeee 11115555 llllaaaasssstttt SSSSuuuunnnn AAAAuuuugggguuuusssstttt
+                  SSSSuuuunnnn AAAAuuuugggg 11112222 22223333::::55559999::::55559999 CCCCDDDDTTTT 1111999999990000
+                  (_W_e _g_e_t _J_u_n_e _1_5, _t_h_e_n _A_u_g_u_s_t _1_5, _t_h_e_n _t_h_e _p_r_e_c_e_d_i_n_g _S_u_n_d_a_y.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee nnnnoooowwww 3333////1111
+                  TTTThhhhuuuu MMMMaaaarrrr  1111 22222222::::00009999::::22224444 CCCCSSSSTTTT 1111999999990000
+                  (_W_e _g_e_t _t_h_e _c_u_r_r_e_n_t _y_e_a_r _w_i_t_h nnnnoooowwww, _t_h_e_n _a_d_j_u_s_t _t_o _3/_1.)
+
+                  %%%% ggggeeeettttddddaaaatttteeee tttthhhhaaaannnnkkkkssssggggiiiivvvviiiinnnngggg tttthhhhiiiirrrrdddd ssssaaaattttuuuurrrrddddaaaayyyy ++++6666 wwwweeeeeeeekkkkssss aaaapppprrrriiiillll eeeeaaaasssstttteeeerrrr \\\\
+                  ffffrrrriiiiddddaaaayyyy ----3333 ddddaaaayyyyssss 1111999933338888 nnnneeeexxxxtttt ttttuuuueeeessssddddaaaayyyy
+                  SSSSaaaatttt MMMMaaaayyyy 22228888 22223333::::55559999::::55559999 CCCCDDDDTTTT 1111999933338888
+                  (_F_i_r_s_t, _w_e _g_e_t _A_p_r_i_l _1_9_3_8 [_A_p_r_i_l _3_0, _1_9_3_8], _t_h_e_n _E_a_s_t_e_r [_A_p_r_i_l _1_7],
+                  (_t_h_e TTTThhhhaaaannnnkkkkssssggggiiiivvvviiiinnnngggg _i_s _o_v_e_r_w_r_i_t_t_e_n _b_y _t_h_e EEEEaaaasssstttteeeerrrr), _t_h_e_n _t_h_e _t_h_i_r_d
+                  _S_a_t_u_r_d_a_y _i_n _A_p_r_i_l [_A_p_r_i_l _1_6], _t_h_e_n _t_h_e _f_o_l_l_o_w_i_n_g _T_u_e_s_d_a_y
+                  [_A_p_r_i_l _1_9] (_t_h_e FFFFrrrriiiiddddaaaayyyy _i_s _o_v_e_r_w_r_i_t_t_e_n _b_y _t_h_e nnnneeeexxxxtttt TTTTuuuueeeessssddddaaaayyyy),
+                  _t_h_e_n _t_h_e _3 _d_a_y_s _a_r_e _s_u_b_t_r_a_c_t_e_d [_A_p_r_i_l _1_6], _a_n_d _f_i_n_a_l_l_y,
+                  _6 _w_e_e_k_s _a_r_e _a_d_d_e_d [_M_a_y _2_8].
+
+
+          When the ----eeee option is used:
+
+
+
+
+
+
+
+
+     Page 17                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee 11110000 ppppmmmm ffffeeeebbbb
+                  Fri Feb  1 22:00:00 CST 1991
+                  (_w_e _g_e_t _t_h_e _f_i_r_s_t _s_e_c_o_n_d _i_n _1_0 _p_m _o_f _t_h_e _f_i_r_s_t
+                  _d_a_y _o_f _n_e_x_t _F_e_b_r_u_a_r_y.)
+
+
+          When the ----pppp option is used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----pppp 11110000 ppppmmmm ffffeeeebbbb
+                  Wed Feb 28 23:59:59 CST 1990
+                  (----pppp _o_p_t_i_o_n -- _c_a_p_p_e_d _t_o _t_h_e
+                  _p_r_e_s_e_n_t -- _n_o_t_e _w_e _g_e_t _t_h_i_s _y_e_a_r.)
+
+
+          When both ----eeee and ----pppp options are used:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----eeee ----pppp 11110000 ppppmmmm ffffeeeebbbb
+                  Thu Feb  1 22:00:00 CST 1990
+                  (_t_h_e  _f_i_r_s_t _s_e_c_o_n_d _a_t _1_0 _p_m _o_f _t_h_e _f_i_r_s_t
+                  _d_a_y _i_n _l_a_s_t _F_e_b_r_u_a_r_y.)
+
+
+     OOOOUUUUTTTTPPPPUUUUTTTT FFFFOOOORRRRMMMMAAAATTTTSSSS
+          The format for the output is based on _d_a_t_e(_1) and is similar
+          to that of _p_r_i_n_t_f(3S).  Each field descriptor is preceded by
+          %%%% and will be replaced in the output by its corresponding
+          value.  A single %%%% is encoded by %%%%%%%%.  All other characters
+          are copied to the output without change.  The string is
+          always terminated with a new-line character.  There are more
+          field descriptors than in _d_a_t_e.
+
+          Field Descriptors:
+               %%%%    insert a % character
+               aaaa    abbreviated weekday - Sun to Sat
+               AAAA    weekday - Sunday to Saturday
+               dddd    day of month - 01 to 31
+               DDDD    date as mm/dd/yy (again, this is potentially
+                    confusing for years not in the twentieth century.)
+               hhhh    abbreviated month - Jan to Dec
+               HHHH    hour - 00 to 23
+               iiii    month - January to December
+               jjjj    day of year - 001 to 366
+               JJJJ    Julian day (number of days since noon GMT, January
+                    1, 4713 B.C.)
+               llll    day of month - 1 to 31 (Note no leading zero on
+                    single digit days)
+               mmmm    month of year - 01 to 12
+               MMMM    minute - 00 to 59
+               nnnn    insert a new-line character
+
+
+
+
+
+
+     Page 18                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+               SSSS    second - 00 to 59
+               tttt    insert a tab character
+               TTTT    time as HH:MM:SS
+               uuuu    unix time (seconds since 00:00:00 January 1, 1970
+                    GMT if the date is between 1970 and approximately
+                    2105; -1 otherwise.)
+               wwww    day of week - Sunday = 0
+               yyyy    last 2 digits of year - 00 to 99 (yyyy is for compa-
+                    tibility with _d_a_t_e; dangerous for years not in the
+                    twentieth century.)
+               YYYY    year - 1 to 9999
+               rrrr    time in AM/PM notation
+               zzzz    time zone (e.g., EST or CDT).
+
+          The default output format is """"%%%%aaaa %%%%hhhh %%%%llll %%%%TTTT %%%%zzzz %%%%YYYY....""""  The out-
+          put format for the ----vvvv option is:
+
+           """"LLLLooooccccaaaallll ddddaaaatttteeee:::: %%%%DDDD  %%%%AAAA,,,, %%%%iiii %%%%dddd,,,, %%%%YYYY%%%%nnnn\\\\
+           DDDDaaaayyyy ooooffff tttthhhheeee yyyyeeeeaaaarrrr ((((1111////1111 ======== 000000001111)))):::: %%%%jjjj%%%%nnnn\\\\
+           DDDDaaaayyyy ooooffff tttthhhheeee wwwweeeeeeeekkkk ((((SSSSuuuunnnnddddaaaayyyy ======== 0000)))):::: %%%%wwww%%%%nnnn\\\\
+           LLLLooooccccaaaallll ttttiiiimmmmeeee:::: %%%%HHHH::::%%%%MMMM::::%%%%SSSS  %%%%rrrr %%%%zzzz%%%%nnnn\\\\
+           UUUUnnnniiiixxxx ttttiiiimmmmeeee:::: %%%%uuuu%%%%nnnn\\\\
+           JJJJuuuulllliiiiaaaannnn DDDDaaaayyyy:::: %%%%JJJJ"""".
+
+          Suppose it is now 10:09:24 PM CDT on Wednesday, May 30,
+          1990.  Then the following commands would give the
+          corresponding outputs:
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----ffff """"uuuunnnniiiixxxx ttttiiiimmmmeeee::::  %%%%uuuu""""
+                  unix time:  644123364
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----ffff """"%%%%dddd////%%%%mmmm////%%%%yyyy %%%%TTTT""""
+                  30/05/90 22:09:24
+
+                  %%%% ggggeeeettttddddaaaatttteeee ----vvvv
+                  Wed May 30 22:09:24 CDT 1990
+                  Local date: 05/30/90  Wednesday, May 30, 1990
+                  Day of the year (1/1 == 001): 150
+                  Day of the week (Sunday == 0): 3
+                  Local time: 22:09:24  10:09:24 PM CDT
+                  Unix time: 644123364
+                  Julian Day Number: 2448042
+
+                  %%%% ggggeeeettttddddaaaatttteeee """"++++%%%%yyyy////%%%%mmmm////%%%%dddd  %%%%TTTT"""" JJJJuuuunnnneeee 1111
+                  90/06/01  23:59:59
+
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          Various diagnostics are produced for an invalid datestring.
+          _g_e_t_d_a_t_e returns 1 for an invalid datestring, 2 for illegal
+
+
+
+
+
+     Page 19                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          options, and 3 for internally detected bugs.
+
+     BBBBUUUUGGGGSSSS,,,, CCCCAAAAVVVVEEEEAAAATTTTSSSS,,,, aaaannnndddd TTTTRRRRAAAAPPPPSSSS
+          The same caveats of _c_a_l(_1) apply (and then some):   the
+          dates are for England and her colonies, and the year is con-
+          sidered to start in January, even though this is histori-
+          cally naive.  (See the discussion above on NNNNeeeewwww YYYYeeeeaaaarrrr''''ssss DDDDaaaayyyy in
+          HHHHoooolllliiiiddddaaaayyyyssss....))))
+
+          _g_e_t_d_a_t_e does its best with daylight savings time.  However,
+          no attempt is made to adjust daylight savings time through
+          history; if daylight savings is in effect locally during the
+          current year, then _g_e_t_d_a_t_e assumes daylight savings has been
+          in effect through history.
+
+          On many machines, the shell parameter $$$$TTTTZZZZ (see the section
+          on SSSSHHHHEEEELLLLLLLL PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS parameters below) is not being populated
+          as documented for _c_t_i_m_e(_3). Specifically, instead of $$$$TTTTZZZZ
+          permanently containing information as to whether daylight
+          savings time is observed, $$$$TTTTZZZZ is being changed twice a year.
+          For example, rather than setting TTTTZZZZ====CCCCSSSSTTTT6666CCCCDDDDTTTT,,,, some systems
+          have been using TTTTZZZZ====CCCCSSSSTTTT6666 and TTTTZZZZ====CCCCDDDDTTTT5555,,,, flipping the value of
+          $$$$TTTTZZZZ when daylight savings time changes.  Hence, _g_e_t_d_a_t_e has
+          no sure-fire way of telling if daylight savings time is
+          observed locally.  _g_e_t_d_a_t_e is presently making the simplify-
+          ing assumption that daylight savings time _i_s being observed.
+
+          _g_e_t_d_a_t_e will interpret almost any input it can parse.  Cer-
+          tain constructs where the day of the month is out of bounds
+          are interpreted as a month and a year, e.g., "August 35" is
+          translated as August 31 in the year 35; dates such as
+          "August 31" are interpreted as a month and a day.  Indeter-
+          minate combinations of the form "15 March 18" are inter-
+          preted as "DAY MONTH YEAR" (March 15 in the year 18).
+
+          Julian rules for leap years are used for the years 1-1753.
+          (Any year divisible by 4 is a leap year.)  Gregorian rules
+          are used for 1753 and after.  (Any year divisible by 4 is a
+          leap year, unless it is divisible by 100; years divisible by
+          400 are leap years.)  Certain calendar systems have adopted
+          another adjustment (years divisible by 4000 are nnnnooootttt leap
+          years).  To be consistent with _c_a_l(_1), this last adjustment
+          is not applied in _g_e_t_d_a_t_e. Hence, days of the week for dates
+          after February 28, 4000 may not be consistent with calendars
+          using the latter adjustment.
+
+     SSSSHHHHEEEELLLLLLLL PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          Local time zone information (name, offset from GMT, and
+          whether daylight savings time is observed) is derived from
+
+
+
+
+
+
+     Page 20                                        (printed 10/27/92)
+
+
+
+
+
+
+     GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV         GGGGEEEETTTTDDDDAAAATTTTEEEE((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))
+
+
+
+          the $$$$TTTTZZZZ shell parameter.  (See _c_t_i_m_e(_3).)
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cal(1), calendar(1), date(1), datecalc(exptools), ctime(3),
+          printf(3f), scanf(3f).
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          D. G. Furchtgott.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRRSSSS
+           B. R. Davies
+           D. G. Furchtgott.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 21                                        (printed 10/27/92)
+
+
+

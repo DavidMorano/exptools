@@ -1,0 +1,258 @@
+#  %Z%  SID: %I%;  module: %M%;  last changed: %G%  %U%
+#
+#  This routine is used to tell exptools users about the status of the
+#  RUG distribution to their machine.
+
+#  On sun machines, make sure we have access to SVR3/4 commands
+PATH=/usr/5bin:$PATH					export PATH
+
+CMD=`basename $0`			# The basic command name
+CMDDIR=`dirname $0`			# The command directory
+
+KSH_SEARCH_PATH="$CMDDIR:$PATH"
+ERRMSG="$CMD: ERROR: not running under ksh88 -- aborting!"
+
+RC=""
+KSHTEST=""
+echo OK | read KSHTEST
+if test "$JUST_TRYING_KSH" = "yes"; then
+    #
+    # This is just a probe of this shell, so indicate in the return code
+    # whether it is a ksh88.
+    #
+    if test "$KSHTEST" = "OK"; then
+	RC=0
+    else
+	RC=2
+    fi
+elif test "$KSHTEST" != "OK"; then
+    #
+    # This is the first time through, but we don't have a ksh88.
+    # So we will search for one.
+    #
+    echo "Looking for ksh88 ... \c"
+    DIR_SEARCH_LIST=`echo $KSH_SEARCH_PATH|tr ":" " "`
+    for DIR in $DIR_SEARCH_LIST; do
+	KSH=$DIR/ksh
+	if test -x $KSH; then
+	    if JUST_TRYING_KSH="yes" $KSH $0; then
+		#
+		# Got it, let's use it
+		#
+		echo "got it"
+		if test $# -gt 0; then
+		    $KSH $0 "$@"	# This is for real!
+		else
+		    $KSH $0		# This is for real!
+		fi
+		RC=$?			# Final error code
+		break			# All done, let's go home
+	    fi
+	fi
+    done
+    if test -z "$RC"; then
+	#
+	# Never found a ksh88 
+	#
+	echo
+	echo "$ERRMSG" >&2
+	RC=2
+    fi
+fi
+
+if test -n "$RC"; then
+    #
+    # No more work to be done -- exit
+    #
+    exit $RC
+fi
+
+#
+# We passed the tests, and are now running ksh88.
+# Let's do the ruginfo processing!
+#
+
+
+#-------------------------< not
+
+not() {
+    if "$@"; then
+	false
+    else
+	true
+    fi
+}
+
+
+#-------------------------< main
+
+if test -z "$TOOLS"  -o  ! -d $TOOLS/lib/toolnews; then
+    OLDTOOLS=$TOOLS
+    TOOLS=$(logdir exptools)
+    if test "$TOOLS" = "$OLDTOOLS"; then
+	echo "\n\aWARNING: Your exptools environment appears to be incorrectly set up"
+	echo "         Please contact your exptools administrator for help."
+	exit 2
+    else
+	echo "\n\aWARNING: Your TOOLS environmental variable is incorrectly set."
+	echo "         The current value is '$OLDTOOLS'"
+	echo "         Instead, it should be"
+	echo "               TOOLS=\`logdir exptools\`   (=$TOOLS)"
+    fi
+    echo
+    echo "Hit RETURN to continue: \c"
+    read
+fi
+
+{
+    echo
+    echo "            E X P T O O L S   R U G   D I S T R I B U T I O N"
+    echo "                      $(date)"
+
+    CASCADEFILE=$TOOLS/adm/rug/local/cascadefile
+    SUBFILE=$TOOLS/adm/rug/local/subscrlist
+    UPDLOG=$TOOLS/adm/upd1.1/lib/updlog
+    CPIOLOG=$TOOLS/adm/upd1.1/lib/cpio.log
+
+    RUGMACHINE=false
+    NODENAME=$(
+	if whence uuname >/dev/null; then
+	    uuname -l
+	else
+	    uname -n
+	fi
+    )
+    if test -f $TOOLS/.nodename; then
+	RUGNODENAME=$(< $TOOLS/.nodename)
+	if test "$RUGNODENAME" = "$NODENAME"; then
+	    RUGMACHINE=true
+	fi
+    fi
+
+    HAVE_UPDLOG=false
+    HAVE_OLD_UPDLOG=false
+    if test -s $CPIOLOG -a ! -f $TOOLS/adm/rug/.over; then
+	HAVE_UPDLOG=true
+	ls -l $CPIOLOG | read X X X X X MONTH DAY TIME REST
+	if test -n "$(find $CPIOLOG -mtime +14 -print 2>/dev/null)"; then
+	    HAVE_OLD_UPDLOG=true
+	fi
+    elif test -s $UPDLOG; then
+	HAVE_UPDLOG=true
+	ls -l $UPDLOG | read X X X X X MONTH DAY TIME REST
+	if test -n "$(find $UPDLOG -mtime +14 -print 2>/dev/null)"; then
+	    HAVE_OLD_UPDLOG=true
+	fi
+    else
+	MONTH="DATE"
+	DAY="UNKNOWN!"
+	TIME=""
+    fi
+
+    if test -f $TOOLS/.machtype; then
+	. $TOOLS/.machtype		# Get the tool type
+    else
+	TYPE=UNKNOWN				export TYPE
+	TYP=UNK					export TYP
+    fi
+
+    if not $RUGMACHINE; then
+	echo "\nSorry, this machine '$NODENAME' is NOT part of the Exptools RUG distribution."
+	echo "It provides tools for machine type '$TYPE' in directory $TOOLS."
+	if test -n "$RUGNODENAME"; then
+	    echo "Its exptools files were copied from machine '$RUGNODENAME'."
+	    RUGNODEMSG="the SA of '$RUGNODENAME', "
+	else
+	    RUGNODEMSG=""
+	fi
+	if $HAVE_UPDLOG; then
+	    echo "The last time the exptools were copied over appears to be $MONTH $DAY $TIME."
+	fi
+	echo "To get a nightly Exptools feed, contact your local Exptools administrator,"
+	echo "${RUGNODEMSG}or send email to att!exptools."
+	echo
+	echo "The command 'expinfo' can be used to identify the local administrators at"
+	echo "major AT&T locations supporting Exptools."
+    elif test ! -s $CASCADEFILE; then
+	echo "\nThis machine -- $NODENAME -- is a part of the Exptools RUG distribution."
+	echo "It provides tools for machine type '$TYPE' in directory $TOOLS."
+	echo "It receives tools directly from tool providers."
+	echo "Use the 'providers' command to see which tools are provided."
+	echo
+	echo "Latest contact from providers or administrators: $MONTH $DAY $TIME."
+	if $HAVE_OLD_UPDLOG; then
+	    echo "WARNING: Latest contact over 2 weeks ago -- updates may be suspended!"
+	fi
+	echo
+	echo "The following are the most recent updates:"
+	if test -s $UPDLOG; then
+	    fgrep -v -e "------------" $UPDLOG |
+	    tail -25 | 
+	    pr -o4 -t
+	else
+	    echo "    NONE"
+	fi
+    else
+	echo "\nThis machine -- $NODENAME -- is a part of the Exptools RUG distribution."
+	echo "It provides tools for machine type '$TYPE' in directory $TOOLS."
+	echo
+	integer COUNT=0
+	while IFS=: read LEVEL MACHINE TIMESTAMP; do
+	    MACHINES[$COUNT]="$MACHINE"
+	    TIMESTAMPS[$COUNT]="$TIMESTAMP"
+	    ((COUNT += 1))
+	done < $CASCADEFILE
+	((COUNT -= 1))
+	OVERLORD="${MACHINES[$COUNT]}"
+	PREFIX=""
+	INDENT="    "
+	MODIFIER=""
+	echo "The Overlord machine of this Exptools cascade is known as '$OVERLORD'.  It"
+	echo "receives tools directly from the Exptools providers and feeds them to all"
+	echo "other $TYPE Exptools machines.\n"
+	echo "Here is how the tools flow to this machine from the Overlord:"
+	FIRST=true
+	while ((COUNT >= 0)); do
+	    TS="${TIMESTAMPS[$COUNT]}"
+	    if test -n "$TS"; then
+		if $FIRST; then
+		    TS=" (updated $TS)"
+		else
+		    TS=" on $TS"
+		fi
+	    fi
+	    echo "${PREFIX}'${MACHINES[$COUNT]}'$TS$MODIFIER fed machine"
+	    PREFIX="$INDENT$PREFIX"
+	    MODIFIER=", which"
+	    FIRST=false
+	    ((COUNT -= 1))
+	done
+	date | read X X X X TIMEZONE REST
+	echo "${PREFIX}'$NODENAME' on $MONTH $DAY $TIME $TIMEZONE."
+	echo
+	if test -s $SUBFILE; then
+	    cat $SUBFILE
+	    echo
+	    echo "NOTE: STD = all standard tools; OPT = all optional tools"
+	    echo "Use the 'providers' command to see which tools are in each class."
+	    echo
+	fi
+	echo "Latest contact from server: $MONTH $DAY $TIME."
+	if $HAVE_OLD_UPDLOG; then
+	    echo "WARNING: Latest contact over 2 weeks ago -- updates may be suspended!"
+	fi
+	if test -f $CPIOLOG; then
+	    echo
+	    echo "The following are the most recent updates:"
+	    if test -s $CPIOLOG; then
+		egrep -v "[0-9] blocks\$| uid=[0-9]" $CPIOLOG | 
+		tail -25 | 
+		pr -o4 -t
+	    else
+		echo "    NONE"
+	    fi
+	fi
+    fi
+
+    echo
+} | ${PAGER:-pg}

@@ -1,0 +1,462 @@
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          nuedit - edit records in a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnnuuuueeeeddddiiiitttt [-b<blank_cnt>] [-cdfiqvV] [-n<newline_char>] \
+                  <table>[=<alt_table>] [with <table>[=<alt_table>]...] \
+                  [where <where-clause>]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The nnnnuuuueeeeddddiiiitttt command provides a mechanism for editing
+          specified records in a given UNITY table.  The table is
+          locked for update during the entire duration of the command
+          so that other users cannot change it.
+
+          The only mandatory argument is the name of the table on
+          which changes are to be made.  The standard input ("-")
+          _c_a_n_n_o_t be used for this table.  The _w_h_e_r_e-clause is used to
+          specify a subset of records to edit.  It allows checking the
+          values of attributes in each record against constants and,
+          if the _w_i_t_h parameter is given, allows checking the values
+          of attributes against attributes of records in other tables
+          (using a join).  (See the rrrreeeettttrrrriiiieeeevvvveeee(1) manual page for more
+          details on the _w_h_e_r_e-clause and cross-table matching.)
+          nnnnuuuueeeeddddiiiitttt queries the specified table(s) and transforms records
+          satisfying the _w_h_e_r_e-clause into ``packet'' format for
+          editing in an editor.  Those records that do not match the
+          _w_h_e_r_e-clause will be left unchanged.  If no _w_h_e_r_e-clause is
+          specified, all the records in the given table are converted
+          to packet format for editing.
+
+          In the packet format, each attribute's name and value are
+          put on a line separated by a tab.  If the ----uuuu option is
+          given, then the ``user-friendly'' names are used instead of
+          the attribute names, if they exist in the description file.
+          (See the ddddeeeessssccccrrrriiiippppttttoooorrrr(4) manual page.)  If an attribute value
+          contains a <_n_e_w_l_i_n_e__c_h_a_r> (see the ----nnnn option below), it will
+          be replaced by a newline and a tab.
+
+          Each record's packet is preceded by a line of the form:
+
+               #####<tab><packet_number>
+
+          where <_p_a_c_k_e_t__n_u_m_b_e_r> is the sequence number of the packet
+          within the edited file.  This line is used only to mark the
+          start of each record; this line and the <_p_a_c_k_e_t__n_u_m_b_e_r> are
+          ignored when converting the edited file back to record
+          format.  Blank lines are also ignored.
+
+          After the matching records are put into the packet format,
+          the user is put into their editor to make any necessary
+          changes in the data.  The editor used is determined first by
+          the ED environment variable.  If this is not set or is
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+          empty, the EDITOR environment variable is looked at.  If
+          this is not set or is empty, then ``/bin/ed'' is used.
+          Standard editor commands should be used to do the editing.
+          When changes are complete the user should exit the editor in
+          the standard fashion.
+
+          After exiting the editor, the data is converted back to
+          normal record format.  Records are checked so they do not
+          corrupt the UNITY table.  Further validation may be done use
+          the ----vvvv option.
+
+          If an error occurs in the conversion, the user is notified
+          and asked if they would like to re-enter the editor to
+          correct the problems.  If the user responds with 'y', they
+          are put back into the editor.  Otherwise, nnnnuuuueeeeddddiiiitttt will notify
+          the user where the packet file is located and exit without
+          making any changes.  If the packet-to-record conversion
+          succeeds, the user is prompted whether to make the changes
+          to the table or not.  If the user responds with 'y', then
+          the updated records are put back in the table and the
+          original records are removed.  This last question is not
+          asked if the ----ffff or ----dddd options are given.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----bbbb<_c_o_u_n_t>
+               Insert <_c_o_u_n_t> blank records in the edited file.  If
+               <_c_o_u_n_t> is not given, it is defaulted to 1.  This
+               option is useful as an alternate mechanism for
+               inserting records into the table.
+
+               Note that blank records are _n_o_t removed from the edited
+               file during packet-to-record conversion.  The user must
+               remove any un-wanted blank records while in the editor.
+
+          ----cccc   Check the new tuples after exiting the editor.  The
+               vvvvaaaalllliiiiddddaaaatttteeee(UNITY) command is used to check the updated
+               tuples.  If an error occurs on any record, the user
+               will be prompted whether to re-enter the editor to make
+               the corrections, as if packet-to-record conversion had
+               failed.
+
+               The V<_t_a_b_l_e> and E<_t_a_b_l_e> files should be present
+               before this option is used.  Otherwise, the vvvvaaaalllliiiiddddaaaatttteeee
+               command will always fail.
+
+               The vvvvaaaalllliiiiddddaaaatttteeee command, like all other normal UNITY
+               commands, does not (yet) support reading the
+               description for a table from the table itself and not
+               in a separate descriptor file.  If the edited table has
+               its description in the table itself, a warning message
+               will be printed and this option will be ignored.
+
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+          ----dddd   Demo or no-change mode.  Do not perform any updates,
+               but act as if they were being done.  This option is
+               used to see what nnnnuuuueeeeddddiiiitttt would update, without making
+               any updates.
+
+          ----ffff   Force the updates to be done.  Once packet-to-record
+               conversion has completed successfully, the changes are
+               made to the table without prompting the user for the
+               okay.
+
+          ----iiii   Ignore the case of letters in _a_l_l the string and
+               regular expression comparisons of the where-clause.
+               This option is a short hand notation to pre-pending the
+               ``cccc'' prefix to all the comparison operators in the
+               where-clause.  With this option, the string ``this''
+               would match ``This'' or ``THIS''.  The regular
+               expression ``this'' would match ``This is a test'' or
+               ``THIS IS A TEST''.  (There is no need for grouping
+               with square brackets.)  This option is analogous to the
+               -i option of ggggrrrreeeepppp(1).
+
+          ----nnnn<_n_e_w_l_i_n_e__c_h_a_r>
+               When generating the packet file for editing, each time
+               <_n_e_w_l_i_n_e__c_h_a_r> character is encountered in an attribute
+               value, it will be replaced by a newline and a tab.  For
+               example, if <_n_e_w_l_i_n_e__c_h_a_r> is '~' and an attribute
+               ``junk'' had the value
+
+                    Value~for Junk
+
+               it would be shown in the packet file as
+
+                    junk Value
+                         for Junk
+
+               The reverse action is taken when converting the packets
+               back to records: Any lines having tab as the first
+               character are appended to the previous attribute's
+               value, minus the tab.
+
+               If this option is not given, the default <_n_e_w_l_i_n_e__c_h_a_r>
+               is tilde ('~').  If ----nnnn is given with no argument, then
+               the newline character is assumed to be null and the
+               newline conversion is effectively turned off.
+
+          ----qqqq   Quiet mode.  Do not print a count of the converted
+               records.
+
+          ----vvvv   Use the verbose or ``user-friendly'' names from the
+               descriptor file to label each attribute in the packet
+               file.  If an attribute's user-friendly name is not
+               present in the descriptor file, the normal attribute
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+               name is used instead.
+
+          ----VVVV   Print the version of the command and exit.  No updates
+               are done.
+
+          <_t_a_b_l_e_1>[====<_a_l_t__t_a_b_l_e>]
+               The table records are to be updated in.
+
+               By default, the descriptor file for the table is named
+               D<_t_a_b_l_e_1>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>'' after the table
+               name.  The alternate descriptor file will be
+               D<_a_l_t__t_a_b_l_e>.  Note that if <_a_l_t__t_a_b_l_e> contains a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the UNITYDFILES directories
+               or in the current directory.
+
+          wwwwiiiitttthhhh <_t_a_b_l_e_2>[====<_a_l_t__t_a_b_l_e>]...
+               Extra table(s) containing records that are matched
+               against in the _w_h_e_r_e clause.  A table named ``-''
+               refers to standard input.  The standard input can only
+               be used once.
+
+               If this option is used, attribute names appearing in
+               more than one table must be prefixed with the table
+               name and a period (table.attribute) or the relation's
+               positional number and a period (2.attribute).  See the
+               rrrreeeettttrrrriiiieeeevvvveeee(1) manual page for more information on
+               attribute name syntax.
+
+               By default, the descriptor file for the table is named
+               D<_t_a_b_l_e_2>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>'' after the table
+               name.  The alternate descriptor file will be
+               D<_a_l_t__t_a_b_l_e>.  Note that if <_a_l_t__t_a_b_l_e> contains a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the UNITYDFILES directories
+               or in the current directory.
+
+          wwwwhhhheeeerrrreeee <_w_h_e_r_e-_c_l_a_u_s_e>
+               Specify a subset of records to be considered.  If no
+               _w_h_e_r_e-_c_l_a_u_s_e is given, all records will be considered.
+
+               The _w_h_e_r_e-_c_l_a_u_s_e is made up of expressions comparing
+               the value of an attribute to a constant or to the value
+               of another attribute.  The expressions can be combined
+               using boolean operators and parenthesis.
+
+               The comparison operators are: lllltttt (less than), lllleeee (less
+               than or equal to), ggggtttt (greater than), ggggeeee (greater than
+               or equal to), eeeeqqqq (equal to), and nnnneeee (not equal to). If
+               they appear as is, they are numeric comparisons.  They
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+               can also have the following prefixes: llll (lexical
+               comparison), cccc (lexical comparison, but ignore the case
+               of letters), nnnn (numeric comparison), rrrr (regular
+               expression comparison - eeeeqqqq and nnnneeee only), dddd (date and
+               time comparison), and ffff (field-to-field comparison -
+               may also be combined with llll, cccc, nnnn, and dddd prefixes).
+
+               The boolean operations are: !!!! (negation), aaaannnndddd (logical
+               conjunction), oooorrrr (logical disjunction), (((( and ))))
+               (grouping), and eeeellllsssseeee (selection precedence).
+
+               See the rrrreeeettttrrrriiiieeeevvvveeee(1) manual page for more information.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+                    A colon-separated list of directories to search
+                    for table descriptor files.  If this is not
+                    specified, or if a needed file is not found in one
+                    of the directories, the current directory is
+                    searched.  If that fails, the directory where the
+                    associated table is located (based on the table
+                    name on the command line) is searched.
+
+                    NOTE: UNITY commands in _e_x_p_t_o_o_l_s only accept one
+                    directory in this variable.  Also, they use it
+                    only after looking in the current directory and in
+                    the table's directory; some commands do not use it
+                    at all.
+
+          ED, EDITOR
+                    Editor used to edit the packet file.  First $ED is
+                    looked at; if it is not defined or empty $EDITOR
+                    is looked at.  If both variables are not defined
+                    or empty, /bin/ed is used as the editor.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          No more than eight tables may be given.
+
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+
+
+
+     Page 5                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+          There is a limit on the number of attributes each table can
+          have.  Currently, this is 200 on mainframes and 100 on all
+          other machines.
+
+          There are no terminal restrictions from nnnnuuuueeeeddddiiiitttt other than
+          those imposed by the particular editor used.
+
+          If the input table is large, the packet format for the
+          records may be too large to be handled by the editor.  _I_f
+          _t_h_e _e_d_i_t_o_r _c_o_m_p_l_a_i_n_s, _r_e_s_p_o_n_d _w_i_t_h '_n' _w_h_e_n _a_s_k_e_d _w_h_e_t_h_e_r _t_o
+          _m_a_k_e _t_h_e _u_p_d_a_t_e_s.  Otherwise, data may be corrupted or lost.
+          In this case, a where-clause may be used to update only a
+          portion of the file at a time.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          $ ED=ed
+          $ export ED
+          $ nuedit SP where snumber leq s3
+          nuedit: 1 records selected from SP.
+          39
+          1,$p
+          #####   1
+          snumber s3
+          pnumber p1
+          qty     200
+
+          /qty/s/200/300/p
+          qty     300
+          w
+          39
+          q
+          nuedit: 1 records converted
+          nuedit: make these changes in SP (y or n)? y
+          nuedit: changes made, SP updated
+
+
+          BEFORE:            AFTER:
+
+          |------------|     |------------|
+          |snu|pnu| qty|     |snu|pnu| qty|
+          |mbe|mbe|    |     |mbe|mbe|    |
+          |r  |r  |    |     |r  |r  |    |
+          |------------|     |------------|
+          |s1 |p1 | 300|     |s1 |p1 | 300|
+          |s1 |p2 | 200|     |s1 |p2 | 200|
+          |s1 |p3 | 400|     |s1 |p3 | 400|
+          |s2 |p1 | 100|     |s2 |p1 | 100|
+          |s2 |p2 | 200|     |s2 |p2 | 200|
+          |s3 |p1 | 200|     |s3 |p1 | 300|
+          |------------|     |------------|
+
+     FFFFIIIILLLLEEEESSSS
+
+
+
+     PPPPaaaaggggeeee 6666                                          ((((pppprrrriiiinnnntttteeeedddd 11110000////8888////99991111))))
+
+
+
+
+
+
+     nnnnuuuueeeeddddiiiitttt((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnuuuueeeeddddiiiitttt((((1111))))
+
+
+
+          AAAA<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e> and BBBB<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e>
+                    - Index files for <_a_t_t_r_i_b_u_t_e> in <_t_a_b_l_e>.
+
+          DDDD<_t_a_b_l_e>  - Descriptor file for <_t_a_b_l_e>, listing the
+                    attributes, their delimiting-character or width,
+                    printing information, and user-friendly names.
+
+          ppppaaaakkkk$$$$$$$$     - Packet format file for editing.  If the updates
+                    are aborted for whatever reason, the edited
+                    changes are contained in this file.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          alter(UNITY), delete(UNITY), insert(UNITY), nalter(1),
+          ndelete(1), ninsert(1), retrieve(1), uedit(UNITY).
+          uenter(UNITY), tuple(UNITY), and validate(UNITY).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 10/8/91)
+
+
+

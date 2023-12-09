@@ -1,0 +1,198 @@
+
+
+
+     AAAAGGGGEEEENNNNDDDDAAAA,,,,AAAAPPPPOOOOSSSSTTTT((((1111))))        UUUUNNNNIIIIXXXX 5555....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        AAAAGGGGEEEENNNNDDDDAAAA,,,,AAAAPPPPOOOOSSSSTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          agenda, apost - maintain personal calendar
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          aaaaggggeeeennnnddddaaaa [ ----wwww ] [ ----tttt ttttiiiimmmmeeee ] [ ----dddd ] [ ----hhhh ] [ ----mmmm ] [ ffffiiiilllleeee ... ]
+
+          aaaappppoooosssstttt [ ffffiiiilllleeee ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _A_g_e_n_d_a consults the file ._a_g_e_n_d_a in the home directory and
+          prints lines with date and time  specifications matching the
+          current time.  If the ----tttt option is used, the next argument
+          is taken as the current time, which may be any reasonable
+          specification of date and time of day.  If the ----wwww flag is
+          present, warning messages are produced for lines with syntax
+          errors.  Any other arguments are taken to be names of agenda
+          files, and are used instead of $_H_O_M_E/._a_g_e_n_d_a.  _A_p_o_s_t is a
+          shell script which provides an easy way to post items to the
+          ._a_g_e_n_d_a file, or to the file specified on the command line.
+
+          The file ._a_g_e_n_d_a should contain lines of 4 or more fields,
+          separated by spaces or tabs.  The first 3 fields specify a
+          range of dates and times, the rest constitute a message to
+          be printed if _a_g_e_n_d_a is run at some time within that range.
+          The general format is:
+
+                ttttiiiimmmmeeee[,,,,ttttiiiimmmmeeee] ddddaaaayyyy[,,,,ddddaaaayyyy] mmmmoooonnnntttthhhh[,,,,mmmmoooonnnntttthhhh] mmmmeeeessssssssaaaaggggeeee ...
+
+          ttttiiiimmmmeeee    Specifies an hour of the day (0-23), matching any
+                  time within that hour, or an exact time of day
+                  (0:00-23:59).  Am or pm notation may be used.
+          ddddaaaayyyy     Specifies a day of the week (Sunday-Saturday), day
+                  of the month (1-31), or the word 'llllaaaasssstttt'.  If a day
+                  of the week is specified, a qualifier may follow in
+                  parentheses indicating which day of the month (1-5
+                  or LLLL for last).  An alternate form of the qualifier
+                  is       (nnnn[+-]mmmm) where nnnn is 1-5 or LLLL and mmmm is a
+                  number of days to add to it or subtract from it.  If
+                  'last' is specified, it matches the last day of any
+                  month, and may be adjusted backward, e.g. 'last-3'.
+                  Any normal abbreviation is allowed for weekday
+                  names.
+          mmmmoooonnnntttthhhh   Specifies the month in which the ttttiiiimmmmeeee and ddddaaaayyyy fields
+                  are valid.  Legal values are month name (January-
+                  December) or month number (1-12).  Any normal
+                  abbreviation for month names may be used.
+          mmmmeeeessssssssaaaaggggeeee The rest of the line is taken to be a message to
+                  print.  If the first character is '!!!!' the rest of
+                  the line is passed to $SHELL (_s_h(1) if $SHELL is not
+                  set) for processing.  All normal backslash escapes
+                  are supported (see _e_c_h_o(1)).  Newlines may be
+                  included in the message by terminating a line with a
+
+
+
+     Page 1                                          (printed 3/15/84)
+
+
+
+
+
+
+     AAAAGGGGEEEENNNNDDDDAAAA,,,,AAAAPPPPOOOOSSSSTTTT((((1111))))        UUUUNNNNIIIIXXXX 5555....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        AAAAGGGGEEEENNNNDDDDAAAA,,,,AAAAPPPPOOOOSSSSTTTT((((1111))))
+
+
+
+                  backslash (\\\\) or by inserting the \\\\nnnn sequence.
+
+          A dash (----) indicates an inclusive range (e.g. 12:45-12:57)
+          and is applicable in any of the date/time fields.  Multiple
+          ttttiiiimmmmeeee, ddddaaaayyyy, and mmmmoooonnnntttthhhh specifications may be separated by
+          commas, in which case they are evaluated left to right.  An
+          asterisk (****) matches the current value for that field.  If
+          the message begins with an ampersand (&&&&), the next message
+          not beginning with an ampersand is printed.  In this way
+          several disjoint time specifications may be associated with
+          a single message.
+
+          If any of the ----dddd, ----hhhh, or ----mmmm options is specified, then the
+          comparsion between each entry and the current time will
+          ignore the day, time, and month fields, respectively.  For
+          example if -d is specified, the day field is ignored and all
+          messages which match the month and time of day will be
+          printed.
+
+          A line beginning with a sharp sign (####) is treated as a
+          comment (ignored).  The longest line (including
+          continuations) is 1024 characters.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following are examples of lines in the ._a_g_e_n_d_a file.
+
+          6-9 fri 1-12 Time card due 9:00am
+                  Prints the message if _a_g_e_n_d_a is run between 6:00am
+                  and 9:59am every friday (every month).
+
+          6-9:15 last,mon(3),1 * Pay Rent!
+                  Prints "Pay Rent!" if _a_g_e_n_d_a is run between 6:00am
+                  and 9:15 on the first day, the last day, or the
+                  third monday of the month.
+
+          *:15-*:45 1-7 aug,JANUARY Check mail
+                  Prints "Check mail" if _a_g_e_n_d_a is run between quarter
+                  after the hour and quarter to the next hour for the
+                  first week of August and January.
+
+          0-11 * * Good Morning
+          12-17 * * Good Afternoon
+          6pm-11pm * * Good Evening
+                  Friendly login messages when _a_g_e_n_d_a is run from
+                  ._p_r_o_f_i_l_e at login time.
+
+          16 mon-th * &
+          15 friday * !banner "Go Home!"
+                  Run the _b_a_n_n_e_r program if _a_g_e_n_d_a is run between
+                  4:00pm and 5:00pm, Monday through Thursday, or
+                  3:00pm to 4:00pm on Friday.
+
+
+
+
+     Page 2                                          (printed 3/15/84)
+
+
+
+
+
+
+     AAAAGGGGEEEENNNNDDDDAAAA,,,,AAAAPPPPOOOOSSSSTTTT((((1111))))        UUUUNNNNIIIIXXXX 5555....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        AAAAGGGGEEEENNNNDDDDAAAA,,,,AAAAPPPPOOOOSSSSTTTT((((1111))))
+
+
+
+          16 29 feb planning meeting room 3d-501
+          10 last * monthly group meeting
+                  If one wishes to see all meeting for today(Feb 29),
+                  _a_g_e_n_d_a -_h may be run, in which case all lines will
+                  match the month and day, but the time field will be
+                  ignored.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _s_h(1),_e_c_h_o(1),_c_r_o_n(1M)
+
+     FFFFIIIILLLLEEEESSSS
+          $HOME/.agenda
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Alan Hastings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 3/15/84)
+
+
+

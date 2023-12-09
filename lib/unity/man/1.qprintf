@@ -1,0 +1,264 @@
+
+
+
+     qqqqpppprrrriiiinnnnttttffff((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  qqqqpppprrrriiiinnnnttttffff((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          qprintf - Format lines read from standard input according to
+          a user-specified format.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          qqqqpppprrrriiiinnnnttttffff [-bR] [-d_c] [-F_n] [-f<_f_o_o_t_e_r__s_t_r_i_n_g>]
+               [-h<_h_e_a_d_e_r__s_t_r_i_n_g>] [-i<_f_i_l_e>] [-m<_m_i_d_d_l_e__s_t_r_i_n_g>] [-
+               n_c] [<_f_o_r_m_a_t>] [<_f_i_e_l_d__n_a_m_e_s>...]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The qqqqpppprrrriiiinnnnttttffff command generates strings on the output
+          according to the format string given on the command line.
+          For each line read from standard input, qqqqpppprrrriiiinnnnttttffff divides it
+          into fields according to a field delimiter and prints the
+          fields on the standard output using <_f_o_r_m_a_t> as the first
+          argument to pppprrrriiiinnnnttttffff(3) and the field values or <_f_i_e_l_d__n_a_m_e_s>
+          as the other arguments.
+
+          Within the format string, all conversions start with a
+          percent sign (``%''), followed by optional justification,
+          width and precision information recognized by pppprrrriiiinnnnttttffff(3), and
+          finally a conversion character.  The following conversion
+          characters are recognized in the format string:
+
+          ssss    Output a field value.  The field output is the _Nth
+               field as this is the _Nth ``%s'' in the format string.
+
+          dddd, oooo, or xxxx
+               Print the record number being printed.
+
+          nnnn    Print the corresponding <_f_i_e_l_d__n_a_m_e> given on the
+               command line.  The field name output is the _Nth field
+               as this is the _Nth ``%n'' in the format string.  This
+               conversion is most useful when the format string is
+               applied repeatedly with the ----RRRR option.  Note, that
+               unlike the other conversions, this conversion is not a
+               standard conversion supported by pppprrrriiiinnnnttttffff(3).  It is
+               converted to a %%%%ssss and the field name is supplied as an
+               argument.
+
+          As an example, the format ``%-.20s'' would print a field as
+          a twenty-character left-justified value.  The format ``%d
+          %n=%s\n'' would print the record number, a space, the field
+          name, an equal sign, the field value, and a newline.
+
+          Note that a newline is _n_o_t output with each record unless
+          included in the format string.
+
+          All character constant escape sequences recognized in the C
+          language are recognized as part of the format string:
+
+               \\\\nnnn       newline
+
+
+
+     Page 1                                         (printed 10/15/91)
+
+
+
+
+
+
+     qqqqpppprrrriiiinnnnttttffff((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  qqqqpppprrrriiiinnnnttttffff((((1111))))
+
+
+
+               \\\\tttt       horizontal tab
+               \\\\bbbb       backspace
+               \\\\rrrr       carriage return
+               \\\\ffff       form feed
+               \\\\\\\\       backslash
+               \\\\""""       double quote
+               \\\\_n_u_m_b_e_r  bit pattern
+
+          The format string should be surrounded by quotes if it
+          contains white space or other characters recognized by the
+          shell.
+
+          If no <_f_o_r_m_a_t> string is given, then each field value is
+          printed, followed by a new-line, i.e., a format of ``%s\n''
+          for each field is used.  Without the <_f_o_r_m_a_t> argument, the
+          ----FFFF option must be given to know how many fields are on each
+          line.  Normally, if there are not as many ``%s'' constructs
+          in <_f_o_r_m_a_t> as the field count given with the ----FFFF option,
+          then after the format string is printed, each extra field
+          value is printed followed by a new-line i.e., one ``%s\n''
+          conversion is appended to <_f_o_r_m_a_t> for each extra field.
+          This can be changed with the ----RRRR option.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----bbbb   Remove trailing blanks from field values before they
+               are printed.
+
+          ----dddd_c  The character ``_c'' is the field delimiter character
+               for dividing up each input line.  The default delimiter
+               is ``^G'' (Control-G).
+
+          ----FFFF_n  The number of fields in each record must be _n.  The
+               number _n must also be greater than or equal to the
+               number of ``%s'' conversions in the format string.
+
+               If no <_f_o_r_m_a_t> string is given, this parameter is
+               required.
+
+          ----ffff <_f_o_o_t_e_r__s_t_r_i_n_g>
+               The next argument is used as a string to be printed at
+               the end of the output, after all tuples have been
+               printed.  The string may consist of any number of
+               lines.  Standard C escape conventions (e.g. ``\n'') are
+               recognized and translated to the corresponding value.
+               In this case the string should be quoted to avoid
+               backslash interpretation by the shell.
+
+          ----hhhh <_h_e_a_d_e_r__s_t_r_i_n_g>
+               The next argument is used as a header to be printed at
+               the beginning of the output, before any tuples are
+               printed.  The string may consist of any number of
+               lines.  Standard C escape conventions (e.g. ``\n'') are
+
+
+
+     Page 2                                         (printed 10/15/91)
+
+
+
+
+
+
+     qqqqpppprrrriiiinnnnttttffff((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  qqqqpppprrrriiiinnnnttttffff((((1111))))
+
+
+
+               recognized and translated to the corresponding value.
+               In this case the string should be quoted to avoid
+               backslash interpretation by the shell.
+
+          ----iiii<_f_i_l_e>
+               The data to be formatted is taken from the given _f_i_l_e.
+               Without this option, the data is taken from standard
+               input.
+
+          ----mmmm <_m_i_d_d_l_e__s_t_r_i_n_g>
+               The next argument is used as a string to be printed in
+               between each tuple of output.  The string may consist
+               of any number of lines.  Standard C escape conventions
+               (e.g. ``\n'') are recognized and translated to the
+               corresponding value.  In this case the string should be
+               quoted to avoid backslash interpretation by the shell.
+
+          ----nnnn_c  All occurrences of the specified character ``_c'' are
+               translated into a a newline during printing.  Thus, the
+               user can explicitly control where breaks occur in field
+               values.  The default newline indicator character is
+               tilde (~).
+
+          ----RRRR   Use the <_f_o_r_m_a_t> string repeatedly as needed for all
+               the fields.  This option is most useful when the format
+               describes how a single field (or set of fields) should
+               be printed.  If the number of fields is not an exact
+               multiple of the number %s conversion constructs in the
+               format string, the extra conversions are ignored, but
+               the rest of the format string is still printed.  This
+               option is ignored if there is no <_f_o_r_m_a_t> string or the
+               ----FFFF option is not given.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+          There is a limit on the number of fields.  Currently, this
+          is 200 on mainframes and 100 on all other machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+
+
+
+     PPPPaaaaggggeeee 3333                                         ((((pppprrrriiiinnnntttteeeedddd 11110000////11115555////99991111))))
+
+
+
+
+
+
+     qqqqpppprrrriiiinnnnttttffff((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  qqqqpppprrrriiiinnnnttttffff((((1111))))
+
+
+
+          To print three fields (a supplier name, number, and
+          location) on each line:
+
+               qprintf -d':' "Supplier %s, number %s, is located in %s.\n"
+
+          Given the input
+
+               Smith:5398:London
+               Jones:769:Nice
+               Blake:245:Paris
+
+          using the above command, the output would be
+
+               Supplier Smith, number 5398, is located in London.
+               Supplier Jones, number 769, is located in Nice.
+               Supplier Blake, number 245, is located in Paris.
+
+          To create C structure initialization code out of the same
+          input as above, the following command could be used:
+
+               qprintf -d':' -h"struct xyz var[] = {\n" -m",\n" -f"\n};\n" \
+                    "\t{ \"%s\", %s, \"%s\" }"
+
+          Using the above command, the output would be
+
+               struct xyz var[] = {
+                    { "Smith", 5398, "London" },
+                    { "Jones", 769, "Nice" },
+                    { "Blake", 245, "Paris" }
+               };
+
+          Create shell-variable assignments out of the input for use
+          in a while-loop:
+
+               qprintf -d':' -R -F3 "%n='%s'; " -m"\n" -f"\n" NAME ID LOC
+
+          Using the above command, the output would be
+
+               NAME='Smith'; ID='5398'; LOC='London';
+               NAME='Jones'; ID='769'; LOC='Nice';
+               NAME='Blake'; ID='245'; LOC='Paris';
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          prblock(1), prtable(1), retrieve(1), and uprintf(UNITY).
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                         (printed 10/15/91)
+
+
+

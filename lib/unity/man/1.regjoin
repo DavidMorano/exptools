@@ -1,0 +1,132 @@
+
+
+
+     rrrreeeeggggjjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         rrrreeeeggggjjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          regjoin - join two existing tables based on regular
+          expressions
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _r_e_g_j_o_i_n [-q] [-Itable1] [-Itable2] [-Otable] a1a[,a1b,...] \
+           a2a[,a2b,...] _f_r_o_m table1 table2 [_i_n_t_o table3]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _r_e_g_j_o_i_n command allows the user to build a new table by
+          joining two existing tables (table1 and table2).  The first
+          two arguments specify the attributes on which tables table1
+          and table2 are to be joined; the arguments are composed of
+          one or more attributes in the respective tables, separated
+          by commas (no white space is allowed in the attribute
+          lists).  The join of tables table1 and table2 is composed of
+          those records whose attribute values from table1 are a
+          regular expression matching the attribute values from table2
+          for those fields on which the join is being done.  The
+          records are concatenated together with the attributes table1
+          appearing first.  The attributes in table1 (i.e., the
+          regular expressions) on which the join is done do not appear
+          in the output.  If the last attribute of table1 is a
+          terminator field (the terminator must be newline), then the
+          terminator is changed to tab so that the joined record is a
+          single line on output.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the first input table.  If the -I option is used
+          twice, the second occurrance table name specified in the
+          second occurrance is used to determine an alternate
+          description file to be used in reading the second input
+          table.  Note that this makes the -I option positional.  Even
+          if an alternate description file is not desired for the
+          first table, it must be entered if an alternate description
+          file is desired for the second table.  In this case, the
+          table name entered in the first occurrance of the -I option
+          should use the same table name as as table1.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          If an input table specified is "-", then input is taken from
+          the standard input instead of a table.  The -I option must
+          be used to specify the name of a table from which the
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     rrrreeeeggggjjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         rrrreeeeggggjjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          description file name can be determined and used.  If the
+          second table specified is "-", then two occurrances of the
+          -I option must appear as described above; the first
+          occurrance applies to the first table and the second
+          occurrance applies to the second table.  Both table names
+          cannot be "-"; one of them must be specified.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+          If an attribute in table1 other than an attribute on which
+          the join is being done has the same name as an attribute in
+          table2, then the resulting description file will have two
+          attributes with the same name; this causes strange results
+          when used by several of the UNITY programs.  This problem
+          was solved by renaming the duplicate attribute name in the
+          second description file to <attribute>1 (i.e., a "1" is
+          appended to the attribute name for all duplicate pairs other
+          than the joined attributes) and warning the user about the
+          name change.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _u_j_o_i_n(UNITY), _o_u_t_e_r_j_o_i_n(UNITY), _s_e_t_d_i_f_f(UNITY)
+
+     CCCCAAAAVVVVEEEEAAAATTTT
+          Because this command does not use indexes and because it
+          must compile the regular expressions dynamically, it is VERY
+          SLOW!
+
+          The regjoin command is implemented using the software ujoin
+          and some conditional compilation based on whether REGJOIN is
+          defined or not.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

@@ -1,0 +1,990 @@
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+     AAAABBBBSSSSTTTTRRRRAAAACCCCTTTT
+          postalias - perform operations on private and system mail
+          alias(es)
+
+     UUUUSSSSAAAAGGGGEEEE
+          postalias [alias_name]        (menu driven)
+
+          postalias [options] [alias_name[s]](command line interface)
+
+     OOOOVVVVEEEERRRRVVVVIIIIEEEEWWWW
+          ppppoooossssttttaaaalllliiiiaaaassss is a general purpose manager of private and public
+          aliases (usually groups of names) that are used by post and
+          sendmail programs (mailtool).  Post (4.0 and later) and
+          mailtool can access these aliases either from the local
+          machine or from a remote machine.  Postalias provides these
+          capabilities:
+
+          -  Create, submit, error-check, edit, and delete public and
+             private aliases
+
+          -  Convert aliases to email format (greatly speeds sending
+             of mail)
+
+          -  Provides "delete" (-name) syntax not provided by UPAS
+             aliases
+
+          -  List aliases and their respective locations
+
+          -  Display alias members in user-selected format
+
+          -  Search for alias names or text strings within alias files
+
+          -  Send files (via uuto) to all members of an alias
+
+     BBBBAAAACCCCKKKKGGGGRRRROOOOUUUUNNNNDDDD
+          In ppppoooosssstttt Release 4.0, a set of programs in ////uuuussssrrrr////lllliiiibbbb////uuuuppppaaaassss
+          replaced  ////bbbbiiiinnnn////mmmmaaaaiiiillll as the mail processor.  The ppppoooosssstttt
+          4444....0000////uuuuppppaaaassss environment allows users to have both private and
+          public aliases.  Private aliases are those identified by the
+          keyword aaaalllliiiiaaaassss and are located in a ....mmmmaaaaiiiillllrrrrcccc file or in an
+          alias file located in the user's $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss directory.
+          Public aliases are located in directories pointed to by
+          entries in the file ////uuuussssrrrr////lllliiiibbbb////uuuuppppaaaassss////nnnnaaaammmmeeeeffffiiiilllleeeessss....  The default
+          directory for system aliases is ////uuuussssrrrr////lllliiiibbbb////uuuuppppaaaassss////lllliiiisssstttt or
+          ////oooopppptttt////mmmmaaaaiiiillll////lllliiiibbbb////iiiinnnncccclllluuuuddddeeee for sendmail type aliases.  If system
+          aliases are kept in another directory, the environment vari-
+          able PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR can be set to point to the directory where
+          the system alias files are contained.  If postalias does not
+          determine the correct alias type on your machine (UUUUPPPPAAAASSSS or
+          SSSSEEEENNNNDDDDMMMMAAAAIIIILLLL), the PPPPAAAA____AAAALLLLIIIIAAAASSSSTTTTYYYYPPPPEEEE variable can be set to specify
+          which alias type is being used.  Both types may be used on
+          the same machine.  PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR can be set to point to the
+
+
+
+     Page 1                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+          directory where the system alias files are contained.
+
+          PPPPoooosssstttt searches for aliases in the order shown:
+
+          1) Private aliases in your ....mmmmaaaaiiiillllrrrrcccc file.
+
+          2) Private post/upas aliases located in your $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss
+             ($$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessssEEEEMMMMSSSS for sendmail) directory
+
+          3) Public post/upas aliases located in  PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR
+
+          PPPPoooossssttttaaaalllliiiiaaaassss uses an extended version of the basic
+          upas/sendmail alias format which provides additional
+          features and allows for easier alias maintainance (see AAAALLLLIIIIAAAASSSS
+          FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT section).  Aliases are most readable when they
+          are in name format but most efficient in terms of computer
+          resources when they are in eeeemmmmaaaa format ((((mmmmaaaacccchhhhiiiinnnneeee!!!!llllooooggggiiiinnnn))))....  In
+          order to speed up ppppoooosssstttt processing by an order of magnitude
+          when using aliases, all aliases are converted to eeeemmmmaaaa format.
+          Aliases will be converted to eeeemmmmaaaa format when the PPPPOOOOSSSSTTTT data-
+          base is updated (usually once per week), or when an alias is
+          created, submitted, or edited.  Security considerations on
+          some machines require that public aliases must be owned by
+          rrrrooooooootttt....  In this case, there will be a delay from the time you
+          submit (-s) an alias until the post administrator processes
+          the request.
+
+          Since the PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR will contain the converted aliases, a
+          SSSSrrrrcccc directory was added under PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR to contain the ori-
+          ginal aliases in name format.
+
+     NNNNOOOORRRRMMMMAAAALLLL UUUUSSSSEEEERRRR SSSSCCCCEEEENNNNAAAARRRRIIIIOOOOSSSS
+          This section provides the main-line scenario for creating,
+          submitting, using, and updating alias files.  Both the menu
+          and the command-line interface are discussed.  All options
+          are described later in the OOOOPPPPTTTTIIIIOOOONNNNSSSS section.
+
+          A menu will appear when you do not specify any flag options,
+          you specify 0 or 1 alias files, and postalias (input and
+          output) is connected to a terminal.  Users wishing to bypass
+          the menu and most postalias prompts, may set and export the
+          shell variable PPPPAAAA____PPPPRRRROOOOMMMMPPPPTTTT====nnnn.  The menu will vary depending on
+          who owns the alias and whether it is public or private.  For
+          example, if you enter:   ppppoooossssttttaaaalllliiiiaaaassss this menu will appear:
+
+            1) Enter an alias name (for more menu choices)
+            2) List all alias names (-l)
+            3) Show alias names that I own (-O)
+            4) Show alias names containing string (-g)
+            5) Do a text search (grep) on all aliases (-t)
+            6) Send mail to post administrator (to change alias owners, etc) (-a)
+            7) Quit Now
+
+
+
+     Page 2                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+               Select by number: _
+
+          If you don't know what aliases are on your system, you might
+          select """"LLLLiiiisssstttt aaaallllllll aaaalllliiiiaaaassss nnnnaaaammmmeeeessss"""" to see what (if any) aliases
+          have already been created.  If you want to work with alias
+          """"wwwwhhhh----ssssttttaaaaffffffff"""", you could enter the name via the menu but more
+          commonly you would run:   ppppoooossssttttaaaalllliiiiaaaassss wwwwhhhh----ssssttttaaaaffffffff from the shell
+          prompt.  If the alias """"wwwwhhhh----ssssttttaaaaffffffff"""" exists but is not owned by
+          you, the following menu would appear:
+
+            Alias [wh-staff] is owned by: [fred]
+
+            1) Expand with POST query (includes error checks) (-X 'fmt')
+            2) Display alias without POST query (-x)
+            3) List file(s) and owner (-L)
+            4) Send mail to alias owner to request a change in the alias (-o)
+            5) Quit Now
+               Select by number: _
+
+          If the alias is not owned by you, all you can do is
+          display/check it (in various formats), ask the owner to
+          change it, or, of course, send mail to it. To send mail to
+          an alias "wh-staff" with post (post 4.0 or later), enter:
+                   ppppoooosssstttt !!!!wwwwhhhh----ssssttttaaaaffffffff   or   ppppoooosssstttt <<<<mmmmaaaacccchhhh>>>>!!!!wwwwhhhh----ssssttttaaaaffffffff
+
+          where <<<<mmmmaaaacccchhhh>>>> is the machine on which the alias resides.  The
+          leading """"!!!!"""" is required by post even if the alias is local.
+          See ppppoooosssstttt for more details.
+
+     CCCCRRRREEEEAAAATTTTIIIINNNNGGGG YYYYOOOOUUUURRRR OOOOWWWWNNNN AAAALLLLIIIIAAAASSSS
+          If the alias did not exist, postalias would ask if you
+          wanted to create it.  Users create new aliases in their
+          local directory ($HOME/lib/names/Src) where they can be used
+          and tested before submitting to the public directory
+          PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc.  Suppose you wanted to create a new alias
+          """"nnnneeeewwww----lllliiiisssstttt"""" - you would enter:
+                               ppppoooossssttttaaaalllliiiiaaaassss nnnneeeewwww----lllliiiisssstttt
+
+          and follow the instructions for entering names that pos-
+          talias provides.  When you complete the data entry (see
+          AAAALLLLIIIIAAAASSSS FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT and EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS), the alias will be written
+          locally ($HOME/lib/names/Src) and will be converted to ema
+          format (via a POST query) in $HOME/lib/names.  You will be
+          notified of any errors and warnings that occur during the
+          POST query and conversion.  At this point your alias is
+          installed privately and can only be used by you.
+
+     SSSSUUUUBBBBMMMMIIIITTTTTTTTIIIINNNNGGGG AAAALLLLIIIIAAAASSSSEEEESSSS FFFFOOOORRRR PPPPUUUUBBBBLLLLIIIICCCC UUUUSSSSEEEE
+          After you verify the correctness of the private alias, and
+          you want to make it public, you may submit it to a public
+          directory.  This may be done via the menu or via postalias
+          ----ssss <<<<aaaalllliiiiaaaassss----nnnnaaaammmmeeee>>>>.  If your machine has security restrictions
+
+
+
+     Page 3                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+          on the filesystem, the post administrator for your machine
+          must install the files as root.  If your machine does not
+          have these restrictions, postalias will simply move your
+          files to the public directory.  With security restrictions,
+          your files are sent (uuto) to the administrator and your
+          local copy is moved to a """"::::ssssuuuubbbbmmmmiiiitttttttteeeedddd"""" directory (under Src)
+          and wwwwiiiillllllll nnnnooootttt bbbbeeee aaaacccccccceeeessssssssiiiibbbblllleeee uuuunnnnttttiiiillll iiiitttt iiiissss iiiinnnnssssttttaaaalllllllleeeedddd.... In this
+          case, installation of public aliases depends on the local
+          system administrator and local procedures and may take a day
+          or longer.  If your system has not been set up to use public
+          aliases, postalias will not be able to submit the alias and
+          you will have to contact your local system administrator or
+          Help Desk (or use private aliases or aliases on another
+          machine only).
+
+          For aliases owned by you, you can also perform edit, format,
+          or delete operations (in addition to the other operations).
+          In this case these menu choices are also available:
+
+            Your Alias was found in: [/usr/lib/upas/list/Src/my-alias]
+
+            4) Edit and convert the Alias (-e)
+            5) Format the alias into standard format (-f)
+            6) Convert alias to ema-format (-c)
+
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          TOOLS (exptool directory)
+          PA_LISTDIR (directory where public aliases are kept)
+          PA_ALIASTYPE (UPAS or SENDMAIL)
+
+     AAAALLLLIIIIAAAASSSS FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT
+          PPPPoooossssttttaaaalllliiiiaaaassss understands the basic alias format and adds some
+          additional capabilities.  The syntax of a postalias source
+          file is shown below.  It is very similar to the UPAS alias
+          format but in general is more "forgiving" about use of
+          backslashes, blank lines, etc.  and has a few additional
+          features.  Example alias files can be seen in the EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          section.  Alias names must contain a hhhhyyyypppphhhheeeennnn ((((----)))) and cannot
+          contain: !!!! @@@@ %%%% ____ //// :::: ==== ....
+
+          File aaaalllliiiiaaaassss----nnnnaaaammmmeeee:
+            # Leading comments, if any
+
+            alias-name                    # Optional - same as file name
+            first.m.last/loc=POST_LOC     # Name/Loc avoids multiple matches
+            f.m.last (optional comment)   # Optional Comment
+            # Comment                     # Embedded Comment
+            set LOCALQUAL loc=POST_LOC    # Optional Qualifier (saves typing)
+            al-name                       # another alias file
+            mach!al-name                  # remote alias file
+            mach!login                    # email - for people not in POST
+
+
+
+     Page 4                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+            -first.m.last/loc=<loc>       # Remove this person
+            -alias-name                   # Remove this alias
+
+            # Trailing Comments, if any
+
+          AAAA bbbbaaaacccckkkkssssllllaaaasssshhhh aaaafffftttteeeerrrr eeeeaaaacccchhhh lllliiiinnnneeee iiiissss ooooppppttttiiiioooonnnnaaaallll iiiiffff ddddeeeessssiiiirrrreeeedddd ttttoooo bbbbeeee
+          ccccoooonnnnssssiiiissssttttaaaannnntttt wwwwiiiitttthhhh tttthhhheeee UUUUPPPPAAAASSSS aaaalllliiiiaaaassss ffffoooorrrrmmmmaaaatttt....  WWWWhhhheeeennnn aaaannnn aaaalllliiiiaaaassss iiiissss
+          bbbbuuuuiiiilllltttt uuuupppp ffffrrrroooommmm aaaa ccccoooommmmbbbbiiiinnnnaaaattttiiiioooonnnn ooooffff ooootttthhhheeeerrrr aaaalllliiiiaaaasssseeeessss,,,, oooonnnneeee oooorrrr mmmmoooorrrreeee
+          iiiinnnnddddiiiivvvviiiidddduuuuaaaallllssss mmmmaaaayyyy bbbbeeee ssssuuuubbbbttttrrrraaaacccctttteeeedddd ffffrrrroooommmm tttthhhheeee rrrreeeessssuuuullllttttiiiinnnngggg ccccoooonnnnvvvveeeerrrrtttteeeedddd
+          aaaalllliiiiaaaassss bbbbyyyy ppppllllaaaacccciiiinnnngggg eeeeaaaacccchhhh nnnnaaaammmmeeee ttttoooo bbbbeeee ddddeeeelllleeeetttteeeedddd oooonnnn aaaa lllliiiinnnneeee bbbbyyyy iiiittttsssseeeellllffff
+          aaaafffftttteeeerrrr aaaallllllll tttthhhheeee aaaalllliiiiaaaassss mmmmeeeemmmmbbbbeeeerrrrssss....  TTTThhhheeee sssseeeetttt LLLLOOOOCCCCAAAALLLLQQQQUUUUAAAALLLL ffffiiiieeeelllldddd====vvvvaaaalllluuuueeee
+          notation can be used to minimize repeated qualifiers in an
+          alias since member of an alias often have a commmon post
+          field (such as loc). LLLLOOOOCCCCAAAALLLLQQQQUUUUAAAALLLL can be set anywhere inside
+          the alias and applies from that point down until reset (with
+          another sssseeeetttt LLLLOOOOCCCCAAAALLLLQQQQUUUUAAAALLLL ffffiiiieeeelllldddd====vvvvaaaalllluuuueeee line).  To temporarily
+          override the LOCALQUAL, specify a qualifier on the line
+          (nnnnaaaammmmeeee////lllloooocccc====PPPPOOOOSSSSTTTT____LLLLOOOOCCCC).
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS FFFFIIIILLLLEEEE EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Example postalias Source formats:
+
+          File ddddpppp----ddddeeeepppptttt1111:
+                  # This is the alias for all members of dept1:
+
+                  dp-dept1                 # alias name (must match file name)
+                  gp-grp1                  # group 1
+                  gp-grp2                  # group 2
+                  a.g.bell/loc=ill650      # plus this person
+                  -b.arnold                # omit - this entry not really in dept
+
+                  # end alias
+
+          FFFFiiiilllleeee ggggpppp----ggggrrrrpppp1111:
+                  # This is the alias for all members of grp1:
+
+                  gp-grp1                     # Optional - must match file name
+                  org=nef527000/loc=ill650    # Be sure org in POST is up to date!
+                  r.e.fuller                  # Charter member of the group
+
+                  # end alias gp-grp1
+
+          FFFFiiiilllleeee ggggpppp----ggggrrrrpppp2222:
+                  # This is the alias all members of grp2:
+
+                  gp-grp2                     # Optional - must match file name
+                  set LOCALQUAL loc=ill650    # Most are at this location
+                  b.arnold
+                  t.f.craig/state=wa
+                  chris.johnson/loc=il0015    # Chris is at another location
+                  monte.v.jupnerhous/         # Slash overrides LOCALQUAL
+                  pete.e.thompson/loc=va033
+
+
+
+     Page 5                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+                  ihcnws!pat                  # Not in POST Yet
+
+                  # end alias gp-grp2
+
+          FFFFiiiilllleeee mmmmgggg----oooorrrrgggg2222:
+                  # This is the alias for all managers in org 2 (nef52):
+                  # Instead of listing all the managers, let post do the work
+
+                  mg-org2                    # Optional - must match file name
+                  borg=cnef52/borg=dnef52    # Director and all Sups for this org
+
+                  # end alias gp-grp2
+
+          EEEExxxxaaaammmmpppplllleeee aaaalllliiiiaaaassss ffffoooorrrrmmmmaaaatttt iiiinnnn aaaa ....mmmmaaaaiiiillllrrrrcccc file:
+                             aaaalllliiiiaaaassss aaaa----nnnnaaaammmmeeee aaaalllliiiiaaaassss____mmmmeeeemmmmbbbbeeeerrrr ............
+
+
+     SSSSUUUUMMMMMMMMAAAARRRRYYYY OOOOFFFF CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLIIIINNNNEEEE OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          Common Command-Line Options:
+              -l)     list all aliases
+              -O)     list aliases I own
+              -h)     Help (command line usage details)
+
+            For any alias:
+              -X 'fmt')expand alias with post lookup to 'fmt'
+              -x)     expand alias without post lookup
+              -R) turn off recursion when expanding with -X'fmt' or -x
+              -o)     send mail to alias owner to request a change
+              -g string)show alias NAME(s) that contain """"ssssttttrrrriiiinnnngggg""""
+              -t string)grep for """"ssssttttrrrriiiinnnngggg"""" inside all alias files
+              -l)     list (cat) the specified alais[es]
+
+            For aliases you own:
+              -n)     create new private alias
+              -s)     submit alias(es) for public installation
+              -e)     edit named alias(es) in private/system directory
+              -f)     format alias into normal form
+              -d)     send mail to administrator to request deletion of alias(es)
+
+            Less common options:
+              -a)     send message to post administrator (change owner or alias name)
+              -c)     convert alias(es) to ema format
+              -l)     list aliases
+              -m)     view modified(converted) alias file(s)
+              -p)     parameter check
+              -r)     reformat (convert if necessary) all aliases in a dir
+              -u)     uuto files to alias members
+              -V|-v)  version number
+              -[1-6]) number of columns in output
+              -h)     help information
+              -H)     maintenance help
+
+
+
+
+     Page 6                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLIIIINNNNEEEE EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          A typical command-line scenario for an alias provider might
+          be:
+
+          postalias -n my-alias    (create a new local alias)
+
+          postalias -Xf my-alias   (display/check the alias)
+
+          post !my-alias           (send test mail to the alias
+                                   members)
+
+          postalias -e my-alias    (edit the local alias)
+
+          postalias -s my-alias    (submit the private alias to a pub-
+                                   lic directory)
+                                   (moves local copy to a ":submitted"
+                                   directory)
+
+          AAAAfffftttteeeerrrr ppppuuuubbbblllliiiicccc iiiinnnnssssttttaaaallllllllaaaattttiiiioooonnnn::::
+
+          postalias -e my-alias    (edit the public alias)
+
+          post !my-alias           (use the public alias from home
+                                   machine)
+
+          post mach!my-alias       (use the public alias from another
+                                   machine)
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS OOOOFFFF OOOOTTTTHHHHEEEERRRR OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          postalias -l          # list all available aliases
+
+          postalias -g 'str'    # list aliases with 'str' in name
+
+          postalias -l a-name   # expand with post lookup
+
+          postalias -RXf a-name # expand with post lookup (no recur-
+                                sion)
+
+          postalias [-[1-6]] -x a-name
+                                # view without post lookup
+
+          postalias -t 'string' # search all aliases for 'string'
+
+          postalias -m a-name   # view the converted alias
+
+          postalias -f a-name   # format an alias
+
+          postalias -c a-name   # convert alias to ema format
+
+          postalias -d a-name   # delete an alias file
+
+          postalias -o a-name   # send mail to the alias owner
+
+
+
+     Page 7                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+          postalias -a          # send mail to post administrator
+
+          postalias -u file(s) a-name
+                                # uuto files to an alias
+
+          postalias -h          # help (options)
+
+          postalias -p          # view the list of postalias parame-
+                                ters
+
+
+                              POSTALIAS MAINTENANCE OPTIONS:
+
+          postalias -H          # see the list of maintenance options
+
+          postalias -I          # install parameters for enhanced
+                                operation
+
+          postalias -r[ directory_to_reformat]
+                                # automatically reformat alias files
+                                in a specific directory
+
+          postalias [-DEGW] -A[ dir_to_check]
+                                # audit alias file directory
+
+          postalias -L a-name   # get a long listing(ls -l) on alias
+                                file from any directory
+
+          Typical invocation of cron to reformat private alias files
+          in $HOME/lib/names/Src:
+
+          1  1  *  *  1-5 ksh "export TOOLS=`logdir exptools`;$TOOLS/bin/postalias -r"
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          Command line options:
+            postalias [-c|-d|-e|-f|-l|-m|-o|-s] alias_name[ alias_name ...]
+            postalias [-n|-u|[-[1-6]] -R -x|-X 'fmt'] alias_name
+            postalias [-a|-h|-H|-l|-p|-v|-V]
+            postalias alias_name[ alias_name ...]
+            postalias -r[ dir_to_check]
+            postalias [[-[1-6]] -g|-t] string
+            postalias [-[1-6]]
+
+          Maintenance options:
+            postalias [-H|-I|-O]
+            postalias -L alias_name[ alias_name ...]
+            postalias [-DGW] -A[ dir_to_audit]
+
+
+          -[1-6]        Number of columns in output display.  The
+                        number of columns for the  -l, -g, and -x
+                        options can be varied from 1 to 6 columns.
+
+
+
+     Page 8                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+          -a            postalias will address a mail message to the
+                        post administrator and will start the mail
+                        message at the SSSSuuuubbbbjjjjeeeecccctttt:::: line. This option is
+                        used for special cases only - for example
+                        changing the owner or name of alias(es).  This
+                        may be easier than deleting and re-submitting
+                        especially when several aliases are involved.
+                        The address used is determined from the
+                        ppppoooosssstttt____aaaaddddmmmm alias.
+
+          -c alias(es)  convert alias(es) to eeeemmmmaaaa format.  Normally
+                        this option is not requested specifically
+                        because other options that require conversion
+                        (edit, format, and new alias) will convert the
+                        alias.  The conversion takes the postalias
+                        source and converts it into a format (and
+                        location) usable by post.  In doing so,
+                        response time of sending to aliases is
+                        improved (factor of 10:1) and features not
+                        supplied by post can be implemented.
+
+          -d alias(es)  request deletion of named alias(es).
+                        ppppoooossssttttaaaalllliiiiaaaassss will send a mail message to the post
+                        administrator requesting deletion of the named
+                        alias(es), as well as, notification of the
+                        completion of the request.
+
+          -e alias(es)  edit named alias(es) in a private or system
+                        directory.  ppppoooossssttttaaaalllliiiiaaaassss will open the named
+                        alias file(s) for editing in the following
+                        directories (in order): $HOME/lib/names/Src,
+                        $HOME/lib/names, PA_LISTDIR/Src, PA_LISTDIR,
+                        using the value of the EEEEDDDDIIIITTTTOOOORRRR variable. If
+                        unset, vvvviiii is used. When the editing session is
+                        complete, the alias (if revised) will be con-
+                        verted using the ----cccc option.
+
+          -f alias(es)  format uuuuppppaaaassss alias file into normal form. The
+                        normal form of an alias file is shown in the
+                        AAAALLLLIIIIAAAASSSS FFFFOOOORRRRMMMMAAAATTTT section.  If desired, you may
+                        have the names sorted (last name first).  You
+                        will be able to edit and install the alias (if
+                        desired).  The original alias is saved in
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc////::::oooolllldddd.  If you choose not
+                        to install the formatted alias, it is saved in
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc////ffff....<<<<aaaalllliiiiaaaassss----nnnnaaaammmmeeee>>>>.
+
+          -g 'string'   display all the aliases and their respective
+                        location that contain the 'string' in the
+                        alias name.
+
+          -h            display help (usage) information.
+
+
+
+     Page 9                                          (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+          -l [alias(es)]
+                        list names of all aliases (if no files are
+                        specified).  List (cat) the alias(es) (if
+                        files are specified).
+
+          -m alias(es)  view modified (converted) alias file(s).
+                        ppppoooossssttttaaaalllliiiiaaaassss normally displays the original, that
+                        is, unconverted alias file. This option shows
+                        the alias in the converted ((((eeeemmmmaaaa)))) format.
+
+          -n alias      create a new alias. After checking the alias
+                        name for necessary and disallowed characters,
+                        ppppoooossssttttaaaalllliiiiaaaassss will allow you to enter a prompt
+                        mode or to edit a skeleton file.  The prompt
+                        mode will verify each name as it is entered to
+                        minimize problems when converting the alias.
+                        Instructions and examples are provided in
+                        prompt mode.  The non-prompt mode will open a
+                        file with the name 'alias' in the
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc directory.  After editing
+                        is complete, the file will be converted to eeeemmmmaaaa
+                        format. The converted file will be placed in
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss.... After testing the alias, it
+                        can be submitted to a public directory (if
+                        available) using ppppoooossssttttaaaalllliiiiaaaassss ----ssss aaaalllliiiiaaaassss....
+
+          -o alias(es)  send message to alias owner.  ppppoooossssttttaaaalllliiiiaaaassss will
+                        address a message to the alias file owner(s)
+                        and will start the mail message at the
+                        SSSSuuuubbbbjjjjeeeecccctttt:::: line. The address used is determined
+                        from the ggggrrrroooouuuupppp iiiidddd of the alias file(s).
+
+          -p            display parameters such as filepaths and log-
+                        file location used by ppppoooossssttttaaaalllliiiiaaaassss.... This option
+                        is normally only used by the postalias
+                        administrator and is intended as an aid in
+                        troubleshooting user problems.
+
+          -r [directory]
+                        convert all aliases that require conversion in
+                        named directory.  Users of postalias only need
+                        this if they keep private aliases.  Public
+                        aliases are updated by a cron job run by the
+                        post administrator.  The -r option will check
+                        the timestamp of the post server database and
+                        alias files and invoke ppppoooossssttttaaaalllliiiiaaaassss ----cccc on any
+                        alias files that require conversion.  Usually,
+                        files will require conversion only after the
+                        POST DB has been updated.  If no directory is
+                        specified, then the aliases in the
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc directory will be refor-
+                        matted.  It is best run as an off-hours cron
+
+
+
+     Page 10                                         (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+                        task at least once a week (right after the
+                        POST DB has been updated on your system).
+
+          -R            turn off recursion (expansion of sub-aliases)
+                        when expanding with -x or -X'fmt'.
+
+          -s alias(es)  submit alias(es) for installation in public
+                        bin (if available).  ppppoooossssttttaaaalllliiiiaaaassss will move the
+                        private alias(es) to the public directory (if
+                        writable) or will send a mail message to the
+                        post administrator requesting installation of
+                        the named alias(es) and uuuuuuuuttttoooo the alias file(s)
+                        to the administrator.  The message also
+                        requests notification of completion of the
+                        request.  The submitted alias files in
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc are moved to a ::::ssssuuuubbbbmmmmiiiitttttttteeeedddd
+                        subdirectory (automatically created, if neces-
+                        sary).  The converted alias files in
+                        $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss are removed.  The alias cannot
+                        be used until installed in the public direc-
+                        tory by the administrator.
+
+          -t 'string'   display all lines containing the string in the
+                        aliases available to the user with their
+                        respective directory location as well as their
+                        position within the alias files.
+
+          -u file(s) alias
+                        uuto files to alias members.  ppppoooossssttttaaaalllliiiiaaaassss will
+                        decompose the alias and send the file(s) to
+                        each alias member.  The restrictions on this
+                        usage are that the alias members are not
+                        aliases on a remote machine since ppppoooossssttttaaaalllliiiiaaaassss is
+                        only capable of decomposing aliases on its
+                        home machine and the e-mail addresses are in
+                        mmmmaaaacccchhhhiiiinnnneeee!!!!llllooooggggiiiinnnn format.
+
+          -[v|V]        display current version number of the pos-
+                        talias command.
+
+          -X 'fmt'      expand alias with post lookup - user specified
+                        format.  This option is used to format an
+                        alias in any format desired by the user.  The
+                        ''''ffffmmmmtttt'''' string is the same as used with pq -o
+                        (or post -o).  Enter pq -i for a current list
+                        of %%%%kkkkeeeeyyyywwwwoooorrrrddddssss==== for post.  Example format
+                        strings are:
+
+                          -X ''''NNNNaaaammmmeeee====%%%%llllaaaasssstttt,,,, %%%%ffffiiiirrrrsssstttt %%%%mmmmiiiiddddddddlllleeee''''
+                          -X ''''NNNNaaaammmmeeee:::: %%%%22225555....22225555^^^^nnnnaaaammmmeeee\\\\nnnn\\\\ttttLLLLoooocccc:::: %%%%8888++++lllloooocccc ((((%%%%eeeemmmmaaaa))))
+                        A few pre-defined formats are built into pos-
+                        talias, these include:
+
+
+
+     Page 11                                         (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+                          -X s (standard post/pq output)
+                          -X O (Org Chart Format)
+                          -X e (email)
+                          -X n (Name, Last, First - sorted)
+                          -X N (name/loc)
+                          -X o (name/loc/org)
+
+          -x alias      expand alias without post lookup - column for-
+                        mat, name only.  ppppoooossssttttaaaalllliiiiaaaassss will recursively
+                        expand an alias to list all the component
+                        members. It will use names and aliases con-
+                        tained in $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc and
+                        PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc directories.
+
+     MMMMAAAAIIIINNNNTTTTEEEENNNNAAAANNNNCCCCEEEE OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          -A [directory]
+                        audit named directory.  If no directory is
+                        specified, then the aliases in the PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR
+                        directory will be audited.  Audit will consist
+                        of counting files, showing which files have
+                        been added and deleted, listing files unique
+                        to directory and to SSSSrrrrcccc subdirectory, and
+                        finally listing the oldest five files in the
+                        named directory and the five oldest and young-
+                        est files in the SSSSrrrrcccc subdirectory.  Additional
+                        information can be retrieved by adding audit
+                        flags to the command line.
+
+          -D            audit flag. Output will also show changes to
+                        the ppppoooosssstttt ----DDDD command.
+
+          -G            audit flag. File pair(s) in named directory
+                        and SSSSrrrrcccc subdirectory will be checked to make
+                        sure that the file group ID for both files are
+                        identical.
+
+          -H            display help message for maintenance menu.
+
+          -I            install parameters needed by ppppoooossssttttaaaalllliiiiaaaassss for
+                        enhanced functional operation. This option is
+                        normally only used by the postalias adminis-
+                        trator.  The required parameters are:
+
+                            1. name of postalias administrator in
+                        name.surname format.
+                            2. logname of postalias administrator.
+                        This data is necessary if a logfile is
+                        desired.
+                            3. name an extension of person to handle
+                        postalias problems.
+                            4. e-mail address of backup administrator
+                        in mmmmaaaacccchhhh!!!!llllooooggggiiiinnnn format.
+
+
+
+     Page 12                                         (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+                        The alias file ppppoooossssttttaaaalllliiiiaaaassss----aaaaddddmmmm will be created
+                        and submitted.
+
+          -L            find file(s) and display file stats using llllssss
+                        ----llll
+
+          -O            list all public aliases that user owns.
+
+          -W            audit flag. Files will be checked for group
+                        write permissions.  Files in the public direc-
+                        tories that are not writable by group cannot
+                        be edited.
+
+
+     AAAADDDDMMMMIIIINNNNIIIISSSSTTTTRRRRAAAATTTTOOOORRRRSSSS NNNNOOOOTTTTEEEESSSS
+          The following setup procedure is recommended to enhance the
+          ppppoooosssstttt////uuuuppppaaaassss////sssseeeennnnddddmmmmaaaaiiiillll environment to use the ppppoooossssttttaaaalllliiiiaaaassss command
+          and to automatically convert aliases to the eeeemmmmaaaa format for
+          faster ppppoooosssstttt operation and additional features when using
+          aliases.
+
+          1.  Create a directory typically """"////uuuussssrrrr////lllliiiibbbb////uuuuppppaaaassss////lllliiiisssstttt"""" for
+              UPAS or ////oooopppptttt////mmmmaaaaiiiillll////lllliiiibbbb////iiiinnnncccclllluuuuddddeeee for Sendmail if one does
+              not already exist.  This directory will hold all public
+              aliases on your system. It is referenced as """"PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR""""
+              in the remainder of this section.  For UPAS, add """"lllliiiisssstttt""""
+              to the file ////uuuussssrrrr////lllliiiibbbb////uuuuppppaaaassss////nnnnaaaammmmeeeeffffiiiilllleeeessss....
+
+          2.  Create a sub-directory """"SSSSrrrrcccc"""" to hold the alias Source
+              under the PA_LISTDIR directory created in step 1.
+
+              Both directories must have "writable by group" permis-
+              sions.  Installation of public aliases can be greatly
+              simplified by allowing users write permissions (sticky
+              bit - cccchhhhmmmmoooodddd 1111777777777777) in both directories.  This will allow
+              users of postalias to "submit" and "delete" their own
+              UPAS aliases directly to the public location without
+              manual intervention by you (or another administrator).
+              SENDMAIL aliases will still require administrator inter-
+              vention to install/build.  With the "sticky bit" set
+              users will only be able to write their own files. They
+              can not touch anyone else's files.
+
+          3.  Use """"ppppoooossssttttaaaalllliiiiaaaassss ----nnnn ppppoooosssstttt----aaaaddddmmmm"""" (for UPAS type aliases) or
+              """"ppppoooossssttttaaaalllliiiiaaaassss ----nnnn sssseeeennnnddddmmmmaaaaiiiillll----aaaaddddmmmm"""" (for SENDMAIL/EMS type
+              aliases) to create an alias for the administrator
+              responsible for maintaining the aliases.  Mail will be
+              sent to this alias (and files uuto'ed to the id) when-
+              ever a user requests an action that requires administra-
+              tor intervention.  New aliases are first created in
+              """"$$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss////SSSSrrrrcccc....""""  (directories will be created as
+              necessary).  When editing is complete, the files will be
+
+
+
+     Page 13                                         (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+              automatically converted to eeeemmmmaaaa format and will be placed
+              in the $$$$HHHHOOOOMMMMEEEE////lllliiiibbbb////nnnnaaaammmmeeeessss[[[[EEEEMMMMSSSS]]]] directory.  Be sure to make
+              these aliases public.  On SENDMAIL systems and UPAS sys-
+              tems that do not allow writes to the public directory,
+              you will see a warning stating "This system has no alias
+              administrator."  You can ignore this warning since you
+              are installing this alias.  Make sure that the alias is
+              in the public directory and any SENDMAIL alias builds
+              are done.
+
+          4.  Copy any existing aliases to """"PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc"""" and
+              """"PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR....""""  If the aliases are not already in stan-
+              dard name format, you may want to format/error-check the
+              source with """"ppppoooossssttttaaaalllliiiiaaaassss ----ffff ****"""" from the PA_LISTDIR/Src
+              directory.  This first modifies the source file to a
+              standard name format and then runs the conversion to ema
+              format.  Files should be owned by root and 'grouped' to
+              the alias owner.  If you do not format them, run
+              ppppoooossssttttaaaalllliiiiaaaassss ----cccc **** from the PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc directory to con-
+              vert aliases to eeeemmmmaaaa----ffffoooorrrrmmmmaaaatttt.... Once installed and con-
+              verted, ppppoooossssttttaaaalllliiiiaaaassss ----eeee aaaa----nnnnaaaammmmeeee can be used at any time to
+              edit the files.
+
+          5.  Enter a nightly ccccrrrroooonnnn job to invoke ppppoooossssttttaaaalllliiiiaaaassss ----rrrr
+              PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc to do the alias update.  ppppoooossssttttaaaalllliiiiaaaassss ----rrrr in
+              turn, will use ppppoooossssttttaaaalllliiiiaaaassss ----cccc **** to reconvert the aliases
+              whenever the ppppoooosssstttt database is updated (once a week) or
+              an individual alias requires conversion (someone maually
+              edited the source without using postalias).
+
+          6.  Run ppppoooossssttttaaaalllliiiiaaaassss ----IIII to set the various parameters required
+              for enhanced operation. See the ----IIII option above for
+              details.
+
+          7.  Run ppppoooossssttttaaaalllliiiiaaaassss ----pppp to check parameter settings.  Correc-
+              tions can be made with either ppppoooossssttttaaaalllliiiiaaaassss ----IIII or ppppoooossssttttaaaalllliiiiaaaassss
+              ----eeee ppppoooossssttttaaaalllliiiiaaaassss----aaaaddddmmmm....
+
+              If you do not allow the sticky bit on the PA_LISTDIR
+              directories, new aliases will be submitted to the
+              administrator (in the post-adm alias) for installation
+              by the users.  They should be put in both the PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR
+              and PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc directories and the files should be
+              owned by root and 'grouped' to the submitter.  Run
+              ppppoooossssttttaaaalllliiiiaaaassss ----cccc aaaalllliiiiaaaassss[[[[ ............ aaaalllliiiiaaaassss]]]] from the PPPPAAAA____LLLLIIIISSSSTTTTDDDDIIIIRRRR////SSSSrrrrcccc
+              directory to convert new aliases to eeeemmmmaaaa format.
+
+              When users request deletion of an alias, it should be
+              deleted from both directories.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          $TOOLS must be set and exported prior to using
+
+
+
+     Page 14                                         (printed 9/13/95)
+
+
+
+
+
+
+     PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         PPPPOOOOSSSSTTTTAAAALLLLIIIIAAAASSSS((((1111))))
+
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          Private and System Aliases in the post 4.0/upas Environment
+          - ITDS NE05100R0-930826-01TM - APXLIB No. d4145. Postscript
+          copy of file TMpostalias.ps is also located in
+          ~exptools/lib/postalias.
+
+     AAAAUUUUTTTTHHHHOOOORRRR////PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          William S. Krol/Grant R. Lee
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 15                                         (printed 9/13/95)
+
+
+

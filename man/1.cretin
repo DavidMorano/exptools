@@ -1,0 +1,594 @@
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+        NNNNAAAAMMMMEEEE
+          cretin - produces project diagrams for planning and
+          tracking.
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccrrrreeeettttiiiinnnn [ ----????vvvvnnnnddddwwwwmmmm ] [ ----llll _m_a_x_d_a_y_s ] [ ----ssss _d_a_t_e ] [ ----eeee _d_a_t_e ] [
+          ----cccc _d_a_t_e ] [ ----oooo _o_u_t_f_i_l_e ] _i_n_f_i_l_e
+
+        DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ccccrrrreeeettttiiiinnnn produces a standardized, human-readable Gantt-style
+          chart (a Concise REport of Task INtervals) for project
+          tracking, showing scheduled and actual completion of
+          critical tasks throughout the lifetime of the project. It
+          can produce a chart for any project that can be broken down
+          into individually scheduled tasks. As tasks are completed,
+          information on actual completion can be provided, or tasks
+          can be rescheduled if the initial schedule cannot be met.
+          Each task is shown on the chart, with pattern-coded boxes
+          for the originally scheduled dates, rescheduled dates (if
+          any), and actual dates of completion of the task.  Project
+          milestones are also shown, plotted against the project
+          timeline.  The project data is maintained in a human-
+          readable file, which can be edited with any text editor as
+          additional project data becomes available.  The resulting
+          chart is a standard ppppiiiicccc data file, which can be printed
+          alone, or as part of a document, like any other ppppiiiicccc diagram.
+
+        FFFFEEEEAAAATTTTUUUURRRREEEESSSS OOOOFFFF CCCCRRRREEEETTTTIIIINNNN DDDDIIIIAAAAGGGGRRRRAAAAMMMMSSSS
+          The diagram shows:
+
+          *    The project name.
+
+          *    The person who planned the project schedule.
+
+          *    The date the chart was generated, and a vertical line
+               through the current date on the timeline.
+
+          *    A timeline for the project, usually showing a tick mark
+               for each monday in the project, and a date for the
+               first monday in each month.  This date contains the
+               year only if the year in the previous date was
+               different, so that the first monday in the year stands
+               out.  If a span of time longer than 2 years is shown on
+               one page, only the first monday in each year has a
+               date.
+
+          *    Critical dates in the project (milestones), as labeled
+               arrows pointing to the date on the timeline at which
+               they occur, and a light vertical line.  Lesser
+               milestones are indicated with just the vertical line.
+
+          *    A key distinguishing the three types of task interval
+
+
+
+     Page 1                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+               data shown: scheduled, rescheduled and actual.
+
+          *    For each task in the project, one or more rectangles
+               representing the originally scheduled period(s) for a
+               task to be done, one or more of a different pattern
+               showing when the task was/is actually being done (if
+               that information is available), and one or more for the
+               new projected dates for the task to be done (if they
+               have changed).
+
+        OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          The valid options are:
+
+          ----????   List the command syntax and the valid options of
+               ccccrrrreeeettttiiiinnnn.
+
+          ----vvvv   Give verbose details about the ccccrrrreeeettttiiiinnnn run, and a crude
+               ascii preview of the chart on the terminal.  Users can
+               partially "debug" their charts without waiting for
+               high-quality output.  The preview itself will be
+               "paged" to keep it from flying past too fast to see.
+               To force a particular pager to be used (more, pg, cat,
+               etc.), set the $PAGER variable to that value.
+
+          ----nnnn   No printout desired; just generate the ppppiiiicccc
+               representation of the chart. Used with ----vvvv option, or to
+               generate charts which will be printed later.
+
+          ----dddd   Options ----dddd, ----wwww, and ----mmmm allow the user to control the
+               "granularity" of time represented on the chart
+               timeline.  (If none is specified, ccccrrrreeeettttiiiinnnn uses a
+               heuristic to determine which is appropriate, based on
+               the project length.)  Specifically, ----dddd requests that
+               days are the smallest unit of time represented on the
+               project timeline, as minor tickmarks (implying that
+               weeks will be shown as major tickmarks.
+
+          ----wwww   Request that weeks are shown as minor tickmarks on the
+               project timeline (and months are shown as major
+               tickmarks).  This is appropriate for the majority of
+               projects tracked by ccccrrrreeeettttiiiinnnn.
+
+          ----mmmm   Request that months are shown as minor tickmarks on the
+               project timeline (and years are shown as major
+               tickmarks).
+
+          ----llll _m_a_x_d_a_y_s
+               Place an upper bound on the length of time (in days) to
+               be shown in the chart.  If part of the schedule must be
+               truncated to achieve this, it will be done such that
+               the the current date tends to be in the middle of the
+               chart.  This can be used to easily obtain a detailed,
+
+
+
+     Page 2                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+               short-term view of the current status of a long
+               project.
+
+          ----ssss _d_a_t_e
+               Specify the starting date for the chart, in the format
+               mm/dd/yy. This overrides all other start date
+               specifications, whether explicitly stated in the data
+               file or automatically computed from the task dates.
+
+          ----eeee _d_a_t_e
+               Specify the ending date for the chart.  Ditto.
+
+          ----cccc _d_a_t_e
+               Specify the current date for the chart, in the format
+               mm/dd/yy. This overrides all other start date
+               specifications, whether explicitly stated in the data
+               file or obtained via ttttiiiimmmmeeee((((2222)))).
+
+          ----oooo _o_u_t_f_i_l_e
+               Specify a full or partial path name for the ppppiiiicccc output
+               file. The default file name is cretin.pic in the
+               current directory.
+
+          _i_n_f_i_l_e
+               Specify the ccccrrrreeeettttiiiinnnn input file.  This file contains data
+               about a project in a human-readable ascii format.  See
+               "Cretin Input Language" for more information.
+
+        CCCCRRRREEEETTTTIIIINNNN IIIINNNNPPPPUUUUTTTT LLLLAAAANNNNGGGGUUUUAAAAGGGGEEEE
+          The report is produced from an ASCII text file containing
+          information about the project, using a simple keyword-driven
+          format.  It can be created using your favorite UNIX text
+          editor.  The PROJECT_NAME: and PLANNER: fields are required;
+          the planner is typically the person responsible for creating
+          the initial plan and keeping it up to date.  START_DATE:,
+          END_DATE: and CURRENT_DATE: can be specified; if not, the
+          start and end date for the chart are determined from the
+          other information in the file, and the current date is
+          provided by the UNIX system. The current date is noted in
+          the upper right-hand corner, and a vertical dashed line is
+          drawn through the chart at the date corresponding to the
+          current date, if it is between the start and end dates.
+          FOOTER: is an optional field which places any label at the
+          bottom of the chart, such as DRAFT or PROJECT COMPLETE.
+
+          TASK: is a special keyword; it should be followed by the
+          name of some task that is part of the overall project.  On
+          the following lines, SCHEDULED:, RESCHEDULED: or ACTUAL: may
+          appear, followed by any number of dates. A date is in the
+          form month/day or month/day/year, such as 1/1/87.  Each pair
+          of dates is interpreted as a start and end date (the start
+          date MUST be before the end date), so that intermittent
+
+
+
+     Page 3                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+          activity can be shown. Also, if there are an odd number of
+          dates specified, all but the last date are used in pairs as
+          above, and the last date is paired with the current date.
+          So, for instance, once you have begun working on a scheduled
+          task, you put an ACTUAL: line in your input file below that
+          TASK:, followed by the date you began working on it, and
+          your resulting chart will show work beginning on that date
+          and going right up to the current date.  Once the task is
+          completed, put the end date on the ACTUAL: line after the
+          start date.
+
+          MILESTONE: is used to indicate a critical date in the
+          project directly on the timeline.  It must be followed by
+          one date, and optionally by a text label. Any number of
+          MILESTONE: statements can appear in the input file.  It is
+          best to label only the most important milestones, and to
+          keep labels short.  The older format, MILESTONES: followed
+          by any number of dates without labels, will continue to be
+          supported.  All milestones will be designated by a light
+          vertical dotted line; labeled milestones will also have a
+          label and an arrow.
+
+          # used at the beginning of the line is a comment character
+          and comments out the rest of the line.  Extra blank lines
+          can be used to make the input file human-readable.  If a
+          sequence of dates appears on a line, the year should be
+          included in the first date, but can be omitted for the rest
+          of the line if none of the dates are more than a year apart.
+          A date without a year is assumed to fall in a year-long
+          interval beginning at the previous date.  If multiple lines
+          are needed for a long list of dates, simply put them on the
+          next line (no continuation character).
+
+          Three types of messages are issued: ERROR is fatal, and will
+          explain what is wrong with the input data before stopping;
+          WARNING points out something unusual, which could be
+          intentional or erroneous, but is not fatal; NOTEs and other
+          messages simply provide information about the data used to
+          generate the chart.  You will typically only see ERRORs and
+          WARNINGS unless the -v option is used.
+
+
+        SSSSAAAAMMMMPPPPLLLLEEEE CCCCRRRREEEETTTTIIIINNNN IIIINNNNPPPPUUUUTTTT FFFFIIIILLLLEEEE
+               # Sample cretin input file for a generic CADV project
+               PROJECT_NAME: VDAC CADV
+               PLANNER: SOS
+               START_DATE: 8/3/87
+               FOOTER: SAMPLE
+               MILESTONE: 2/1/88 Prelim. EDI
+               MILESTONE: 4/4/88 Final EDI
+               MILESTONE: 5/16/88 AM
+               MILESTONES: 11/16/87 12/21 1/11/88
+
+
+
+     Page 4                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+               TASK: CADV Strategy and Test Plan
+               SCHEDULED: 8/3/87 8/17
+               RESCHEDULED: 8/3/87 8/24
+               ACTUAL: 8/3/87 8/24
+
+               TASK: Library Model Development
+               SCHEDULED: 8/3/87 11/2
+               RESCHEDULED: 8/24/87 11/23
+               ACTUAL: 8/24/87
+
+               TASK: Writing Functional and Timing Tests
+               SCHEDULED: 8/17/87 11/23
+               RESCHEDULED: 8/31/87 12/7
+               ACTUAL: 8/31/87
+
+               TASK: Schematic Capture
+               SCHEDULED: 8/31/87 11/9
+               ACTUAL: 8/10/87 8/24 9/7
+
+               TASK: Building System Model
+               SCHEDULED: 11/16/87 12/21
+
+               TASK: Initializing System Model
+               SCHEDULED: 12/21/87 1/11
+
+               TASK: Functional DV
+               SCHEDULED: 1/11/88 2/22
+
+               TASK: Preliminary Layout and Route
+               SCHEDULED: 2/1/88 2/22
+
+               TASK: Timing Delay Calculation
+               SCHEDULED: 2/15/88 3/7
+
+               TASK: Timing DV
+               SCHEDULED: 2/29/88 4/25
+
+               TASK: Final Layout and Route
+               SCHEDULED: 4/4/88 5/2
+
+               TASK: Final Timing DV
+               SCHEDULED: 5/2/88 5/16
+
+
+        HHHHIIIINNNNTTTTSSSS FFFFOOOORRRR EEEEFFFFFFFFEEEECCCCTTTTIIIIVVVVEEEE UUUUSSSSEEEE OOOOFFFF CCCCRRRREEEETTTTIIIINNNN
+          CCCCrrrreeeettttiiiinnnn was designed such that its default actions are what
+          the typical user wants to do, which is to create a chart
+          showing the entire project from start to end, but options
+          have been provided to support other uses as well.  To make a
+          chart which shows more detail in a small part of the
+          schedule, which can be useful for long projects, use the
+          command line argument ----llll or ----ssss and ----eeee or to specify the
+
+
+
+     Page 5                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+          dates you would like the chart to begin and end.  Many non-
+          fatal warnings may result (these are produced to protect the
+          naive user from unintentionally specifying activities that
+          are too early or late to show up on the chart).  You can
+          also make a longer chart of the whole project on several
+          sheets of paper by running cretin several times, using -s
+          and -e to specify different start and end dates for each
+          sheet.
+
+          CCCCrrrreeeettttiiiinnnn handles a maximum of approximately 19 tasks.  It will
+          reduce the rectangle sizes and spacing somewhat to
+          accomodate that number, but there are practical limits to
+          how much information can be meaningfully displayed on a
+          single page. If you have more, consider one of the
+          following:
+
+          (1)  Reducing the number of items - you may be tracking
+               minor items that could be more meaningfully grouped
+               under a single title.
+
+          (2)  Using more than one chart - the project may break up
+               gracefully into several subprojects.  For instance,
+               when a circuit pack is developed that contains CMOS
+               chips, one could create a master schedule for the
+               circuit pack development, and show the CMOS development
+               process as a single task on that schedule; and also
+               develop a more detailed schedule on a per-chip basis
+               for the development of each chip.  As information on
+               the actual completion of the chips became available, it
+               could be used to update the master schedule.
+
+        SSSSUUUUPPPPPPPPOOOORRRRTTTT FFFFOOOORRRR LLLLOOOOCCCCAAAALLLL PPPPRRRRIIIINNNNTTTT CCCCAAAAPPPPAAAABBBBIIIILLLLIIIITTTTYYYY
+          CCCCrrrreeeettttiiiinnnn comes with a script pppppppprrrr that is used by default to
+          print the charts.  PPPPpppprrrr is called thus:
+
+               ppr pic-file-name
+
+          it prints the ccccrrrreeeettttiiiinnnn diagrams on a Xerox 9700 using opr
+          -txr. If it is more convenient to direct the charts to
+          another printer, this can be achieved by writing a local
+          printing script called llllooooccccaaaallll____pppppppprrrr that processes ppppiiiicccc and
+          sends it to the local printer.  Any user that wants their
+          output redirected can put this script in their path.  CCCCrrrreeeettttiiiinnnn
+          will look for a script by this name in the user's path; if
+          it is found, it will be used instead of pppppppprrrr.  Alternatively,
+          the variable PPPPPPPPRRRR can be set to the full path name of a local
+          printing script, and exported; ccccrrrreeeettttiiiinnnn will print with that
+          script.  The contents of the script pppppppprrrr follow; if you want
+          to create your own llllooooccccaaaallll____pppppppprrrr, you could copy this, change
+          the arguments to troff and possibly pic, and replace dx9700
+          and opr with a filter and print spooler suitable for your
+          printer.
+
+
+
+     Page 6                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+               # ppr - shell script for printing CRETIN charts & PIC figures.
+               TF=/tmp/cretin_t.$LOGNAME
+               DF=/tmp/cretin_d.$LOGNAME
+               OF=/tmp/cretin_o.$LOGNAME
+               font=X97.tim10p
+               DX9700="dx9700 $font";;
+               cat $* | pic -TX97 | troff -rN4 -T$font -mm - 2>$TF \
+               | $DX9700 2>$DF | opr -r -txr -jcretin 1>$OF 2>&1
+               retstat=$?
+               # Ignore duplicate font size warnings from troff & dx9700.
+               cat $TF | sort -u; cat $DF $OF; rm $TF $DF $OF
+               exit $retstat
+
+
+          Also note that if the default pppppppprrrr script is absolutely
+          unusable on your system (e.g., no Xerox 9700 is even
+          attached to your system), I can set up ccccrrrreeeettttiiiinnnn on your system
+          to always default to some local printing script instead.
+
+
+        IIIINNNNCCCCLLLLUUUUDDDDIIIINNNNGGGG CCCCRRRREEEETTTTIIIINNNN CCCCHHHHAAAARRRRTTTTSSSS IIIINNNN DDDDOOOOCCCCUUUUMMMMEEEENNNNTTTTSSSS
+          CCCCrrrreeeettttiiiinnnn charts can be included in a document with .so, if
+          ssssooooeeeexxxxppppaaaannnndddd is supported on your system, or via similar local
+          mechanisms, or simply by inserting the ppppiiiicccc file that ccccrrrreeeettttiiiinnnn
+          produces into your document.  The document can then be
+          printed as you would any document that contains ppppiiiicccc figures.
+          On systems that support soexpand, and can access a Xerox
+          9700 via opr -txr, the memo printing script mmmmpppprrrr is provided;
+          it prints general mm documents containing pic diagrams.  It
+          it called thus:
+
+               mpr document-name
+
+          For more detail, and a sample document generated this way,
+          see:  "CRETIN Charts for Project Tracking - User's Manual,"
+          XMPI10000-870925-01IM.
+
+          If you need to write your own version of mmmmpppprrrr to print memos
+          on your own system, it will look very similar to pppppppprrrr or, if
+          you have one, your llllooooccccaaaallll____pppppppprrrr, except for the lines:
+
+               soexpand $* | pic -TX97 | tbl | troff  -T$font -mm - 2>$TF \
+               | $DX9700 2>$DF | opr -r -txr -1
+
+          Note that the arguments to troff and opr are somewhat
+          different, and that soexpand and tbl have been added to the
+          pipe.  Eqn could be added too, or any other preprocessors
+          that are required.
+
+        EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+               cretin -?
+
+
+
+
+     Page 7                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+          will show usage and options.
+
+               cretin gendel.plan
+
+          runs ccccrrrreeeettttiiiinnnn on the file gendel.plan, and prints the
+          resulting chart if no errors are found.
+
+               cretin `logdir exptools`/lib/cretin/vdac.plan
+
+          runs ccccrrrreeeettttiiiinnnn on the sample file vdac.plan (you should be able
+          to do this to generate a sample ccccrrrreeeettttiiiinnnn diagram).
+
+               cretin -v -n proj1.plan
+
+          runs ccccrrrreeeettttiiiinnnn on the input file proj1.plan, produces verbose
+          output including an ascii preview right on the terminal, but
+          does not produce a final printout.
+
+               cretin -l 90 -o /tmp/myplan.pic -s 1/1/88 ../myplan.plan
+
+          will run ccccrrrreeeettttiiiinnnn on the input file ../myplan.plan, set the
+          start date for the chart to 1/1/88 (the end date is not set
+          in the command line, so if it is specified in the data file,
+          that end date will be used; if not, it will be automatically
+          determined from other dates in the data file).  Since ----llll _9_0
+          is used, if the length of the project between the start date
+          (1/1/88) and the end date is more than 90 days, only 90 days
+          of the project will be shown, centered around the current
+          date (unless that would leave part of the page blank, then
+          the chart is shifted to fill the page).  The resulting pic
+          file will be created as /tmp/myplan.pic.  The order of the
+          options does not matter.  Most combinations of options
+          behave in a reasonable way, but use only the options you
+          need to avoid unnecessary confusion.
+
+        FFFFIIIILLLLEEEESSSS
+          `logdir exptools`/lib/cretin/*.plan
+               Sample ccccrrrreeeettttiiiinnnn input files
+
+          `logdir exptools`/lib/cretin/ppr
+               PPPPiiiicccc printing script
+
+          `logdir exptools`/lib/cretin/mpr
+               Memo printing script
+
+        SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          pic(1)
+          troff(1)
+
+          Kernighan, Brian W.,
+          "PIC - A Graphics Language for Typesetting: Revised User Manual,"
+          AT&T Bell Laboratories Computer Science Technical Report No. 116,
+
+
+
+     Page 8                                          (printed 8/22/89)
+
+
+
+
+
+
+     CCCCRRRREEEETTTTIIIINNNN((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCRRRREEEETTTTIIIINNNN((((1111))))
+
+
+
+          December, 1984.
+
+          Connie L. O'Dell,
+          "CRETIN Charts for Project Tracking - User's Manual,"
+          XMPI10000-870925-01IM.
+
+
+        BBBBUUUUGGGGSSSS
+          As a simple tool, ccccrrrreeeettttiiiinnnn leaves the some tasks to the user
+          that are non-trivial to automate, such as keeping milestone
+          names short enough that they don't overlap each other, and
+          task names short enough so that they don't run off the page.
+          The previewing mechanism is very simple, particularly in its
+          treatment of text: due to the limited resolution of ascii
+          terminals, text strings appear about twice as long as they
+          really are in the high-quality output, so that strings may
+          appear to overlap that do not.  CCCCrrrreeeettttiiiinnnn development has been
+          plagued by various memory limitations of the Xerox 9700; it
+          is not impossible that an extremely complex diagram will
+          come out blank, although it is now quite rare.  Other
+          features would be nice, such as dependencies, and full
+          printing support for printers other than Xerox 9700s. Users
+          unfamiliar with the ccccrrrreeeettttiiiinnnn input language may have
+          difficulty creating their first input file; a user-friendly
+          interface ((((ccccrrrreeeettttiiiinnnnffffeeee)))) especially designed for editing ccccrrrreeeettttiiiinnnn
+          input files is available from David Hong, ihlpe!cdh, only
+          for friendly users.
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+          Connie L. O'Dell, Chris J. Howells
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Connie L. O'Dell
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 9                                          (printed 8/22/89)
+
+
+

@@ -1,0 +1,102 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/extension/s.ext.3"
+.\"
+.PH "'EXTENSION(3RA)'Relational Algebra C++ Library'EXTENSION(3RA)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Extension, BF_Extension, AF_Extension, WS_Extension - data storage for 
+relational algebra
+.LI "\fBSYNOPSIS\fP"
+.EX
+\#include <relation.h>
+
+.SO ext.dd
+
+.SO bf_ext.dd
+
+.SO af_ext.dd
+
+.SO ws_ext.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+Extensions are an abstract class that provides data storage for the
+relational algebra.  Extensions consist of a heap of Tuples.  The Tuples
+are not assumed to be ordered.
+.P
+Retrievals are made from Extensions by sequentially walking through the
+Extension using the startwalk(), walk() and endwalk() functions.
+To maintain access to the data area returned by walk(), Tuple::share()
+should be called.  If Tuple::share() is not called, the next walk() or the
+endwalk() may cause the data area to be lost.
+When the data area is no longer required, Tuple::done() should be called to
+free up the associated memory.
+Tuples may be updated during the walk by using the = operator.  The = operator
+is illegal outside of a walk.  Walk() returns NULL when the end of the 
+extension is reached. Tuples may be appended to the Extension using the 
++= operator.
+.P
+When created, an Extension has zero Tuples and item_size, the size of each
+Tuple, is unknown.  The item_size must be set before appending any Tuples.
+The Extension can be reset to zero Tuples using the truncate() function.  At
+that time the item_size may be changed.
+.P
+AF_Extensions use ASCII files as the storage method.  The Tuples passed are
+assumed to be newline terminated character data and are stored one per line.
+The item_size represents the longest legal line, but Tuples are allowed to
+be shorter.
+.P
+BF_Extensions use binary files as the storage method.  The file is assumed
+to consist of fixed length records of size item_size.  Tuples read from
+a binary file during a walk are assumed valid and marked T_CONSTRAINED.
+.P
+WS_Extensions use main memory for storage.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The Extension functions or their derived equivalents will fail and abort
+and relerr.errno will be set if one of the following are true:
+.VL 10 0
+.LI "[R_UNKNOWN_EXTENSION_SIZE]"
+cardinality, startwalk, or += are called with an item_size of zero.
+.LI "[R_IN_WALK]"
+startwalk or truncate are called between a startwalk and an endwalk.
+.LI "[R_NOT_IN_WALK]"
+walk, endwalk or = are called when not between a startwalk and an endwalk.
+.LI "[R_BAD_TUPLE]"
++= or = are called with a NULL Tuple.
+.LE
+Derived Extension class functions should call the corresponding Extension
+functions to check for the above errors.
+.P
+The AF_Extension and BF_Extension functions will fail and abort
+and relerr.errno will be set if one of the following are true:
+.VL 10 0
+.LI "[R_READONLY_EXTENSION]"
+The truncate(), = or += operations are applied to an Extension with
+READONLY perm.
+.LI "[R_LINE_TOO_LONG]"
+The AF_Extension walk function reads a line exceeding item_size.
+.LI "[R_NO_NEWLINE]"
+The AF_Extension = or += operators are passed a Tuple whose data is not
+newline terminated.
+.LE
+AF_Extension and BF_Extension may fail and abort and set syserr.errno for
+various file-oriented reasons.
+.LI "\fBEXAMPLES\fP"
+.br
+.EX
+.SO extE.ex
+.EE
+.LI "\fBWARNINGS\fP"
+.br
+If permanent indices are added to the relational algebra, Extensions must
+change.  The member functions must change and the underlying
+implementation will need to support ordered storage of the Tuples.
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Er, \*(Tp, \*(Rl, intro(3RA)
+.LE

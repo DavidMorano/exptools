@@ -1,0 +1,17 @@
+#ident "@(#) /sable/sdb/ra/rel/extension/s.af_ext.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+class AF_Extension : public Extension
+   {
+include(af_ext.pd)
+public:
+   unsigned cardinality();     // put non-inline function first
+   AF_Extension(const char *file,Fileperm perm=READWRITE);
+   ~AF_Extension();
+   Boolean_t startwalk();
+   Tuple *walk();
+   Boolean_t operator=(Tuple *t);
+   Boolean_t endwalk();
+   Boolean_t truncate();
+   Boolean_t operator+=(Tuple *t);
+   };

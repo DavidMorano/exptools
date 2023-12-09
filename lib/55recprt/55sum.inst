@@ -1,0 +1,209 @@
+.tr ~
+.HC ^
+.PH
+.ce 2
+.B
+INSTRUCTIONS FOR GENERATING THE
+"SSBU PERFORMANCE MANAGEMENT DISCUSSION SUMMARY"
+.R
+.sp
+.PH "'Instructions - %'''"
+A special macro has been written for generating
+the "SSBU Performance Management Discussion Summary"
+form.
+It is a 2-page form that should be generated
+in January for each employee for use during the entire year.
+To use the macro,
+you must:
+.BL
+.LI
+Have a login on a system that has the UNISON print
+spooler package available (prtfmt) and has exptools
+available.  Your PATH variable in your \&.profile
+must include "\(galogdir unison\(ga/bin" and
+"\(galogdir exptools\(ga/bin".
+If it does not,
+the Computing Technology Center (CTC) Counseling group
+can help you set it up.
+(See the last section of these instructions
+entitled "OBTAINING HELP".)
+.LI
+Have access to a PostScript or Imagen printer.
+.LI
+Have working knowledge of an editor (vi, emacs, ed, etc.).
+.LE
+.sp
+.B
+USING THE MACRO
+.R
+.sp
+.fi
+To generate the form,
+you must create a 1-line file.
+This line must contain the \&.EN macro.
+This macro generates the entire form and takes
+7~arguments.
+Each argument corresponds to a boxed-in section
+on the form.
+For example:
+.DS C
+\&.EN  "Doe, John P."  SGA2  "Switching Systems"  123-45-6789  NA1234567  01/93  12/93
+.DE
+That is,
+.TS
+center;
+L C L.
+argument 1	\&=	employee's name (in quotes)
+argument 2	\&=	classification, band, or tier
+argument 3	\&=	business unit or division (in quotes)
+argument 4	\&=	social security number
+argument 5	\&=	department/organization number
+argument 6	\&=	appraisal period "from" date
+argument 7	\&=	appraisal period "to" date
+.TE
+Note that each individual argument that contains spaces
+must be enclosed in quotes;
+the .EN macro and all arguments must each be separated by
+one space.
+.sp
+You can also generate more than one form, if necessary,
+within the same file.
+Suppose you're a supervisor wanting to generate a ^2-page
+form for each employee in your group,
+or a secretary wanting to generate a ^2-page form for
+each employee in the department.
+Each additional invocation of the \&.EN macro (and the
+7~arguments) produces another 2-page form.
+For example:
+.DS CB
+\&.EN  "Doe, John P."  SGA2  "Switching Systems"  123-45-6789  NA1234567  01/93  12/93
+\&.EN  "Smith, Mary K."  MTS  "Switching Systems"  987-65-4321  NA1234567  01/93  12/93
+\&.EN  "Jones, Fred R."  "Tier 2"  "Switching Systems"  090-90-9090  NA1234567  01/93  12/93
+.DE
+Each \&.EN line generates a separate "SSBU Performance Management
+Discussion Summary" form.
+.sp
+.B
+PRINTING THE FORM
+.R
+.sp
+.fi
+A special printing script has been included for printing
+the "SSBU Performance Management Discussion Summary" form.
+This script sources in the macro definition file
+which produces the form.
+Since this printed form does not contain any private
+information,
+there is no need to encrypt your file.
+However, if you choose to do so,
+this script handles the decrypting process as it
+prints the file,
+thereby eliminating the need to have an unencrypted
+(readable) copy of the file stored on the system.
+.sp
+In order to use this script,
+you \f2must\f1 have a \&.prt file in your $HOME
+directory.
+If you do not,
+you \f2must\f1 create one.
+It must minimally contain the following:
+.DS C
+-T  post  -d  ih12345z
+.DE
+where "post" is replaced with your printer type (post or
+i300) and "ih12345z" is replaced with your printer
+destination.
+If you do not currently have a \&.prt file and need
+help setting one up,
+see OBTAINING HELP below.
+.sp
+To use the script, type
+.DS C
+55sumprt  [options]  filename
+.DE
+where [options] include
+.VL 12 5
+.LI "-p"
+Run the file through the "xproof/proof"
+program.
+If you have a terminal that allows you to
+preview troff output (630, 730, or dmd),
+and you are in layers,
+then this option formats the output and
+presents it to you via the "xproof" program
+(or "proof" if xproof is not available on
+your system).
+.LI "-Z"
+Send PostScript output to standard out
+instead of printing it.
+.LI "-V"
+Print the version number of this program
+and exit.
+.LE
+.sp
+If you do not supply the "-p" option (for
+proofing), then the script will send the
+file to the printer specified in your \&.prt
+file.
+(See the NOTE following these examples.)
+.sp
+Examples:
+.AL
+.LI
+To send a file to print at the printer:
+.DS C
+55sumprt  filename
+.DE
+.LI
+To proof the file
+on your terminal:
+.DS C
+55sumprt  -p  filename
+.DE
+.LI
+To direct the PostScript output to a file for printing
+on a PostScript device where UNISON is not available:
+.DS C
+55sumprt  -Z  filename  >  newfilename
+.DE
+.LE
+.sp
+If your file is encrypted, you will be
+prompted for the keyword.
+.sp
+NOTE:~
+If you would like to send your file to
+print at a different printer than the
+one you normally use,
+this script allows you to do that via
+your \&.prt file.
+This script calls the "-j 55summary"
+trigger option on the embedded prtfmt command line.
+Therefore, to specify a printer that will
+be used only for your Performance Appraisal
+Summary,
+add the following two lines to your \&.prt
+file:
+.DS CB
+-j  55summary  :  -d  ih12345z
+-j  55summary  :  -T  post
+.DE
+where "ih12345z" is replaced with your
+printer destination and "post" is replaced
+with your printer type.
+If you do not include these lines in your
+\&.prt file,
+then your file will print at the printer
+specified in the first line of your \&.prt
+file.
+.sp
+.B
+OBTAINING HELP
+.R
+.sp
+The CTC Counselors
+are available to help you with any and all
+problems associated with the use of these
+tools.
+Please direct your questions/problems to
+^(708)~979-2555.

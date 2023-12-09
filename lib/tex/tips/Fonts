@@ -1,0 +1,185 @@
+From: Mark_A_Hartman@att.com
+Subject: Fonts
+Date: 10/1991
+
+= = = = = = =
+
+[ The following list of questions and answers addresses fonts and how they
+are handled in exptools TeX.  Please feel free to suggest corrections,
+additions, or improvements to this list to the TeX providers.  -mah ]
+
+> Which fonts are currently available in exptools TeX?
+
+The following font families are currently provided in exptools TeX:
+
+1.  Computer Modern - the standard set of Computer Modern fonts should
+be available.  If you find a font that is missing or out-of-date, please
+contact the providers and we will update it.
+
+2.  PostScript fonts - TFM and VF files for a subset of the standard
+PostScript fonts are distributed.  These consist mainly of the Times,
+Helvetica, and Courier families, plus a few miscellaneous fonts.  See
+the discussion below for more details on using PostScript fonts.
+
+3.  AMS Symbol fonts - only the symbol fonts are currently distributed,
+not the other AMS font families (Euler and Cyrillic).  To use the normal
+AMS symbol definitions from TeX or LaTeX, include the following near the
+top of your input file:
+
+\input{amssym.def}
+\input{amssym.tex}
+
+The first file defines the \newsymbol macro from AMS-TeX, while the
+second contains the actual definitions for the AMS symbols.
+
+> How can I use native PostScript fonts in my TeX documents?
+
+To use PostScript fonts, TeX needs a TFM file so it knows the proper
+spacing for each character in the font.  In addition, VF files are
+used to map characters from TeX's character set to Adobe's.  (This is
+a simplification; two TFM files and one VF file are actually used for
+most fonts.)
+
+Currently, TFM and VF files for the Times, Helvetica, and Courier font
+families (along with some other fonts) are available under
+~exptools/lib/tex/fonts.  For LaTeX users, a style file (times.sty) is
+provided to transparently use the PostScript Times family instead of the
+Computer Modern family.  To use PostScript fonts from plain TeX, or
+to use fonts other than those specified in times.sty, you must know
+the names used to access the PostScript fonts.  The naming scheme
+used in exptools is described in detail in TUGboat, Volume 11, Number 4,
+pages 517-520.  The names for the 35 standard PostScript fonts are listed
+below.  Note that all fonts are not currently distributed -- contact the
+exptools TeX providers for specific needs.
+
+AvantGarde-Book:		pagk
+AvantGarde-BookOblique:		pagko
+AvantGarde-Demi:		pagd
+AvantGarde-DemiOblique:		pagdo
+Bookman-Demi:			pbkd
+Bookman-DemiOblique:		pbkdi
+Bookman-Light:			pbkl
+Bookman-LightItalic:		pbkli
+Courier-Bold:			pcrb		[available]
+Courier-BoldOblique:		pcrbo		[available]
+Courier:			pcrr		[available]
+Courier-Oblique:		pcrro		[available]
+Helvetica-Bold:			phvb		[available]
+Helvetica-BoldOblique:		phvbo		[available]
+Helvetica-NarrowBold:		phvbrn		[available]
+Helvetica-NarrowBoldOblique:	phvbon		[available]
+Helvetica:			phvr		[available]
+Helvetica-Oblique:		phvro		[available]
+Helvetica-Narrow:		phvrrn		[available]
+Helvetica-NarrowOblique:	phvron		[available]
+NewCenturySchlbk-Bold:		pncb
+NewCenturySchlbk-BoldItalic:	pncbi
+NewCenturySchlbk-Italic:	pncri
+NewCenturySchlbk-Roman:		pncr
+Palatino-Bold:			pplb
+Palatino-BoldItalic:		pplbi
+Palatino-Italic:		pplri
+Palatino-Roman:			pplr
+Symbol:				psyr		[available]
+Times-Bold:			ptmb		[available]
+Times-BoldItalic:		ptmbi		[available]
+Times-Italic:			ptmri		[available]
+Times-Roman:			ptmr		[available]
+ZapfChancery-MediumItalic:	pzcmi		[available]
+ZapfDingbats:			pzdr		[available]
+
+> What if the font I want to use is not in exptools TeX?
+
+With the large number of Metafont fonts available, it is likely that you
+may wish to use fonts that we have chosen not to provide in exptools TeX.
+The first step in doing this is to acquire the Metafont source files for
+the fonts (.mf files) and place them in a directory.  Then, add this
+directory to your MFINPUTS environment variable.  You can then generate a 
+TFM file for each font you wish to use by running Metafont:
+
+$ mf "\mode:=localfont; mag:=1.0; scrollmode; input yourfont.mf"
+
+The mode and mag used do not really matter, since they do not
+affect the TFM file; only the GF file which you can discard.
+Place your newly created TFM files in another directory, and add this
+directory to your TEXFONTS environment variable.  You may now use
+the new fonts as you would any others.
+
+Some additional notes:
+
+a)  You can place both the Metafont source files and the TFM files in
+your current directory, since "." is in both paths by default.
+
+b)  For some fonts you may have TFM and PK files, but not the Metafont
+source files.  In this case, place the TFM files somewhere in your
+TEXFONTS path, and place the PK files where dvips can find them (see
+the dvips man page or continue reading this tips file for more details).
+
+> I have found that when I dvips a dvi file, SOMETIMES it goes through all
+> this METAFONT stuff and SOMETIMES it doesn't!  Since the METAFONT processing
+> can take a lot of time (both clock time and CPU time), I would much prefer
+> that it only go through this process once.
+> 
+> So, why is METAFONT processing only necessary sometimes?
+
+One major problem with TeX and the Computer Modern fonts is the huge amount
+of disk space a full set of high-resolution fonts can take.  Dvips uses fonts
+stored in PK format.  Since they are basically bitmaps, separate files are
+required for each size (or magnification) of each font.  This multiplies out
+to more disk space than exptools could be expected to allocate to TeX.  The
+dvips program solves this problem by creating fonts on demand, so only those
+fonts that are actually used are stored on disk.  At a typical site, less
+than one fifth of the full set of Computer Modern fonts are used over a long
+period, so this saves a great deal of disk space.  The downside is that it
+does take a certain amount of time to create a new font if it has not been
+accessed recently.
+
+The PK files generated by dvips reside in /usr/tmp/pk.XXX (where XXX varies
+according to your printer type).  In theory you only need to do the
+METAFONT processing once.  Unfortunately, some machines clean up /usr/tmp
+somewhat aggressively (often several times a day).  Thus, the first time
+your process your document, fonts are created in /usr/tmp/pk.XXX.  If you
+run dvips again (within a reasonable period of time), the fonts in
+/usr/tmp/pk.XXX will be used and you will not have to wait for METAFONT to run.
+However, when the crontab entry runs and cleans out /usr/tmp, you get to start
+all over again.
+
+Several PK files are kept pre-made under ~exptools/lib/tex/fonts.  This set
+does fluctuate, so input on fonts you find yourself rebuilding often is
+appreciated.
+
+> Is there an easy way to save the fonts generated by METAFONT for later use,
+> and if so, how?
+
+Yes.  Copy the generated files from /usr/tmp/pk.XXX into a private directory.
+Then, add that directory to the TEXPKS path environment variable or modify the
+"P" flag in your .dvipsrc appropriately (TEXPKS overrides the config and
+.dvipsrc files).  Look at the "P" flag in ~exptools/lib/tex/config.* for what
+this path should contain.  The following is appropriate for Imagen fonts
+(the default) using the environment variable approach:
+
+TEXPKS=.:$HOME/myfonts:/usr/tmp/pk.imagen:$TOOLS/lib/tex/fonts
+export TEXPKS
+
+Dvips will now search your private directory, in addition to the exptools
+and /usr/tmp/pk.XXX directories, to find PK files.  It will still invoke
+METAFONT for fonts that it can't find anywhere in the path.
+
+This does open up the potential for you to have out-of-date fonts in your
+directory (for example, if the font source files are changed), so please
+don't abuse this option.
+
+> The characters in my output appear unusually thin, especially when the
+> printer is low on toner.  Why does this happen?
+
+This happens because the default fonts are built with parameters for the
+Imagen (Canon print engine), and you may be using something with a Xerox print
+engine (a QMS perhaps?).  To allow for this possibility, dvips supports
+separate fonts for Imagen and QMS printers.  You may want to try QMS fonts,
+which are considerably heavier (check out waits.mf in ~exptools/lib/tex/mf if
+you are interested).  This can either specified with either a -Pqms on the
+command line, a PRINTER=qms in your environment, or some appropriate
+modifications to your .dvipsrc file.  This will work for any printer with a
+Xerox engine, not just the QMS.  In fact, it will work on any printer if
+you just want heavier output.
+

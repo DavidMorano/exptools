@@ -1,0 +1,2970 @@
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          IntensionValue,AttributeValue - an improved Tuple with
+          Intension semantics
+          #include <relation.h>
+
+          An  is composed of a Tuple (see ) and an Intension ().  Like
+          Tuples, IntensionValues may be used to walk through a
+          Relation and look at individual records.  IntensionValues
+          are designed to be compatible with Tuples, with a simplified
+          application interface.  Tuples require the application
+          programmer to carefully track references with Tuple_new(),
+          share() and done().  Tuples require the application to
+          convert the Tuple data to a C struct to read or write an
+          Attribute value, and Tuples don't permit updates to a shared
+          Tuple.  Instead the data must be copied to a new Tuple and
+          the Attribute values must be updated in the new Tuple.
+          Updates to STRING Attribute values must be padded with NULL
+          ('\0') characters to the full size of the Attribute.
+
+          IntensionValues hide these complexities.  The IntensionValue
+          constructor, destructor and assignment operator (=) handle
+          all necessary Tuple_new(), share(), done(), and padding
+          transparently to the application.  The IntensionValue cast
+          operators (void *(), Tuple *(), const char *()) convert the
+          data in the Tuple to the specified type and return it to the
+          application.  No allocation or deallocation of space is
+          required on the part of the application.  The IntensionValue
+          project operator ( [] ) allows an application to project an
+          IntensionValue to an AttributeValue by specifying the
+          Attribute.  Project returns a reference to an
+          AttributeValue.
+
+          The AttributeValues can be read by casting them to Int_t,
+          Float_t or char *.  They can be written (updated) using the
+          assignment operator (=), and they can be tested using the
+          comparison operators ( ==, !=, <=, <, >=, > ).
+
+          The IntensionValue caches AttributeValues when it projects
+          to them and automatically arranges for their cleanup when
+          the IntensionValue is destroyed.
+          The IntensionValue and AttributeValue operations fail, call
+          relerr.error to print an error to standard error, abort and
+          exit under the following circumstances: - the IntensionValue
+          assignment operator ( = ) is called with an unreferenced or
+          wrongly sized Tuple.  - the IntensionValue assignment
+          operator ( = ) is called with a AttributeValue reference
+          (right hand side) whose Domain does not match the Domain of
+          the AttributeValue on the left hand side.  If you really do
+          want to make an assignment with mixed Domains, you could
+          type cast the right hand side, to the type of the left hand
+          side's Domain.  The Constraints for the left hand side's
+          Domain will be applied to the right hand side before the
+          assignment is successful.  - the project operator ( [] ) is
+
+
+
+     Page 1                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          called with an Attribute that isn't in the Intension.  - the
+          AttributeValue assignment operator ( = ) or an
+          AttributeValue comparison operator ( ==,!=,>,>=,<,<= ) is
+          called with an Int_t value for an Attribute whose Domain is
+          not INT.  - the AttributeValue assignment operator ( = ) or
+          an AttributeValue comparison operator ( ==,!=,>,>=,<,<= ) is
+          called with an Float_t value for an Attribute whose Domain
+          is not FLOAT.  - the AttributeValue assignment operator ( =
+          ) or an AttributeValue comparison operator ( ==,!=,>,>=,<,<=
+          ) is called with an char * value for an Attribute whose
+          Domain is not STRING.
+          intro(3RA), , , , , ,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Attribute, Predicate - field names and operations for
+          relational algebra
+          #include <relation.h>
+
+
+          Attributes are the names of the fields of a relation.  They
+          are conceptually similar to structure member names in C.
+          Attributes are used to select fields in a projection,
+          specify values in a selection and determine which fields
+          will participate in joins.
+
+          Attributes must be associated with a previously declared
+          Domain.  They are usually defined with the attribute macro
+          which maps the internal attribute name to the C++
+          identifier.
+
+          The attribute operations (==,!=,<=,>=,<,>) are used to build
+          predicate expressions.  The predicate expressions allow
+          Attributes to be compared to other Attributes as well as to
+          variables and constants.
+
+          The Predicate class provides the logical and (&&), logical
+          or (||) and not (!) operations.  Unlike Constraints,
+          Predicates permit different Attributes to be mixed in the
+          same Predicate expression.  When the select (Relation
+          operator::%) or startwalk functions apply the Predicate
+          expression to a Relation, all the Attributes must be present
+          in that Relation.
+          The attribute operations (==,!=,<=,>=,<,>) will fail and
+          abort, and relerr.errno will be set if one of the following
+          are true: The attribute's type is not INT, but it is being
+          compared to an INT.  The attribute's type is not FLOAT, but
+          it is being compared to a FLOAT.  The attribute's type is
+          not char *, but it is being compared to a char * or Pattern.
+          The attributes being compared to each other do not have the
+          same Domain.
+
+          The attribute operations (==,!=,<=,>=,<,>) will fail and
+          abort, and syserr.errno will be set if the following is
+          true: The char * is NULL.
+          , , , , , , intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Persistent_Counter - Class for maintaining a counter across
+          processes
+          #include <sblib.h>
+
+          Persistent_Counter is a class that allows a Int_t object to
+          be kept in a file so that its value is preserved across
+          process invocations.
+
+          The constructor requires a pathname as the first parameter.
+          If this file does not exist it will be created and
+          initialized with the optional third parameter.  If this file
+          exists the value will it contains will not be changed by the
+          constructor.  A modulus can be passed to the constructor as
+          the second parameter.  This is a 1 to N, not 0 to N-1,
+          modulus.  Note that the initial value can be, and defaults
+          to, zero.
+
+          The operator ++ increments the value and returns back the
+          result after the increment.  This function is thus a
+          preincrement so for clarity programmers should try to use
+          "++identifier" instead of "identifier++".
+
+          The value can be changed using the assignment operator =.
+          Note the modulus is not applied by the assignment operator.
+
+          intro(3SB).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Curse - base class for classes using curses(3X) #include
+          <sblib.h>
+
+          The Curse class provides a base class for deriving other
+          curses(3X) related classes.  The first construction of a
+          Curse object calls the curses function initscr() while the
+          last destruction calls the curses function endwin().  The
+          Curse class also calls endwin() whenever any signal whose
+          default setting is termination is detected while a Curse
+          object is active.  If a trap function existed prior to the
+          first Curse construction, the detected signal will be
+          cascaded to it.  If this prior trap returns without exiting,
+          the Curse trap function will call initscr() again.
+
+          If you use classes derived from Curse you don't generally
+          need to define a base Curse object.  However, if you call a
+          curses function prior to constructing the first derived
+          class object, for example as an argument to the derived
+          class constructor, you should define a Curse prior to that
+          function call so that it will behave properly.  A base Curse
+          object can also be used for curses programs without any
+          derived objects.  In that case it provides a simple means
+          for entering and exiting curses and it protects against
+          signals.
+          If Curse traps a signal and the previous setting is SIG_DFL,
+          Curse prints the message "Signal <number> received." to
+          standard error and exits using the signal number as the exit
+          status.
+          If new signal traps are set after the Curse object is
+          declared, the application must take responsibility for
+          saving the trap function address returned from signal(2) or
+          sigset(2), and invoking that trap function from within the
+          new trap function.
+          , , , curses(3X)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Domain, Dname, Constraint - data types and operators for
+          relational algebra
+          #include <relation.h>
+
+
+
+          The Dname class provides assignment and comparison operators
+          for Domain names.  It consists of a character array, an
+          operator = for assignment of strings or other Dnames to the
+          Dname, and operators == and != for comparison of Dnames.
+          When assigning strings, the NULL character pointer will be
+          converted to a NULL (zero length) string and a string whose
+          length is greater than LNAME-1 characters (not including the
+          terminator) will be truncated to LNAME-1 characters.
+          Applications using relational algebra never need to refer to
+          Dnames directly.
+
+          Domains define the base set of values with which Attributes
+          (fields) are associated.  Domains are conceptually similar
+          to typedefs in C.  If two Attributes have the same Domain
+          they can be renamed to each other, which allows them to be
+          joined.  Domains are constructed by specifying a name, which
+          is converted to Dname, a type and a length.  The type may be
+          either INT (short, long or int depending on the Int_t
+          typedef), FLOAT (float or double depending on Float_t) or
+          STRING (fixed length character arrays).  For INT and FLOAT
+          the length argument to the constructor is ignored and the
+          size of Int_t and Float_t, respectively, are used.  For
+          STRING the length argument may be any valid Dlength, but
+          extremely large domains could cause memory allocation
+          failures.  Domains are most easily defined using the macros
+          int_domain, float_domain, and string_domain, which map the
+          internal Domain name to the C++ identifier and supply the
+          size information for INT and FLOAT.
+
+          If data needs to be exchanged between relations and other
+          C++ objects, it is useful to typedef each defined Domain.
+          This simplifies the creation of equivalent structures
+          (icons) for the relations.
+
+          Constraints may be used to further restrict Domain values.
+          Constraints provide comparison through the Domain operators
+          ==, !=, <=, >=, < and >.  INT Domains may be compared to
+          Int_t values, FLOAT Domains to Float_t values and STRING
+          Domains to strings (char *) or Patterns.  Comparisons can be
+          combined using the Constraint operators &&, || and !.
+
+          Constraints are applied automatically to Tuples in
+          Relations.  They may also be applied to any appropriately
+          typed data using the Domain::constrain() operation.  If you
+          call Domain::constrain() using the default print=TRUE,
+          constrain() will print the R_CONSTRAINT_FAILED message if
+
+
+
+     Page 6                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          the constraint fails.  Domain::constrain() calls
+          Domain::constraint_string() to supplement the error message.
+          Application code may want to use Domain::constraint_string()
+          to format their own error or explanatory message,
+          particularly if they call Domain::constrain() with
+          print=FALSE.  The string returned by constraint_string()
+          should be deleted when the application is done with it.
+          The Domain constructor will fail and abort and relerr.errno
+          will be set if one of the following are true: A STRING
+          Domain is constructed with a length of 0, a FLOAT Domain is
+          constructed with a length other than sizeof(Float_t) or an
+          INT Domain is constructed with a length other than
+          sizeof(Int_t).
+
+          The Domain operations constrain(), ==, !=, <=, >=, < and >
+          will fail and abort and relerr.errno will be set if one of
+          the following are true: A char * or Pattern is constrained
+          on a FLOAT or INT Domain.  An Int_t is constrained on a
+          FLOAT or STRING Domain.  A Float_t is constrained on a INT
+          or STRING Domain.  The Constraint && and || operations will
+          fail and abort and relerr.errno will be set if the following
+          is true: The left Domain is not equal to the right Domain.
+          , , , , , , intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Error - System V Release 4.0 Style Error Handling
+          #include <sblib.h>
+
+
+          The  class provides error message capabilities similar to
+          the System V Release 4.0 standard.  Error objects are
+          constructed with the address (_e_r_r_l_i_s_t) and size (_n_e_r_r_s) of
+          an array of error strings.  Each entry in the array is of
+          type Error_message, and has a _t_a_g, an _e_r_r_o_r__c_l_a_s_s, a
+          _s_e_v_e_r_i_t_y, a _t_e_x_t and an _a_c_t_i_o_n.  The application environment
+          has control over where the error message is shown and which
+          parts of the Error_message structure are actually generated.
+
+          _E_r_r_o_r__m_e_s_s_a_g_e _S_T_R_U_C_T_U_R_E
+
+          The _E_r_r_o_r__m_e_s_s_a_g_e._t_a_g is a short name for the error, and it
+          typically resembles the name of the symbolic constant
+          identifying the error.  For example, error number 1 in
+          syserr has the tag name "EPERM" and is identified by the
+          #define EPERM.
+
+          The _E_r_r_o_r__m_e_s_s_a_g_e._e_r_r_o_r__c_l_a_s_s contains bits that further
+          describe the error.  An error is either MM_HARD (hardware),
+          MM_SOFT (software) or MM_FIRM (firmware).  It is either
+          MM_RECOVER (recoverable) or MM_NRECOV (non-recoverable).  It
+          was generated by MM_APPL (application) code, MM_UTIL
+          (utility) code or MM_OPSYS (operating system) code.  Each
+          Error_message structure specifies one bit from the first set
+          (MM_HARD, MM_SOFT or MM_FIRM), one bit from the second set
+          (MM_RECOVER or MM_NRECOV), and one bit from the third set
+          (MM_APPL, MM_UTIL or MM_OPSYS).  The bits are concatenated
+          using the bitwise OR operator, e.g.
+          MM_SOFT|MM_RECOVER|MM_APPL.
+
+          The _E_r_r_o_r__m_e_s_s_a_g_e._s_e_v_e_r_i_t_y contains bits that indicate how
+          serious the error is.  An error is either MM_NOSEV (unknown
+          or don't care), MM_HALT (fatal to the process), MM_ERROR
+          (serious but not fatal to the process), MM_WARNING (unusual
+          but not serious) or MM_INFO (information only, not really an
+          error).  An MM_HALT error causes _E_r_r_o_r::_e_r_r_o_r() to exit(2)
+          with a non-zero value.  The other severity bits only affect
+          the contents of the error message.  These severity bits are
+          translated into appropriate strings for printing by the
+          _E_r_r_o_r::_e_r_r_o_r() function.
+
+          The _E_r_r_o_r__m_e_s_s_a_g_e._t_e_x_t contains a description of the error.
+          The _t_a_g is a short description and the _t_e_x_t provides a more
+          complete description.
+
+          The _E_r_r_o_r__m_e_s_s_a_g_e._a_c_t_i_o_n describes the action needed to fix
+          the error.  It appears after the "TO FIX:" string of the
+          error message.  If action is NULL, the "TO FIX:" string is
+
+
+
+     Page 8                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          not printed.
+
+          _E_N_V_I_R_O_N_M_E_N_T _V_A_R_I_A_B_L_E_S
+
+          By setting the environment variable PRINT_ERROR_TO, the
+          application can control where error messages are printed.
+          PRINT_ERROR_TO can contain a colon separated list of the
+          following names: _c_o_m_m_a_n_d, _c_o_n_s_o_l_e, _m_a_i_l and _s_t_d_e_r_r.  If
+          PRINT_ERROR_TO contains the name _c_o_n_s_o_l_e, error messages
+          will be sent to the device specified in the environment
+          variable CONSOLE_DEV, (/dev/console by default).  If
+          PRINT_ERROR_TO contains the name _c_o_m_m_a_n_d, the error messages
+          will be piped to the command specified in the environment
+          variable ERRORCMD.  ERRORCMD must contain a fully qualified
+          pathname from root (i.e.  the pathname must start with a
+          '/').  If PRINT_ERROR_TO contains the name _m_a_i_l, error
+          messages are mailed to the owner of the process (by
+          default).  If PRINT_ERROR_TO contains the name _s_t_d_e_r_r, the
+          error messages are printed on standard error.  For example,
+          PRINT_ERROR_TO=command:console:stderr says that all error
+          messages are to be piped to the command specified in
+          ERRORCMD, and printed to CONSOLE_DEV and standard error.
+          The error messages would not be mailed to any one.  If
+          PRINT_ERROR_TO is not set, or is explicitly set to NULL,
+          then all error messages will be printed to standard error.
+          If PRINT_ERROR_TO contains invalid names, the invalid names
+          are ignored.
+
+          An error message can be broken into pieces called _t_a_g,
+          _s_e_v_e_r_i_t_y, _t_e_x_t, _a_c_t_i_o_n and _l_a_b_e_l.  The _t_a_g, _s_e_v_e_r_i_t_y, _t_e_x_t
+          and _a_c_t_i_o_n are obtained from the original _e_r_r_l_i_s_t array
+          passed to _E_r_r_o_r::_E_r_r_o_r().  The _l_a_b_e_l is obtained from the
+          _f_i_l_e and _l_i_n_e arguments to _E_r_r_o_r::_e_r_r_o_r(), the _c_o_m_m_a_n_d
+          variable, the current date and time of day, and the process
+          id (pid).  If _c_o_m_m_a_n_d is set, the label is of the form
+          _c_o_m_m_a_n_d(_f_i_l_e:_l_i_n_e) _d_a_t_e _t_i_m_e_O_f_D_a_y _P_I_D=pid If _c_o_m_m_a_n_d is not
+          set, the label is of the form (_f_i_l_e:_l_i_n_e) _d_a_t_e _t_i_m_e_O_f_D_a_y
+          _P_I_D=pid.
+
+          An application can select which pieces of the error messages
+          are shown by setting the environment variables CMDVERB,
+          CONVERB, MAILVERB and STDERRVERB.  These VERBs control the
+          error message verbosity.  CMDVERB controls the verbosity of
+          error messages sent to ERRORCMD.  CONVERB controls the
+          verbosity of error messages sent to CONSOLE_DEV.  MAILVERB
+          controls the verbosity of error messages sent to an
+          electronic mail program.  STDERRVERB controls the verbosity
+          of error messages sent to standard error.  All of these
+          VERBs can contain a colon-separated list of the names of the
+          pieces.  For example, STDERRVERB=severity:text:action:label
+          would print the severity, text, action and label pieces of
+          the error message to standard error, but the tag piece would
+
+
+
+     Page 9                                          (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          not be printed.  This assumes that PRINT_ERROR_TO contained
+          _s_t_d_e_r_r.  If any of the VERBs are not set or are set to NULL
+          (e.g. STDERRVERB=""), all pieces of the error message are
+          printed to those locations designated in PRINT_ERROR_TO.  If
+          any of the VERBs contain invalid names, the invalid names
+          are ignored.
+
+          The _c_o_m_m_a_n_d variable is used as part of the error message's
+          label.  It must be set by the application code (typically in
+          main() to argv[0]).
+
+          _E_R_R_O_R _C_L_A_S_S _M_E_M_B_E_R_S
+
+          The _E_r_r_o_r::_e_r_r_o_r() function is used to print error messages.
+          It is roughly comparable to the standard perror(3) function.
+          Error::error() always returns FALSE.  This is a convenience
+          that allows statements like "return
+          syserr.error(errno,__FILE__,__LINE__);".  The _e_r_r_n_u_m
+          argument is the number of the error message in the error
+          list passed to Error::Error().  It is similar to the global
+          variable errno in the standard C library.  However, each
+          error object can independently number its errors since each
+          has its own _e_r_r_l_i_s_t.  The _f_i_l_e and _l_i_n_e arguments are used
+          as part of the error message's label.  The _s_u_f_f_i_x argument
+          is printed after the text of the error message, assuming the
+          appropriate VERB specified text.  The application can use
+          _s_u_f_f_i_x to provide more information about the error.
+
+          _E_r_r_o_r::_e_r_r_F_i_l_e() attempts to open its err_file argument as
+          file descriptor 2 (standard error).  It returns TRUE if it
+          is successful, and FALSE if it fails.  If the file does not
+          exist, it is created.  If the file exists, the errors are
+          appended to it.
+
+          _E_r_r_o_r::_i_d_e_n_t_i_f_i_e_r() accepts a pointer to a string that will
+          be printed after the label portion of an error message.
+          This assumes that the appropriate VERB specified label.  If
+          identifier() is called with out any arguments, the error
+          message identifier is set to NULL, and is not printed with
+          the error message.
+
+          The _E_r_r_o_r::_m_a_i_l_T_o() function accepts a NULL terminated,
+          space separated list of users to whom the error messages
+          will be mailed, when a VERB specifies mail.  This list is
+          validated by the electronic mail program.  If this function
+          is not called and a VERB specifies mail, error messages will
+          be mailed to the user running the process.
+
+          _E_r_r_o_r::_e_r_r_n_o is the error number passed to _E_r_r_o_r::_e_r_r_o_r() as
+          errnum.
+
+          The most recently printed error is uniquely identified by
+
+
+
+     Page 10                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          _E_r_r_o_r::_l_a_s_t_e_r_r.  For example, an application can access the
+          number of the last error by referencing X.lasterr->errno,
+          assuming that X is an Error object.
+
+          _E_R_R_O_R _O_B_J_E_C_T_S
+
+          The extern variable syserr is an Error object that defines
+          messages for the standard system call errors (errno).  It
+          also contains the additional errors NO_FREE_STORE (dynamic
+          allocation failure), UNEXPECTED_ERROR and NULL_POINTER.
+          These are common errors even though they are not tied to
+          system calls and errno.
+
+          Additional Error objects may be defined by utility or
+          application code.
+
+          _E_R_R_O_R _M_A_C_R_O_S
+
+          The NPcheck and NScheck macros are used to check if function
+          arguments are NULL pointers (i.e. (char *)0 ) or null
+          strings (i.e. "").  Both macros generate errors which will
+          cause the process to halt.  The NPNScheck macro can be used
+          as short hand for specifying both checks.
+
+          The SYSreturn preprocessor macro calls syserr.error with the
+          system's errno (not Error::errno), the current file name and
+          the current line number.  The False check (Fc), System check
+          (Sc), and System ok (So) preprocessor macros provide
+          standard routine error checking so that the code is not
+          cluttered with if tests on subroutine calls.  The
+          FALSEreturn macro should be defined locally by the
+          function(s) using these macros.
+
+          The Trace and TraceStmt macros are used for general purpose
+          code tracing.  Trace is used if you just want a simple trace
+          statement.  TraceStmt is used if you want a complex
+          statement executed as part of the tracing.  The environment
+          variables TRACELEVEL and TRACEFILE are used to control the
+          amount of trace information that is generated.  TRACELEVEL
+          should be set to an integer specifying the desired level of
+          tracing.  In general, the higher the number, the larger the
+          quantity of trace information.  By default it is initialized
+          to 0.  TRACEFILE can contain the name of the file to be
+          traced.  This will filter out trace information that is not
+          within the specified file.  By default it is set to all.
+          For example, if TRACELEVEL was set to 5 and TRACEFILE was
+          set to test.c, then all the trace statements in test.c,
+          whose level is less than or equal to 5 would be printed.
+          All other trace statements in the system would be ignored.
+          The  class constructor will print an error message, abort
+          and exit under the following conditions: PRINT_ERROR_TO
+          specified _c_o_m_m_a_n_d, but the command string in ERRORCMD did
+
+
+
+     Page 11                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          not start with a slash ('/').  ERRORCMD must contain a fully
+          qualified pathname from root (i.e. /usr/local/bin/program).
+          The calculation of the label's length was not equal to the
+          number of characters copied into the label's array.  Be sure
+          that the calculation includes all the literals in the string
+          being copied into the label's array.  PRINT_ERROR_TO
+          specified _c_o_n_s_o_l_e, but the device specified in CONSOLE_DEV
+          (default /dev/console) could not be opened.  Be sure that
+          the device is plugged in, powered on and accessible to the
+          user running the program.  The errlist array passed to
+          Error::Error was NULL.  PRINT_ERROR_TO specified _c_o_n_s_o_l_e,
+          but CONSOLE_DEV is not writable.  PRINT_ERROR_TO specified
+          _c_o_m_m_a_n_d and ERRORCMD is the name of a command that is not
+          available to this process.
+
+          The  class will print an error message and continue
+          executing under the following conditions: PRINT_ERROR_TO
+          specified _c_o_m_m_a_n_d, but ERRORCMD was not set or is NULL;
+          _c_o_m_m_a_n_d is ignored.  To correct, remove _c_o_m_m_a_n_d from
+          PRINT_ERROR_TO, or set and export ERRORCMD.  Error::error()
+          was called with an errnum that is greater than the number of
+          errors passed in the errlist array.  Error::mailTo() was
+          called with a NULL pointer, i.e. no addressees.
+          /* shell:  STDERRVERB=text:severity:action; export
+          STDERRVERB */ /* shell:  PRINT_ERROR_TO=console:stderr;
+          export PRINT_ERROR_TO */
+
+          The options to pipe to ERRORCMD and to send mail are not
+          part of the SVR4.0 error handling.
+
+          Currently, MM_HALT indicates a non-recoverable error.
+          MM_RECOVER and MM_NRECOV have no effect.  They are included
+          to maintain SVR4.0 compatibility.
+
+          Do not expect a precise emulation of SVR4.0 error handling.
+          At the time of this implementation, SVR4 error handling was
+          not complete.
+          iiiinnnnttttrrrroooo((((3333SSSSBBBB)))), exit(2), abort(3C), perror(3C).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 12                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Extension, BF_Extension, AF_Extension, WS_Extension - data
+          storage for relational algebra #include <relation.h>
+
+
+
+
+          Extensions are an abstract class that provides data storage
+          for the relational algebra.  Extensions consist of a heap of
+          Tuples.  The Tuples are not assumed to be ordered.
+
+          Retrievals are made from Extensions by sequentially walking
+          through the Extension using the startwalk(), walk() and
+          endwalk() functions.  To maintain access to the data area
+          returned by walk(), Tuple::share() should be called.  If
+          Tuple::share() is not called, the next walk() or the
+          endwalk() may cause the data area to be lost.  When the data
+          area is no longer required, Tuple::done() should be called
+          to free up the associated memory.  Tuples may be updated
+          during the walk by using the = operator.  The = operator is
+          illegal outside of a walk.  Walk() returns NULL when the end
+          of the extension is reached. Tuples may be appended to the
+          Extension using the += operator.
+
+          When created, an Extension has zero Tuples and item_size,
+          the size of each Tuple, is unknown.  The item_size must be
+          set before appending any Tuples.  The Extension can be reset
+          to zero Tuples using the truncate() function.  At that time
+          the item_size may be changed.
+
+          AF_Extensions use ASCII files as the storage method.  The
+          Tuples passed are assumed to be newline terminated character
+          data and are stored one per line.  The item_size represents
+          the longest legal line, but Tuples are allowed to be
+          shorter.
+
+          BF_Extensions use binary files as the storage method.  The
+          file is assumed to consist of fixed length records of size
+          item_size.  Tuples read from a binary file during a walk are
+          assumed valid and marked T_CONSTRAINED.
+
+          WS_Extensions use main memory for storage.
+          The Extension functions or their derived equivalents will
+          fail and abort and relerr.errno will be set if one of the
+          following are true: cardinality, startwalk, or += are called
+          with an item_size of zero.  startwalk or truncate are called
+          between a startwalk and an endwalk.  walk, endwalk or = are
+          called when not between a startwalk and an endwalk.  += or =
+          are called with a NULL Tuple.  Derived Extension class
+          functions should call the corresponding Extension functions
+          to check for the above errors.
+
+          The AF_Extension and BF_Extension functions will fail and
+
+
+
+     Page 13                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          abort and relerr.errno will be set if one of the following
+          are true: The truncate(), = or += operations are applied to
+          an Extension with READONLY perm.  The AF_Extension walk
+          function reads a line exceeding item_size.  The AF_Extension
+          = or += operators are passed a Tuple whose data is not
+          newline terminated.  AF_Extension and BF_Extension may fail
+          and abort and set syserr.errno for various file-oriented
+          reasons.
+          If permanent indices are added to the relational algebra,
+          Extensions must change.  The member functions must change
+          and the underlying implementation will need to support
+          ordered storage of the Tuples.
+          , , , intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 14                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          create_file, fileTrace - file manipulations
+          #include <sblib.h>
+
+          The  function can be used to create a file when the file
+          does not need to be opened.  The _p_a_t_h argument is a NULL
+          terminated character string containing a UNIX pathname.  The
+          function creates the file using the O_RDWR, O_CREAT and
+          O_EXCL flags (see open(2)).  If _p_a_t_h already exists or
+          cannot be created,  returns FALSE.  If it succeeds in
+          creating the file, it returns TRUE.  The  function uses the
+          ooooppppeeeennnn((((2222)))) system call to create the file, but it closes the
+          resulting file descriptor.
+
+          The  function does an fstat(2) on each of a process' 20 file
+          descriptors to determine if the file descriptors are
+          associated with an open file.  If a file descriptor
+          associated with an open file, a trace message is printed.
+          This trace message contains the file descriptor, device,
+          inode and raw device numbers.  After all of the file
+          descriptors have been examined, a trace error message is
+          printed containing the _t_a_g argument followed by a string of
+          C's and O's.  A 'C' indicates that the file descriptor,
+          associated with the C's position in the string, is closed.
+          An 'O' indicates that the file descriptor, associated with
+          the O's position in the string, is open.
+          open(2), creat(2), fstat(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 15                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Form - input, output and update forms
+
+          #include <sblib.h>
+
+
+          The  class converts a list of fields to a screen form using
+          curses(3X) and provides operations to input, display and
+          update records through the form.  The Form class provides a
+          consistent "look-and-feel" for the specified forms.
+
+          The constructor takes the order, captions and ASCII length
+          of the fields as the _f_o_r_m_f_i_e_l_d_s argument and the number of
+          fields as the _n_f_i_e_l_d_s argument.  A _h_e_a_d_i_n_g may be specified
+          but is not required.  The _t_y_p_e argument specifies the type
+          of form requested, RECORD or TABLE.  A _w_i_n_d_o_w may be
+          specified or the default stdscr will be used.
+
+          The application is responsible for allocating a large enough
+          window to hold the data as well as the necessary form
+          overhead.  Every form must allocate 2 lines for the error
+          subwindow, 1 line for the message subwindow and 2 lines for
+          the heading if present.  If the RECORD FORMTYPE is used, 2
+          lines should be allocated for each field (double-spacing)
+          and the window's width must be large enough to hold the
+          caption length + field length + four (leading space, a
+          colon-space separator  and a terminating space) for every
+          field.  If the window is too small,  will try to "squeeze"
+          the form by single-spacing the lines and putting more than
+          one field per line.  The result is ugly but readable.
+
+          If the TABLE FORMTYPE is used 2 lines must be allocated for
+          the caption names and at least 1 line for all the fields
+          combined.  The field values will be printed horizontally
+          (one column for each field).  If the window size is too
+          small to provide a TABLE, the constructor will try to
+          generate the form using RECORD (see above for window size
+          rules associated with FORMTYPE RECORD).  The _f_o_r_m_f_i_e_l_d_s and
+          _n_f_i_e_l_d_s arguments remain publicly available as _f_i_e_l_d_s and
+          _n_i_t_e_m_s.
+
+          Each field structure contains 3 members.  The _c_a_p_t_i_o_n is the
+          field name.  The _l_e_n_g_t_h is the maximum allowable length for
+          a character representation of the field value.  The _l_e_n_g_t_h
+          should not include the NULL terminator.  For example, if
+          "ABCD" is a longest possible string, _l_e_n_g_t_h should be 4, not
+          5.  Both of these fields must be initialized by the
+          application code before constructing the Form.  The
+          constructor will allocate a character buffer for the _d_a_t_a
+          member of the field structure.  The application code should
+          write to these buffers before calling the ddddiiiissssppppllllaaaayyyy(((()))) or
+          uuuuppppddddaaaatttteeee(((()))) functions and should read from these buffers after
+          calling the iiiinnnnppppuuuutttt(((()))) or uuuuppppddddaaaatttteeee(((()))) functions.  The buffer will
+
+
+
+     Page 16                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          always represent the data in character form, so sscanf(3),
+          sprintf(3) or similar functions should be used by the
+          application to read or write non-character data.
+
+          The iiiinnnnppppuuuutttt(((()))) function accepts a new record from the user and
+          records it in the _d_a_t_a member of the field structures.  The
+          ddddiiiissssppppllllaaaayyyy(((()))) function displays the information found in the
+          _d_a_t_a member of the  field structures to the user.  The
+          uuuuppppddddaaaatttteeee(((()))) function displays the initial information found in
+          the _d_a_t_a member of the field structures, then replaces it
+          with new information specified by the user.  If _s_t_a_r_t_f_i_e_l_d
+          is specified, fields less than _s_t_a_r_t_f_i_e_l_d will not be
+          updated. The rrrreeeerrrreeeeaaaadddd(((()))) function allows an individual field to
+          be reread, e.g. if an error has been detected and the user
+          should replace the value.  A zero-based _r_o_w number may be
+          specified for each of these functions.  It is meaningful for
+          TABLE format and should be passed.  It should always be zero
+          for RECORD format and may be allowed to default.
+
+          The mmmmeeeessssssssaaaaggggeeee(((()))) function prints a _m_e_s_s_a_g_e string at the bottom
+          of the window.  When called with no arguments it erases the
+          current message string.  The pppprrrroooommmmpppptttt(((()))) function also prints a
+          _m_e_s_s_a_g_e at the bottom of the window, then waits for a
+          character to be typed by the user and erases the message.
+          PPPPrrrroooommmmpppptttt(((()))) returns the character typed.  The eeeerrrrrrrroooorrrr(((()))) function
+          prints an error _m_e_s_s_a_g_e at the top of the window.  When
+          called with no arguments it erases the current error
+          message.  In general, the string passed to mmmmeeeessssssssaaaaggggeeee(((()))),
+          pppprrrroooommmmpppptttt(((()))) or eeeerrrrrrrroooorrrr(((()))) should not be larger than the number of
+          columns in the window.  A string larger than the number of
+          columns in the window may wrap or be truncated.
+
+          The constructor records the capacity of the form in records.
+          This may be obtained through the ccccaaaappppaaaacccciiiittttyyyy(((()))) function.  One
+          is the expected value for RECORD format.  For TABLE format
+          the value indicates the number of rows available for records
+          on the form.  The ffffrrrreeeeffffrrrreeeesssshhhh function will redisplay the Form
+          object, ensuring that it appears above any other curses
+          windows that might be overlapping it.  The friend ooooppppeeeerrrraaaattttoooorrrr
+          <<<<<<<< prints a character image of the form as a series of lines
+          to a specified ostream.
+
+          The destructor deallocates all buffers and subwindows
+          allocated by the constructor.  It erases but does not
+          refresh the original window.
+          The  functions will fail and abort and syserr.errno will be
+          set if one of the following are true: The constructor is
+          called with a NULL fieldlist, 0 nfields or NULL base window.
+          A  function is called when the Form object has a NULL data
+          member in fields or NULL internal windows.  The  functions
+          will fail and abort and formerr.errno will be set if one of
+          the following are true: The rrrreeeerrrreeeeaaaadddd(((()))) function is called with
+
+
+
+     Page 17                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          a field number that is not between 0 and nitems-1.  The
+          rrrreeeerrrreeeeaaaadddd(((()))) function is called and an error occurs on input
+          through curses.  Input failure during input or update is
+          nonfatal and simply terminates the operation.  The
+          constructor determines that the longest field width or
+          combined field and caption width plus 4 exceeds the width of
+          the base window.  The constructor is called with too small a
+          base window or reread, input, display or update is called
+          with a row number that is not between 0 and capacity()-1.  A
+          call to the curses(3X) subwin() function fails during the
+          execution of the constructor.
+           creates subwindows.  On many versions of curses subwindows
+          created from subwindows cause core dumps.  Therefore the
+          window passed to the constructor probably should not be a
+          subwindow.  Use newwin to create the window or let it
+          default to stdscr.
+
+           objects point to the fields rather than copying them.  It
+          is the responsibility of the application to make sure that
+          the fields are not destroyed before the form.
+
+           curses(3X),,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 18                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Intension - field names for relational algebra
+          #include <relation.h>
+
+          An Intension describes the structure of a Relation with an
+          ordered list of Attributes.  Intensions are used to define
+          Relations and are used with the Relation operators project (
+          [] ) and transitive closure ( * ).  A Relation definition
+          uses % to separate the key Attributes from the non-key
+          Attributes and uses / as an ordinary Attribute separator.
+          The key Attributes are always a prefix of the Relation.  If
+          % is not specified, the entire Attribute list becomes the
+          key.  For example, Relation R(a%b/c) has the key Attribute a
+          and the non-key Attributes b and c.  A projection or closure
+          uses / as an Attribute separator and * to rename Attributes.
+          For example, R[c/x*a] projects the c and a Attributes from R
+          and renames a to x.  The definition of Attributes x and a
+          must be based on the same Domain.
+
+          The == and != operators are used to determine if two
+          Intensions are equivalent or not equivalent.  To be
+          equivalent, the Intensions must have the same Attributes in
+          the same order.  The member function constrain() will apply
+          the Intension's Domain constraints on the specified tuple.
+
+          Intensions are normally built during a Relation definition
+          or projection and never get assigned to a variable.  If
+          there are several Relations with the same Intension, or if a
+          projection is done within a loop, it may be more efficient
+          to create the Intension once and assign it to a reference
+          variable.  This is allowed but requires awareness of the
+          Intension's lifetime.  Intensions are dynamically allocated
+          and are automatically freed when the Relation or Relational
+          expression using them is complete.  If you want to use an
+          Intension reference variable to share the Intension, the
+          member functions use() and done() must be used to ensure
+          that the Intension does not get deallocated prematurely.
+          The function use() should be called after the Intension
+          reference is assigned and before it is used.  The function
+          done() should be called when the Intension is no longer
+          needed.
+          The operator * will print an error message, set relerr.errno
+          and abort under the following circumstances: the two
+          Attributes involved in the rename are not based on the same
+          Domain.
+
+          The operators / and % will print an error message, set
+          relerr.errno and abort under the following circumstances: an
+          Attribute occurs more than once in the Intension.  more than
+          NATTR (currently 32) Attributes occur in the Intension.
+
+          The done() function will print an error message, set
+          relerr.errno and abort under the following circumstances:
+
+
+
+     Page 19                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          the done() function is called more often than use() was
+          called.
+
+          The constrain() function will print an error message, set
+          relerr.errno
+           and abort under the following circumstances: The Tuple is
+          NULL or of the wrong size.
+          Parentheses should not be used in the Intension.  Keys are
+          not currently enforced.
+          , , , , , , intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 20                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          intro - introduction to functions and classes in the
+          relation C++ library
+
+          #include <relation.h>
+          The Relational Algebra Library (relation) is a set of C++
+          classes developed at AT&T Santa Barbara Laboratory.  It
+          allows a variety of data storage mechanisms, currently
+          including ASCII files, binary files and main memory
+          (workspace), to be treated as relations and manipulated
+          using relational algebra operations.
+
+          The class structure of the Relational Algebra library
+          conforms closely with standard relational terminology.  A
+          has an that defines its structure and an  that defines its
+          current value.  The  is an ordered list of s. The  class
+          provides field names and associates the fields with s.  The
+          defines the set of legal values associated with an atomic
+          data item.
+
+          The  is a simple container of s.  The  can be truncated to
+          zero s, added to, or walked through.  The  is a shareable
+          structure containing a record in a relation.  The  data can
+          be treated as a struct containing a member for each .
+
+          All the relational algebra operations are based on the
+          capabilities of the  underlying the .  For example, the
+          WS_Extension class is used to create a WS_Relation, the
+          AF_Extension class is used to create an AF_Relation, and the
+          BF_Extension class is used to create a BF_Relation.  New
+          Relation types can be added by creating a new Extension, in
+          other words a means to add, zero or walk through values in
+          the new Relation types.  Relation operations may be extended
+          to provide optimization or new features, but it is not
+          necessary to redefine or extend Relation operations just to
+          add a new storage mechanism.
+          The Santa Barbara library (sblib) provides typedefs of
+          Float_t and Int_t on behalf of the relation library to
+          provide consistent treatment of floating point and integer
+          data.  Several of the relation classes have additional
+          typedefs for their own use.
+
+          The relation library also #defines several cpp(1) macros.
+          The int_domain, float_domain and string_domain macros
+          simplify declaration of Domains by automatically matching
+          the internal Domain name to the C++ variable name.  The
+          attribute macro provides a similar service for Attribute
+          declarations.  Many of the relation classes #define
+          additional constants or macros.
+          LDIR and INCLUDE are specified during installation.
+
+          INCLUDE/relation.h - declarations for the relation classes
+          and functions.  LDIR/librelation.a - definition for the
+
+
+
+     Page 21                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          relation classes and functions.
+          Classes in the relation library use the relerr Error object
+          (see ).  Many of the classes are based on functions and
+          classes in the sblib.  These sblib functions and classes
+          could use several additional Error objects (see Intro(3SB)).
+
+          The classes in the relation library require linkage to the
+          sblib library as well as the system libraries libcurses.a
+          and libPW.a.  Use of libmalloc.a is recommended since
+          occasional problems have occurred with the libc.a version of
+          malloc.
+
+          ar(1),CC(1),cc(1),intro(3),intro(3SB)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 22                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          intro - introduction to functions and classes in the sblib
+          C++ library
+
+          #include <sblib.h>
+          The Santa Barbara Library (sblib) is a set of miscellaneous
+          C++ classes and functions developed at AT&T Santa Barbara
+          Laboratory.  The sblib includes functions and classes for
+          file handling, error handling, regular expressions, screen
+          management and simple list containers.
+
+          The basename, dirname and create_file functions, as well as
+          the Vfd and Vfile classes, are used for file handling.  The
+          basename and dirname functions parse a UNIX pathname into
+          its directory entry component and directory path component,
+          respectively.  The create_file function creates a file in
+          the UNIX file hierarchy.  Unlike the creat(2) system call,
+          it does not leave an open file descriptor.  The Vfd and
+          Vfile classes provide caching of open files to provide
+          apparently unlimited open files.  The Vfd class provides a
+          system I/O (file descriptor) interface while the Vfile class
+          provides a standard I/O (FILE pointer) interface.
+
+          The upper and lower functions are used for string handling.
+          They return a copy of a string translated to upper or lower
+          case, respectively.
+
+          The Error class provides a uniform interface for error
+          handling.  Although it does not behave identically to System
+          V Release 4 error handling, it provides roughly the same
+          appearance and features and is intended to ease the
+          transition to System V Release 4.
+
+          The Form class provides automatically generated forms for
+          input, update and display with a built-in look and feel.
+          The forms are based on the curses library, but pre-date FMLI
+          and the Character User Interface Style Guide.
+
+          The List classes provide simple containers with list, stack
+          or queue behavior.  The Pattern class encapsulates the
+          interface to the regcmp/regex functions, which provide
+          regular expression pattern matching.
+          The sblib has several typedefs.  Addr_t is similar to the
+          system's caddr_t and is used for addresses.  Float_t and
+          Int_t provide consistent treatment of floating point and
+          integer data.  Boolean_t and its two constants, TRUE and
+          FALSE, provide for boolean values.  These typedefs exist in
+          part to provide compatibility with the relational algebra
+          library.
+
+          The sblib also #defines several cpp(1) constants.
+          EMPTY_STRING is a string containing an immediate NULL
+          character.  PARENT, CHILD and FORKERR are defined to make it
+
+
+
+     Page 23                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          convenient to switch on the fork(2) system call.  The max()
+          macro takes the greater of two objects.  The strNcpy() macro
+          works like strncpy(3) but ensures that the result is NULL
+          terminated.
+
+          The error(3SB) and wgets(3SB) manual pages describe
+          additional sblib definitions
+          LDIR and INCLUDE are specified during installation.
+
+          INCLUDE/sblib.h - declarations for the sblib classes and
+          functions.  LDIR/libsblib.a - definition for the sblib
+          classes and functions.
+          Functions and classes in the sblib use the syserr, formerr,
+          listerr or ptrn_err Error objects.  Some functions,
+          particularly those compiled with the C compiler, may use
+          perror(3) or the sys_errlist[].
+
+          Some of the functions and classes in the sblib library
+          require linkage to system libraries, including libcurses.a
+          and libPW.a.  Use of libmalloc.a is recommended since
+          occasional problems have occurred with the libc.a version of
+          malloc.
+
+          ar(1),CC(1),cc(1),intro(3),intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 24                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          List, Link1, Link1_queue, Link1_stack, Link2 - classes for
+          list handling #include <sblib.h>
+
+
+
+
+          The  classes provide simple containers.  List is an abstract
+          base class used to derive various types of lists. It should
+          not be constructed directly.  List provides routines for
+          converting data to List_items (iiiitttteeeemmmmiiiizzzzeeee(((())))), appending to the
+          end of the list (aaaappppppppeeeennnndddd(((())))), pushing on the front of the list
+          (ppppuuuusssshhhh(((())))), popping from the front of the list (ppppoooopppp(((())))) and
+          removing a specific item from anywhere on the list
+          (rrrreeeemmmmoooovvvveeee(((())))).  List also contains routines for walking through
+          the list (ssssttttaaaarrrrttttwwwwaaaallllkkkk(((()))), wwwwaaaallllkkkk(((()))), eeeennnnddddwwwwaaaallllkkkk(((())))). The iiiitttteeeemmmmiiiizzzzeeee(((()))),
+          ssssttttaaaarrrrttttwwwwaaaallllkkkk(((()))), wwwwaaaallllkkkk(((()))) and eeeennnnddddwwwwaaaallllkkkk(((()))) routines do not modify the
+          list, but aaaappppppppeeeennnndddd(((()))), ppppuuuusssshhhh(((()))), ppppoooopppp(((()))) and rrrreeeemmmmoooovvvveeee(((()))) change the
+          list by adding or removing items.
+
+          Each List implementation uses a class derived from List_item
+          to store individual items.  The derived iiiitttteeeemmmmiiiizzzzeeee(((()))) function
+          dynamically allocates List_items.  The application program
+          should delete the List_item when it is no longer needed.
+          The iiiitttteeeemmmmiiiizzzzeeee(((()))) function is the oooonnnnllllyyyy approved way to allocate
+          List_items.  Passing an application-allocated List_item to
+          aaaappppppppeeeennnndddd(((()))) or ppppuuuusssshhhh(((()))) bypasses the dynamic allocation provided
+          by iiiitttteeeemmmmiiiizzzzeeee(((()))).  The results are undefined.
+
+          The application treats the derived List_items as a base
+          List_item.  They must not exchange List_items between
+          different List-derived classes since the List_items are
+          derived differently.  The _d_a_t_a member of List_item is used
+          to access the data retrieved from the list.  The Lists do
+          not make their own copy of the data they store.  Therefore,
+          if the user manipulates the data outside the list, the list
+          will reflect the manipulation.
+
+          The Link1 class provides a singly-linked List class.  It
+          derives a Link1_List_item class from the List_item class and
+          redefines the List members appropriately.  The Link1_queue
+          class is a restricted version of Link1 providing iiiitttteeeemmmmiiiizzzzeeee(((())))
+          and the queue operations aaaappppppppeeeennnndddd(((()))) and ppppoooopppp(((()))).  The
+          Link1_stack class is a restricted version of Link1 providing
+          iiiitttteeeemmmmiiiizzzzeeee(((()))) and the stack operations ppppuuuusssshhhh(((()))) and ppppoooopppp(((()))).
+
+          The Link2 class provides a doubly-linked List class.  It
+          derives a Link2_List_item class from the List_item class and
+          redefines the List members appropriately.
+          The  operations append(), remove() and push() will fail and
+          abort or return FALSE and set syserr.errno under the
+          following circumstances: A NULL List_item pointer is passed
+          as an argument. The List operations will fail and abort or
+
+
+
+     Page 25                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          return FALSE and set listerr.errno under the following
+          circumstances: The List_item passed to aaaappppppppeeeennnndddd(((()))), rrrreeeemmmmoooovvvveeee(((()))) or
+          ppppuuuusssshhhh(((()))) is not of the same List class as the List. The
+          List_item passed to aaaappppppppeeeennnndddd(((()))) or ppppuuuusssshhhh(((()))) is already on some
+          List. The List_item being deleted is still on a list. The
+          List_item passed to rrrreeeemmmmoooovvvveeee(((()))) is not on that List.  If the
+          list is empty, this error will be generated for any
+          invocations of rrrreeeemmmmoooovvvveeee(((()))).  The ppppoooopppp(((()))), rrrreeeemmmmoooovvvveeee(((()))) or ssssttttaaaarrrrttttwwwwaaaallllkkkk(((())))
+          operation was called between ssssttttaaaarrrrttttwwwwaaaallllkkkk(((()))) and eeeennnnddddwwwwaaaallllkkkk(((()))). The
+          wwwwaaaallllkkkk(((()))) operation was called when not between ssssttttaaaarrrrttttwwwwaaaallllkkkk(((()))) and
+          eeeennnnddddwwwwaaaallllkkkk(((()))). The eeeennnnddddwwwwaaaallllkkkk(((()))) ooooppppeeeerrrraaaattttiiiioooonnnn wwwwaaaassss ccccaaaalllllllleeeedddd wwwwiiiitttthhhhoooouuuutttt aaaa
+          ccccoooorrrrrrrreeeessssppppoooonnnnddddiiiinnnngggg ssssttttaaaarrrrttttwwwwaaaallllkkkk(((())))....  TTTThhhheeee LLLLiiiissssttttssss ddddoooo NNNNOOOOTTTT mmmmaaaakkkkeeee tttthhhheeeeiiiirrrr oooowwwwnnnn
+          ccccooooppppyyyy ooooffff tttthhhheeee ddddaaaattttaaaa tttthhhheeeeyyyy ssssttttoooorrrreeee....  TTTThhhheeeerrrreeeeffffoooorrrreeee,,,, iiiiffff tttthhhheeee aaaapppppppplllliiiiccccaaaattttiiiioooonnnn
+          mmmmaaaannnniiiippppuuuullllaaaatttteeeessss tttthhhheeee ddddaaaattttaaaa oooouuuuttttssssiiiiddddeeee tttthhhheeee lllliiiisssstttt,,,, tttthhhheeee lllliiiisssstttt wwwwiiiillllllll rrrreeeefffflllleeeecccctttt
+          tttthhhheeee mmmmaaaannnniiiippppuuuullllaaaattttiiiioooonnnn....  DDDDaaaattttaaaa ccccaaaannnn bbbbeeee oooonnnn mmmmoooorrrreeee tttthhhhaaaannnn oooonnnneeee lllliiiisssstttt iiiiffff
+          sssseeeeppppaaaarrrraaaatttteeeellllyyyy iiiitttteeeemmmmiiiizzzzeeeedddd,,,, bbbbuuuutttt iiiitttteeeemmmmssss ((((tttthhhheeee ccccoooonnnnttttaaaaiiiinnnneeeerrrrssss ooooffff tttthhhheeee ddddaaaattttaaaa))))
+          ccccaaaannnn nnnnooootttt bbbbeeee aaaaddddddddeeeedddd ttttoooo mmmmoooorrrreeee tttthhhhaaaannnn oooonnnneeee lllliiiisssstttt....  IIIItttteeeemmmmssss iiiitttteeeemmmmiiiizzzzeeeedddd
+          uuuussssiiiinnnngggg oooonnnneeee ddddeeeerrrriiiivvvveeeedddd LLLLiiiisssstttt ccccllllaaaassssssss aaaarrrreeee pppprrrreeeevvvveeeennnntttteeeedddd ffffrrrroooommmm bbbbeeeeiiiinnnngggg ssssttttoooorrrreeeedddd
+          oooonnnn aaaa ddddiiiiffffffffeeeerrrreeeennnntttt ddddeeeerrrriiiivvvveeeedddd LLLLiiiisssstttt ccccllllaaaassssssss....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 26                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          mmmmaaaannnnaaaaggggeeee____mmmmeeeennnnuuuussss ---- mmmmeeeennnnuuuu ffffoooorrrrmmmmssss aaaannnndddd ssssttttaaaatttteeee----bbbbaaaasssseeeedddd ttttrrrraaaannnnssssiiiittttiiiioooonnnnssss
+
+          ####iiiinnnncccclllluuuuddddeeee <<<<ssssbbbblllliiiibbbb....hhhh>>>>
+
+
+          TTTThhhheeee  ffffuuuunnnnccccttttiiiioooonnnn ffffoooorrrrmmmmaaaattttssss mmmmeeeennnnuuuu ssssccccrrrreeeeeeeennnnssss,,,, oooobbbbttttaaaaiiiinnnnssss sssseeeelllleeeeccccttttiiiioooonnnnssss ffffrrrroooommmm
+          tttthhhheeee uuuusssseeeerrrr,,,, aaaannnndddd uuuusssseeeessss tttthhhheeee sssseeeelllleeeeccccttttiiiioooonnnn ttttoooo iiiinnnnvvvvooookkkkeeee ssssppppeeeecccciiiiffffiiiieeeedddd
+          ffffuuuunnnnccccttttiiiioooonnnnssss aaaannnndddd////oooorrrr cccchhhhaaaannnnggggeeee ttttoooo aaaa nnnneeeewwww mmmmeeeennnnuuuu ssssccccrrrreeeeeeeennnn....  TTTThhhheeee
+          _s_t_a_t_e__t_a_b_l_e aaaarrrrgggguuuummmmeeeennnntttt ssssuuuupppppppplllliiiieeeessss tttthhhheeee iiiinnnnffffoooorrrrmmmmaaaattttiiiioooonnnn nnnneeeeeeeeddddeeeedddd....  TTTThhhheeee
+          _s_t_a_t_e__t_a_b_l_e iiiissss aaaannnn aaaarrrrrrrraaaayyyy ooooffff ssssttttrrrruuuucccctttt mmmmeeeennnnuuuu....  EEEEaaaacccchhhh mmmmeeeennnnuuuu ssssttttrrrruuuuccccttttuuuurrrreeee
+          ccccoooonnnnttttaaaaiiiinnnnssss iiiinnnnffffoooorrrrmmmmaaaattttiiiioooonnnn ttttoooo ffffoooorrrrmmmmaaaatttt aaaa ccccoooommmmpppplllleeeetttteeee mmmmeeeennnnuuuu ssssccccrrrreeeeeeeennnn....  TTTThhhheeee
+          _h_e_a_d_i_n_g iiiissss pppprrrriiiinnnntttteeeedddd aaaatttt tttthhhheeee ttttoooopppp ooooffff tttthhhheeee ssssccccrrrreeeeeeeennnn....  OOOOppppttttssss iiiissss aaaannnn
+          aaaarrrrrrrraaaayyyy ooooffff ssssttttrrrruuuucccctttt ttttrrrraaaannnnssssiiiittttiiiioooonnnn....  EEEEaaaacccchhhh _o_p_t_s eeeennnnttttrrrryyyy hhhhaaaassss aaaa _m_e_n_u__i_t_e_m
+          tttthhhhaaaatttt iiiissss pppprrrriiiinnnntttteeeedddd oooonnnn tttthhhheeee mmmmeeeennnnuuuu ssssccccrrrreeeeeeeennnn....  TTTThhhheeee _o_p_t_s eeeennnnttttrrrryyyy ((((ssssttttrrrruuuucccctttt
+          ttttrrrraaaannnnssssiiiittttiiiioooonnnn)))) hhhhaaaassss sssseeeevvvveeeerrrraaaallll ooootttthhhheeeerrrr mmmmeeeemmmmbbbbeeeerrrrssss....  TTTThhhheeee _h_e_l_p__m_e_s_s_a_g_e iiiissss
+          pppprrrriiiinnnntttteeeedddd iiiiffff tttthhhheeee uuuusssseeeerrrr rrrreeeeqqqquuuueeeessssttttssss hhhheeeellllpppp ffffoooorrrr tttthhhheeee mmmmeeeennnnuuuu ooooppppttttiiiioooonnnn....  TTTThhhheeee
+          _a_c_t_i_o_n ffffuuuunnnnccccttttiiiioooonnnn iiiissss iiiinnnnvvvvooookkkkeeeedddd aaaannnndddd ppppaaaasssssssseeeedddd ssssttttddddssssccccrrrr ((((sssseeeeeeee
+          ccccuuuurrrrsssseeeessss((((3333XXXX)))))))) wwwwhhhheeeennnn tttthhhheeee uuuusssseeeerrrr sssseeeelllleeeeccccttttssss tttthhhheeee mmmmeeeennnnuuuu ooooppppttttiiiioooonnnn....  TTTThhhheeee
+          _n_e_x_t__s_t_a_t_e iiiissss uuuusssseeeedddd ttttoooo iiiinnnnddddeeeexxxx tttthhhheeee _s_t_a_t_e__t_a_b_l_e aaaannnndddd sssseeeelllleeeecccctttt aaaa nnnneeeewwww
+          ssssttttrrrruuuucccctttt mmmmeeeennnnuuuu iiiiffff tttthhhheeee _a_c_t_i_o_n rrrreeeettttuuuurrrrnnnnssss TTTTRRRRUUUUEEEE....  TTTThhhhuuuussss eeeeaaaacccchhhh ooooppppttttiiiioooonnnn
+          sssseeeelllleeeecccctttteeeedddd ccccaaaannnn ccccaaaallllllll aaaannnn aaaapppppppplllliiiiccccaaaattttiiiioooonnnn----ddddeeeeffffiiiinnnneeeedddd ffffuuuunnnnccccttttiiiioooonnnn aaaannnndddd////oooorrrr ggggoooo
+          ttttoooo aaaa nnnneeeewwww mmmmeeeennnnuuuu....  TTTThhhheeee _n_o_o_p aaaallllwwwwaaaayyyyssss rrrreeeettttuuuurrrrnnnnssss TTTTRRRRUUUUEEEE....  IIIItttt ccccaaaannnn bbbbeeee
+          uuuusssseeeedddd aaaassss tttthhhheeee _a_c_t_i_o_n iiiiffff aaaa nnnneeeewwww mmmmeeeennnnuuuu iiiissss tttthhhheeee oooonnnnllllyyyy ddddeeeessssiiiirrrreeeedddd rrrreeeessssuuuulllltttt....
+
+          The _c_u_r_r_e_n_t__s_t_a_t_e argument is used to index the _s_t_a_t_e__t_a_b_l_e
+          for the initial state.  The  function loops until the user
+          decides to quit, then returns the final current state.  This
+          can be saved and used to restart at the same point, or  can
+          always be called with the same initial state, such as state
+          0.  State 0 is assumed by  to be the "main menu" state.
+
+          The  function is a Finite State Automata.  Its input
+          alphabet consists of letters corresponding to the numbers 0
+          to _N_U_M__O_P_T_I_O_N_S, currently a to x.  Its output is defined by
+          the various _a_c_t_i_o_n functions and its state tables is defined
+          by _s_t_a_t_e__t_a_b_l_e.  Since  is a Finite State Automata, its
+          behavior is well defined and easy to modify.
+
+          The most difficult barrier to using  is correctly defining
+          the _s_t_a_t_e__t_a_b_l_e.  The _h_e_l_p__m_e_s_s_a_g_e, for example, is an array
+          of fixed-length strings that is a member of an array of
+          structures that is a member of another array of structures.
+          Careful attention to curly braces, commas and string lengths
+          is a must!  The compiler will rarely give an error that is
+          more specific than "somewhere within the state table".  We
+          recommend indenting the curly braces to show nesting levels
+          and commenting the start of each new struct menu.
+          The  function will display error messages to the user
+          interactively, but will not return any diagnostics to the
+          calling function.
+           uses stdscr only.
+
+
+
+
+     Page 27                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+           curses(3X),,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 28                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          MONITOR - macro to monitor process execution
+          #include <sblib.h>
+
+          #define MONITOR(FUNC) void (*FUNC)();
+
+          The MONITOR macro spawns a child process.  The child process
+          calls the function named by FUNC.  If it returns from FUNC
+          it will exit with a 0 status.  The parent process waits for
+          the child process to exit.  If the child exits with a value
+          of 0, due to a SIGTERM signal, or due to a SIGKILL signal,
+          the parent sets errno to 0 and returns.  If the child exits
+          with any other signal or value the parent will respawn the
+          child.  If the child survives less than 5 seconds for five
+          consecutive respawns, the parent sets errno to the child's
+          exit status and returns.  If the spawn fails, the parent
+          leaves errno with the value set by fork(2) and returns.
+          If the child does not exit, MONITOR will not return.  If the
+          child does not use errno as its exit status, MONITOR's errno
+          value will not be meaningful.  Since MONITOR is implemented
+          as a macro, the type of FUNC is checked downstream by the
+          compiler.  C++ should catch type mismatches.  With the C
+          compiler it is incumbent on the programmer to make sure FUNC
+          takes no parameters and is void.
+          intro(3SB), cpp(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 29                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Node - common file and directory manipulations
+          #include <sblib.h>
+
+
+          The  class provides a set of common manipulations that can
+          be performed on files and directories.
+
+          _N_o_d_e::_N_o_d_e() accepts a pointer to a character string as the
+          name of a file or directory.  If the name does not exist or
+          is not accessible, _N_o_d_e::_N_o_d_e() will generate an error
+          message (see stat(2)) and mark the object as unsuccessfully
+          constructed.  If the name is accessible, the object will be
+          marked as successfully constructed.  See _N_o_d_e::_v_a_l_i_d() for
+          checking the success or failure of construction.
+
+          All Node member functions will return FALSE if the object is
+          not successfully constructed.  They do not generate an error
+          in this situation.  Additionally, if a member function is
+          successful, that means that the operation was successfully
+          performed on all the files and directories which are
+          contained in the Node.
+
+          _N_o_d_e::_c_h_o_w_n() accepts user and group ids, which are used to
+          change the owner and group of the Node.  If the Node is a
+          file, then the change is made to the file.  If the Node is a
+          directory, then the directory and all the files and
+          directories under it are changed.  _N_o_d_e::_c_h_o_w_n() returns
+          TRUE if it is successful, otherwise it generates an error
+          (see chown(2)) and returns FALSE.
+
+          _N_o_d_e::_c_o_p_y() accepts a pointer to a character string as the
+          name of a Node (destination) to which this Node (source) is
+          to be copied.  If the source and destination Nodes are not
+          both files or both directories, copy() will return FALSE.
+          If the destination Node already exists, it is overwritten.
+          If the source Node is a file, then it will be copied to the
+          new name.  If the source Node is a directory, then the
+          directory tree under it will be created under the new name
+          and all of the files in source directory tree will be copied
+          over to the new directory tree.  _N_o_d_e::_c_o_p_y() returns TRUE
+          if it is successful, otherwise it generates an error and
+          returns FALSE.
+
+          _N_o_d_e::_l_i_n_k() accepts a pointer to a character string as the
+          name of a Node (destination) to which this Node (source) is
+          to be linked.  If the source and destination Nodes are not
+          both files or both directories, link() will return FALSE.
+          If the destination Node already exists, it is removed, and a
+          link to the source Node is established.  If the source Node
+          is a file, then it will be linked to the new name.  If the
+          source Node is a directory, then the directory tree under it
+          will be created under the new name and all of the files in
+
+
+
+     Page 30                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          the source Node directory tree will be linked over to the
+          new directory tree.  _N_o_d_e::_l_i_n_k() returns TRUE if it is
+          successful, otherwise it generates an error (see link(2) and
+          mkdir(2)) and returns FALSE.
+
+          _N_o_d_e::_r_e_m_o_v_e() removes this Node and marks it as invalid.
+          _N_o_d_e::_r_e_m_o_v_e() returns TRUE if it is successful, otherwise
+          it generates an error (see unlink(2) and rmdir(2)) and
+          returns FALSE.
+
+          _N_o_d_e::_s_a_m_e_T_y_p_e() checks the type of this Node against the
+          type of the argument.  If both have the same file type,
+          sameType() returns TRUE, otherwise it returns FALSE.
+
+          _N_o_d_e::_s_t_a_t_u_s() copies this Node's stat structure into the
+          stat structure passed as an argument.  If _N_o_d_e::_s_t_a_t_u_s() is
+          successful it returns TRUE, otherwise it returns FALSE.
+
+          _N_o_d_e::_v_a_l_i_d() returns TRUE if the Node is valid, otherwise
+          it returns FALSE.  It should be called by the application
+          after a Node construction to determine if the Node was
+          successfully constructed.
+
+          _N_o_d_e::_w_a_l_k() invokes the WALKFUNC (through ftw(3C))  for
+          this Node, and all of its files and directories.  Currently,
+          there must be 5 file descriptors available when walk() is
+          invoked.  If there are not 5 file descriptors, ftw(3C) may
+          fail.  _N_o_d_e::_w_a_l_k() returns TRUE if the Node is exhausted
+          (ftw(3C) returns 0), otherwise it returns FALSE (ftw(3C)
+          returns non-zero).
+          The  operations can fail due to the failure of underlying
+          system calls or stdio calls.  In that case they will call
+          syserr.error() with an appropriate message and may abort.
+          iiiinnnnttttrrrroooo((((3333SSSSBBBB)))),ftw(3C),chown(2),link(2),mkdir(2),rmdir(2),stat(2),unlink(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 31                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          basename, dirname - return a portion of a path name
+          #include <sblib.h>
+
+          The  and  functions parse a UNIX path name and return the
+          file component and directory component, respectively.  The
+          _p_a_t_h argument is a pointer to a NULL terminated character
+          string.  Directories and files in the _p_a_t_h are separated by
+          the slash ('/') character.  The _b_u_f_f_e_r argument is a pointer
+          to a memory location large enough to hold the file or
+          directory component plus a NULL.
+
+          If path or buffer is NULL, both functions will return NULL.
+
+          If _p_a_t_h contains no slash characters,  copies _p_a_t_h into
+          _b_u_f_f_e_r.  If _p_a_t_h contains slash characters,  copies the
+          characters after the last slash into _b_u_f_f_e_r.  In both cases
+          _b_u_f_f_e_r is NULL terminated and returns _b_u_f_f_e_r for the
+          convenience of the application using it.
+
+          If _p_a_t_h contains no slash characters,  puts a dot ('.',
+          current directory) into _b_u_f_f_e_r.  If _p_a_t_h contains slash
+          characters,  copies all the characters before the last slash
+          into _b_u_f_f_e_r.  In both cases _b_u_f_f_e_r is NULL terminated and
+          returns _b_u_f_f_e_r for the convenience of the application using
+          it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 32                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Pattern - regular expression matching
+          #include <sblib.h>
+
+          The  class uses the regcmp(3X) regular expression matcher to
+          test if a string conforms to a pattern.  The _p_a_t_t_e_r_n is
+          specified to the constructor.  The Pattern::match() operator
+          returns TRUE if a _s_t_r_i_n_g matches the pattern and FALSE if it
+          does not.  The constant _p_a_t_t_e_r_n__s_t_r_i_n_g may be used to
+          printout Pattern's regular expression pattern.  Although
+          regcmp(3X) allows assignment of pieces of the matched
+          string, Pattern does not.
+          The  constructor fails and causes subsequent calls to
+          mmmmaaaattttcccchhhh(((()))) to return FALSE under the following circumstances: -
+          the internal check for assignments within a pattern was
+          itself an invalid pattern.  This error should not occur
+          unless  itself is broken.  - the _p_a_t_t_e_r_n argument to the
+          constructor contains assignments ($n constructs).
+          Assignment is not allowed by  since there is no way to pass
+          the variable to be assigned.  - the _p_a_t_t_e_r_n argument to the
+          constructor was rejected by regcmp(3X).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 33                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Relation, WS_Relation, BF_Relation, AF_Relation,
+          Form_Relation - tables for relational algebra
+          #include <relation.h>
+
+
+
+
+
+
+          The friend operator << prints the contents of the Relation
+          to the specified ostream.  Attribute names are used as
+          column headings.  No pagination is done.  The degree
+          function returns the number of Attributes in the Relation.
+          The cardinality function returns the number of Tuples in the
+          Relation.  The truncate function removes all Tuples from the
+          Relation.  The walk functions startwalk, walk, endwalk and
+          operator=(Tuple *) provide Tuple by Tuple iteration over the
+          entire Relation or a selected subset of the Relation.  The
+          general behavior of walks is described in Extension(3).
+          Relations behave the same way, but assume that Tuples match
+          the Intension and also allow a Predicate to be passed to the
+          startwalk function.  When the predicate is passed, only
+          Tuples that are TRUE for the Predicate are returned by walk.
+          The walk(IntensionValue &) function populates the
+          IntensionValue with a Tuple returned from walk().  If the
+          IntensionValue already contained a Tuple, that Tuple is
+          deallocated before getting the new Tuple from walk().  In
+          general, walk(IntensionValue &) should be used rather than
+          walk() because IntensionValues provide a straight forward
+          interface to Tuples.  If an application uses walk(), it has
+          to manage the Tuples.  The assignment operations update a
+          Relation.  The Relation = Relation operation replaces all
+          Tuples in the left Relation with the Tuples in the right
+          Relation.  The Relation += Relation operation appends to the
+          left Relation all Tuples in the right Relation that are not
+          already in the left Relation.  The Relation -= Relation
+          operation removes all Tuples in the left Relation that join
+          with Tuples in the right Relation.  The right Relation must
+          have the same Intension as the left Relation.  The right
+          Relation may be manipulated via projects, joins, etc. so
+          that an intermediate Relation is produced, whose Intension
+          matches the left Relation's Intension, that can be used by
+          the assignment.  The Relation += Tuple operation appends the
+          Tuple to the Relation.  The Relation is not checked for
+          duplicates.  The Relation = Tuple operation is valid only
+          within a walk and replaces the current Tuple in the walk
+          with the right side Tuple.  The Relation is not checked for
+          duplicates.  All of the assignments return TRUE or FALSE.
+          The comparison operations compare two Relations.  The
+          operations are set comparisons, so < is proper subset, <= is
+          subset, > is proper superset, >= is superset, == is set
+          equality and != is set inequality.  All of the comparisons
+
+
+
+     Page 34                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          return TRUE or FALSE.  All of these operations take two
+          Relations as operands and return a Relation.  The operator +
+          returns the union of the two Relations, i.e. all Tuples in
+          either Relation (with duplicates removed).  The right
+          Relation must have the same Attributes as the left Relation,
+          in the same order.  The operator - returns the set
+          difference of the two Relations, i.e. all Tuples in the left
+          Relation which do not join with Tuples in the right
+          Relation.  The right Relation does not need to have the same
+          Attributes as the left Relation.  The operator ^ returns the
+          half join of the two Relations, i.e. all Tuples in the right
+          Relation that join with the left Relation.  This is an
+          extremely useful operator that may be thought of as an
+          expansion of the simple predicate select ([]) operator. It
+          can often be used to eliminate iterations through one
+          Relation in order to select Tuples from another Relation.
+          The operator & returns the natural join of the two
+          Relations.  The Intension of the new Relation contains all
+          Attributes of the left Relation followed by any Attributes
+          in the right Relation that don't occur in the left Relation,
+          keeping their relative sequence within the Intension.  Each
+          Tuple from the left Relation is combined with all Tuples
+          from the right Relation with equal values for each common
+          Attribute.  Each new Tuple created by the combination is
+          added to the Extension of the new Relation.  Duplicates are
+          removed.  There are two limiting cases for natural joins.
+          If all of the Attributes are in common between the two
+          Relations, the result is an intersection.  If none of the
+          Attributes are in common, the result is a cross-product.
+          The operator [] is a relational project when it encloses an
+          Intension (e.g. R[a1/a2/a3]).  The project returns a
+          "vertical subset" of the Relation, containing those
+          Attributes listed in the Intension (e.g. a1, a2, a3).
+          Attributes can be renamed within the Intension using
+          new*old, e.g. R[a1/x2*a2/a3] results in Attributes a1, x2
+          and a3.  Attributes x2 and a2 would both need to be defined
+          using the same Domain.  All the Tuples in the original
+          Relation or expression participate in the projection, but
+          duplicates are removed.  Therefore the number of Tuples
+          (cardinality) in the result may be less than in the
+          original.  The operator [] is a relational select when it
+          encloses a predicate expression (e.g. R[user == root]). The
+          select returns a "horizontal subset" of the Relation,
+          containing the same Intension (Attributes) as the original
+          and those Tuples from the original for which the Predicate
+          is true.  The % form of the operator is still available, but
+          unsupported and will be deleted in the future.  The operator
+          * (transitive closure) iteratively joins a Relation to
+          itself until it stops growing.  The Attributes to be joined
+          are specified by the right Intension operand using the
+          rename operator *.  For example, r1*(parent*child)
+          repeatedly joins r1 to itself using the parent and child
+
+
+
+     Page 35                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Attributes.  It returns a Relation with Attributes
+          parent/child containing all ancestors of every child in r1.
+          This is equivalent to all descendents of every parent in r1.
+          It is possible for the transitive closure to be taken based
+          on a concatenated key as well, e.g.
+          r2*(from_state*to_state/from_city*to_city).  The string()
+          function converts the Relation to a character string and
+          returns the string.  If the data in the Relation overflows
+          string()'s internal buffer (BUFSIZ bytes), the string will
+          be terminated with three dots (...)  followed by the tuple
+          separator.  The separators between Tuples and between
+          Attributes can be passed as parameters.  If a separator
+          consists of more than one character (the parameters are
+          character strings), the whole string is used as the
+          separator.  The default separators are newline ("\n") for
+          Tuples and tab ("\t") for Attributes.  If the separators are
+          passed as NULL pointers an error is generated.  The third
+          parameter is used as the heading above the first Tuple.  By
+          default, there is not a heading.  The appendString()
+          function converts the string (first parameter) into one or
+          more Tuples and adds them to the Relation.  The Relation is
+          not checked for duplicates.   The conversion is based on the
+          Tuple separator (second parameter) and the attribute
+          separator (third parameter).
+
+          The tupleSeparator parameter is a string of valid Tuple
+          separators while the attrSeparator parameter is a single
+          valid Attribute separator character.  This is a compromise
+          between making it easy to handle free-form input and making
+          it easy to specify NULL Attribute values.  The str parameter
+          will first be broken into Tuples based on the
+          tupleSeparator.  Since this happens first, if the
+          attrSeparator occurs in the tupleSeparator string it will be
+          interpreted as a Tuple separator.  A sequence of valid
+          characters ( e.g. "\n\n" ) will be treated as a single
+          separator.  This makes it easy to handle free form input
+          that may include blank lines.  As each Tuple is parsed, a
+          single valid character is treated as a single separator.
+          For example, "a\t\tc" would be ( a, NULL, c ).  This makes
+          it easy to specify NULL Attribute values.  When parsing, if
+          there are too few Attribute values the missing ones are
+          initialized to NULLs.  If there are too many the extra ones
+          are silently ignored.
+
+          If you need to specify a NULL Tuple you can easily do so by
+          specifying the Attribute separator followed by a Tuple
+          Separator ( e.g. "\t\n").  If you want to use any sequence
+          of white space ( tab or space ) as the Attribute separator,
+          you can do so as a special case by specifying attrSeparator
+          as NULL ('\0').  This doesn't completely provide for free-
+          form Attribute separators, but it handles the most common
+          need.
+
+
+
+     Page 36                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          WS_Relations, BF_Relations, AF_Relations and Form_Relations
+          are derived from the base class Relation.  WS_Relations are
+          stored in memory (workspace), BF_Relations are stored in
+          binary files and AF_Relations are stored in ASCII files.
+          The constructors for the BF_Relations and AF_Relations take
+          a pathname parameter file which defaults to NULL (this will
+          create a temporary file and remove it as the Relation is
+          destroyed) and an parameter perm which should be either
+          READONLY or READWRITE.  AF_Relations take an additional
+          parameter delim.  This can be set to a field delimiter
+          character such as tab (\t) or colon (:).  The AF_Relations
+          will expect one record per line with exactly one delimiter
+          between each Attribute value on the line.  If delim is
+          allowed to default to NULL, AF_Relations will still expect
+          one record per line but will allow 1 or more spaces or tabs
+          between each Attribute value on the line.  Obviously, a
+          delimiter character should be selected that could never
+          occur within the data.
+
+          BF_Relations have the additional capability of triggering
+          function calls on inserts, deletes or updates to Tuples in
+          the BF_Relation.  The trigger function takes two parameters,
+          a pointer to the old Tuple and a pointer to the new Tuple.
+          For an insert, new is not NULL.  For a delete, old is not
+          NULL.  For an update, both are not NULL.  If the trigger
+          function returns TRUE the insert, deletion or update
+          continues.  If the trigger function returns false the
+          insert, deletion or update is aborted and a TRIGGER_FAILED
+          error message results.  The trigger function is set up by
+          calling the BF_Relation trigger() operation.  ALL processes
+          updating the BF_Relation must set up the trigger for it to
+          fire reliably.  That is why triggering has not been made
+          available for other types of Relations like AF_Relation.  An
+          AF_Relation is too easily updated through the "back door"
+          using an editor.
+
+          BF_Relations can be locked via the LockBF class.  The
+          application specifies the BF_Relation to be locked in the
+          first argument to LockBF() and the type of lock in the
+          second argument.  The LockBF destructor releases the lock.
+          A LockBF object should be defined within a block ({...}) of
+          code for which the lock is to be in effect.
+
+          Form_Relation constructors also take additional parameters.
+          A form heading may be specified.  A NULL value indicates
+          that no heading is needed.  A curses(3X) WINDOW pointer may
+          also be specified.  If allowed to default to NULL, the full
+          screen window stdscr will be used.  Assigning to
+          Form_Relations causes them to display all assigned values to
+          the user.  Using Form_Relations in an expression causes them
+          to elicit input from the user.  Form_Relations also have
+          some additional functions.  The update function takes a
+
+
+
+     Page 37                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Tuple, elicits updates to the Tuple from the user, and
+          returns a new Tuple with the updates.  The criteria function
+          displays a blank form, allows the user to fill in the blanks
+          on the form, and returns a pointer to a Predicate that aaaannnndddds
+          together all of the values specified.  In other words, it
+          can be used to select all Tuples with Attribute values equal
+          to every criteria specified by the user on the form.  Any
+          Attributes that the user left blank are not included in the
+          Predicate.  The Relation operations will print an error
+          message, set relerr.errno and abort under the following
+          circumstances: The Relation assignment operators =, += or -=
+          are used when the left and right Relations do not have the
+          same Intension.  Not only must they have the same
+          Attributes, they must be in the same order.  The left and
+          right Relations of the union do not have the same Intension.
+          Not only must they have the same Attributes, they must be in
+          the same order.  Too many Attributes are participating in
+          the transitive closure.  The operators += or -= are used
+          with a Form_Relation.  The constrain function detects two
+          Tuples with the same key.  Instead of aborting, constrain
+          will exclude one of the Tuples from the return value and
+          continue.  The Intension of the argument passed to
+          walk(IntensionValue &) does not match the Intension of the
+          Relation (of which walk is a member).  The Predicate
+          specified for the startwalk function or operator % (select)
+          contains Attributes that are not in the Relation, or the
+          Intension specified for the operators [] (project) or *
+          (closure) contains Attributes that are not in the Relation.
+          An pointer passed to a function was NULL.  Do not pass the
+          function a NULL pointer, use the defaults (if there are any)
+          or try passing NULL value (i.e. "" rather than (char *)0).
+
+          The Form_Relation operations will print an error message,
+          set formerr.errno and abort under the following additional
+          circumstances: The user repeatedly enters incorrect data for
+          a field.
+          Additional errors may occur due to lower level objects used
+          by Relations.
+          , , , , , , intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 38                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          roll - limitable random number generator
+          #include <sblib.h>
+
+
+          The  function returns an unsigned long between 1 and the
+          argument passed to it.  You can think of it as a die and you
+          get to specify how many sides the die has through the _s_i_d_e_s
+          argument.  Care to roll the die?
+          drand48(3C)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 39                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          strstr - locate a substring within a string
+          #include <sblib.h>
+
+          The  function locates the substring (_s_u_b_S_t_r) within the
+          specified string (_s_t_r).  If the substring is found,  returns
+          a pointer to the first character of the substring.  Note
+          that the substring is not NULL terminated.  If the substring
+          is not found,  returns a NULL pointer.
+
+          The canonSpan() function converts spans of 1 or more
+          occurences of the spanChar into a single occurence of the
+          canonical length canLength.  It searches fromStr and copies
+          into toStr.  The calling function is responsible for
+          allocating char arrays of the appropriate length for fromStr
+          and toStr.  The default spanChar is space (' ') and the
+          default canLength is 1.  This would convert spans of 1 or
+          more spaces to a single space.  If the canLength were 0, all
+          spaces would be eliminated.  If the canLength were 7, all
+          spans of 1 or more spaces would be converted to a span of 7
+          spaces.  The canonSpan() function returns a pointer to
+          toStr.
+
+          The split() function separates a string into newline
+          separated lines based on lineLen.  Each internal newline-
+          separated line that exceeds lineLen is broken into 2 or more
+          newline-separated lines less than or equal to lineLen.  The
+          line will be split on the lineSeparator character when
+          possible.  If the line can't be split on a lineSeparator
+          because none occurs within lineLen characters, the line will
+          be split at lineLen.  If preserveSeparator is TRUE, the
+          lineSeparator character will become the first character of
+          the next line.  This does not occur when there was no
+          original lineSeparator character (i.e. it had to be split at
+          lineLen).  The fromStr is searched and changes are made to
+          the toStr.  The calling function is responsible for
+          allocating char arrays of the appropriate length for fromStr
+          and toStr.  The split() function returns the number of
+          _a_d_d_i_t_i_o_n_a_l lines in the string, i.e. the number of newlines
+          that it _a_d_d_e_d to the string.
+
+          When called with the default arguments, split() will break
+          the fromStr into lines of 80 characters or less using word-
+          wrap (splitting on space and not preserving the space on the
+          following line).
+          string(3)
+
+
+
+
+
+
+
+
+
+
+     Page 40                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Tuple - records for relational algebra
+          #include <relation.h>
+
+          Tuples provide a buffer area for exchanging data between
+          Extensions or between an Extension and the rest of the
+          application.  They must be dynamically allocated so they can
+          only be constructed by using the Tuple_new() friend
+          function.  In addition to the Tuple::data buffer area, the
+          size is stored and flags are available for marking the
+          Tuples.  Setting the flag T_CONSTRAINED shows that the Tuple
+          is guaranteed to meet the Constraints for all its
+          Attributes.  The flag T_MARK may be used for general marking
+          purposes.  Other flags may be defined privately by the
+          application.
+
+          Tuples may be shared using the share() and done()
+          operations.  The routine calling Tuple_new() is
+          automatically given a reference to the Tuple and will keep
+          the reference until it calls done().  Other routines that
+          are passed the Tuple should call share() if they wish to
+          retain a reference to the data.  They release their
+          reference with done() as well.  The Tuple lives until all
+          references to it have been released with done().
+
+          Since Tuples may be shared, the Tuple::data should not be
+          arbitrarily modified.  It is typically initialized by the
+          routine calling Tuple_new().  Once initialized, routines
+          wishing to modify the Tuple should call Tuple_new() to
+          create a new Tuple and copy the information into the new
+          Tuple, modifying it as needed.
+
+          Information may be copied into a Tuple from another memory
+          area using the = operator, or it may be read or written
+          using Tuple::data. If some of the fields being copied are
+          character arrays, the string in the array should not only be
+          NULL terminated, it should be padded with NULLs to the end
+          of the array.  This is most likely to occur in programs that
+          are iteratively staging structures through a buffer area
+          before copying them into the tuple.  By eliminating the
+          staging area and reading and writing directly to
+          Tuple::data, the problem with "left-over" non-NULL data is
+          eliminated and so is unnecessary copying of the data.
+          The Tuple::done() function will print an error message, set
+          relerr.errno and abort under the following circumstances:
+          The tuple reference count is 0 or negative on entry.
+          Tuples are potentially shared.  The data should only be
+          modified by the routine calling Tuple_new(), and only before
+          it has been made available to other routines.
+
+          String data copied into tuples should be NULL terminated and
+          padded with NULLs to the end of the character array.
+          Otherwise the results of the relational algebra expressions,
+
+
+
+     Page 41                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          which use both lexical and bitwise equivalence, may be
+          unexpected.  BEWARE of strcpy and strncpy!  Use memcpy and a
+          NULL-padded value wherever possible.
+
+          Programs using Tuples should set _new_handler.
+          , , , intro(3RA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 42                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          upper, lower - translate a copy of a string to upper or
+          lower case.
+          #include <sblib.h>
+
+          char *upper(char *string); char *lower(char *string);
+          The  and  functions translate the case of _s_t_r_i_n_g.  The
+          function copies the string, translating any lower case
+          characters to upper case and returns the result.  The
+          function copies the string, translating any upper case
+          characters to lower case and returns the result.  The
+          returned string is dynamically allocated but  and are
+          responsible for freeing them.  Do not free or delete the
+          returned strings in application code.
+          ctype(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 43                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          Vfd, Vfile - classes for virtual files
+          #include <sblib.h>
+
+
+          The Vfd (virtual file descriptor) class allows you to use
+          more files than allowed by the system tuneable NOFILES (see
+          /etc/master.d/kernel).  These files may be accessed as file
+          descriptors through VVVVffffdddd::::::::ffffdddd(((()))).
+
+          Vfd objects with open files are normally kept on an age-
+          sorted list.  If a Vfd with an open file is referenced,
+          access is immediate.  If a Vfd with a closed file is
+          referenced and there are available file descriptors, the
+          file is opened and then accessed.  If there are too many
+          open files, the least-recently used Vfd on the age-sorted
+          list closes its file to make room for the referenced Vfd.
+          The offset into the closed file is saved and is restored
+          when the file is reopened.
+
+          Certain operations such as record and file locking don't
+          work properly if a Vfd object is closed unexpectedly.  The
+          VVVVffffdddd::::::::nnnnoooottttaaaavvvvaaaaiiiillll(((()))) operation can be used to exempt these
+          objects from the age-sorted list.  The VVVVffffdddd::::::::aaaavvvvaaaaiiiillll(((())))
+          operation makes them available to be put on the age-sorted
+          list again.  By default, objects are made available.
+
+          Currently the Vfd class allows 6 Vfd objects to be open at
+          one time.
+
+          The Vfile (virtual FILE *) class is derived from class Vfd.
+          It allows you to use a FILE * rather than a file descriptor.
+          As with Vfd, Vfile allows you to have more than NOFILES
+          files open.  Although VVVVffffdddd::::::::aaaavvvvaaaaiiiillll(((()))) and VVVVffffdddd::::::::nnnnoooottttaaaavvvvaaaaiiiillll(((()))) can
+          be used with Vfiles, there can be problems with record
+          locking.  It is recommended that only file locking be used
+          with Vfiles.
+          The  operations can fail due to the failure of underlying
+          system calls or stdio calls.  In that case they will call
+          syserr.error() with an appropriate message and may abort.
+          If the parameter name is allowed to default, a file will be
+          created in /usr/tmp using a name generated by tmpnam(3S).
+          This file will be unlinked by the destructor.
+
+          Use the nnnnoooottttaaaavvvvaaaaiiiillll(((()))) function if you plan to lock the file.
+          open(2), fopen(3S)
+
+
+
+
+
+
+
+
+
+
+     Page 44                                         (printed 10/5/92)
+
+
+
+
+
+
+     RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  RRRReeeellllAAAAllllgggg((((3333CCCC++++++++))))
+
+
+
+          wgets, init_screen, set_labels, clear_labels - curses
+          operations
+          #include <sblib.h>
+
+          extern "C"
+             {
+             void init_screen();
+             void setLabels(char *labels[8]);
+             void set_labels();
+             void set_menu_labels();
+             void clear_labels();
+             int wgets(char *,unsigned,WINDOW *);
+             };
+
+          The wwwwggggeeeettttssss(((()))) function reads through a window into a string.
+          It has several features not found in the curses wgetstr
+          routine.  The length of the string is passed as an argument.
+          If the user types more than length minus 1 characters wgets
+          will beep and refuse to accept each new character until a
+          terminating character is received.  Length should be less
+          than or equal to the size of memory pointed to by string
+          (e.g. if string is a character array of 20 bytes, length
+          should be 20).  Wgets has one or more characters for each of
+          the following functions: erase character, erase field, save
+          (done with record), quit (done with input) next (next field
+          in record) and previous (previous field in record).  The
+          erase character and erase field functions are used for
+          editing, the others are terminating functions.  When a
+          character specifying one of the terminating functions is
+          received, wgets returns the value of that character.  The
+          sets of characters and matching case clauses are defined in
+          wgets.h.  The interpretation of the terminating functions is
+          left to the application code but the intended interpretation
+          is defined above.  The iiiinnnniiiitttt____ssssccccrrrreeeeeeeennnn(((()))), sssseeeettttLLLLaaaabbbbeeeellllssss(((()))) and
+          cccclllleeeeaaaarrrr____llllaaaabbbbeeeellllssss(((()))) functions may be used to provide soft labels.
+          The sssseeeetttt____llllaaaabbbbeeeellllssss(((()))) function calls sssseeeettttLLLLaaaabbbbeeeellllssss(((()))) with function
+          key designations that agree with the wgets interpretation.
+          The sssseeeetttt____mmmmeeeennnnuuuu____llllaaaabbbbeeeellllssss(((()))) function calls sssseeeettttLLLLaaaabbbbeeeellllssss(((()))) with
+          function key designations that are consistent with In
+          addition to the initscr() functionality it sets up soft
+          labels and puts curses in a state where calls to wgetch(3X)
+          are in character-at-a-time no-echo mode while calls to  are
+          in line-at-a-time echo mode.  The sssseeeetttt____llllaaaabbbbeeeellllssss(((()))) function
+          should be called before wwwwggggeeeettttssss(((()))) to display the soft labels.
+          The cccclllleeeeaaaarrrr____llllaaaabbbbeeeellllssss(((()))) function should be called when finished
+          to erase the soft labels.
+          The  functions print know error messages.  Their behavior is
+          that of the underlying curses(3X) library.
+          curses(3X),,,
+
+
+
+
+
+
+     Page 45                                         (printed 10/5/92)
+
+
+

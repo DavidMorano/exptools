@@ -1,0 +1,2833 @@
+#if,ifdef,ifndef nesting to deep
+floating point constant folding causes exception
+function value type must be declared before use
+illegal array size combination
+illegal types in :
+illegal use of field
+inline function has bad type
+pointer required
+unknown control statement
+void type illegal in expression
+
+Sorry, no help available.  Please send electronic mail to Joe Steffen
+(ihlpn!steffen) containing code that will cause this message so help for it
+can be added.
+
+#elif following #else
+
+In a #if statement, the #else must be after all the #elif statements.
+
+#include of /usr/include/... may be non-portable
+
+Using the full path to a #include'd file may not work on another variant of
+the UNIX(R) Operating System, so remove /usr/include/ from the file name.
+
+& before array or function: ignored
+
+Since an array or function name by itself is an address, using the address
+operator (&) has no effect, so remove the &.
+
+=< illegal
+=> illegal
+
+This operator is unknown, probably the characters are transposed.
+
+"/*" found in the comment that starts in line
+
+This message may indicate an unterminated comment that is accidentally
+commenting out code, e.g.
+
+	/* comment
+	if (g() != 0)
+		i = 1;	/* comment */
+
+so verify that this /* is intended to be in the comment starting in the
+line given.
+
+"defined" modifying non-identifier in preprocessor if
+
+The defined operator must be followed by an identifier starting with a
+letter or _.
+
+} expected
+
+a function is declared as an argument
+
+An argument cannot be declared to be a function.  Probably the * to make it
+a function pointer is missing, e.g.
+
+	f(sig)
+	int	(sig)();
+	{
+
+or misplaced
+
+	f(sig)
+	int	*(sig)();
+	{
+
+This should be
+
+	f(sig)
+	int	(*sig)();
+	{
+
+actuals too long
+actual arguments too long
+unterminated macro call
+
+Either the ( at the beginning of this macro call is missing, e.g.
+
+	putchar c);
+
+or the ) at the end of this macro call is missing, e.g.
+
+	putchar(c;
+
+or the " at the end of one of the macro arguments is missing, e.g.
+
+	if (streq(s, "echo))
+
+ambiguous assignment: assignment op taken
+
+The =- in i=-1 could be the = operator followed by a minus sign, or the old
+form of the -= operator, and the compiler assumes the latter.  Add blanks
+around the operator so the meaning is clear, that is, change i=-1 to either
+i = -1 or i =- 1.  Better yet, use the correct form of the operator in the
+latter, e.g. i -= 1.
+
+ambiguous assignment: simple assign, unary op assumed
+
+The =- in i=-1 could be the = operator followed by a minus sign, or the old
+form of the -= operator, and the compiler assumes the former.  Add blanks
+around the operator so the meaning is clear, that is, change i=-1 to either
+i = -1 or i =- 1.  Better yet, use the correct form of the operator in the
+latter, e.g. i -= 1.
+
+aline Relocatable symbol in absolute expression
+
+This may be caused by casting a string constant to a type smaller than a
+pointer, e.g.
+
+	f((short) "string");
+
+which is a coding error.  If there was a warning message of "conversion of
+pointer loses bits" the file and line number in the message will point to
+the coding error.
+
+aline syntax error
+
+Use the -S option to cc to generate a .s assembler-language file instead of
+a .o file.  The number after "aline" in the message is the line number in
+the .s file where the syntax error occurred.  Compare the words in this
+line to the macro names listed in the m4 manual pages.  If one of them
+matches, e.g. index, then there is a variable declared in this .c file that
+matches an m4 macro name, so rename it.
+
+Otherwise there is a bug in the compiler, so contact the organization that
+supports it.
+
+aline Table overflow: some optimizations lost (Labels)
+aline Table overflow: some optimizations lost (SelSet)
+
+The assembler was unable to do all possible optimizations of short and
+long branch instructions.  Your program will still run, so ignore this
+message.
+
+arg list in declaration
+
+A function type declaration cannot have arguments, e.g.
+
+	char f(a);
+
+should be
+
+	char f();
+
+An argument cannot be declared to be a function.  If it is intended to be a
+function pointer, then parentheses are missing, e.g.
+
+	f(sig)
+	int	*sig();
+	{
+
+should be
+
+	f(sig)
+	int	(*sig)();
+	{
+
+A function cannot be declared to be in a structure, e.g.
+
+	struct {
+		int p();
+	} s;
+
+Perhaps this is meant to be a pointer to a function
+
+	struct {
+		int (*p)();
+	} s;
+
+A function should not have other declarations in the argument declaration
+list, e.g
+
+	f(a)
+	int a;
+	extern int errno;
+	{
+
+should be
+
+	f(a)
+	int a;
+	{
+		extern int errno;
+
+arg list in declaration or template typelist in error
+
+If this is intended to be a function template, perhaps an argument type is
+misspelled, e.g.
+
+	void f(intt);
+
+should be
+
+	void f(int);
+
+or if an argument type is defined in a typedef statement, perhaps the
+header file containing the typedef has not been #include'd before this
+function template.
+
+argument mismatch
+
+Either the ( at the beginning of this macro call is missing, e.g.
+
+	putchar c);
+
+or there are too many arguments, e.g.
+
+	putchar(c, file);
+
+argument unused in function
+
+This argument is never used in this function, so either delete the argument,
+place an /* ARGSUSED */ comment in front of the function, or use the lint
+-v option to suppress this message.
+
+array of functions is illegal
+
+If the intent is to declare an array of pointers to functions, probably the
+() representing the function argument list is in the wrong place, e.g.
+
+	void (*f)[10]();
+
+should be
+
+	void (*f())[10];
+
+array subscript is n, cannot be negative
+
+An array subscript cannot be negative.
+
+array subscript is n, cannot be > m
+
+This constant array subscript is too big.  A typical cause of this is
+
+	char s[10];
+	s[10] = '\0';
+
+The dimension of the array is 10, but the valid subscripts are 0 through 9,
+so a subscript of 10 is too big.
+
+array too large
+
+The sizeof this array is a larger integer than will fit in an unsigned
+long, which is the largest integer type, so split the array into smaller
+arrays.
+
+asm > 50 chars
+
+The string constant argument to asm() is too long, so replace blanks with
+tabs if possible.  You will get one of these messages for every character
+over the limit.
+
+assignment of different structures
+
+The structures in a structure assignment must be of the same type.
+
+assignment operator (=) found where == was expected
+
+The assignment operator = is being used where the equality operator == is
+normally used.  Usually this is a typing mistake, e.g.
+
+	if (i = 1)
+		++j;
+
+Sometimes the precedence (which operator is evaluated first) is not what
+was expected, e.g.
+
+	if (c = getchar() != EOF)
+
+is equivalent to
+
+	if (c = (getchar() != EOF))
+
+which is not what was intended, so add parentheses
+
+	if ((c = getchar()) != EOF)
+
+Occasionally the value of an assignment expression is tested in a while
+statement, e.g.
+
+	while (*p++ = *q++)
+		;
+
+which copies one string to another until the null byte is found.  To make
+this code more readable and to avoid this message, recode it as
+
+	while ((*p++ = *q++) != '\0')
+		;
+
+bad asm construction
+
+The asm pseudo-function is a way of inserting assembler statements in C
+code.  It has one argument which must be a string constant, e.g.
+
+	asm("\tmov\tr0,r1\n");
+
+bad file for #line
+
+The file name must be surrounded by double quotes, e.g.
+
+	#line 1 "stdio.h"
+
+bad formal
+bad formal argument
+
+Macro arguments must start with a letter or _, and the argument list cannot
+be continued on the next line.
+
+bad include syntax
+
+The include file name must be surrounded with < and >, e.g.
+
+	#include <stdio.h>
+
+or double quotes, e.g.
+
+	#include "local.h"
+
+bad number for #line
+
+The #line must be followed by a number.  If you just want to change the
+file name, use the number 1, e.g.
+
+	#line 1 "stdio.h"
+
+bad octal digit
+
+This is not an octal digit.  A leading 0 on a number means that it is
+octal, so if this is intended to be a decimal number, remove the leading
+0's.  A number that starts with 0x is hexadecimal, so if this is intended
+to be a hexadecimal number add the missing x.
+
+bad scalar initialization
+initialization alignment error
+
+Only arrays and structures can have multiple initializers.  If this is to
+be an array, then [] is missing after the name, e.g.
+
+	int a = {1, 2};
+
+should be
+
+	int a[] = {1, 2};
+
+Extra braces around a value can also cause this error, e.g.
+
+	int a[] = {{1}, 2};
+
+so remove them
+
+	int a[] = {1, 2};
+
+bad structure offset
+
+The left side of the -> or . operator is not a pointer to a structure, e.g.
+the declaration of p in this code
+
+	struct st {
+		int a;
+	};
+	char *p;
+
+	p->a;
+
+should be
+
+	struct st *p;
+
+BCD constant exceeds 6 characters
+
+If you are not using the Honeywell GCOS operating system, probably you have
+used ` in place of " in a string constant, e.g.
+
+	char *s = `123456`;
+
+should be
+
+	char *s = "123456";
+
+block nesting too deep
+
+This code has {'s nested too deep, so move the portion starting from this {
+to the matching } to a new function and call it from here.
+
+Can't create
+
+This directory is not writable by you, so the .i file cannot be created.
+
+Can't find include file
+
+Verify that the #include file name is spelled correctly by using the ls
+command on the directory containing the file.
+
+If the file is in the current directory, then use " instead of < and >
+around the file name, e.g.
+
+	#include "local.h"
+
+If the file has a path relative to the current directory, then either
+prefix the file name with the relative path, e.g.
+
+	#include "../common/global.h"
+
+or add a -I option with a path to the directory to the cc or lint command,
+and use < and > instead of " in the #include, e.g. for the above use
+-I../common and
+
+	#include <global.h>
+
+If this file is in the sys directory under /usr/include, then sys/ must
+prefix the file name, e.g.
+
+	#include <sys/dir.h>
+
+cannot assign variable "v" in function "f" to a register, manually declare it as a register to save space (n)/time (m)
+
+In function "f", declaring the variable "v" to be "register" would save n
+bytes and m processor cycles, but the optimizer can't do this for you because
+there are no more registers or no more of the right kind of registers, e.g
+MC680x0 processors have separate address and data registers.  You can also
+remove "register" from previous declarations in the same function to free a
+register for this variable.
+
+cannot cast struct/union to VOID
+
+A function returning a structure has been cast to void, e.g.
+
+	struct st f();
+	
+	(void) f();
+
+Perhaps the function returns a pointer to a structure and the '*' was left
+out of the declaration, e.g.
+
+	struct st *f();
+
+If the function really returns a structure, remove the void cast.
+
+cannot continue: fix cause of above warning on line
+
+Instead of an error message, some coding errors will cause a warning
+followed by this message.  For example, if the & in front of the structure
+name is missing on an argument to an assert macro the argument is an entire
+structure instead of its address. You will get this message because the
+assert macro casts the argument to a (char *) pointer, and the compiler
+doesn't know how to transform a structure to a pointer.
+
+can't take & of
+cannot take address of
+unacceptable operand of &
+
+The address operator (&) cannot be used on a structure bit field or
+register variable.  If the latter, remove "register" from its declaration.
+
+cannot initialize extern or union
+
+If this is an external declaration it cannot have an initial value, so
+remove "extern".
+
+If this is a union declaration it also cannot have an initial value, so
+initialize it by adding code to the main function, e.g.
+
+union {
+	int	i;
+	char	c;
+} u;
+main()
+{
+	u.i = 2;
+}
+
+Note that global variables are guaranteed to be 0 when the program starts,
+so don't add code to initialize them to 0.
+
+cannot recover from earlier errors: goodbye!
+**** cannot recover from this error ****
+
+The compiler or lint is unable to recover from syntax or other errors, so
+fix the cause of the previous error messages.
+
+case not in switch
+
+A case statement can only appear inside a switch statement.
+
+character comparison should always fail
+
+A character is being compared to a negative value on a machine where
+characters are always unsigned, e.g.
+
+#include <stdio.h>
+
+	char c;
+	
+	if (c == EOF)
+
+character constant has more than one character
+
+The most common cause of this is '\0177' which is not the DEL character but
+a two character constant of 017 followed by 7.  Only three digits are
+allowed after the \ and the digits are assumed to be octal, so leave out
+the 0, e.g. '\177'.
+
+A character constant is treated as an integer by the compiler, so
+multi-character constants such as 'abcd' should not be used because the
+order the characters are stored in the integer varies among machines.  Thus
+a program that works on one machine may not work on a different type of
+machine.
+
+comparison of unsigned with negative constant
+
+An unsigned variable cannot be negative, so comparing it to a negative
+number is meaningless.  If you mean to compare an unsigned variable to the
+bit value of a negative number such as -1, then cast it to unsigned, e.g.
+
+	if (u == (unsigned) -1)
+
+compiler takes size of function
+
+The sizeof operator cannot be used on a function name.
+
+constant argument to NOT
+
+The operand of the ! operator is a constant, so verify that this is what is
+intended.
+
+constant expected
+
+This usually happens when a symbolic constant is misspelled or its #define
+statement is missing, so the preprocessor does not substitute the constant
+for the symbol.
+
+constant in conditional context
+
+If this is an assert macro, ignore this message.
+
+If this is an if, while, or for statement then the relation being tested is
+either always true or always false, e.g.
+
+	while (1)
+
+If the intent is to loop forever, use this instead
+		
+	for (;;)
+
+Verify that 1 was not meant to be i, e.g.
+
+	if (1 > 0)
+
+was meant to be
+
+	if (i > 0)
+
+This message will occur on this statement
+
+	if (sizeof(int) < sizeof(long))
+
+because while the size of types varies among different machines, the size
+is constant on a particular machine.  Another form of the above is
+
+#define	SIZEINT	 2
+#define	SIZELONG 4
+
+	if (SIZEINT < SIZELONG)
+
+This message can also occur on the use of a #defined'd symbol containing a
+constant expression
+
+#define A 4
+#define B (A > 0 ? 1 : 0)
+
+	int i = B;
+	
+If you still can't find the cause of this message, use the -P option to the
+cc command to run the preprocessor only and generate a .i file instead of
+a .o file.  The line numbers in this file will differ from the .c file, so
+use the text search command of your editor to find the statement causing
+this message.  See if the preprocessing is doing something unexpected;
+perhaps a macro is not expanding correctly.
+
+constant too big for cross-compiler
+
+This constant value is too big to be compiled on the machine running the
+compiler.
+
+constant truncated by assignment
+
+This constant is too big for this variable, e.g.
+
+	char c;
+	c = 256;
+
+So use a larger data type or a smaller constant.  Another form of this is
+
+	char *p;
+	*p = 256;
+
+If this is intended, then cast the pointer
+
+	*((short *) p) = 256;
+
+conversion from long may lose accuracy
+
+A long value is truncated when assigned to a char, short, or int.  This
+message can be suppressed with the lint -a option.
+
+conversion of pointer loses bits
+conversion of pointer to int or unsigned loses bits
+
+A pointer is cannot be converted to this type because the type is too small
+to hold a pointer.
+
+conversion to long may sign-extend incorrectly
+
+This message may indicate a coding error on machines where an int variable 
+is smaller than a long variable, e.g.
+
+	long longvar;
+	
+	longvar = 1 << sizeof(int);
+
+The integer constant 1 should be a long constant 1L
+	
+	longvar = 1L << sizeof(int);
+
+A negative char, short, or int will become positive on some machines when
+assigned to a long variable.  This message can be suppressed with the lint
+-a option.
+
+declare the VARARGS arguments you want checked!
+
+Declared size for array is bytes--
+references to large arrays (over 32768 bytes) require special syntax
+
+Set a pointer to the address of the array, e.g.
+
+	char a[100000], *p;
+
+	p = a;
+
+and then use the pointer in place of the array name, e.g.
+
+	c = p[i];
+	p[i] = 2;
+
+Note that the index variable i must now be declared to be long instead of
+int because the array's dimension is large than will fit in an int.
+
+If this was an existing array that has been made larger, you can avoid
+changing the references to the array in the code by changing the original
+declaration of
+
+	char oldname[100000];
+
+to rename the array so the old name can be used for the pointer
+
+	char newname[100000], *oldname = newname;
+
+declared argument is missing
+
+This function argument is declared but is not in the argument list, e.g.
+
+	f()
+	int i;
+	{
+
+should be
+
+	f(i)
+	int i;
+	{
+
+declared size too big - arrays limited to 16777216 bytes
+
+This array is too large for this machine, so use several smaller arrays
+instead.
+
+default not inside switch
+
+"default:" can only appear inside a switch statement.
+
+degenerate unsigned comparison
+
+An unsigned variable is never < 0 and is always >= 0, so remove this
+comparison.
+
+division by 0
+division by 0.
+division by zero
+remainder by zero
+
+Division by 0 is mathematically invalid, probably another number was
+intended.
+
+double not supported, mapped into long
+float not supported, mapped into long
+
+This machine cannot do floating point arithmetic, so remove this
+declaration.
+
+duplicate case in switch
+
+This switch statement has two cases with the same value.  If the case
+values are #define'd constant names and you don't know which names have the
+same value, you can use the -P option to cc to generate a .i file instead
+of a .o file.  The .i file is the preprocessed .c file, so the #define'd
+names have been replaced by their numeric values.  Now you can easily find
+the two cases with the same value, and match the line numbers back to
+the .c file.
+
+duplicate default in switch
+
+"default:" can only appear once inside a switch statement.  Note: You may
+also get this message if "default:" appears outside a switch statement.
+
+else statement has no effect
+
+This else statement has a ; right after it.  This is usually an error, e.g.
+
+	else;
+		f();
+
+so remove the ;.  If the else statement was intended to do nothing, remove
+the else and the ; for clarity.
+
+empty array declaration
+
+The size of an array must be given unless it is a function argument or an
+external declaration.
+
+empty character constant
+
+A character constant cannot be empty (''), so use '\0' for the null
+character.
+
+environ is a system variable, see exec(2) in the UNIX(R) Manual
+
+The environ global system variable must be declared as a pointer to a
+character pointer as seen in the exec(2) UNIX(R) Manual entry, e.g.
+
+	extern char **environ;
+
+Do not use this variable name for a local variable, function argument, or
+your own global variable.
+
+enumeration type clash, operator
+
+If the operator is RETURN, then this value does not match the enumeration
+type of this function.  If the operator is = or a comparison operator then
+one side of the operator does not have the same enumeration type as the
+other side.  If one side is an enumeration member then it is probably a
+member of a different enumeration type than the other side.  Be sure that a
+#define'd constant with a name similar to an enumeration member has not
+been mistakenly used.  If you really want to assign a constant to an
+enumeration variable, for example, cast the constant to the enumeration
+type to make this clear, e.g.
+
+	e = (enum etag) 0;
+
+equality operator (==) found where = was expected
+
+The equality operator == is being used where the assignment operator = is
+normally used.  This is almost always a typing mistake, e.g.
+
+	i == 1;
+
+does nothing and should be
+
+	i = 1;
+
+errno is a system variable, see intro(2) in the UNIX(R) Manual
+
+The errno global system variable must be declared as an int, e.g.
+
+	extern int errno;
+
+Do not use this variable name for a local variable, function argument, or
+your own global variable.
+
+evaluation order undefined
+
+When a variable is changed and used in one place in an expression, and used
+again in a second place in the same expression, then its value in the
+second place will vary depending on the compiler used, e.g.
+
+	i = 1;
+	a[++i] = i;
+
+The value of a[2] may be 2 if one compiler is used, or 3 if another
+compiler is used.
+
+The & operator can cause this problem when it is used in place of the &&
+operator, e.g.
+
+	if ((c = getchar()) != EOF & c != '\n')
+
+excessive -I file ignored
+too many -D options, ignoring
+too many -U options, ignoring
+
+There is a limit on the number of these options.
+
+expression causes compiler loop: try simplifying
+
+If this is a simple switch statement, e.g.
+
+	switch (st)
+	
+and the variable is an entire structure, then the member name is missing,
+that is, the above should be
+
+	switch (st.m)
+
+Otherwise the compiler is unable to generate code for this statement, so
+split it into two statements.
+
+extra tokens (ignored) after directive
+
+Either #ifdef has been used in place of #if, e.g.
+
+	#ifdef vax || u3b
+
+should be
+
+	#if vax || u3b
+
+or parentheses have been use around the symbol ala #feature, e.g.
+
+	#ifdef ( vax )
+
+should be
+
+	#ifdef vax
+
+extraneous name
+
+The preprocessor expects only two arguments, the input and output file
+name, so the extra argument was ignored.  If this was the output file name,
+then there is a blank between an option and its argument, e.g.
+
+	/lib/cpp -I /usr/include/sys infile outfile
+
+should be
+
+	/lib/cpp -I/usr/include/sys infile outfile
+
+fakename table overflow
+
+There are too many structure definitions that do not have tags, so put a
+dummy tag on this structure, e.g.
+
+	struct dummy1 {
+
+field outside of structure
+
+A bit field cannot be a member of a union, so surround it with a structure
+declaration, e.g.
+
+	union {
+		struct {
+			int	i : 1;
+		} s;
+		int	j;
+	} u;
+
+field too big
+
+This bit field is declared to have more bits than will fit in its type,
+such as a 10 bit character field, so use the next larger type, that is,
+change char to short or short to long.  Note that int is the size of a
+short on some machines and the size of a long on others, so its maximum
+bit field size varies.
+
+Floating exception (coredump)
+Floating exception - core dumped
+
+This may be caused by division by 0 of a float or double, e.g.
+
+	double x = 1.0, y = 0.0;
+	...
+	x /= y;
+
+floating point not implemented
+
+This machine cannot do floating point arithmetic, so remove this floating
+point constant.  Note that a number ending in a period looks like a
+floating point constant, and that a period may have been typed in place of
+a comma, e.g.
+
+	f(1.1);
+
+should be
+
+	f(1,1);
+
+Using the wrong #define'd constant name may also cause this message, e.g.
+
+#define SHOULDBE msg_ptr->text
+#define SHOULD	 1
+
+	f(SHOULD.msg);
+
+because the after preprocessing this becomes
+
+	f(1.msg);
+
+fortran declaration must apply to function
+
+The fortran keyword only applys to function declarations, so () is probably
+missing after the function name, that is,
+
+	fortran f;
+
+should be
+
+	fortran f();
+
+fortran function has wrong type
+
+A fortran function cannot return a pointer, array, or function value.
+
+fortran keyword nonportable
+
+Some compilers do not allow the FORTRAN function interface.
+
+function argument: comparing struct/union/enum with different tags
+function parameter: comparing struct/union/enum with different tags
+
+The structure tag of this function argument does not match the function
+template.  If the structures are compatible, cast the argument to match the
+template, otherwise use the correct structure for this argument.
+
+function argument: looking for; found
+function parameter: looking for; found
+
+The type of this function argument does not match the function template. 
+If the argument is a number, cast it to the correct type, otherwise use the
+correct type for this argument.
+
+function argument: struct/union/enum is undefined
+function parameter: struct/union/enum is undefined
+function template: struct/union/enum is undefined
+function argument: untagged struct/union/enum is undefined
+function parameter: untagged struct/union/enum is undefined
+function template: untagged struct/union/enum is undefined
+
+This structure, union, or enumeration has not been declared, so add it's
+declaration.
+
+function argument ( number ) type inconsistent with format
+
+The type of the argument does not match the conversion specification in the
+format string in this printf, fprintf, sprintf, scanf, fscanf, or sscanf
+function call, e.g.
+
+	int i = 3;
+	
+	printf("%s", i);
+
+The last line should be
+	
+	printf("%d", i);
+
+
+function argument ( number ) used inconsistently
+
+This message is followed by a list of occurrences of the form
+
+    function( arg number )    file1(line) :: file2(line)
+
+If file1 is llib-lc, llib-lm, or llib-lport, e.g.
+
+    setbuf( arg 2 )   	llib-lc(400) :: 450.c(72)
+
+this function is a system call or library function and the type of this
+argument in the call in file2 does not match its man page.
+
+If file1 is a source file, the type of this function argument in these two
+places (see line numbers) does not agree, so cast the argument to the type
+given in the function declaration.
+
+function called with variable number of arguments
+
+This message is followed by a list of occurrences of the form
+
+    function    file1(line) :: file2(line)
+
+If file1 or file2 is llib-lc, llib-lm, or llib-lport, e.g.
+
+    fcntl   	llib-lc(48) :: dfsck.c(112)
+
+this function is a system call or library function and the number of
+arguments in the call to it in the source file does not match its man page,
+so call it with the correct number of arguments.
+
+If both files are source files, the number of arguments in these two calls
+do not match, so verify that this is what is intended.
+
+function declaration in bad context
+
+A function type declaration cannot have arguments, e.g.
+
+	char f(a);
+
+should be
+
+	char f();
+
+function has illegal storage class
+
+A function cannot be declared to be in a register, e.g.
+
+	register int p();
+
+Perhaps this is meant to be a pointer to a function
+
+	register int (*p)();
+
+function has return(e); and return;
+
+This function doesn't always return a value.  A return statement with a
+value may be missing at the end of the function 
+
+	f()
+	{
+		if (g() != 0)
+			return(0);
+	}
+
+or one return statement may be missing a value 
+
+	f()
+	{
+		if (g() != 0)
+			return;
+		return(0);
+	}
+
+Every case in a switch statement (including the default case, if present)
+may end in a return statement
+
+	f(i)
+	int i;
+	{
+		switch (i) {
+		case 0:
+			return(1);
+		case 1:
+			return(2);
+		default:
+			return(0);
+		}
+	}
+
+so move one of the return statements out of the switch
+
+	f(i)
+	int i;
+	{
+		switch (i) {
+		case 0:
+			return(1);
+		case 1:
+			return(2);
+		}
+		return(0);
+	}
+
+If this is a } within the function, look for a missing { or extra }
+
+	f()
+	{
+		if (g() != 0)
+			return(1);
+		} /* this is the line in the message */
+		return(0);
+	}
+
+or an unterminated comment
+
+	f()
+	{
+		/* unterminated comment
+		if (g() != 0) {
+			/* comment */
+			if (h() == 0)
+				return(1);
+		} /* this is the line in the message */
+		return(0);
+	}
+
+by using the C program beautifier (cb) on this file
+
+	cb program.c
+
+and looking for an unexpected left shift in the indentation
+
+	f()
+	{
+		if (g() != 0)
+			return(1);
+	} /* unexpected left shift */
+	return(0);
+	}
+
+function illegal in structure or union
+
+A function cannot be declared to be in a structure, e.g.
+
+	struct {
+		int p();
+	} s;
+
+Perhaps this is meant to be a pointer to a function
+
+	struct {
+		int (*p)();
+	} s;
+
+function must return a value
+
+This function is declared to return a structure or union (which may contain
+a structure) so it must return a value.  This program will core dump on
+some machines, such as 3B20S, if the calling function attempts to use the
+return value from this function.
+
+If this function is not intended to return a structure or union, then there
+is a missing semicolon (;) at the end of the structure or union declared
+before this function, e.g.
+
+	struct st {
+		int m;
+	}		/* missing ; */
+	f()
+	{
+
+function return type differs from its current return type
+
+This function template has a different return type than the previous
+function declaration, e.g.
+
+	void f();
+	extern f(int); /* this is the line in the message */
+
+The second statement causes this message because no return type is given
+and the default of int conflicts with the earlier declaration of void.
+
+function returns illegal type
+
+If the intent is to declare an array of pointers to functions, probably the
+() representing the function argument list is in the wrong place, e.g.
+
+	void (*f)()[10];
+
+should be
+
+	void (*f())[10];
+
+function returns pointer to automatic array; should be static
+
+An automatic array is an array local to this function that was not declared
+to be static.  It is stored on the stack and will be overwritten by the
+local variables of the next function called.  Add the static keyword to the
+declaration of this array so it will be stored in regular memory instead of
+the stack, and thus will not be overwritten.
+
+function returns value which is always ignored
+function returns value which is sometimes ignored
+
+This message is followed by a list of function names.  Verify that their
+return values can be safely ignored.  The return values of string functions
+like strcat, strcpy, and sprintf can be ignored.  The return values of
+output functions like printf and putchar can be ignored unless the program
+can output enormous files.
+
+You can get rid of this message by adding void casts to every function call
+where the return value is not used, e.g.
+
+	(void) strcpy(s1, s2);
+
+unless your program uses lex or yacc, because void casts added to the .c
+file that they generate will be removed the next time lex or yacc is run.
+
+function template and argument counts unequal
+
+This function is being called with the wrong number of arguments, or the
+function template is missing the trailing ellipsis (...) to indicate a
+variable number of arguments.
+
+function template and parameter counts unequal
+
+This function has a different number of arguments than the preceding
+function template indicates, e.g.
+
+	int main(int, char**);
+	main()
+	{
+
+function template redefined: overrides former template
+
+This function template has a different type for one of the arguments than
+an earlier template, e.g.
+
+	void f(char);
+	void f(int); /* this is the line in the message */
+
+so change or delete the erroneous template.
+
+function value is used, but none returned
+
+This message is followed by a list of function names.
+
+This function does not return a value, and at least one call to it assumes
+it does.  Either this function is missing a return statement with a value
+or the code that uses its return value should be changed.
+
+function was not declared to return a pointer
+
+This function's return value is being cast to a pointer, e.g.
+
+	p = (struct st *) malloc(sizeof(struct st));
+	
+but it is not declared to return a pointer.  This is not allowed by the
+run-time checking compiler rtcc(EXPTOOLS).  Probably this function's return
+type is not declared and it is defaulting to int, so declare it
+
+	char *malloc();
+	
+Note that you should use the real pointer type, not the pointer type
+needed, so the cast on the return value may still be needed.  If this
+function is used in many files you may want to put its declaration in a
+global header file instead of in every file.
+
+gcos BCD constant illegal
+
+If you are not using the Honeywell GCOS operating system, probably you have
+used ` in place of ' in a character constant, e.g.
+
+	c = `1`;
+
+should be
+
+	c = '1';
+
+heap switch size exceeded
+switch table overflow
+
+This switch statement and any enclosing switch statements have too many
+case statements.  If this switch statement is inside another, put it in a
+new function and call it from here.  If this switch statement is not
+inside another, split it into two switch statements like this
+
+	switch (i) {
+	case 1:
+		/* code omitted */
+		break;
+	/* case 2-249 omitted */
+	case 250:
+		/* code omitted */
+		break;
+	default:
+		goto label1;
+	}
+	goto label2;
+label1:
+	switch (i) {
+	case 251:
+		/* code omitted */
+		break;
+	default:
+		/* code omitted */
+	}
+label2:
+
+if statement has no effect
+
+This if statement has a ; right after it.  This is usually an error, e.g.
+
+	if (i == 1);
+		f();
+
+so remove the ; but if it is intentional, e.g.
+
+	if (i == 1 && j == 0 && k < 9);
+	else
+		f();
+
+then put the ; on the next line
+
+	if (i == 1 && j == 0 && k < 9)
+		;
+	else
+		f();
+
+to make the intent clear and to avoid this message.
+
+If-less else
+If-less endif
+
+A #if or #ifdef statement is missing.
+
+illegal break
+
+Either this break statement is not inside a looping statement (for, while,
+or do) or braces are needed around the body of the loop, e.g.
+
+	while (i < 0)
+		j = min(max(a, b), c);
+		if (i-- == j)
+			break;
+
+should be
+
+	while (i < 0) {
+		j = min(max(a, b), c);
+		if (i-- == j)
+			break;
+	}
+
+Illegal character in preprocessor if
+
+The #if must be followed by an expression containing only symbols #define'd
+with values; integer numbers; character constants; the unary -, !, ~, and
+defined operators; the binary *, /, %, +, -, <<, >>, <, >, <=, >=, ==, !=,
+&, ^, |, &&, and || operators; the trinary ?: operator; and parentheses. 
+The sizeof operator is not allowed.
+
+If the expression looks correct then one of the symbols probably has been
+#define'd to have a value of an illegal character, e.g.
+
+	#define AT @
+	#if AT
+
+illegal character (octal)
+
+This line contains an character that is not used in the C language, such as
+@, $, or a control character.  See the ascii(5) manual page to translate
+the octal number to the character.  If the character is in a string or
+character constant, probably the leading " or ' is missing, respectively.
+
+illegal combination of pointer and integer, op
+
+If this is a return statement then an integer is being returned instead of
+a pointer, or vice versa, so cast the return value to the correct type.
+
+If this is a character declaration with an initial value of a string, e.g.
+
+	char s = "string";
+
+then either * is needed before the name to make this a pointer
+
+	char *s = "string";
+
+or [] is needed after the name to make this an array
+
+	char s[] = "string";
+
+If a pointer is being assigned or compared to an integer expression, cast
+the expression to the correct type of pointer.
+
+Otherwise this is probably a coding error.  Note that using a cast will
+avoid this message but will not fix a coding error.
+
+illegal comparison of enums
+
+A enumeration can only be tested with the == and != operators.  If testing
+with another operator such as <= is desired, cast the enumeration to int,
+e.g.
+
+	if ((int) e <= 1)
+
+illegal continue
+
+This continue statement is not inside a looping statement (for, while, or do);
+or braces are needed around the body of the loop, e.g.
+
+	while (i < 0)
+		--i;
+		if (i == j)
+			continue;
+		--j;
+
+should be
+
+	while (i < 0) {
+		--i;
+		if (i == j)
+			continue;
+		--j;
+	}
+
+illegal field size
+
+A bit field cannot have < 0 or > 63 bits.
+
+illegal field type
+
+The type of a bit field can only be enum, char, unsigned char, short,
+unsigned short, int, or unsigned int; or with some compilers, long or
+unsigned long.  Change the type to one of these.  Note that a field cannot
+be a pointer to one of these types either.
+
+illegal function
+
+The name of a function called in this statement is declared to be something
+other than a function, e.g.
+
+	int i;
+	i();
+
+Either the wrong name was used or () is missing on the declaration, e.g.
+the above should be
+
+	int i();
+	i();
+
+This message usually prints twice for each occurrence of the problem.
+
+illegal hex constant
+
+The first character of a number is a digit other than 0 when the second
+character is x or X, e.g. 1xf.
+
+illegal indirection
+
+Either the array subscript brackets ([]) are placed after something that is
+not a an array, e.g.
+
+	int i;
+	i[0] = 0;
+
+or a pointer has been used as an array subscript, e.g.
+
+	int a[10], *p;
+	a[p] = 0;
+
+or an enum member has been used as an array subscript without an int cast,
+e.g.
+
+	enum {
+		RED, GREEN, BLUE
+	};
+	int colors[3];
+	colors[RED] = 0;	/* should be: colors[(int) RED] = 0; */
+
+or the * unary operator is used on something that is not a pointer. 
+Perhaps the * was left off the declaration, e.g.
+
+	int i, p;
+	i = *p;
+
+should be
+
+	int i, *p;
+	i = *p;
+
+illegal initialization
+
+A variable cannot be used to initialize a global or static variable.
+
+illegal lhs of assignment operator
+
+The left hand side (lhs) of this assignment is something that cannot be
+given a value, e.g. a function call 
+
+	f() = 1;
+
+or array name
+
+	char s[10];
+
+	s = "string";
+
+illegal macro name
+
+The #define'd symbol does not start with a letter or _, e.g.
+
+	#define 1
+
+illegal member use
+
+A structure or union member in this line is misspelled or is in a different
+structure or union.
+
+If this is a multi-level structure or union, e.g.
+
+	struct {
+		int i;
+		struct {
+			int j;
+		} b;
+	} a;
+
+then one of the intermediate structure or union names has probably been
+left out, e.g.
+
+	a.j = 1;
+
+should be
+
+	a.b.j = 1;
+
+Illegal number
+
+Decimal numbers can only contain the digits 0-9, and hexadecimal numbers
+start with 0x and can only be followed by 0-9, a-f, and A-F.
+
+illegal pointer combination
+illegal structure pointer combination
+possible pointer alignment problem
+
+Pointers of different types are being compared or assigned, so cast one
+pointer to the type of the other.
+
+illegal pointer subtraction
+
+Pointers with types of different sizes cannot be subtracted, e.g.
+
+	int i, *ip;
+	char *cp;
+	i = ip - cp;
+
+illegal register declaration
+
+A global variable cannot be declared to be in a register, so remove the
+register keyword, or if the variable is only used in one function, move its
+declaration inside that function.
+
+illegal type combination
+
+This combination of char, double, float, int, long, short, unsigned, void
+or typedef names is not supported, e.g. long double.
+
+If this is a typedef statement, the typedef name may already have been
+defined, e.g.
+
+	typedef long TIME;
+	...
+	typedef unsigned long TIME;	/* error */
+
+illegal use of a function in an arithmetic expression
+
+Pointer arithmetic cannot be performed on a function name.  Perhaps this is
+meant to be a function call and the parentheses are missing.
+
+illegal use of function name
+
+A function name cannot be used in an arithmetic expression.
+
+illegal use of label
+
+A label cannot be used in an arithmetic expression.
+
+illegal void in typelist
+
+The void type can only be used for the first argument in a function
+template, to indicate that the function has no arguments.
+
+illegal zero sized structure member
+zero size field
+
+A zero-width bit field can be used in a structure to force alignment to the
+type of the field, but the field cannot have a name, so remove it.
+
+illegal {
+
+There is an extra { in this list of array or structure initial values.
+
+inline declaration must apply to function
+
+The asm keyword can only be used as a storage class for a function, e.g.
+
+	asm f() {
+
+invariant comparison
+
+This comparison is either always true or always false, so it is probably a
+coding error.
+
+is a predefined symbol, see end(3C) in the UNIX(R) Manual
+
+The end, etext, and edata symbols are special names that should not be
+used except as described in the end(3C) UNIX(R) Manual entry.  If used,
+they must be declared as int, e.g.
+
+	extern int end, etext, edata;
+
+Do not use these symbol names for variables or function names or arguments.
+
+is a system call, see section 2 of the UNIX(R) Manual
+
+These are special function names that should not be used except as
+described in the corresponding UNIX(R) Manual section 2 entry.  If
+declared, they must have the correct return type, e.g.
+
+	char *sbrk();
+
+Do not use these system call names for variables or function names or
+arguments.
+
+Label in expression
+
+A label cannot be used as a function argument or in an expression; perhaps
+it is a misspelled variable name.
+
+ld fatal: Symbol referencing errors. No output written to a.out
+undefined symbol
+
+If the symbol is _main then this program does not have a main function,
+which is the first function in the program to be executed.
+
+The remaining symbols are either misspelled function names, missing
+functions, or global variables that are only declared as external.
+
+lint's little mind is blown
+
+local variable set but not used in function
+set but not used in function
+
+This local variable has not been used after being set to a value in this
+function, so either remove it or insert the missing code that was intended
+to use it.
+
+local variable unused in function
+unused in function
+
+This local variable is not used in this function, so remove it.
+
+logical AND (&&) expression always false
+
+This expression is always false because the same variable cannot have
+different values at the same time, e.g.
+
+	if (i == 1 && i == 2)
+
+logical OR (||) expression always true
+
+This expression is always true because the same variable cannot have
+different values at the same time, e.g.
+
+	if (i != 1 || i != 2)
+	
+If i is 1 the right part of the || expression is true, if i is 2 the left
+part is true, and if i is any other value the left part is true.  Since one
+part of the || is always true, then this expression is always true.
+
+long in case or switch statement may be truncated
+
+The values used in a switch or case statement are converted to int, so long
+values may are truncated on machines where the int type is smaller than the
+long type.
+
+If this is a switch statement you can cast the expression to int, e.g.
+
+	long fcn();
+	
+	switch ((int) fcn()) {
+
+loop not entered at top
+
+A goto statement jumps inside this for, while, or do loop from outside the
+loop.
+
+macro recursion
+
+A macro cannot call itself or another macro that calls itself, e.g.
+
+	#define a() b()
+	#define b() a()
+	a();
+
+main() returns random value to invocation environment
+
+This main function does not have a return statement with a value.  The exit
+system call should be used to return 0 if the program is successful and > 0
+if it fails.  Unfortunately lint does not recognize this function and will
+continue to give this message unless a /* NOTREACHED */ comment is added
+after the exit(0) at the end of main(), e.g.
+
+		exit(0);
+		/* NOTREACHED */
+	}
+
+malformed format string
+
+The format string is incorrect in this printf, fprintf, sprintf, scanf,
+fscanf, or sscanf function call, e.g.
+
+	printf("%..s", name);
+
+should be
+
+	printf("%.8s", name);
+
+malloc is a library function, see section 3 of the UNIX(R) Manual
+realloc is a library function, see section 3 of the UNIX(R) Manual
+
+The malloc and realloc library functions must be declared to
+return a character pointer before they are used, e.g.
+
+	char *malloc(), *realloc();
+
+matches an m4 macro name; may cause assembler errors
+
+This function or variable has the same name as a m4 macro name.  If this
+file contains any assembly language statements (calls to the asm
+pseudo-function) the m4 macro processor will be called by the assembler,
+and this function or variable name will be replaced by its m4 macro value,
+which will cause an assembler syntax error.
+
+may be indistinguishable due to internal name truncation
+
+The two names differ after the eighth character, so they will be considered
+the same by an old-style compiler that only treats the first eight
+characters as significant, e.g.
+
+	a2345678();
+	a23456789();
+	
+will call a2345678() twice.
+
+may be used before set
+
+This local variable is not given a value before it is used.  Note that
+global and static variables are guaranteed to be 0 if not initialized, but
+local variables have the value of whatever happens to be in memory at that
+stack location.
+
+member of structure or union required
+
+The right hand operand of -> is not a structure or union member, perhaps it
+is misspelled or not declared.
+
+missing )
+
+The ) is missing after the macro arguments, e.g.
+
+	#define a(b,c
+
+missing identifier
+
+This #ifdef, #ifndef, or #undefine does not have an identifier, e.g.
+
+	#ifdef
+
+multiple assignment of structures not supported
+
+This compiler does not support assignment of more than one structure to
+another, e.g.
+
+	struct st a, b, c;
+	a = b = c;
+
+so use separate assignments instead
+
+	b = c;
+	a = b;
+
+name declared but never used or defined
+
+If lint was used on some but not all of the source files in the program,
+ignore this message.  Use the -u option to suppress this and related
+messages.
+
+This message is followed by a list of occurrences of the form
+
+    name    file(line)
+
+This function or global variable has an external declaration, but is never
+used.  Remove the declaration if it is not in a header file, otherwise use
+the lint -x option to suppress this message.
+
+name defined but never used
+
+If lint was used on some but not all of the source files in the program,
+ignore this message.  Use the -u option to suppress this and related
+messages.
+
+This message is followed by a list of occurrences of the form
+
+    name    file(line)
+
+This function or global variable is not used, so remove it.
+
+name multiply declared
+
+This message is followed by a list of occurrences of the form
+
+    function    file1(line) :: file2(line)
+
+If file2 is llib-lc, llib-lm, or llib-lport, e.g.
+
+    abort   	arcv.c(210) :: llib-lc(171)
+
+this function in file1 has the same name as a system call or library
+function, so change its name to avoid confusion.
+
+If file2 is a source file, this function in file1 has the same name as a
+function in file2, so change one of them.
+
+name used but not defined
+
+If lint was used on some but not all of the source files in the program,
+ignore this message.  Use the -u option to suppress this and related
+messages.
+
+This message is followed by a list of occurrences of the form
+
+    name    file(line)
+
+If this is a function, it does not exist in these program source files, so
+verify that it is spelled correctly.
+
+If this is a variable, it has been always declared with the extern keyword,
+so remove this keyword in one of the program source files.
+
+If this is a macro, the header file containing the macro definition was not
+included.
+
+nesting too deep
+
+Braces ({) are nested too many levels in this function, so put some of its
+code in a separate function.
+
+newline in BCD constant
+
+If you are not using the Honeywell GCOS operating system, probably you have
+used ` in place of ' in a character constant, e.g.
+
+	c = `1';
+
+should be
+
+	c = '1';
+
+newline in string or char constant
+
+This string or character constant does not end on this line.  Probably the
+terminating " or ' is missing in this string or character constant,
+respectively.  If the newline character is intended to be in the constant,
+use \n instead of continuing the constant on the next line, e.g.
+
+	printf("Type ? for help.
+	Enter file name: ");
+
+should be
+
+	printf("Type ? for help.\nEnter file name: ");
+
+If the constant is too long to fit on one source line and the newline
+character is not intended to part of the constant, put a \ at the end
+of the all but the last line, e.g.
+
+	char printable[] = "abcdefghijklmnopqrstuvwxyz\
+	0123456789\
+	-=[]\`;',./!@#$%^&*()_+{}|~:\"<>?"
+
+no automatic aggregate initialization
+
+An array or structure declared inside a function cannot be initialized, so
+either make it global (move it outside the function), add assignment
+statements to the function to initialize it, or if it is a character array
+with an initial value of a string, e.g.
+
+	char s[] = "string";
+
+you also change it to a pointer
+
+	char *s = "string";
+
+no table entry for op
+
+The compiler is unable to find a code generation template that matches the
+expression tree for this statement.
+
+If there is a warning on the same line, fix the cause of the warning. 
+Instead of an error message, some coding errors will cause a warning
+followed by a compiler error message.  For example, if the & in front of
+the structure name is missing on an argument to an assert macro the
+argument is an entire structure instead of its address. You will get this
+compiler error because the assert macro casts the argument to a (char *)
+pointer, and the compiler doesn't know how to transform a structure to a
+pointer.
+
+The mc68cc compiler also gives this message when a member of a
+structure-valued function is used directly, e.g.
+
+	i = f().a;
+
+so assign the returned structure to a temporary structure first
+
+	temp = f();
+	i = temp.a;
+
+Otherwise there is a bug in the compiler, so contact the organization that
+supports it.
+
+No source file
+
+Either this file name is misspelled or it is in another directory.
+
+no space
+too much pushback
+
+A macro in this statement expands to be larger than the C preprocessor can
+handle.  This can be caused by calls to large macros in this macro's
+arguments or nested calls to large macros in its definition.
+
+non-constant case expression
+
+A switch case value must be a numeric or character constant or enumeration
+value.
+
+non-null byte ignored in string initializer
+
+This string is longer than the structure member character array can hold,
+e.g.
+	struct s {
+	        char a[1];
+	} s = {
+		"12"
+	};
+
+so either increase the size of the array or shorten the string.
+
+nonportable character comparison
+
+Characters are unsigned on some machines, so comparing a character to a
+negative number will not work on all machines.  Some comparisons of a
+character to 0 (c < 0, c <= 0, c >= 0, or c > 0) imply that the character
+can be negative, so this also will not work on all machines.  You can cast
+the character to unsigned and compare it to the absolute value, that is,
+recode
+
+	if (c < 0)
+
+to be
+
+	if ((unsigned) c >= 0200)
+
+Note that the operator was inverted, that is, < became >=.
+
+nonportable field type
+
+The only type for a bit field accepted by all compilers is unsigned int.
+
+nonunique name demands struct/union or struct/union pointer
+struct/union or struct/union pointer required
+
+Either . was used in place of ->, e.g.
+
+	struct stat *p;
+	i = p.st_size;
+
+should be
+
+	struct stat *p;
+	i = p->st_size;
+
+or -> was used in place of ., e.g.
+
+	struct stat st;
+	i = st->st_size;
+
+should be
+
+	struct stat st;
+	i = st.st_size;
+
+or the * is missing in the structure pointer declaration, e.g.
+
+	struct stat p;
+	i = p->st_size;
+
+should be
+
+	struct stat *p;
+	i = p->st_size;
+
+not found in instruction table
+unexpected end
+
+You need to put #if !uts and #endif around a asm pseudo-function call used
+to insert non-IBM/Amdahl assembler statements in a C program, e.g.
+
+#if !uts
+	asm("nop");
+#endif
+
+null dimension
+
+Only the first dimension number of an array declaration can be omitted, so
+add the second and subsequent dimension numbers, e.g.
+
+	extern int a[][10];
+
+null effect
+
+An expression in this or previous statement has no effect, so it is ignored.
+See if the equality operator == was used where the assignment operator =
+was intended, e.g.
+
+	i == 1;
+
+should be
+
+	i = 1;
+
+If this is a for loop statement and there is a comma in the middle
+expression, that is, between the semicolons (;), e.g.
+
+	for (i = 0; i < 3, j > 4; ++i)
+
+then the code between the left semicolon and the comma is ignored.  Replace
+the comma with && or || as was really intended.
+
+If this is the } at the end of a for loop, the part of the for statement
+that is executed at the end of the loop has no effect, e.g.
+
+	for (p = start; p < finish; *p++) {
+		f(p);
+	} /* this is the line in the message */
+
+The * in *p++ should be removed in the above for statement.
+
+If this is the only statement inside a for loop, the part of the for statement
+that is executed at the end of the loop may have no effect, e.g.
+
+	for (p = start; p < finish; *p++)
+		f(p); /* this is the line in the message */
+
+The * in *p++ should be removed in the above for statement.
+
+old-fashioned assignment operator
+old style assign-op causes syntax error
+
+Assignment operators like =- should be transposed to -= to prevent
+confusion with other operators such as the negative operator -.  For
+example, is i=-j equivalent to i =- j or i = -j?
+
+old-fashioned initialization: use =
+
+In a declaration, the = operator before the initial value used to be
+optional, e.g.
+
+	int i 0;
+
+but is now required.	
+
+operands of + have incompatible types
+
+Either a pointer has been used as an array subscript, e.g.
+
+	int a[10], *p;
+	a[p] = 0;
+
+or an enum member has been used as an array subscript without an int cast,
+e.g.
+
+	enum {
+		RED, GREEN, BLUE
+	};
+	int colors[3];
+	colors[RED] = 0;	/* should be: colors[(int) RED] = 0; */
+
+or the type of the two sides of this operator do not match, so cast one
+side to the other's type if they are not structures and are the same size.
+
+operands of CAST have incompatible types
+
+If the right side of the cast is a function call, then the function may be
+of type void, which does not return a value, and cannot be cast to anything
+else.
+
+If the right side is a structure it cannot be cast to anything else.
+
+operands of <operator> have incompatible types
+
+The type of the two sides of this operator do not match, so cast one side
+to the other's type if they are not structures and are the same size.
+
+out of tree space; simplify expression
+
+This statement is too long so split it into smaller statements.
+
+parameter stack overflow
+
+This function has too many arguments; or this structure, union, or
+enumeration has too many members.
+
+pointer casts may be troublesome
+
+Ignore this message.  It was intended to warn of portability problems to
+rare machines where pointers can vary in size depending on their type, but
+these machines are now mainly found in museums.
+
+precedence confusion possible: parenthesize!
+
+Put parentheses around every use of the bit-wise operators & and |, and
+the shift operators << and >> because their precedence is not what you
+would expect, e.g.
+
+	if (i < j & 1)
+
+should be
+
+	if (i < (j & 1))
+
+This message may also indicate a type where the second & or | in the && or
+|| operators was left out, e.g.
+
+	if ( i < 0 & j < 0)
+
+should be
+
+	if ( i < 0 && j < 0)
+
+precision lost in assignment to (sign-extended?) field
+
+This assignment may be trying to set this bit field to a value larger than
+it can hold, e.g.
+
+	struct {
+		int f : 2;
+	} st;
+
+	st.f = 4;
+
+Either make the field larger or the value smaller so it will fit.
+
+This assignment may also be setting this field to a value that will set its
+high-order bit, e.g.
+
+	st.f = 2;
+
+Since the type of this field is signed, the high-order bit is the sign bit.
+This field will appear to be negative on machines that extend the sign bit
+when extracting a field.  This is rare so either ignore this message or
+change the type to the equivalent unsigned type:
+
+	struct {
+		unsigned int f : 2;
+	} st;
+
+precision lost in field assignment
+
+This assignment
+
+	st.f = 4;
+
+trys to set this bit field
+
+	struct {
+		unsigned int f : 2;
+	} st;
+
+to a value that is larger than it can hold.
+
+predefined symbol used outside a preprocessor statement
+
+The preprocessor will replace this symbol with the number 1, so don't use
+it as a variable, function, or tag name.
+
+Problems with output file; probably out of temp space
+Problems writing; probably out of temp-file space
+
+Type this command
+
+	df /usr/tmp
+
+If you get
+
+	df: cannot open /usr/tmp
+
+then type
+
+	df / /usr
+
+If the number of blocks is < 1000 then this machine is low on temporary
+file space, so call the operator, otherwise call the system administrator.
+
+questionable conversion of function pointer
+
+A pointer to a function is being cast to another type, so verify that this
+is what is intended.
+
+redeclaration of formal parameter
+
+This function argument appears more than once in the list of arguments, so
+rename or remove one of them.
+
+redeclaration of
+
+This function or variable has been declared twice with different types.  If
+this is the line after the function argument declaration, e.g.
+
+	void
+	f()
+	{ /* this is the line in the message */
+
+then this function was called from a prior function in this source file. 
+When a function has not been declared before it is called, its type is
+assumed to be int.  If it later is declared to be a type other than int,
+such as void, this is considered a redeclaration, so declare this
+function's type at the top of the file, e.g.
+
+	void f();
+
+redefined
+
+This #define gives this symbolic constant a different value than an earlier
+#define, which is probably in a header file that was #include'd.  Use grep
+to find all occurrences of this symbol in the program's source files, e.g.
+
+	grep MAX *.h *.c | grep define
+
+will find all definitions of the symbolic constant MAX in the source files
+in the current directory.
+
+If this symbolic constant is intended to be redefined, avoid this message
+by putting an #undef statement in front of the redefinition, e.g.
+
+	#undef MAX
+	#define MAX 100
+
+redefinition hides earlier one
+
+This variable has the same name as a global variable, so rename it to
+prevent confusion.  If the variable is generated by a macro, change its name
+to an unusual one by adding a leading underscore (_), e.g. change port to
+_port.
+
+sizeof returns value less than or equal to zero
+
+This sizeof argument is an external array who's dimension is not given, so
+add the dimension to the external array declaration.
+
+statement not reached
+
+This statement cannot be reached during execution.  The most common cause
+of this is a break statement after a return statement in a switch case.
+When using lint this message can be suppressed by placing a 
+/* NOTREACHED */ comment before the statement or using the -b option.  The
+compiler will still give this message, so a more comprehensive solution is
+to delete this statement.
+
+static variable unused
+
+This static variable is not used, so remove it.
+
+string expected
+
+The #ident statement must have a string constant as the sole argument, e.g.
+
+#ident	"@(#)lint:lint.c	1.8"
+
+struct/union never defined
+
+The line number in the message is always the last line in the source file,
+so ignore it.
+
+This structure or union tag was used to declare a pointer, but itself was
+never declared.  If the declaration is there then either the tag is missing
+or misspelled.
+
+structure never defined
+
+This structure, union or enumeration tag was used to declare a pointer, but
+itself was never declared.  If the declaration is there then either the tag
+is missing or misspelled.
+
+structure reference must be addressable
+
+The left side of the . is not a structure.  If it is a macro, e.g.
+
+	GETFIELD(x).y
+	
+then the header file containing the macro definition may be missing.  If
+so, the macro appears to be a function returning an integer to the
+compiler, thus causing this message.
+
+structure size <0=0 or >65535
+
+This structure is too large.
+
+structure too large
+too many local variables
+too many bytes of locals: limit is 32768 per function
+
+The space needed for the local variables of this function is larger than
+the maximum run-time stack size, so make some of the largest array or
+structure declarations global by moving them outside the function.
+
+structure typed union member must be named
+
+Either the structure tag or variable name is missing, e.g.
+
+	union {
+		struct a;
+
+stuck starg
+
+The compiler is unable to generate code for a function argument expression
+that results in a structure
+
+	struct tag g();
+	f(g().m);
+
+so add a statement that assigns all or part of the expression to a
+temporary structure variable 
+
+	struct tag g();
+	struct subtag st = g().m;
+	f(st);
+
+switch expression must have integral type
+switch expression requires integral type
+
+A switch statement value must be of type char, short, or int.
+
+symbol table full
+
+There are too many symbols for the compiler to handle, so remove unneeded
+declarations and included header files, or split this file.
+
+syntax error
+
+There are so many possible causes of a syntax error that only the most
+common and/or hard to find are listed here.
+
+If this is an if or while statement, look for a missing (
+
+	if (i = f()) == 0)
+
+If this is the statement after an if or while statement, look for a
+missing )
+
+	if ((i = f() == 0)
+		j = 1; /* this is the line in the message */
+
+If this is an assignment statement, look for a : in place of the
+terminating ;
+
+	i = 1:
+
+Look for a missing ; on the previous statement
+
+	j = 1
+	i = 1; /* this is the line in the message */
+
+If this is the last } in the function, look for a missing { or extra }
+
+	f()
+	{
+		if (g() != 0)
+			i = 1;
+		}
+	} /* this is the line in the message */
+
+or an unterminated comment
+
+	f()
+	{
+		/* unterminated comment
+		if (g() != 0) {
+			i = 1;	/* comment */
+		}
+	} /* this is the line in the message */
+
+by using the C program beautifier (cb) on this file
+
+	cb program.c
+
+and looking for an unexpected left shift in the indentation
+
+	f()
+	{
+		if (g() != 0)
+			i = 1;
+	} /* unexpected left shift */
+	}
+
+If this is after the last } in the file
+
+	}
+	/* this is the line in the message and the end of the file */
+
+or at the first { in a function with no arguments
+
+	g()
+	{ /* this is the line in the message */
+
+or the first argument declaration
+
+	g(i, j, k)
+	int i; /* this is the line in the message */
+
+then look for a missing } or extra { in the preceding function by
+using the C program beautifier as described above and looking for an
+unexpected right shift in the indentation
+
+	f()
+	{
+		if (g() != 0) {
+			i = 1;
+			h(); /* unexpected right shift */
+	}
+
+If this is a declaration or function call, look at the cpp manual pages to
+see if the variable is a predefined preprocessor symbol, e.g.
+
+	int unix;
+
+If this is a declaration that uses a type defined in a typedef statement,
+e.g.
+
+	FILE *input;
+
+probably the header file containing the typedef has not been #include'd,
+such as stdio.h for type FILE.  If the syntax error is in a system header
+file, probably sys/types.h was not included or was included after this
+header file.
+
+If you still can't find the syntax error, use the -P option to the cc
+command to run the preprocessor only and generate a .i file instead of a .o
+file.  The line numbers in this file will differ from the .c file, so
+use the text search command of your editor to find the statement causing
+the syntax error.  See if the preprocessing is doing something unexpected;
+perhaps a macro is not expanding correctly.
+
+A final note: Ignore any remaining messages after the syntax error message
+because they are likely to be caused by the syntax error.
+
+syntax error (in preprocessor if)
+
+The #if must be followed by an expression containing only symbols #define'd
+with values; integer numbers; character constants; the unary -, !, ~, and
+defined operators; the binary *, /, %, +, -, <<, >>, <, >, <=, >=, ==, !=,
+&, ^, |, &&, and || operators; the trinary ?: operator; and parentheses. 
+The sizeof operator is not allowed.
+
+If the expression looks correct then one of the symbols probably has been
+#define'd to not have a value, e.g.
+
+	#define a
+	#if a
+
+will cause this message, but this will not
+
+	#define a 1
+	#if a
+
+Note that an undefined symbol defaults to a value of 0, so it can be used
+in a #if statement.
+
+terminating typechecking on function - too many errors
+too many errors
+
+Too many errors have been found to be worth continuing this compilation.
+
+token too long
+
+This string constant is too long for the preprocessor to handle, so split
+it into two strings.
+
+too few arguments for format
+
+The format string indicates there should be more arguments in this printf,
+fprintf, sprintf, scanf, fscanf, or sscanf function call, e.g.
+
+	printf("%d %d", i);
+
+should be
+
+	printf("%d %d", i, j);
+
+too many #else's
+
+There can only be one #else in a #if statement, perhaps #elif was intended
+for all but the last #else.
+
+too many arguments for format
+
+The format string indicates there should be fewer arguments in this printf,
+fprintf, sprintf, scanf, fscanf, or sscanf function call, e.g.
+
+	printf("%d", i, j);
+
+should be
+
+	printf("%d %d", i, j);
+
+too many characters in character constant
+
+This character constant has more characters than will fit in an integer
+constant, that is, more than 4 characters on a 32 bit machine or more than
+2 characters on a 16 bit machine.  Lint may give this message for any
+multi-character constant.
+
+too many defines
+too much defining
+
+There are too many #define statements, so remove those for symbols not
+used.  Since #define statements are often in header files, remove the
+#include statements for any unneeded header files.
+
+too many formals
+too many formal arguments
+
+This macro has too many arguments.
+
+} expected
+too many initializers
+
+There are more initial values than can fit in an array of this dimension,
+so either remove some initial values or increase the dimension.
+
+type clash in conditional
+
+The two sides of the : are structures of different types.
+
+undeclared initializer name
+
+This name has not been #define'd before it was used as an initial value.
+
+undefined
+
+This variable has either not been declared, or if it is an argument in a
+function definition, e.g.
+
+	f(i)
+	int i;
+	{
+
+then there is a missing } or extra { in the preceding function. 
+
+undefined control
+
+Either the preprocessor keyword is misspelled, e.g.
+
+	#defin MAX 100
+
+or the white space after the keyword is missing, e.g.
+
+	#defineMAX 100
+
+or this file is no longer to be used, that is it only contains
+
+	#empty
+
+Unexpected EOF in comment
+Unexpected EOF in the comment starting in line
+
+The */ to end this comment was not found before the end of the file. 
+Either it is missing, /* was used in its place, or mistyped, e.g. *?.
+
+Unexpected EOF within #if, #ifdef or #ifndef
+missing #endif at end-of-file
+
+This file has a #if or #ifdef without a matching #endif, so find where the
+missing #endif belongs and add it.
+
+unhide: unexpected list
+
+Either this line is in a function that has an argument with the same name
+as the function, e.g.
+
+	b(a, b)
+	int a, b;
+	{
+
+or the "case" keyword is missing from switch case statements, e.g.
+
+	enum {a, b, c, d} e;
+	...
+	switch (e) {
+	a:
+	b:
+		return;
+	}
+
+unknown flag
+
+This option has been misspelled.
+
+unknown size
+
+The sizeof operator is unable to get the size of a structure or union that
+has not been declared.
+
+Unreasonable include nesting
+
+The term "include nesting" refers to #include'd files that also #include
+files, which also #include files, etc.  This has occurred too many times
+and is probably caused by recursive #include's, e.g. file a.h includes b.h,
+which includes c.h, which includes a.h again.
+
+unsigned comparison with 0?
+
+An unsigned variable cannot be negative, so change a comparison of > 0 to
+!= 0 and a comparison of <= 0 to == 0.
+
+value type declared inconsistently
+
+This message is followed by a list of occurrences of the form
+
+    function    file1(line) :: file2(line)
+
+The line numbers are correct, but the file name will be wrong if the line
+is in a #include'd file.  So if the line in the file named doesn't contain
+a declaration or call of the function, use cscope(1) to find that line
+number in a #include'd file by searching for the function with the "Find
+this C symbol" input field.
+
+If there is a question mark (?) after a file name, then the line is a
+declaration of the function return type, otherwise it is a call to a
+function that has not been declared.
+
+If file1 is llib-lc, llib-lm, or llib-lport, e.g.
+
+    exit   	llib-lc(45) :: volcopy.c(936)
+
+this function is a system call or library function and its declaration in
+file2 does not match its man page.
+
+If file1 is a source file, this function has been declared with different
+types in file1 and file2.
+
+Note that when a function has not been declared before it is called, its
+type is assumed to be int.  If it is declared to be a type other than int,
+such as void, in another source file this is considered a redeclaration, so
+declare this function's type before it is called, e.g.
+
+	void exit();
+
+value type used inconsistently
+
+This message is followed by a list of occurrences of the form
+
+    function    file1(line) :: file2(line)
+
+If file1 is llib-lc, llib-lm, or llib-lport, e.g.
+
+    malloc   	llib-lc(338) :: cpset.c(100)
+
+this function is a system call or library function and its use in
+file2 does not match its man page.
+
+If file1 is a source file, this function's use does not match its
+declaration.
+
+Note that when a function has not been declared before it is called, its
+type is assumed to be int.  If it is declared to be a type other than int,
+such as void, in another source file this is considered a redeclaration, so
+declare this function's type before it is called, e.g.
+
+	char *malloc();
+
+void function cannot return value
+
+This function is declared to be type void, which means it does not return a
+value, so either change the function's type or remove the value from this
+return statement.  You can also get this message if you cast the return
+value from a void function, e.g.
+
+	void f();
+	
+	i = (int) f();
+
+void type for
+
+Only functions can of type void, so probably () is missing from the
+declaration, e.g.
+
+	void exit;
+
+should be
+
+	void exit();
+
+void type illegal as argument
+
+A function returning void has no value, so a call to it cannot be used as a
+function argument, e.g.
+
+	void f();
+	
+	g(f());
+
+Perhaps just the function name should be the argument, e.g.
+
+	signal(SIGINT, f);
+
+whiles, fors, etc. too deeply nested
+
+While, for, do, and switch statements are nested too many levels in this
+function, so put some of its code in a separate function called from this
+function.
+
+yacc stack overflow
+
+This sequence of if and else if statements is too long, so split the
+sequence by removing an else from the middle.
+
+yacc stack overflow (in preprocessor if)
+
+This #if statement is too long or complicated, so split it into two #if
+statements.
+
+zero or negative subscript
+
+An array's dimension must be > 0.
+
+zero sized structure
+
+This structure contains only zero-width bit fields.
+
+& error
+address of OREG taken
+andable error
+argument or auto is smaller than an int
+bad -= rewrite
+Bad address for hard ops
+bad AR_?? action
+bad arg temp
+bad argument
+bad bdty
+bad call to setstr
+bad conditional branch
+bad conversion
+bad getlr
+bad incr rewrite
+bad multi-level tree descriptor around mltree
+bad option
+bad setrew
+bad setstr
+bad special shape
+bad storage class
+bcsave error
+call register overwrite
+cannot find fake struct tag
+cannot reclaim
+can't identify type of fake tagname
+check at level
+check error
+checkal: illegal node type
+class of param not PARAM
+clearst fails on
+compiler takes alignment of function
+could not malloc bytes
+could not realloc bytes
+defid call
+Don't know what to do in chkdim
+doinit: unexpected initializer
+doinit: zero array size
+dtmerge: p = : p->in.op =
+faulty register move
+freeing blank tree!
+function level error
+gummy structure member
+illegal -
+illegal \n
+illegal address
+illegal address in xxxput
+illegal character on intermediate file
+illegal class
+illegal conput
+illegal constant shift type in zzzcode
+illegal d or e zzz subcode
+illegal free
+illegal location counter
+illegal makeor2
+illegal oconvert
+illegal reclaim
+illegal register name
+illegal register pair freed
+illegal setasop
+illegal variable shift type in zzzcode
+illegal zzzcode
+incode: field > int
+inoff error
+insane structure member list
+insput
+intermediate file format eof
+intermediate file format error
+locctr: STAB unused
+lost jump table temp file
+lost temp file
+nidcl error
+no free areg for return structure address
+No free areg for stasg/starg
+no free data register for stasg/starg
+no hoptab for
+no line number for
+other code
+out of hash tables
+out of room for asm argument storage
+out of switch in yylex
+overwriting in structure assignment
+parameter reset error
+paramstk error
+potential register overwrite
+register allocation error
+register overfreed
+rtmerge: illegal node type
+savetl: illegal node type
+setbin failed
+setstr failed
+stack overflow
+STASG bad
+STASG-r
+stat unsuccessful on
+strfind encountered symbol table error
+struct/union member is smaller than an int
+structure tagname not found
+switch error
+ttmerge: illegal node type
+tymerge: arg 1
+tyreduce
+unhide fails
+unknown opcode
+upput
+usable asked about nontemp register
+wasted space
+yylex error, character
+zzzcode- bad type
+
+If there is a preceding message with the same line number, correct the
+cause of the message.
+
+Otherwise, there is a bug in the program that produced this message (the
+compiler or lint), so contact the organization that supports it.

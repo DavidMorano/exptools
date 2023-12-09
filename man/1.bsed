@@ -1,0 +1,132 @@
+
+
+
+     BBBBSSSSEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              BBBBSSSSEEEEDDDD((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          bsed - binary stream editor
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          bbbbsssseeeedddd [-vsw] [-m [min-]max] search=replace infile outfile
+          bbbbsssseeeedddd [-vsw] [-m [min-]max] search infile
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          bbbbsssseeeedddd searches for a binary string in a file.  If a replace
+          string is given, bbbbsssseeeedddd copies infile to outfile, replacing
+          all instances of the search string with the replace string.
+
+          If infile is '-', input is from standard input; if outfile
+          is '-', output is to standard output.
+
+          Both the search and the replace strings can contain a combi-
+          nation of ascii characters and hex numbers. The following is
+          the algorithm used: If the string begins with a digit (0-9),
+          assume a hex number is beginning.  Continue converting hex
+          digits (0-f) into binary until a non-hex digit begins,
+          unless the string began with "0x" or "0x": in that case just
+          throw away the 0x.  Every 2 hex digits makes a byte; if
+          there is an odd number then the last digit is taken as the
+          low nibble of a byte.  Anytime a backslash () is encoun-
+          tered, consider it to be a break in the conversion process
+          and treat it as if starting a new string.  If another
+          backslash is immediately following it, insert a backslash.
+          Once converting an ascii string, continue converting it
+          until a backslash or end of string.
+
+          NOTE: be sure to escape the backslash from the shell.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          -v   verbose option.  First lists the search (and replace)
+               string in a hex-ascii dump format:  each byte is listed
+               first in hex, followed by the ascii for each printable
+               character or "." for each non-printing character.  Next
+               it gives a hex-ascii dump of the context of each match
+               of the search string, with the position of the match
+               into the file (in hex) in the middle of the dump.  Out-
+               put is to stderr.
+
+          -s   Normally bbbbsssseeeedddd will list the number of matches to
+               stderr.  This option suppresses that.
+
+          -w   Normally bbbbsssseeeedddd will warn if the search and replace
+               strings are not the same length.  This option
+               suppresses that warning.
+
+          -m [min-]max
+               Normally bbbbsssseeeedddd will find all the matches of the search
+               string.  This option specifies a range of match numbers
+
+
+
+     Page 1                                          (printed 10/3/91)
+
+
+
+
+
+
+     BBBBSSSSEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              BBBBSSSSEEEEDDDD((((1111))))
+
+
+
+               to use.  The default mininimum is number 1.  Both min
+               and max are in decimal.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          bsed -v "ab\0xa" testfile
+
+          bsed -sw "data\0=fonts\0" testfile - | od -cx
+
+          bsed -v -m5-5 "012345=0xa\bc" testfile testout
+
+     AAAAUUUUTTTTHHHHOOOORRRR////PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          David W. Dykstra, iexist!dwd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 10/3/91)
+
+
+

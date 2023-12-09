@@ -1,0 +1,198 @@
+
+
+
+     TTTTOOOOOOOOLLLLMMMMAAAANNNN((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           TTTTOOOOOOOOLLLLMMMMAAAANNNN((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          toolman - print manual entries for experimental tools
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ttttoooooooollllmmmmaaaannnn [----XXXXCCCCLLLL] [----DDDD _p_a_c_k_a_g_e] [----OOOO _p_r_i_n_t_o_p_t_i_o_n]... \
+               [----PPPP _p_r_i_n_t_s_c_r_i_p_t] _t_o_o_l_n_a_m_e ...
+          ttttoooooooollllmmmmaaaannnn ----NNNN [----LLLL] [----DDDD _p_a_c_k_a_g_e] [----OOOO _p_r_i_n_t_o_p_t_i_o_n]... \
+               [----PPPP _p_r_i_n_t_s_c_r_i_p_t]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _T_o_o_l_m_a_n prints the manual pages for all commands in the
+          _t_o_o_l_n_a_m_e list, with ''''****'''' as a special case meaning all manual
+          pages.  By default, _t_o_o_l_m_a_n's output is piped through a user
+          specified paging command, determined by the value of the
+          PPPPAAAAGGGGEEEERRRR environment variable and written to the standard
+          output.  If the PPPPAAAAGGGGEEEERRRR environment variable is not set or is
+          null, the default pager is _p_g(1).
+
+          The ----XXXX option causes _t_o_o_l_m_a_n to submit a batch job to print
+          the manual pages on a hard copy printer rather than standard
+          output.  This option is the default if the ----NNNN option is
+          used.
+
+          The ----NNNN option allows the user to keep a current version of
+          all _e_x_p_t_o_o_l_s manual pages.  This option causes all manual
+          pages newer than the file $_H_O_M_E/._t_o_o_l_m_a_n__t_i_m_e to be printed.
+          If the ._t_o_o_l_m_a_n__t_i_m_e file does not exist, _t_o_o_l_m_a_n creates it
+          and exits.  After the manual pages are printed, the time of
+          the ._t_o_o_l_m_a_n__t_i_m_e file is set to the current time.  If this
+          file is not empty it is used with the _e_g_r_e_p(1) ----ffff and ----vvvv
+          options to exclude */_m_a_n/[_0-_8].* file names, e.g. this will
+          exclude the _5_5* and _e_m_a_c_s but not _e_m_a_c_s_t_e_r_m manual pages:
+
+               \.55
+               \.emacs$
+
+          The ----LLLL option causes _t_o_o_l_m_a_n to only list the manual pages
+          that would be printed if the ----LLLL option had not been given.
+          No manual pages are actually printed.  The list of manual
+          pages is printed on standard output, one per line.
+
+          The ----CCCC option has the same effect as including _C_o_n_t_e_n_t_s and
+          _I_n_d_e_x in the _t_o_o_l_n_a_m_e list.
+
+          The ----DDDD option causes _t_o_o_l_m_a_n to search a user specified
+          directory for manual pages.  If the directory name given
+          after the ----DDDD option contains a ////, toolman uses that
+          directory name (full or relative) as the directory to
+          search.  If the directory name given does not contain a ////,
+          _t_o_o_l_m_a_n assumes that it is the name of an optional EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS
+          tool package to print the manual pages for.  For example, to
+          print all manual pages for the tool set _u_n_i_t_y, the command
+
+
+
+     Page 1                                         (printed 12/14/92)
+
+
+
+
+
+
+     TTTTOOOOOOOOLLLLMMMMAAAANNNN((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           TTTTOOOOOOOOLLLLMMMMAAAANNNN((((1111))))
+
+
+
+          would be ttttoooooooollllmmmmaaaannnn ----DDDD uuuunnnniiiittttyyyy ''''****'''' .  To search only the manual
+          directory for the standard tool set (i.e. $_T_O_O_L_S/_m_a_n), the
+          option is ----DDDD ssssttttaaaannnnddddaaaarrrrdddd.  To search only the optional tool
+          package areas (and not the standard package area), the
+          option is ----DDDD ooooppppttttiiiioooonnnnaaaallll.  To search all the _e_x_p_t_o_o_l_s
+          directories (which is the default if no ----DDDD option is
+          specified) use the option ----DDDD aaaallllllll.  More than one ----DDDD option
+          may be given.  Only directories specified by ----DDDD will be
+          searched (i.e. if ----DDDD uuuunnnniiiittttyyyy is given on the command line, the
+          standard set to manual pages will not be searched, only the
+          manual pages in the _u_n_i_t_y package).
+
+          The ----PPPP option allows the user to specify a different script
+          to actually print the hard copy output.  This allows the
+          user to use _t_o_o_l_m_a_n to find the manual pages to print, but
+          gives the user additional flexibility in output format.
+          This is particularly useful if the user wishes to send the
+          output to some printer other than the default for this
+          machine.  The full path names of the manual page files are
+          passed as arguments to the user specified script.
+
+          The ----OOOO option is used to pass the print command an option
+          not recognized by _t_o_o_l_m_a_n.  The option(s) to pass to the
+          print command must follow the ----OOOO, and may also be used to
+          pass options to scripts specified by the -P option (see
+          above).  Note that ----OOOO may be used repeatedly; while
+
+               -O '-d ix'
+
+          does not work, the equivalent options may be passed as
+
+               -O -d -O ix
+
+          It may also be used to pass options to scripts specified by
+          the ----PPPP option (see above).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          toolman 2pr
+               Displays the manual page for the tool _2_p_r on standard
+               output.
+
+          toolman -X -Dunity '*'
+               Prints the manual pages for the optional package _u_n_i_t_y.
+               The pages will be printed on both sides of the paper.
+
+          toolman -XC
+               Prints the contents and permuted index for the standard
+               tool set.
+
+          toolman -N -D standard
+               Prints all standard manual pages that have been changed
+               since the last time this command was executed.  If this
+
+
+
+     Page 2                                         (printed 12/14/92)
+
+
+
+
+
+
+     TTTTOOOOOOOOLLLLMMMMAAAANNNN((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           TTTTOOOOOOOOLLLLMMMMAAAANNNN((((1111))))
+
+
+
+               is the first time _t_o_o_l_m_a_n has been executed with the ----NNNN
+               option, no manual pages are printed.
+
+          toolman -NL
+               Lists on standard output all manual pages that have
+               been changed since the last time ttttoooooooollllmmmmaaaannnn ----NNNN was
+               executed.  No manual pages are actually printed.  If
+               ttttoooooooollllmmmmaaaannnn ----NNNN were executed directly after this command,
+               it would print exactly those manual pages that were
+               listed.
+
+          toolman -P localprintscript emacs
+               Prints the _e_m_a_c_s manual pages on a local printer.
+
+          toolman -N -P prt -O '-dix' -O '-p2on1' -O '-B' emacs
+               Prints the new manual pages on a bulk printer without
+               putting the print command and options in a shell
+               script.
+
+     LLLLOOOOCCCCAAAALLLL OOOOPPPPTTTTIIIIOOOONNNN
+          This section is of interest primarily to _e_x_p_t_o_o_l_s
+          administrators.  If a file named
+          $_T_O_O_L_S/_l_i_b/_t_o_o_l_m_a_n/_t_o_o_l_m_a_n__l_o_c_a_l exists on the local
+          machine, that file is used as if it were supplied to _t_o_o_l_m_a_n
+          via the ----PPPP option (see above) as the script for printing all
+          manual pages.
+
+     FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT
+          _T_o_o_l_m_a_n assumes that the manual pages it finds are formatted
+          by a command similar to:
+
+               nroff -man toolman.1 > 1.toolman
+
+          Note that the page length must be the default 66 lines and
+          the output type must be the default (----TTTT33337777).  File names for
+          manual pages must match the pattern '[[[[0000----8888]]]]....****'.  The digit
+          should match the section number the manual page would be
+          included under.
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/man            Manual directory for standard tool set
+          $TOOLS/lib/*/man      Manual directories for optional tool sets
+          $HOME/.toolman_time   Timestamp file (see ----NNNN option above)
+          $TOOLS/lib/toolman/toolman_local
+                                Local print script (see LOCAL OPTION above)
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _p_g(1)
+
+
+
+
+
+
+
+     Page 3                                         (printed 12/14/92)
+
+
+

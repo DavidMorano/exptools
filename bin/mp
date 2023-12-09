@@ -1,0 +1,43 @@
+#!/bin/sh
+
+_mp=${TOOLS:?}/lib/mp/bin/inimp
+_addon=
+
+case $1 in
+-T)	export TRFONTS	# where to find troff font description files
+	TRFONTS=${TRFONTS:-/usr/lib/font/devpost}
+	test -r $TRFONTS/R ||
+	{
+		TRFONTS=/usr/add-on/dwb/lib/font/devpost
+		test -r $TRFONTS/R ||
+		{
+			cat <<-EOF 1>&2
+			$0 -T: Cannot find troff width tables!
+			You don't seem to have a version of troff I can handle.
+			I need ASCII font tables with names like R, B, I, HI.
+			I expect the files to contain four columns of data and
+			appear in /usr/lib/font/devpost, $TRFONTS
+			or a directory given by the environment variable TRFONTS
+			EOF
+
+			exit 1
+		}
+	}
+	MPXCOMMAND=${MPXCOMMAND:-$TOOLS/lib/mp/bin/troffmpx}
+	;;
+esac
+
+
+#append default paths
+TEXFONTS=${TEXFONTS:+$TEXFONTS:}.:$TOOLS/lib/tex/fonts
+MFINPUTS=${MFINPUTS:+$MFINPUTS:}.:$TOOLS/lib/tex/mf
+MPINPUTS=${MPINPUTS:+$MPINPUTS:}.:$TOOLS/lib/mp/lib
+MPMEMS=${MPMEMS:+$MPMEMS:}.:$TOOLS/lib/mp/lib
+MPPOOL=${MPPOOL:+$MPPOOL:}.:$TOOLS/lib/mp
+TEXVFONTS=${TEXVFONTS:+$TEXVFONTS:}$TOOLS/lib/tex/fonts
+MPXCOMMAND=${MPXCOMMAND:-$TOOLS/lib/mp/bin/makempx}
+: ${MPEDITOR:="${EDITOR:-${VISUAL:-vi}} +%d %s"}
+
+export TEXFONTS MFINPUTS MPINPUTS MPMEMS MPPOOL MPXCOMMAND MPEDITOR TEXVFONTS
+
+exec $_mp $*

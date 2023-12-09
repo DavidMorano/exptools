@@ -1,0 +1,175 @@
+#!/bin/sh
+
+######################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1990, 1992
+#			AT&T Bell Laboratories
+######################################################################
+####################################################################
+# Extract call, predicate, or #include info from source file
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				October 1990
+#
+#
+# USAGE:  pretree  -l  awk | c | make | nroff | prolog  | prologxref
+#		[-I|p] [-s] [-F char] [-i file_of_files] [source_files]
+#
+# NOTES:
+#	languages supported:
+#		awk	-awk pattern matching language
+#		c	-C language source
+#		make	-makefile source
+#		nroff	-nroff, troff, or mm source file
+#		prolog	-prolog language source
+#		prologxref	-(Sun) prolog crossreference report
+####################################################################
+VERSION="5.2"
+LANGOPTIONS="awk | c | make | nroff | prolog | prologxref"
+PGM=`basename $0`
+TOOLS=`logdir exptools`
+LIBDIR=$TOOLS/lib/${PGM}/
+# LIBDIR=./
+
+TMP=/usr/tmp
+
+# set temporary files
+TMPF1=$TMP/1dtc$$
+TMPF2=$TMP/2dtc$$
+TMPCF=$TMP/3dtc$$
+PIPEDFILE=$TMP/4dtc$$
+
+TMPFILES="$TMPF1 $TMPF2 $TMPCF $PIPEDFILE"
+
+# trap unexpected signals so we clean up temp files
+#trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+EXAMPLE="\nTo draw a tree diagram, pipe output of ${PGM} to dt, for example:\n\n\t\t${PGM} -lc file.c | dt\n\t\t\tor\n\t\t${PGM} -lprolog file.pl | dt -l64\n"
+FORHELP="\n(Type 'toolman pretree' for manual page, then contact Bob Parnass for help.)\n"
+USAGE="### error ### ${PGM}, version ${VERSION}:\nUSAGE:  ${PGM}   -l ${LANGOPTIONS}\n\t[-I|-p] [-s]  [-F char]  [-i file_of_files]  [source_files]\n${EXAMPLE}${FORHELP}"
+
+EXITCODE=0
+
+# parse command line arguments 
+set -- `getopt i:l:F:Ips $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	IFLAG=
+	INCFLAG=
+	IINCFLAG=
+	PFLAG=
+	FFLAG=
+	SFLAG=
+	SSFLAG=
+	for i in $*
+	do
+		case $i in
+		-I)
+			# extract #include info
+			INCFLAG="-I"
+			IINCFLAG=1
+			shift 1;;
+		-p)
+			# extract call params
+			PFLAG="-p"
+			shift 1;;
+		-i)
+			IFLAG="-i"
+			FILEOFFILES=$2
+			shift 2;;
+		-F)
+			FFLAG="-F $2"
+			shift 2;;
+		--)
+			shift; break;;
+		-l)
+			case $2 in
+			awk|c|make|nroff|prolog|prologxref)
+				LANGANALYZER=$2
+				shift 2;;
+			*)
+				echo "\n${PGM}: language must be: ${LANGOPTIONS}" 1>&2
+				echo ${USAGE} 1>&2
+				exit 1
+				;;
+			esac
+			;;
+		-s)
+			# skip UNIX subroutines and system calls
+			# for C programs 
+			SFLAG="-s"
+			SSFLAG=1
+			shift 1;;
+		'-?')
+			echo ${USAGE} 1>&2
+			exit 1
+			;;
+		esac
+	done
+fi
+
+if [ "$LANGANALYZER" ]
+then
+	if [ "$LANGANALYZER" != "c" ]
+	then
+		if [ "$IINCFLAG" -o "$SSFLAG" ]
+		then
+			echo "-I, -s, -p options are only valid for c language programs\n" 1>&2
+			echo "${USAGE}" 1>&2
+			exit 1
+		fi
+	fi
+else
+	echo "\nMust specify language as: ${LANGOPTIONS}" 1>&2
+	echo ${USAGE} 1>&2
+	exit 1
+fi
+
+PIPEDFILE=
+
+if [ "$IFLAG" ]
+then
+	test -r ${FILEOFFILES}
+	if [ $? -ne 0 ]
+	then
+		echo "### error ### ${PGM}: Cannot read file ${FILEOFFILES}" 1>&2
+		echo "${USAGE}" 1>&2
+		exit 1
+	fi
+else
+	if [ $# -ne  0 ]
+	then
+		FILELIST=
+		while [ $# -ge 1 ]
+		do
+			FILELIST="$FILELIST "${1}
+			shift
+		done
+	fi
+fi
+
+${LIBDIR}$LANGANALYZER $INCFLAG $PFLAG $FFLAG $SFLAG $IFLAG $FILEOFFILES $FILELIST
+
+EXITCODE=$?
+
+if [ $EXITCODE -ne 0 ]
+then
+	echo "### error ### ${PGM}: $LANGANALYZER analyzer failed." 1>&2
+fi
+
+# clean up
+rm -f ${TMPFILES}
+exit ${EXITCODE}
+
+# There is a fifth dimension beyond that which is known to
+# man. It is a dimension as vast as space and as timeless as
+# infinity.  It is the middle ground between light and shadow,
+# between science and superstition. And it lies between the
+# pit of Man's fears and the summit of his knowledge.  This is
+# the dimension of imagination -- it is an area which we call
+# "The Twilight Zone".

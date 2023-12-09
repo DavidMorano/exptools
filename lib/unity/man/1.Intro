@@ -1,0 +1,990 @@
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Intro - introduction to UNITY commands and application
+          programs
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          UNITY is a small relational data base management system
+          (DBMS) that runs under the UNIX(TM) operating system.  UNITY
+          is very user-oriented and provides many powerful command
+          capabilities.  Emphasis is placed on ease of use and
+          allowing a multi-user environment while keeping UNITY small
+          and simple to understand and maintain.
+
+          Since UNITY is based on the relational data model it
+          benefits from an easily understood data structure.  Data is
+          thought of in terms of _t_a_b_l_e_s (files) of _t_u_p_l_e_s (records)
+          consisting of several _a_t_t_r_i_b_u_t_e_s (fields).  With this model,
+          a _d_a_t_a_b_a_s_e is a collection of _t_a_b_l_e_s.  UNITY does not
+          currently support the concept of the _k_e_y (i.e., an attribute
+          which is unique for every record in the data file) in the
+          relational model so that identical tuples are allowed in a
+          table.  However, attributes may be specified to be indexed
+          to decrease access time.  In UNITY, attribute values are
+          Ascii character strings that are either fixed in length, or
+          variable in length with a specified terminator.  Description
+          files, which provide an interpretation for the records in
+          the tables, must be defined by the user.  The command
+          language is simple and yet powerful.  It is based on
+          relational algebra (e.g., joining of tables, selection and
+          projection of attributes) implemented as executable C-
+          programs within the UNIX environment.  The commands allow
+          the user ease in creation, maintenance and update, and query
+          of the tables.  These commands may be executed singly in
+          sequence with output into a file to serve as input to the
+          next command, or in a procedure made up of a sequence of
+          commands to be executed as if a single command had been
+          given (shell procedure).
+
+          UNITY does _n_o_t currently provide a self-contained user
+          language or command interpretor.  Instead, it offers the
+          full capability of the UNIX shell language to build up
+          complicated queries from simple individual commands (i.e.,
+          the UNITY programs function as tools).  In effect, a new
+          data type called TABLE and a set of functions such as
+          _u_s_e_l_e_c_t and _u_j_o_i_n have been defined.  Each UNITY command is
+          designed to be small and modular.  The UNITY software
+          currently consists of about four dozen C-language programs
+          (about 15,000 lines of code).  Each command is a stand-alone
+          module and most of the commands occupying less than 50K
+          bytes of user memory (with the exception of the _r_e_g_j_o_i_n,
+          _u_m_e_n_u and _v_a_l_i_d_a_t_e programs).
+
+          Users may write their own programs using the UNITY functions
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          at two levels.  The lower level UNITY functions can be
+          called from a user program to read, manipulate, and write
+          UNITY tables; these functions are described in
+          _U_i_n_t_l_l(UNITY).  The user also has access to the high-level
+          functions which execute actual UNITY commands.  The
+          interface is argc-argv format just as the arguments would be
+          passed to the unity main programs; these functions are
+          described in _U_i_n_t_h_l(UNITY).  All of the UNITY functions are
+          available in the dblib.a archive file.
+
+        OOOOppppeeeerrrraaaattttiiiioooonnnn EEEEnnnnvvvviiiirrrroooonnnnmmmmeeeennnntttt
+          UNITY was designed with the UNIX shell language as its user
+          interface (host language).  This architecture makes it easy
+          to improve UNITY's capabilities by adding additional modules
+          to provide new functions.  The shell provides another level
+          of flexibility, permitting complex query-transactions to be
+          built up from elementary commands, and allowing file
+          transfers for processing UNITY queries in a distributed
+          environment.
+
+          A simple query may be answered by executing one of the UNITY
+          commands.  However, there are frequently queries that
+          require a sequence of these commands.  It is not convenient
+          for each user to execute these commands one by one, and the
+          shell language provides the means to build a query or
+          transaction that is made up of several UNITY commands.
+          These transactions can be built in a "parametric" way so
+          that different values may be substituted into the same
+          sequence of commands.  Such parametric transactions become
+          part of the UNITY command structure and can easily be
+          employed by untrained users.
+
+        GGGGeeeettttttttiiiinnnngggg SSSSttttaaaarrrrtttteeeedddd
+          The first step in setting up UNITY tables is to create the
+          description files using the _m_a_k_e_t_a_b_l_e or _t_a_b_l_e command.
+          Data may then be loaded into the tables using _u_e_n_t_e_r (_l_o_a_d
+          or _i_n_s_e_r_t may also be used).  The tables may be displayed by
+          using the _d_i_s_p_l_a_y and _u_p_r_i_n_t commands.  The _c_o_m_p_u_t_e, _i_n_s_e_r_t,
+          _a_l_t_e_r, _d_e_l_e_t_e, _u_e_n_t_e_r, and _u_e_d_i_t commands can be used to
+          update the tables.  The records may be manipulated with the
+          _u_s_e_l_e_c_t, _u_j_o_i_n, _o_u_t_e_r_j_o_i_n, _s_e_t_d_i_f_f, _f_o_r_m_a_t, _a_s_o_r_t, _m_e_r_g_e,
+          _u_n_m_e_r_g_e, and _u_p_r_i_n_t_f commands to create new tables.  The
+          _v_a_l_i_d_a_t_e command is available for verifying that records are
+          valid against a pre-defined validation script for the table.
+          An interface to the Source Code Control System (SCCS) is
+          provided by _u_a_d_m_i_n, _u_d_e_l_t_a, and _u_g_e_t.  Finally, _s_t_a_t, _d_i_s_t
+          (_t_a_l_l_y), and _d_d_i_s_t (_d_t_a_l_l_y) are available for data analysis.
+          Manual pages more fully describe each of the commands listed
+          above.
+
+        UUUUNNNNIIIITTTTYYYY FFFFeeeeaaaattttuuuurrrreeeessss
+          The following are some of the features of UNITY:
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          1.   Mutual exclusion of update transactions to maintain
+               consistency during concurrent updates by multiple
+               users;
+
+          2.   A powerful selection capability including the use of
+               regular expression pattern matching and arbitrary
+               nesting of relational operators;
+
+          3.   Ability to create index files to reduce processing time
+               and automatic updating of index files;
+
+          4.   The _u_p_r_i_n_t and _c_a_t_a_l_o_g programs to allow the user a
+               flexible way to display the records without having to
+               know and use awk(I) or other such languages;
+
+          5.   Interactive insertion and updating of tables;
+
+          6.   Programs to aid the user in reformatting and sorting
+               tables;
+
+          7.   A validation module that allows the user flexibility in
+               validating input, updates, and currently existing
+               tables;
+
+          8.   Ease in building UNITY and porting the code to other
+               machines (it has been installed and tested on many
+               computers).
+
+        BBBBuuuuiiiillllddddiiiinnnngggg UUUUNNNNIIIITTTTYYYY
+          When building UNITY for the first time on a machine, the
+          UNITY administrator must change present working directory to
+          the directory containing the UNITY source code and execute
+
+                                  nohup make &
+
+          This will run the build process in the background and create
+          the archive file (named "dblib.a"), compile the functions
+          and put the object files into the archive, and compile/link
+          the programs.  If this command is executed after UNITY is
+          already built, any object modules in the archive file that
+          are outdated will be updated and programs will be re-
+          compiled/linked if necessary.  The command will print
+            `all' is up to date.
+          if no re-compilation is necessary.  A single program can be
+          updated by executing
+
+                                 make "program"
+
+          If the executable commands are to be moved into a "bin"
+          directory, and the archive and header files are to be moved
+          into a library directory, and the manual pages installed,
+          the user should execute
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+           make LIB=<library dir> BIN=<bin dir> MAN=<man dir> install
+
+          If LIB, BIN, and MAN are not set, the make(1) program will
+          use ../lib, ../bin, and ../man, respectively (these can be
+          changed in the Makefile).  The files are linked into the
+          respective directories (if the LIB, BIN, or MAN directories
+          are not on the same file system, the Makefile must be
+          changed to do a copy instead of a link).  The _u_m_a_n command
+          is updated to look the manual pages in the MAN directory.
+
+          When building UNITY on an versions of UNIX without floating
+          point (e.g., the AT&T 3B2/3B5), "-f" must be added to the
+          CFLAGS in the Makefile (to include the floating point
+          software when loading the executable programs).  When
+          building UNITY on UNIX/370, "-b1,1" must be added to the
+          CFLAGS in the Makefile (to include additional base
+          registers).  When building UNITY on a 16-bit machine (e.g.,
+          the DEC PDP 11/70), IFLAG must be set to "-i" so that when
+          the _u_m_e_n_u program is executed, the program text and data
+          areas will live in separate address spaces.
+
+          On some versions of UNIX, libPW.a is not available.  For
+          these versions, PW in the Makefile should be set to null (by
+          default, it is set to -lPW).  PW1 must be set to regcmp.o
+          and PW2 must be set to regex.o in the Makefile.  The source
+          files for regcmp.c and regex.c are provided for those
+          systems that need it (the version in libPW.a is used
+          otherwise).
+
+          Some versions of _m_a_k_e(1) will not interpret the Makefile
+          correctly.  Older version of _m_a_k_e don't understand archive
+          library dependencies and some versions don't recognize
+          macros added in later versions of _m_a_k_e (e.g., BSD does not
+          recognize the $$@ dependency).  This will cause the software
+          to build incorrectly or not to build at all.  A shell
+          script, _m_a_k_e_u_n_i_t_y is provided to build the UNITY software.
+          It assumes that the software is to be installed.  CC,
+          CFLAGS, IFLAG, LIB, MAN, BIN, PW, PW1, and PW2 are all shell
+          variables that can be changed within _m_a_k_e_u_n_i_t_y before
+          executing the command.  Note that executing this shell will
+          always re-build UNITY as if it had never been compiled
+          before, even if only one file has been updated (i.e., the
+          shell does not look at modification times to do only
+          restricted re-building).
+
+        TTTThhhheeee DDDDeeeessssccccrrrriiiippppttttiiiioooonnnn FFFFiiiilllleeee
+          A description file is associated with each UNITY table which
+          lists the fields on each record, the field type (fixed width
+          or terminator field) and, optionally, print information and
+          "user-friendly" field names.  In some situations, it is
+          necessary to allow users to specify their own description by
+          which records in the table are interpreted.  A simple
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          example of a case where this is useful is the specification
+          of a date:  one user may want to access a date as three
+          two-character fields (e.g., month, date, and year) while
+          another user may reference it as a single six-character
+          quantity.  In other situations, it is advantageous to have
+          one single description file that is accessed by all users
+          (i.e., for a single, centrally-located table).
+
+          When accessing a UNITY table, all UNITY programs first look
+          for the description file in the present working directory
+          (name composed of the simple file name of the table prefixed
+          with a 'D').  If the file does not exist, then the program
+          looks for a file with the same name in the directory in
+          which the table is located.  If the description file is not
+          found, it will then look at the environment variable
+          UNITYDFILES to see if a colon-separated list of directories
+          is specified, one of which contains the description file.
+          Thus, all description files can be stored in one or more
+          common directories by use of the UNITYDFILES environment
+          variable.
+
+          WHEN DESCRIPTION FILES AND VALIDATION OBJECT FILES ARE
+          CREATED BY A UNITY COMMAND (E.G., _u_j_o_i_n, _u_s_e_l_e_c_t, _v_a_l_i_d_a_t_e,
+          ETC.), THEY ARE CREATED IN THE PRESENT WORKING DIRECTORY.
+          Any "user-friendly" names are LOST when a new description
+          file is created (when an "into" clause is specified) by
+          _u_s_e_l_e_c_t when projection is done, and by _u_j_o_i_n, _o_u_t_e_r_j_o_i_n,
+          and _r_e_g_j_o_i_n.
+
+          The _m_a_k_e_t_a_b_l_e and _t_a_b_l_e commands are provided to create the
+          original description file for each table or the description
+          file may be created using a text editor.  The format is
+          given on the manual page for _t_a_b_l_e.  Comment lines may be
+          added to the description file; all lines beginning with a
+          pound sign (#) in column 1 are ignored.
+
+        SSSSeeeelllleeeeccccttttiiiioooonnnn ccccrrrriiiitttteeeerrrriiiiaaaa ---- tttthhhheeee wwwwhhhheeeerrrreeee ccccllllaaaauuuusssseeee
+          Many of the UNITY programs allow the user to operate on a
+          subset of the records in the table based on selection
+          criteria specified in a _w_h_e_r_e clause.  The _w_h_e_r_e clause is
+          composed of the conjunction (keyword _a_n_d) and disjunction
+          (keyword _o_r) of conditions specified as a comparison between
+          a UNITY field and a user-specified value, or another UNITY
+          field in the same table.
+
+          There are six basic comparison operators as indicated by six
+          suffixes used for the comparison operators.  They are:
+
+          lt  - less than
+          le  - less than or equal to
+          eq  - equal to
+          ne  - not equal to
+
+
+
+     Page 5                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          ge  - greater than or equal to
+          gt  - greater than
+
+          These may be prefixed to specialize the comparison as
+          follows:
+
+          none If no prefix is given, then a numerical comparison is
+               done.  This means that both values are converted to
+               double float values and compared.  Thus, values like
+               1.0 and 1 which would fail an equality test based on a
+               character-by-character comparison would match using a
+               numerical equality comparison (i.e., operator _e_q).
+
+          l    If the operator is prefixed with an 'l', then a lexical
+               comparison is done.  The two values are compared as
+               character strings, a character at a time, using the
+               standard Ascii character set (see _a_s_c_i_i(5) in the UNIX
+               User's Manual).  Thus, "1.0" would not be considered
+               equal to "1", "tim" would be considered less than
+               "time", and "test" would equal "test".
+
+          r    If the _e_q or _n_e operators, _o_n_l_y, are prefixed with an
+               'r', then a regular expression comparison is done.  The
+               second value is taken as a regular expression against
+               which to compare the field value.  The _r_e_g_e_x_p(7)
+               regular expression matching routines (the same routines
+               used in _e_d(1), _s_e_d(1), etc.)  compile the regular
+               expressions and make the comparisons.  The manual page
+               for _e_d(1) specifies in detail the regular expressions
+               that are accepted.  The regular expression takes the
+               place of the attribute value in the "_w_h_e_r_e" clause.  It
+               should not be surrounded by "/" or "?" since there is
+               no notion of current line in the selection process and
+               should normally be surrounded by single quotes to avoid
+               expansion by the shell.
+
+          d    If an operator is prefixed with a 'd', then a date
+               comparison is done.  Date comparisons treat the values
+               at dates in
+                         <month>{- or /}<day>{- or /}<year>
+               form where month is between 1 and 12 inclusive, day is
+               between 1 and 31 inclusive, and year is between 0 and
+               99 inclusive.  Note that numbers less than 10 may
+               appear as either single or two digit numbers (e.g., 1
+               or 01) and that the separators between the month and
+               day values and the day and year values may either be a
+               virgule (/) or a hyphen (-).
+
+          f    If an operator is prefixed with an 'f', then a field-
+               to-field comparison is done.  Note that an operator can
+               be prefixed with an 'fd' for a field-to-field date
+               comparison or prefixed with an 'fl' for a field-to-
+
+
+
+     Page 6                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               field lexical comparison (the default with just an 'f'
+               prefix is a field-to-field numerical comparison).  An
+               'fr' prefix is _n_o_t valid (i.e., a field-to-field
+               regular expression comparison is not allowed).
+
+          Parentheses may be used to group conditions arbitrarily
+          together (note that the parenthesis must appear as a
+          separate argument to the command and that it must be escaped
+          so that the shell does not interpret it).  The '!' operator
+          may be used to negate any condition.  The operator
+          precedence from highest to lowest precedence is comparison
+          operators, the ! (not) unary operator, _a_n_d, and _o_r.
+          Parentheses may be used to override precedence.  The where
+          clause is formally defined as
+
+          <where clause>       ::=  _w_h_e_r_e <expression>
+          <expression>         ::=  <expr1> | <expr1>/b_o_r/b<expr1>
+          <expr1>              ::=  <expr2> | <expr2>/b_a_n_d/b<expr2>
+          <expr2>              ::=  <expr3> | !/b<expr3>
+          <expr3>              ::=  <field><relop><value> |
+                                     <unity field><frelop><unity field> |
+                                     _(/b<expression>/b_)
+          <field>              ::=  <unity field> | _r_e_c#
+          <frelop>             ::=  _f<numerical operator> |
+                                    _f<lexical operator> |
+                                    _f<date operator>
+          <relop>              ::=  <numerical operator> |
+                                    <lexical operator> |
+                                    <date operator> |
+                                    <reg. expr. operator>
+          <numerical operator> ::=  _e_q | _l_t | _g_t | _l_e | _g_e | _n_e
+          <lexical operator>   ::=  _l_e_q | _l_l_t | _l_g_t | _l_l_e | _l_g_e | _l_n_e
+          <date operator>      ::=  _d_e_q | _d_l_t | _d_g_t | _d_l_e | _d_g_e | _d_n_e
+          <reg. expr. operator>::=  _r_e_q | _r_n_e
+          <unity field>        ::=  any field in the description file
+          <value>              ::=  string
+
+
+          _r_e_c# above is replaced by the sequence number of a record in
+          the table.
+
+          As an example, the /etc/passwd file is a valid UNITY table.
+          Based on the standard format of
+
+          login:passwd:uid:gid:acct:home:shell
+
+          the description file could be
+
+          login  t:      8l
+          passwd t:      14l
+          uid    t:      5r
+          gid    t:      5r
+
+
+
+     Page 7                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          acct   t:      20l
+          home   t:      15l
+          shell  t\n     12l
+
+          A valid query might be
+
+          uselect from /etc/passwd where name req '^J[^ohn]*Smith$'
+
+          that would select all entries in the passwd file with a last
+          name of Smith and a first initial of 'J' but not a first
+          name of 'John' (e.g., 'Jim' or 'James' would be acceptable).
+
+        CCCCrrrraaaasssshhhh RRRReeeessssiiiissssttttaaaannnntttt UUUUppppddddaaaatttteeee
+          UNITY is careful when updating a table that data is not
+          lost.  When an update is done, a temporary file is updated,
+          the original file is removed, and the temporary file is
+          linked to the original table, thus updating the table.  This
+          form of updating a temporary file and then replacing the
+          original is crash-resistant (if a crash occurs, no data
+          should be lost) and assures that a reader of the table will
+          get a consistent view.  The critical section comes only
+          during the removal of the original table and the linking in
+          of the updated table.  However, if the system crashes during
+          an update, the table will be in a consistent state.  It will
+          either be unchanged if the table still exists or changed and
+          residing in the temporary file if the original table has
+          been removed (i.e., if the crash occurs after removing the
+          original table but before the link of the temporary file has
+          taken place).  The temporary file is created in the
+          directory of the table so that there is no problem with the
+          link (i.e., one cannot link across file systems).  Note that
+          this assumes that the user has write permission in the
+          directory containing the table but not necessarily write
+          permission on the table itself.  Thus, the user may turn off
+          the write permissions of the table to avoid accidental
+          removal of the file (i.e., only read permission is necessary
+          for a table).
+
+        HHHHaaaannnnddddlllliiiinnnngggg ooooffff CCCCoooonnnnccccuuuurrrrrrrreeeennnntttt UUUUppppddddaaaatttteeeessss
+          UNITY has a locking facility to limit update of a table to
+          one user at a time (sequential processing) to prevent
+          inconsistencies caused by concurrent updates.  A lock file
+          is created for the table at the beginning of an update and
+          removed at the end.  Thus, the entire table is locked during
+          the update.  If another user attempts an update while
+          someone already has the file locked, the user is notified
+          and must execute the command again.  The test for the
+          existence of a locked table is done only in the update
+          programs _a_l_t_e_r, _c_o_m_p_u_t_e, _d_e_l_e_t_e, _i_n_s_e_r_t, _u_e_d_i_t, and _u_p_r_i_n_t_f
+          (_u_e_n_t_e_r uses _i_n_s_e_r_t to do the final insertion) so that a
+          user making queries or reports on the table is not affected.
+          Thus, multiple readers and one writer are allowed for a
+
+
+
+     Page 8                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          table.  The readers will always get a consistent view of the
+          records (i.e., one can never look at a partially updated
+          table), due to the way updates are done.
+
+          The locking mechanism is implemented as follows.  A _s_t_a_t(2)
+          is done on the table to determine the device and inode
+          numbers for the table; these two values uniquely identify
+          the file on a given UNIX system.  These values are converted
+          to Ascii strings and concatenated to form the lock file
+          name.  Ten attempts are made to create the lock file in
+          /tmp; this should be enough time for another update to
+          complete and remove the lock file (unless the update is a
+          _u_e_d_i_t).  If all attempts to create the lock file fail, the
+          user is notified that the lock file already exists and the
+          program exits.  The lock file name is given so that the user
+          can examine the lock file using _l_s(1) (the long format will
+          list the owner of the lock file) to determine if the table
+          is really being used or if the lock file was accidentally
+          left around from a previous update of the table (i.e., the
+          update was killed before the lock file could be removed such
+          as during a system crash).  If necessary, the lock file may
+          be removed since the /tmp directory is writable by anyone.
+          If the _c_r_e_a_t(2) is successful, the table is updated and then
+          the lock file is removed.  All update programs catch
+          interrupt, quit, hang-up, and software termination signals
+          and remove the lock file before termination.
+
+          Note that the locking mechanism is useless if a user edits
+          the table using programs other than the UNITY update
+          programs.  If several users are to be accessing the same
+          table, it may be necessary to appoint an administrator who
+          will own the file.  The table permissions may be set such
+          that the table is read-only for other users.  In this
+          manner, a user may not directly edit the table but may
+          update it using the UNITY update programs.
+
+        PPPPiiiippppeeee----lllliiiinnnniiiinnnngggg ooooffff UUUUNNNNIIIITTTTYYYY CCCCoooommmmmmmmaaaannnnddddssss
+          Most UNITY commands have the capability to read from the
+          standard input and/or write to the standard output.  This is
+          indicated by specifying a table name of "-" for either the
+          input table name or in the "into clause" for an output
+          table.
+
+          However, not only is the table needed but also the
+          associated description file.  For reading from the standard
+          input, the -I option must be used to specify the name of a
+          table from which the input description file name can be
+          determined and used.  For writing to the standard output,
+          the -O option must be used to specify the name of a table
+          from which the output description file name can be
+          determined.  The description file will be created in the
+          current directory.
+
+
+
+     Page 9                                          (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          By using the standard input/output and the -I/-O options,
+          one can pipe the output of one UNITY command (or UNIX
+          command) to the next.  One further consideration is the
+          execution of commands in a pipeline.  The last command
+          command gets executed first, then the next to last command,
+          up to the first command.  This means that the last command
+          may be looking for an input description file which has not
+          yet been created as the output of the previous command.  The
+          way to get around this problem is to have the last command
+          sleep before executing, giving the previous command a chance
+          to create the description file, as in the following:
+
+          asort -Ot login in /etc/passwd into - | (sleep 3; uprint -It -)
+
+          which prints a copy of the password file in sorted order on
+          login.  In many cases, where the format of the file is not
+          changed (i.e., the input description file is the same as the
+          output description file), the same description file may be
+          used, without creating an intermediate description file, as
+          in the following:
+
+          asort login in /etc/passwd | uprint -I/etc/passwd -
+
+
+        EEEErrrrrrrroooorrrr CCCChhhheeeecccckkkkiiiinnnngggg aaaannnndddd MMMMeeeessssssssaaaaggggeeeessss
+          Much error checking is done to protect the user from
+          corrupting a table and to aid in determining what errors
+          have occurred.  The programs check to see that all
+          positional arguments or keywords (e.g., "_f_r_o_m", "_i_n_t_o",
+          etc.) appear in the proper place in the command line
+          arguments since their absence may mean that the user has
+          incorrectly formatted the command.  Checks are also done
+          during initialization to determine that table and
+          description files are accessible before processing begins
+          and that an output table does not exist (so that a table is
+          not accidentally overwritten).  However, all commands which
+          have the capability to create output tables and description
+          files can override this last restriction by specifying _o_n_t_o
+          instead of _i_n_t_o.  In this case, the output is appended if
+          the table already exists and the description file is not
+          updated if it already exists.  The user must beware that an
+          important table is not overwritten.
+
+          All programs print a "Usage:" message if the wrong number of
+          arguments is given for the program or if a positional
+          argument or keyword is missing.  Thus, a user can get the
+          usage of a program by entering the program name alone
+          without arguments since all UNITY programs require at least
+          one argument.  Most of the commands print the number of
+          records that are updated or output.  This message can be
+          suppressed by specifying the -q option on the command line
+          of each command.  All information and error messages are
+
+
+
+     Page 10                                         (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          printed to the standard error output.
+
+          The exit code for normal termination is 0 for all programs.
+          If an error occurs, the exit code is set to 1.  In the
+          validate program only, a file or usage error generates an
+          exit code of 1 and the occurrence of one or more invalid
+          records in the file produces an exit code of 2.
+
+        RRRReeeemmmmaaaaiiiinnnniiiinnnngggg LLLLiiiimmmmiiiittttaaaattttiiiioooonnnnssss
+          UNITY still imposes some restrictions on use that might be
+          desirable to remove.  They include the following items:
+
+          1.   The entire table is locked during update.  It may be
+               desirable to have a finer granularity of lock such as
+               being able to lock a set of records or a set of
+               attributes.  This would be much more complicated than
+               the simplistic locking mechanism that was implemented.
+               This feature was not implemented because of the added
+               complexity and since it is not currently expected that
+               many users will update a single table _c_o_n_c_u_r_r_e_n_t_l_y.
+
+          3.   _A_l_l records must be terminated with a newline.  If the
+               last field of a record is a fixed width field, the
+               programs read one additional character to get the
+               newline.  The terminator for a terminator field must be
+               a newline if it is the last field for the record.
+               Several routines depend on this restriction.  There may
+               be instances where it is desirable to allow records
+               without newline separators.  It may also be desirable
+               to have variable length records with a binary length as
+               the first bytes in the record.  Additionally, other
+               attribute types (integer, float, etc.) may be
+               desirable.
+
+               The user currently may have multi-line records if and
+               only if the embedded newline is a terminator for an
+               attribute.  The _i_n_s_e_r_t, _l_o_a_d, and _u_c_h_e_c_k programs will
+               reject as invalid records that have a newline in the
+               middle of an attribute value.
+
+          4    UNITY does not currently check the return code on
+               writes.  Thus if a user tries to write a table that is
+               large without changing the file size limit (using
+               ulimit(2)), data may be lost without warning.
+
+        GGGGeeeennnneeeerrrraaaallll CCCCoooommmmmmmmeeeennnnttttssss
+          The current UNITY limitation on record length is 4096
+          characters and can easily be increased (or decreased) by
+          changing the MAXREC definition in db.h and building UNITY
+          again.  Note that the line-length limitation of 512 still
+          exists in many editors so that they cannot be used to create
+          or edit longer records.  These records can be created by
+
+
+
+     Page 11                                         (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          joining two or more tables (e.g., by using the _u_j_o_i_n command
+          in UNITY) or using the _i_n_s_e_r_t or _u_e_n_t_e_r programs.  The
+          maximum number of attributes per table is currently 100, the
+          maximum key length is now 128 characters, and the maximum
+          number of keys that can be indexed is 4096.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 12                                         (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+                            _U_N_I_T_Y _C_O_M_M_A_N_D _U_S_A_G_E
+
+     _a_l_t_e_r [-q] [-Itable] [-Otable] aname _t_o value _i_n table1 \
+      [_i_n_t_o table2] [where clause]
+     _a_s_o_r_t [-q] [sort flags] [-Itable] [-Otable] aname _i_n table1 \
+      [_i_n_t_o table2]
+     _c_a_t_a_l_o_g [-llines] [-mmargin] [-wwidth] [-n] [-b] [-e] [-d] [-Itable]\
+       [-h header] [-f footer] [aname ... _i_n ] table1 [_i_n_t_o table2 ] \
+       [where clause]
+     _c_o_m_p_u_t_e [-q] [-Itable] [-Otable] [-f%format] aname [op aname ...] \
+      result aname3 _i_n table1 [_i_n_t_o table2] [where clause]
+     _d_d_i_s_t [-n] [-Itable] [-Otable] {aname1|count} _b_y aname2 aname3 \
+      _i_n table1 [_i_n_t_o table2] [where clause]
+     _d_e_l_e_t_e [-q] [-Itable] [-Otable] from table1 [_i_n_t_o table2] where clause
+     _d_i_s_p_l_a_y [-Itable] table [{des|data}]
+     _d_i_s_t [-n] [-Itable] [-Otable] {aname1|count} _b_y aname2 _i_n table1 \
+      [_i_n_t_o table2] [where clause]
+     _d_t_a_l_l_y [-n] [-Itable] [-Otable] aname1 aname2 _i_n table1 \
+      [_i_n_t_o table2] [where clause]
+     _e_r_a_s_e-index aname _f_r_o_m table
+     _e_r_a_s_e-table table [table ...]
+     _f_o_r_m_a_t [-q] [-Itable] [-Otable] table1 _i_n_t_o table2
+     _i_n_d_e_x [-Itable] aname _i_n table
+     _i_n_s_e_r_t [-q] [-Itable] [-n[newline]] _i_n table1 [_i_n_t_o table2] \
+      [{_p_r_o_m_p_t_i_n_g | _f_r_o_m table3}]
+     _j_o_i_n [-q] [-Itable1] [-Itable2] [-Otable] a1a[,a1b,...] \
+      a2a[,a2b,...] _f_r_o_m table1 table2 [_i_n_t_o table3]
+     _l_o_a_d [-q] data-file _t_o table
+     _m_a_k_e_t_a_b_l_e [-v] table
+     _m_e_r_g_e [-q] [-s<separator>] [-Itable] [-Otable] aname1 _i_n table1 \
+      [_i_n_t_o table2]
+     _p_a_c_k_e_t [-q] [-Itable] [-Otable] [-n[<newline>]] [-u] table1 [_i_n_t_o table2]
+     _o_u_t_e_r_j_o_i_n [-q] [-Itable1] [-Itable2] [-Otable] a1a[,a1b,...] \
+      a2a[,a2b,...] _f_r_o_m table1 table2 [_i_n_t_o table3]
+     _r_e_g_j_o_i_n [-q] [-Itable1] [-Itable2] [-Otable] a1a[,a1b,...] \
+      a2a[,a2b,...] _f_r_o_m table1 table2 [_i_n_t_o table3]
+     _s_e_t_d_i_f_f [-q] [-Itable1] [-Itable2] a1a[,a1b,...] a2a[,a2b,...] \
+      _f_r_o_m table1 table2 [_i_n_t_o table3]
+     _s_t_a_t [-Itable] [-Otable] [aname ... _i_n ] table1 [_i_n_t_o table2] \
+      [where clause]
+     _t_a_b_l_e table1 aname1 atype1 [...]
+     _t_a_l_l_y [-n] [-Itable] [-Otable] aname _i_n table1 [_i_n_t_o table2] \
+      [where clause]
+     _t_u_p_l_e [-q] [-Itable] [-Otable] [-n[<newline>]] [-u] table1 \
+      [_i_n_t_o table2]
+     _u_a_d_m_i_n [-rrel] [-t[name]] [-fflag[flag-val]] [-alogin] \
+           [-m[mrlist]] [-y[comment]] file ...
+     _u_c_h_e_c_k [-q] [-Itable] table
+     _u_d_e_l_t_a [-rSID] [-s] [-n] [-glist] [-m[mrlist]] [-y[comment]] \
+               [-p] file ...
+     _u_e_d_i_t [-q] [-Itable] [-v] [-n[nline]] [-u] table [where clause]
+     _u_e_n_t_e_r [-q] [-Itable] [-v] [-n[nline]] [-u] [-c] _i_n table
+
+
+
+     Page 13                                         (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     _u_g_e_t [-rSID] [-ccutoff] [-ilist] [-x[list] [-aseq-no.] [-k] [-e] \
+            [-s] [-b] [-g] [-t] file ...
+     _u_j_o_i_n [-q] [-Itable1] [-Itable2] [-Otable] a1a[,a1b,...] \
+      a2a[,a2b,...] _f_r_o_m table1 table2 [_i_n_t_o table3]
+     _u_n_l_o_a_d table1 [ _t_o table2 ]
+     _u_m_e_n_u
+     _u_n_m_e_r_g_e [-q] [-Itable] [-Otable] [-s<separator>] aname1 _i_n table1 \
+      [_i_n_t_o table2]
+     _u_p_r_i_n_t  [options] [aname ... _i_n ] table1 [_i_n_t_o table2] \
+      [where clause]
+     _u_p_r_i_n_t_f [-q] [-Itable] [-Otable] [-fformat] [-nc] aname \
+      [aname ...] [result aname3] _i_n table1 [_i_n_t_o table2] [where clause]
+     _u_s_e_l_e_c_t [-q] [-Itable] [-Otable] [aname[as aname2]...] _f_r_o_m table1 \
+      [_i_n_t_o table2] [where clause]
+     _v_a_l_c_m_p [-l] [-Itable] table [outfname]
+     _v_a_l_i_d_a_t_e [-Itable] table1
+
+     Notes:
+     aname         is an attribute name
+     atype         is an attribute type definition of the form
+            {w<fixed length> | t<terminator>} \
+            [<tab>[print width][print position]]
+
+     where clause  is defined as
+     <where clause>       ::=   _w_h_e_r_e <expression>
+     <expression>         ::=   <expr1> | <expr1>/b_o_r/b<expr1>
+     <expr1>              ::=   <expr2> | <expr2>/b_a_n_d/b<expr2>
+     <expr2>              ::=   <expr3> | !/b<expr3>
+     <expr3>              ::=   <field><relop><value> |
+                                <unity field><frelop><unity field> |
+                                (/b<expression>/b)
+     <field>              ::=   <unity field> | _r_e_c#
+     <frelop>             ::=   _f<numerical operator> |
+                                _f<lexical operator> |
+                                _f<date operator>
+     <relop>              ::=   <numerical operator> |
+                                <lexical operator> |
+                                <date operator> |
+                                <reg. expr. operator>
+     <numerical operator> ::=   _e_q | _l_t | _g_t | _l_e | _g_e | _n_e
+     <lexical operator>   ::=   _l_e_q | _l_l_t | _l_g_t | _l_l_e | _l_g_e | _l_n_e
+     <date operator>      ::=   _d_e_q | _d_l_t | _d_g_t | _d_l_e | _d_g_e | _d_n_e
+     <reg. expr. operator>::=   _r_e_q | _r_n_e
+     <unity field>        ::=   any field in the description file
+     <value>              ::=   string
+
+     _r_e_c# above is replaced by the sequence number of a record
+     in the table.
+
+     The field comparison operators are indicated by an 'f' prefix on the
+     numerical and lexical comparison operators.
+
+
+
+
+     Page 14                                         (printed 1/19/90)
+
+
+
+
+
+
+     IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     uprint options are
+       -f take next arg as footer   -w_k page width _k
+       -h take next arg as header   -l_k page length _k
+       -r suppress error messages   -o_k offset left margin _k positions
+       -t suppress header/trailer   -s_c separator character _c
+       -u suppress box              -n_c translate _c into newline
+       -b break on non-alphanumeric -a take next arg as attribute line
+       -d_c double space with _c used for separator line
+       -e number records            -v print user-friendly names (verbose)
+       -p don't print records across page breaks
+       -R don't print repeated attribute values on left
+
+     sort flags are
+       -b ignore leading blanks
+       -d dictionary sort (letters,digits,blanks only)
+       -f fold upper to lower case
+       -i ignore characters outside Ascii 040-0176
+       -n numeric sort
+       -r reverse sort order
+       -t_x tab character separating sub-fields of attribute is _x
+       -_p_o_s, +_p_o_s - restricts sort sub-fields
+       -u unique sort, cannot be used with -t, -D, -_p_o_s, +_p_o_s
+       -D Date sort, cannot be used with -t, -u, -_p_o_s, +_p_o_s
+
+     Braces ({...}) show alternative choices.
+     Brackets ([...]) show optional information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 15                                         (printed 1/19/90)
+
+
+

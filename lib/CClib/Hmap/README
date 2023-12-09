@@ -1,0 +1,120 @@
+H-maps - hashed associative arrays for C++.
+
+
+Who to blame:
+Bob Wilber	wilber@homxb.att.com
+		att!homxb!wilber
+
+Latest Changes:
+	This should now compile correctly with no warnings with C++ 2.1.
+	Some versions of ptfilt have choked on the gigantic defines in
+	Hmap.h.  If you have this problem, try replacing Hmap.h with
+	Hmap.h-PT, which uses PT_define/PT_end instead of #define.
+	(This file courtesy of Jim Gentilesco.)
+
+	Hmapiter(S,T)::key() is now a const S& rather than an S.
+
+	A new function, Hmap(S,T)::clear(), has been added.  It deletes
+	all elements of the h-map.
+
+	The internal Hmapnode(S,T) class now uses initialization rather
+	than assignment to initialize its key and value pair.  This
+	should not create any changes to the user visible functionality,
+	provided that you have properly working constructors.
+
+To create:
+First, you must set the following system dependent pararameters:
+
+_HMAP_MAX_BKT_IX
+_HMAP_MAX_BKTS
+_HMAP_DEF_MAX_BKT_IX
+_HMAP_DEF_MAX_BKTS
+
+which are all in Hmap.h in the _Hmap_constants enumeration.
+
+What they mean:
+
+First, some background.  The number of buckets is always prime to make for
+better hashing.  The primes used are enumerated by the "prime" function, which
+is private to _Hmap_.  There are 116 available primes, indexed from 0 to 115.
+If i in [0, 115] is a bucket index, prime(i) is the corresponding bucket size.
+_HMAP_MAX_BKTS is the maximum number of buckets that can ever be allocated for
+an h-map, and must be one of the primes in the list.  _HMAP_MAX_BKT_IX is the
+corresponding index.  To set _HMAP_MAX_BKTS, figure out the maximum contiguous
+storage that you can safely allocate, divide by the pointer size, and pick the
+largest prime from the table at the end of this document that's less than that
+value.  Set _HMAP_MAX_BKT_IX to the corresponding index.
+
+_HMAP_DEF_MAX_BKTS is the default maximum number of buckets for an h-map, i.e.,
+the limit that is used if the programmer doesn't specify anything else.  It
+must be <= _HMAP_MAX_BKTS.  The correct value for this is somewhat subjective:
+It should be big enough not to get in the way for most normal uses of h-maps
+and small enough so that your system can "comfortably" allocate blocks of that
+many pointers.  _HMAP_DEF_MAX_BKTS must also come from the list of primes and
+_HMAP_DEF_MAX_BKT_IX must be set to its index.  If _HMAP_MAX_BKTS is very small
+then _HMAP_DEF_MAX_BKTS should be equal to it.  For example, the maximum size
+block of storage that can be allocated on some systems is 64K bytes,
+corresponding to 16K four byte pointers.  On such systems _HMAP_MAX_BKTS and
+_HMAP_DEF_MAX_BKTS should both equal 16381, with _HMAP_MAX_BKT_IX =
+_HMAP_DEF_MAX_BKT_IX = 46.
+
+(Note: _HMAP_DEF_MAX_BKTS and _HMAP_MAX_BKTS must both fit in an unsigned int.
+So on machines with 16 bit ints, the maximum value of _HMAP_DEF_MAX_BKT_IX and
+_HMAP_MAX_BKT_IX is 54, with the corresponding limit on _HMAP_DEF_MAX_BKTS and
+_HMAP_MAX_BKTS being 65521.)
+
+The next thing to do after setting the parameters is to check the predefined
+hash functions and redefine them if necessary.  (The hash functions are
+inherently machine dependent since they have to know how big a word is.)  The
+hash functions provided should work on machines that look like a VAX, i.e.,
+ints, longs, pointers, and floats are 32 bits, doubles are 64 bits, and shorts
+are 16 bits.  Most of the predefined hash functions are inline calls to
+Hmap_word_hash, which is defined in Hmap.c.  If ints are some size other than
+32 bits you will at least have to change the constant ONE_ZERO_PATTERN in
+Hmap.c.  Also note that the predefined hash functions for longs and pointers
+assume that longs and pointers fit in an int, so they will certainly have to be
+changed on machines where this isn't true.
+
+Once you've set the parameters and defined satisfactory hash functions edit
+the makefile if necessary and then say:
+	make
+Then run testhmap, making sure that you have the file called "text" in your
+current directory.  If all goes well testhmap will produce four output files:
+test_out1, test_out2, test_out3, and test_out4.  These should contain the same
+lines as test_out1.ok, test_out2.ok, test_out3.ok, and test_out4.ok,
+respectively.  Since your system may have a different function for hashing
+strings than the one with which the *.ok files were created, the order of the
+lines may be different.  In that case you must sort both the test_out? files
+and their corresponding test_out?.ok files before comparing them.  The file
+test_out2 should have its lines in exactly the reverse order of file test_out1.
+The file test_out4 should contain those lines in test_out3 with a count greater
+than 1, and should be in the same order.
+
+Once everything checks out, put Hmap.o in the appropriate library and move
+Hmap.h to your include directory.  (Although Hmaps make use of Pools, the part
+of the code that's in Hmap.o doesn't; the routines in Hmap.o don't need
+anything that can't be found in libC.a.  So it's okay to put Hmap.o at the
+front of libC.a.)
+
+                      TABLE OF SELECTED PRIMES
+SIZE is the largest prime < 2**N, and INDEX is the corresponding bucket index.
+
+ N       SIZE  INDEX       N       SIZE  INDEX       N          SIZE  INDEX
+ 6         61    14       15      32749    50       24      16777213    86
+ 6.5       89    16       15.5    46337    52       24.5    23726561    88
+ 7        127    18       16      65521    54       25      33554393    90
+ 7.5      181    20       16.5    92681    56       25.5    47453111    92
+ 8        251    22       17     131071    58       26      67108859    94
+ 8.5      359    24       17.5   185363    60       26.5    94906249    96
+ 9        509    26       18     262139    62       27     134217689    98
+ 9.5      719    28       18.5   370723    64       27.5   189812507   100
+10       1021    30       19     524287    66       28     268435399   102
+10.5     1447    32       19.5   741431    68       28.5   379625047   104
+11       2039    34       20    1048573    70       29     536870909   106
+11.5     2887    36       20.5  1482907    72       29.5   759250111   108
+12       4093    38       21    2097143    74       30    1073741789   110
+12.5     5791    40       21.5  2965819    76       30.5  1518500213   112
+13       8191    42       22    4194301    78       31    2147483647   114
+13.5    11579    44       22.5  5931641    80       31.25 2553802819   115
+14      16381    46       23    8388593    82
+14.5    23167    48       23.5 11863279    84

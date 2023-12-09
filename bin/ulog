@@ -1,0 +1,21 @@
+#!/bin/sh
+# tail all interesting HDB log files using xtail
+# Dave Dykstra, 11/16/89
+
+case $# in
+    0)  cd /usr/spool/uucp
+	F=".Log/* .Admin"
+	;;
+    *)  cd /usr/spool/uucp/.Log
+	F=""
+	for ARG
+	do
+	    for DIR in *
+	    do
+		F="$F $DIR/$ARG"
+	    done
+	done
+	;;
+esac
+
+exec xtail $F

@@ -1,0 +1,605 @@
+2/2/94 news
+
+On SVR4, Sun and Solaris systems which support job control, ^X-^C is now
+bound to "suspend-emacs" instead of "exit-emacs". This actually is the way
+that Gosling originally bound ^X-^C, but it hasn't been supported in the
+exptools version because of lack of support for job control within UNIX
+System V until now.
+
+In a previous news item, I suggested binding suspend-emacs to ^X-^C, but
+didn't realize that there was code already in there that hadn't been enabled
+until now which already did the binding. This has been causing problems for
+a few people, for which I apologize.
+
+If you see the message
+
+	[1] + Stopped (signal)         gmacs
+
+from the shell, it means that you've suspended the gmacs session, and can
+restart it again by typing the "fg" shell command.
+
+If you wish to rebind ^X-^C back to "exit-emacs", add the following line to
+your .emacs_pro file:
+
+        (bind-to-key "exit-emacs" "\^X\^C")
+
+If you don't have a .emacs_pro file, you are loading the default profile. If
+you want to rebind ^X-^C back to "exit-emacs", create a .emacs_pro.ml file
+with the following two lines:
+
+        (bind-to-key "exit-emacs" "\^X\^C")
+        (load "profile")
+
+1/26/94 news
+
+When using alternation within regular expression searches, as in "abc\|def",
+there was no checking on the number of \|'s, even though internally, only
+room for 9 was allocated. The limit has been raised to 31, and it now checks
+to make sure you don't go past that limit.
+
+10/18/93 news
+
+added "suspend-emacs" for systems which support job control. I suggest
+binding it to ^X-^C.
+
+recompiled on System V release 4 (i486) target. It now properly turns off
+the new special tty characters, such as ^O and ^Z, and will handle networked
+drives better.
+
+11/16/92 news
+
+Problems with screen updates while using gmacs on an ISDN/IDM port have been fixed.
+
+2/3/91 news
+
+If the flow-lim variable is set to -1, flow control will always be turned on.
+
+Gmacs now works better on System V release 4 systems. Previously, the SVr3
+ttyname() function would fail, and finding the current directory would
+occasionally fail.
+
+10/20/91 news
+
+fixed an intermittent core dump when using indent-C-procedure
+
+new command: show-mlisp-path shows the full path name for a given mlisp
+file. For example, (show-mlisp-path "man") will return
+/usr/add-on/exptools/lib/gmacs/maclib/man.ml.
+
+When problems are found with mlisp files, the path to the erroneous mlisp
+file is shown.
+
+If you loaded an mlisp file named X and there was a file named X in the
+current directory, ./X would be loaded even if X.ml existed in the macro
+library. This was wrong. Reminder: if no suffix is given, mlisp files are
+looked for under the names X, X.mc and X.ml. It is expected that the .mc
+files are compiled mlisp files.
+
+The message when previous-error ran into the top of the list was changed
+from "No more messages" to "No more errors".
+
+Now files-should-end-with-newline can have a negative value which means to
+always place a newline at the end of the file. Thus, it may have any of
+these values:
+	>0	ask if a newline should be put at the end of the file
+	0	never check
+	<0	always make certain that written files contain newlines at their end
+
+Fixed a problem on svr4 systems whereby gmacs can sometimes not find your
+current directory.
+
+Two new strings can be set:
+
+	initialize-terminal	output at beginning of program and
+				returning from shell escape
+
+	reset-terminal		output at end of program and going into
+				a shell escape
+
+The output algorithms dealing with flow-lim was modified slightly. Reminder:
+Some slow terminals or terminal emulators will send ^S and ^Q through to the
+host to try and prevent it from overflowing its buffers. These often cause
+gmacs to misinterpret the sequences, making it go into search and
+quote-character mode, or losing characters. If you are on such a system, set
+flow-lim to a small number, such as 32 or 128 (you'll have to experiment).
+When gmacs does an update of the screen which will cause it to send out more
+than flow-lim number of characters, it will temporarily leave raw mode so
+that ^S and ^Q will be interpreted as flow control characters instead of as
+search and quote-character.
+
+June 23, 91 news:
+
+Gmacs no longer does an automatic backup of non-regular files, such as
+devices, etc.
+
+The default path for loading maclisp files no longer includes the current
+directory first. Having the current directory there sometimes gave strange
+results if you happened to have a file by the name of the mlisp file to be
+loaded.
+
+The value of the read-only flag is now reevaluated when you do a ^X-^W
+(write-existing-file) command.
+
+The compile-it command was off by one byte in the amount of the buffer
+searched. This caused a final line of output to be missed on occasion if the
+line number was at the end of the line.
+
+A new version of $TOOLS/lib/gmacs/etc/indent was installed. It has a number
+of new features which are documented in $TOOLS/lib/gmacs/man/1.indent.
+
+A new version of $TOOLS/lib/gmacs/bin/dblist was installed. It produces
+output better suited for shell reinput.
+
+June 4, 91 news:
+
+I synchronized the mlisp files across all machine types. Some new features
+not previously seen on most machines are:
+
+buffer-edit.ml	(buffer-edit) now does the edit if it is given an argument,
+		otherwise it does the same thing as (list-buffers)
+
+command.ml	new: (goto-commands), (execute-command) and
+		(execute-background). Provides support for menu-like list of
+		commands kept in a file.
+
+ctags.ml	new: (goto-tag) and (goto-tag-in-buffer) based on vi ctags
+		"tags" file.
+
+ctagstotags.ml	new: (ctags-to-tags) converts vi ctags "tags" file to
+		tags.ml ".tags" file.
+
+del.ml		added: (delete-blank-lines) delete extra blank lines around
+		dot, leaving one blank lie at most.
+
+		(delete-matching-lines) search all lines for a given
+		pattern, deleting them. Comparable to g/re/d within ed(1).
+
+dmd.ml		new: support for netty mouse. Probably also works with
+		emacsterm and viterm.
+
+doplusargs.ml	new: (do-plus-args). When autoexecuted on a filename match of
+		+*, it provides a way to start up a file at a particular
+		place. For example, saying "gmacs +35 foo" will start up on
+		the 35th line of the file foo. The following are supported:
+
+			+35	start on given line number
+			+$	start at end of file
+			+/re	search for regular expression
+			+?re	search from end back to regular expression
+			+35c	start on given character
+			+35%	start at given percentage within file
+			+(...)	execute mlisp function
+
+elec-c++.ml	added electric-C++-mode. Common routines to both
+		(electric-c-mode) and (electric-C++-mode) are found in
+		elec-c-com.ml.
+
+justify.ml	added justify-paragraph-style to control whether there are 1
+		or 2 spaces between sentences. Set it to 0 for 1 space and 1
+		for 2 spaces.
+
+lgoto.ml	new: (forward-to-character) and (backward-to-character) move
+		within the line to the given character, just like in Emacs
+		mode of the Korn shell. It can be given a prefix argument.
+
+line-bot.ml	new: (line-to-bottom-of-window) move the current line to the
+		bottom of the window
+
+mh-annot.ml, mh-doc.ml, mh-e.ml, mh-edit.ml, mh-exit.ml, mh-folder.ml,
+mh-forw.ml, mh-help.ml, mh-inc.ml, mh-mode.ml, mh-move.ml, mh-repl.ml,
+mh-send.ml, mh-show.ml, mh-unmark.ml
+		new: provides support for the MH mail system. Read the files
+		for info on their use.
+
+mlispcc.ml	new: (mlispcc) invokes the UNIX program mlispcc to compile
+		an mlisp file.
+
+myx.ml		new: support for mouse under the DMD myx terminal emulator.
+		May also work with emacsterm/viterm.
+
+newshell.ml	new: (interactive-shell) enhanced interactive shell
+
+newsplit.ml	new: (new-split-current-window) alternative to
+		(split-current-window). If not given an argument, it prompts
+		for a buffer name. If given an argument, it acts like
+		(split-current-window).
+
+nextfile.ml	new: (next-file) and (previous-file) provide a means of
+		traversing the argument list given when gmacs was invoked.
+		(next-file) goes to the next file on the argument list and
+		(previous-file) goes to the previous file. After hitting the
+		end, they wrap back around to the other end.
+
+nroff.ml	added (nroff-justify-paragraph), changed names of
+		(split-lines) and (join-lines) to (nroff-split-lines) and
+		(nroff-join-lines)
+
+profile.ml	the invocation of (stats) changed from ESC-= to ^X= 
+		added interactive-shell at ESC-= (see newshell.ml)
+		changed mode line format default to indicate read-only, narrowed, recursion-depth
+		added (backward-to-character) at ESC-^] (see lgoto.ml)
+		added (forward-to-character) at ^] (see lgoto.ml)
+		added (middle-of-window) at ESC-m (see lgoto.ml)
+		added (redraw-window) at ESC-^L (see redraw.ml)
+		added (delete-blank-lines) at ESC-^O (see del.ml)
+		added (next-file) at ESC-^N (see nextfile.ml)
+		added (previous-file) at ESC-^P (see nextfile.ml)
+		added (baseconvert), (hexadize), (octalize) (see base.ml)
+		added an autoexecute of (do-plus-args) (see doplusargs.ml)
+
+rot13.ml	new: (rot13-region) and (rot13). Do a rotation-by-13
+		translation of a region or buffer, respectively. This is
+		suitable for use on rotated netnews articles.
+
+search.ml	added prefix argument to (search-next) and (search-previous)
+
+spell.ml	added support for the UNIX command grope
+
+tags.ml		added (goto-tag-in-buffer)
+
+transp.ml	the temp buffer won't be checkpointed anymore
+
+utah-c.ml	new: an alternative to the electric-c functions. See the
+		file for usage instructions.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+June 3, 91 news:
+
+I added the correctly spelled function error-occurred. The incorrectly
+spelled version is still available.
+
+I fixed a glitch in the error parsing functions. Note, the types of error
+message patterns parsed by compile-it and parse-error-messages-in-region
+are:
+
+	filename[:,][ \t]*##:
+	"filename"[:,][ \t]*##:
+	filename[:,] line ##:
+	"filename"[:,] line *##:
+
+    These patterns are also allowed at the ends of lines without the
+    trailing ":". (This is where the glitch was.)
+
+I improved insert_null_glitch support for Concept terminals
+
+Added the function "variable-type" which returns a string representing the
+type of the given variable: string, integer or marker.
+
+The "mlispcc" macro and executable were installed. This function is used to
+"compile" mlisp functions.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+June 1, 91 news:
+
+The following is a list of new features in the latest version of gmacs. Some
+systems have had some of these features for a while, but for others, in
+particular the Vax, all of the following features are new.
+
+Over the next few days, I will be syncing up the macro libraries and other
+support tools that are part of the gmacs package so that they are the same
+on all systems. When a macro package is affected due to this, a toolnews
+item will be posted to that affect.
+
+					Tony Hansen
+					gmacs provider
+
+-------------------------------- new features --------------------------------
+
+gmacs strictly uses terminfo now for doing all terminal I/O.
+
+It uses the new directory routines for Sun, SVr3 and beyond, and UTS
+systems, which means that it can now be used on non-System V filesystems.
+
+Changed the default mode line to include information about the buffer being
+readonly and narrowed.
+
+Can now show the value of a marker, as returned by dot and set-mark.
+
+It supports 19.2 and 38.4 baud rates.
+
+I bumped up the maximum size screen permitted.
+
+Reversed the order that files are visited. If you want the old order, set
+the variable "visit-in-reverse" in your .emacs_pro.
+
+The cd command now uses $CDPATH.
+
+It can do either appending (the default) or prepending of checkpoint and
+backup extensions. See the functions "set-backup-prefix" and
+"set-checkpoint-prefix", and the variable "prepend-extension" below for more
+info.
+
+Gmacs will now echo uncompleted escape sequence and uncompleted numeric
+arguments in the minibuffer after a timeout. The variables "echo-keystrokes"
+and "echo-argument" give the timeout in seconds before the respective things
+start being echoed. They both default to 5 seconds.
+
+Help windows pop up and then back down on the next keystroke. The variable
+"remove-help-window" controls the action; it defaults to 1.
+
+Gmacs can do single stepping of mlisp functions. The variable
+"single-step-execution" controls it.
+
+I added a compiled version of mlisp files. The builtin function "mlispcc" is
+used to compile mlisp files. If asked to load an mlisp file whose name
+doesn't have an extension, gmacs looks for the mlisp files first without an
+extension, then with the ".mc" extension, and then with the ".ml" extension.
+
+THe save-excursion command now saves the last search string.
+
+In regular expression, [x] and [^x] are not permitted to match \n unless
+it's the first in the set.
+
+The layout of windows is remembered when doing save-window-excursion.
+
+The function "prev-error" has been added to match "next-error". It is
+invoked via ^X-^P. Both commands can now take arguments.
+
+The error parsing algorithm now knows about the output style used by the
+regular "grep -n" command. Thus there is no need for a special ggrep command
+anymore.
+
+Within a mode line format, a limited form of if processing is available. The
+sequence %< is followed by a single letter, which represents a mode or
+variable. If the variable is true, then the string up through the characters
+%> is output. The letters may be OR'd together using %|. The known letters
+are (upper case letters are the reverse of lower case letters):
+
+	%<a	%<A:	abbrev mode is on/off
+	%<b	%<B:	this window is/is-not at the bottom of the screen
+	%<c	%<C:	case-fold-search is on/off
+	%<e	%<E:	(recursion-depth) >/== 0
+	%<f	%<F:	first char of buffer is/is-not visible in this window
+	%<l	%<L:	last char of buffer is/is-not visible in this window
+	%<m	%<M:	the buffer has/has-not been modified
+	%<n	%<N:	the buffer is/is-not narrowed
+	%<r	%<R:	the buffer is/is-not read-only
+	%<t	%<T:	this window is/is-not at the top of the screen
+
+    New format strings in a mode line are:
+	%F	a file's basename
+	%a	"abbrev" if abbreviation mode is turned on.
+	%D	the current recurion depth
+	%R	the current recurion depth if it's >0
+
+    Formats may being with "-" to be left justified instead of right justified.
+
+The command ESC-SPACE is a synonym for ^@ (set-mark).
+
+forward-paren and backward-paren are smarter about comment conventions
+
+-------------------------------- new functions --------------------------------
+
+These are the new functions added:
+
+---------------- autoload-if-necessary
+
+This function works just like "autoload" except if the named function has
+already been marked for auto loading, it won't force the named function to
+be loaded from the new named location. This way MLisp packages can default
+to obtaining other MLisp routines from other packages, but if the user
+wishes, s/he may redefine them.
+
+---------------- bitwise-and, bitwise-or, ~
+
+The functions "bitwise-and", "bitwise-or" and "~" (bitwise-complement) have
+been added. The first two and/or together the list of arguments. The last
+returns the complement of its single argument.
+
+---------------- call-interactively
+
+Forces another function to be invoked as if the user had typed it through a
+keystroke or ESC-x.
+
+---------------- delete-buffer
+
+If you delete a buffer using "delete-buffer", it's checkpoint file will also
+be deleted from the filesystem. (The minibuffer cannot be deleted.)
+
+---------------- execute-background-monitor-command
+
+execute a unix command in the background
+
+---------------- function-type
+
+Returns the type of a mlisp function name.
+
+---------------- get-syntax-table
+
+Returns the local syntax table name.
+
+---------------- get-tty-file
+prompt for a filename
+
+---------------- invisible-argc
+return the number of arguments passed to gmacs without it looking like the
+number was looked at.
+
+---------------- invisible-argv
+return an argument passed to gmacs without it looking like the
+argument was looked at.
+
+---------------- is-top-window
+return true if the current window is the top one on the screen.
+
+---------------- mlispcc
+
+The function "mlispcc" invokes the program $TOOLS/lib/gmacs/bin/mlispcc to
+compile the mlisp files. Execute the mlispcc function while editing an mlisp
+file.
+
+---------------- number-of-replacements
+
+return the number of replacements made by the last replace-string command.
+
+---------------- pending-input
+
+return true if there is unread input for gmacs
+
+---------------- pop-to-unix-command
+
+execute a given command, temporarily leaving gmacs. Just like
+return-to-monitor, except that the given command is run instead of a shell.
+
+---------------- prev-error
+
+This function complements "next-error". It is invoked via ^X-^P. It goes to
+the previous error message in the parsed error list.
+
+---------------- rename-buffer
+
+You can rename a buffer using the new command "rename-buffer". (The
+minibuffer cannot be renamed.)
+
+---------------- repeat-message
+
+repeat the last message sent to the minibuffer
+
+---------------- screen-height, screen-width
+
+Added screen-height and screen-width commands to set the screen height and
+width, respectively.
+
+---------------- send-region-to-background-command
+
+send the given region to a command which is kicked off in the background.
+The region is deleted from the buffer.
+
+---------------- set-backup-prefix, set-checkpoint-prefix
+
+These compliment set-backup-extension and set-checkpoint-extension to permit
+a different prefix to be chosen from the defaults of "BAK." and "CKP.".
+
+---------------- subshell-noblock
+
+This function is a variation on the function subshell which doesn't block
+waiting for initial output to be returned.
+
+---------------- tty-name
+
+This function returns the current tty device name.
+
+---------------- users-id
+
+This function returns the current uid.
+
+---------------- window-width
+
+This function returns the width of the window.
+
+-------------------------------- new variables --------------------------------
+
+These are the new global and buffer-specific variables added:
+
+================ default-needs-checkpointing
+
+Add variable "default-needs-checkpointing" to initialize the buffer-specific
+variables "needs-checkpointing".
+
+================ default-prefix-string
+
+This new global variable "default-prefix-string" which is used to set the
+buffer-specific variable "prefix-string", which in turn is automatically
+output whenever an automatic newline is inserted while you're typing and you
+hit the right margin.
+
+================ echo-keystrokes, echo-argument
+
+The number of seconds to wait before echoing the unfinished escape sequence
+or numeric argument.
+
+================ fast-file-searches
+
+If true (the default) then Emacs will not perform any fancy tests to
+determine what files the user is interested in during filename command
+completion. If false, it will read a byte from the file to try to see if it
+is an executable or a text file.
+
+================ flow-lim
+
+Some slow terminals or terminal emulators will send ^S and ^Q through to
+the host to try and prevent it from overflowing its buffers. These often
+cause gmacs to misinterpret the sequences, making it go into search and 
+quote-character mode, or losing characters. If you are on such a system,
+set flow-lim to a small number, such as 32 or 128 (you'll have to
+experiment). When gmacs does an update of the screen which will cause it
+to send out more than flow-lim number of characters, it will temporarily
+leave raw mode so that ^S and ^Q will be interpreted as flow control
+characters instead of as search and quote-character.
+
+================ no-.emacs_uid-files
+
+If non-zero, gmacs will not save information about its current window layout
+when you exit. If set in your .emacs_pro file, it will also not attempt to
+read such a file. This variable may also be set by the -d command line
+option.
+
+================ prepend-extension
+
+Choose between using a prefix or extension for backup and checkpoint
+filenames. The default prefixes are "BAK." and "CKP.", while the default
+extensions are ".BAK" and ".CKP".
+
+================ read-only
+
+This buffer-specific variable "read-only" prevents writing the file if it is
+set. Set the value back to 0 if you want to write the file elsewhere.
+
+================ remove-help-window
+
+If true (the default), the help window will be removed automatically on the
+next keystroke after popping up to give help.
+
+================ silently-exit-emacs
+
+If true, don't ask the question about modified buffers existing: just exit
+without saving them!
+
+================ single-step-execution
+
+To do single stepping of mlisp functions, the variable
+"single-step-execution" can be set to 0, 1, 2 or 3. If 1 or 3, you'll be
+prompted before each step is executed. If 2 or 3, a trace is placed in the
+buffer named "Trace Buffer". When prompted, the choices are:
+
+    space	execute command
+    !		continue without further prompting or tracing
+    s		continue through to end of progn
+    r		do a recursive edit
+    x		execute the one command without following it down
+    =		give the message again
+    ^G		stop
+
+================ subshell-poll-time
+
+when a subshell is active, this is the number of seconds or keystrokes to
+check for additional output from the subshell. The default is 10.
+
+================ use-csh-option-f
+
+A recursive shell can be forced to be invoked using the "-f" option. This is
+useful for csh users.
+
+================ visit-in-reverse
+
+If set to 1, files will be visited in the order listed on the command line,
+leaving you on the last file listed. If set to 0 (the default), the files
+will be visited in reverse order, leaving you on the first file listed.
+
+-------------------------------- new command line options --------------------------------
+
+Some new command line options were added. This is a complete list of the
+gmacs command line options:
+
+-d		ignore .emacs_uid files on startup and exit
+-e function	function to execute after loading -l file
+-i		ignore .emacs_uid files on startup
+-l file		load this file after loading $HOME/.emacs_pro
+-q		(quick) don't read $HOME/.emacs_pro at startup
+-t ttyname	causes gmacs to do its IO to the named tty
+-u username	read ~username/.emacs_pro instead of $HOME/.emacs_pro
+-x function	execute the named function after visiting any files
+
+If (doplusargs) is autoloaded on the file pattern "+*", then + arguments can
+also be used to manipulate the first filename listed.

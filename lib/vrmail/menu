@@ -1,0 +1,64 @@
+# field no  contents
+# --------  --------
+#   1       level
+#
+#   2       item name
+#
+#   3       options:	(positional y or n, in comma separated list)
+#           =============
+#       1   selection uses interactive reading box
+#       2   selection creates new window 
+#       3   selection references message
+#       4   selection deletes message
+#       5   selection prompts before deleting created window
+#       6   selection manipulates a deleted message
+#		7	selection marks messages with X
+#		8	selection manipulates X'd messages
+#		9	selection marks messages with check mark
+#		10	selection manipulates checked messages
+#
+#   4       command_name
+#
+#   5       real command_name if field 4 is a built in as in $auto
+#
+0:-Select:y,y,y,n,y,n,n,n,y,n:$dbttn1
+1:Msgs:n,n,n,n,n,n,n,n,n,n:junk
+1:Show:y,y,y,n,y:show
+1:-Show:y,y,y,n,y:$bttn1
+2:Refile:n,n,y,y,n:junk
+2:To MBOX:n,n,y,y,n:save
+2:To senders name:y,n,y,y,n:Save
+2:To mail file:n,n,y,y,n:$auto(mf):savef
+2:Without header:n,n,y,n,n:$auto(mf):writef
+1:Compose:n,y,n,n,n:comp
+1:Reply:n,y,y,n,n:repl
+1:REPLY:n,y,y,n,n:Repl
+1:Forward:n,y,y,n,n:forw
+1:Undelete:n,n,y,n,n,y:undelete
+1:Delete:n,n,y,y,n:delete
+1:Edit:n,y,y,n,n:edit
+-1:Multi:n,n,n,n,n,n,n,n,n:junk
+1:Show:y,y,n,n,y,n,n,n,n,y:show
+1:Pipe:n,n,n,n,n,n,n,n,n,y:$auto(cmds),prtmail,prt,prtfmt:pipe
+1:Undelete:n,n,n,n,n,y,n,y,n,n:undelete
+1:Delete:n,n,n,y,n,n,n,y,n,n:delete
+2:Refile:n,n,n,y,n,n,n,n,n,y:junk
+2:To MBOX:n,n,n,y,n,n,n,n,n,y:save
+2:To senders name:y,n,n,y,n,n,n,n,n,y:Save
+2:To mail file:n,n,n,y,n,n,n,n,n,y:$auto(mf):savef
+2:Without header:n,n,n,n,n,n,n,n,n,y:$auto(mf):writef
+0:-Mark:y,y,y,n,y,n,y,n,n,n:$bttn3
+1:Others:n,n,n,n,n:junk
+1:Mailcmd:n,y,n,n,n:post
+1:Pipe:n,n,y,n,n:$auto(cmds),prtmail,prt,prtfmt:pipe
+2:Copy:n,n,y,n,n:junk
+2:To MBOX:n,n,y,n,n:csave
+2:To senders name:n,n,y,n,n:cSave
+2:To mail file:n,n,y,n,n:$auto(mf):csavef
+1:Load:n,y,n,n,n:$load:foo
+1:Shell:n,y,n,n,n:shell
+-1:Utils:n,n,n,n,n:nothing
+1:Purge Faces:n,n,n,n,n:$purge
+1:Reload Mail:n,n,n,n,n:$reload_mail
+1:Reload Menu:n,n,n,n,n:$reload_menu
+0:Options:n,n,n,n,n:$options

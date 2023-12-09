@@ -1,0 +1,56 @@
+#  @(#)  SID: 1.1;  module: @mask;  last changed: 6/3/91  13:15:38
+#
+#  This command helps mask changeable output (such as dates, times) from
+#  being compared during regression testing, either by replacing such
+#  text with '*****' or by surrounding such text with the strings '[}*' and
+#  '*}]', causing the regress system to ignore the text surrounded.
+
+
+USAGE="Usage:  $0  [ -s ] [ -r replacment ]  pattern ..."
+
+GETOPT=$(getopt sr: $*)
+
+if test $? != 0; then
+    echo "$USAGE"
+    exit 2
+fi
+
+set -- $GETOPT
+
+REPLACEMENT="*****"
+for arg in $*; do
+    case "$1" in
+    -r)
+	REPLACEMENT="$2"
+	shift 2
+    ;;
+    -s)
+	REPLACEMENT="[{*&*}]"
+	shift
+    ;;
+    --)
+	shift
+	break
+    ;;
+    *)
+	echo "$0: ERROR: Unknown flag '$1' encountered"
+	echo "$USAGE"
+	exit 2
+    ;;
+    esac
+done
+
+SCRIPTS=""
+DO_SED=false
+for arg; do
+    if test -n "$arg"; then
+	SCRIPTS="$SCRIPTS -e '1,\$s$arg$REPLACEMENTg'"
+	DO_SED=true
+    fi
+done
+
+if $DO_SED; then
+    eval sed $SCRIPTS
+else
+    cat
+fi

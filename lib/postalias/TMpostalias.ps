@@ -1,0 +1,4666 @@
+%!PS-Adobe-2.0
+%%Copyright: Copyright (c) 1993 AT&T, All Rights Reserved
+%%Version: 3.4
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+/DpostDict 200 dict def
+DpostDict begin
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% Version 3.4 prologue for troff files.
+%
+
+/#copies 1 store
+/Prologue (dpost.ps) def
+/aspectratio 1 def
+/formsperpage 1 def
+/landscape false def
+/linewidth .3 def
+/magnification 1 def
+/margin 0 def
+/orientation 0 def
+/resolution 720 def
+/rotation 1 def
+/xoffset 0 def
+/yoffset 0 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/R  /Times-Roman def
+/I  /Times-Italic def
+/B  /Times-Bold def
+/BI /Times-BoldItalic def
+/H  /Helvetica def
+/HI /Helvetica-Oblique def
+/HB /Helvetica-Bold def
+/HX /Helvetica-BoldOblique def
+/CW /Courier def
+/CO /Courier def
+/CI /Courier-Oblique def
+/CB /Courier-Bold def
+/CX /Courier-BoldOblique def
+/PA /Palatino-Roman def
+/PI /Palatino-Italic def
+/PB /Palatino-Bold def
+/PX /Palatino-BoldItalic def
+/Hr /Helvetica-Narrow def
+/Hi /Helvetica-Narrow-Oblique def
+/Hb /Helvetica-Narrow-Bold def
+/Hx /Helvetica-Narrow-BoldOblique def
+/KR /Bookman-Light def
+/KI /Bookman-LightItalic def
+/KB /Bookman-Demi def
+/KX /Bookman-DemiItalic def
+/AR /AvantGarde-Book def
+/AI /AvantGarde-BookOblique def
+/AB /AvantGarde-Demi def
+/AX /AvantGarde-DemiOblique def
+/NR /NewCenturySchlbk-Roman def
+/NI /NewCenturySchlbk-Italic def
+/NB /NewCenturySchlbk-Bold def
+/NX /NewCenturySchlbk-BoldItalic def
+/ZD /ZapfDingbats def
+/ZI /ZapfChancery-MediumItalic def
+/S  /S def
+/S1 /S1 def
+/GR /Symbol def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	/scaling 72 resolution div def
+	linewidth setlinewidth
+	1 setlinecap
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	scaling scaling scale
+
+	addmetrics
+	0 0 moveto
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/landscapepage {
+	landscape not {
+		0 height scaling div neg translate	% not quite
+		90 rotate
+	} if
+} bind def
+
+/portraitpage {
+	landscape {
+		width scaling div 0 translate	% not quite
+		-90 rotate
+	} if
+} bind def
+
+/addmetrics {
+	/Symbol /S null Sdefs cf
+	/Times-Roman /S1 StandardEncoding dup length array copy S1defs cf
+} def
+
+/pagesetup {
+	/page exch def
+	currentdict /pagedict known currentdict page known and {
+		page load pagedict exch get cvx exec
+	} if
+} def
+
+/decodingdefs [
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg /y exch def counttomark 2 idiv {y moveto show} repeat}
+	{neg moveto {2 index stringwidth pop sub exch div 0 32 4 -1 roll widthshow} repeat}
+	{neg moveto {spacewidth sub 0.0 32 4 -1 roll widthshow} repeat}
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg setfunnytext}
+] def
+
+/setdecoding {/t decodingdefs 3 -1 roll get bind def} bind def
+
+/w {neg moveto show} bind def
+/m {neg dup /y exch def moveto} bind def
+/done {/lastpage where {pop lastpage} if} def
+
+/f {
+	dup /font exch def findfont exch
+	dup /ptsize exch def scaling div dup /size exch def scalefont setfont
+	linewidth ptsize mul scaling 10 mul div setlinewidth
+	/spacewidth ( ) stringwidth pop def
+} bind def
+
+/changefont {
+	/fontheight exch def
+	/fontslant exch def
+	currentfont [
+		1 0
+		fontheight ptsize div fontslant sin mul fontslant cos div
+		fontheight ptsize div
+		0 0
+	] makefont setfont
+} bind def
+
+/sf {f} bind def
+
+/cf {
+	dup length 2 idiv
+	/entries exch def
+	/chtab exch def
+	/newencoding exch def
+	/newfont exch def
+
+	findfont dup length 1 add dict
+	/newdict exch def
+	{1 index /FID ne {newdict 3 1 roll put}{pop pop} ifelse} forall
+
+	newencoding type /arraytype eq {newdict /Encoding newencoding put} if
+
+	newdict /Metrics entries dict put
+	newdict /Metrics get
+	begin
+		chtab aload pop
+		1 1 entries {pop def} for
+		newfont newdict definefont pop
+	end
+} bind def
+
+%
+% A few arrays used to adjust reference points and character widths in some
+% of the printer resident fonts. If square roots are too high try changing
+% the lines describing /radical and /radicalex to,
+%
+%	/radical	[0 -75 550 0]
+%	/radicalex	[-50 -75 500 0]
+%
+% Move braceleftbt a bit - default PostScript character is off a bit.
+%
+
+/Sdefs [
+	/bracketlefttp		[201 500]
+	/bracketleftbt		[201 500]
+	/bracketrighttp		[-81 380]
+	/bracketrightbt		[-83 380]
+	/braceleftbt		[203 490]
+	/bracketrightex		[220 -125 500 0]
+	/radical		[0 0 550 0]
+	/radicalex		[-50 0 500 0]
+	/parenleftex		[-20 -170 0 0]
+	/integral		[100 -50 500 0]
+	/infinity		[10 -75 730 0]
+] def
+
+/S1defs [
+	/underscore		[0 80 500 0]
+	/endash			[7 90 650 0]
+] def
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% A first cut at a company wide version of postcommon.ps.
+% Includes Matthijs Melchior's version of roundpagebbox,
+% but disables adjustments for postprint. This is just an
+% example - it should not be considered final or official.
+%
+
+/roundpagebbox {
+	Prologue (postprint.ps) ne {
+		pagebbox dup 0 get pagebbox 2 get add 2 exch put
+		pagebbox dup 1 get pagebbox 3 get add 3 exch put
+		pagebbox 0 0 put
+		pagebbox 1 0 put
+		userdict /origin-at-paper-edge true put
+	} if
+} bind def
+
+end
+%%EndProlog
+%%BeginSetup
+DpostDict begin
+mark
+/resolution 720 def
+setup
+2 setdecoding
+%
+% PostScript 12 and 8 line logos - horizontal configuration. Switch occurs
+% automatically below point size 29. Code from Matthijs Melchior.
+%
+
+/LOGO-dict-mm where not {
+	64 dict /LOGO-dict-mm exch def
+}{pop} ifelse
+LOGO-dict-mm begin		% initialize dictionary
+
+
+/globesetup {
+/r exch def
+/N exch def
+/d 2 N r mul N 1 sub add div def
+/h d r mul def
+} def
+/mkabs {
+/yp exch def
+/xl exch def
+dup dup 0 get xl mul 0 exch put
+dup dup 1 get h mul yp add 1 exch put
+dup dup 2 get xl mul 2 exch put
+dup dup 3 get h mul yp add 3 exch put
+dup dup 4 get xl mul 4 exch put
+dup dup 5 get h mul yp add 5 exch put
+} def
+/topsegment {
+/n exch def
+/y n r mul n .5 add add d mul def
+/a y 1 y dup mul sub sqrt atan def
+/x a cos def
+/c2 exch x y mkabs def
+/ly1 exch h mul y add def
+/lx1 exch x abs mul def
+/c1 exch x y mkabs def
+x y /moveto load
+0 0 1 a 180 a sub /arc load
+c1 aload pop /curveto load
+lx1 ly1 /lineto load
+c2 aload pop /curveto load
+/closepath load
+} def
+/botsegment {
+/n exch 1 add def
+/y n r mul n .5 sub add d mul def
+/a y 1 y dup mul sub sqrt atan def
+/x a cos def
+/c2 exch x y mkabs def
+/ly1 exch h mul y add def
+/lx1 exch x abs mul def
+/c1 exch x y mkabs def
+x y /moveto load
+0 0 1 a 540 a sub /arcn load
+c1 aload pop /curveto load
+lx1 ly1 /lineto load
+c2 aload pop /curveto load
+/closepath load
+} def
+/segment {
+/n exch def
+/dh exch 1 exch sub 2 div def
+/ylb n r mul n 0.5 add add d mul def
+/ylt ylb h add def
+/yrb ylb h dh mul add def
+/yrt ylt h dh mul sub def
+/alb ylb 1 ylb dup mul sub sqrt atan def
+/alt ylt 1 ylt dup mul sub sqrt atan def
+/arb yrb 1 yrb dup mul sub sqrt atan 180 exch sub def
+/art yrt 1 yrt dup mul sub sqrt atan 180 exch sub def
+/xlb alb cos def
+/xlt alt cos def
+/xrb arb cos def
+/xrt art cos def
+/c4 exch xrb abs ylb mkabs def
+/ly2 exch h mul ylb add def
+/lx2 exch xrb abs mul def
+/c3 exch xrb abs ylb mkabs def
+/c2 exch xrt abs ylt mkabs def
+/ly1 exch h mul ylt add def
+/lx1 exch xrt abs mul def
+/c1 exch xrt abs ylt mkabs def
+xlb ylb /moveto load
+0 0 1 alb alt /arc load
+c2 4 get c2 5 get /lineto load
+c2 2 get c2 3 get
+c2 0 get c2 1 get
+lx1 ly1	/curveto load
+c1 4 get c1 5 get /lineto load
+c1 2 get c1 3 get
+c1 0 get c1 1 get
+xrt yrt /curveto load
+0 0 1 art arb /arc load
+c3 aload pop /curveto load
+lx2 ly2 /lineto load
+c4 aload pop /curveto load
+/closepath load
+} def
+8 2.5 globesetup
+/globe8 [
+/newpath load
+[ -.9   .1  -.6   .2  -.5   .2  ] -.5   .2  [ -.4   .2   .0  .0  .4  .0 ] 3 topsegment
+[ -.9  -.35 -.85 -.35 -.8  -.35 ] -.1  -.35 [  .1  -.35  .3  .0  .5  .0 ]
+[ -.8   .35 -.75  .35 -.7   .35 ] -.1   .35 [  .1   .35  .4  .0  .55 .0 ] .55 2 segment
+[ -.8  -.35 -.75 -.35 -.7  -.35 ]  .05 -.35 [  .2  -.35  .4  .0  .55 .0 ]
+[ -.8   .35 -.75  .35 -.7   .35 ]  .05  .35 [  .2   .35  .45 .0  .6  .0 ] .7  1 segment
+[ -.8  -.35 -.75 -.35 -.7  -.35 ]  .0  -.35 [  .15 -.35  .4  .0  .6  .0 ]
+[ -.8   .35 -.75  .35 -.7   .35 ]  .0   .35 [  .15  .35  .4  .0  .6  .0 ] .7  0 segment
+[ -.7  -.35 -.65 -.35 -.6  -.35 ] -.1  -.35 [  .05 -.35  .35 .0  .55 .0 ]
+[ -.7   .35 -.65  .35 -.6   .35 ] -.1   .35 [  .05  .35  .25 .0  .4  .0 ] .8 -1 segment
+[ -.65 -.2  -.55 -.2 -.45  -.2  ] -.3   -.2 [ -.2  -.2   .2  .0  .3  .0 ]
+[ -.65  .1  -.55  .1 -.45   .1  ] -.45  .1  [ -.3   .1  -.1  .0  .0  .0 ] .96 -2 segment
+[  .0   .0   .0   .0  .0    .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ]
+[  .0   .0   .0   .0  .0    .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ]  1 -3 segment
+[  .0   .0   .0   .0  .0    .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ] -4 botsegment
+] cvx def
+12 3 globesetup
+/globe12 [
+/newpath load
+[ -.8   .2  -.7  .25 -.5   .25 ] -.4  .25 [ -.2   .25  .0  .0  .2  .0 ] 5 topsegment
+[ -.7  -.35 -.7 -.35 -.6  -.35 ] -.3 -.35 [ -.1  -.35  .3  .0  .55 .0 ]
+[ -.7   .35 -.7  .35 -.6   .35 ] -.25 .35 [ -.05  .35  .4  .0  .55 .0 ] .6  4 segment
+[ -.8  -.35 -.7 -.35 -.6  -.35 ] -.1 -.35 [  .1  -.35  .4  .0  .5  .0 ]
+[ -.8   .35 -.7  .35 -.6   .35 ] -.1  .35 [  .1   .35  .4  .0  .5  .0 ] .7  3 segment
+[ -.8  -.35 -.7 -.35 -.6  -.35 ]  .0 -.35 [  .1  -.35  .45 .0  .55 .0 ]
+[ -.8   .35 -.7  .35 -.6   .35 ]  .0  .35 [  .15  .35  .4  .0  .5  .0 ] .8  2 segment
+[ -.75 -.35 -.7 -.35 -.6  -.35 ]  .0 -.35 [  .2  -.35  .4  .0  .5  .0 ]
+[ -.75  .35 -.7  .35 -.6   .35 ]  .0  .35 [  .2   .35  .45 .0  .55 .0 ] .9  1 segment
+[ -.7  -.35 -.6 -.35 -.55 -.35 ]  .0 -.35 [  .1  -.35  .45 .0  .55 .0 ]
+[ -.7   .35 -.6  .35 -.55  .35 ]  .0  .35 [  .1   .35  .5  .0  .6  .0 ] .9  0 segment
+] cvx
+[
+[ -.7 -.35 -.6 -.35 -.5  -.35 ] -.15 -.35 [  .0  -.35  .4  .0  .5  .0 ]
+[ -.65 .35 -.55 .35 -.45  .35 ] -.15  .35 [  .0   .35  .35 .0  .45 .0 ] .9 -1 segment
+[ -.8 -.1  -.5 -.3  -.4  -.3  ] -.2  -.3  [  .0  -.3   .3  .0  .4  .0 ]
+[ -.8  .1  -.5  .3  -.4   .3  ] -.2   .3  [  .0   .3   .2  .0  .3  .0 ] 1 -2 segment
+[ -.7 -.1  -.5 -.15 -.4  -.15 ] -.3  -.15 [ -.2  -.15  .0  .0  .2  .0 ]
+[ -.7  .05 -.5  .1  -.4   .1  ] -.4   .1  [ -.3   .1   .0  .0  .2  .0 ] 1 -3 segment
+[  .0  .0   .0  .0   .0   .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ]
+[  .0  .0   .0  .0   .0   .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ] 1 -4 segment
+[  .0  .0   .0  .0   .0   .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ]
+[  .0  .0   .0  .0   .0   .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ] 1 -5 segment
+[  .0  .0   .0  .0   .0   .0  ]  .0   .0  [  .0   .0   .0  .0  .0  .0 ] -6 botsegment
+] cvx
+4 array cvx
+dup 0 5 -1 roll put
+dup 1 /exec load put
+dup 2 4 -1 roll put
+dup 3 /exec load put
+def
+
+/l {  lineto } def
+/rl {  rlineto } def
+/m {  moveto } def
+/rm {  rmoveto } def
+/C { closepath } def
+/c {  curveto } def
+/rc {  rcurveto } def
+/T { m 0 29 rl -9.5 0 rl 0 7 rl 29 0 rl 0 -7 rl -9.5 0 rl 0 -29 rl C } def
+/ATT {
+newpath
+1 36 div dup scale
+0  0 m  12 36 rl  8 0 rl -11 -36 rl C
+25  0 m -11 36 rl  8 0 rl  12 -36 rl C
+10  7 m   0  7 rl 14 0 rl   0  -7 rl C
+36  0 T
+80  6 m -3 0 -5 1.2 -6 2 rc -12 10 rl -2.4 2 -2.7 6 0 6 rc
+1 0 2 -1 2 -2 rc 0 -4 rl 7 0 rl 0 4 rl
+0 5 -3 7 -9 7 rc -6 0 -9 -3 -9 -7 rc
+0 -2 0 -3.6 2 -6 rc 12 -10 rl 6 -5 10 -6 13 -6 rc C
+71 18 m 0 -6 rl 0 -5 -3 -7 -7 -7 rc -3 0 -5 2 -5 4 rc 0 1 0 3 2 4 rc
+-4 5 rl -4 -2 -6 -6 -6 -9 rc 0 -7 6 -10 13 -10 rc
+9 0 14 6 14 11 rc 0 8 rl C
+82  0 T
+36 dup scale
+} def
+
+end
+
+/build_LH { % standard ATT logo
+    LOGO-dict-mm begin
+	/w exch def
+	ptsize 29 lt	% select globe, # lines depends on point size
+		{ /globe /globe8 load def }
+		{ /globe /globe12 load def } ifelse
+	gsave
+	 currentpoint translate
+	 size 2 div dup scale
+	 gsave
+	  1.02 1 transform round exch round exch itransform
+	  translate
+	  globe fill
+	 grestore
+	 gsave
+	  2.15 .62 translate
+	  .78 dup scale
+	  ATT fill
+	 grestore
+	grestore
+    end
+} def
+end
+%%EndSetup
+%%Page: 1 1
+DpostDict begin
+/saveobj save def
+mark
+1 pagesetup
+%INFO[PROPRIETARY MARKING: CODE = 1, MARKING = Proprietary]
+%INFO[COMPANY:  AT&T Bell Laboratories]
+%INFO[DATE: May 23, 1994]
+%INFO[AUTHOR: NAME = W. S. Krol, ORG = NE05100R0, LOC = IHC, ROOM = 1G-427, PHONE = (708)713-1160, AFFILIATION = AT&T Bell Laboratories]
+%INFO[DOCUMENT STYLE: CODE = IM, TYPE = Memorandum]
+36 S1 f
+()3780 696 w
+36 S1 f
+3780 696 m
+756 build_LH
+4536 696 m
+10 S1 f
+(_ ________________________________________________________________________________________________________)1 5220 1 720 876 t
+10 H f
+(AT&T Bell Laboratories)2 1037 1 720 1020 t
+8 R f
+(subject:)720 1416 w
+%INFO[TITLE: <START>]
+10 B f
+(Private and System Aliases in the post 4.0/upas Environment)8 2593 1 1017 1416 t
+(Issue 6 - APXLIB No. d4145)5 1206 1 1017 1536 t
+(WPN 1702-14-4000)1 824 1 1017 1656 t
+%INFO[TITLE: <END>]
+8 R f
+(date:)3792 1416 w
+10 B f
+(May 23, 1994)2 569 1 4032 1416 t
+8 R f
+(from:)3792 1656 w
+10 B f
+(W. S. Krol)2 456 1 4032 1656 t
+(Org. NE05100R0)1 733 1 4032 1776 t
+(IHC 1G-427)1 525 1 4032 1896 t
+(\(708\)713-1160)4032 2016 w
+(TM:NE05100R0-930826-01TM)4032 2136 w
+(TECHNICAL MEMORANDUM)1 1418 1 2171 2616 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = INTRODUCTION]
+(INTRODUCTION)720 2916 w
+10 R f
+(Most readers are aware that)4 1137 1 720 3096 t
+10 B f
+(post)1891 3096 w
+10 R f
+( built on the foundation of)5 1097(is a mail processing system that is)6 1415 2 2103 3096 t
+10 B f
+(mailx)4650 3096 w
+10 R f
+(for)4924 3096 w
+(reading and sending messages.)3 1240 1 720 3216 t
+10 B f
+(post)1988 3216 w
+10 R f
+(enhances the functionality of)3 1165 1 2194 3216 t
+10 B f
+(mailx)3387 3216 w
+10 R f
+( the ability to look up)5 869(by providing)1 517 2 3654 3216 t
+( in addition to recognizing)4 1151(employee/site information in on-line corporate directories,)5 2450 2 720 3336 t
+10 B f
+(mailx)4370 3336 w
+10 R f
+(and)4658 3336 w
+10 B f
+(mail)4851 3336 w
+10 R f
+(addressing conventions. In)2 1080 1 720 3456 t
+10 B f
+(post)1831 3456 w
+10 R f
+( of programs in)3 634(Release 4.0, a set)3 708 2 2040 3456 t
+10 B f
+(/usr/lib/upas)3414 3456 w
+7 R f
+(1)3950 3416 w
+10 R f
+(replaced)4017 3456 w
+10 B f
+(/bin/mail)4386 3456 w
+10 R f
+(as the)1 237 1 4803 3456 t
+( the ability of)3 557( tends to be misunderstood, and consequently underutilized, is)8 2551( What)1 274(mail processor.)1 618 4 720 3576 t
+10 B f
+(post)4752 3576 w
+10 R f
+(to)4962 3576 w
+(use various powerful forms of aliases to direct mail.)8 2077 1 720 3696 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 1.  , HEADING = ADDRESSING BASICS]
+10 B f
+( BASICS)1 387(1. ADDRESSING)1 781 2 720 3936 t
+10 R f
+(When evaluating the)2 842 1 720 4116 t
+10 B f
+(post)1595 4116 w
+10 R f
+( \(-\) are taken as options and all other)8 1535(command, arguments with a leading dash)5 1699 2 1806 4116 t
+(arguments are taken to be addresses of recipients.)7 1978 1 720 4236 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 1.1  , HEADING = Address Forms]
+10 B f
+( Forms)1 302(1.1 Address)1 525 2 720 4416 t
+10 R f
+(An individual)1 553 1 720 4596 t
+10 B f
+(address)1298 4596 w
+10 R f
+(can have one of the following forms:)6 1475 1 1651 4596 t
+8 S f
+(\267)993 4776 w
+10 B f
+(login)1080 4776 w
+10 R f
+(- local user login id. An example is my login)9 1788 1 1317 4776 t
+10 B f
+(wsk)3130 4776 w
+10 R f
+(.)3297 4776 w
+8 S f
+(\267)993 4956 w
+10 B f
+(network address)1 708 1 1080 4956 t
+10 R f
+( example is)2 455( An)1 172(- [system][!...]!login or login@system.)3 1549 3 1813 4956 t
+10 B f
+(ihlpf!wsk)4014 4956 w
+8 S f
+(\267)993 5136 w
+10 B f
+(query)1080 5136 w
+10 R f
+( query is one or more value pairs separated by \()10 1985(- corporate directory query. A)4 1225 2 1363 5136 t
+10 B f
+(/)4573 5136 w
+10 R f
+(\) or \()2 217 1 4601 5136 t
+10 B f
+(:)4818 5136 w
+10 R f
+(\). A)1 189 1 4851 5136 t
+(value pair is the construct)4 1066 1 1080 5256 t
+10 B f
+(attribute=value)2180 5256 w
+10 R f
+(as described in the)3 767 1 2876 5256 t
+10 B f
+(post)3677 5256 w
+10 R f
+( that if)2 279(documentation. Note)1 872 2 3889 5256 t
+(the)1080 5376 w
+10 B f
+(attribute)1230 5376 w
+10 R f
+(is missing in a)3 588 1 1635 5376 t
+10 B f
+(query)2252 5376 w
+10 R f
+(sequence, as usually is the case with ``)7 1569 1 2531 5376 t
+10 B f
+(post user.name)1 648 1 4100 5376 t
+10 R f
+(,'' then)1 292 1 4748 5376 t
+10 B f
+(post)1080 5496 w
+10 R f
+(defaults the)1 463 1 1283 5496 t
+10 B f
+(attribute)1771 5496 w
+10 R f
+(to)2173 5496 w
+10 B f
+(pn)2276 5496 w
+10 R f
+( examples of the)3 657(. Two)1 258 2 2388 5496 t
+10 B f
+(query)3328 5496 w
+10 R f
+(format are)1 412 1 3603 5496 t
+10 CW f
+(w.s.krol)1320 5736 w
+(loc=ill650/room=1g427)1320 5856 w
+8 S f
+(\267)993 6156 w
+10 B f
+(alias)1080 6156 w
+10 R f
+( recipients either contained in an alias \256le or set by the)11 2254(- lists of)2 340 2 1306 6156 t
+10 B f
+(alias)3932 6156 w
+10 R f
+(identi\256er in a)2 547 1 4159 6156 t
+10 B f
+(.mailrc)4738 6156 w
+10 R f
+( may contain any of the above address types as well as one or more aliases.)15 2999(\256le. It)1 264 2 1080 6276 t
+8 S1 f
+(__________________)720 6456 w
+8 R f
+( tree \(Antiaris)2 450( Javanese)1 327( full, u'pas-tree'\), a fabulous Javanese tree that poisoned everything for miles around;)12 2781( n. \(in)2 238( u'pas.)1 238(1. upas.)1 286 6 720 6576 t
+( poison.])1 279( [Malay,)1 289(toxicara, of the mulberry family\); the poison of its latex.)9 1789 3 840 6666 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 1 1
+%%Page: 2 2
+DpostDict begin
+/saveobj save def
+mark
+2 pagesetup
+10 R f
+(- 2 -)2 166 1 2797 480 t
+8 S f
+(\267)993 960 w
+10 B f
+(local \256le delivery)2 722 1 1080 960 t
+10 R f
+(\(command line or .mailrc \256le only\))5 1404 1 1802 960 t
+(\320)1290 1140 w
+10 B f
+(+name)1440 1140 w
+10 R f
+( begins with a plus \()5 838(- If the recipient name)4 906 2 1760 1140 t
+10 B f
+(+)3504 1140 w
+10 R f
+(\), the rest of the name is taken to be)9 1479 1 3561 1140 t
+( of a \256le to append the mail to. If the \256le is a relative path name, it is prepended)19 3233(the name)1 367 2 1440 1260 t
+(with the value of the)4 821 1 1440 1380 t
+10 B f
+(folder)2286 1380 w
+10 R f
+(variable.)2566 1380 w
+(\320)1290 1560 w
+10 S f
+(\357)1440 1560 w
+10 B f
+(program)1489 1560 w
+10 R f
+(- If the recipient name begins with a pipe symbol \()10 2089 1 1898 1560 t
+10 S f
+(\357)3987 1560 w
+10 R f
+(\), the rest of the name is)6 1004 1 4036 1560 t
+( provides an automatic)3 943(taken to be a shell command to pipe the message through. This)11 2657 2 1440 1680 t
+( as)1 137(interface with any program that reads the standard input, such)9 2719 2 1440 1800 t
+10 B f
+(lp)4350 1800 w
+10 R f
+(for recording)1 552 1 4488 1800 t
+(outgoing mail on paper. The)4 1155 1 1440 1920 t
+10 S f
+(\357)2625 1920 w
+10 B f
+(program)2674 1920 w
+10 R f
+( it)1 85(should be enclosed in double quotes to escape)7 1874 2 3081 1920 t
+(from)1440 2040 w
+10 B f
+(shell)1659 2040 w
+10 R f
+(.)1854 2040 w
+%INFO[SECTION: LEVEL = 2, NUMBER = 1.2  , HEADING = Address Resolution]
+10 B f
+( Resolution)1 481(1.2 Address)1 525 2 720 2220 t
+(address)720 2400 w
+10 R f
+(resolution follows the following steps:)4 1539 1 1073 2400 t
+8 S f
+(\267)783 2580 w
+10 B f
+(alias)870 2580 w
+10 R f
+( \()1 62( the \256rst character is a)5 893( If)1 119(is resolved. The process is recursive, therefore, aliases can be nested.)10 2783 4 1093 2580 t
+10 B f
+(+)4950 2580 w
+10 R f
+(\))5007 2580 w
+(or \()1 141 1 870 2700 t
+10 S f
+(\357)1011 2700 w
+10 R f
+(\) local \256le delivery is assumed.)5 1243 1 1060 2700 t
+8 S f
+(\267)783 2880 w
+10 B f
+(address)870 2880 w
+10 R f
+(is searched from the left for the \256rst occurrence of \()10 2060 1 1223 2880 t
+10 B f
+(!)3283 2880 w
+10 R f
+(\), \()1 116 1 3316 2880 t
+10 B f
+(@)3432 2880 w
+10 R f
+(\), \()1 116 1 3525 2880 t
+10 B f
+(/)3641 2880 w
+10 R f
+(\), \()1 116 1 3669 2880 t
+10 B f
+(:)3785 2880 w
+10 R f
+(\) or \()2 199 1 3818 2880 t
+10 B f
+(=)4017 2880 w
+10 R f
+(\))4074 2880 w
+( the \256rst character found is a \()7 1215(\320 If)1 216 2 870 3060 t
+10 B f
+(!)2301 3060 w
+10 R f
+(\) or \()2 205 1 2334 3060 t
+10 B f
+(@)2539 3060 w
+10 R f
+(\) then the)2 383 1 2632 3060 t
+10 B f
+(address)3043 3060 w
+10 R f
+(is a network address. \(Note that)5 1284 1 3399 3060 t
+10 B f
+(address)4712 3060 w
+10 R f
+(in the network address can be a system-wide alias\).)8 2048 1 1020 3180 t
+( the \256rst character found is a \()7 1222(\320 If)1 216 2 870 3360 t
+10 B f
+(/)2308 3360 w
+10 R f
+(\), \()1 120 1 2336 3360 t
+10 B f
+(:)2456 3360 w
+10 R f
+(\) or \()2 207 1 2489 3360 t
+10 B f
+(=)2696 3360 w
+10 R f
+(\) then)1 234 1 2753 3360 t
+10 B f
+(address)3016 3360 w
+10 R f
+( if)1 91(is a query. However,)3 840 2 3373 3360 t
+10 B f
+(POSTETC)4334 3360 w
+10 R f
+(is set)1 208 1 4832 3360 t
+(in the environment and the)4 1079 1 1020 3480 t
+10 B f
+(address)2126 3480 w
+10 R f
+( otherwise it)2 496(is found in /etc/passwd, it is then treated as a login,)10 2063 2 2481 3480 t
+(is treated as a query.)4 817 1 1020 3600 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 2.  , HEADING = ALIAS PRECEDENCE]
+10 B f
+( PRECEDENCE)1 714(2. ALIAS)1 431 2 720 3840 t
+(post)720 4020 w
+10 R f
+(recognizes three)1 650 1 923 4020 t
+10 B f
+(alias)1598 4020 w
+10 R f
+(types and searches for them in the following order:)8 2035 1 1818 4020 t
+8 S f
+(\267)993 4200 w
+10 R f
+(Private mailx alias - searches for the)6 1536 1 1080 4200 t
+10 B f
+(alias)2655 4200 w
+10 R f
+(identi\256er in the mail startup \256le. The default \256le is)9 2151 1 2889 4200 t
+10 B f
+($HOME/.mailrc)1080 4320 w
+10 R f
+(but it can be changed via the)6 1142 1 1802 4320 t
+10 B f
+($MAILRC)2969 4320 w
+10 R f
+(environment variable.)1 876 1 3460 4320 t
+8 S f
+(\267)993 4500 w
+10 R f
+(Private upas alias - searches for)5 1275 1 1080 4500 t
+10 B f
+($HOME/lib/names)2383 4500 w
+10 R f
+(. If)1 145 1 3190 4500 t
+10 B f
+($HOME/lib/names)3364 4500 w
+10 R f
+(is a directory, then it)4 840 1 4200 4500 t
+( if)1 88( Otherwise,)1 488(is searched for a \256le name that is the same as the alias name.)13 2456 3 1080 4620 t
+10 B f
+($HOME/lib/names)4139 4620 w
+10 R f
+(is)4973 4620 w
+(a \256le then it is searched for the desired)8 1541 1 1080 4740 t
+10 B f
+(alias)2646 4740 w
+10 R f
+(.)2841 4740 w
+8 S f
+(\267)993 4920 w
+10 R f
+(System-wide upas alias - reads the \256le)6 1645 1 1080 4920 t
+10 B f
+(/usr/lib/upas/name\256les)2769 4920 w
+10 R f
+(to obtain the directories to be)5 1263 1 3777 4920 t
+( default location for system)4 1129( The)1 214( same as the desired alias.)5 1076(searched for a \256le whose name is the)7 1541 4 1080 5040 t
+(aliases is)1 358 1 1080 5160 t
+10 B f
+(/usr/lib/upas/list)1463 5160 w
+10 R f
+( be used throughout the rest of this document. The)9 2018(and this location will)3 842 2 2180 5160 t
+(environment variable)1 870 1 1080 5280 t
+10 B f
+(PA)1994 5280 w
+10 S f
+(_)2127 5280 w
+10 B f
+(LISTDIR)2177 5280 w
+10 R f
+( to a different location for the system)7 1604(can be set to point)4 803 2 2633 5280 t
+(aliases.)1080 5400 w
+%INFO[SECTION: LEVEL = 1, NUMBER = 3.  , HEADING = ADDRESSING MAIL]
+10 B f
+( MAIL)1 297(3. ADDRESSING)1 781 2 720 5640 t
+(post)720 5820 w
+10 R f
+( as address types can be freely)6 1237( various alias types as well)5 1088( The)1 209(is \257exible in its ability to address mail.)7 1579 4 927 5820 t
+(mixed in any)2 542 1 720 5940 t
+10 B f
+(post)1297 5940 w
+10 R f
+( can be used in the)5 790(message. Aliases)1 717 2 1510 5940 t
+10 B f
+(Cc:)3052 5940 w
+10 R f
+(and)3236 5940 w
+10 B f
+(Bcc:)3415 5940 w
+10 R f
+( can be nested ie.)4 720(headers. Aliases)1 682 2 3638 5940 t
+( than one alias or)4 702( mail as a result of a recipient being included in more)11 2171( Duplicate)1 442(included in other aliases.)3 1005 4 720 6060 t
+( may also send the mail)5 1016( You)1 238( may include yourself in any address or alias.)8 1933( You)1 238(address is eliminated.)2 895 5 720 6180 t
+(message directly to a printer by using \()7 1577 1 720 6300 t
+10 S f
+(\357)2297 6300 w
+10 R f
+( by using \()3 437(\) or append it to a \256le)6 878 2 2346 6300 t
+10 B f
+(+)3661 6300 w
+10 R f
+(\) subject to the restrictions listed)5 1322 1 3718 6300 t
+(above.)720 6420 w
+%INFO[SECTION: LEVEL = 2, NUMBER = 3.1  , HEADING = Private Aliases]
+10 B f
+( Aliases)1 325(3.1 Private)1 485 2 720 6600 t
+10 R f
+(To use a private alias \(these reside in your)8 1685 1 720 6780 t
+10 B f
+(.mailrc)2430 6780 w
+10 R f
+(\), do)1 183 1 2732 6780 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 2 2
+%%Page: 3 3
+DpostDict begin
+/saveobj save def
+mark
+3 pagesetup
+10 R f
+(- 3 -)2 166 1 2797 480 t
+10 CW f
+(post alias1[ ... aliasN])3 1440 1 960 960 t
+10 R f
+(In the mail to this alias, the full list of recipients is displayed.)12 2444 1 720 1200 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 3.2  , HEADING = Private/System upas Aliases]
+10 B f
+( upas Aliases)2 551(3.2 Private/System)1 818 2 720 1440 t
+10 R f
+(To use a private/system)3 946 1 720 1620 t
+10 B f
+(upas)1691 1620 w
+10 R f
+(alias, do)1 333 1 1917 1620 t
+10 CW f
+(post [<system>]!alias \(from a Unix <system>\))5 2640 1 960 1860 t
+10 R f
+(or)720 1980 w
+10 CW f
+(attmail attbl!<system>!alias \(from attmail\))3 2580 1 960 2100 t
+10 R f
+( a list of individual)4 812(When mail is sent to this these aliases with ``post !alias,'' the alias name\(instead of)14 3508 2 720 2340 t
+(recipients\) is displayed in the)4 1171 1 720 2460 t
+10 B f
+(To:)1916 2460 w
+10 R f
+(message.)2091 2460 w
+10 CW f
+(To: !alias)1 600 1 960 2700 t
+10 R f
+(The)720 2940 w
+10 S f
+(<)905 2940 w
+10 R f
+(system)960 2940 w
+10 S f
+(>)1238 2940 w
+10 R f
+(is optional if you are sending from the machine where the alias is located. The signi\256cance)15 3717 1 1323 2940 t
+( you can use a system-wide upas alias that exists on another machine, simply by)14 3437(of this format is that)4 883 2 720 3060 t
+( name. It is the \()5 669(preceding the alias with that system)5 1444 2 720 3180 t
+10 B f
+(!)2833 3180 w
+10 R f
+(\) that de\256nes the alias to be a system alias. To further)11 2174 1 2866 3180 t
+(simplify the process, you can put a alias in your .mailrc \256le that references the system alias. For example,)18 4210 1 720 3300 t
+10 CW f
+(alias myalias <system>!alias)2 1680 1 960 3540 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 4.  , HEADING = VIEWING ALIAS CONTENTS]
+10 B f
+( ALIAS CONTENTS)2 907(4. VIEWING)1 592 2 720 3900 t
+10 R f
+(You can use)2 523 1 720 4080 t
+10 B f
+(post -w alias)2 558 1 1283 4080 t
+10 R f
+(to display the contents of aliases in your)7 1712 1 1881 4080 t
+10 B f
+(.mailrc)3634 4080 w
+10 R f
+( can display the)3 672(\256le. You)1 391 2 3977 4080 t
+( upas aliases with)3 702(contents of your)2 651 2 720 4200 t
+10 B f
+(mail -# alias)2 517 1 2098 4200 t
+10 R f
+( - You must use)4 633(. Note)1 269 2 2615 4200 t
+10 B f
+(mail)3542 4200 w
+10 R f
+(not)3756 4200 w
+10 B f
+(post)3909 4200 w
+10 R f
+( exptool)1 325(. The)1 230 2 4087 4200 t
+10 B f
+(postalias)4667 4200 w
+10 R f
+(was written to provide a uniform interface to the user as well as allow other operations on aliases.)17 3898 1 720 4320 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 4.1  , HEADING = System upas Aliases]
+10 B f
+( upas Aliases)2 551(4.1 System)1 480 2 720 4500 t
+%INFO[SECTION: LEVEL = 3, NUMBER = 4.1.1  , HEADING = Local Users]
+( Users)1 263(4.1.1 Local)1 489 2 720 4680 t
+10 R f
+(The exptool)1 486 1 720 4860 t
+10 B f
+(postalias)1237 4860 w
+10 R f
+( installed or)2 486(allows local users to interrogate the system for which aliases have been)11 2913 2 1641 4860 t
+(to see the contents of any alias.)6 1245 1 720 4980 t
+(To see all the aliases available to you, do)8 1639 1 720 5220 t
+10 CW f
+(postalias)960 5460 w
+10 R f
+(To see a subset of the aliases available to you, do)10 1966 1 720 5700 t
+10 CW f
+(postalias -g 'string')2 1260 1 960 5940 t
+10 B f
+(postalias)720 6180 w
+10 R f
+(will display all the aliases that contain the string in the alias name.)12 2651 1 1118 6180 t
+(To see the contents of a system alias, do)8 1606 1 720 6360 t
+10 CW f
+(postalias alias)1 900 1 960 6600 t
+10 R f
+(The exptool)1 496 1 720 6840 t
+10 B f
+(aliasx)1257 6840 w
+10 R f
+(allows users to expand nested private and public)7 2052 1 1543 6840 t
+10 B f
+(upas)3637 6840 w
+10 R f
+( expand an alias)3 691(aliases. To)1 469 2 3880 6840 t
+(including those that contain other aliases, do)6 1779 1 720 6960 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 3 3
+%%Page: 4 4
+DpostDict begin
+/saveobj save def
+mark
+4 pagesetup
+10 R f
+(- 4 -)2 166 1 2797 480 t
+10 CW f
+(aliasx alias)1 720 1 960 960 t
+10 R f
+(The output is available in different formats, see the manual page for details.)12 3022 1 720 1200 t
+%INFO[SECTION: LEVEL = 3, NUMBER = 4.1.2  , HEADING = Remote Users]
+10 B f
+( Users)1 263(4.1.2 Remote)1 576 2 720 1380 t
+10 R f
+( can send mail to a system upas alias but cannot view the alias contents except by)16 3315(Users on remote systems)3 1005 2 720 1560 t
+(using the ``lookup'' feature\(if it is installed on the machine where the alias is located.\))14 3452 1 720 1680 t
+(A remote mail server to interrogate these lists, called)8 2118 1 720 1920 t
+10 S f
+(<)2864 1920 w
+10 B f
+(system)2919 1920 w
+10 S f
+(>)3207 1920 w
+10 B f
+(!lookup)3262 1920 w
+10 R f
+( on ihlpf. Anyone)3 711(has been installed)2 712 2 3617 1920 t
+(who can send UNIX mail to)5 1143 1 720 2040 t
+10 S f
+(<)1892 2040 w
+10 R f
+(system)1947 2040 w
+10 S f
+(>)2225 2040 w
+10 R f
+( that)1 178( Note)1 247( the contents of a given alias.)6 1180(can view)1 361 4 2309 2040 t
+10 S f
+(<)4303 2040 w
+10 B f
+(system)4358 2040 w
+10 S f
+(>)4646 2040 w
+10 R f
+(name is)1 311 1 4729 2040 t
+(optional if you are on the system where the alias \256le is located.)12 2516 1 720 2160 t
+%INFO[SECTION: LEVEL = 4, NUMBER = 4.1.2.1  , HEADING = List of Aliases]
+( of Aliases)2 427(4.1.2.1 List)1 481 2 720 2340 t
+(If you send mail with the keyword)6 1376 1 720 2460 t
+10 B f
+(aliases)2121 2460 w
+10 R f
+(in the)1 225 1 2424 2460 t
+10 B f
+(Subject:)2674 2460 w
+10 R f
+(\256eld, then a list of aliases will be returned to you.)10 1976 1 3054 2460 t
+10 CW f
+(> post !lookup)2 840 1 960 2700 t
+(Subject: aliases)1 960 1 960 2820 t
+(I> .)1 240 1 960 2940 t
+(EOT)960 3060 w
+10 R f
+(You will receive a message from)5 1316 1 720 3300 t
+10 B f
+(post)2061 3300 w
+10 R f
+(as follows:)1 436 1 2264 3300 t
+10 CW f
+( 16:22 CDT 1992)3 900( 6)1 180(From post Mon Apr)3 1020 3 960 3540 t
+(# aliases)1 540 1 960 3780 t
+(aa-nwsbu)960 3900 w
+(face-2-face)960 4020 w
+(inspector-list)960 4140 w
+(lb-royer)960 4260 w
+(oap-pmt)960 4380 w
+(pc-group)960 4500 w
+(tm-ihc2k)960 4620 w
+%INFO[SECTION: LEVEL = 4, NUMBER = 4.1.2.2  , HEADING = Alias Contents]
+10 R f
+( Contents)1 381(4.1.2.2 Alias)1 536 2 720 4920 t
+(If you send mail with the alias name in the)9 1854 1 720 5040 t
+10 B f
+(Subject:)2616 5040 w
+10 R f
+(\256eld or the message body of an e-mail message)8 2027 1 3013 5040 t
+(addressed to)1 496 1 720 5160 t
+10 S f
+(<)1241 5160 w
+10 R f
+(system)1296 5160 w
+10 S f
+(>)1574 5160 w
+10 R f
+(!lookup, then a list of the members of the alias will be mailed to you.)14 2759 1 1629 5160 t
+10 CW f
+(> post !lookup)2 840 1 960 5400 t
+(Subject: pc-group)1 1020 1 960 5520 t
+(I> .)1 240 1 960 5640 t
+(EOT)960 5760 w
+10 R f
+(You will receive a message from)5 1316 1 720 6000 t
+10 B f
+(post)2061 6000 w
+10 R f
+(as follows:)1 436 1 2264 6000 t
+10 CW f
+( 16:45 CDT 1992)3 900( 6)1 180(From post Mon Apr)3 1020 3 960 6240 t
+(# pc-group)1 600 1 960 6480 t
+( 708 713 1341 ihlpf!jjf)4 1380( ill650 1g-208)2 1200( 54422)1 660(fuentes,james j)1 900 4 960 6600 t
+( 708 713 1160 ihlpf!wsk)4 1380( ill650 1g-427)2 1200( 54421)1 720(krol,william s)1 840 4 960 6720 t
+( 708 979 7639 ihlpf!mtmm)4 1440( 54421 ill650 1h-430)3 1740(mcgarry,michael t)1 1020 3 960 6840 t
+( 708 713 1168 ihlpf!neuf)4 1440( 54421 ill650 1h-419)3 1740(neufelder,susan e)1 1020 3 960 6960 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 4 4
+%%Page: 5 5
+DpostDict begin
+/saveobj save def
+mark
+5 pagesetup
+10 R f
+(- 5 -)2 166 1 2797 480 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 5.  , HEADING = THE PROBLEM]
+10 B f
+( PROBLEM)1 531(5. THE)1 337 2 720 960 t
+10 R f
+( most user-friendly aliases are those)5 1453(Although aliases can be constructed using any of the address types, the)11 2867 2 720 1140 t
+( is, address form)3 666( That)1 235( personal name along with any necessary qualifying attributes.)8 2509(that use the recipient's)3 910 4 720 1260 t
+(is)720 1380 w
+10 B f
+(query)825 1380 w
+10 R f
+(and attribute is)2 620 1 1113 1380 t
+10 B f
+(pn)1771 1380 w
+10 R f
+( personal names also eliminates the need to update an alias)10 2486(\(default\). Using)1 671 2 1883 1380 t
+(when a member moves to a different machine.)7 1851 1 720 1500 t
+(Before)720 1680 w
+10 B f
+(post)1016 1680 w
+10 R f
+( must \256rst decompose any aliases and then convert all address types to)12 2825(can actually send mail, it)4 996 2 1219 1680 t
+(the)720 1800 w
+10 B f
+(ema)874 1800 w
+10 R f
+(format ie.)1 395 1 1083 1800 t
+10 B f
+(machine!login)1510 1800 w
+10 R f
+( unless you are on a)5 825(. Unfortunately,)1 667 2 2116 1800 t
+10 B f
+(post)3640 1800 w
+10 R f
+( the)1 153(server\(which is unlikely\),)2 1037 2 3850 1800 t
+(database accesses are done over datakit, one name at a time and are expensive in terms of time and)18 4320 1 720 1920 t
+( has shown a savings in both time and cost of almost 90%.)12 2335( Tests)1 261(computer resources.)1 803 3 720 2040 t
+( users when they are in name format but most)9 1831(Simply stated, the problem is that aliases are most readable by)10 2489 2 720 2220 t
+(ef\256cient in terms of computer resources when they are in)9 2275 1 720 2340 t
+10 B f
+(ema)3020 2340 w
+10 R f
+(format ie.)1 388 1 3222 2340 t
+10 B f
+(machine!login)3635 2340 w
+10 R f
+(.)4241 2340 w
+(The solution to this problem lies in automatically converting all aliases used by)12 3207 1 720 2520 t
+10 B f
+(post)3955 2520 w
+10 R f
+(to)4161 2520 w
+10 B f
+(ema)4267 2520 w
+10 R f
+(format. Since)1 567 1 4473 2520 t
+( on the server is normally updated once per week, many redundant database accesses will be)15 3820(the database)1 500 2 720 2640 t
+( the default directory\) has been implemented and tested with)9 2586(eliminated. A conversion procedure\(using)3 1734 2 720 2760 t
+(success and is as follows:)4 1021 1 720 2880 t
+8 S f
+(\267)783 3060 w
+10 R f
+(Install original aliases in a)4 1049 1 870 3060 t
+10 B f
+(Src)1944 3060 w
+10 R f
+(directory under)1 612 1 2113 3060 t
+10 B f
+(/usr/lib/upas/list)2750 3060 w
+10 R f
+(.)3442 3060 w
+8 S f
+(\267)783 3240 w
+10 R f
+( to)1 104(Convert each alias)2 737 2 870 3240 t
+10 B f
+(ema)1737 3240 w
+10 R f
+( Using)1 290(format\(if possible\) whenever the alias is edited.)6 1905 2 1940 3240 t
+10 B f
+(postalias -e alias)2 697 1 4161 3240 t
+10 R f
+(will)4884 3240 w
+(open the original alias \(either in)5 1333 1 870 3360 t
+10 B f
+($HOME/lib/names/Src)2240 3360 w
+10 R f
+(or)3256 3360 w
+10 B f
+(/usr/lib/upas/list/Src)3376 3360 w
+10 R f
+( When)1 274(\) for editing.)2 526 2 4240 3360 t
+( the)1 152(the editing session is complete, the alias will be converted and placed in either)13 3181 2 870 3480 t
+10 B f
+($HOME/lib/names)4233 3480 w
+10 R f
+(or)870 3600 w
+10 B f
+(/usr/lib/upas/list)1021 3600 w
+10 R f
+(directory to be used by)4 1087 1 1781 3600 t
+10 B f
+(post)2936 3600 w
+10 R f
+( \256le was not located in the)6 1301( the alias)2 441(. If)1 184 3 3114 3600 t
+10 B f
+($HOME/lib/names/Src)870 3720 w
+10 R f
+(or)1874 3720 w
+10 B f
+(/usr/lib/upas/list/Src)1982 3720 w
+10 R f
+(directory, then no conversion will take place.)6 1802 1 2871 3720 t
+8 S f
+(\267)783 3900 w
+10 R f
+(Convert all aliases whenever the)4 1397 1 870 3900 t
+10 B f
+(post)2317 3900 w
+10 R f
+( of system aliases due to)5 1104( Conversion)1 537(database is updated.)2 853 3 2546 3900 t
+(database updates is done after hours via a)7 1724 1 870 4020 t
+10 B f
+(cron)2629 4020 w
+10 R f
+(job using)1 379 1 2858 4020 t
+10 B f
+(postalias -r)1 484 1 3271 4020 t
+10 R f
+(, when there are no charges for)6 1285 1 3755 4020 t
+(compute time on)2 694 1 870 4140 t
+10 B f
+(ihlpf!)1600 4140 w
+10 R f
+(. The)1 241 1 1834 4140 t
+10 B f
+(postalias -r)1 486 1 2111 4140 t
+10 R f
+(exptool can also be used by individual users to keep their)10 2406 1 2634 4140 t
+(private upas alias in)3 796 1 870 4260 t
+10 B f
+($HOME/lib/names)1691 4260 w
+10 R f
+(in sync with the database.)4 1029 1 2523 4260 t
+(The conversion of aliases is done using the exptool)8 2042 1 720 4500 t
+10 B f
+(postalias -c)1 475 1 2787 4500 t
+10 R f
+(which in turn, uses the)4 902 1 3287 4500 t
+10 B f
+(aliasx)4214 4500 w
+10 R f
+(exptool.)4484 4500 w
+%INFO[SECTION: LEVEL = 1, NUMBER = 6.  , HEADING = ALIAS CREATION]
+10 B f
+( CREATION)1 564(6. ALIAS)1 431 2 720 4740 t
+(alias)720 4920 w
+10 R f
+( A)1 146( characters.)1 477(names should be simple, signi\256cant and should avoid confusing combinations of)10 3454 3 963 4920 t
+(hyphen must be included in the)5 1297 1 720 5040 t
+10 B f
+(alias)2051 5040 w
+10 R f
+(name to distinguish it from)4 1120 1 2280 5040 t
+10 B f
+(post)3434 5040 w
+10 R f
+( like)1 183( Grouping)1 441(queries and logins.)2 770 3 3646 5040 t
+( using the same pre\256x such as nw-\(Network Wireless\), apx-\(Autoplex\), omc-\(OMC\), lb-\(lab\),)11 3915(aliases by)1 405 2 720 5160 t
+( aa-\(af\256rmative action\), pq-\(pqmi\), etc. will allow users to easily locate)10 2967(dp-\(dept\), gp-\(group\), tm-\(team\),)2 1353 2 720 5280 t
+( to easily change ownership of)5 1232( of alias names also allows the post administrator)8 1981( Grouping)1 435(the desired alias.)2 672 4 720 5400 t
+(a given group of \256les.)4 874 1 720 5520 t
+( of the set)3 394( Any)1 223( aliases are \256les, the alias name has the same 14 character limit as a \256le name.)16 3126(Since the upas)2 577 4 720 5700 t
+(of characters \()2 571 1 720 5820 t
+10 B f
+(!)1291 5820 w
+10 R f
+(\), \()1 117 1 1324 5820 t
+10 B f
+(@)1441 5820 w
+10 R f
+(\), \()1 117 1 1534 5820 t
+10 B f
+(%)1651 5820 w
+10 R f
+(\), \()1 117 1 1751 5820 t
+10 B f
+(.)1868 5820 w
+10 R f
+(\), \()1 142 1 1893 5820 t
+10 S f
+(_)2035 5820 w
+10 R f
+(\), \()1 117 1 2085 5820 t
+10 B f
+(/)2202 5820 w
+10 R f
+(\), \()1 116 1 2230 5820 t
+10 B f
+(:)2346 5820 w
+10 R f
+(\) or \()2 199 1 2379 5820 t
+10 B f
+(=)2578 5820 w
+10 R f
+(\) may not be included in an)6 1093 1 2635 5820 t
+10 B f
+(upas)3753 5820 w
+10 R f
+(alias name. Use a \()4 756 1 3979 5820 t
+10 B f
+(\\)4735 5820 w
+10 R f
+(\) at the)2 277 1 4763 5820 t
+(end of the line to continue a long alias de\256nition to the next line.)13 2582 1 720 5940 t
+( as layers of aliases, eg. lab alias containing department aliases,)10 2561(Note that organizational aliases can be built)6 1759 2 720 6120 t
+(department aliases containing group aliases and \256nally the group aliases containing the group members.)13 4150 1 720 6240 t
+( the second)2 453(A comment is any line starting with a \(#\) in the \256rst column and followed by a blank \(a must\) in)20 3867 2 720 6420 t
+( in a)2 178(column. Comments can go at the beginning or end of the alias \256le, or between aliases)15 3475 2 720 6540 t
+10 B f
+(.mailrc)4401 6540 w
+10 R f
+(\256le, but)1 309 1 4731 6540 t
+(not in the middle of an alias continued across lines.)9 2048 1 720 6660 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 5 5
+%%Page: 6 6
+DpostDict begin
+/saveobj save def
+mark
+6 pagesetup
+10 R f
+(- 6 -)2 166 1 2797 480 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 6.1  , HEADING = Private Aliases]
+10 B f
+( Aliases)1 325(6.1 Private)1 485 2 720 960 t
+10 R f
+(Private aliases consist of a line in your .mailrc \256le such as the following;)13 2903 1 720 1140 t
+10 CW f
+(alias pc-group j.j.fuentes w.s.krol m.t.mcgarry s.e.neufelder)5 3660 1 720 1380 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 6.2  , HEADING = Private upas Aliases]
+10 B f
+( upas Aliases)2 551(6.2 Private)1 485 2 720 1680 t
+10 R f
+( the)1 154(A private upas alias is a \256le with the same name as)11 2099 2 720 1860 t
+10 B f
+(alias)3005 1860 w
+10 R f
+(located in the)2 552 1 3232 1860 t
+10 B f
+($HOME/lib/names)3816 1860 w
+10 R f
+(directory.)4655 1860 w
+(Since the)1 371 1 720 1980 t
+10 B f
+(alias)1118 1980 w
+10 R f
+( as the system upas alias, it can be created, tested and then installed in)14 2804(\256le format is the same)4 896 2 1340 1980 t
+(the public)1 397 1 720 2100 t
+10 B f
+(upas)1142 2100 w
+10 R f
+( the)1 148( the following example, the name for)6 1478( In)1 133(directory without requiring any format changes.)5 1913 4 1368 2100 t
+(alias, as well as the \256le it is in, is)9 1314 1 720 2220 t
+10 B f
+(pc-group)2059 2220 w
+10 R f
+(and its contents are:)3 796 1 2473 2220 t
+10 CW f
+(pc-group \\)1 600 1 960 2460 t
+(j.j.fuentes/loc=ill650 \\)1 1440 1 960 2580 t
+(w.s.krol \\)1 600 1 960 2700 t
+(m.t.mcgarry \\)1 780 1 960 2820 t
+(s.e.neufelder)960 2940 w
+(# Comments can be added here)5 1680 1 960 3180 t
+10 R f
+(The exptool)1 506 1 720 3420 t
+10 B f
+(postalias -n alias)2 759 1 1277 3420 t
+10 R f
+( alias creation process including creating the necessary)7 2375(automates the)1 578 2 2087 3420 t
+(subdirectories.)720 3540 w
+%INFO[SECTION: LEVEL = 2, NUMBER = 6.3  , HEADING = System upas Aliases]
+10 B f
+( upas Aliases)2 551(6.3 System)1 480 2 720 3720 t
+10 R f
+( \256le name for this example alias is)7 1403( The)1 210( such as the following example.)5 1290(System upas aliases consist of \256les)5 1417 4 720 3900 t
+10 B f
+(pc-group)720 4020 w
+10 R f
+(and its contents are:)3 796 1 1134 4020 t
+10 CW f
+(pc-group \\)1 600 1 960 4260 t
+(j.j.fuentes/loc=ill650 \\)1 1440 1 960 4380 t
+(w.s.krol \\)1 600 1 960 4500 t
+(m.t.mcgarry \\)1 780 1 960 4620 t
+(s.e.neufelder)960 4740 w
+(# Comments can be added here at the end of the file)11 3060 1 960 4980 t
+10 R f
+( is easy to add another entry to the list,)9 1615(This form where each name is on its own line is preferred since it)13 2705 2 720 5220 t
+( alias is to have all the entries on one)9 1491( alternate form for the)4 887( The)1 208(especially when the alias has many entries.)6 1734 4 720 5340 t
+(line. The)1 382 1 720 5460 t
+10 B f
+(upas)1129 5460 w
+10 R f
+( from the private alias \(in the .mailrc \256le\) in that the word)12 2341(\256le type aliases differ)3 868 2 1357 5460 t
+10 B f
+(alias)4594 5460 w
+10 R f
+(is not)1 223 1 4817 5460 t
+(used to identify the de\256nition. Since each alias is described in its own \256le, the)14 3389 1 720 5580 t
+10 B f
+(alias)4154 5580 w
+10 R f
+(identi\256er is not)2 646 1 4394 5580 t
+( upas aliases are only usable by the owner whereas system-wide upas aliases are available)14 3627(required. Private)1 693 2 720 5700 t
+( not necessary, it is convenient to mark the end of)10 2013( Although)1 431( users including those on other machines.)6 1669(to all)1 207 4 720 5820 t
+(the alias \256le with)3 686 1 720 5940 t
+10 CW f
+(# End of alias ``alias-name'')4 1740 1 960 6180 t
+10 R f
+( alias \256les into one \256le for checking.)7 1538( will allow you to merge a group of)8 1503( This)1 239(followed by a blank line.)4 1040 4 720 6420 t
+(This checking \256le is not usable as an alias but serves as a record of the contents.)16 3197 1 720 6540 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 6 6
+%%Page: 7 7
+DpostDict begin
+/saveobj save def
+mark
+7 pagesetup
+10 R f
+(- 7 -)2 166 1 2797 480 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 7.  , HEADING = MORE OPERATIONS USING THE postalias COMMAND]
+10 B f
+( OPERATIONS USING THE postalias COMMAND)5 2243(7. MORE)1 436 2 720 960 t
+10 R f
+( your system)2 541(Owing to security concerns,)3 1162 2 720 1140 t
+10 B f
+(upas)2463 1140 w
+10 R f
+(alias \256les are actually owned by)5 1353 1 2704 1140 t
+10 B f
+(root)4097 1140 w
+10 R f
+(, although you are)3 766 1 4274 1140 t
+(considered the owner. When you submit an alias \256le to the local)11 2651 1 720 1260 t
+10 B f
+(post)3404 1260 w
+10 R f
+( the)1 154(administrator for installation in)3 1271 2 3615 1260 t
+( grouping will allow)3 841( This)1 237( your login will be the group ID \(Local administrator option\).)10 2546(system directory,)1 696 4 720 1380 t
+(you to change your alias \256les.)5 1193 1 720 1500 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.1  , HEADING = Creating Alias Files]
+10 B f
+( Alias Files)2 467(7.1 Creating)1 552 2 720 1680 t
+10 R f
+(To create a alias \256le, do)5 953 1 720 1860 t
+10 CW f
+(postalias -n alias)2 1080 1 960 2100 t
+10 B f
+(postalias)720 2340 w
+10 R f
+( usable characters, open a \256le for editing with the name)10 2379(will check the name for)4 1006 2 1134 2340 t
+10 B f
+(alias)4561 2340 w
+10 R f
+(in the)1 242 1 4798 2340 t
+(directory)720 2460 w
+10 B f
+($HOME/lib/names/Src)1107 2460 w
+10 R f
+( editing is complete, the alias is)6 1264( When)1 289(. Directories are created as needed.)5 1401 3 2086 2460 t
+(converted and the)2 719 1 720 2580 t
+10 B f
+(ema)1469 2580 w
+10 R f
+(formatted alias \256le is placed in)5 1254 1 1676 2580 t
+10 B f
+($HOME/lib/names)2960 2580 w
+10 R f
+( where an)2 399( those situations)2 655(. For)1 219 3 3767 2580 t
+( of other aliases, one or more individuals may be subtracted from the)12 2844(alias is built up from a combination)6 1476 2 720 2700 t
+(resulting converted alias by placing each name to be deleted on a line by itself after all the alias members.)19 4320 1 720 2820 t
+(The format for the member to be deleted is as follows:)10 2174 1 720 2940 t
+10 CW f
+(- name.lastname)1 900 1 960 3180 t
+10 R f
+(Note the space after the minus\(-\) sign.)6 1527 1 720 3420 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.2  , HEADING = Submitting Alias Files]
+10 B f
+( Alias Files)2 467(7.2 Submitting)1 654 2 720 3600 t
+10 R f
+(Alias \256le\(s\) are created in)4 1142 1 720 3780 t
+10 B f
+($HOME/lib/names/Src)1915 3780 w
+10 R f
+( -)1 87(and tested in the user's private upas directory)7 2006 2 2947 3780 t
+10 B f
+($HOME/lib/names)720 3900 w
+10 R f
+( via)1 155( complete, the alias \256le\(s\) is sent)6 1361(. When)1 322 3 1527 3900 t
+10 B f
+(uuto)3398 3900 w
+10 R f
+(to the local)2 460 1 3626 3900 t
+10 B f
+(post)4119 3900 w
+10 R f
+(Administrator for)1 710 1 4330 3900 t
+(installation in the directory)3 1146 1 720 4020 t
+10 B f
+(/usr/lib/upas/list/Src)1913 4020 w
+10 R f
+( batch)1 264( alias \256les should be submitted in a)7 1557(. Multiple)1 442 3 2777 4020 t
+( exptool)1 332( The)1 212(whenever practical.)1 787 3 720 4140 t
+10 B f
+(postalias -s)1 477 1 2083 4140 t
+10 R f
+( submit an alias,)3 668( To)1 167(automates the alias submission process.)4 1613 3 2592 4140 t
+(do)720 4260 w
+10 CW f
+(postalias -s alias[ ... alias])4 1800 1 960 4500 t
+10 R f
+(This will send mail to the post administrator requesting the installation of the alias and will)15 3656 1 720 4740 t
+10 B f
+(uuto)4403 4740 w
+10 R f
+(the named)1 415 1 4625 4740 t
+( message also requests that you are to be noti\256ed when the request is complete.)14 3159(\256le\(s\). The)1 463 2 720 4860 t
+10 B f
+(postalias -s)1 473 1 720 5040 t
+10 R f
+(automatically moves submitted alias \256les to a)6 1846 1 1221 5040 t
+10 B f
+(:submitted)3096 5040 w
+10 R f
+(subdirectory and removes the \256le in)5 1454 1 3586 5040 t
+(the private upas directory\()3 1083 1 720 5160 t
+10 B f
+($HOME/lib/names)1803 5160 w
+10 R f
+( the private upas alias has a higher precedence than)9 2131(\), since)1 299 2 2610 5160 t
+(the system upas alias and would be seen \256rst by)9 1921 1 720 5280 t
+10 B f
+(post)2667 5280 w
+10 R f
+( installed, changes are made to the system-wide)7 1909(. Once)1 286 2 2845 5280 t
+(alias.)720 5400 w
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.3  , HEADING = Editing Alias Files]
+10 B f
+( Alias Files)2 467(7.3 Editing)1 493 2 720 5580 t
+10 R f
+(To edit an alias \256le, do)5 916 1 720 5760 t
+10 CW f
+(postalias -e alias[ ... alias])4 1800 1 960 6000 t
+10 B f
+(postalias)720 6240 w
+10 R f
+(will open the private/system alias \256le for editing using the result of the)12 2862 1 1121 6240 t
+10 B f
+($EDITOR)4011 6240 w
+10 R f
+(variable. The)1 555 1 4485 6240 t
+(revised alias will be converted to the)6 1464 1 720 6360 t
+10 B f
+(ema)2209 6360 w
+10 R f
+(format when the editing session is completed.)6 1829 1 2411 6360 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.4  , HEADING = Converting Alias Files]
+10 B f
+( Alias Files)2 467(7.4 Converting)1 658 2 720 6540 t
+10 R f
+(To convert an alias \256le, do)5 1065 1 720 6720 t
+10 CW f
+(postalias -c alias[ ... alias])4 1800 1 960 6960 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 7 7
+%%Page: 8 8
+DpostDict begin
+/saveobj save def
+mark
+8 pagesetup
+10 R f
+(- 8 -)2 166 1 2797 480 t
+( either the private directory)4 1198(This operation should be done in)5 1448 2 720 960 t
+10 B f
+($HOME/lib/names/Src)3419 960 w
+10 R f
+(or the system)2 589 1 4451 960 t
+(directory)720 1080 w
+10 B f
+(/usr/lib/upas/list/Src)1111 1080 w
+10 R f
+( the conversion process will be reported to)7 1729( errors found as a result of)6 1083(. Any)1 253 3 1975 1080 t
+(the user via a mail message.)5 1120 1 720 1200 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.5  , HEADING = Reformatting Alias Files]
+10 B f
+( Alias Files)2 467(7.5 Reformatting)1 751 2 720 1380 t
+10 R f
+(To automatically reformat alias \256les in a speci\256c directory, do)9 2485 1 720 1560 t
+10 CW f
+(postalias -r[ directory_to_reformat])2 2160 1 960 1800 t
+10 B f
+(postalias -r)1 481 1 720 2040 t
+10 R f
+( on the database and when necessary, invoke)7 1833(will check the timestamp)3 1020 2 1232 2040 t
+10 B f
+(postalias -c)1 482 1 4117 2040 t
+10 R f
+(to convert)1 409 1 4631 2040 t
+( directory is named, then the \256les in)7 1439( no)1 127( If)1 118(all the aliases in the named directory.)6 1501 4 720 2160 t
+10 B f
+($HOME/lib/names)3931 2160 w
+10 R f
+(will be)1 276 1 4764 2160 t
+(converted.)720 2280 w
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.6  , HEADING = Viewing Converted Alias Files]
+10 B f
+( Converted Alias Files)3 941(7.6 Viewing)1 525 2 720 2460 t
+10 R f
+(To view the converted alias \256le, do)6 1406 1 720 2640 t
+10 CW f
+(postalias -m alias[ ... alias])4 1800 1 960 2880 t
+10 B f
+(postalias)720 3120 w
+10 R f
+(will display the alias \256le in the)6 1228 1 1118 3120 t
+10 B f
+($HOME/lib/names)2371 3120 w
+10 R f
+(or)3203 3120 w
+10 B f
+(/usr/lib/upas/list)3311 3120 w
+10 R f
+(directory.)4028 3120 w
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.7  , HEADING = Deleting Alias Files]
+10 B f
+( Alias Files)2 467(7.7 Deleting)1 530 2 720 3300 t
+10 R f
+( to be deleted, a request must be sent to the post administrator, since you only have \256le)17 3500(When an alias needs)3 820 2 720 3480 t
+( delete an alias \256le, do)5 893( To)1 161(modify permission.)1 778 3 720 3600 t
+10 CW f
+(postalias -d alias[ ... alias])4 1800 1 960 3840 t
+10 R f
+(A message will be sent to the administrator requesting that the alias\(es\) be deleted and that you are to be)19 4320 1 720 4080 t
+(noti\256ed when the request is complete.)5 1515 1 720 4200 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.8  , HEADING = Sending Mail to Post Administrator]
+10 B f
+( Mail to Post Administrator)4 1182(7.8 Sending)1 521 2 720 4380 t
+10 R f
+(The command)1 574 1 720 4560 t
+10 B f
+(postalias -a)1 481 1 1319 4560 t
+10 R f
+(can be used to communicate with the)6 1481 1 1825 4560 t
+10 B f
+(post)3331 4560 w
+10 R f
+(administrator. Doing)1 858 1 3534 4560 t
+10 CW f
+(postalias -a)1 720 1 960 4800 t
+10 R f
+(will invoke post starting at the Subject: line for a message to the)12 2565 1 720 5040 t
+10 B f
+(post)3310 5040 w
+10 R f
+(administrator.)3513 5040 w
+10 CW f
+(Subject:)960 5280 w
+10 R f
+( aliases !post-adm and !post-bkup are used to)7 1924( The)1 222(Complete the message as you do with normal mail.)8 2174 3 720 5520 t
+(address the message.)2 834 1 720 5640 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.9  , HEADING = Sending Mail to Alias Owner]
+10 B f
+( Mail to Alias Owner)4 894(7.9 Sending)1 521 2 720 5820 t
+10 R f
+(The exptool)1 480 1 720 6000 t
+10 B f
+(postalias -o)1 481 1 1225 6000 t
+10 R f
+( Doing)1 300(can be used to communicate with an alias owner.)8 1960 2 1731 6000 t
+10 CW f
+(postalias -o alias)2 1080 1 960 6240 t
+10 R f
+(will invoke post starting at the Subject: line for a message to the alias owner.)14 3072 1 720 6480 t
+10 CW f
+(Subject:)960 6720 w
+10 R f
+(Complete the message as you do with normal mail.)8 2046 1 720 6960 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 8 8
+%%Page: 9 9
+DpostDict begin
+/saveobj save def
+mark
+9 pagesetup
+10 R f
+(- 9 -)2 166 1 2797 480 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.10  , HEADING = Sending Files to an Alias]
+10 B f
+( Files to an Alias)4 706(7.10 Sending)1 571 2 720 960 t
+10 R f
+(To uuto \256les to the members of an alias, do)9 1732 1 720 1140 t
+10 CW f
+(postalias -u file\(s\) alias)3 1560 1 960 1380 t
+10 R f
+(The)720 1620 w
+10 B f
+(alias)909 1620 w
+10 R f
+( alias member. The restrictions on)5 1409(will be decomposed and the named \256les will be sent to each)11 2493 2 1138 1620 t
+(this usage are:)2 571 1 720 1740 t
+8 S f
+(\267)783 1920 w
+10 R f
+(the alias members are not aliases on a remote machine.)9 2249 1 870 1920 t
+10 B f
+(aliasx)3175 1920 w
+10 R f
+( of decomposing aliases)3 978(is only capable)2 611 2 3451 1920 t
+(on its home machine.)3 855 1 870 2040 t
+8 S f
+(\267)783 2220 w
+10 B f
+(uuto)870 2220 w
+10 R f
+(requires that the)2 643 1 1090 2220 t
+10 B f
+(ema)1758 2220 w
+10 R f
+(is in)1 170 1 1960 2220 t
+10 B f
+(machine!user)2155 2220 w
+10 R f
+(format.)2757 2220 w
+10 B f
+(user@machine)3098 2220 w
+10 R f
+(format cannot be used.)3 909 1 3760 2220 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.11  , HEADING = Getting Help]
+10 B f
+( Help)1 231(7.11 Getting)1 547 2 720 2400 t
+10 R f
+(To see the list of available options, do)7 1521 1 720 2580 t
+10 CW f
+(postalias -h or postalias -?)4 1680 1 960 2820 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.12  , HEADING = Checking Version of postalias]
+10 B f
+( Version of postalias)3 864(7.12 Checking)1 631 2 720 3120 t
+10 R f
+(To check the current operating version, do)6 1693 1 720 3300 t
+10 CW f
+(postalias -v or postalias -V)4 1680 1 960 3540 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.13  , HEADING = Checking Parameters]
+10 B f
+( Parameters)1 517(7.13 Checking)1 631 2 720 3840 t
+10 R f
+(To see the set of parameters\(variables\), such as directory locations, log\256le location, etc used by)14 3890 1 720 4020 t
+10 B f
+(postalias)4642 4020 w
+10 R f
+(,)5015 4020 w
+(do)720 4140 w
+10 CW f
+(postalias -p)1 720 1 960 4380 t
+%INFO[SECTION: LEVEL = 2, NUMBER = 7.14  , HEADING = Installation]
+10 B f
+(7.14 Installation)1 715 1 720 4680 t
+10 R f
+(To install the parameters needed by)5 1422 1 720 4860 t
+10 B f
+(postalias)2167 4860 w
+10 R f
+(for full operation, the)3 854 1 2565 4860 t
+10 B f
+(postalias)3444 4860 w
+10 R f
+(administrator should do)2 950 1 3842 4860 t
+10 CW f
+(postalias -i)1 720 1 960 5100 t
+10 R f
+(and provide the following information:)4 1560 1 720 5340 t
+8 S f
+(\267)783 5520 w
+10 R f
+(Name of postalias administrator in \256rstname.lastname format.)6 2475 1 870 5520 t
+8 S f
+(\267)783 5700 w
+10 R f
+(Logname of postalias administrator.)3 1443 1 870 5700 t
+8 S f
+(\267)783 5880 w
+10 R f
+(Name and extension of person to handle postalias problems.)8 2405 1 870 5880 t
+8 S f
+(\267)783 6060 w
+10 R f
+(e-mail address of backup administrator in)5 1661 1 870 6060 t
+10 B f
+(mach!login)2556 6060 w
+10 R f
+(format.)3059 6060 w
+(The alias \256le)2 518 1 720 6300 t
+10 B f
+(postalias-adm)1264 6300 w
+10 R f
+( either)1 254( can be made by)4 652( Revisions)1 446(will be created and submitted.)4 1205 4 1885 6300 t
+10 B f
+(postalias -i)1 461 1 4469 6300 t
+10 R f
+(or)4957 6300 w
+10 B f
+(postalias -e postalias-adm)2 1095 1 720 6420 t
+10 R f
+(.)1815 6420 w
+%INFO[SECTION: LEVEL = 1, NUMBER = 8.  , HEADING = LAB 5442 ALIASES]
+10 B f
+( 5442 ALIASES)2 679(8. LAB)1 331 2 720 6660 t
+10 R f
+( Lab 5442 are)3 602(The laboratory\(lb-\), department\(dp-\) and group\(gp-\) and various other alias \256les used by)11 3718 2 720 6840 t
+( paragraph on alias)3 831( The)1 230( the organization chart.)3 995(stored on ihlpf. They are updated monthly to match)8 2264 4 720 6960 t
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 9 9
+%%Page: 10 10
+DpostDict begin
+/saveobj save def
+mark
+10 pagesetup
+10 R f
+(- 10 -)2 216 1 2772 480 t
+( original set of aliases are shown)6 1309( The)1 206( organization aliases.)2 842(interrogation above explains how to view current)6 1963 4 720 960 t
+(in Attachment 2.)2 669 1 720 1080 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 9.  , HEADING = SUMMARY]
+10 B f
+(9. SUMMARY)1 657 1 720 1320 t
+(post/upas)720 1500 w
+10 R f
+(provide a powerful yet easy to use aliasing structure that has the following bene\256ts.)13 3334 1 1152 1500 t
+8 S f
+(\267)993 1680 w
+10 R f
+(Anyone can create an alias.)4 1093 1 1080 1680 t
+8 S f
+(\267)993 1860 w
+10 R f
+( format\(initial.surname\) and therefore are readable without)6 2466(System aliases are created in query)5 1494 2 1080 1860 t
+(further interpretation.)1 859 1 1080 1980 t
+8 S f
+(\267)993 2160 w
+10 R f
+(Automatic conversion to)2 988 1 1080 2160 t
+10 B f
+(ema)2093 2160 w
+10 R f
+(format eliminates redundant database accesses.)4 1881 1 2295 2160 t
+8 S f
+(\267)993 2340 w
+10 R f
+( cannot get out of sync and maintenance is)8 1769(Each alias \256le only exists on one machine. Databases)8 2191 2 1080 2340 t
+(much simpler.)1 572 1 1080 2460 t
+8 S f
+(\267)993 2640 w
+10 R f
+( pre\256xing the alias with the system)6 1454(Remote users can use and interrogate system-wide aliases by)8 2506 2 1080 2640 t
+(name.)1080 2760 w
+8 S f
+(\267)993 2940 w
+10 R f
+( eliminates long lists of)4 998( This)1 244( in the mail header.)4 832(Private/System upas aliases are not expanded)5 1886 4 1080 2940 t
+( good)1 228( the name used for the alias is descriptive, the reader has a)12 2367( If)1 120(recipients in the mail message.)4 1245 4 1080 3060 t
+(picture of the audience.)3 936 1 1080 3180 t
+8 S f
+(\267)993 3360 w
+10 R f
+( will be centrally maintained and coordinated with the organization charts)10 3065(Organizational aliases)1 895 2 1080 3360 t
+(since they are done by the same person.)7 1585 1 1080 3480 t
+8 S f
+(\267)993 3660 w
+10 B f
+(post)1080 3660 w
+10 R f
+( alias is)2 322(only sends one message to reach multiple users on a remote machine. If an remote)14 3425 2 1293 3660 t
+(used even that message is shorter since the alias expansion takes place on the remote machine.)15 3770 1 1080 3780 t
+8 S f
+(\267)993 3960 w
+10 R f
+(The alias \256les can be moved between machines without requiring any changes to the \256les.)14 3597 1 1080 3960 t
+( use of aliasing can reduce the cost of sending mail, reduce mail \256le sizes as well as)17 3457(In conclusion, proper)2 863 2 720 4200 t
+(make mail messages easier to read and understand.)7 2034 1 720 4320 t
+%INFO[SECTION: LEVEL = 1, NUMBER = 10.  , HEADING = ACKNOWLEDGEMENTS]
+10 B f
+(10. ACKNOWLEDGEMENTS)1 1354 1 720 4560 t
+10 R f
+( to thank Steve Mershon of Post Services for supplying the lookup)11 2690(I would like)2 487 2 720 4740 t
+10 B f
+(script)3925 4740 w
+10 R f
+(as well as the review)4 843 1 4197 4740 t
+( for her help in maintaining the organizational aliases and Grant Lee for the)13 3052(of this document, Sharon Kline)4 1268 2 720 4860 t
+10 B f
+(aliasx)720 4980 w
+10 R f
+(exptool.)990 4980 w
+10 B f
+(W. S. Krol)2 456 1 2880 5460 t
+10 R f
+(IHC-NE05100R0-WSK)720 5460 w
+%INFO[NOTATION LIST: CODE = 1, TYPE = Copy (with att.) to]
+%INFO[NOTATION LIST: <START>]
+(Copy \(with att.\) to)3 739 1 720 5700 t
+%INFO[NOTATION LIST: <END>]
+%INFO[NOTATION LIST: CODE = 4, TYPE = Atts.]
+%INFO[NOTATION LIST: <START>]
+(Atts.)720 6060 w
+(Attachment 1 -)2 599 1 720 6180 t
+10 B f
+(postalias)1344 6180 w
+10 R f
+(Command Summary)1 831 1 1742 6180 t
+(Attachment 2 - Lab NE05 alias list)6 1393 1 720 6300 t
+(Attachment 3 -)2 599 1 720 6420 t
+10 B f
+(lookup)1344 6420 w
+10 R f
+(script)1665 6420 w
+(Attachment 4 -)2 599 1 720 6540 t
+10 B f
+(postalias)1344 6540 w
+10 R f
+(man page)1 385 1 1742 6540 t
+%INFO[NOTATION LIST: <END>]
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 10 10
+%%Page: 11 11
+DpostDict begin
+/saveobj save def
+mark
+11 pagesetup
+10 R f
+(CONTENTS)2619 960 w
+(INTRODUCTION)895 1200 w
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . .)22 2951 1 1835 1200 t
+10 R f
+(1)4990 1200 w
+( BASICS)1 376(1. ADDRESSING)1 758 2 770 1380 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . .)21 2818 1 1968 1380 t
+10 R f
+(1)4990 1380 w
+( Forms)1 281(1.1 Address)1 552 2 895 1500 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . .)22 2951 1 1835 1500 t
+10 R f
+(1)4990 1500 w
+( Resolution)1 459(1.2 Address)1 552 2 895 1620 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . .)21 2818 1 1968 1620 t
+10 R f
+(2)4990 1620 w
+( PRECEDENCE)1 670(2. ALIAS)1 419 2 770 1800 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . .)21 2818 1 1968 1800 t
+10 R f
+(2)4990 1800 w
+( MAIL)1 280(3. ADDRESSING)1 758 2 770 1980 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . .)21 2818 1 1968 1980 t
+10 R f
+(2)4990 1980 w
+( Aliases)1 319(3.1 Private)1 508 2 895 2100 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . .)22 2951 1 1835 2100 t
+10 R f
+(2)4990 2100 w
+( upas Aliases)2 527(3.2 Private/System)1 831 2 895 2220 t
+10 B f
+(. . . . . . . . . . . . . . . . . . .)18 2419 1 2367 2220 t
+10 R f
+(3)4990 2220 w
+( ALIAS CONTENTS)2 866(4. VIEWING)1 562 2 770 2400 t
+10 B f
+(. . . . . . . . . . . . . . . . . . .)18 2419 1 2367 2400 t
+10 R f
+(3)4990 2400 w
+( upas Aliases)2 527(4.1 System)1 520 2 895 2520 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 2520 t
+10 R f
+(3)4990 2520 w
+( PROBLEM)1 498(5. THE)1 319 2 770 2700 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . . .)23 3084 1 1702 2700 t
+10 R f
+(5)4990 2700 w
+( CREATION)1 530(6. ALIAS)1 419 2 770 2880 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . .)22 2951 1 1835 2880 t
+10 R f
+(5)4990 2880 w
+( Aliases)1 319(6.1 Private)1 508 2 895 3000 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . .)22 2951 1 1835 3000 t
+10 R f
+(6)4990 3000 w
+( upas Aliases)2 527(6.2 Private)1 508 2 895 3120 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 3120 t
+10 R f
+(6)4990 3120 w
+( upas Aliases)2 527(6.3 System)1 520 2 895 3240 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 3240 t
+10 R f
+(6)4990 3240 w
+( OPERATIONS USING THE postalias COMMAND)5 2129(7. MORE)1 414 2 770 3420 t
+10 B f
+(. . . . . . . . . . .)10 1355 1 3431 3420 t
+10 R f
+(7)4990 3420 w
+( Alias Files)2 456(7.1 Creating)1 569 2 895 3540 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 3540 t
+10 R f
+(7)4990 3540 w
+( Alias Files)2 456(7.2 Submitting)1 671 2 895 3660 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 3660 t
+10 R f
+(7)4990 3660 w
+( Alias Files)2 456(7.3 Editing)1 520 2 895 3780 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . .)21 2818 1 1968 3780 t
+10 R f
+(7)4990 3780 w
+( Alias Files)2 456(7.4 Converting)1 675 2 895 3900 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 3900 t
+10 R f
+(7)4990 3900 w
+( Alias Files)2 456(7.5 Reformatting)1 758 2 895 4020 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . .)19 2552 1 2234 4020 t
+10 R f
+(8)4990 4020 w
+( Converted Alias Files)3 897(7.6 Viewing)1 569 2 895 4140 t
+10 B f
+(. . . . . . . . . . . . . . . . . .)17 2286 1 2500 4140 t
+10 R f
+(8)4990 4140 w
+( Alias Files)2 456(7.7 Deleting)1 569 2 895 4260 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 4260 t
+10 R f
+(8)4990 4260 w
+( Mail to Post Administrator)4 1101(7.8 Sending)1 553 2 895 4380 t
+10 B f
+(. . . . . . . . . . . . . . . . .)16 2153 1 2633 4380 t
+10 R f
+(8)4990 4380 w
+( Mail to Alias Owner)4 849(7.9 Sending)1 553 2 895 4500 t
+10 B f
+(. . . . . . . . . . . . . . . . . . .)18 2419 1 2367 4500 t
+10 R f
+(8)4990 4500 w
+( Files to an Alias)4 678(7.10 Sending)1 553 2 895 4620 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . .)19 2552 1 2234 4620 t
+10 R f
+(9)4990 4620 w
+( Help)1 219(7.11 Getting)1 525 2 895 4740 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . . .)23 3084 1 1702 4740 t
+10 R f
+(9)4990 4740 w
+( Version of postalias)3 824(7.12 Checking)1 608 2 895 4860 t
+10 B f
+(. . . . . . . . . . . . . . . . . .)17 2286 1 2500 4860 t
+10 R f
+(9)4990 4860 w
+( Parameters)1 468(7.13 Checking)1 608 2 895 4980 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 4980 t
+10 R f
+(9)4990 4980 w
+(7.14 Installation)1 675 1 895 5100 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . . .)23 3084 1 1702 5100 t
+10 R f
+(9)4990 5100 w
+( 5442 ALIASES)2 661(8. LAB)1 325 2 770 5280 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . .)22 2951 1 1835 5280 t
+10 R f
+(9)4990 5280 w
+(9. SUMMARY)1 642 1 770 5460 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . . . . . .)24 3217 1 1569 5460 t
+10 R f
+(10)4940 5460 w
+(10. ACKNOWLEDGEMENTS)1 1290 1 720 5640 t
+10 B f
+(. . . . . . . . . . . . . . . . . . . . .)20 2685 1 2101 5640 t
+10 R f
+(10)4940 5640 w
+10 I f
+(AT&T \261 PROPRIETARY)2 995 1 2382 7224 t
+10 R f
+(Use pursuant to Company Instructions.)4 1563 1 2098 7344 t
+(- i -)2 144 1 2808 7704 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 11 11
+%%Trailer
+DpostDict begin
+done
+end
+%%Pages: 11
+%%DocumentFonts: Courier Times-Bold Helvetica Times-Italic Times-Roman Times-Roman Symbol
+initgraphics
+%!PS-Adobe-2.0
+%%Copyright: Copyright (c) 1993 AT&T, All Rights Reserved
+%%Version: 3.4
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+/DpostDict 200 dict def
+DpostDict begin
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% Version 3.4 prologue for troff files.
+%
+
+/#copies 1 store
+/Prologue (dpost.ps) def
+/aspectratio 1 def
+/formsperpage 1 def
+/landscape false def
+/linewidth .3 def
+/magnification 1 def
+/margin 0 def
+/orientation 0 def
+/resolution 720 def
+/rotation 1 def
+/xoffset 0 def
+/yoffset 0 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/R  /Times-Roman def
+/I  /Times-Italic def
+/B  /Times-Bold def
+/BI /Times-BoldItalic def
+/H  /Helvetica def
+/HI /Helvetica-Oblique def
+/HB /Helvetica-Bold def
+/HX /Helvetica-BoldOblique def
+/CW /Courier def
+/CO /Courier def
+/CI /Courier-Oblique def
+/CB /Courier-Bold def
+/CX /Courier-BoldOblique def
+/PA /Palatino-Roman def
+/PI /Palatino-Italic def
+/PB /Palatino-Bold def
+/PX /Palatino-BoldItalic def
+/Hr /Helvetica-Narrow def
+/Hi /Helvetica-Narrow-Oblique def
+/Hb /Helvetica-Narrow-Bold def
+/Hx /Helvetica-Narrow-BoldOblique def
+/KR /Bookman-Light def
+/KI /Bookman-LightItalic def
+/KB /Bookman-Demi def
+/KX /Bookman-DemiItalic def
+/AR /AvantGarde-Book def
+/AI /AvantGarde-BookOblique def
+/AB /AvantGarde-Demi def
+/AX /AvantGarde-DemiOblique def
+/NR /NewCenturySchlbk-Roman def
+/NI /NewCenturySchlbk-Italic def
+/NB /NewCenturySchlbk-Bold def
+/NX /NewCenturySchlbk-BoldItalic def
+/ZD /ZapfDingbats def
+/ZI /ZapfChancery-MediumItalic def
+/S  /S def
+/S1 /S1 def
+/GR /Symbol def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	/scaling 72 resolution div def
+	linewidth setlinewidth
+	1 setlinecap
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	scaling scaling scale
+
+	addmetrics
+	0 0 moveto
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/landscapepage {
+	landscape not {
+		0 height scaling div neg translate	% not quite
+		90 rotate
+	} if
+} bind def
+
+/portraitpage {
+	landscape {
+		width scaling div 0 translate	% not quite
+		-90 rotate
+	} if
+} bind def
+
+/addmetrics {
+	/Symbol /S null Sdefs cf
+	/Times-Roman /S1 StandardEncoding dup length array copy S1defs cf
+} def
+
+/pagesetup {
+	/page exch def
+	currentdict /pagedict known currentdict page known and {
+		page load pagedict exch get cvx exec
+	} if
+} def
+
+/decodingdefs [
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg /y exch def counttomark 2 idiv {y moveto show} repeat}
+	{neg moveto {2 index stringwidth pop sub exch div 0 32 4 -1 roll widthshow} repeat}
+	{neg moveto {spacewidth sub 0.0 32 4 -1 roll widthshow} repeat}
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg setfunnytext}
+] def
+
+/setdecoding {/t decodingdefs 3 -1 roll get bind def} bind def
+
+/w {neg moveto show} bind def
+/m {neg dup /y exch def moveto} bind def
+/done {/lastpage where {pop lastpage} if} def
+
+/f {
+	dup /font exch def findfont exch
+	dup /ptsize exch def scaling div dup /size exch def scalefont setfont
+	linewidth ptsize mul scaling 10 mul div setlinewidth
+	/spacewidth ( ) stringwidth pop def
+} bind def
+
+/changefont {
+	/fontheight exch def
+	/fontslant exch def
+	currentfont [
+		1 0
+		fontheight ptsize div fontslant sin mul fontslant cos div
+		fontheight ptsize div
+		0 0
+	] makefont setfont
+} bind def
+
+/sf {f} bind def
+
+/cf {
+	dup length 2 idiv
+	/entries exch def
+	/chtab exch def
+	/newencoding exch def
+	/newfont exch def
+
+	findfont dup length 1 add dict
+	/newdict exch def
+	{1 index /FID ne {newdict 3 1 roll put}{pop pop} ifelse} forall
+
+	newencoding type /arraytype eq {newdict /Encoding newencoding put} if
+
+	newdict /Metrics entries dict put
+	newdict /Metrics get
+	begin
+		chtab aload pop
+		1 1 entries {pop def} for
+		newfont newdict definefont pop
+	end
+} bind def
+
+%
+% A few arrays used to adjust reference points and character widths in some
+% of the printer resident fonts. If square roots are too high try changing
+% the lines describing /radical and /radicalex to,
+%
+%	/radical	[0 -75 550 0]
+%	/radicalex	[-50 -75 500 0]
+%
+% Move braceleftbt a bit - default PostScript character is off a bit.
+%
+
+/Sdefs [
+	/bracketlefttp		[201 500]
+	/bracketleftbt		[201 500]
+	/bracketrighttp		[-81 380]
+	/bracketrightbt		[-83 380]
+	/braceleftbt		[203 490]
+	/bracketrightex		[220 -125 500 0]
+	/radical		[0 0 550 0]
+	/radicalex		[-50 0 500 0]
+	/parenleftex		[-20 -170 0 0]
+	/integral		[100 -50 500 0]
+	/infinity		[10 -75 730 0]
+] def
+
+/S1defs [
+	/underscore		[0 80 500 0]
+	/endash			[7 90 650 0]
+] def
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% A first cut at a company wide version of postcommon.ps.
+% Includes Matthijs Melchior's version of roundpagebbox,
+% but disables adjustments for postprint. This is just an
+% example - it should not be considered final or official.
+%
+
+/roundpagebbox {
+	Prologue (postprint.ps) ne {
+		pagebbox dup 0 get pagebbox 2 get add 2 exch put
+		pagebbox dup 1 get pagebbox 3 get add 3 exch put
+		pagebbox 0 0 put
+		pagebbox 1 0 put
+		userdict /origin-at-paper-edge true put
+	} if
+} bind def
+
+end
+%%EndProlog
+%%BeginSetup
+DpostDict begin
+mark
+/resolution 720 def
+setup
+2 setdecoding
+end
+%%EndSetup
+%%Page: 1 1
+DpostDict begin
+/saveobj save def
+mark
+1 pagesetup
+10 B f
+(POSTALIAS Command Summary - APXLIB d5105 - Dated Sep 24, 1993)10 3126 1 1317 192 t
+10 R f
+( from "Private and System Aliases in the the)8 1829(The following command descriptions are taken)5 1913 2 720 456 t
+10 B f
+(post)4494 456 w
+10 R f
+(4.0/upas)4704 456 w
+( see document for full description of commands.)7 1936( Please)1 305(Environment", W. S. Krol, APXLIB d4145.)5 1757 3 720 566 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Alias File Format]
+10 B f
+(Alias File Format)2 749 1 720 786 t
+9 CW f
+(alias_name \\)1 648 1 936 951 t
+(alias_member \\)1 756 1 936 1061 t
+(...)936 1171 w
+(alias_member)936 1281 w
+(- name.lastname, name to remove)4 1674 1 936 1501 t
+(# comment if desired)3 1080 1 936 1611 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Creating an Alias]
+10 B f
+(Creating an Alias)2 750 1 720 1776 t
+9 R f
+(To create a)2 401 1 720 1941 t
+9 B f
+(post/upas)1144 1941 w
+9 R f
+(private or system alias, do)4 945 1 1532 1941 t
+9 CW f
+(postalias -n alias)2 972 1 936 2094 t
+9 R f
+(A \256le in)2 328 1 720 2247 t
+9 B f
+($HOME/lib/names/Src)1087 2247 w
+9 R f
+(is opened using the)3 745 1 2007 2247 t
+(editor set by the)3 702 1 720 2357 t
+9 B f
+(EDITOR)1485 2357 w
+9 R f
+(variable. Any needed)2 849 1 1903 2357 t
+( complete, the)2 549(directories are created. After editing is)5 1483 2 720 2467 t
+( is converted to ema format and placed in)8 1702(alias \256le)1 330 2 720 2577 t
+9 B f
+($HOME/lib/names)720 2687 w
+9 R f
+( to)1 102( errors are reported)3 713(. Conversion)1 492 3 1445 2687 t
+( Submission of the alias \()5 995(the user via mail.)3 673 2 720 2797 t
+9 B f
+(-s)2388 2797 w
+9 R f
+(option\))2492 2797 w
+( the)1 184(should be done from)3 894 2 720 2907 t
+9 B f
+($HOME/lib/names/Src)1872 2907 w
+9 R f
+(directory.)720 3017 w
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Help Message]
+10 B f
+(Help Message)1 591 1 720 3182 t
+9 R f
+(To display postalias help\(usage\) message, do)5 1628 1 720 3347 t
+9 CW f
+( -?\))1 216( \(or)1 324(postalias -h)1 648 3 936 3500 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = View Version]
+10 B f
+(View Version)1 574 1 720 3665 t
+9 R f
+(To see current postalias version, do)5 1278 1 720 3830 t
+9 CW f
+( -V\))1 216( \(or)1 324(postalias -v)1 648 3 936 3983 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Viewing Alias Lists]
+10 B f
+(Viewing Alias Lists)2 823 1 720 4148 t
+9 R f
+(To list all aliases available to you, do)7 1344 1 720 4313 t
+9 CW f
+(postalias)936 4466 w
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Viewing Subset of Alias Lists]
+10 B f
+(Viewing Subset of Alias Lists)4 1240 1 720 4631 t
+9 R f
+(To list all aliases available to you containing the 'string')9 2032 1 720 4796 t
+(in the alias name, do)4 745 1 720 4906 t
+9 CW f
+(postalias -g string)2 1026 1 936 5059 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Viewing Alias Contents]
+10 B f
+(Viewing Alias Contents)2 1000 1 720 5224 t
+9 R f
+(To view the contents of alias\(es\), do)6 1311 1 720 5389 t
+9 CW f
+(postalias alias[ alias ...])3 1458 1 936 5542 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Viewing Converted Alias Files]
+10 B f
+(Viewing Converted Alias Files)3 1291 1 720 5707 t
+9 R f
+(To view the converted\(ema format\) alias \256le\(s\), do)7 1839 1 720 5872 t
+9 CW f
+(postalias -m alias[ ... alias])4 1620 1 936 6025 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Submitting an Alias]
+10 B f
+(Submitting an Alias)2 852 1 720 6190 t
+9 R f
+(To request installation of an alias\(es\), do)6 1471 1 720 6355 t
+9 CW f
+(postalias -s alias[ alias ...])4 1620 1 936 6508 t
+9 R f
+( to)1 103(Message requesting installation and alias \256le is sent)7 1929 2 720 6661 t
+( you, so)2 306( will be 'grouped' to)4 790( Alias)1 248(post administrator.)1 688 4 720 6771 t
+(that you can edit the \256le.)5 893 1 720 6881 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Editing an Alias]
+10 B f
+(Editing an Alias)2 691 1 720 7046 t
+9 R f
+(To edit an alias\(es\), do)4 825 1 720 7211 t
+9 CW f
+(postalias -e alias[ alias ...])4 1620 1 936 7364 t
+9 R f
+( the)1 153(The editor set by)3 666 2 3007 786 t
+9 B f
+($EDITOR)3869 786 w
+9 R f
+(variable is used. If)3 727 1 4312 786 t
+(unset, the default is vi.)4 818 1 3007 896 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Converting an Alias]
+10 B f
+(Converting an Alias)2 856 1 3007 1061 t
+9 R f
+(To convert an alias\(es\) to ema format, do)7 1489 1 3007 1226 t
+9 CW f
+(postalias -c alias[ alias ...])4 1620 1 3223 1379 t
+9 R f
+(Aliases are converted to eliminate redundant calls to the)8 2032 1 3007 1532 t
+( detected during)2 669( errors)1 278( Any)1 246(post database server.)2 839 4 3007 1642 t
+(conversion are reported to the user via mail.)7 1589 1 3007 1752 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Reformatting Directories]
+10 B f
+(Reformatting Directories)1 1071 1 3007 1917 t
+9 R f
+(To reformat an alias directory, do)5 1213 1 3007 2082 t
+9 CW f
+(postalias -r [directory])2 1296 1 3223 2235 t
+9 R f
+( be checked and \256les will be)6 1113(Database timestamp will)2 919 2 3007 2388 t
+(converted.)3007 2498 w
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Deleting an Alias]
+10 B f
+(Deleting an Alias)2 728 1 3007 2663 t
+9 R f
+(To delete an alias\(es\), do)4 905 1 3007 2828 t
+9 CW f
+(postalias -d alias[ alias ...])4 1620 1 3223 2981 t
+9 R f
+( is sent to post)4 553(Message requesting deletion of alias\(es\))4 1479 2 3007 3134 t
+(administrator.)3007 3244 w
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Message to Post Administrator]
+10 B f
+(Message to Post Administrator)3 1317 1 3007 3409 t
+9 R f
+( than a submit or delete)5 1030(To send a message\(other)3 1002 2 3007 3574 t
+(request\) to post administrator, do)4 1195 1 3007 3684 t
+9 CW f
+(postalias -a)1 648 1 3223 3837 t
+9 R f
+(A)3007 3990 w
+9 B f
+(post)3126 3990 w
+9 R f
+( started at 'Subject:' line At the)6 1325(session is)1 374 2 3340 3990 t
+(completion of session, mail is sent to the alias)8 1801 1 3007 4100 t
+9 B f
+(post-)4849 4100 w
+(adm)3007 4210 w
+9 R f
+(.)3177 4210 w
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Message to Alias Owner]
+10 B f
+(Message to Alias Owner)3 1029 1 3007 4375 t
+9 R f
+(To send a message to owner\(s\) of alias\(es\), do)8 1672 1 3007 4540 t
+9 CW f
+(postalias -o alias[ alias ...])4 1620 1 3223 4693 t
+9 R f
+(A)3007 4846 w
+9 B f
+(post)3126 4846 w
+9 R f
+( started at 'Subject:' line At the)6 1325(session is)1 374 2 3340 4846 t
+(completion of session, mail is sent to the alias owner\(s\).)9 2023 1 3007 4956 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Sending Files to Alias Members]
+10 B f
+(Sending Files to Alias Members)4 1350 1 3007 5121 t
+9 R f
+(To send \256le\(s\) to members of an alias, do)8 1497 1 3007 5286 t
+9 CW f
+(postalias -u file[ file ...] alias)5 1836 1 3223 5439 t
+9 R f
+(File\(s\) will be)2 528 1 3007 5592 t
+9 B f
+(uuto)3569 5592 w
+9 R f
+( Restrictions)1 488( alias members.)2 588('ed to)1 219 3 3744 5592 t
+( alias must)2 390(are that any other aliases contained in named)7 1642 2 3007 5702 t
+( the local machine and e-mail address is in)8 1686(reside on)1 346 2 3007 5812 t
+(machine!login format.)1 806 1 3007 5922 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = View Parameters]
+10 B f
+(View Parameters)1 733 1 3007 6087 t
+9 R f
+(To see postalias parameters, do)4 1130 1 3007 6252 t
+9 CW f
+(postalias -p)1 648 1 3223 6405 t
+%INFO[SECTION: LEVEL = 2, NUMBER = none, HEADING = Installing postalias]
+10 B f
+(Installing postalias)1 805 1 3007 6570 t
+9 R f
+( To)1 147(This option is for use by the postalias administrator.)8 1885 2 3007 6735 t
+(install postalias parameters, do)3 1112 1 3007 6845 t
+9 CW f
+(postalias -i)1 648 1 3223 6998 t
+9 R f
+( will be put in the)5 715(Answer each question. Information)3 1317 2 3007 7151 t
+(alias \256le)1 356 1 3007 7261 t
+9 B f
+(postalias-adm)3438 7261 w
+9 R f
+(. File will be submitted.)4 1066 1 3973 7261 t
+(Subsequent invocations will modify the existing alias.)6 1951 1 3007 7371 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 1 1
+%%Trailer
+DpostDict begin
+done
+end
+%%Pages: 1
+%%DocumentFonts: Courier Times-Bold Times-Roman
+initgraphics
+%!PS-Adobe-2.0
+%%Copyright: Copyright (c) 1993 AT&T, All Rights Reserved
+%%Version: 3.4
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% Version 3.4 prologue for ASCII files.
+%
+
+/#copies 1 store
+/Prologue (postprint.ps) def
+/aspectratio 1 def
+/font /Courier def
+/formsperpage 1 def
+/landscape false def
+/magnification 1 def
+/margin 10 def
+/orientation 0 def
+/pointsize 10 def
+/rotation 1 def
+/xoffset .25 def
+/yoffset .25 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	font findfont pointsize scalefont setfont
+	/charwidth (M) stringwidth pop def
+	/linespace pointsize pointsize .10 mul add neg def
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	height width div 1 min dup scale
+	0 linespace translate
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/pagesetup {/page exch def 0 0 moveto 0} bind def
+
+/L {
+	counttomark 2 idiv {charwidth mul currentpoint exch pop moveto show} repeat
+	linespace add dup 0 exch moveto
+} bind def
+
+/l {show linespace add dup 0 exch moveto} bind def
+
+/LL {
+	counttomark 2 idiv {charwidth mul currentpoint exch pop moveto show} repeat
+} bind def
+
+/done {/lastpage where {pop lastpage} if} def
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% A first cut at a company wide version of postcommon.ps.
+% Includes Matthijs Melchior's version of roundpagebbox,
+% but disables adjustments for postprint. This is just an
+% example - it should not be considered final or official.
+%
+
+/roundpagebbox {
+	Prologue (postprint.ps) ne {
+		pagebbox dup 0 get pagebbox 2 get add 2 exch put
+		pagebbox dup 1 get pagebbox 3 get add 3 exch put
+		pagebbox 0 0 put
+		pagebbox 1 0 put
+		userdict /origin-at-paper-edge true put
+	} if
+} bind def
+
+%%EndProlog
+%%BeginSetup
+mark
+setup
+%%EndSetup
+%%Page: 1 1
+/saveobj save def
+mark
+1 pagesetup
+()0(ATTACHMENT 2 - Lab NE05 Alias List)24 L
+()0(----------------------------------)24 L
+()l
+(Network Wireless)0(su-skeens)24(gp-horvath)48 L
+(general groups)0(su-stredde)24(gp-howell)48 L
+(---------------)0(su-wiberg)24(gp-iyengar)48 L
+(nw-api)0(gp-johnson)48 L
+(nw-api-mem)0(Departments)24(gp-jones)48 L
+(nw-api-sup)0(-----------)24(gp-kelly)48 L
+(nw-celebration)0(dp-andrews)24(gp-kitko)48 L
+(nw-education)0(dp-chan)24(gp-konsoer)48 L
+(nw-hisp)0(dp-davison)24(gp-krug)48 L
+(nw-ihc-all)0(dp-haase)24(gp-linnemeyer)48 L
+(nw-ihc-mgmt)0(dp-marinho)24(gp-lueders)48 L
+(nw-ihc-sup)0(dp-marinho-ihc)24(gp-mao)48 L
+(nw-library)0(dp-marione)24(gp-marr)48 L
+(nw-women-ihc)0(dp-mcdonell)24(gp-matusevich)48 L
+(nw-women-wh)0(dp-menkes)24(gp-mcclain)48 L
+()0(dp-sellinger)24(gp-mcfarland)48 L
+(Lab alias)0(dp-skeens)24(gp-morales)48 L
+(---------)0(dp-stredde)24(gp-moriarty)48 L
+(lb-royer)0(dp-wiberg)24(gp-mrboard)48 L
+(mg-royer)0(gp-munoz)48 L
+(su-royer)0(Groups)24(gp-murray)48 L
+()0(------)24(gp-newell)48 L
+(Management)0(gp-anderson)24(gp-nieters)48 L
+(by dept)0(gp-baldwin)24(gp-nitz)48 L
+(----------)0(gp-berliner)24(gp-nolen)48 L
+(mg-andrews)0(gp-brinkman)24(gp-oboyle)48 L
+(mg-chan)0(gp-brodrueck)24(gp-percoco)48 L
+(mg-davison)0(gp-byrd)24(gp-peterson)48 L
+(mg-haase)0(gp-carper)24(gp-pfister)48 L
+(mg-marinho)0(gp-carroll)24(gp-roissier)48 L
+(mg-marione)0(gp-chang)24(gp-schottland)48 L
+(mg-mcdonell)0(gp-clifford)24(gp-strom)48 L
+(mg-menkes)0(gp-cosentino)24(gp-tam)48 L
+(mg-sellinger)0(gp-cosmas)24(gp-vacantIHC)48 L
+(mg-skeens)0(gp-daniels)24(gp-walk)48 L
+(mg-stredde)0(gp-dicke)24(gp-whitemyer)48 L
+(mg-wiberg)0(gp-domek)24(gp-wiest)48 L
+()0(gp-donahue)24(gp-yau)48 L
+(Supervisors)0(gp-dugan)24(gp-yueh)48 L
+(by dept)0(gp-dughi)24(gp-yuhas)48 L
+(----------)0(gp-england)24(gp-zenino)48 L
+(su-andrews)0(gp-ficht)24(gp-zorn)48 L
+(su-chan)0(gp-findley)24 L
+(su-davison)0(gp-frazier)24(post alias)48 L
+(su-haase)0(gp-gierlach)24(support)48 L
+(su-marinho)0(gp-gonzalez)24(----------)48 L
+(su-marione)0(gp-green)24(post-adm)48 L
+(su-mcdonell)0(gp-hanson)24(post-bkup)48 L
+(su-menkes)0(gp-harris)24(postalias-adm)48 L
+(su-sellinger)0(gp-holch)24 L
+()l
+(Notes)l
+(mg-alias is used for supervisors of manager as well as manager)l
+(su-alias is used for supervisors of manager but not manager)l
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 1 1
+%%Trailer
+done
+%%DocumentFonts: Courier
+%%Pages: 1
+initgraphics
+%!PS-Adobe-2.0
+%%Copyright: Copyright (c) 1993 AT&T, All Rights Reserved
+%%Version: 3.4
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% Version 3.4 prologue for ASCII files.
+%
+
+/#copies 1 store
+/Prologue (postprint.ps) def
+/aspectratio 1 def
+/font /Courier def
+/formsperpage 1 def
+/landscape false def
+/magnification 1 def
+/margin 10 def
+/orientation 0 def
+/pointsize 10 def
+/rotation 1 def
+/xoffset .25 def
+/yoffset .25 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	font findfont pointsize scalefont setfont
+	/charwidth (M) stringwidth pop def
+	/linespace pointsize pointsize .10 mul add neg def
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	height width div 1 min dup scale
+	0 linespace translate
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/pagesetup {/page exch def 0 0 moveto 0} bind def
+
+/L {
+	counttomark 2 idiv {charwidth mul currentpoint exch pop moveto show} repeat
+	linespace add dup 0 exch moveto
+} bind def
+
+/l {show linespace add dup 0 exch moveto} bind def
+
+/LL {
+	counttomark 2 idiv {charwidth mul currentpoint exch pop moveto show} repeat
+} bind def
+
+/done {/lastpage where {pop lastpage} if} def
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% A first cut at a company wide version of postcommon.ps.
+% Includes Matthijs Melchior's version of roundpagebbox,
+% but disables adjustments for postprint. This is just an
+% example - it should not be considered final or official.
+%
+
+/roundpagebbox {
+	Prologue (postprint.ps) ne {
+		pagebbox dup 0 get pagebbox 2 get add 2 exch put
+		pagebbox dup 1 get pagebbox 3 get add 3 exch put
+		pagebbox 0 0 put
+		pagebbox 1 0 put
+		userdict /origin-at-paper-edge true put
+	} if
+} bind def
+
+%%EndProlog
+%%BeginSetup
+mark
+setup
+%%EndSetup
+%%Page: 1 1
+/saveobj save def
+mark
+1 pagesetup
+()0(ATTACHMENT 3 - lookup script)24 L
+()0(----------------------------)24 L
+()l
+(    # lookup - lookup of upas aliases and alias lists)l
+(    # ----------------------------------------------------------------------)l
+(    # Written by Gines Milara and modified by Alex Damman.)l
+(    )l
+(    LIST=/usr/lib/upas/list)l
+(    PATH=$PATH:/usr/lib/upas:/usr/lbin:)l
+(    )l
+(    cd $LIST)l
+(    )l
+(    awk ' {)l
+()0(path = $2;)8 L
+()0(getline;)8 L
+()0(while \(index\($1,":"\) > 0\) {)8 L
+()0(if \($1 == "Subject:"\))12 L
+()0(list = substr\($0, length\($1\) + 1\);)20 L
+()0(getline;)12 L
+()0(})8 L
+()0(while \(1\) {)8 L
+()0(list = list " " $0;)12 L
+()0(if \(getline == 0\))12 L
+()0(break;)20 L
+()0(})8 L
+(    } END {print path list} ' - | sed "s/ `uname -n`!/ /g" | \()l
+(    read path args)l
+(    # echo "Subject: $args" # doesn't seem to work)l
+(    for token in $args)l
+(    do  if)0([ "$token" = "aliases" ])16 L
+()0(then    echo "# aliases\\n`/bin/ls`")8 L
+()0(elif    [ ! -f "$token" -a ! -f "../Olist/$token" ])8 L
+()0(then    echo "# $token: No such alias")8 L
+()0(else    echo "# $token")8 L
+()0(for alias in `translate $token`)12 L
+()0(do  if expr "$alias" : '.*[!]' >/dev/null||test -f "$alias")12 L
+()0(then)20(echo " $alias")32 L
+()0(else)20(eval post -w -q multi= "$alias" 2>&1)32 L
+()0(fi)20 L
+()0(done | sort)12 L
+()0(fi)8 L
+(    done | sed 's/^ //' |)0(/bin/rmail $path)32 L
+(    \))l
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 1 1
+%%Trailer
+done
+%%DocumentFonts: Courier
+%%Pages: 1
+initgraphics
+%!PS-Adobe-2.0
+%%Copyright: Copyright (c) 1993 AT&T, All Rights Reserved
+%%Version: 3.4
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+/DpostDict 200 dict def
+DpostDict begin
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% Version 3.4 prologue for troff files.
+%
+
+/#copies 1 store
+/Prologue (dpost.ps) def
+/aspectratio 1 def
+/formsperpage 1 def
+/landscape false def
+/linewidth .3 def
+/magnification 1 def
+/margin 0 def
+/orientation 0 def
+/resolution 720 def
+/rotation 1 def
+/xoffset 0 def
+/yoffset 0 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/R  /Times-Roman def
+/I  /Times-Italic def
+/B  /Times-Bold def
+/BI /Times-BoldItalic def
+/H  /Helvetica def
+/HI /Helvetica-Oblique def
+/HB /Helvetica-Bold def
+/HX /Helvetica-BoldOblique def
+/CW /Courier def
+/CO /Courier def
+/CI /Courier-Oblique def
+/CB /Courier-Bold def
+/CX /Courier-BoldOblique def
+/PA /Palatino-Roman def
+/PI /Palatino-Italic def
+/PB /Palatino-Bold def
+/PX /Palatino-BoldItalic def
+/Hr /Helvetica-Narrow def
+/Hi /Helvetica-Narrow-Oblique def
+/Hb /Helvetica-Narrow-Bold def
+/Hx /Helvetica-Narrow-BoldOblique def
+/KR /Bookman-Light def
+/KI /Bookman-LightItalic def
+/KB /Bookman-Demi def
+/KX /Bookman-DemiItalic def
+/AR /AvantGarde-Book def
+/AI /AvantGarde-BookOblique def
+/AB /AvantGarde-Demi def
+/AX /AvantGarde-DemiOblique def
+/NR /NewCenturySchlbk-Roman def
+/NI /NewCenturySchlbk-Italic def
+/NB /NewCenturySchlbk-Bold def
+/NX /NewCenturySchlbk-BoldItalic def
+/ZD /ZapfDingbats def
+/ZI /ZapfChancery-MediumItalic def
+/S  /S def
+/S1 /S1 def
+/GR /Symbol def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	/scaling 72 resolution div def
+	linewidth setlinewidth
+	1 setlinecap
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	scaling scaling scale
+
+	addmetrics
+	0 0 moveto
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/landscapepage {
+	landscape not {
+		0 height scaling div neg translate	% not quite
+		90 rotate
+	} if
+} bind def
+
+/portraitpage {
+	landscape {
+		width scaling div 0 translate	% not quite
+		-90 rotate
+	} if
+} bind def
+
+/addmetrics {
+	/Symbol /S null Sdefs cf
+	/Times-Roman /S1 StandardEncoding dup length array copy S1defs cf
+} def
+
+/pagesetup {
+	/page exch def
+	currentdict /pagedict known currentdict page known and {
+		page load pagedict exch get cvx exec
+	} if
+} def
+
+/decodingdefs [
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg /y exch def counttomark 2 idiv {y moveto show} repeat}
+	{neg moveto {2 index stringwidth pop sub exch div 0 32 4 -1 roll widthshow} repeat}
+	{neg moveto {spacewidth sub 0.0 32 4 -1 roll widthshow} repeat}
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg setfunnytext}
+] def
+
+/setdecoding {/t decodingdefs 3 -1 roll get bind def} bind def
+
+/w {neg moveto show} bind def
+/m {neg dup /y exch def moveto} bind def
+/done {/lastpage where {pop lastpage} if} def
+
+/f {
+	dup /font exch def findfont exch
+	dup /ptsize exch def scaling div dup /size exch def scalefont setfont
+	linewidth ptsize mul scaling 10 mul div setlinewidth
+	/spacewidth ( ) stringwidth pop def
+} bind def
+
+/changefont {
+	/fontheight exch def
+	/fontslant exch def
+	currentfont [
+		1 0
+		fontheight ptsize div fontslant sin mul fontslant cos div
+		fontheight ptsize div
+		0 0
+	] makefont setfont
+} bind def
+
+/sf {f} bind def
+
+/cf {
+	dup length 2 idiv
+	/entries exch def
+	/chtab exch def
+	/newencoding exch def
+	/newfont exch def
+
+	findfont dup length 1 add dict
+	/newdict exch def
+	{1 index /FID ne {newdict 3 1 roll put}{pop pop} ifelse} forall
+
+	newencoding type /arraytype eq {newdict /Encoding newencoding put} if
+
+	newdict /Metrics entries dict put
+	newdict /Metrics get
+	begin
+		chtab aload pop
+		1 1 entries {pop def} for
+		newfont newdict definefont pop
+	end
+} bind def
+
+%
+% A few arrays used to adjust reference points and character widths in some
+% of the printer resident fonts. If square roots are too high try changing
+% the lines describing /radical and /radicalex to,
+%
+%	/radical	[0 -75 550 0]
+%	/radicalex	[-50 -75 500 0]
+%
+% Move braceleftbt a bit - default PostScript character is off a bit.
+%
+
+/Sdefs [
+	/bracketlefttp		[201 500]
+	/bracketleftbt		[201 500]
+	/bracketrighttp		[-81 380]
+	/bracketrightbt		[-83 380]
+	/braceleftbt		[203 490]
+	/bracketrightex		[220 -125 500 0]
+	/radical		[0 0 550 0]
+	/radicalex		[-50 0 500 0]
+	/parenleftex		[-20 -170 0 0]
+	/integral		[100 -50 500 0]
+	/infinity		[10 -75 730 0]
+] def
+
+/S1defs [
+	/underscore		[0 80 500 0]
+	/endash			[7 90 650 0]
+] def
+%
+% Copyright (c) 1993 AT&T, All Rights Reserved
+%
+% A first cut at a company wide version of postcommon.ps.
+% Includes Matthijs Melchior's version of roundpagebbox,
+% but disables adjustments for postprint. This is just an
+% example - it should not be considered final or official.
+%
+
+/roundpagebbox {
+	Prologue (postprint.ps) ne {
+		pagebbox dup 0 get pagebbox 2 get add 2 exch put
+		pagebbox dup 1 get pagebbox 3 get add 3 exch put
+		pagebbox 0 0 put
+		pagebbox 1 0 put
+		userdict /origin-at-paper-edge true put
+	} if
+} bind def
+
+end
+%%EndProlog
+%%BeginSetup
+DpostDict begin
+mark
+/resolution 720 def
+setup
+2 setdecoding
+end
+%%EndSetup
+%%Page: 1 1
+DpostDict begin
+/saveobj save def
+mark
+1 pagesetup
+9 B f
+( \( 1 \))3 126( POSTALIAS)1 1605( EXPTOOLS \))2 534( \()1 68( System V)2 386( UNIX)1 1325(POSTALIAS \( 1 \))3 636 7 540 480 t
+(ABSTRACT)540 960 w
+10 R f
+(postalias \261 perform operations on private and system post alias\(es\))9 2660 1 900 1080 t
+9 B f
+(USAGE)540 1248 w
+10 R f
+(postalias [-[1-6]])1 673 1 900 1368 t
+(postalias alias)1 558 1 900 1488 t
+10 S f
+(_)1458 1488 w
+10 R f
+(name[ alias)1 457 1 1508 1488 t
+10 S f
+(_)1965 1488 w
+10 R f
+(name ...])1 349 1 2015 1488 t
+(postalias [-n)1 491 1 900 1608 t
+10 S f
+(\357)1391 1608 w
+10 R f
+([-[1-6]] -x] alias)2 647 1 1440 1608 t
+10 S f
+(_)2087 1608 w
+10 R f
+(name)2137 1608 w
+(postalias [-c)1 485 1 900 1728 t
+10 S f
+(\357)1385 1728 w
+10 R f
+(-d)1434 1728 w
+10 S f
+(\357)1517 1728 w
+10 R f
+(-e)1566 1728 w
+10 S f
+(\357)1643 1728 w
+10 R f
+(-f)1692 1728 w
+10 S f
+(\357)1758 1728 w
+10 R f
+(-m)1807 1728 w
+10 S f
+(\357)1918 1728 w
+10 R f
+(-o)1967 1728 w
+10 S f
+(\357)2050 1728 w
+10 R f
+(-s] alias)1 313 1 2099 1728 t
+10 S f
+(_)2412 1728 w
+10 R f
+(name[ alias)1 457 1 2462 1728 t
+10 S f
+(_)2919 1728 w
+10 R f
+(name ...])1 349 1 2969 1728 t
+(postalias [-?)1 485 1 900 1848 t
+10 S f
+(\357)1385 1848 w
+10 R f
+(-a)1434 1848 w
+10 S f
+(\357)1511 1848 w
+10 R f
+(-h)1560 1848 w
+10 S f
+(\357)1643 1848 w
+10 R f
+(-H)1692 1848 w
+10 S f
+(\357)1797 1848 w
+10 R f
+(-p)1846 1848 w
+10 S f
+(\357)1929 1848 w
+10 R f
+(-v)1978 1848 w
+10 S f
+(\357)2061 1848 w
+10 R f
+(-V])2110 1848 w
+(postalias [[-[1-6]] -g)2 814 1 900 1968 t
+10 S f
+(\357)1714 1968 w
+10 R f
+(-t] string)1 347 1 1763 1968 t
+(postalias -r[ dir)2 610 1 900 2088 t
+10 S f
+(_)1510 2088 w
+10 R f
+(to)1560 2088 w
+10 S f
+(_)1638 2088 w
+10 R f
+(check])1688 2088 w
+(postalias -u \256le\(s\) alias)3 924 1 900 2208 t
+10 S f
+(_)1824 2208 w
+10 R f
+(name)1874 2208 w
+9 B f
+(USAGE - Maintenance menu)3 1169 1 540 2376 t
+10 R f
+(postalias [-H)1 513 1 900 2496 t
+10 S f
+(\357)1413 2496 w
+10 R f
+(-I])1462 2496 w
+(postalias -L alias)2 677 1 900 2616 t
+10 S f
+(_)1577 2616 w
+10 R f
+(name[ alias)1 457 1 1627 2616 t
+10 S f
+(_)2084 2616 w
+10 R f
+(name ...])1 349 1 2134 2616 t
+(postalias [-D] [-E] [-G] [-W] -A[ dir)6 1444 1 900 2736 t
+10 S f
+(_)2344 2736 w
+10 R f
+(to)2394 2736 w
+10 S f
+(_)2472 2736 w
+10 R f
+(audit])2522 2736 w
+9 B f
+(DESCRIPTION)540 2904 w
+10 B f
+(postalias)900 3024 w
+10 R f
+( user)1 195( helps the)2 389( It)1 114(is a general purpose manager of private and public aliases that are used by post.)14 3221 4 1301 3024 t
+(to do the the following tasks:)5 1164 1 900 3144 t
+(List the aliases available to the user and their respective locations.)10 2637 1 1000 3384 t
+(Display the members of one or more aliases in either)9 2110 1 1000 3504 t
+10 B f
+(name)3135 3504 w
+10 R f
+(or)3393 3504 w
+10 B f
+(ema)3501 3504 w
+10 R f
+(format.)3703 3504 w
+(Create, submit, edit or delete aliases.)5 1470 1 1000 3624 t
+(Display current version number or list of command options.)8 2395 1 1000 3744 t
+(grep for \256le names or text strings within alias \256les.)9 2032 1 1000 3864 t
+(Manually or automatically convert aliases to)5 1778 1 1000 3984 t
+10 B f
+(ema)2803 3984 w
+10 R f
+(ie.)3005 3984 w
+10 B f
+(machine!login)3152 3984 w
+10 R f
+(format.)3783 3984 w
+(Automatically address mail to an alias owner or to the post administrator.)11 2936 1 1000 4104 t
+(Send \256les to the members of an alias.)7 1493 1 1000 4224 t
+(In addition,)1 461 1 900 4464 t
+10 B f
+(postalias)1386 4464 w
+10 R f
+( set parameters to enhance)4 1056(allows the postalias administrator to)4 1444 2 1784 4464 t
+10 B f
+(postalias)4310 4464 w
+10 R f
+(functionality)4709 4464 w
+(and to list the parameters seen by the)7 1478 1 900 4584 t
+10 B f
+(postalias)2403 4584 w
+10 R f
+(command.)2801 4584 w
+(In)900 4752 w
+10 B f
+(post)1012 4752 w
+10 R f
+(Release 4.0, a set of programs in)6 1327 1 1219 4752 t
+10 B f
+(/usr/lib/upas)2575 4752 w
+10 R f
+(replaced)3140 4752 w
+10 B f
+(/bin/mail)3507 4752 w
+10 R f
+( The)1 210(as the mail processor.)3 880 2 3922 4752 t
+10 B f
+(post)5042 4752 w
+(4.0/upas)900 4872 w
+10 R f
+( aliases are those)3 742( Private)1 357(environment allows users to have both private and public aliases.)9 2818 3 1303 4872 t
+( the keyword)2 549(identi\256ed by)1 516 2 900 4992 t
+10 B f
+(alias)2004 4992 w
+10 R f
+(and are located in a)4 831 1 2238 4992 t
+10 B f
+(.mailrc)3108 4992 w
+10 R f
+(\256le or in an alias \256le located in the user's)9 1771 1 3449 4992 t
+10 B f
+($HOME/lib/names)900 5112 w
+10 R f
+( the \256le)2 360(directory. Public aliases are located in directories pointed to entries in)10 3097 2 1763 5112 t
+10 B f
+(/usr/lib/upas/name\256les.)900 5232 w
+10 R f
+(The default directory for system aliases is)6 1669 1 1914 5232 t
+10 B f
+(/usr/lib/upas/list.)3608 5232 w
+10 R f
+(The environment variable)2 1037 1 900 5400 t
+10 B f
+(PA)1965 5400 w
+10 S f
+(_)2098 5400 w
+10 B f
+(LISTDIR)2148 5400 w
+10 R f
+( directory where the system alias)5 1331(can be set to point to the system)7 1301 2 2588 5400 t
+(\256les are contained.)2 761 1 900 5520 t
+10 B f
+(PA)1716 5520 w
+10 S f
+(_)1849 5520 w
+10 B f
+(LISTDIR)1899 5520 w
+10 R f
+( descrip-)1 350(will be used to reference the system directory in the following)10 2529 2 2341 5520 t
+( alias formats are shown in the)6 1220(tion. Typical)1 536 2 900 5640 t
+10 B f
+(EXAMPLES)2681 5640 w
+10 R f
+(section.)3262 5640 w
+10 B f
+(post)900 5808 w
+10 R f
+(searches for aliases in the following locations in the order shown.)10 2615 1 1103 5808 t
+( aliases in your)3 602(1. Private)1 483 2 900 5976 t
+10 B f
+(.mailrc)2010 5976 w
+10 R f
+(\256le.)2337 5976 w
+( post/upas aliases located in your)5 1318(2. Private)1 483 2 900 6144 t
+10 B f
+($HOME/lib/names)2726 6144 w
+10 R f
+(directory)3558 6144 w
+( post/upas aliases located in)4 1110(3. Public)1 456 2 900 6312 t
+10 B f
+(PA)2491 6312 w
+10 S f
+(_)2624 6312 w
+10 B f
+(LISTDIR)2674 6312 w
+(postalias)900 6480 w
+10 R f
+( their respective loca-)3 864(without any arguments\(other than column control\) lists all aliases, as well as)11 3058 2 1298 6480 t
+( available via the)3 697( - To limit the amount of displayed information, aliases)9 2273( Note)1 251(tions, available to the user.)4 1099 4 900 6600 t
+(.so directive in the)3 738 1 900 6720 t
+10 B f
+(.mailrc)1663 6720 w
+10 R f
+(\256le are not displayed.)3 860 1 1990 6720 t
+10 B f
+(postalias)900 6888 w
+10 R f
+(with an)1 300 1 1301 6888 t
+10 B f
+(alias)1629 6888 w
+10 S f
+(_)1824 6888 w
+10 B f
+(name)1874 6888 w
+10 R f
+( of the named alias\(es\) as well as its loca-)9 1696(argument will display the contents)4 1389 2 2135 6888 t
+(tion.)900 7008 w
+( are in the)3 405(Since the upas aliases)3 874 2 900 7176 t
+10 B f
+(/usr)2207 7176 w
+10 R f
+(\256le system, security considerations on some machines require that the)9 2818 1 2402 7176 t
+(aliases must be owned by)4 1021 1 900 7296 t
+10 B f
+(root.)1946 7296 w
+10 R f
+( 26, 1994)2 375( October)1 4036(Page 1)1 269 3 540 7680 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 1 1
+%%Page: 2 2
+DpostDict begin
+/saveobj save def
+mark
+2 pagesetup
+9 B f
+( \( 1 \))3 126( POSTALIAS)1 1605( EXPTOOLS \))2 534( \()1 68( System V)2 386( UNIX)1 1325(POSTALIAS \( 1 \))3 636 7 540 480 t
+10 R f
+( but most ef\256cient in terms of computer resources)8 2034(Aliases are most readable when they are in name format)9 2286 2 900 960 t
+(when they are in)3 677 1 900 1080 t
+10 B f
+(ema)1607 1080 w
+10 R f
+(format ie.)1 393 1 1814 1080 t
+10 B f
+(machine!login.)2262 1080 w
+10 R f
+(For example, my)2 690 1 2923 1080 t
+10 B f
+(ema)3643 1080 w
+10 R f
+(is)3850 1080 w
+10 B f
+(ihlpf!wsk.)3947 1080 w
+10 R f
+( up)1 129(In order to speed)3 688 2 4403 1080 t
+10 B f
+(post)900 1200 w
+10 R f
+(by a factor of nine when using aliases, all aliases are converted to)12 2613 1 1103 1200 t
+10 B f
+(ema)3741 1200 w
+10 R f
+(format ie.)1 388 1 3943 1200 t
+10 B f
+(machine!login.)4381 1200 w
+10 R f
+(Aliases will be converted to)4 1115 1 900 1368 t
+10 B f
+(ema)2040 1368 w
+10 R f
+(format under any of the following conditions:)6 1826 1 2242 1368 t
+(1. the)1 322 1 900 1536 t
+10 B f
+(post)1247 1536 w
+10 R f
+(database is updated)2 776 1 1450 1536 t
+( alias is created using the)5 1001(2. an)1 294 2 900 1704 t
+10 B f
+(-n)2220 1704 w
+10 R f
+(option)2334 1704 w
+( alias is revised using the)5 1002(3. an)1 294 2 900 1872 t
+10 B f
+(-e)2221 1872 w
+10 R f
+(option.)2323 1872 w
+(Since the)1 400 1 900 2040 t
+10 B f
+(PA)1356 2040 w
+10 S f
+(_)1489 2040 w
+10 B f
+(LISTDIR)1539 2040 w
+10 R f
+(will now contain the converted aliases, a)6 1808 1 2007 2040 t
+10 B f
+(Src)3871 2040 w
+10 R f
+( under)1 284(directory was added)2 865 2 4071 2040 t
+10 B f
+(PA)900 2160 w
+10 S f
+(_)1033 2160 w
+10 B f
+(LISTDIR)1083 2160 w
+10 R f
+(to contain the original aliases in name format.)7 1831 1 1520 2160 t
+(Note: A hyphen must be included in the alias name to distinguish it from)13 2913 1 900 2328 t
+10 B f
+(post)3838 2328 w
+10 R f
+(queries and logins.)2 752 1 4041 2328 t
+9 B f
+(OPTIONS)540 2496 w
+10 B f
+(-[1-6])900 2616 w
+10 R f
+( -g)1 125( number of columns for the no options,)7 1672( The)1 221(Number of columns in output display.)5 1602 4 1600 2616 t
+( option should be)3 734( This)1 242( 6 columns.)2 492(option and -x option cases can be varied from 1 to)10 2152 4 1600 2736 t
+(invoked before the -g and -x options.)6 1478 1 1600 2856 t
+10 B f
+(-a postalias)1 1073 1 900 3024 t
+10 R f
+(will address a mail message to the post administrator and will start the mail)13 3207 1 2013 3024 t
+(message at the)2 582 1 1600 3144 t
+10 B f
+(Subject:)2207 3144 w
+10 R f
+(line. The address used is determined from the)7 1819 1 2587 3144 t
+10 B f
+(post)4431 3144 w
+10 S f
+(_)4609 3144 w
+10 B f
+(adm)4659 3144 w
+10 R f
+(alias.)4873 3144 w
+10 B f
+(-c alias\(es\))1 446 1 900 3312 t
+10 R f
+(convert alias\(es\) to)2 775 1 1600 3312 t
+10 B f
+(ema)2408 3312 w
+10 R f
+( the user, but)3 543( in name format are easily read by)7 1416(format. Aliases)1 643 3 2618 3312 t
+( to process. Since the database normally)6 1648(require about nine times the computer resources)6 1972 2 1600 3432 t
+(changes once a week, the conversion to)6 1600 1 1600 3552 t
+10 B f
+(ema)3229 3552 w
+10 R f
+( eliminate all redundant database)4 1334(format will)1 451 2 3435 3552 t
+( conversion to)2 580(accesses. The)1 574 2 1600 3672 t
+10 B f
+(ema)2786 3672 w
+10 R f
+(format is done to \256les in the)6 1164 1 2995 3672 t
+10 B f
+(PA)4190 3672 w
+10 S f
+(_)4323 3672 w
+10 B f
+(LISTDIR/Src)4373 3672 w
+10 R f
+(direc-)4988 3672 w
+(tory, and the converted \256les are put in the)8 1693 1 1600 3792 t
+10 B f
+(PA)3322 3792 w
+10 S f
+(_)3455 3792 w
+10 B f
+(LISTDIR)3505 3792 w
+10 R f
+(directory where)1 632 1 3946 3792 t
+10 B f
+(post)4607 3792 w
+10 R f
+(expects to)1 406 1 4814 3792 t
+( of other)2 364( those situations where an alias is built up from a combination)11 2633( For)1 203(\256nd them.)1 420 4 1600 3912 t
+( the resulting converted alias by)5 1318(aliases, one or more individuals may be subtracted from)8 2302 2 1600 4032 t
+( format)1 293(placing each name to be deleted on a line by itself after all the alias members. The)16 3327 2 1600 4152 t
+(for the member or alias group to be deleted is as follows:)11 2277 1 1600 4272 t
+(- name.lastname and/or)2 934 1 1700 4512 t
+(- alias)1 241 1 1700 4632 t
+( problems discovered in the conversion pro-)6 1812( Any)1 231( minus\(-\) sign.)2 604(Note the space after the)4 973 4 1600 4872 t
+(cess are reported to the alias owner via a mail message.)10 2208 1 1600 4992 t
+10 B f
+(-d alias\(es\))1 458 1 900 5160 t
+10 R f
+(request deletion of named alias\(es\).)4 1512 1 1600 5160 t
+10 B f
+(postalias)3186 5160 w
+10 R f
+( to the post)3 517(will send a mail message)4 1095 2 3608 5160 t
+( alias\(es\), as well as, noti\256cation of the)7 1668(administrator requesting deletion of the named)5 1952 2 1600 5280 t
+(completion of the request.)3 1043 1 1600 5400 t
+10 B f
+(-e alias\(es\))1 446 1 900 5568 t
+10 R f
+( alias\(es\) in a private or system directory.)7 1694(edit named)1 446 2 1600 5568 t
+10 B f
+(postalias)3771 5568 w
+10 R f
+(will open the named alias)4 1045 1 4175 5568 t
+(\256le\(s\) for editing in the following directories in the order shown:)10 2586 1 1600 5688 t
+10 B f
+($HOME/lib/names/Src)1700 5928 w
+($HOME/lib/names)1700 6048 w
+(PA)1700 6168 w
+10 S f
+(_)1833 6168 w
+10 B f
+(LISTDIR/Src)1883 6168 w
+(PA)1700 6288 w
+10 S f
+(_)1833 6288 w
+10 B f
+(LISTDIR)1883 6288 w
+10 R f
+(using the value of the)4 876 1 1600 6528 t
+10 B f
+(EDITOR)2505 6528 w
+10 R f
+(variable. If unset, the)3 857 1 2929 6528 t
+10 B f
+(vi)3816 6528 w
+10 R f
+(editor is used. When the editing)5 1296 1 3924 6528 t
+( revised\) will be converted using the)6 1567(session is complete, the alias \(if)5 1371 2 1600 6648 t
+10 B f
+(-c)4582 6648 w
+10 R f
+(option listed)1 517 1 4703 6648 t
+(above. Conversion will only be done on \256les located in the)10 2481 1 1600 6768 t
+10 B f
+($HOME/lib/names/Src)4119 6768 w
+10 R f
+(or)5137 6768 w
+10 B f
+(PA)1600 6888 w
+10 S f
+(_)1733 6888 w
+10 B f
+(LISTDIR/Src)1783 6888 w
+10 R f
+(directories.)2392 6888 w
+10 B f
+(-f alias\(es\))1 435 1 900 7056 t
+10 R f
+(format)1600 7056 w
+10 B f
+(upas)1897 7056 w
+10 R f
+( form of an alias \256le is shown in the)9 1498(alias \256le into normal form. The normal)6 1593 2 2129 7056 t
+10 B f
+(EXAMPLES)1600 7176 w
+10 R f
+(section.)2186 7176 w
+10 B f
+(postalias)2549 7176 w
+10 R f
+(will read an)2 481 1 2952 7176 t
+10 B f
+(ema)3463 7176 w
+10 R f
+(or)3669 7176 w
+10 B f
+(name)3781 7176 w
+10 R f
+(or mixed format \256le and out-)5 1177 1 4043 7176 t
+(put those names and e-mail addresses in)6 1603 1 1600 7296 t
+10 B f
+(post)3228 7296 w
+10 R f
+(in the following)2 639 1 3431 7296 t
+10 B f
+(post name format:)2 787 1 4095 7296 t
+10 R f
+( 2)1 75( Page)1 3909(October 26, 1994)2 696 3 540 7680 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 2 2
+%%Page: 3 3
+DpostDict begin
+/saveobj save def
+mark
+3 pagesetup
+9 B f
+( \( 1 \))3 126( POSTALIAS)1 1605( EXPTOOLS \))2 534( \()1 68( System V)2 386( UNIX)1 1325(POSTALIAS \( 1 \))3 636 7 540 480 t
+10 B f
+(\256rst.middle.last/loc=post)1700 960 w
+10 S f
+(_)2752 960 w
+10 B f
+(loc)2802 960 w
+10 R f
+( comments are copied to the output)6 1470( Leading)1 387(After formatting, the names will be sorted.)6 1763 3 1600 1200 t
+(\256le, trailing comments are deleted. The input \256le)7 2042 1 1600 1320 t
+10 B f
+(alias)3680 1320 w
+10 S f
+(_)3875 1320 w
+10 B f
+(name)3925 1320 w
+10 R f
+( directory.)1 422(may be in any)3 602 2 4196 1320 t
+(The output \256le name will be)5 1540 1 1600 1440 t
+10 B f
+(f.alias)3248 1440 w
+10 S f
+(_)3501 1440 w
+10 B f
+(name)3551 1440 w
+10 R f
+(and it will be placed in)5 1328 1 3892 1440 t
+10 B f
+($HOME/lib/names/Src.)1600 1560 w
+10 R f
+( output \256le)2 534( The)1 256(Directories will be created as needed.)5 1750 3 2680 1560 t
+10 B f
+(f.alias)1600 1680 w
+10 S f
+(_)1853 1680 w
+10 B f
+(name)1903 1680 w
+10 R f
+(should be reviewed and then renamed to)6 1613 1 2161 1680 t
+10 B f
+(alias)3799 1680 w
+10 S f
+(_)3994 1680 w
+10 B f
+(name)4044 1680 w
+10 R f
+(prior to submission.)2 798 1 4302 1680 t
+10 B f
+(-g 'string')1 424 1 900 1848 t
+10 R f
+( alias)1 223(display all the aliases and their respective location that contain the 'string' in the)13 3397 2 1600 1848 t
+(name.)1600 1968 w
+10 B f
+(-[?)900 2136 w
+10 S f
+(\357)1016 2136 w
+10 B f
+(h])1065 2136 w
+10 R f
+(display help\(usage\) information.)2 1301 1 1600 2136 t
+10 B f
+(-m)900 2304 w
+10 R f
+(view modi\256ed\(converted\) alias \256le\(s\).)3 1564 1 1600 2304 t
+10 B f
+(postalias)3227 2304 w
+10 R f
+( original, that is,)3 695(normally displays the)2 887 2 3638 2304 t
+(unconverted alias \256le. This option shows the alias in the converted)10 2661 1 1600 2424 t
+10 B f
+(\(ema\))4286 2424 w
+10 R f
+(format.)4554 2424 w
+10 B f
+(-n alias)1 309 1 900 2592 t
+10 R f
+( disallowed characters,)2 919(create a new alias. After checking the alias name for necessary and)11 2701 2 1600 2592 t
+10 B f
+(postalias)1600 2712 w
+10 R f
+(will open a \256le with the name 'alias' in the)9 1766 1 2004 2712 t
+10 B f
+($HOME/lib/names/Src.)3801 2712 w
+10 R f
+(directory.)4835 2712 w
+( created as needed unless)4 1026(Directories will be)2 753 2 1600 2832 t
+10 B f
+($HOME/lib/names)3410 2832 w
+10 R f
+(is an existing \256le and is)5 972 1 4248 2832 t
+( edit-)1 210( After)1 262( it.)1 108( the alias \256le exists, the user will be allowed to overwrite)11 2308( If)1 119(not a directory.)2 613 6 1600 2952 t
+( to)1 104(ing is complete, the \256le will be converted)7 1654 2 1600 3072 t
+10 B f
+(ema)3384 3072 w
+10 R f
+(format. The converted \256le will be placed)6 1633 1 3587 3072 t
+(in)1600 3192 w
+10 B f
+($HOME/lib/names.)1706 3192 w
+10 R f
+(After testing the alias, it can be submitted using)8 1931 1 2566 3192 t
+10 B f
+( alias)1 222(postalias -s)1 473 2 4525 3192 t
+10 R f
+(from the)1 341 1 1600 3312 t
+10 B f
+($HOME/lib/names/Src)1966 3312 w
+10 R f
+(directory.)2970 3312 w
+10 B f
+(-o alias\(es\))1 452 1 900 3480 t
+10 R f
+(send message to alias owner\(s\).)4 1261 1 1600 3480 t
+10 B f
+(postalias)2911 3480 w
+10 R f
+(will address a message to the alias \256le owner\(s\))8 1910 1 3310 3480 t
+( message at the)3 619(and will start the mail)4 892 2 1600 3600 t
+10 B f
+(Subject:)3140 3600 w
+10 R f
+(line. The address used is determined from)6 1696 1 3524 3600 t
+(the)1600 3720 w
+10 B f
+(group id)1 365 1 1747 3720 t
+10 R f
+(of the alias \256le\(s\).)3 721 1 2137 3720 t
+10 B f
+(-p)900 3888 w
+10 R f
+( log\256le location used by)4 981(display parameters such as \256lepaths and)5 1620 2 1600 3888 t
+10 B f
+(postalias.)4231 3888 w
+10 R f
+(This option is)2 561 1 4659 3888 t
+( used by the postalias administrator and is intended as an aid in troub-)13 3036(normally only)1 584 2 1600 4008 t
+(leshooting user problems.)2 1030 1 1600 4128 t
+10 B f
+(-r [directory])1 561 1 900 4296 t
+10 R f
+( of the post)3 480( option will check the timestamp)5 1358( This)1 238(reformat alias\(es\) in named directory.)4 1544 4 1600 4296 t
+( and invokes)2 511(server database)1 615 2 1600 4416 t
+10 B f
+(postalias -c)1 478 1 2754 4416 t
+10 R f
+(to update alias \256les in the named directory when)8 1960 1 3260 4416 t
+( is available. If no directory is speci\256ed, then the aliases in the)12 2989(new post data)2 631 2 1600 4536 t
+10 B f
+($HOME/lib/names/Src)1600 4656 w
+10 R f
+( cron task when)3 647( is best run as a)5 648( It)1 118(directory will be reformatted.)3 1196 4 2611 4656 t
+(the system is idle.)3 717 1 1600 4776 t
+10 B f
+(-s alias\(es\))1 441 1 900 4944 t
+10 R f
+( for installation.)2 650(submit alias\(es\))1 636 2 1600 4944 t
+10 B f
+(postalias)2943 4944 w
+10 R f
+(will send a mail message to the post adminis-)8 1872 1 3348 4944 t
+(trator requesting installation of the named alias\(es\) and)7 2381 1 1600 5064 t
+10 B f
+(uuto)4032 5064 w
+10 R f
+(the alias \256le\(s\) to the)4 942 1 4278 5064 t
+( The)1 214( of completion of the request.)5 1221( message also requests noti\256cation)4 1414(administrator. The)1 771 4 1600 5184 t
+(submitted alias \256les in)3 928 1 1600 5304 t
+10 B f
+($HOME/lib/names/Src)2562 5304 w
+10 R f
+(are moved to a)3 617 1 3575 5304 t
+10 B f
+(:submitted)4226 5304 w
+10 R f
+(subdirectory)4721 5304 w
+( converted alias \256les in)4 941( The)1 209(\(automatically created, if necessary\).)3 1482 3 1600 5424 t
+10 B f
+($HOME/lib/names)4262 5424 w
+10 R f
+(are)5099 5424 w
+(removed.)1600 5544 w
+10 B f
+(-t 'string')1 407 1 900 5712 t
+10 R f
+( in the aliases available to the user with their respec-)10 2130(display all lines containing the string)5 1490 2 1600 5712 t
+(tive directory location as well as their position within the alias \256les.)11 2704 1 1600 5832 t
+10 B f
+(-u \256le\(s\) alias)2 567 1 900 6000 t
+10 R f
+(uuto \256les to alias members.)4 1153 1 1600 6000 t
+10 B f
+(postalias)2817 6000 w
+10 R f
+(will decompose the alias and send the \256le\(s\) to)8 1990 1 3230 6000 t
+( restrictions on this usage are that the alias members are not)11 2591( The)1 224(each alias member.)2 805 3 1600 6120 t
+(aliases on a remote machine since)5 1415 1 1600 6240 t
+10 B f
+(aliasx)3052 6240 w
+10 R f
+( its)1 133(is only capable of decomposing aliases on)6 1753 2 3334 6240 t
+(home machine and the e-mail addresses are in)7 1837 1 1600 6360 t
+10 B f
+(machine!login)3462 6360 w
+10 R f
+(format.)4093 6360 w
+10 B f
+(-[v)900 6528 w
+10 S f
+(\357)1016 6528 w
+10 B f
+(V])1065 6528 w
+10 R f
+(display current version number of the postalias command.)7 2319 1 1600 6528 t
+10 B f
+(-x alias)1 303 1 900 6696 t
+10 R f
+(expand alias.)1 553 1 1600 6696 t
+10 B f
+(postalias)2236 6696 w
+10 R f
+(will recursively expand an alias to list all the component)9 2553 1 2667 6696 t
+( aliases contained in)3 918(members. It will use names and)5 1455 2 1600 6816 t
+10 B f
+($HOME/lib/names/Src)4035 6816 w
+10 R f
+(and)5076 6816 w
+10 B f
+(PA)1600 6936 w
+10 S f
+(_)1733 6936 w
+10 B f
+(LISTDIR/Src)1783 6936 w
+10 R f
+( the sake of response time,)5 1104(directories. For)1 618 2 2400 6936 t
+10 B f
+(postalias)4156 6936 w
+10 R f
+(does not do any)3 657 1 4563 6936 t
+10 B f
+(post)1600 7056 w
+10 R f
+( number of entries is shown at the end of the display.)11 2114(lookups. The)1 547 2 1803 7056 t
+( 26, 1994)2 375( October)1 4036(Page 3)1 269 3 540 7680 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 3 3
+%%Page: 4 4
+DpostDict begin
+/saveobj save def
+mark
+4 pagesetup
+9 B f
+( \( 1 \))3 126( POSTALIAS)1 1605( EXPTOOLS \))2 534( \()1 68( System V)2 386( UNIX)1 1325(POSTALIAS \( 1 \))3 636 7 540 480 t
+(MAINTENANCE OPTIONS)1 1133 1 540 960 t
+10 B f
+(-A [directory])1 589 1 900 1080 t
+10 R f
+( no directory is speci\256ed, then the aliases in the)9 1955( If)1 123(audit named directory.)2 915 3 1600 1080 t
+10 B f
+(PA)4625 1080 w
+10 S f
+(_)4758 1080 w
+10 B f
+(LISTDIR)4808 1080 w
+10 R f
+( have)1 221( will consist of counting \256les, showing which \256les)8 2081( Audit)1 287(directory will be audited.)3 1031 4 1600 1200 t
+(been added and deleted, listing \256les unique to directory and to)10 2673 1 1600 1320 t
+10 B f
+(Src)4318 1320 w
+10 R f
+(subdirectory, and)1 713 1 4507 1320 t
+( youngest)1 390(\256nally listing the oldest \256ve \256les in the named directory and the \256ve oldest and)14 3230 2 1600 1440 t
+(\256les in the)2 449 1 1600 1560 t
+10 B f
+(Src)2091 1560 w
+10 R f
+( information can be retrieved by adding audit)7 1924(subdirectory. Additional)1 1019 2 2277 1560 t
+(\257ags to the command line.)4 1058 1 1600 1680 t
+10 B f
+(-D)900 1848 w
+10 R f
+(audit \257ag. Output will also show changes to the)8 1902 1 1600 1848 t
+10 B f
+(post -D)1 308 1 3527 1848 t
+10 R f
+(command.)3860 1848 w
+10 B f
+(-E)900 2016 w
+10 R f
+( also show empty \256les in the named directory. This usually indi-)11 2703(audit \257ag. Output will)3 917 2 1600 2016 t
+(cates a problem with the)4 976 1 1600 2136 t
+10 B f
+(ema)2601 2136 w
+10 R f
+(conversion process.)1 787 1 2803 2136 t
+10 B f
+(-G)900 2304 w
+10 R f
+(audit \257ag. File pair\(s\) in named directory and)7 1870 1 1600 2304 t
+10 B f
+(Src)3503 2304 w
+10 R f
+(subdirectory will be checked to make)5 1539 1 3681 2304 t
+(sure that the \256le group ID for both \256les are identical.)10 2105 1 1600 2424 t
+10 B f
+(-H)900 2592 w
+10 R f
+(display help message for maintenance menu.)5 1791 1 1600 2592 t
+10 B f
+(-I)3441 2592 w
+10 R f
+( needed by)2 434(install parameters)1 707 2 3538 2592 t
+10 B f
+(postalias)4705 2592 w
+10 R f
+(for)5104 2592 w
+( is normally only used by the postalias)7 1767(enhanced functional operation. This option)4 1853 2 1600 2712 t
+( required parameters are:)3 993(administrator. The)1 763 2 1600 2832 t
+(1. name of postalias administrator in name.surname format.)7 2380 1 1700 3072 t
+(2. logname of postalias administrator. This data is necessary if a log\256le is desired.)13 3274 1 1700 3192 t
+(3. name an extension of person to handle postalias problems.)9 2433 1 1700 3312 t
+(4. e-mail address of backup administrator in)6 1761 1 1700 3432 t
+10 B f
+(mach!login)3486 3432 w
+10 R f
+(format.)3989 3432 w
+(The alias \256le)2 516 1 1600 3672 t
+10 B f
+(postalias-adm)2141 3672 w
+10 R f
+(will be created and submitted.)4 1201 1 2761 3672 t
+10 B f
+(-L)900 3840 w
+10 R f
+(\256nd \256le\(s\) and display \256le stats using)6 1495 1 1600 3840 t
+10 B f
+(ls -l)1 153 1 3120 3840 t
+(-W)900 4008 w
+10 R f
+( in the public directories)4 979( Files)1 247( will be checked for group write permissions.)7 1822(adit \257ag. Files)2 572 4 1600 4008 t
+(that are not writable by group cannot be edited.)8 1888 1 1600 4128 t
+9 B f
+(EXAMPLES)540 4296 w
+10 R f
+(# Typical alias format in a)5 1051 1 900 4416 t
+10 B f
+(.mailrc)1976 4416 w
+10 R f
+(\256le.)2303 4416 w
+(alias alias)1 391 1 1000 4536 t
+10 S f
+(_)1391 4536 w
+10 R f
+(name alias)1 424 1 1441 4536 t
+10 S f
+(_)1865 4536 w
+10 R f
+(member ...)1 427 1 1915 4536 t
+(# Typical)1 380 1 900 4704 t
+10 B f
+(upas)1305 4704 w
+10 R f
+(alias format. It is in a \256le with the same name.)10 1848 1 1531 4704 t
+(# Alias description)2 755 1 900 4824 t
+(# comments, if any)3 766 1 900 4944 t
+(alias)1000 5064 w
+10 S f
+(_)1183 5064 w
+10 R f
+(name \\)1 294 1 1233 5064 t
+(alias)1000 5184 w
+10 S f
+(_)1183 5184 w
+10 R f
+(member\(in e-mail format\) \\)3 1095 1 1233 5184 t
+(alias)1000 5304 w
+10 S f
+(_)1183 5304 w
+10 R f
+(n \(any other alias\) \\)4 776 1 1233 5304 t
+(alias)1000 5424 w
+10 S f
+(_)1183 5424 w
+10 R f
+( \\)1 78(member\(in name format\))2 1003 2 1233 5424 t
+(# To list all the aliases available to you)8 1560 1 900 5592 t
+(postalias [-[1-6]])1 673 1 900 5712 t
+(# To list the aliases available to you whose name contains 'string')11 2633 1 900 5880 t
+(postalias [-[1-6]] -g 'string')3 1100 1 900 6000 t
+(# To view the contents of an alias)7 1345 1 900 6168 t
+(postalias alias)1 558 1 900 6288 t
+10 S f
+(_)1458 6288 w
+10 R f
+(name)1508 6288 w
+(# To view the expanded contents of an alias)8 1752 1 900 6456 t
+(postalias [-[1-6]] -x alias)3 989 1 900 6576 t
+10 S f
+(_)1889 6576 w
+10 R f
+(name)1939 6576 w
+(# To search all alias \256les available to you whose contents contain 'string')12 2929 1 900 6744 t
+(postalias -t 'string')2 755 1 900 6864 t
+(# To view the converted\(ema formatted\) contents of an alias)9 2408 1 900 7032 t
+(postalias -m alias)2 694 1 900 7152 t
+10 S f
+(_)1594 7152 w
+10 R f
+(name)1644 7152 w
+( 4)1 75( Page)1 3909(October 26, 1994)2 696 3 540 7680 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 4 4
+%%Page: 5 5
+DpostDict begin
+/saveobj save def
+mark
+5 pagesetup
+9 B f
+( \( 1 \))3 126( POSTALIAS)1 1605( EXPTOOLS \))2 534( \()1 68( System V)2 386( UNIX)1 1325(POSTALIAS \( 1 \))3 636 7 540 480 t
+10 R f
+(# To create an alias)4 775 1 900 960 t
+(postalias -n alias)2 666 1 900 1080 t
+10 S f
+(_)1566 1080 w
+10 R f
+(name)1616 1080 w
+(# To format an alias)4 804 1 900 1248 t
+(postalias -f alias)2 649 1 900 1368 t
+10 S f
+(_)1549 1368 w
+10 R f
+(name)1599 1368 w
+(# To submit an alias)4 811 1 900 1536 t
+(postalias -s alias)2 655 1 900 1656 t
+10 S f
+(_)1555 1656 w
+10 R f
+(name)1605 1656 w
+(# To edit an alias)4 688 1 900 1824 t
+(postalias -e alias)2 660 1 900 1944 t
+10 S f
+(_)1560 1944 w
+10 R f
+(name)1610 1944 w
+(# To convert an alias \256le)5 990 1 900 2112 t
+(postalias -c alias)2 660 1 900 2232 t
+10 S f
+(_)1560 2232 w
+10 R f
+(name)1610 2232 w
+(# To delete an alias \256le)5 929 1 900 2400 t
+(postalias -d alias)2 666 1 900 2520 t
+10 S f
+(_)1566 2520 w
+10 R f
+(name)1616 2520 w
+(# To send mail to the post administrator)7 1597 1 900 2688 t
+(postalias -a)1 452 1 900 2808 t
+(# To send mail to the alias owner)7 1329 1 900 2976 t
+(postalias -o alias)2 666 1 900 3096 t
+10 S f
+(_)1566 3096 w
+10 R f
+(name)1616 3096 w
+(# To uuto \256les to the members of an alias)9 1657 1 900 3264 t
+(postalias -u \256le\(s\) alias)3 924 1 900 3384 t
+10 S f
+(_)1824 3384 w
+10 R f
+(name)1874 3384 w
+(# To see the list of available options)7 1446 1 900 3552 t
+(postalias -h or postalias -?)4 1043 1 900 3672 t
+(# To check the current version of postalias)7 1699 1 900 3840 t
+(postalias -v or postalias -V)4 1071 1 900 3960 t
+(# to view the list of postalias parameters)7 1612 1 900 4128 t
+(postalias -p)1 458 1 900 4248 t
+(# postalias maintenance options)3 1274 1 900 4416 t
+(# To see the list of maintenance options)7 1590 1 900 4536 t
+(postalias -H)1 480 1 900 4656 t
+(# to install postalias parameters for enhanced operation)7 2204 1 900 4824 t
+(postalias -I)1 441 1 900 4944 t
+(# To automatically reformat alias \256les in a speci\256c directory)9 2410 1 900 5112 t
+(postalias -r[ directory)2 859 1 900 5232 t
+10 S f
+(_)1759 5232 w
+10 R f
+(to)1809 5232 w
+10 S f
+(_)1887 5232 w
+10 R f
+(reformat])1937 5232 w
+(# To audit alias \256le directory)5 1157 1 900 5400 t
+(postalias [-D] [-E] [-G] [-W] -A[ dir)6 1444 1 900 5520 t
+10 S f
+(_)2344 5520 w
+10 R f
+(to)2394 5520 w
+10 S f
+(_)2472 5520 w
+10 R f
+(check])2522 5520 w
+(# To get a long listing\(ls -l\) on alias \256le from any directory)12 2359 1 900 5688 t
+(postalias -L alias)2 677 1 900 5808 t
+10 S f
+(_)1577 5808 w
+10 R f
+(name)1627 5808 w
+(# Typical invocation of cron to reformat private alias \256les in)10 2413 1 900 5976 t
+10 B f
+($HOME/lib/names)3338 5976 w
+10 R f
+(1 1)1 150 1 1000 6096 t
+10 S f
+(* *)1 150 1 1200 6096 t
+10 R f
+(1-5 ksh "export TOOLS=`logdir exptools`;$TOOLS/bin/postalias -r")5 2756 1 1400 6096 t
+9 B f
+(ADMINISTRATORS NOTES)1 1178 1 540 6384 t
+10 R f
+( setup procedure is recommended to enhance the)7 1963(The following)1 571 2 900 6504 t
+10 B f
+(post/upas)3462 6504 w
+10 R f
+(environment to use the)3 922 1 3897 6504 t
+10 B f
+(postalias)4847 6504 w
+10 R f
+(command and to automatically convert aliases to the)7 2219 1 900 6624 t
+10 B f
+(ema)3161 6624 w
+10 R f
+(format for faster)2 687 1 3380 6624 t
+10 B f
+(post)4109 6624 w
+10 R f
+(operation when using)2 892 1 4328 6624 t
+(aliases.)900 6744 w
+( directory)1 394( a)1 77(1. Create)1 460 3 900 6912 t
+10 B f
+(/usr/lib/upas/list)1865 6912 w
+10 R f
+(under)2591 6912 w
+10 B f
+(/usr/lib/upas)2852 6912 w
+10 R f
+(if one does not already exist and add)7 1524 1 3422 6912 t
+10 B f
+(list)4980 6912 w
+10 R f
+(to)5142 6912 w
+(the \256le)1 275 1 1100 7032 t
+10 B f
+(/usr/lib/upas/name\256les.)1400 7032 w
+10 R f
+(Both directories should have \302writable by group\302 permissions.)7 2475 1 2414 7032 t
+( 26, 1994)2 375( October)1 4036(Page 5)1 269 3 540 7680 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 5 5
+%%Page: 6 6
+DpostDict begin
+/saveobj save def
+mark
+6 pagesetup
+9 B f
+( \( 1 \))3 126( POSTALIAS)1 1605( EXPTOOLS \))2 534( \()1 68( System V)2 386( UNIX)1 1325(POSTALIAS \( 1 \))3 636 7 540 480 t
+10 R f
+( a directory)2 454(2. Create)1 460 2 900 960 t
+10 B f
+(Src)1839 960 w
+10 R f
+(under)2008 960 w
+10 B f
+(/usr/lib/upas/list.)2260 960 w
+10 R f
+(3. Use)1 355 1 900 1128 t
+10 B f
+(postalias -n alias)2 741 1 1296 1128 t
+10 S f
+(_)2037 1128 w
+10 B f
+(name)2087 1128 w
+10 R f
+(to create aliases)2 665 1 2362 1128 t
+10 B f
+(post-adm)3069 1128 w
+10 R f
+(and)3511 1128 w
+10 B f
+(post-bkup.)3697 1128 w
+10 R f
+(These will be created in)4 1021 1 4199 1128 t
+10 B f
+($HOME/lib/names/Src.)1100 1248 w
+10 R f
+( editing is complete, the \256les)5 1170( When)1 292( necessary.)1 441(Directories will be created as)4 1183 4 2134 1248 t
+(will be automatically converted to)4 1369 1 1100 1368 t
+10 B f
+(ema)2495 1368 w
+10 R f
+(format and will be placed in the)6 1276 1 2698 1368 t
+10 B f
+($HOME/lib/names)4001 1368 w
+10 R f
+(directory.)4835 1368 w
+(After testing the aliases, move them from the private)8 2169 1 1100 1488 t
+10 B f
+($HOME/lib/names/Src)3302 1488 w
+10 R f
+(directory to the public)3 906 1 4314 1488 t
+10 B f
+(/usr/lib/upas/list/Src)1100 1608 w
+10 R f
+(directory. The)1 613 1 2012 1608 t
+10 B f
+(post-adm)2674 1608 w
+10 R f
+(and)3123 1608 w
+10 B f
+(post-bkup)3316 1608 w
+10 R f
+(aliases in the)2 564 1 3800 1608 t
+10 B f
+($HOME/lib/names)4413 1608 w
+10 R f
+(directory must be deleted since)4 1242 1 1100 1728 t
+10 B f
+(post)2367 1728 w
+10 R f
+(would see them before the \256les in PA)7 1501 1 2570 1728 t
+10 S f
+(_)4071 1728 w
+10 R f
+(LISTDIR.)4121 1728 w
+( all the name formatted aliases from)6 1484(4. Copy)1 417 2 900 1896 t
+10 B f
+(/usr/lib/upas/list/Src)2835 1896 w
+10 R f
+(to)3733 1896 w
+10 B f
+(/usr/lib/upas/list.)3845 1896 w
+10 R f
+(Files should be)2 624 1 4596 1896 t
+( Run)1 227( and 'grouped' to the alias owner.)6 1404(owned by root)2 599 3 1100 2016 t
+10 B f
+(postalias -c)1 485 1 3365 2016 t
+10 S f
+(*)3885 2016 w
+10 R f
+(from the)1 351 1 3970 2016 t
+10 B f
+(/usr/lib/upas/list/Src)4356 2016 w
+10 R f
+(directory to convert aliases to)4 1185 1 1100 2136 t
+10 B f
+(ema)2311 2136 w
+10 R f
+( converted,)1 445( installed and)2 535(format. Once)1 552 3 2514 2136 t
+10 B f
+(postalias -e alias)2 699 1 4073 2136 t
+10 S f
+(_)4772 2136 w
+10 B f
+(name)4822 2136 w
+10 R f
+(can)5082 2136 w
+(be used at any time to edit the \256les.)8 1413 1 1100 2256 t
+( a)1 78(5. Enter)1 416 2 900 2424 t
+10 B f
+(cron)1428 2424 w
+10 R f
+(job to invoke)2 546 1 1656 2424 t
+10 B f
+(postalias -r /usr/lib/upas/list/Src)2 1382 1 2236 2424 t
+10 R f
+(to do the alias update.)4 910 1 3652 2424 t
+10 B f
+(postalias -r)1 485 1 4622 2424 t
+10 R f
+(in)5142 2424 w
+(turn, will use)2 525 1 1100 2544 t
+10 B f
+(postalias -c)1 475 1 1650 2544 t
+10 S f
+(*)2150 2544 w
+10 R f
+(to reconvert the aliases whenever the)5 1476 1 2225 2544 t
+10 B f
+(post)3726 2544 w
+10 R f
+(database is updated.)2 801 1 3929 2544 t
+(6. Run)1 367 1 900 2712 t
+10 B f
+(postalias -I)1 470 1 1292 2712 t
+10 R f
+( for enhanced operation. See the)5 1290(to set the various parameters required)5 1499 2 1787 2712 t
+10 B f
+(-I)4602 2712 w
+10 R f
+(option above)1 520 1 4700 2712 t
+(for details.)1 427 1 1100 2832 t
+(7. Run)1 367 1 900 3000 t
+10 B f
+(postalias -p)1 500 1 1305 3000 t
+10 R f
+( can be made with either)5 1048( Corrections)1 530( settings.)1 370(to check parameter)2 784 4 1843 3000 t
+10 B f
+(postalias -I)1 484 1 4614 3000 t
+10 R f
+(or)5137 3000 w
+10 B f
+(postalias -e postalias-adm.)2 1120 1 1100 3120 t
+10 R f
+(Over time, new aliases will be submitted for installation by the users. They should be put in both the)18 4320 1 900 3288 t
+10 B f
+(/usr/lib/upas/list)900 3408 w
+10 R f
+(and)1619 3408 w
+10 B f
+(/usr/lib/upas/list/Src)1790 3408 w
+10 R f
+(directories and the \256les should be owned by root and 'grouped')10 2539 1 2681 3408 t
+( Run)1 222(to the submitter.)2 663 2 900 3528 t
+10 B f
+(postalias -c alias[ ... alias])4 1105 1 1815 3528 t
+10 R f
+(from the)1 347 1 2951 3528 t
+10 B f
+(/usr/lib/upas/list/Src)3329 3528 w
+10 R f
+(directory to convert new)3 996 1 4224 3528 t
+(aliases to)1 369 1 900 3648 t
+10 B f
+(ema)1294 3648 w
+10 R f
+(format.)1496 3648 w
+(When users request deletion of an alias, it should be deleted from both directories.)13 3286 1 900 3816 t
+9 B f
+(CAVEATS)540 3984 w
+10 R f
+($TOOLS must be set and exported prior to using)8 1954 1 900 4104 t
+9 B f
+(SEE ALSO)1 453 1 540 4272 t
+10 R f
+(Private and System Aliases in the post 4.0/upas Environment - ITDS NE05100R0-930826-01TM - APX-)13 4320 1 900 4392 t
+(LIB No. d4145)2 608 1 900 4512 t
+9 B f
+(AUTHOR/PROVIDER)540 4680 w
+10 R f
+(William S. Krol)2 642 1 900 4800 t
+( 6)1 75( Page)1 3909(October 26, 1994)2 696 3 540 7680 t
+cleartomark
+showpage
+saveobj restore
+end
+%%EndPage: 6 6
+%%Trailer
+DpostDict begin
+done
+end
+%%Pages: 6
+%%DocumentFonts: Times-Bold Times-Roman Symbol

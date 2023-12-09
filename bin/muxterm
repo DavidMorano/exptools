@@ -1,0 +1,36 @@
+#!/bin/sh
+# @(#) muxterm 1.10@(#)
+# Front end to the Emulator system
+if [ "$TOOLS" = "" ]
+then
+	echo The TOOLS Environment variable is not set up.
+	echo Please initialize this and export it.
+	echo
+	exit 1
+fi
+
+# Where fcterm and emu are located
+EMUBIN=$TOOLS/lib/muxterm
+
+case "$1" in
+eter*)
+	TERM_TYPE=emacsterm
+	TERMINAL="-terminal_command etermx -nofork -nopage"
+	shift
+	;;
+fcte*|xter*)
+	TERM_TYPE=xterm
+	TERMINAL="-terminal_command ${EMUBIN}/fcterm"
+	shift
+	;;
+*)
+	# Assume the first parameter should be an arg for the
+	# multiplexor process.
+	# Default to using an xterm
+	TERM_TYPE=xterm
+	TERMINAL="-terminal_command ${EMUBIN}/fcterm"
+	;;
+esac
+
+export TERM
+TERM=$TERM_TYPE ${EMUBIN}/multiplexor -debug 1 $TERMINAL $* &

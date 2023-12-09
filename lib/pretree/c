@@ -1,0 +1,153 @@
+#!/bin/sh
+######################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1990, 1992
+#			AT&T Bell Laboratories
+######################################################################
+
+##########################################################
+# Extract rule dependencies from a C source file
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    c  [-F char] [-I|-p] [-s]  [-i file_of_files] [source_files]
+#
+# This program writes to stdout lines of the form:
+#
+#	fcn1 fcn2
+#
+# The -I, -p, and -s options are passed to ccalls.
+# If -I option specified on command line, output is of the form:
+#
+#	file.c file.h
+#
+# If -p option specified on command line, output is of the form:
+#
+#	fcn1 fcn1(arg1,arg2,...,argN)
+#
+##########################################################
+PGM=`basename $0`
+
+FORHELP="\n\n(For more help, read the manual page then contact Bob Parnass)\n"
+USAGE="### error ### ${PGM}\nUSAGE:  `basename $0`  [-I|-p] [-s] [-i file_of_files] [-F char]\n\t\t[files.c] ${FORHELP}"
+
+TMP=/usr/tmp
+JUNKFILE=$TMP/cc$$.c
+CFILE=$TMP/ccb$$
+CSCOPEFILE=$TMP/ccc$$
+ALLFILES=$TMP/ccd$$
+
+
+TMPFILES="${CSCOPEFILE} ${JUNKFILE} ${CFILE} ${ALLFILES}"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# parse command line arguments 
+set -- `getopt i:IpF:s $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	IFLAG=
+	FFLAG=
+	INCFLAG=
+	PFLAG=
+	SFLAG=
+	FILEOFFILES=
+
+	for i in $*
+	do
+		case $i in
+		-I)
+			# print #include info
+			INCFLAG="-I"
+			shift 1;;
+		-p)
+			# print params
+			PFLAG="-p"
+			shift 1;;
+		-i)
+			# file of files
+			IFLAG="-i"
+			FILEOFFILES=$2
+			shift 2;;
+		-F)
+			# change interfield separator character
+			FFLAG="-F $2"
+			shift 2;;
+		-s)
+			# print params
+			SFLAG="-s"
+			shift 1;;
+		'-?')
+			echo ${USAGE} 1>&2
+			exit
+			;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+PIPED=
+
+# input file of fcn calls was specified
+if [ "$IFLAG" ]
+then
+	# -i argument specified on command line
+	:
+else
+	if [ $# -eq 0 ]
+		then
+		# assume source file is piped 
+		cat > "${ALLFILES}"
+		PIPED=1
+
+	else
+		# files are specified on command line
+		while [ $# -gt 0 ]
+		do
+			INFILE=${1}
+			test -r "${INFILE}"
+			if [ $? -ne 0 ]
+			then
+				echo "### error ### ${PGM}: Cannot read file ${INFILE}." 1>&2
+				echo "${USAGE}" 1>&2
+				rm -f ${TMPFILES}
+				exit 1
+			else
+				FILELIST="$FILELIST "$1
+			fi
+			shift
+		done
+	fi
+fi
+
+if [ "${PIPED}" ]
+then
+	cscope -b -f ${CSCOPEFILE} ${ALLFILES}  > /dev/null 2>&1
+	EXITCODE=$?
+else
+	cscope -b -f ${CSCOPEFILE} ${IFLAG} ${FILEOFFILES} ${FILELIST} > /dev/null 2>&1
+	EXITCODE=$?
+fi
+
+if [ $EXITCODE -eq 0 ]
+then
+	# extract rule names
+	ccalls $INCFLAG $FFLAG $PFLAG $SFLAG ${CSCOPEFILE}  \
+		| sed -e 's/\{.*//'
+	EXITCODE=$?
+else
+	echo "### error ### ${PGM}:  cscope failed" 1>&2
+fi
+
+rm -f "${TMPFILES}"
+
+exit $EXITCODE

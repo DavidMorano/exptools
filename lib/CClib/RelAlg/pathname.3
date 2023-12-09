@@ -1,0 +1,43 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/pathname/s.pathname.3"
+.\"
+.PH "'PATHNAME(3SB)'SBLIB C++ Library'PATHNAME(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+basename, dirname - return a portion of a path name
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <sblib.h>
+
+.SO pathname.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The \*(Bn and \*(Dn functions parse a UNIX path name and return the
+file component and directory component, respectively.  The \fIpath\fP
+argument is a pointer to a NULL terminated character string.  Directories
+and files in the \fIpath\fP are separated by the slash ('/') character.
+The \fIbuffer\fP argument is a pointer to a memory location large enough
+to hold the file or directory component plus a NULL.
+.P
+If path or buffer is NULL, both functions will return NULL.
+.P
+If \fIpath\fP contains no slash characters, \*(Bn copies \fIpath\fP
+into \fIbuffer\fP.
+If \fIpath\fP contains slash characters, \*(Bn copies the characters after
+the last slash into \fIbuffer\fP.
+In both cases \fIbuffer\fP is NULL terminated and \*(Bn
+returns \fIbuffer\fP for the convenience of the application using it.
+.P
+If \fIpath\fP contains no slash characters, \*(Dn puts a dot ('.', current
+directory) into \fIbuffer\fP.
+If \fIpath\fP contains slash characters, \*(Dn copies all the characters
+before the last slash into \fIbuffer\fP.
+In both cases \fIbuffer\fP is NULL terminated and \*(Dn
+returns \fIbuffer\fP for the convenience of the application using it.
+.LE

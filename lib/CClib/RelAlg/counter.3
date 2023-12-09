@@ -1,0 +1,42 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/counter/s.counter.3"
+.\"
+.PH "'PERSISTENT COUNTER(3SB)'SBLIB C++ Library'PERSISTENT COUNTER(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Persistent_Counter \(em Class for maintaining a counter across processes
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <sblib.h>
+
+.SO counter.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+Persistent_Counter is a class that allows a Int_t object to be kept in
+a file so that its value is preserved across process invocations.
+.P
+The constructor requires a pathname as the first parameter.  If this file
+does not exist it will be created and initialized with the optional third
+parameter.  If this file exists the value will it contains will not be changed
+by the constructor.  A modulus can be passed to the constructor as the 
+second parameter.  This is a 1 to N, not 0 to N-1, modulus.  Note that
+the initial value can be, and defaults to, zero.
+.P
+The operator ++ increments the value and returns back the result after the
+increment.  This function is thus a preincrement so for clarity
+programmers should try to use "++identifier" instead of "identifier++".
+.P
+The value can be changed using the assignment operator =.  Note the modulus
+is not applied by the assignment operator.
+.P
+.LI "\fBSEE ALSO\fP"
+.br
+intro(3SB).
+.LE
+

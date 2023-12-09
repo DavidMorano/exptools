@@ -1,0 +1,101 @@
+====  NOTICE NOTICE NOTICE NOTICE NOTICE ====
+
+Vrmail was accidently deleted from all exptools machines last week.
+It has been rebuilt from scratch and redistributed.  If you are
+still unable to access vrmail, please let me know so that I can
+get the administrators to help me get distributions accelerated.
+
+Sorry for the inconvience for those who find the tool useful...
+
+====  NOTICE NOTICE NOTICE NOTICE NOTICE ====
+
+Hopefully, this is the last update to vrmail for a while.  If you
+are still having problems with something, please let me know so
+that I can look into it.
+
+o	Fixed problem with FACEPATH=!cmd handling where the subject line
+	was not being included as expected.
+o	Worked around problem with i486 and mips (really all SVR4) not
+	deleting window when you hit return.
+o	Changed time to just include hours and minutes.
+o	Change date to use abbreviated strings.
+o	Further corrected values calculated for date and time positioning.
+
+Gregg Wonderly
+708-979-2794
+IH 6R-215
+
+=== old news =======================================================
+
+This is the fourth update in the past week.  There where a couple
+of problems that I tried to solve quickly.  These were
+
+o	hdrexp was not sent out
+o	lib/vrmail/host had a bug in it for forw, repl and comp
+o	It did not work on 630's
+o	The mouse cursor flashed wildly due to a call to request() in a loop.
+o	The subject portion of the command line for !facepath handling was
+	actually the from information repeated.
+o	The date flashed every second.  It should now update at the same
+	interval used for looking for new mail (40 seconds by default).
+o	The i486 version was not compiled with -Bstatic which resulted in
+	references to libraries which not everyone would have...
+
+Hopefully these things are now fixed...
+
+=== old old news ====================================================
+
+Vrmail has been updated.  The changes are itemized below.
+It has been quite a while since vrmail was updated, so there
+might be some things different that I forgot to document here.
+
+I have tried to provide some remedial locking which should help
+eliminate truncated mail boxes when you try to print/read several
+messages, one after the other.  From time to time, this locking
+might become confused and result in a message asking if you want
+to ignore a lock.  In most cases, it is safe to do so, but make
+sure that you know nothing else is going on.  Post/mailx has
+a fundamental problem with locking mail files and will not lock
+a file that is loaded with "post -f file".  This results in
+truncated mail files because one version of post is reading
+while another is writing and will get a shortened version of
+the mail file that it will then write back out.
+
+Added a simple facility for allowing the menu to include text
+from another file so that the folder list can be dynamically
+created without creating the whole menu in a script.
+
+Change all operations in the host script which used to use
+post/mailx -f ${VM_MAILFILE} to instead set MAIL=${VM_MAILFILE}
+and then not use the -f.  The -f option does not perform locking
+and the result can be a trashed mailbox if you tried to do many
+things to your mailbox at once.  The result will be that you
+might see messages about "this instance of ... is read only".
+This will mean that sometimes the "read" status may not be updated
+correctly.  But, with post/mailx there does not seem to be any other
+way to guarantee that the mailbox will not get trashed.
+
+Fixed a problem with reply not performing 'o' command correctly.
+Setting VM_OUTBOX= and not using 'o' explicitly still worked.
+
+Added support for header rewrites to get the To: and Cc:
+lines to be correct after post lookups and aliases.
+
+Add support for 730windows control of the window.
+
+A box (narrow, but visible) is placed around faces cooresponding
+to mail messages that your login name does NOT appear in the To:
+list (i.e. message was probably Cc'd to you).
+
+When multiple windows are opened, they are now stacked diagonally
+down the screen to aid in sorting through them.
+
+Fixed a bug with login to face mapping which was limiting the
+login to the first 10 characters.  since the host name is at the
+beginning of this string, only 3 or so characters of the login
+were used to map to faces.  Thus, ken would match kent etc.
+
+Added support to use the new libwindows code from Dave Dykstra.
+This should allow vrmail to work under pseudo-tty layers as
+he has implmented and made available as a product from NCR.
+There is a similar version available from USTOP.

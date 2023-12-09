@@ -1,0 +1,84 @@
+: use /bin/sh
+
+#	gnuemacs shell source 10:41PM Tue Jul 16, 1991
+#
+#	gnuemacs - startup script for GNU emacs to provide several
+#	           needed environment variables.
+#
+#
+#	Scott Thompson, Scott_F_Thompson@att.com, 1-(708)-979-2237
+#	Chip Webb, cwebb@allegra.att.com, 	  1-(908)-582-2882
+#	Dan Jacobson, Dan_Jacobson@ATT.COM 	  1-(708)-979-6364
+#
+
+# If your machine is not an exptools machine, or the gnuemacs tree
+# is not in the same place as exptools, then set and export the
+# environment variable $GNUEMACS_TREE, which will override
+# the setting of $TOOLS. You can do this here in this
+# file or in your .profile.
+#
+# Example
+#
+# GNUEMACS_TREE=$HOME/private/gnuemacs; export GNUEMACS_TREE
+
+# Verify that TOOLS variable is set.
+#
+TMP_TOOLS_VAR=${GNUEMACS_TREE:=${TOOLS:?"$0: Either \$TOOLS or \$GNUEMACS_TREE must be set and exported!"}}
+
+# Make sure HOME is set as it will be used later
+#
+if	test -z "$HOME"
+then
+	HOME=`logdir`
+fi
+
+: ${GNUEMACS_LIB:="$TMP_TOOLS_VAR/lib/gnuemacs"}
+: ${NEWSBOX:="${HOME}/News"}			# A somewhat standard loc.
+: ${DOMAINNAME:="ATT.COM"}			# We are all ATT?
+: ${ORGANIZATION:="AT&T Bell Laboratories"}	# Ditto
+
+if	test "x$NOISPELL" = x
+then
+	: ${ISPELL_LIB:="${GNUEMACS_LIB}/local/etc"}
+fi
+
+# Official distributed lisp directories.
+#
+TOOLSLOADPATH="$GNUEMACS_LIB/local/lisp:$GNUEMACS_LIB/dist/lisp"
+
+# Used by gnuemacs to find lisp directories.  Allows user to specifiy
+# private lisp directories first!
+#
+# NOTE: Using EMACSLOADPATH to change directory ordering is DANGEROUS!
+#
+EMACSLOADPATH="${EMACSLOADPATH:+$EMACSLOADPATH:}$TOOLSLOADPATH"
+
+# If user wants to use ispell and WORDLIST file does not exist create
+# it, ispell fails if this file does not exist.
+#
+: ${WORDLIST:="$HOME/lib/wwb/spelldict"}	
+if	test  "x$NOISPELL" = x -a ! -f "$WORDLIST"
+then
+	# Since $WORDLIST cannot be found or is not set, use a default
+	# derived from WrittersWorkBench.  Then for fun put 'gnuemacs'
+	# in the new personal spelling dictionary.  If this all fails
+	# there is not much that can be done, so just continue on.
+	#
+	WORDLIST="${HOME}/lib/wwb/spelldict"
+	( mkdir $HOME/lib $HOME/lib/wwb >/dev/null 2>&1 && 
+	echo gnuemacs >$WORDLIST 2>/dev/null ) || :
+fi
+
+# If GNUPATH is set it will be placed before the default emacs directories.
+# This change was made to avoid name conflicts unless the user explicitly
+# wishes to override a particular tool or set of emacs tools.
+#
+TOOLSEXECPATH="$GNUEMACS_LIB/bin:$GNUEMACS_LIB/local/etc:$GNUEMACS_LIB/dist/etc"
+PATH="${GNUPATH:+$GNUPATH:}$TOOLSEXECPATH:$PATH"
+
+# Export variables used by GNU emacs and several of it's packages.
+#
+export	DOMAINNAME EMACSLOADPATH GNUEMACS_LIB HOME ISPELL_LIB \
+	NEWSBOX ORGANIZATION PATH WORDLIST
+
+exec ${GNUEMACS_LIB}/bin/gnuemacs ${1+"$@"}

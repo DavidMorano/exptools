@@ -1,0 +1,154 @@
+# %Z%  SID: %I%;  module: %M%;  last changed: %G%  %U%
+#
+# This routine returns the machine type of the current machine, using the
+# standard exptools names, or it returns 'unknown' if the machine type can't
+# be determined.  If an argument is used, it is expected to be the name of a
+# machine type.  This is useful to convert the long form into the short form
+# of the machine type with the -s flag.
+
+machtype() {
+    typeset TYPE TYP SHORT BOTH
+
+    if test "${1:-}" = "-s"; then
+	SHORT=true
+	shift
+    else
+	SHORT=false
+    fi
+
+    if test "${1:-}" = "-b"; then
+	BOTH=true
+	shift
+    else
+	BOTH=false
+    fi
+
+    case "${1:-}" in
+    3b20)
+	TYPE="3b20"
+	TYP="3b"
+    ;;
+    vax)
+	TYPE="vax"
+	TYP="vax"
+    ;;
+    i386)
+	TYPE="i386"
+	TYP="386"
+    ;;
+    i486)
+	TYPE="i486"
+	TYP="486"
+    ;;
+    pyr)
+	TYPE="pyr"
+	TYP="pyr"
+    ;;
+    mips)
+	TYPE="mips"
+	TYP="mip"
+    ;;
+    3b2)
+	TYPE="3b2"
+	TYP="3b2"
+    ;;
+    ibm)
+	TYPE="ibm"
+	TYP="ibm"
+    ;;
+    sun3)
+	TYPE="sun3"
+	TYP="sun"
+    ;;
+    sparc)
+	TYPE="sparc"
+	TYP="spc"
+    ;;
+    hp3)
+	TYPE="hp3"
+	TYP="hp3"
+    ;;
+    hppa)
+	TYPE="hppa"
+	TYP="hpp"
+    ;;
+    solaris)
+	TYPE="solaris"
+	TYP="sol"
+    ;;
+    ?*)
+	TYPE="unknown"
+	TYP="unk"
+    ;;
+    *)
+	if mach_try u3b; then
+	    TYPE="3b20"
+	    TYP="3b"
+	elif mach_try vax; then
+	    TYPE="vax"
+	    TYP="vax"
+	elif mach_try i486; then
+	    TYPE="i486"
+	    TYP="486"
+	elif mach_try i386; then
+	    if $SVR4; then
+		TYPE="i486"
+		TYP="486"
+	    else
+		TYPE="i386"
+		TYP="386"
+	    fi
+	elif mach_try pyr; then
+	    TYPE="pyr"
+	    TYP="pyr"
+	elif mach_try mips; then
+	    TYPE="mips"
+	    TYP="mip"
+	elif mach_try u3b2 || mach_try u3b15 || mach_try u3b5 || mach_try u3b4000; then
+	    TYPE="3b2"
+	    TYP="3b2"
+	elif mach_try hp9000s300; then
+	    TYPE="hp3"
+	    TYP="hp3"
+	elif mach_try hp-pa || mach_try hp9000s800; then 
+	    TYPE="hppa"
+	    TYP="hpp"
+	elif mach_try u370 || mach_try uts; then
+	    TYPE="ibm"
+	    TYP="ibm"
+	elif mach_try sun3 || mach_try sun3x; then
+	    TYPE="sun3"
+	    TYP="sun"
+	elif mach_try sparc || mach_try sun4 || mach_try sun4c; then
+	    if $SVR4; then
+		TYPE="solaris"
+		TYP="sol"
+	    else
+		TYPE="sparc"
+		TYP="spc"
+	    fi
+	else
+	    TYPE="unknown"
+	    TYP="unk"
+	fi
+    ;;
+    esac
+
+    if $SHORT; then
+	echo "$TYP"
+    elif $BOTH; then
+        echo "$TYPE $TYP"
+    else
+	echo "$TYPE"
+    fi
+}
+
+function mach_try {
+    if test -x /bin/$1; then
+	/bin/$1
+    elif test -x /usr/5bin/$1; then
+	/usr/5bin/$1
+    else
+	false
+    fi
+}

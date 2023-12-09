@@ -1,0 +1,301 @@
+
+% This file is part of the NFSS (New Font Selection Scheme) package.
+% ------------------------------------------------------------------
+
+\def\filedate{92/09/20}
+
+IMPORTANT NOTICE:
+
+Don't change this file.
+
+This file contains problem records, bug reports, and history notes.
+Unsolved problems and uncorrected but known bugs (so called features)
+start out with two exclamation marks before the number.  Fixed
+problems will start with two asterisks.
+
+
+** (1) FMi 90/04/05: \process@table will never be called in the letter
+        style, or more exactly in any style that redefines \document.
+        This means that you can't use math alphabet identifiers in
+        letters.  This is a problem of the upgrade to LaTeX 2.10 and
+        will vanish then.  A fix for LaTeX 2.09 styles is to insert
+        \process@table immediately before \def\do ....  inside any
+        redefinition of the \document command.  
+       FMi 91/09/28: corrected with the new release of LaTeX 2.09 from
+        91/12/01
+
+
+** (2) FMi 90/04/05: \makelabels in letter will cause an error because
+        \xpt is redefined to \@preamerr after \document.
+       FMi 90/06/03: Fixed by redefining \xpt inside \xpt. (v1.1j
+        lfonts.doc)
+
+!! (3) FMi 90/04/05: Problems similar to (1) will be encountered in
+        style files that redefine internals like \@outputpage, etc.
+
+** (4) SPQR 90/05/22: In oldlfont.sty and newlfont.sty we forgot to
+        add the lasy math alphabet identifier to the math versions.
+       FMi 90/05/24: fixed.
+
+** (5) MDo 90/06/08: An \hbox{\small ...} in vertical mode will be
+        placed into the vertical list using the \baselineskip current
+        inside the box not the one outside the box.  Temp. fix: use
+        extra braces to keep the change from \small local.  Final fix
+        will move part of the code from \gbl@settings into
+        \selectfont.
+       FMi 90/06/24: fixed.
+
+** (6) DH 90/06/18: \hbox instead of \mbox was used in \text.
+       FMi 90/06/24: fixed.
+
+** (7) DH 90/06/29: oldlfont.sty shouldn't be read in twice to avoid
+        math group overflow.
+       FMi 90/06/29: fixed.
+
+** (8) MDo 90/06/28: \no@font@help message was too long for some
+        version of TeX (buffer size). 
+       FMi 90/06/30: fixed by shortening the error message.  We
+        recommend increase of buffer size to at least 2000!!!!!
+
+** (9) FMi (long known): In certain cases \addtoversion would produce
+        a misleading error message.
+       RmS 90/06/30: Fixed by adding another error message text.
+        
+** (10) MDo 90/07/05: Stupid typo in v1.2l of fam.doc. First assigned
+        user value and then default value in \extra@def.
+       FMi 90/07/05: Fixed by exchanging.  
+
+** (11) JBr 90/07/06: Another stupid typo in v1.2i of oldlfont.sty
+        where a necessary \fi was preceded by %.
+       FMi 90/07/06: Fixed by removing the percent.
+
+** (12) FMi 90/07/07: While changing the interface a few days ago I
+        forgot to remove a \the\toks@ in \define@mathgroup.  This
+        enlarged the versions by a power of two resulting in some loss
+        of performance.
+       FMi: fixed five minutes later. 
+
+** (13) DH 90/07/10: In fam.doc a missing percent in \sub@fontshape
+        could produce an extra space if a font is loaded in horizontal
+        mode.
+       FMi 90/07/11: fixed.
+
+** (14) MDo 90/07/10: Used \ifx\undefined\ds@oldlfont instead of
+        \@ifundefined{ds@oldlfont} so that oldlfont was never loaded
+        in a \documentstyle command. (Another of those stupid things)
+       FMi 90/07/11: Fixed.  
+
+** (15) RmS 90/09/02: Fix for (14) was incorrect since \@ifundefined
+        is not available before latex.tex is loaded.
+       FMi 90/09/02: Fixed by inserting its definition directly.  
+
+** (16) FMi 90/10/02: Dr. David Love reported that \paragraph{Test}
+        {\sl AB} would produce a bold slanted heading the newlfont
+        option.  This is actually not an error of the font selection
+        scheme but a problem with LaTeX 2.09. If the newlfont option
+        is used, it is necessary that at some places in a style file
+        all font parameters are specified. Currently the LaTeX styles
+        specify only \normalsize \bf in headings.  In this case one
+        has to reset the wrong font parameter by hand, e.g.,
+        \paragraph{\normalshape Test} in the case above.  As similar
+        problem will arise when a footnote is encountered during the
+        scope of \sf etc.  This problem will vanish with the new
+        LaTeX.
+       FMi 91/09/28: corrected with the new release of LaTeX 2.09
+
+** (17) DH 90/10/04: It seems better to substitute cmti for cmu fonts
+        which are not available since this font is mainly used for the
+        \pound symbol. (Who likes to get pounds converted to dollars
+        in a footnote?)
+       FMi 90/10/09: Changed.
+
+** (18) FMi 90/10/12: FJe reported that changes to \baselinestretch
+        in the preamble do not affect the setting of \baselineskip.
+       FMi 90/10/12: Fixed by forcing a reinitialisation in 
+        \begin{document}
+
+** (19) DWu 91/03/03: The combination of twoside, \pagestyle{headings}
+        and newlfont.sty results in slanted page numbers on every
+        second page. This is again the result of mixing LaTeX 2.09
+        styles with the font selection scheme.
+       Temp. fix: delimit the scope of \sl in the heading macros with
+        an extra set of braces. The standard styles will be updated
+        soon.
+       FMi 91/09/28: corrected with the new release of LaTeX 2.09
+
+!! (20) WKa 91/03/07: \process@table will never be called in the
+        letter style, or more exactly in any style that redefines
+        \document.  This means that you can't use newlfont.sty within
+        such document styles without adding the fix mentioned in (1).
+
+** (21) SLe 91/03/25: \$ no longer worked as superscript in math.
+        Fixed 91/03/27 FMi: added extra braces around definition. Did
+        the same for \pounds and \copyright.
+
+** (22) FMi 91/03/30: The file install.tex was added to the
+        distribution.  It describes the generation of a new format in
+        more detail and is processable with the old LaTeX. The file
+        fontsel.tex was changed so that it is processable without the
+        NFSS running.
+
+** (23) FMi 91/03/30: Definitions of \newfont and \symbol added to
+        newlfont.sty and basefont.tex. The use of this functions is
+        not encouraged but was provided because the NFSS still misses
+        a proper interface for these features.
+
+*****   FMi 91/09/28: Set of small changes to use the features offered
+        by a new release of LaTeX 2.09. NFSS will check whether or not
+        it runs under the new LaTeX release and will issue an error if
+        not during initex to inform people that there is a newer
+        version of LaTeX around. \xpt got undefined then.
+
+** (24) RmS 91/11/10: \reset@font should be protected against
+        expansion.
+       FMi 91/11/21: corrected.
+
+** (25) RmS 91/11/21: LaTeX fonts should start with `l'.
+       FMi 91/11/21: corrected.
+
+** (26) RmS 91/11/22: euscript.sty does not work without amstex.sty
+        option.
+       FMi 91/11/22: Missing code added.
+
+** (27) FMi 91/11/26: The AMS removed eufm14.mf and eufb14.mf from
+        their font distribution. For this reason fontdef.max was
+        changed.
+
+** (28) RBa 91/05: \series etc. should get different names because
+        they may be used in mathematical work.
+       FMi 91/11/27: Changed to \fontfamily, \fontseries, \fontshape
+        and \fontsize. Old names are still supported but shouldn't be
+        used any longer.
+
+** (29) FMi 91/12/02: The file preload.med was renamed to preload.xpt
+        to to reflect its purpose namely to preload 10pt font metrics.
+
+** (30) BRa 91/12/29: Forgotten \size in basefont.tex and
+        \newlfont.sty.  Changed to \fontsize.
+
+** (31) FMi 91/12/29: Check for NFSS in oldlfont and newlfont styles
+        added, so that execution stops with an error message if NFSS
+        is not loaded.  Suggested by BRa.
+
+!! (32) FMi 92/01/24: Local style files that directly use \halign need
+        to surround the column marks in the preamble with a set of
+        braces. Otherwise surprising errors can occur when a size
+        change happens within such a table. This change is otherwise
+        not changing the processing of the macros since each column is
+        already according to TeX rules implicitly surrounded by
+        braces.
+       Example:
+           \halign{{#}\hfil\quad&\hfil{#}\hfil\cr...}
+       not
+           \halign{#\hfil\quad&\hfil#\hfil\cr...}
+
+!! (33) FMi 92/02/09: Using tracefnt.sty with \tracingfonts>2 may
+        result in errors inside tabular material. Since this is more
+        or less only a tracing tool we probably won't fix this bug
+        soon.
+
+** (34) FMi 92/02/09: Neither (27) nor (21) have been completely
+        corrected. Missing code added.
+
+** (35) FMi 92/02/09: \subst@fontshape changed so that the correct
+        font (i.e. the substituted one) is shown in overfull box
+        messages and other places.
+
+** (36) FMi 92/03/21: Macro \text was renamed to \nfss@text to make it
+        internal because people complained that the name is too
+        common. The style file amstext.sty will redefine this to
+        behave like the \text macro in amstext. This means that people
+        who wish to use \text the way it was before need to load
+        amstext.sty in the \documentstyle command.
+        
+** (37) FMi 92/05/11: \subst@fontshape for cmr/bx/u added to make a
+        \pounds come out right in situations like {\bf\pounds}
+        Hopefully dc/ec font layout will come soon. Problem reported
+        by AJe.
+
+** (38) JTr 92/02/12: $\script{A} \boldsymbol{\script {A}}$ resulted
+        in both ``script alphabet'' characters becoming bold.
+       Fixed 92/5/12 RmS.
+
+** (39) ROl 92/05: The use of a size command inside a moving argument
+        causes an error when oldlfont is inforce
+       Fixed 92/7/1 FMi with v1.3d of oldlfont.
+
+** (40) PTa 92/06: \cal and \mit became \relax in toc file if not
+        preceded by a \protect.
+       Fixed 92/7/1 FMi: with v1.2e of lfonts.new.
+
+** (41) Aje 92/06: with oldlfont in force the use of \rmdefault etc
+        did not really work because size commands switch back to
+        default fonts hardwired into fontdef.xxx
+       Changed 92/7/1 FMi: with v1.3d of oldlfont.
+
+** (42) NPa 92/07/18: changing \rmdefault in the preamble doesn't
+        change the base font characteristics of the whole document.
+       Fixed 92/07/18 FMi: with v1.1i of latint.
+
+** (43) FJe 92/08/17: math sizes for 7pt are wrong and should be
+        7/5/5.
+       Fixed 92/08/19 FMi: with v1.1e of setsize.
+
+** (44) FJe 92/08/17: double substitution using \subst@fontshape
+        doesn't work.
+       Fixed 92/08/19 FMi: with v1.3d of fam.
+
+** (45) RKe 92/08/19: In nfss the command \@currsize is not set by the
+        standard size changing commands. This is used, for example, by
+        a style option implementing relative size changes.
+       Fixed 92/09/01 FMi: changed definition of \@setsize to include
+        an assignment to \@currsize.  However, this assignment is
+        *not* carried out when the size changing command is used
+        un\protected in a moving argument to keep the size changing
+        commands robust.
+
+** (46) FJe 92/09/03: Combination of substitution and math loading
+        produced weird error.
+       Fixed 92/09/03 FMi: with v1.3e of fam.
+
+** (47) FJe 92/09/07: Since a warning is given for every size when a
+        font substitution happens it is better to include the size
+        into the warning message.
+       Fixed 92/09/07 FMi: with v1.3f of fam.
+
+** (48) UFu 92/09/07: Change (31) resulted in oldlfont.sty being no
+        longer loadable at IniTeX time.
+       Fixed 92/09/07 RmS: with v1.3f of oldlfont.
+
+** (49) FMi 92/09/20: To avoid incorrect output in cases like $\bf x$
+        under newlfont.sty or basefont.tex all `text-font commands',
+        eg \sf, \tt, \sl, etc. will generate an error message when
+        used in math mode. Up to now the command was silently ignored.
+        At the same time the math alphabets \mathbf and \mathsf have
+        been added.
+
+** (50) BRa ???: Changing only \baselinestretch has no effect.
+       Fixed 92/09/24 RmS: with v1.3h of fam and v1.0s of tracefnt.
+
+
+The good guys and dolls mentioned in this file:
+
+  RBa   Rosemary Bailey
+  JBr   Johannes Braams
+  MDo   Michael Downes
+  UFu   Ulrich Fuchs
+  DH    Don Hosek
+  WKa   Wolfgang Kaspar
+  RKe   Ronan Keryell
+  FJe   Frank Jensen
+  AJe   Alan Jeffrey
+  SLe   Silvio Levy
+  FMi   Frank Mittelbach
+  ROl   Roque Donizete de Oliveira
+  NPa   Neil Patterson
+  SPQR  Sebastian Rahtz
+  BRa   Bernd Raichle
+  RmS   Rainer Sch\"opf
+  PTa   Paul Taylor
+  JTr   Jon Trowbridge
+  DWu   Dominik Wujastik

@@ -1,0 +1,66 @@
+/* Derived from "@(#)ctrans:lib/task/task/fudge.c.68k	1.3" */
+/* Rewritten for SPARC as "%Z%%M% %I% %E% SMI" */
+/* Ported to V2.0 by GRT 89/09/28 */
+/**************************************************************************
+			Copyright (c) 1984 AT&T
+	  		  All Rights Reserved  	
+
+	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
+	
+	The copyright notice above does not evidence any   	
+	actual or intended publication of such source code.
+
+*****************************************************************************/
+#include <ntask.h>
+#include "hw_stack.h"
+
+// SPARC frame fudger
+
+/* careful -- stack frame not self-describing */
+// STACK GROWS DOWN
+
+int*	Skip_pc_p;	/// global to hold fudged return pc.
+
+/*
+ * On the SPARC, it's hopeless to try to guess how many of the
+ * saved registers are meaningful.  But, they're always there and
+ * the relevant parts of the stack layout never change.
+ */
+FrameLayout::FrameLayout(int* fp)
+{
+	int *ofp = (int*)OLD_FP(fp);
+
+	FullFrameLen = ofp - fp;
+}
+
+/*
+ * Fudge frame of function-defined-by-f_fp (called "f" below)
+ * so that that function returns to its grandparent,
+ * in particular, so a parent task returns to the function that
+ * called the derived constructor (de_ctor), skipping de_ctor;
+ * the child will return to the derived constructor, which is its "main."
+ *
+ * This will be quite different on the SPARC.
+ *
+ * Here's the first thing I think might work:
+ *	SAVE
+ *	FLUSH-REGS
+ *	ALTER THE STACK CONNECTIONS
+ *	RESTORE
+ */
+void
+task::fudge_return(int* f_fp)
+{
+	int *p_fp, gramps_fp;
+
+	// C gives me the SAVE
+	/// Note that the value is T_FLUSH_WINDOWS from <machine/trap.h>
+	asm("	t 0x83 ");
+
+	// Now re-string the stack frames
+	p_fp = (int*)OLD_FP(f_fp);
+	gramps_fp = OLD_FP(p_fp);
+
+	OLD_PC(f_fp) = OLD_PC(p_fp);
+	OLD_FP(f_fp) = gramps_fp;
+}

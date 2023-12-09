@@ -1,0 +1,13 @@
+#ident "@(#) /sable/sdb/ra/rel/domain/s.constr.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+typedef enum { AND='&', OR='|', NOT='!', LT='<', LE='L', GT='>',
+               GE='G', EQ='=', NE='E', MATCH='M', NOMATCH='N' } Op;
+class Constraint // simple domain constraint expressions
+   {
+include(constr.pd)
+public:
+   Constraint & operator&&(const Constraint &r) const;
+   Constraint & operator||(const Constraint &r) const;
+   Constraint & operator!() const;
+   };

@@ -1,0 +1,924 @@
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  dbe -	visual database	editor
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  ddddbbbbeeee [[[[	----ffff_c ]]]] [[[[	----nnnn ]]]] [[[[ ----uuuu ]]]] [[[[ ----vvvv||||----VVVV ]]]] [[[[	_m_a_s_k_f_i_l_e ]]]] _f_i_l_e
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  Dbe is a database editor loosely based on the	regular	editor
+	  "ed",	but with formatted output designed for ease of use for
+	  maintaining a	database.  It is a screen oriented editor, but
+	  it also has a	nonvisual mode for use on dumb terminals. It
+	  does not allow for concurrent	updates	of a database, but
+	  does provide a friendly user interface and includes error
+	  checking of inputs.  It works	best for small to moderately
+	  sized	databases which	are being updated by a small number of
+	  people.  It has the following	limitations:
+
+	       Maximum database	size is	128K bytes
+
+	       Maximum of 26 fields per	record (In visual mode,	it
+	       will only allow that many if your screen	is large
+	       enough to hold 26--on an	ordinary 24-line terminal,
+	       only 21 fields are permitted.)
+
+	       Maximum of 2048 characters per record, including	field
+	       separator characters
+
+	       No concurrent updates. When one person starts a dbe
+	       session on a database, no one else may update that
+	       database	until the current dbe session is completed.
+
+	       Dbe does	not implement a	true relational	database, in
+	       that there are no real "key" fields. While you can
+	       specify that particular fields must not be empty, there
+	       is no checking for duplicate values in any field.
+
+	  A companion program, rrrreeeepppptttt, can be used to generate reports
+	  from the database.
+
+	  A dbe	database is compatible with unity database tools,
+	  provided you have a unity description	file. The -u option of
+	  dbe will create such a description file automatically.
+
+     GGGGEEEETTTTTTTTIIIINNNNGGGG SSSSTTTTAAAARRRRTTTTEEEEDDDD
+	  Dbe has a lot	of commands and	may appear a bit overwhelming
+	  to a new user.  However, it is possible to use dbe
+	  effectively while only knowing a few of the commands.	If you
+	  are a	new user, the following	steps may help:
+
+	  1.   If you are setting up a new database, read the MASKFILE
+	       FORMAT section of this manual page entry.  It you just
+	       want to learn how to update an existing dbe database,
+
+
+
+     Page 1					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	       you can skip that section for now.
+
+	  2.   Read the	USER INTERFACE section to get a	feel for what
+	       dbe can do for you and how it works.  That section also
+	       tells how to update an individual field within a
+	       record.
+
+	  3.   In the COMMANDS section,	study the following commands:
+		  /_e_x_p/	 to search for records
+		  A	to add records
+		  D	to delete records
+		  H	for help,
+		  Q	to quit	normally
+		  QQ   to quit,	but discard all	changes
+
+	  4.   Study the EXAMPLE section.
+
+	  5.   Try using dbe.
+
+	  6.   Once you	feel comfortable using dbe, read this whole
+	       manual page entry to get	an idea	of all the things dbe
+	       can do. Then learn whatever features you	think would be
+	       useful to you.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLIIIINNNNEEEE AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+	  Normally, the	only command line argument needed is _f_i_l_e, the
+	  name of the file containing the database information,	but
+	  dbe has a few	other optional arguments:
+
+	  ----ffff_c  Dbe normally assumes tabs as field separators. Using
+	       the ----ffff_c option will change the field separator to _c.
+
+	  ----nnnn   Do not call "tabs" to set tabs on your terminal.	If dbe
+	       thinks your terminal has	tabs set but you don't,	the
+	       display gets messed up. To avoid	this, dbe now calls
+	       "tabs". However,	this has side effects on some
+	       terminals, so the -n option can be used to not set
+	       tabs.
+
+	  ----uuuu   Create a	unity database description file	based on the
+	       maskfile	associated with	_f_i_l_e. The file will be called
+	       DDDD_f_i_l_e, following	the unity convention. When this	option
+	       is given, the editing facility of dbe is	not invoked:
+	       the DDDD_f_i_l_e is created and	dbe exits.  This can help make
+	       it easy to use all the power of unity on	a database
+	       created with dbe. Normally it should only be necessary
+	       to use this option once,	before unity is	used on	the
+	       database	for the	first time, although it	will be
+	       necessary to rerun it whenever the database structure
+	       changes (i.e., when the _m_a_s_k_f_i_l_e	is changed to add,
+	       change, or delete fields.)  Unity field names are much
+	       more restrictive	than dbe field names, so dbe will do
+
+
+
+     Page 2					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	       its best	to make	something that unity will accept, but
+	       may not always succeed. See the CAVEATS section for
+	       details.
+
+	  ----vvvv   The -v or -V option will	print the current version
+	       number of dbe. This option was not available prior to
+	       Version 6.00, so	if your	dbe doesn't recognize -v, it
+	       is ancient.  This manual	page is	current	as of version
+	       7.03a.
+
+	  _m_a_s_k_f_i_l_e
+	       The _m_a_s_k_f_i_l_e contains field definitions -- field	names
+	       and information to be used in error checking. Each
+	       field name should be limited to 15 characters maximum.
+	       There can be a maximum of 26 fields per record.	If no
+	       _m_a_s_k_f_i_l_e	is specified, the default is to	use the	given
+	       _f_i_l_e with ".mask" appended, e.g.	"dbe junk" would use
+	       "junk.mask" as the _m_a_s_k_f_i_l_e. The	same _m_a_s_k_f_i_l_e is used
+	       throughout an editing session, i.e., entering an	"E",
+	       "F", or "R" command will	not change the _m_a_s_k_f_i_l_e.  See
+	       the MASKFILE FORMAT section for details on the contents
+	       of the _m_a_s_k_f_i_l_e.
+
+     UUUUSSSSEEEERRRR IIIINNNNTTTTEEEERRRRFFFFAAAACCCCEEEE
+	  During normal	operation, each	record is displayed with each
+	  of its fields	on a separate line. Each field is labeled with
+	  a field identification letter	and field name.	A typical
+	  display would	be:
+
+	       a date	       01/02/82
+	       b info	       This is the current info	field
+	       c status	       okay
+
+	  where	"a", "b", and "c", are the field identification
+	  letters and "date", "info", and "status" are the field
+	  names.
+
+	  Individual fields can	be updated by entering the field
+	  identification letter	followed immediately by	the new
+	  contents of the field. For example, to change	status (field
+	  c) to	"BAD", enter
+		ccccBBBBAAAADDDD
+	  or to	change the date	(field a) to "11/12/99"	enter
+		aaaa11111111////11112222////99999999
+	  To make a field blank, simply	enter the identifying letter
+	  followed by carriage return.	For example, entering
+		bbbb
+	  will make the	info field blank. In all cases,	the changed
+	  field	will be	displayed so that you can verify that it was
+	  updated correctly.  You may continue to update fields	on the
+	  current record or may	go to another record with one of the
+	  commands listed in the COMMANDS section.  Error checking is
+
+
+
+     Page 3					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  done on all inputs unless error checking is disabled (e.g.,
+	  using	the '#'	and 'S'	commands below).
+
+	  In visual mode, the database information is displayed	at the
+	  top of the screen. Normal input commands are entered from
+	  the bottom line of the display, and messages are displayed
+	  just above the command input line. While in append mode, the
+	  cursor is placed at the field	currently being	entered.
+
+	  In visual mode, if a line of input is	too long to fit	on the
+	  screen, the line will	be scrolled to the left	to make	room.
+	  Some characters will disappear from the screen, but they are
+	  still	remembered internally (as long as you don't go beyond
+	  the program's	buffer limitations). Output lines that are too
+	  long to fit are marked with arrows ("<== " and " ==>") and
+	  can be scrolled manually--see	the '<'	and '>'	commands
+	  below.
+
+	  Characters are erased	by the backspace key. There is
+	  currently no easy way	to enter a literal backspace. The @ is
+	  the line kill	character.  It can be entered literally	by
+	  preceding it with the	usual backslash.
+
+	  A lock file is created to help prevent concurrent editing of
+	  _f_i_l_e.	 If you	invoke dbe and get a message of	the form "_f_i_l_e
+	  already locked", this	normally means that someone else is
+	  already editing the database,	and you	will have to wait
+	  until	they finish.  If dbe dies abnormally it	is possible
+	  for it to leave a lock file, although	it should clean
+	  everything up	under most circumstances. The lock file	can be
+	  removed manually if necessary.
+
+	  When dbe is invoked, it creates a backup file, named
+	  _f_i_l_e.bbbbaaaacccckkkk.  This can be used to recover from some editing
+	  disasters.  (If _f_i_l_e gets clobbered but _f_i_l_e....bbbbaaaacccckkkk is still
+	  okay,	you can	copy _f_i_l_e....bbbbaaaacccckkkk to _f_i_l_e.)
+
+	  For more robust backup and concurrency control, you can set
+	  up an	sccs file. However, using an sccs file will use	much
+	  more file space and will cause extra messages	to come	out of
+	  dbe as it initializes	and cleans up. If you don't need the
+	  robustness of	an sccs	file, ignore this paragraph.  If you
+	  set up an sccs file, dbe will	do a "get" and "delta" on the
+	  file.	 If you	want to	use this mechanism, to set up a
+	  database called _f_i_l_e,	you can	do
+
+	       aaaaddddmmmmiiiinnnn ----nnnn	----aaaa_l_o_g_i_n__l_i_s_t ssss...._f_i_l_e
+
+	  where	_l_o_g_i_n__l_i_s_t is a	comma separated	list of	logins that
+	  are to have edit permissions on the database.	Then create
+	  your _m_a_s_k_f_i_l_e	and use	dbe as usual.
+
+
+
+
+     Page 4					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  While	in append mode,	or when	making field substitutions,
+	  any entered shell variables will be expanded into their
+	  values. For example, if "$HOME" is entered, it will be
+	  expanded into	the value of your environment variable "HOME".
+	  Entering $_n, where _n is a number, will cause the last	append
+	  mode input given for the _nth field to	be interpolated. If
+	  the input contains a '$' but the following word does not
+	  appear to be a valid shell variable or field number, the
+	  text will be unchanged. The special meaning of the '$' can
+	  also be removed by preceding it with a backslash. If any
+	  expansion is done, the new expanded text is displayed.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDDSSSS
+	  Once you have	invoked	dbe on your database, you can update
+	  it using the following commands:
+
+	  ////_e_x_p////	    Search for _e_x_p. The	trailing slash is optional.
+		    If no _e_x_p is specified, the	most recently
+		    specified search pattern is	used.
+
+	  ????_e_x_p????	    Same as /_e_x_p/ except the search is upward from the
+		    current place.
+
+	  ||||_x_s_t_r	    Search for _s_t_r, looking only in field _x.  The
+		    search string is remembered	so that	a subsequent
+		    entry of "/" or "|"	will look for the next
+		    occurrence and "?" will look for the previous
+		    occurrence.
+
+	  <cr>	    Carriage return will move to the next record
+
+	  _n	    where _n is a record	number.	Goes to	the specified
+		    record.  +_n	or -_n can be used to move relative to
+		    the	current	record.
+
+	  $$$$	    Go to the last record in the _f_i_l_e
+
+	  ....====	    Print the current record number
+
+	  ====	    Print the total number of records in the _f_i_l_e
+
+	  &&&&	    Repeat the last field substitution command
+
+	  ####	    Toggle error checking. Error checking is initially
+		    enabled.  Subsequent entries of '#'	will
+		    alternately	turn error checking off	and on.	The
+		    new	status (OFF or ON) is printed.
+
+	  <<<<	    Scroll long	output lines to	the left. This is
+		    useful only	in visual mode.
+
+	  >>>>	    Scroll long	output lines to	the right. This	is
+
+
+
+     Page 5					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+		    useful only	in visual mode.
+
+	  <<<<ccccnnnnttttrrrrllll----LLLL>>>> Redraw the screen.
+
+	  _y_s_t_r	    where _y is a lower case field identification
+		    letter.  Replace the contents of field _y with _s_t_r.
+
+	  AAAA	    Enter append mode to add records into database.
+		    It prompts for contents of each field doing	error
+		    checking on	each. There are	several	special
+		    commands available in append mode. Some of the
+		    characters used to invoke these commands may seem
+		    a bit counter-intuitive, but they have been	used
+		    since the earliest days of dbe and are maintained
+		    for	upward compatibility. Commands are:
+
+		    <cntrl-D> Exit append mode
+
+		    ........	      Use the same input for this field	as was
+			      used on the last input to	this field.
+
+		    ....nnnn	      Skip to beginning	of next	record.	This
+			      is only allowed if all the remaining
+			      fields in	the current record are not
+			      required fields.
+
+		    ....pppp	      Go back to previous field
+
+		    ....####	      Toggle error checking on or off
+
+		    ....????	      Print append help	information
+
+		    The	characters in these commands are not echoed,
+		    e.g., you will not see ".p"	on the screen, but the
+		    cursor will	move appropriately. No carriage	return
+		    is needed for these	commands--they will be
+		    executed as	soon as	they are recognized.
+
+		    Other special commands in append mode are:
+
+		    ....	      Exit append mode (synonym	for <cntrl-D>)
+
+		    ....!!!!_c_m_d     Escape to	shell to execute _c_m_d
+
+		    \\\\....	      Begin a line with	'.'
+
+		    These commands _d_o require the usual	carriage
+		    return for termination.
+
+		    Note that beginning	with Version 7.00, a dot
+		    followed immediately by a carriage return at the
+		    beginning of a field is a synonym for <cntrl-D>
+
+
+
+     Page 6					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+		    and	will exit append mode.
+
+		    If you exit	the append mode	while in the middle of
+		    entering a record, that record will	be discarded.
+		    This means you must	step through all the fields
+		    (so	that the cursor	is back	to the first field)
+		    before entering the	<cntrl-D> or dot if you	want
+		    your last entered record to	really be saved. If
+		    you	exit from other	than the first field, a
+		    warning is printed indicating that the partially
+		    entered record was discarded. If the last few
+		    fields of a	record are null, the ".n" command can
+		    be used to skip to the beginning of	the next
+		    record.
+
+	  DDDD	    Delete the current record
+
+	  EEEE [[[[_f_i_l_e]]]]  Edit a new _f_i_l_e. Works like	the ed 'e' command
+
+	  FFFF [[[[_f_i_l_e]]]]  Print or change the	name of	the _f_i_l_e being edited
+
+	  GGGG_x_s_t_r	    Global substitution. Globally substitutes _s_t_r into
+		    field _x.  The last line changed will normally be
+		    printed.
+
+	  HHHH	    Help. Prints a summary of valid commands.
+
+	  LLLL	    List. Prints current record	making invisible
+		    characters visible.	If the record is too long to
+		    fit	on the screen, only what will fit will be
+		    shown.
+
+	  PPPP	    Reprint the	current	record
+
+	  QQQQ	    Quit after automatically writing the _f_i_l_e
+
+	  QQQQQQQQ	    Quit unconditionally (do not write the _f_i_l_e	first)
+
+	  RRRR [[[[_f_i_l_e]]]]  Read in a _f_i_l_e. The	records	read in	are added to
+		    the	contents of the	buffer
+
+	  SSSS////_x_x////_y_y   Substitute,	like ed	"s" command. No	error checking
+		    is done, so	use at your own	risk.
+
+	  UUUU	    Undo the last editing command
+
+	  WWWW [[[[_f_i_l_e]]]]  Write the current contents of the buffer to	the
+		    _f_i_l_e
+
+	  !!!!_c_m_d	    Escape to the shell	to execute 'cmd'. If an
+		    unescaped %	is included in the command, it is
+		    expanded into the name of the _f_i_l_e currently being
+
+
+
+     Page 7					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+		    edited. The	expanded command is then echoed. !!!!!!!!
+		    will re-execute the	previous shell command.
+
+	  ~~~~_s_t_r	    Pass _s_t_r directly to the "ed". This	is intended to
+		    allow expert users to have access to all editor
+		    commands.  The novice should be warned that	using
+		    this mode may cause	unexpected output, and that
+		    some ed command are	no longer available in dbe. In
+		    particular,	the ~j,	~n, ~H,	and ~X commands	have
+		    been removed.
+
+	  %%%%_x_s_t_r	    Define a macro _x, as _s_t_r.  This allows you to
+		    create a new command that is a combination of
+		    existing commands. Use '\n'	for embedded newlines.
+		    For	example, to define a macro Z, which will
+		    update field c to "1/23/86"	and field e to
+		    "completed", use the following:
+
+			 %Zc1/23/86\necompleted
+
+		    Macro names	may be any single printable character
+		    such as a letter, number, or punctuation symbol.
+		    Macro definitions should not include other macro
+		    definitions	or calls. There	is no error checking
+		    done at macro definition time. Macro definitions
+		    last only till the end of the dbe session.
+
+	  """"_x	    Execute macro _x. The text of the macro is treated
+		    as if were being entered at	the terminal. If " is
+		    entered followed immediately by a newline (i.e.,
+		    without specifying an _x), dbe will print a list of
+		    all	currently defined macros.
+
+     MMMMAAAASSSSKKKKFFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT
+	  The _m_a_s_k_f_i_l_e contains	one line for each field. This line
+	  specifies an error checking function for the field and a
+	  name for the field. The format of _m_a_s_k_f_i_l_e lines is:
+
+		[!!!!]_f_u_n_c_t_i_o_n[(_a_r_g_u_m_e_n_t_s)],,,, """"_n_a_m_e	""""
+
+	  If the first character of the	line is	a '!', the field is
+	  considered required, i.e., any attempt to enter nothing in
+	  the field will be rejected as	invalid.
+
+	  The _f_u_n_c_t_i_o_n and optional _a_r_g_u_m_e_n_t_s are selected from	the
+	  table	below. These allow dbe to error	check inputs to	help
+	  avoid	invalid	data entry.
+
+	  The _n_a_m_e in the _m_a_s_k_f_i_l_e is used by dbe as a prompt to let
+	  the user know	what the field is for. The _n_a_m_e	portion	of the
+	  _m_a_s_k_f_i_l_e is also used	by the companion "rept"	program	to
+	  generate headings for	reports	generated from the database.
+
+
+
+     Page 8					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  Field	names should be	limited	to 15 characters each.
+	     Function	     Arguments		   Valid input
+	     ____________________________________________________________________________________________________________
+	     num	range of signed	       number
+			floating point
+			number,	low to high
+
+	     padnum	maximum	number of      number (output will
+			digits,	1 to 6	       be padded with
+					       leading zeros if
+					       necessary to be the
+					       specified number	of
+					       digits long)
+
+	     any			       anything
+
+	     date	date range in	       date in MM/DD/YY
+			MM/DD/YY format, low   format
+			to high
+
+	     regex	regular	expression     match of	regular
+			as documented in       expression
+			table below
+
+	     ascii	if 1 arg, maximum      ascii string (except
+			string length, if 2    control characters)
+			args, minimum and
+			maximum	lengths
+
+	     file	search path as in      filename	that can be
+			$PATH shell	       found in	search
+			variable, shell	       path, or	string
+			variables allowed      preceded	by a -
+					       character. Output is
+					       full pathname of
+					       file
+
+	     regfile	search path as for     name of valid
+			"file" above	       regular file (not a
+					       directory or special
+					       file)
+
+	     dir	search path as for     name of valid
+			"file" above	       directory
+
+	     member	strings	separated by   member of given set
+			"|"		       of strings
+
+	     members	strings	separated by   comma separated list
+			"|"		       of members of given
+					       set of strings
+
+
+
+
+     Page 9					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  The regex argument should be a regular expression. The
+	  characters in	the following list are special as noted. Other
+	  characters match themselves.
+
+	      ^	      match at the beginning of	the field
+
+	      $	      match at the end of the field
+
+	      .	      match any	character
+
+	      [	]     match any	of the characters within the brackets
+
+	      [^ ]    match any	character not within the brackets
+
+	      *	      match zero or more of the	preceding pattern
+
+	      +	      match one	of more	of the preceding pattern
+
+	      {_n}     match _n occurences of the	previous pattern
+
+	      {_n,}    match _n or more occurences of the	previous
+		      pattern
+
+	      {_n,_m}   match from _n to _m	occurences of the previous
+		      pattern
+
+	  Parentheses can be used for grouping.	 To literally match
+	  any of these special characters, they	must be	preceded by
+	  _t_w_o backslashes in the _m_a_s_k_f_i_l_e pattern, except that
+	  matching a ) requires	three backslashes.
+
+	  Comment lines	can be put into	the _m_a_s_k_f_i_l_e by	beginning them
+	  with a '#'.  Blank lines may also appear anywhere.
+
+	  A sample _m_a_s_k_f_i_l_e would be:
+
+	     #this is a	comment
+	     # require an ID# between 0	and 100000
+	     !num(0,100000),	     "id #"
+	     #
+	     # require a description made up of	arbitrary text
+	     !ascii(),		     "description "
+	     #
+	     # accept a	part number that starts	with a number and
+	     # ends with an upper case letter
+	     regex(^[0-9]+[A-Z]$),     "part #"
+	     #
+	     # accept a	code consisting	of a nonblank character,
+	     # followed	by 2 to	5 alphanumeric characters
+	     regex(^[^ ][A-Za-z0-9]{2,5}$),"code"
+	     #
+	     # accept a	date between 1982 and 1990
+
+
+
+     Page 10					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	     date(01/01/82,12/31/90),"order date"
+	     #
+	     # accept a	name of	a file that exists
+	     # in /usr/me or $HOME/bin
+	     file(/usr/me:$HOME/bin),"filename"
+	     #
+	     # accept an answer	of yes,	no, or maybe
+	     member(yes|no|maybe),   "answer "
+	     #
+	     # accept things like "bob,	sue", "dan", "bob",
+	     # "sue", "dan,sue,	bob"
+	     members(bob|dan|sue),   "salesperson"
+	     #
+	     # accept anything
+	     any,		     "junk "
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+	  Suppose you want to maintain an "expert list," i.e., a list
+	  of names, telephone numbers, and areas of expertise.	Let's
+	  name the database "expert".  Using your favorite text
+	  editor, create a _m_a_s_k_f_i_l_e called "expert.mask", which
+	  contains:
+
+	       !ascii(),   "name "
+	       regex([0-9-]*),	    "phone #"
+	       ascii(),	   "area "
+
+	  The creation of the _m_a_s_k_f_i_l_e only has	to be done once	per
+	  database--once the _m_a_s_k_f_i_l_e is created you can go right into
+	  dbe to make updates.
+
+	  Now we can get into dbe. Your	inputs are shown in bbbboooolllldddd,
+	  output from dbe is shown in normal font.
+
+	       ddddbbbbeeee eeeexxxxppppeeeerrrrtttt
+	       ?expert
+	       cannot open input file
+
+	  You will get the "cannot open	input file" message because
+	  this is a brand new database with nothing in it yet. Once
+	  you have something in	the database, you will get a number at
+	  this point instead, giving a count of	how many characters
+	  there	are in the database. Now let's put something into the
+	  database.
+
+	       AAAA
+	       a name	      JJJJoooohhhhnnnn DDDDooooeeee
+	       b phone #      666699999999----0000000000001111
+	       c area	      eeeevvvveeeerrrryyyytttthhhhiiiinnnngggg yyyyoooouuuu''''vvvveeee	aaaallllwwwwaaaayyyyssss wwwwaaaannnntttteeeedddd ttttoooo kkkknnnnoooowwww
+	       a name	      JJJJaaaannnneeee JJJJoooonnnneeeessss
+	       b phone #      666699999999----9999888877776666
+	       c area	      AAAAllllllll kkkkiiiinnnnddddssss	ooooffff ggggoooooooodddd	ssssttttuuuuffffffff
+
+
+
+     Page 11					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  When you have	entered	all the	new records, enter <<<<ccccnnnnttttrrrrllll----DDDD>>>>
+	  to exit the append mode.
+
+	  Now suppose you want to change "John Doe" to be "John	Z. Doe
+	  Jr.":
+
+	       ////DDDDooooeeee////
+	       a name	      John Doe
+	       b phone #      699-0001
+	       c area	      everything you've	always wanted to know
+	       aaaaJJJJoooohhhhnnnn ZZZZ....	DDDDooooeeee JJJJrrrr....
+	       a name	      John Z. Doe Jr.
+
+	  When you are done with all updates, exit dbe:
+
+	       QQQQ
+
+	  Dbe will print the number of characters currently in the
+	  database and exit.
+
+     FFFFIIIILLLLEEEESSSS
+	  s._f_i_l_e	      sccs file
+	  _f_i_l_e.back	      backup file, copy	of original _f_i_l_e when
+			      dbe was invoked
+	  _f_i_l_e.lock	      lock file	to prevent multiple concurrent
+			      edits on _f_i_l_e
+	  _f_i_l_e.mask	      default _m_a_s_k_f_i_l_e
+	  /usr/lib/terminfo/* terminal characteristics definition
+			      files
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  admin(1), delta(1), ed(1), get(1), rept(1), unity(1).
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	  Dbe does not directly	include	all of the commands of "ed",
+	  but has many of the same limitations as "ed".
+
+	  Although dbe now supports records up to 2048 characters, be
+	  warned that many other programs (such	as ed) do not. It may
+	  be necessary to use the -z option to sort when sorting dbe
+	  databases with very long records. Other programs may fail or
+	  produce unexpected results when presented with long records.
+
+	  The visual mode has not been thoroughly tested for every
+	  possible terminal type. If dbe can't properly	set tabs on
+	  your terminal, output	may be mangled (you might try using
+	  the -n option	if this	happens).
+
+	  In visual mode, extra	long output lines are marked with
+	  arrows, but extra long input lines are not.
+
+	  Dbe assumes each record has as many fields as	are specified
+
+
+
+     Page 12					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  in the _m_a_s_k_f_i_l_e.  If a record	has more than the specified
+	  number, the excess are ignored.  If it has less, attempts to
+	  update the fields that do not	exist will yield an error
+	  message of "no match".
+
+	  It is	not easy to change the number of fields	per record or
+	  to rearrange the order of existing fields. If	you need to
+	  add a	field, the most	straightforward	way of doing so	is to
+	  globally add a tab (or your field separator if you use the
+	  -f option) to	the end	of every line in the database _f_i_l_e,
+	  then add the new field into the _m_a_s_k_f_i_l_e as the llllaaaasssstttt field.
+	  The inability	to rearrange fields is usually not a problem,
+	  since	rept can rearrange them	in any order desired.
+	  Additional enhancements in this area are likely in future
+	  releases.
+
+	  For historical reasons, if a prompt _n_a_m_e specified in	the
+	  _m_a_s_k_f_i_l_e contains one	or more	question marks,	the first
+	  question mark	is discarded.  This feature may	disappear
+	  someday.
+
+	  Dbe takes control of your terminal. It should	gracefully
+	  handle almost	any unusual circumstance, but if it is
+	  necessary to exit abnormally,	you can	use the	quit signal (
+	  <cntrl-|> ).	However, cleanup is a bit messy, so this
+	  should be a last resort.  After quitting, use	"stty sane" or
+	  something similar to get the terminal	to a reasonable	state.
+	  Then remove the lock file.  If you are using the sccs
+	  mechanism, it	will also be necessary to do a manual delta on
+	  the _f_i_l_e.
+
+	  The backslash	is a special escaping character	only in
+	  certain situations as	noted above. Otherwise it is a normal
+	  character.
+
+	  The lock file	mechanism cannot really	guarantee against
+	  concurrent edits.  If	a 'W' or 'Q' blows up due to possible
+	  concurrent edit, you can save	your work to a different _f_i_l_e
+	  (use 'W _f_i_l_e_n_a_m_e'), exit using 'QQ', then figure out who
+	  tried	to edit	the _f_i_l_e out from under	you.  If you need
+	  better protection, use the SCCS mechanism described in the
+	  DESCRIPTION section.
+
+	  Unity	only allows field names	up to 11 alphanumeric
+	  characters, while dbe	allows up to 15	arbitrary characters.
+	  The -u option	will truncate field names to 11	characters,
+	  delete trailing white	space, translate internal white	space
+	  to underscores, and discard other non-alphanumerics.	Any
+	  such coersions will be pointed out by	warning	messages.
+	  There	is no guarantee	that field names will be unique, so it
+	  is possible for dbe to create	a description file that	unity
+	  won't	like.
+
+
+
+     Page 13					    (printed 11/14/89)
+
+
+
+
+
+
+     DDDDBBBBEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		DDDDBBBBEEEE((((1111))))
+
+
+
+	  Dbe now insists on a screen of at least 24 lines by 80
+	  columns when in visual mode. If you have a database with
+	  more than 21 fields per record, it will insist on an
+	  additional line of screen space for each additional field.
+	  If you are using a terminal with windows, it gets the	screen
+	  size from the	LINES and COLUMNS shell	variables. These are
+	  normally set properly	automatically when you create the
+	  window, but might not	be changed correctly if	you re-size a
+	  window.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  John Krallmann
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 14					    (printed 11/14/89)
+
+
+

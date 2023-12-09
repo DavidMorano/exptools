@@ -1,0 +1,396 @@
+
+
+
+     CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))                  ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLL))))                  CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          colonpr - replace indentation of C files with ":  "
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          colonpr [-v] [-e] [-c] [-m n] [-n] [-t string] [files]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _c_o_l_o_n_p_r, (colon-pr), replaces the beginning indentation of C
+          files with ":  ".  This gives a visual tab character for
+          browsing large C files with deep levels of indentation.
+          _c_o_l_o_n_p_r will only calculate the appropriate indentation of
+          each line.  It will not try to rearrange lines of a program
+          as cb(1) would.  Also it tries to optimize file memory by
+          replacing spaces with tabs wherever possible.
+
+        OOOOPPPPTTTTIIIIOOOONNNNSSSS::::
+          ----vvvv    This option when encountered will print the version of
+                the command and then exit with a zero status.
+
+          ----eeee    This option will expand tabs in the output.
+
+          ----cccc    This option will print the number of indentations on
+                the current line starting in the first column.  This
+                is a useful option for long files containing long
+                functions with many level of indentations.
+
+          ----mmmm _n  Skip the first 'n' columns then output the ":  ".
+                (eg. Use -m8 for 5ESS(TM) breakpoint listings.) The
+                default is 0.  When a margin is specified, because a
+                tab character is calculated as the next eighth column,
+                if a tab causes the calculation to be greater than the
+                margin specified, an error will occur and the program
+                will exit.  In this case recheck the value of _n.
+
+          ----nnnn    Print line numbers associated with the file.
+
+          ----tttt _s_t_r_i_n_g
+                This option will allow the user to replace the ":  "
+                string.  The program will verify that the width of
+                that string will not exceed 25 columns.
+
+          _c_o_l_o_n_p_r will either read standard-input or files, but not
+          both.  If the ----nnnn option is specified then line numbering
+          will start with 1 for each file.  Also each file will start
+          a separate page.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          # print file1 and file2 with line numbers.
+          colonpr -n file1 file2
+
+          # print a break point listing file.
+          colonpr -m8 file.bp
+
+
+
+     Page 1                                          (printed 4/29/92)
+
+
+
+
+
+
+     CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))                  ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLL))))                  CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))
+
+
+
+          # compress the tabs to 2 spaces instead of 8.
+          colonpr -t'  ' file.c
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cb(1)
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          For _c_o_l_o_n_p_r to print correctly it assumes that the file is
+          syntax error free and  there is no conditional compilation
+          lines (eg. #if),  no Extended Change Management System lines
+          (ie. #feature lines), and no #define lines, which could
+          cause errors in calculating the indentation.
+
+          See the example for something that will not print correctly.
+
+          Also for if, while, for, and switch, to be considered a
+          keyword a '(' must follow the word in the _s_a_m_e line.
+
+          If you need the file to print with correct indentation:
+
+          1.   Run extract(1) on the file to eliminate the #feature lines.
+
+          2.   Try to edit the lines so that colonpr would work. (eg.
+
+          #if PROCESSOR1
+               if(a[0] == 'a') {
+                    strcpy(a,b);
+               }
+          #endif
+          #if PROCESSOR2
+               if(a[1] == 'a') {
+                    strcpy(a,b);
+               }
+          #endif
+
+
+          3.   Try running the C-preprocessor to substitute the #defines and
+               evaluate conditional compilation. (eg.
+
+          $ cc -c -P ex.c
+          $ colonpr ex.i
+
+          4.   Find a place after a function finishes and insert in comments
+               ccccoooolllloooonnnnpppprrrr____rrrreeeesssseeeetttt.  This will start the calculation from zero so
+               that if there are more functions following they will be
+               correct.  Even though there may not be any functions following
+               in that file, for 5ESS(TM) it would be useful since modules are
+               really considered one big file.
+
+          5.   For finer tuning, insert ccccoooolllloooonnnnpppprrrr____ssssaaaavvvveeee in comments to save
+               current indentation, before the section causing trouble, then
+               insert ccccoooolllloooonnnnpppprrrr____rrrreeeessssttttoooorrrreeee in comments after the problem
+
+
+
+     Page 2                                          (printed 4/29/92)
+
+
+
+
+
+
+     CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))                  ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLL))))                  CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))
+
+
+
+               section to restore the indentation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 4/29/92)
+
+
+
+
+
+
+     CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))                  ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLL))))                  CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))
+
+
+
+          Here is a sample run of most of the features of _c_o_l_o_n_p_r.
+          /*
+           * Since the comment is  not within any C block
+           * colonpr will     do no formatting.
+           */
+
+          struct a {
+          :  int a:32; /*     Bit fields. */
+          }ABC;
+
+          main(){
+          :  struct a {
+          :  :  int a:32;
+          :  }b;
+          :  int c,a, d; /* This shows how comments
+          :           will line up.     */
+          :
+          :  /* This comment will  line up   with the appropriate indentation. */
+          :
+          :  /* Here is a     conditional. */
+          :  a = (a) ? c
+          :  : d;
+          :
+          :  /* This is how a switch is handled */
+          :  switch(a[0])     {
+          :  case   'a':
+          :  case   '{': /*   This '{' does not get counted in calculation. */
+          :  default:
+          :  :  /*
+          :  :   * The case and default statements line up
+          :  :   * With the switch.  The rest is indented.
+          :  :   * Also note how this block comment lines   up.
+          :  :   */
+          :  :  break;
+          :  }
+          :
+          :  /* Here are some examples with if - else's. */
+          :  if(a[1] == EOF)
+          :  :
+          :  :  if(b[9] == '}') {  /* Note   the '}'   again is not counted. */
+          :  :  :    goto end_of_file;
+          :  :  }
+          :
+          :  :  else {
+          :  :  :    b[9] =   ' ';
+          :  :  }
+          :
+          :  else   /* This   is the second else. */
+          :  :
+          :  :  if(b[1] == 'a') {
+          :  :  :    a[1] =   b[1];
+          :  :  }
+
+
+
+     Page 4                                          (printed 4/29/92)
+
+
+
+
+
+
+     CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))                  ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLL))))                  CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))
+
+
+
+          :
+          :  /* This shows how parenthesis line up. */
+          :  :  else if(b[1] == 'a' ||
+          :  :       (b[2] == 'n' &&
+          :  :        b[2] == 'n')) {
+          :  :  :    /* Now   indent.   */
+          :  :  :    a[1] =   b[1];
+          :  :  }
+          :
+          :  /* End the second else. */
+          :
+          :  /* Here is a     for loop - while loops are the same. */
+          :  for(i = 0;
+          :      i < 10;
+          :      i++)
+          :  :  if(b[0])
+          :  :  :    a;
+          :
+          :  /* out of the for loop.*
+          :
+          :  /*
+          :   * Labels are put in  the first column.
+          :   * Therefore     it is best if it is on a line
+          :   * by itself     - not with a C statement.
+          :   */
+          :  end_of_file:
+          :
+          :  a[4]=1;
+          :  return;
+          }
+
+          /* Here is an example of conditional compilation causing problems. */
+
+          #ifdef PROCESSOR1   or #feature (! FEAT)
+          fun1()
+          {
+          #endif              or #endfeature (! FEAT)
+          #ifdef PROCESSOR2   or #feature (FEAT)
+          :  fun2()
+          :  {
+          #endif              or #endfeature (FEAT)
+          :  :  return(EOF);
+          :  }
+          :
+          :  /* Insert colonpr_reset to start calculation from scratch. */
+          /* This comment will now be in first column. */
+
+          #define   OKDEFINE 0x30
+          #define   NOTOKDEFINE(a,b) \
+          if((cmp=strcmp(a, b)) <  0 || (a[0] == '\0' && b[0] != '\0')) { \
+          :  cur = j; \
+          :  break; \
+
+
+
+     Page 5                                          (printed 4/29/92)
+
+
+
+
+
+
+     CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))                  ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLL))))                  CCCCOOOOLLLLOOOONNNNPPPPRRRR((((1111))))
+
+
+
+          } \
+          else if   (cmp ==   0) {
+          :  /* Note how main is not at the beginning.. */
+          :  main()
+          :  {
+          :  :  char a[10], b[10], c[10];
+          :  :  NOTOKDEFINE(a,"this")
+          :  :  NOTOKDEFINE(b,"is  really")
+          :  :  NOTOKDEFINE(c,"tricky")
+          :  :
+          :  :  /* colonpr prints the following WARNING. */
+          WARNING - file.c:line#:nesting went less than zero (1).
+          }}} /* These three braces are needed to balance the three macros. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 4/29/92)
+
+
+

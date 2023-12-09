@@ -1,0 +1,183 @@
+# send and install a cpio archive for exptools
+
+HOMEID=exptools
+: ${TOOLS:=`logdir $HOMEID`}
+UPD_CMD=adm/upd1.1/lib/upd
+pkg_cmd=$TOOLS/adm/upd1.1/lib/package		# packages up the file for upd
+mach_cmd=$TOOLS/adm/upd1.1/bin/machines	# maps types to machine lists
+net_cmd=$TOOLS/adm/upd1.1/lib/netcmd		# figures out networking to machines
+send_cmd=$TOOLS/adm/upd1.1/lib/sendjob	# executes network commands
+PATH=$PATH:$TOOLS/adm/bin
+export PATH
+
+umask 007	# private temp files
+set -u		# no slip-ups allowed
+
+tmpfile=/usr/tmp/$$sendcpio		# temp file for packaged commands
+
+: ${LOGNAME:=`id | sed -n 's/.*uid=[0-9]*(\([^)]*\)).*/\1/p'`}
+mailaddr=`uuname -l`!${LOGNAME:?}
+retval=0				# return code for this script
+cmd=$0
+case "$cmd" in
+*/*)
+	cmd=`basename ${0}`
+	;;
+esac
+
+usage="usage: ${cmd} [-Ccv] [-p pkgid] [-M mailaddr] [-P pwdfile] \\
+	[-u userid] -f cpiofile machine-selection"
+
+case $# in
+0)
+    cat <<! >&2
+${usage}
+
+Examples:
+	${cmd} -p god -f emacsterm.ibm -v ibm
+	${cmd} -p god -f adm.cpioZ -C all
+
+The pkgid given must have "cpio" execution permission on each machine
+selected.  The password must be given from the terminal or from the -P
+file.  All output is mailed back.
+
+Options:
+	-C cpio file is compressed but name does not end in .Z
+	-c override local password check
+	-f cpio file to install
+	-M alternate return mail address (default ${mailaddr})
+	-P package password file
+	-p package ID (required)
+	-u alternate target userid to receive files
+	-v verbose (returns file names and block count)
+!
+    exit
+    ;;
+esac
+
+cmdline="$cmd $*"
+
+# get any options.
+if options=`getopt "Ccdf:M:N:P:p:u:v" $*`
+then	:
+else
+	echo "$usage" >&2
+	exit 1
+fi
+set -- $options
+
+altuid=
+cpiofile=
+Debug=
+debug=
+options=
+packargs=
+pkgid=
+pwdfile=
+verbose=
+Z=
+
+while :
+do
+	arg=$1
+	shift
+	case $arg in
+	-C)
+		Z=Z
+		;;
+	-c)
+		packargs="${packargs} ${arg}"
+		;;
+	-d)
+		set -x
+		Debug="set -x"
+		debug=:
+		;;
+	-f)
+		cpiofile=$1
+		shift
+		;;
+	-M)
+		mailaddr=${1}
+		shift
+		;;
+	-N)	# obsolete; uucp is the only network now
+		XNETPREF=$1
+		shift
+		export XNETPREF
+		;;
+	-P)
+		pwdfile="${arg} ${1}"
+		shift
+		;;
+	-p)
+		pkgid=$1
+		options="${options} ${arg}${1}"
+		packargs="${packargs} ${arg}${1}"
+		shift
+		;;
+	-u)
+		altuid=-u$1
+		shift
+		;;
+	-v)
+		verbose=-v
+		;;
+	--)
+		break
+		;;
+	esac
+done
+
+: ${pkgid:?"must specify -p pkgid"}
+: ${cpiofile:?"must specify -f cpiofile"}
+if [ ! -r ${cpiofile} ]
+then
+	echo "$cmd: cannot find ${cpiofile}" >&2
+	exit
+fi
+if expr $cpiofile : '.*\.Z$' >/dev/null
+then	Z=Z
+fi
+
+# other args are assumed to specify a machine list
+machines="${*:?'missing machine selector list'}"
+
+# Now is the time to arrange for certain temp files to disappear on exit.
+# From this point on, $retval controls the exit code for this command.
+trap "retval=1; exit" 1 2 3 15
+trap "$debug rm -f ${tmpfile};exit \${retval}" 0
+
+# package it up with the password
+if $pkg_cmd -Acpio$Z $pwdfile $packargs -M$mailaddr $cpiofile > $tmpfile
+then	: package ok
+else
+	echo "${cmd}: error: exit code $? from ${pkg_cmd}" >&2
+	retval=1
+	exit
+fi
+
+${batch:-batch} <<!!
+    (
+	${Debug}
+	set -u
+	retval=0
+	trap "" 1 2
+	trap "retval=1; exit" 3 15
+	trap 'rm -f ${tmpfile}; exit \$retval' 0
+
+	echo "Subject: sendcpio of ${cpiofile} to $machines\n"
+	echo "${cmdline}"
+
+	${mach_cmd} -faddr,type $machines \
+	| ${net_cmd} \
+	| debug=$debug ${send_cmd} -! "$UPD_CMD $verbose $altuid -p$pkgid" -M${mailaddr} $tmpfile
+
+	# just to be sure
+	rm -f ${tmpfile}
+
+    ) 2>&1 \
+    | /bin/mail ${LOGNAME}
+!!
+
+trap "exit \$retval" 0

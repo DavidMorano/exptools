@@ -1,0 +1,132 @@
+
+
+
+     ppppaaaacccckkkkeeeetttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ppppaaaacccckkkkeeeetttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          packet - convert records to stream packet format
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          packet [-q] [-Itable] [-Otable] [-n[<newline>]] [-u] table1 \
+            [_i_n_t_o table2 ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _p_a_c_k_e_t command transforms records in UNITY tuple format
+          to stream packet format.  In a packet, the data is
+          structured into field-name/field-value pairs consisting of
+          the name of the attribute and its value separated by a tab
+          (a convenient form for editing).  Each packet is preceded by
+          a line of the form
+
+          #####<tab><packet number>
+
+          where <packet number> is the sequence number of the packet;
+          it is provided for reference purposes by the user.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command or when converting packets back to
+          tuples using the _t_u_p_l_e command.  Otherwise, the "into
+          clause" should not be used so that the output will be
+          written to the standard output but a description file is not
+          created.
+
+          In converting terminator fields to packet format, all
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ppppaaaacccckkkkeeeetttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ppppaaaacccckkkkeeeetttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          occurrences of the UNITY "newline" character are translated
+          into a newline-tab sequence.  The default "newline"
+          character is tilde (~).  The default may be changed to _c by
+          specifying the -n_c option on the command line.  If -n is
+          specified with no newline character, then newline
+          translation is effectively turned off.
+
+          If the "-u" option is specified, then the "user-friendly"
+          names are printed instead of the attribute names, if they
+          exist in the description file (see _t_a_b_l_e(UNITY)).  If the
+          "user-friendly" names do not exist, then the attribute names
+          are printed.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are packeted.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ uprint -q SP
+
+          |------------|
+          |snu|pnu| qty|
+          |mbe|mbe|    |
+          |r  |r  |    |
+          |------------|
+          |s1 |p1 | 300|
+          |s1 |p2 | 200|
+          |------------|
+
+          $ packet -q SP
+
+          #####   1
+          snumber s1
+          pnumber p1
+          qty     300
+
+          #####   2
+          snumber s1
+          pnumber p2
+          qty     200
+
+
+     FFFFIIIILLLLEEEESSSS
+          unity/packet.c, zpacket.c - the C source program
+          bin/packet - the executable program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _t_u_p_l_e(UNITY)
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

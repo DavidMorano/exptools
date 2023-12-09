@@ -1,0 +1,362 @@
+.\"
+.\"			AT&T - PROPRIETARY
+.\"	THIS DOCUMENT CONTAINS PROPRIETARY INFORMATION OF
+.\"	AT&T AND IS NOT TO BE DISCLOSED OR USED EXCEPT IN
+.\"		ACCORDANCE WITH APPLICABLE AGREEMENTS.
+.\"
+.\"		Copyright (c) 1988 AT&T
+.\"		Unpublished & Not for Publication
+.\"		All Rights Reserved
+.\"
+.\"	%M% %I% %G%
+.\"
+.tr ~ 
+.PM BP
+.TH int_sllist.3p sfmac GSNCS
+
+.SH NAME
+int_sllist - a singly linked list class for integers
+
+.SH SYNOPSIS
+#include <int_sllist.h>
+.SS Public Data:
+None.
+
+.SS Constructors:
+.nf
+.B "int_sllist"
+.B "int_sllist(int_sllist *oldlist);"
+.B "int_sllist(int_sllist &oldlist);"
+.sp
+.fi
+
+.SS Member Functions:
+
+.nf
+.B "void* operator[](int index);"
+
+.B "void* car();"
+
+.B "void* nth(int index);"
+
+.B "int_sllist* cdr();"
+
+.B "int_sllist* cddr();"
+
+.B "int_sllist* nthcdr(int index);"
+
+.B "void remove(int new_int);"
+
+.B "void append(int new_int);"
+
+.B "void push(int new_int);"
+
+.B "void* pop();"
+
+.B "int is_empty();"
+
+.B "int insert(int new_int,int index);"
+
+.B "int length();"
+
+.B "int exist(int new_int);"
+
+.B "int_sllist *concat(int_sllist *list2);"
+
+.fi
+.SH DESCRIPTION
+The
+.I int_sllist
+class implements singly linked lists of integers.
+.sp
+.SS Constructors
+.br
+A list can be declared in one of three ways.
+Either an empty list is declared and initialized to NULL without any options
+or a list can be declared using an existing list to initialize it.
+.sp
+.I Oldlist
+is either a pointer or a reference to an existing singly linked list.
+.sp
+.SS Operations
+.br
+.TP
+.I operator[]
+The square bracket operator ([]) can be used to retrieve
+the indicated integer from the list.
+It will not modify the list.
+.sp
+.I Index
+is an integer indicating which link 
+the requested object is in.
+.sp
+The pointer returned must be type cast into 
+an integer.
+If an invalid index is used a NULL pointer is returned.
+.sp
+.TP
+.I car
+.I Car
+will return a pointer to the first integer in the list.
+It will not modify the list.
+.sp
+The pointer returned must be type cast into an integer.
+If the list is empty a NULL pointer is returned.
+.sp
+.TP
+.I nth
+.I Nth
+will retrieve
+the indicated integer from the list.
+It will not modify the list.
+.sp
+.I Index
+is an integer indicating which link 
+the requested integer is in.
+.sp
+The pointer returned must be type cast into an integer.
+If an invalid index is used a NULL pointer is returned.
+.sp
+.TP
+.I pop
+.I Pop
+will remove the first integer in the list.
+It will modify the list.
+.sp
+The pointer returned must be type cast into an integer.
+If the list is empty a NULL pointer is returned.
+.sp
+.TP
+.I cdr
+.I Cdr
+will return a pointer into the list starting at the second link.
+It will not modify the list.
+.sp
+If the list is empty a NULL pointer is returned.
+.sp
+.TP
+.I cddr
+.I Cddr
+will return a pointer into the list starting at the third link.
+It will not modify the list.
+.sp
+If the list does not have at least three links a NULL pointer
+is returned.
+.sp
+.TP
+.I nthcdr
+.I Nthcdr
+will return a pointer into the list starting at the
+specified link.
+It will not modify the list.
+.sp
+.I Index
+is an integer indicating which link 
+the requested object is in.
+.sp
+If the requested number of links do not exist in the list
+a NULL pointer is returned.
+.sp
+.TP
+.I remove
+.I Remove
+will remove an integer from the list.
+It will modify the list.
+.sp
+.I New_int
+is the integer value that will be removed from the list.
+.sp
+.TP
+.I append
+.I Append will place an integer at the end of the list.
+It does modify the list.
+.sp
+.I New_int
+is the integer value that will be stored in the list.
+.sp
+.TP
+.I push
+.I Push
+will place an integer at the head of the list.
+It does modify the list.
+.sp
+.I New_int
+is the integer value that will be stored in the list.
+.sp
+.TP
+.I is_empty
+.I Is_empty 
+will see if the list is empty.
+It does not modify the list.
+.sp
+It will return TRUE if the list is empty and
+FALSE otherwise.
+.sp
+.TP
+.I insert
+.I Insert
+will place an integer in the list at the link specified in the
+index.
+It will modify the list.
+.sp
+.I New_int
+is the integer value that will be stored in the list.
+.sp
+.I Index
+is an integer indicating 
+where in the list the integer should be placed.
+.sp
+If the index is out of range the the list
+return an ERROR.
+.sp
+.TP
+.I length
+.I Length
+will return the number of links in a list.
+It does not modify the list.
+.sp
+.TP
+.I exist
+.I Exist
+given an integer traverse the list to see if the value is in the list.
+It does not modify the list.
+.sp
+.I New_int
+is the integer value that will be stored in the list.
+.sp
+This function will return TRUE if the integer is found in the list
+and FALSE if it is not.
+.sp
+.TP
+.I concat
+.I Concat
+will concatenate two lists, the one which the function is invoked from
+and the list passed as an argument.
+It does not modify the list.
+.sp
+.I List2
+is a pointer to a singly linked list.
+.sp
+This function will return a pointer to a newly created list
+that contains a copy of two lists.
+.sp
+.SH EXAMPLES
+.ft CO
+.nf
+
+#ifndef INT_SLLISTDEF_H
+#include "int_sllist.h"
+#endif
+
+
+main()
+{
+	int a = 1;
+	    .
+	    .
+	    .
+	int g = 7;
+	int h = 8;
+	int *z,  *y, *w;
+	void my_print(int_sllist*);
+
+	// declare an empty list and a list pointer
+	int_sllist list1;
+	    .
+	    .
+	    .
+
+	// place objects in list
+	list1.append(a);
+	    .
+	    .
+	    .
+	list1.append(h);
+
+	// display the length of the list
+	printf("list length = %d",list1.length());
+	my_print(&list1);
+
+	// declare another list and initialize it to an existing list
+	sllist list2(list1);
+	
+	// print contents of list
+	/my_print(&list2);
+
+	// retrieve the 4th object in the list
+	z = (int*)list1[4];
+
+	// retrieve the first object in the list
+	w = (int*)list1.car();
+
+	// retrieve the 7th object in the list
+	if((y = (int *)list1.nth(7)) == (int*)NULL)
+
+	// return pointer into list starting at second link
+	lst_ptr = (int_sllist *)list1.cdr();
+
+	// take the integer out of the list
+	w = (int *)list1.pop();
+
+	// create a pointer into the list starting at the third link
+	lst_ptr = (int_sllist *)lst_ptr->cddr();
+
+
+	// create a pointer into the list starting at the 4th link
+	lst_ptr = (int_sllist *)lst_ptr->nthcdr(4);
+
+	// remove an integer from the list
+	list1.remove(*z);
+
+	// insert an integer into the third link 
+	list1.insert(*w,3);
+
+	// place the integer at the head of the list
+	list1.push(*z);
+
+	// see if the list is empty
+	if(list3.is_empty() == TRUE)
+		printf("the list is empty");
+
+	if(list1.exist(2) == TRUE)
+	{
+		printf("2 exists");
+	}
+	else
+	{
+		printf("2 does not exist");
+	}
+
+	// concatenate two lists
+	lst_ptr = list1.concat(&list1);
+
+
+}
+
+// printing routine
+void
+my_print(int_sllist *pr_list)
+{
+	int i, len;
+	int *tmp;
+	
+	len = pr_list->length();
+	for(i = 0; i < len; i++)
+	{
+		tmp = (int*)pr_list->nth(i);
+		printf("i = %d value = %d\n", i, *tmp);
+		
+	}
+}
+
+.SH WARNINGS
+
+.SH CAVEATS
+
+.SH FILES
+
+.SH "SEE ALSO"
+
+.SH SCCSID
+%W%
+

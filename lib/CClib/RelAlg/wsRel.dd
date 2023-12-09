@@ -1,0 +1,12 @@
+#ident "@(#) /sable/sdb/ra/rel/relation/s.wsRel.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+class WS_Relation : public Relation
+{
+public:
+   WS_Relation(Intension &i) : Relation (i,new WS_Extension) {};
+   WS_Relation(Attribute &a) : Relation (a,new WS_Extension) {};
+   /* Operator = becomes lost in the inheritence for unknown reasons */
+   Boolean_t operator=(Tuple *t){ return Relation::operator=(t); }
+   Boolean_t operator=(Relation &r){ return Relation::operator=(r); }
+};

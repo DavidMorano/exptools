@@ -1,0 +1,217 @@
+Subject: Exptools gnuemacs structure;
+	REQUIRED READING: NETNEWS RULES, Source, CBNEWS, GNUS;
+	address updates
+From:  Dan_Jacobson@ATT.COM, Scott Thompson (sft@ihlpa.ATT.COM)
+Date: 7/1991
+
+The current exptools distribution of gnuemacs is setup with the
+following directory structure (if installed in non-exptools context
+much of the following article still applies):
+
+ ~exptools = $TOOLS
+       \
+        \__bin
+        |__lib___
+                 \__gnuemacs
+                          \__bin
+                          |__dist__
+                          |        \__etc
+                          |        |__info
+                          |        |__lisp__
+                          |                 \__term
+                          |__local_
+                                   \__etc
+                                   |__lisp__
+                                   |        \__term
+                                   |__tips
+
+
+  Directories discussed in the following text exist under the exptools
+login, the $TOOLS environment variable is expected to contain this
+value, therefore directories will be specified relative to this login,
+unless otherwise noted.
+
+  The following will describe the use and contents of each directory.
+First, under bin is a shell script that tests for and sets several
+needed environment variables; after which it execs gnuemacs from
+lib/gnuemacs/bin.
+
+  The other two directories under lib/gnuemacs are dist and local;
+dist contains directories comprising the standard distribution of
+gnuemacs, with local containing directories making local additions
+and/or modifications to the standard distribution of gnuemacs.  The
+directories etc, lisp, and lisp/term exist for both the dist and local
+directories and have the same purpose respectively.  Etc, contains
+executables to support emacs, and ascii files documenting the
+distribution.  Lisp, contains emacs lisp files used to form and
+customize emacs's commands language, lisp/term contains terminal
+specific files.  Finally, the dist/info directory contains files used
+by the online documentation facility, and local/tips contains
+suggestions and answers to commonly asked questions.
+
+enjoy.
+
+-------
+Some places to look for our customized settings: in the lisp tree's files:
+startup.el, site-init.el, default.el, also the "front end" script
+$TOOLS/bin/gnuemacs.
+
+Though most exptool providers post notices of minor changes via the
+"toolnews" command, we will probably use the netnews group att.emacs
+for this purpose.  Frequent toolnewses seen at login by those with
+"toolnews" in their .profile, etc. files would be too disturbing.
+
+%%%%%%%%%%%%%%%%% POSTING/SAVING NETNEWS %%%%%%%%%%%%%%%%%%%%%%%
+
+Exptools gnuemacs has facilities for posting/saving netnews---useful
+if you are on a machine that carries netnews... see below.
+
+AT&T EMPLOYEES REMEMBER: 1) ***SEE THE NEWSGROUP ATT.NEWS.POLICY FOR
+CURRENT POSTING/SAVING RULES***. 2) A minor point that these rules
+will remind you of is that crosspostings to both inernal and external
+(to AT&T) newsgroups at the same time will fail, so don't try. 3)
+Don't put any spaces between newsgroups on the "Newsgroups:" header:
+e.g.,
+Newsgroups: xxx.xx.xx,yy.yyyy.yy
+not
+Newsgroups: xxx.xx.xx, yy.yyyy.yy
+
+4) If you break the rules in newsgroup att.news.policy, and especially
+if it gets blamed on gnuemacs not warning you enough about the rules,
+you will cause we the providers endless trouble and embarassment
+having to hack up gnuemacs netnews posting/saving commands more and
+more to warn you more and more.
+
+5) if you can't find the rules in att.news.policy, write us.
+
+%%%%%%%%%%%%%%%%%%  CBNEWS, SOURCES: CBNEWS is not for SOURCES!!!! 
+
+[Dan Jacobson, 9/1990:] The un-byte-compiled GNU Emacs Lisp files
+(.el's) are not distributed with exptools gnuemacs, in an effort to
+save disk space.  At present the GNU Emacs version on the cbnews
+machines carries the .el's.  This is a temporary solution, as the
+cbnews machines are not meant for software distribution.  As of 9/1990
+cbnews machines do not carry exptools.  Do "man gnuemacs" there to
+find the location of the gnuemacs file tree and tips directory etc.
+there.
+
+As of 10/1990, the cbnews machines are the main place where you will
+be able to sucessfully run the GNUS newsreader.
+
+***PLEASE SEE THE TIPS DIRECTORY ON CBNEWS (do "man gnuemacs" first)
+BEFORE DOING ANYTHING THERE.  And note especially ==> always e-mail to
+we the providers for any sources, copying from cbnews machines causes
+network constipation, and will result in us getting the ".el"'s kicked
+off cbnews!
+
+* To get a nice cpio of our package, including .el's, e-mail to
+* Charles_A_Webb@ATT.COM, or sft@ihlpa.att.com.  They can also provide
+* the C source too.
+* 
+* If you decide to pftp to prep.ai.mit.edu to get it from where we get
+* it, you will 1) not get our goodie enhancements. 2) probably fill up
+* disks (even /usr/tmp perhaps) and get everybody angry at you if you do
+* it thru a cbnews machine.  Plus you will cause uucp constipation
+* probably.
+
+%%%%%%%%% Mailing list information superseding that given elsewhere %%%%%%%%%%
+
+[10/1990, Barry Warsaw & SuperCite] warsaw@warsaw.nlm.nih.gov
+supercite@warsaw.nlm.nih.gov, supercite-request@warsaw.nlm.nih.gov
+
+3/1991: gnu.emacs.vm.* newsgroups are where you can read about the VM mailer.
+
+^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v
+
+Sun Mar 17 18:00:16 CST 1991 Dan Jacobson & Chip Webb:
+We installed this. On some systems you may have to autoload this for
+now, e.g.,
+(autoload 'lisp-dir-apropos "lispdir" nil t)
+[lispdir.doc:]
+
+                Answers to Frequently Asked Questions
+	       About the GNU Emacs Lisp Code Directory
+
+                     Last Update: October 12, 1990
+
+
+Q. What *is* the Lisp Code Directory?
+A. Originally it was simply a list, in tabular form, of various
+packages of GNU Emacs Lisp code that had been posted to one of the
+Emacs-related Internet or USENET mailing lists or newsgroups.  Later
+it became a flat-file database and associated formatting software.
+Today it includes over 500 entries, contains entries for the packages
+in the standard GNU Emacs distribution, and there is an elisp package
+available for use with interfacing with it.
+
+Q. Where can I get a copy of the Directory?
+A. The latest copy can be ftp'd from tut.cis.ohio-state.edu.  The file
+is pub/gnu/emacs/elisp-archive/LCD-datafile.Z.  (The .Z means it's
+compressed; use `binary' mode in ftp when retrieving it.)
+
+Q. How can I get a copy of a package listed in the Directory?
+A. The `archive' field of the LCD entry for the package indicates
+where it's archived.  If this field starts with a `~', as in
+~/lispdir.el.Z, the archive host is tut.cis.ohio-state.edu, and the
+file is under the Emacs Lisp Archives which reside in the directory
+pub/gnu/emacs/elisp-archive (see README.Z for more details).  If the
+`archive' field is empty, the `contact' field indicates where one can
+write by e-mail to obtain the code.  In the case of a package that's
+part of the standard Emacs distribution, you probably already have it
+in your $EMACS/lisp directory.  If you're  unable to find a copy
+through the listed contact, post a query to gnu.emacs, info-gnu-emacs,
+or your favorite Emacs group.
+
+Q. What and where is the LCD interfacing package?
+A. It's called `lispdir', and it's in ~/lispdir.el.Z.  (See previous
+answer for details on exactly where that is.)  It currently produces a
+full-directory report in three different formats, two of which are
+tabular.  It also provides a function called lisp-dir-apropos that
+pops up a buffer containing entries that relate to a given topic.
+
+Q. I don't have ftp or uucp access.  Is there a mail archive server?
+A. No, there isn't.  Probably the best thing for you to do is contact
+the author directly.  If that fails, request the items you want via
+your favorite Emacs mailing list or newsgroup.
+
+Q. How can I get my package added to the Directory or get typos or
+inaccuracies fixed?
+A. Dave Brennan, brennan@dg-rtp.dg.com, maintains the Directory.  Send
+typos and inaccuracies to him.  Dave Sill, de5@ornl.gov, maintains the
+Emacs Lisp Archives.  Send submissions to him, and include an LCD
+record.  See ~/guidelines.Z for more information on submissions.
+
+--------------
+Sat May  4 12:05:49 CDT 1991 Dan_Jacobson, Running GNUS remotely via
+NNTP to CBNEWSland:
+
+WJC of Holmdel NJ says: "Of course, the big win comes when NNTP is
+finally offered for real.  It is an absolutely stunning difference to
+run the GNUemacs on another machine and have NNTP on the news servers.
+The NNTP process must be really cheap.  As I recall, in the past I've
+run long sessions and then done a "ps" on cbnews[censored ;-)] to see
+the impact.  I think the NNTP process only got up to a few seconds
+after a couple hours of news reading (but I'm quoting from memory)."
+
+WJC's right... it's zooming!  Maybe one day we can all officially
+connect there via NNTP...
+------------------
+Newsgroups: att.news,att.exptools,att.emacs
+Subject: GNUS: cbnews: /usr/add-on/server/bin/gnuemacs vs. exptools version
+Reply-to: Dan_Jacobson@ihlpz.ATT.COM
+Date: Fri 30 Aug 1991
+
+Some of you have written to me mentioning that gnuemacs' GNUS netnews
+reading program has seemingly broken itself suddenly on the cbnews
+machines.  What has happened is that code you wrote in your .profile
+has detected the newly added exptools login on cbnews, and put
+ ~exptools/bin in front of /usr/add-on/server/bin (set in /etc/profile
+--- the default) on your $PATH, causing you not to invoke our
+custom-built cbnews gnuemacs-GNUS set-up in
+/usr/add-on/server/bin/gnuemacs.
+
+Yes, it would be nice to merge the two.  I am trying to obtain official
+support for gnuemacs and our other free software tools for Bell Labs.
+That way we could give more timely updates to you the users.  If you
+believe these tools are important and you might be able to help us
+find funding, please contact me.

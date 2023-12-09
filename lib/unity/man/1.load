@@ -1,0 +1,66 @@
+
+
+
+     llllooooaaaadddd((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            llllooooaaaadddd((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          load - load records between a UNIX file and a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _l_o_a_d [-q] data-file _t_o table
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _l_o_a_d command allows the user to load any UNIX file into
+          a UNITY table.  To execute the _l_o_a_d command, the records in
+          data-file must have already been carefully set up to conform
+          to the definition of the table.  The description file for
+          the table must exist in the present working directory, (as
+          created by the _t_a_b_l_e or _m_a_k_e_t_a_b_l_e command), in the directory
+          in which the table will reside, or in one of the directories
+          specified in the $UNITYDFILES path (a shell environment
+          variable).
+
+          The file is checked for conformity to the description file
+          before loading the table.  Due to the lack of numerical data
+          types, the load command checks only for the right number of
+          attributes in each record.  Records are checked by counting
+          past the number of characters specified for a fixed width
+          field and skipping to the termination symbol on a terminator
+          field.  If less than w characters are found for a fixed
+          width field or a terminator symbol is not found before a
+          newline is encountered, then an error message is printed
+          indicating that the record is too short.  If additional
+          characters are found before a newline is encountered, then
+          an error message is printed indicating that the record is
+          too long.  All input records are checked before _l_o_a_d
+          terminates; if any errors are detected, all records are left
+          untouched in the input file.
+
+          This command will not read the standard input nor will it
+          write to the standard output (i.e., table names of "-" are
+          not valid).
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are loaded.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/load.c, zload.c - the C source program
+          bin/load - the executable program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _t_a_b_l_e(UNITY), _u_n_l_o_a_d(UNITY)
+
+
+
+
+
+
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+

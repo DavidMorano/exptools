@@ -1,0 +1,74 @@
+.TM, .RP, .IM, .TR, .DS, .TS
+
+"What is the document style?
+	for technical memo type: 	.TM
+	for released paper type: 	.RP
+	for internal memo type: 	.IM
+	for technical report type: 	.TR"
+
+.TM : .TM : ARGS		*@(#)dcs:msdata	2.1 of 9/26/88*
+"	tm number?"
+"	charging case?"
+"	filing case?"
+.RP : .RP : OUT
+.IM : .IM : OUT
+.TR : .TR : ARGS
+"	report number?"
+.TM, .RP, .IM, .TR : .ND : SKIP
+	"What date should I use (just type return if today)?"
+.TM, .RP, .IM, .TR : .TL : MANY
+	"Type the title "
+
+.TM, .RP, .IM, .TR : {
+	.TM, .RP, .IM, .TR : .AU : ONELINE &ARGS
+		"Type author's name on one line."
+		"	his/her room number?"
+		"	his/her extension?"
+	.TM, .RP, .TR: .AI : MANY
+		"What is the author's institute (you may abbreviate .MH,  .WH,  .IH,  .PY)"
+}"Are there more authors?  (y or n)"
+
+.TM : .OK : MANY
+	"What are the keywords for the abstract? "
+.TM, .RP : .AB : MANY
+	"Type in the abstract"
+.TM, .RP : .AE : OUT
+.TM : .CS : ARGS 
+	"For the bottom of the cover sheet : 
+		pages of text?"
+"		other pages?"
+"		total pages?"
+"		number of figures?"
+"		number of tables?"
+"		number of references?"
+.TM, .RP, .IM, .TR: :MANY
+	"For headings use one of those listed below : 
+	simple numbered : 	use .NH
+	numbered levels : 	use .NH with level number
+	unnumbered : 		use .SH
+
+	Type in rest of document or read in files with `` :r file ...'' "
+.TM, .RP: {
+	.TM, .RP::PATH
+		"select a path from
+			display: .DS
+			table: .TS "
+	.DS: .DS: MANY
+		"type displayed text "
+	.DS: .DE: OUT
+	.TS: .TS: OUT
+	.TS: : ONELINE
+		"type one letter for each column of the table where
+			c = centered
+			l = left justified
+			r = right justified
+			n = numbers
+		end with a . on the same line"
+	.TS::MANY
+		"type in table or read with :r"
+	.TS:.TE:OUT
+	.TM, .RP:: MANY
+	" continue rest of document"
+} "Do you want to continue typing document?"
+.TM, .IM : .SG : ARGS
+	"Type signature line"

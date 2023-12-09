@@ -1,0 +1,48 @@
+# @(#)editpath        1.01D: Warren D. Swan - 06/10/1992
+# USAGE:		editpath [pathname [other components]] 
+#	Allows you to easily edit a pathlist.  See manual page.
+# OPTIONS:	none			TO EDIT: Set tabstops at every 3 columns
+# TO TRACE:	TRACE='set -x'; export TRACE
+# REV:  DATE:    WHO: CHANGE:
+# 1.01D 06/10/92 WDS  Added rm -f $TMP for those w/noclobber set & file left
+#                     behind; tests $1 for valid variable name; allows set -u
+# 1.01C 06/09/92 WDS  Single newline from editor is considered empty file
+# 1.01B 06/08/92 WDS  Made into a function (instead of a dot file)
+# 1.01A 09/20/91 WDS  Added placing of new value in command history
+# 1.00C 08/19/87 WDS  unsplitpath renamed to formpath
+# 1.00B 02/19/87 WDS  Corrected left hand side of = in eval statement
+# 1.00A 10/21/86 WDS  Original version
+
+${TRACE-}
+editpath()
+{
+	${TRACE-}
+	typeset TMP PathName OldPath PathVal
+
+	TMP=${TMPDIR-}
+	[ -n "$TMP" -a -d "$TMP" ] || TMP=/usr/tmp
+	[ -d "$TMP" ] || TMP=/tmp
+	TMP=$TMP/edpath.$$
+	rm -f $TMP
+
+	# Test for valid variable name, if given:
+	if [ -n "$1" ]
+	then
+		print -R "$1"|grep '^[A-Za-z_][A-Za-z0-9_]*$' >/dev/null ||
+		{
+			print -u2 -R "editpath: Bad variable name: \"$1\""
+			return 1
+		}
+	fi
+	PathName=${1:-PATH}				# Path name is first argument or PATH
+	eval OldPath="\${$PathName-}"	# Save old value
+	splitpath "$@" > "$TMP"			# Split up given path, + other arguments
+	${EDITOR:-vi} "$TMP"				# User edits temp file with path components
+	[ -s "$TMP" ] || return 1		# Empty temp file means give up
+	[ -z "`< $TMP`" ] && return 1	# Single newline also means empty, so give up
+	PathVal=`formpath -r "$TMP"`	# Reformulate the path var from temp file
+	eval $PathName=\"$PathVal\"	# Store result back into original path variable
+
+	# If value of path changed, store the assignment in the command history:
+	[ "($OldPath)" != "($PathVal)" ] && print -sR "$PathName=$PathVal"
+}

@@ -1,0 +1,330 @@
+
+
+
+     EEEELLLLIIIINNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEELLLLIIIINNNNTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          elint - a C program checker
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          eeeelllliiiinnnntttt [ option ] ... file ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _E_l_i_n_t attempts to detect features of the C program files
+          that are likely to be bugs, non-portable, or wasteful.  It
+          also checks type usage more strictly than the compilers.
+          Among the things that are currently detected are unreachable
+          statements, loops not entered at the top, automatic
+          variables declared and not used, and logical expressions
+          whose value is constant.  Moreover, the usage of functions
+          is checked to find functions that return values in some
+          places and not in others, functions called with varying
+          numbers or types of arguments, and functions whose values
+          are not used or whose values are used but none returned.
+
+          Arguments whose names end with ....cccc are taken to be C source
+          files.  Arguments whose names end with ....llllnnnn are taken to be
+          the result of an earlier invocation of _e_l_i_n_t with either the
+          ----cccc or the ----oooo option used.  The ....llllnnnn files are analogous to ....oooo
+          (object) files that are produced by the _c_c(1) command when
+          given a ....cccc file as input.  Files with other suffixes are
+          warned about and ignored.
+
+          _E_l_i_n_t will take all the ....cccc, ....llllnnnn, and lllllllliiiibbbb----llll_x....llllnnnn (specified
+          by ----llll_x) files and process them in their command line order.
+          By default, _e_l_i_n_t appends the standard C lint library
+          (lllllllliiiibbbb----llllcccc....llllnnnn) to the end of the list of files.  However, if
+          the ----pppp or ----PPPP option is used, the portable C lint library
+          (lllllllliiiibbbb----ppppoooorrrrtttt....llllnnnn) is appended instead.  When the ----cccc option is
+          not used, the second pass of _e_l_i_n_t checks this list of files
+          for mutual compatibility.  When the ----cccc option is used, the
+          ....llllnnnn and the lllllllliiiibbbb----llll_x....llllnnnn files are ignored.
+
+          Any number of _e_l_i_n_t options may be used, in any order,
+          intermixed with file-name arguments.  The following options
+          are used to suppress certain kinds of complaints:
+
+          ----aaaa   Suppress complaints about assignments of long values to
+               variables that are not long.
+
+          ----bbbb   Suppress complaints about bbbbrrrreeeeaaaakkkk statements that cannot
+               be reached.  (Programs produced by _l_e_x or _y_a_c_c will
+               often result in many such complaints).
+
+          ----hhhh   Do not apply heuristic tests that attempt to intuit
+               bugs, improve style, and reduce waste.
+
+          ----ssss   Suppress portability complaints about possible
+
+
+
+     Page 1                                          (printed 3/24/92)
+
+
+
+
+
+
+     EEEELLLLIIIINNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEELLLLIIIINNNNTTTT((((1111))))
+
+
+
+               incorrect sign-extension when assigning a signed value
+               to a larger variable, e.g. assigning a short value to a
+               long variable.
+
+          ----tttt   Suppress complaints about unused labels.
+
+          ----uuuu   Suppress complaints about functions and external
+               variables used and not defined, or defined and not
+               used.  (This option is suitable for running _e_l_i_n_t on a
+               subset of files of a larger program).
+
+          ----vvvv   Suppress complaints about unused arguments in
+               functions.
+
+          ----xxxx   Do not report variables referred to by external
+               declarations but never used, or undefined structure or
+               union tags that were used in pointer declarations.
+
+          The following arguments alter _e_l_i_n_t's behavior:
+
+          ----llll_x  Include additional lint library lllllllliiiibbbb----llll_x....llllnnnn.  For
+               example, you can include a lint version of the Math
+               Library lllllllliiiibbbb----llllmmmm....llllnnnn by inserting ----llllmmmm on the command
+               line.  This argument does not suppress the default use
+               of lllllllliiiibbbb----llllcccc....llllnnnn.  These lint libraries must be in the
+               assumed directory.  This option can be used to
+               reference local lint libraries and is useful in the
+               development of multi-file projects.
+
+          ----LLLL dir
+               Change the algorithm of seaching for lint library
+               lllllllliiiibbbb----llll_x....llllnnnn to look in _d_i_r before looking in
+               $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////eeeelllliiiinnnntttt.
+
+          ----mmmm module
+               Prepend _m_o_d_u_l_e and a slash (/) to the file names in the
+               messages, which is useful when using _e_l_i_n_t on an entire
+               project of thousands of source files.
+
+          ----nnnn   Do not check compatibility against either the standard
+               or the portable lint library.
+
+          ----pppp   Attempt to check portability to machines where an _i_n_t
+               is shorter than a _l_o_n_g or a pointer.
+
+          ----PPPP   Attempt to check portability to other dialects (IBM and
+               GCOS) of C.  Along with stricter checking, this option
+               causes all non-external names to be truncated to eight
+               characters and all external names to be truncated to
+               six characters and one case.
+
+          ----cccc   Cause _e_l_i_n_t to produce a ....llllnnnn file for every ....cccc file on
+
+
+
+     Page 2                                          (printed 3/24/92)
+
+
+
+
+
+
+     EEEELLLLIIIINNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEELLLLIIIINNNNTTTT((((1111))))
+
+
+
+               the command line.  These ....llllnnnn files are the product of
+               _e_l_i_n_t's first pass only, and are not checked for
+               interfunction compatibility.
+
+          ----oooo lib
+               Cause _e_l_i_n_t to create a lint library with the name
+               lllllllliiiibbbb----llll_l_i_b....llllnnnn.  The ----cccc option nullifies any use of the
+               ----oooo option.  The lint library produced is the input that
+               is given to _e_l_i_n_t's second pass.  The ----oooo option simply
+               causes this file to be saved in the named lint library.
+               To produce a lllllllliiiibbbb----llll_l_i_b....llllnnnn without extraneous messages,
+               use of the ----xxxx option is suggested.  The ----vvvv option is
+               useful if the source file(s) for the lint library are
+               just external interfaces (for example, the way the file
+               lllllllliiiibbbb----llllcccc is written).  These option settings are also
+               available through the use of ``lint comments'' (see
+               below).
+
+          The ----DDDD, ----UUUU, and ----IIII options of _c_p_p(1) and the ----gggg and ----OOOO
+          options of _c_c(1) are also recognized as separate arguments.
+          The ----gggg and ----OOOO options are ignored, but, by recognizing these
+          options, _e_l_i_n_t's behavior is closer to that of the _c_c(1)
+          command.  Other options are warned about and ignored.  The
+          preprocessor symbol ``lint'' is defined to allow certain
+          questionable code to be altered or removed for _e_l_i_n_t.
+          Therefore, the symbol ``lint'' should be thought of as a
+          reserved word for all code that is planned to be checked by
+          _e_l_i_n_t.
+
+          Certain conventional comments in the C source will change
+          the behavior of _e_l_i_n_t:
+
+               /*CONSTANTCONDITION*/
+                    stops the constant in conditional context and
+                    constant argument to NOT warnings in the following
+                    line.  This comment can be placed in assert macro
+                    definitions to avoid these warnings.
+
+               /*NOTREACHED*/
+                    at appropriate points stops comments about
+                    unreachable code.  (This comment is typically
+                    placed just after calls to functions like
+                    _e_x_i_t(2)).
+
+               /*VARARGS_n*/
+                    suppresses the usual checking for variable numbers
+                    of arguments in the following function
+                    declaration.  The data types of the first _n
+                    arguments are checked; a missing _n is taken to be
+                    0.
+
+               /*PRINTFLIKE_n*/
+
+
+
+     Page 3                                          (printed 3/24/92)
+
+
+
+
+
+
+     EEEELLLLIIIINNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEELLLLIIIINNNNTTTT((((1111))))
+
+
+
+                    The data types of the first _n arguments are
+                    checked as usual.  The remaining arguments are
+                    checked against the _n'th argument which is
+                    interpreted as a _p_r_i_n_t_f(3) format string.
+
+               /*SCANFLIKE_n*/
+                    Similarly for _s_c_a_n_f(3).
+
+               /*ARGSUSED*/
+                    turns on the ----vvvv option for the next function.
+
+               /*LINTLIBRARY*/
+                    at the beginning of a file shuts off complaints
+                    about unused functions and function arguments in
+                    this file.  This is equivalent to using the ----vvvv and
+                    ----xxxx options.
+
+          _E_l_i_n_t produces its first output on a per-source-file basis.
+          Complaints regarding included files are collected and
+          printed after all source files have been processed.
+          Finally, if the ----cccc option is not used, information gathered
+          from all input files is collected and checked for
+          consistency.  At this point, if it is not clear whether a
+          complaint stems from a given source file or from one of its
+          included files, the source file name will be printed
+          followed by a question mark.
+
+          The behavior of the ----cccc and the ----oooo options allows for
+          incremental use of _e_l_i_n_t on a set of C source files.
+          Generally, one invokes _e_l_i_n_t once for each source file with
+          the ----cccc option.  Each of these invocations produces a ....llllnnnn
+          file which corresponds to the ....cccc file, and prints all
+          messages that are about just that source file.  After all
+          the source files have been separately run through _e_l_i_n_t, it
+          is invoked once more (without the ----cccc option), listing all
+          the ....llllnnnn files with the needed ----llll_x options.  This will print
+          all the interfile inconsistencies.  This scheme works well
+          with _m_a_k_e(1); it allows _m_a_k_e to be used to _e_l_i_n_t only the
+          source files that have been modified since the last time the
+          set of source files were _e_l_i_n_ted.
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/lib/elint               the directory where the lint
+                                         libraries specified by the
+                                         ----llll_x option must exist
+          $TOOLS/lib/elint/lint[12]      first and second passes
+          $TOOLS/lib/elint/llib-lc.ln    declarations for C Library
+                                         functions
+          $TOOLS/lib/elint/llib-port.ln  declarations for portable
+                                         functions
+          $TOOLS/lib/elint/llib-lm.ln    declarations for Math Library
+                                         functions
+
+
+
+     Page 4                                          (printed 3/24/92)
+
+
+
+
+
+
+     EEEELLLLIIIINNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEELLLLIIIINNNNTTTT((((1111))))
+
+
+
+          /usr/tmp/*lint*     temporary files
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cc(1), cpp(1), make(1).
+
+     BBBBUUUUGGGGSSSS
+          _e_x_i_t(2), _l_o_n_g_j_m_p(3C), and other functions that do not return
+          are not understood.
+
+          You may get spurious warnings about _p_r_i_n_t_f(3) or _s_c_a_n_f(3)
+          arguments when using _e_l_i_n_t on ....llllnnnn files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 3/24/92)
+
+
+

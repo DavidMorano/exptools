@@ -1,0 +1,21 @@
+#ident "@(#) /sable/sdb/ra/rel/extension/s.ext.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+class Extension
+   {
+protected:
+   friend ostream &operator<<(ostream &o,Extension &e);
+   unsigned nitems;
+   Boolean_t walking;
+   Extension();
+public:
+   size_t item_size;   // must set after creating, can change after truncating
+   virtual ~Extension() {};
+   virtual unsigned cardinality();
+   virtual Boolean_t startwalk();
+   virtual Tuple * walk();     
+   virtual Boolean_t operator=(Tuple *t);
+   virtual Boolean_t endwalk(); 
+   virtual Boolean_t truncate();
+   virtual Boolean_t operator+=(Tuple *t);
+   };

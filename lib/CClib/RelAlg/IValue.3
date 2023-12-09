@@ -1,0 +1,95 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/IValue/s.IValue.3"
+.\"
+.PH "'INTENSION VALUE(3RA)'Relational Algebra C++ Library'INTENSION VALUE(3RA)'"
+.PF "'10/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910007'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910007'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+IntensionValue,AttributeValue - an improved Tuple with Intension semantics
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <relation.h>
+
+.SO IValue.dd
+.EE
+.SK
+.LI "\fBDESCRIPTION\fP"
+.br
+An \*(Iv is composed of a Tuple (see \*(Tp) and an Intension (\*(In).
+Like Tuples, IntensionValues may be used to walk through a Relation and look
+at individual records.  IntensionValues are designed to be compatible with
+Tuples, with a simplified application interface.  Tuples require the application
+programmer to carefully track references with Tuple_new(), share() and done().
+Tuples
+require the application to convert the Tuple data to a C struct to read or write
+an Attribute value, and Tuples don't permit updates to a shared Tuple.
+Instead the data must be copied to a new Tuple and the Attribute values must be
+updated in the new Tuple.  Updates to STRING Attribute values must be padded
+with NULL ('\e0') characters to the full size of the Attribute.
+.P
+IntensionValues hide these complexities.  The IntensionValue constructor,
+destructor and assignment operator (=) handle all necessary Tuple_new(),
+share(), done(), and padding transparently to the application.
+The IntensionValue cast operators (void *(), Tuple *(), const char *())
+convert the data in the Tuple to the specified type and return it
+to the application.  No allocation or deallocation of space is required
+on the part of the application.
+The IntensionValue project operator ( [] ) allows an application to
+project an IntensionValue to an AttributeValue by specifying the Attribute.
+Project returns a reference to an AttributeValue.
+.P
+The AttributeValues
+can be read by casting them to Int_t, Float_t or char *.  They can be
+written (updated) using the assignment operator (=), and they can be
+tested using the comparison operators ( ==, !=, <=, <, >=, > ).
+.P
+The IntensionValue caches AttributeValues when it projects to them
+and automatically arranges for their cleanup when the IntensionValue
+is destroyed.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The IntensionValue and AttributeValue operations fail, call relerr.error
+to print an error to standard error, abort and exit under the following
+circumstances:
+.VL 10 0
+.LI "[R_BAD_TUPLE]"
+- the IntensionValue assignment operator ( = ) is called with an
+unreferenced or wrongly sized Tuple.
+.LI "[R_MIXED_DOMAIN]"
+- the IntensionValue assignment operator ( = ) is called with a
+AttributeValue reference (right hand side) whose Domain does not match the
+Domain of the AttributeValue on the left hand side.  If you really do
+want to make an assignment with mixed Domains, you could type cast
+the right hand side, to the type of the left hand side's Domain.  The
+Constraints for the left hand side's Domain will be applied to the
+right hand side before the assignment is successful.
+.LI "[R_NO_ATTRIBUTE]"
+- the project operator ( [] ) is called with an Attribute that isn't in
+the Intension.
+.LI "[R_NOT_INT_ATTRIBUTE]"
+- the AttributeValue assignment operator ( = ) or an AttributeValue
+comparison operator ( ==,!=,>,>=,<,<= ) is called with an
+Int_t value for an Attribute whose Domain is not INT.
+.LI "[R_NOT_FLOAT_ATTRIBUTE]"
+- the AttributeValue assignment operator ( = ) or an AttributeValue
+comparison operator ( ==,!=,>,>=,<,<= ) is called with an
+Float_t value for an Attribute whose Domain is not FLOAT.
+.LI "[R_NOT_STRING_ATTRIBUTE]"
+- the AttributeValue assignment operator ( = ) or an AttributeValue
+comparison operator ( ==,!=,>,>=,<,<= ) is called with an
+char * value for an Attribute whose Domain is not STRING.
+.LE
+.SK
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO IValueE.ex
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+intro(3RA), \*(Er, \*(At, \*(Dm, \*(Rl, \*(Tp, \*(In
+.LE

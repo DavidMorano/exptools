@@ -1,0 +1,594 @@
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ce - change the user's Unix environment
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ce  [ -l [-d]] [ -cnpqrs ] [ envname ... ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _c_e command provides the ability to change the user's
+          Unix environment in predefined ways, allowing users to
+          create different environments for different work situations
+          and to move easily among them.
+
+          At its simplest, each environment has a name, such as
+          _e_n_v_n_a_m_e, and the user enters that environment by issuing the
+          command
+
+               ce  envname
+
+          This results in a new shell being started with the given
+          environment set up.  Depending on the options used, the
+          current working directory may be automatically changed as
+          well.  To return to the previous environment (and working
+          directory), the user would enter ^D (control-D).
+
+          Using this command removes the need to hardwire information
+          about a current project in the user's profile.  Users can
+          log in to a neutral environment, and then choose which
+          environment they want to work in after they log in, changing
+          that decision as often as needed during their login session.
+
+          Each environment is defined by a shell script that is dotted
+          in (i.e., processed by the '.' command) just before the
+          subshell is started up.  Users can create their own, private
+          environments, and projects can create common environments to
+          be used by all those working together on them.  The
+          environments a user has available depends on the setting of
+          the CEPATH environmental variable and the set up scripts
+          contained in the directories named in that variable.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTTAAAALLLL VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          The following environmental variables can be used to control
+          the behavior of this command.
+
+          CEPATH  This variable defines the search path for _c_e
+                  environments.  It is similar to the Unix PATH
+                  variable.  It is a colon-separated list of
+                  directories to be searched when an environment is
+                  requested.  The first file encountered whose name is
+                  the same as the requested environment is dotted in.
+                  The commands in that file set up the given
+                  environment.
+
+
+
+
+     Page 1                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+                  The default value of CEPATH is $$$$HHHHOOOOMMMMEEEE////eeeennnnvvvviiiirrrroooonnnnmmmmeeeennnnttttssss....
+
+          CHEPATH Because of an undocumented use of the CEPATH
+                  variable by the Sun tool _t_o_o_l_t_a_l_k, users of _c_e
+                  cannot use CEPATH on Sun machines.  The backup
+                  variable CHEPATH can be used on such machines for
+                  the same purpose as CEPATH.
+
+          CEROOT  If this variable is defined after an environment is
+                  set up, and the -r flag is in effect (the default),
+                  it is taken to identify the new current working
+                  directory of the new environment.  Usually, this
+                  would be either the directory that contains files to
+                  be edited or the directory that is at the top of a
+                  tree of directories containing files to be worked
+                  on.
+
+                  NOTE: this variable is unset every time this command
+                  starts up.
+
+          CEOPTS  This variable defines the user's default command-
+                  line options.  If set, it should contain the flags
+                  the user wants inserted automatically into the
+                  command line whenever the _c_e command is invoked.
+                  This allows users to customize the command to their
+                  own tastes.  Generally, it is used to set the -n
+                  flag if users want to override the -r default.  This
+                  would be done by putting the line CCCCEEEEOOOOPPPPTTTTSSSS====""""----nnnn"""" in
+                  their profile.
+
+          CERC    If this variable is defined, it names a shell script
+                  that is to be dotted in to each new environment
+                  _a_f_t_e_r the environment named on the command line is
+                  processed, just before the user is given control.
+                  This provides a way to add final setup steps to all
+                  environments.
+
+          SHELL   This variable defines the shell to be used with each
+                  new environment.  If not set, the default value is
+                  ////bbbbiiiinnnn////sssshhhh....
+
+          CECMD   If this variable is defined, it names a program or
+                  shell script to be invoked when the environment is
+                  started up _i_n_s_t_e_a_d of the shell identified by the
+                  SHELL variable.  This avoids needless extra steps
+                  and the needless generation of extra subshells when
+                  trying to set up an environment using pre-existing
+                  commands that start up their own shells.  This
+                  variable can be assigned within an environment setup
+                  script, since its value will be used only after the
+                  setup script is processed.
+
+
+
+
+     Page 2                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+                  NOTE: this variable is unset every time this command
+                  starts up.
+
+          PS1     When an environment is set up, the PS1 variable
+                  (which defines the current shell prompt) is changed
+                  to show that a subshell is active.  The name of the
+                  new environment is prefixed to the previous one.
+                  Thus, if the original value of PS1 were
+
+                       $
+
+                  then after entering the _e_n_v_n_a_m_e environment, PS1
+                  would become
+
+                       [envname] $
+
+                  User's who would like to customize the PS1 variable
+                  in their own way can do so in the script identified
+                  by the CERC variable.  This script is processed
+                  _a_f_t_e_r the PS1 variable has been changed.  During the
+                  processing of the CERC script the variable OLDPS1
+                  contains the original value of PS1, which users can
+                  use to construct their own PS1 prompt.
+
+                  If several environments are named on the command
+                  line, all their names are included in the PS1 prompt
+                  separated by slashes(/).
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD----LLLLIIIINNNNEEEE AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+          The following are the command-line flags for this command.
+
+          -l   This flag requests that a list of all environments
+               currently available be displayed.  It generates a list
+               of all the files found in all the directories in the
+               CEPATH variable.
+
+               If this option is used with environment names or
+               patterns, it causes the command to only look for and
+               report on environments with those names or matching
+               those patterns.  The pattern language used is the
+               filename pattern language of the Korn shell.  Please be
+               sure to quote any metacharacters used on the command
+               line to prevent their being interpreted too soon.
+
+               Example: the following command will list all
+               environments whose name ends with the string 'envs':
+
+                    ce -l "*envs"
+
+
+          -d   This flag modifies the -l flag by requesting that the
+               list of environments be organized by the _d_i_r_e_c_t_o_r_y in
+
+
+
+     Page 3                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+               which the environment script was found.
+
+          -c   This flag requests that comments beginning with '##' in
+               the environment definition scripts be printed to
+               standard output when the environments are entered or
+               listed.
+
+          -p   This flag requests that instead of invoking the
+               environment named, that it be printed to standard
+               output instead.  This is useful for quickly examining
+               an environment to see how it is set up.
+
+          -q   This flag requests _q_u_i_e_t operation, i.e., that the
+               informative messages normally displayed during start up
+               not be shown.
+
+          -r   This flag requests that if the variable CEROOT is
+               defined within an environment, that a cd to that
+               directory be done automatically when the environment is
+               started up.  This flag is in effect by default.
+
+          -n   This flag reverses the effect of the -r flag, i.e.,
+               even if the variable CEROOT is defined at the end of
+               setting up an environment, no change of directory will
+               happen.  If a user wants this to be the default
+               behavior for this command, then the variable CEOPTS
+               should be set to '-n' (i.e., the user should put
+               CCCCEEEEOOOOPPPPTTTTSSSS====""""----nnnn"""" in their profile).
+
+          -s   This flag requests that if a second environment is
+               started up within a first, that a cd be done
+               automatically to the directory in the new environment
+               that is in the _s_a_m_e relative position under the new
+               CEROOT as the current directory is under the current
+               CEROOT.  This is useful when two environments use
+               identical directory structures under their respective
+               CEROOT directories, and the user wants to jump to the
+               directory in the second environment that corresponds to
+               the one currently being used in the first.  This often
+               happens when two environments are used for two
+               different versions of the same product, one for the
+               current product as delivered to customers, and the
+               other for the next version of the product under
+               development.  The -s option would allow a developer to
+               jump from the development subdirectory to the
+               corresponding product subdirectory with a single cccceeee ----ssss
+               eeeennnnvvvvnnnnaaaammmmeeee command, check files in that directory, and
+               then return with a single ^D.
+
+          envname
+               This argument names an environment to be set up.  It
+               causes the directories named in CEPATH to be searched
+
+
+
+     Page 4                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+               until one is found containing a file with that name,
+               which is then dotted in, setting up the given
+               environment and changing the PS1 prompt.
+
+               If several environments are named on the command line,
+               each is searched for and processed in turn.  This
+               allows several different, independent environments to
+               be in effect simultaneously.  For tips on how to handle
+               _d_e_p_e_n_d_e_n_t environments, see below.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT SSSSEEEETTTTUUUUPPPP SSSSCCCCRRRRIIIIPPPPTTTTSSSS
+          The simplest environmental setup scripts do little more than
+          set a few environmental variables.  However, there are
+          several options and techniques available that can be used to
+          develop more sophisticated setup scripts.
+
+        EEEEnnnnvvvviiiirrrroooonnnnmmmmeeeennnntttt ccccrrrreeeeaaaattttiiiioooonnnn aaaannnndddd mmmmaaaaiiiinnnntttteeeennnnaaaannnncccceeee
+          A very useful environment, and one that everyone should have
+          who wants to maintain several different personal or project
+          environments, is one that helps set up and maintain other
+          environments.  It is one of the simplest but at the same
+          time most useful environments there is.
+
+          Suppose the directory that contains all a user's personal
+          environment setup scripts is $HOME/environments.  Here is
+          the setup script _m_y_e_n_v_s located in that directory:
+
+               ## Personal environment creation and editing environment
+
+               CEROOT=$HOME/environments
+
+          When the user issues the command cccceeee mmmmyyyyeeeennnnvvvvssss,,,, a subshell is
+          started making the current directory the one with all the
+          personal environment setup scripts, i.e.,
+          $HOME/environments.  This is the case no matter which
+          directory the command was originally issued in.  When done
+          editing, a ^D returns the user to the original directory.
+          This makes it easy to edit and adjust environments at any
+          time.
+
+          Similar scripts can help in the management of project
+          scripts.  Thus, project A might have a script called _A_e_n_v_s,
+          project B might have _B_e_n_v_s, and so forth.  Using these
+          environments makes it easy to manage whatever other
+          environments these projects may have.
+
+        DDDDiiiiffffffffeeeerrrreeeennnntttt bbbbeeeehhhhaaaavvvviiiioooorrrr bbbbaaaasssseeeedddd oooonnnn eeeennnnvvvviiiirrrroooonnnnmmmmeeeennnntttt nnnnaaaammmmeeee
+          When a script is invoked, the name of the environment is
+          passed to the script as its first argument.  This allows the
+          same setup file to appear linked under many different names,
+          with the setup script changing its behavior slightly
+          depending on its name.  For example, the following is a
+
+
+
+     Page 5                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+          general-purpose script used with certain source-control
+          systems:
+
+               ## General script to set up source control variables
+
+               SCCS_VISIBLE=$HOME/src/$1     # Source files directory
+               SCCS_INVISIBLE=$HOME/sccs/$1  # Sccs files directory
+               export SCCS_VISIBLE SCCS_INVISIBLE
+               CEROOT=$SCCS_VISIBLE
+
+          In the above script, two directory names are constructed and
+          assigned to special variables based on the environment name.
+          To create a new environment, all the user need do is 1) link
+          the above setup file to a file with the name of the new
+          environment, and 2) create the ssssrrrrcccc////eeeennnnvvvvnnnnaaaammmmeeee and ssssccccccccssss////eeeennnnvvvvnnnnaaaammmmeeee
+          directories.  After that, the new environment is ready to
+          go.
+
+        HHHHiiiiddddddddeeeennnn bbbbaaaasssseeee eeeennnnvvvviiiirrrroooonnnnmmmmeeeennnnttttssss
+          If several different environments are virtually the same,
+          with only slight differences between them, it might make
+          sense to establish a hidden base environment for them.  The
+          simplest way to do this is to create a file beginning with a
+          dot, such as ....bbbbaaaasssseeeeeeeennnnvvvv,,,, and put into it the setup commands
+          that are common to all the related environments.  Then each
+          main environment script will dot in (using the '.'  command)
+          this base environment, adding to it whatever setup
+          instructions are unique for that particular environment.
+
+          The following shows an example of this:
+
+               ## Project script based on a hidden base environment
+
+               SCCS_VISIBLE=/pt1/proj4.2/src       # Source directory
+               SCCS_INVISIBLE=/pt3/proj4.2/sccs    # Sccs directory
+
+               . /pt4/proj1/environments/.baseenv  # Base environment
+
+          In this example, the principal difference between
+          environments is the location of the source and sccs files.
+          Therefore, the variables that identify these directories are
+          explicitly set, and then the common setup commands are
+          dotted in.  The common setup commands would handle
+          everything that is the same for all these environments, as
+          shown in the following:
+
+               ## Hidden base environment
+
+               export SCCS_VISIBLE SCCS_INVISIBLE
+               CEROOT=$SCCS_VISIBLE
+
+          Of course, this is an overly simple example, but it
+
+
+
+     Page 6                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+          illustrates the principal that all the commands common to
+          the several environments are placed in the base environment,
+          and only the steps that are unique to each environment are
+          placed in each individual environment.
+
+          The main reason for using a filename beginning with a dot
+          for such base environments is that they are probably located
+          in the same directories as the other environment setup
+          scripts, but they shouldn't be listed when a cccceeee ----llll command
+          is issued, because they are not complete environments.  They
+          only provide part of the picture that the other environments
+          complete. Therefore, users shouldn't try to invoke them
+          separately.  The best way to prevent this is not to show
+          them to users in the first place.  Of course, if a base
+          environment file is stored in some other directory, there is
+          no need to keep it hidden using the leading dot.
+
+        DDDDeeeeppppeeeennnnddddeeeennnntttt eeeennnnvvvviiiirrrroooonnnnmmmmeeeennnnttttssss
+          A variation on the above is the case of Dependent
+          environments, i.e., environments which require the presence
+          of _o_t_h_e_r environments (either in whole or in part) to
+          function.  One example of this is a project that is broken
+          into several development efforts, one a core set of
+          functions and the rest a series of optional feature packages
+          that depend on those core functions.  How should the
+          feature-package environments be set up?
+
+          The simple approach would be to set up each environment
+          separately, and require developers to name all the
+          environments they need when doing feature-package
+          development.  For example, if the core environment were
+          named ccccoooorrrreeeeeeeennnnvvvv and a feature-package environment depending on
+          it were named ffffeeeeaaaattttuuuurrrreeeeeeeennnnvvvv,,,, then users might be expected to
+          issue the command
+
+               ce coreenv featureenv
+
+          to get the correct working environment.
+
+          If the feature environment always needed the core
+          environment, then a better way to organize this would be to
+          have the _f_e_a_t_u_r_e_e_n_v setup script automatically include the
+          _c_o_r_e_n_v script.  That way, the user would only need to type
+
+               ce featureenv
+
+          to get the correct environment.  This is easier for users,
+          and is less prone to error.  The following shows an example
+          of this:
+
+               ## Feature script based on a core environment
+
+
+
+
+     Page 7                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+               # First load in the core environment
+               . /pt4/proj/envs/coreenv            # Core environment
+
+               # Now do the feature-package setup ...
+               SCCS_VISIBLE=/pt1/proj4.2/src       # Source directory
+               SCCS_INVISIBLE=/pt3/proj4.2/sccs    # Sccs directory
+               export SCCS_VISIBLE SCCS_INVISIBLE
+               CEROOT=$SCCS_VISIBLE
+                 (any other needed commands ...)
+
+          This is just an example of a specific situation.  The
+          general idea is to have each environment be as complete as
+          possible, so that users need only name that environment to
+          have it set up for them, including all other environments on
+          which it might depend.
+
+        AAAAcccccccceeeessssssssiiiinnnngggg tttthhhheeee llllaaaatttteeeesssstttt pppprrrroooojjjjeeeecccctttt eeeennnnvvvviiiirrrroooonnnnmmmmeeeennnntttt
+          Another problem that can occur in projects is that several
+          different versions of the project might be available
+          simultaneously.  For example, a project might have versions
+          4.1 and 4.2 available as environments, using _p_r_o_j_4._1 and
+          _p_r_o_j_4._2 as the environment names.  Unfortunately, this means
+          that developers must always specify the version number they
+          want to work on when changing environments.  This isn't a
+          big problem, but it can cause difficulties when a project
+          moves to a new version number and people keep typing in the
+          old number.
+
+          One technique that can help here is to link the most-used
+          environment to a file with the generic project name.  Thus,
+          linking _p_r_o_j_4._2 to _p_r_o_j would mean that developers would
+          only need to issue the command
+
+               ce  proj
+
+          to access the current development environment.  When the
+          project moves on to version 4.3, the new environment file
+          can be linked to the _p_r_o_j file, and developers can continue
+          entering the same command to access the new environment.
+
+     IIIINNNNIIIITTTTIIIIAAAALLLL CCCCEEEE SSSSEEEETTTTUUUUPPPP
+          The simplest way to set a userid up to begin using this
+          command is to create a directory called $$$$HHHHOOOOMMMMEEEE////eeeennnnvvvviiiirrrroooonnnnmmmmeeeennnnttttssss
+          and to place the appropriate _m_y_e_n_v_s setup script in it (as
+          described above).  Also, ksh should be the currently running
+          shell.  Once done, the command can be used to see how it
+          works.  Making new, personal environments is then a matter
+          of figuring out the user's needs and setting up environments
+          to match.
+
+          If a user wants access to environments that already exist,
+          then the variable CEPATH should be set in the user's profile
+
+
+
+     Page 8                                          (printed 4/21/94)
+
+
+
+
+
+
+     CCCCEEEE((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                CCCCEEEE((((1111))))
+
+
+
+          to identify the directories containing the necessary setup
+          scripts.  Once set, all the environments in those
+          directories will be available to the user.
+
+     TTTTIIIIPPPPSSSS FFFFOOOORRRR EEEEFFFFFFFFEEEECCCCTTTTIIIIVVVVEEEE UUUUSSSSEEEE
+          To use this command effectively, users should keep the
+          following key ideas in mind.
+
+          1. The CEPATH environmental variable should not be changed
+             often.  This variable should list the directories
+             containing _a_l_l the environments to which a user is likely
+             to change.  It should be set once, generally in the
+             user's profile, and left alone thereafter.
+
+          2. Each environment should have a unique name, so that users
+             can select whichever one they want whenever they want.
+             If similar environments have slightly different "flavors"
+             (version numbers, default libraries, etc.), then each
+             flavor should be clearly identified in the environment's
+             name, e.g., proj4.0, proj4.1, proj4.2beta.  This also
+             allows users to see what environments are at their
+             disposal when the -_l flag of the command is used.
+
+          3. To reduce keystrokes, the most commonly used or default
+             environments can be linked (see above) to files with
+             shorter names.  Such linked environments can be changed
+             as the defaults change.
+
+          4. If, after issuing the _c_e command, users find that they
+             must set additional environmental variables or perform
+             other steps before they can begin working, then something
+             is wrong.  The setting of such variables and execution of
+             such steps should be done during the environment setup
+             itself.  The purpose of this command is to put users in
+             an environment completely suited to their needs, not a
+             partial environment that needs additional steps to
+             complete.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          This command requires that the Korn shell be the current
+          shell when invoked, or that the Korn shell be in the users
+          PATH.
+
+          Users unused to the _c_e command will find themselves typing
+          ccccdddd by mistake at first, generating the error message sssshhhh::::
+          xxxxxxxxxxxx:::: nnnnooootttt ffffoooouuuunnnndddd and producing a moment's confusion.  This
+          difficulty will soon pass with practice.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          George Otto
+
+
+
+
+
+     Page 9                                          (printed 4/21/94)
+
+
+

@@ -1,0 +1,980 @@
+.\" BEGIN RADIX MACROS     ---    Version 5.0
+.ig
+The following is a list of the macros, strings, and number registers
+used in this RADIX macro package.  The first character of the macro
+names is almost always significant.
+	"d" and "g" macros are known and used by the document writer
+	"r" macros and strings allow the writer to define his/her own output
+	    format as specified in the dU macro.
+	"m" macros, strings, and number registers are internal.
+	"f" strings are internal.
+	"t" macros are internal.
+	"h" number registers are internal.
+	the macro name ")d" was chosen to simulate MM's )D.  It is internal.
+RADIX macros
+dA  abstract
+dC  local clusters
+dD  high key
+dE  end decision
+dI  local initials
+dK  local keywords
+dL  summary list of decisions in order they appear in doc, with section heading
+dM  reason for modification
+dP  5ESS Systems Engineering style decision list (similar to dL)
+dQ  5ESS Systems Engineering implementation record
+dR  reference
+dS  start decision
+dT  xref tables - complete and references-only
+dU  user defined output
+dW  weight
+dX  start supplementary info
+dZ  zap temporary files, etc.
+gC  global clusters
+gD  global high key
+gF  field separators used between prefix and label, and label and version in dS
+gI  global initials
+gK  global keywords
+gP  global prefix
+gW  global weight
+
+Other macros defined with .de
+)d  non-fatal error
+mC  macro to print duplicate labels and clean up temporary files
+mS  macro to parse 1st arg to dS
+tS  macro to replace MM's DS between dS and dE to handle DS's diversion
+tE  macro to replace MM's DE between dS and dE to handle D[SF]'s diversion
+ts  temporary macro to hold MM's DS between dS and dE - used with .rn
+te  temporary macro to hold MM's DE between dS and dE - used with .rn
+Ds  similar to dS macro except used for dL list
+De  similar to dE macro except used for dL list
+Hh  similar to H in MM except used for dL list
+
+Strings
+f1  input field separator between prefix and label on dS line - default is "-"
+f2  input field separator between label and version on dS line - default is "V"
+f3  output field separator between prefix and doc# on dS line - default is "-"
+f4  output field separator between doc# and label on dS line- default is "-"
+f5  output field separator between label and version on dS line- default is "V"
+hR  global reference-to document set with dD and gD
+hP  holds filter pipe created in dL
+mH  global high key set with dD or gD
+mF  directory and prefix file name for temporary files used by tables
+mL  label, section number, page - used in dE to write out to table file
+mM  previous section number - used to make dL list
+mN  section number
+mP  global prefix defined by gP
+mR  reference used in table (don't want some info that rR has)
+mT  header text - used to make dL list
+mW  global weight defined by gW
+rA  abstract - user format
+rC  global cluster - user format
+rH  high key - user format
+rI  global initials - user format
+rK  global keywords - user format
+rL  low key (label)  - user format
+rM  modification reason - user format
+rP  prefix - user format
+rR  reference - user format
+rV  version - user format
+rW  weight - user format
+rX  path to exptools radix library
+rc  local cluster - user format
+ri  local initials - user format
+rk  local keywords - user format
+tH  temporary holder of mH (global high key set by gD or dD) - used in dL
+     -  also used in dR to temporarily hold the current reference info
+     -  also used in dL and dP to temporarily hold an error indicator
+tP  temporary holder of mP (global prefix set by gP) - used in dL
+tF  temporary holder of f1 (1st field separator) - used in dL
+tf  temporary holder of f12(2nd field separator) - used in dL
+tO  temporary holder of f3 (1st output field separator) - used in dL
+tM  temporary holder of f4 (3nd output field separator) - used in dL
+to  temporary holder of f5 (3rd output field separator) - used in dL
+
+Divert macros
+mZ  dummy macro used only in checking field separators
+rS  supplementary info - user format
+rT  decision text - user format
+
+Number registers
+h1-h7 keep track of heading number - used in Hh
+hF  records font position of font used just prior to dS
+m1  keeps track of dS/dE ordering
+m3  keeps track of type of "delete"
+m4  keeps track of where dU is called from
+mV  vertical position, used in dU to prevent double spacing between decisions
+mx  horizontal position immediately after .LI
+mX  horizontal position after .LI plus any text before .dS
+r1-7 counters for dP/dQ
+
+
+Temporary files (referred to as \*(mF.D[12345])
+D1  file of all labels.  (high key, low key, section number, page)
+D2  file used to hold non-unique labels.
+D3  file into which label xref tbl source is put; scratch file for dP/dQ.
+D4  file which gets D3's tbl processed source.
+D5  file used in parsing .dS label argument
+D6  file used in preprocessing list file in dL.
+D7  file used to format non-unique labels warning message.
+D8  file of all labels including weight and prefix for dP/dQ
+..
+.\"################## Set up for RADIX macros ###################
+.\"
+.\"  Set "rX" to the path of the radix macros and utilities
+.\"  in the exptools directory. This is necessary so that the RADIX
+.\"  utilities can be  found. The "\" in front of the ".so" insures
+.\"  that xpand and soexpand will not try to expand the ".so".
+.\"
+.if \*(rX \{\
+.sy echo .ds rX `logdir exptools`/lib/radix/ > /usr/tmp/\n($$
+\.so /usr/tmp/\n($$
+.sy rm /usr/tmp/\n($$ 
+'br\}
+.\"
+.\"################## End Set up for RADIX macros ###############
+.\"************************************************************************
+.\" define default field separators used on dS line and in output
+.sy `logdir exptools`/lib/radix/radixlog -macros_source
+.ds f1 -
+.ds f2 V
+.ds f3 -
+.ds f4 -
+.ds f5 V
+.nr m1 0		\" expect .dS before .dE
+.nr m4 1		\" dU will be used by dS
+.ds mF /usr/tmp/\n($$
+.sy touch \*(mF.D1 \*(mF.D8
+.rm mW 
+.\"************************************************************************
+.\" get current line horizontal position for lists by appending to LI macro
+.nr mx -1
+.am LI
+.if !\\n(mx .nr mx \\n(.i+\\n(.k
+..
+.\"************************************************************************
+.\" define non-fatal error message.
+.de )d
+'di
+'di
+.nr :D 0
+.fl
+********************
+.br
+ERROR:(\\n(.F)input line \\n(.c:\\$1
+.br
+********************
+.br
+.tm********************
+.tmERROR:(\\n(.F)input line \\n(.c:\\$1
+.tm********************
+..
+.\"************************************************************************
+.\" define replacement macros for DS DE within dS and dE
+.de tS
+.br
+\!.DS \\$1 \\$2 \\$3
+.nf
+..
+.de tE
+.fi
+\!.DE
+..
+.\"**********************************************************************
+.\" Print duplicate label warning.
+.de mC
+.sy	cut -d -f1 \*(mF.D1 |\
+		sort |\
+		uniq -d |\
+		egrep -v \\\\^0$ > \*(mF.D2; \
+	for i in `cat \*(mF.D2`;  \
+		do egrep \\\\^${i} \*(mF.D1 >> \*(mF.D7;\
+		echo >> \*(mF.D7;\
+	done;
+.\" Need to split .sy because otherwise line is too long for shell
+.sy if [ -s \*(mF.D7 ] ; \
+then \
+echo "WARNING: The following labels are duplicates.\
+\\\\n\\\\nLabel                    Section                  Page\\\\n" >&2; \
+fi
+.sy	if [ -s \*(mF.D7 ] ; \
+	then \
+		cat \*(mF.D7 | \
+		awk -F 'NF==1 {print} \
+			  NF>1  {printf "%s--%s\\\\n",$1,$2}' | \
+		awk -F '/./   {printf "%s-%s\\\\n", $1, $2}' | \
+		pr -tr -e25 >&2; \
+	fi
+.\" Clean up temporary files
+.sy rm \*(mF.D[1-8] 2>/dev/null
+..
+.\" Have mC invoked at end of job.
+.em mC
+.\"
+.\"
+.\"
+.de gC
+.if !\\n(.$ .)d "gC: missing argument"
+.ds rC "\\$1
+..
+.\"
+.\"
+.de gD
+.ie \\$1 .)D "gD: missing required first argument"
+.el .ds mH "\\$1
+.if !\\$2 .ds hR "\\$2
+..
+.de dD
+.ie \\$1 .)D "dD: missing required first argument"
+.el .ds mH "\\$1
+.if !\\$2 .ds hR "\\$2
+..
+.\"
+.\"
+.\"
+.de gF
+.\" Make sure input field separators are one character long.
+.sy echo "\\$1" | awk '{if(length!=1) x=1; print ".nr dl 0" x }' > \*(mF.D2
+'so \*(mF.D2
+.ie \\n(dl .)D "gF: input field separator 1 must be 1 character"
+.el .ds f1 "\\$1
+.sy echo "\\$2" | awk '{if(length!=1) x=1; print ".nr dl 0" x }' > \*(mF.D2
+'so \*(mF.D2
+.ie \\n(dl .)D "gF: input field separator 2 must be 1 character"
+.el .ds f2 "\\$2
+.\" Input separators must be different.
+.if \\*(f1\\*(f2 .)D "gF: input field separators must be unique"
+.\"
+.\" If the 3rd, 4th, and 5th args are non-empty, use them as output field
+.\" separators.  They do not have to be single characters, nor unique.
+.if \\n(.$-2 \{\
+.ds f3 "\\$3
+.ds f4 "\\$4
+.ds f5 "\\$5
+'br\}
+..
+.\"
+.\"
+.\"
+.de gI
+.if !\\n(.$ .)d "gI: missing argument"
+.ds rI "\\$1
+..
+.\"
+.\"
+.\"
+.\" Set Global Weight. Set mW to argument even if it is null. 
+.\" A null argument is the signal to disable the global weight.
+.de gW
+.ds mW \\$1
+..
+.\"
+.\"
+.\"
+.de gK
+.if !\\n(.$ .)d "gK: missing argument"
+.ds rK "\\$1
+..
+.\"
+.\"
+.\"
+.de gP
+.if !\\n(.$ .)d "gP: missing argument"
+.ds mP "\\$1
+..
+.\"
+.\"
+.\"
+.de dA
+.if !\\n(.$ .)d "dA: missing argument"
+.if !\\n(m1 .)d "dA: not within dS-dE pair"
+.ds rA "\\$1
+..
+.\"
+.\"
+.\"
+.de dC
+.if !\\n(.$ .)d "dC: missing argument"
+.if !\\n(m1 .)d "dC: not within dS-dE pair"
+.as rc " \\$1
+..
+.\"
+.\"
+.\"
+.de dE
+.\" Restore font used prior to invoking dS
+.ft \\n(hF
+.br
+.di
+.if !\\n(m1 .)d "dE:missing dS"
+.\"*****************************************************************
+.\" restore DS DE macros
+.rn DS tS
+.rn ts DS
+.rn DE tE
+.rn te DE
+.\"*****************************************************************
+.\" for dP/dQ
+.\"
+.\" Assign global weight if no local weight is set.
+.\"
+.if \\*(rW .ds rW \\*(mW
+.\"
+.\" count various priorities and implementation types
+.ie     \\*(rWE  .nr r1 +1
+.el .ie \\*(rWD  .nr r2 +1
+.el .if \\*(rWO  .nr r3 +1
+.ie     \\*(rPSI .nr r4 +1
+.el .ie \\*(rPAI .nr r4 +1
+.el .ie \\*(rPSD .nr r5 +1
+.el .ie \\*(rPAD .nr r5 +1
+.el                    .nr r6 +1
+.\"*****************************************************************
+.\"Calculate current section number for use below
+.ds mN \\n(H1
+.if \\n(H2-0 .as mN .\\n(H2
+.if \\n(H3-0 .as mN .\\n(H3
+.if \\n(H4-0 .as mN .\\n(H4
+.if \\n(H5-0 .as mN .\\n(H5
+.if \\n(H6-0 .as mN .\\n(H6
+.if \\n(H7-0 .as mN .\\n(H7
+.\"*****************************************************************
+.\" Write label, section, page, and if exist, references, out to *.D1
+.ie \\*(rL0 .ds mL 0\\*(mN\\n%
+.el \{\
+.\" Include version if exists.
+.ie \\*(rV .ds mL "\\*(rH\\*(rL\\*(mN\\n%
+.el .ds mL "\\*(rH\\*(rL\\*(rV\\*(mN\\n%
+'br\}
+.ie \\*(rR .sy echo "\\*(mL" >> \*(mF.D1
+.el              .sy echo "\\*(mL\\*(mR" >> \*(mF.D1
+.\"*****************************************************************************
+.\" Write label, section, page, and weight out to *.D8, for dP/dQ.
+.\" The references have already been written out in the .dR macro.
+.\" Note format is slightly different from *.D1, i.e., weight and prefix
+.\" included and actual output field separators (f4, f5) are used.
+.\"*****************************************************************************
+.ie \\*(rL0 .ds mL 0\\*(mN\\n%
+.el \{\
+.\" Include version if exists.
+.ie \\*(rV .ds mL "\\*(rH\\*(f4\\*(rL\\*(mN\\n%
+.el .ds mL "\\*(rH\\*(f4\\*(rL\\*(f5\\*(rV\\*(mN\\n%
+'br\}
+.sy echo "\\*(mL\\*(rW\\*(rP" >> \*(mF.D8
+.\"*****************************************************************
+.\" If in a list AND horizontal place is the same, no supplementary text was
+.\" entered after the bullet, so need to undo the "start fresh" .br in dS
+.\" and the following .sp with .sp -2 to realign the decision with the bullet.
+.\" To avoid possibly doing .sp -2 again in same list item, redefine mx.
+.if \\n(:g \{\
+.if \\n(mx=\\n(mX .sp -2
+.nr mx -1\}
+.\" dU is designed so the user can define his/her own output format.
+.dU
+.rm rA rH rL rM rP rR rS rT rV rW rc ri rk mL mN mR mZ
+.rr m3 mx mX
+.\" *****************************************************************
+.\" m1 is reset here (not earlier) so as not to interfere with its use in dU.
+.nr m1 0
+..
+.\"
+.\"
+.\"
+.de dI
+.if !\\n(.$ .)d "dI: missing argument"
+.if !\\n(m1 .)d "dI: not within dS-dE pair"
+.as ri "\\$1
+..
+.\"
+.\"
+.\"
+.de dK
+.if !\\n(.$ .)d "dK: missing argument"
+.if !\\n(m1 .)d "dK: not within dS-dE pair"
+.as rk " \\$1 
+..
+.\"
+.\" This macro is used only outside DSS
+.\" DSS replaces the .dL by its expansion in a troff preprocessor
+.\"
+.de dL
+.\" All the formatting macros need to be defined here.
+.if !\\n(.$ .)d "dL: missing argument"
+.rm tH
+.sy if [ ! -r \\$1 ]; then \
+	echo ".ds tH error" > /usr/tmp/\\n($$;\
+else \
+	echo ".rm tH" > /usr/tmp/\\n($$;\
+fi
+'so /usr/tmp/\\n($$
+.sy rm /usr/tmp/\n($$
+.if \\*(tHerror .)d "dL: file '\\$1' does not exist"
+.rm tH
+.\" Save important strings.
+.ds tH "\\*(mH
+.ds tP "\\*(mP
+.ds tF "\\*(f1
+.ds tf "\\*(f2
+.ds tO "\\*(f3
+.ds tM "\\*(f4
+.ds to "\\*(f5
+.\" Reset defaults of important strings.
+.ds mH
+.ds mP
+.ds f1 -
+.ds f2 V
+.ds f3 -
+.ds f4 -
+.ds f5 V
+.nr m4 0
+.\" Build filter pipe string.
+.ds hP
+.if !\\$2 .as hP | \\$2
+.if !\\$3 .as hP | \\$3
+.if !\\$4 .as hP | \\$4
+.if !\\$5 .as hP | \\$5
+.if !\\$6 .as hP | \\$6
+.if !\\$7 .as hP | \\$7
+.if !\\$8 .as hP | \\$8
+.if !\\$9 .as hP | \\$9
+.\" Process document source file.
+.sy /usr/lib/xpand \\$1 | \*(rXldecs | tbl | eqn | pic \\*(hP > \*(mF.D6
+'so \*(mF.D6
+.\" Restore important strings.
+.ds mH "\\*(tH
+.ds mP "\\*(tP
+.ds f1 "\\*(tF
+.ds f2 "\\*(tf
+.ds f3 "\\*(tO
+.ds f4 "\\*(tM
+.ds f5 "\\*(to
+.nr m4 1
+..
+.de Hh
+.if!\\n(.$ .)d "dH: missing arg"
+.nr ;0 0
+.if\\$1-7 .nr ;0 1
+.if\w\\$1-\w'0'u .nr ;0 1
+.if\\n(;0 .)d "dH:bad arg:\\$1"
+.nr ;1 0\\$1
+.if!0\\$1 .nr ;1 \\n(Hu 
+.if!\\n(;1 .)d "dH:bad arg:\\$1"
+.if2-\\n(;1 .nr h2 0 1
+.if3-\\n(;1 .nr h3 0 1
+.if4-\\n(;1 .nr h4 0 1
+.if5-\\n(;1 .nr h5 0 1
+.if6-\\n(;1 .nr h6 0 1
+.if7-\\n(;1 .nr h7 0 1
+.nr h\\n(;1 +1 
+.ds mT "\\$2
+..
+.\"
+.\"
+.\"
+.de Ds
+.if \\n(m1 .)d "dS:missing dE"
+.nr m1 1
+.if \\n(:g .nr mX \\n(.i+\\n(.k
+.\"***********************************************************************
+.\" replace (rename) DS DE macros
+.rn DS ts
+.rn tS DS
+.rn DE te
+.rn tE DE
+.\"***********************************************************************
+.\" Start fresh.
+.br
+.\"***********************************************************************
+.\" if 1st argument is 0 then make rL 0
+.\" else set rP, rL and rV
+.\"      if 2nd argument null then
+.\"          if mH null then error
+.\"          else rH=mH
+.\"      else rH=$2
+.ie \\$10 .ds rL 0
+.el \{\
+.\" Parse 1st arg by passing it through awk to create line of form
+.\" .mS [prefix] lowkey [highkey], and store in //*(mF.D5.
+.\" Then 'so to invoke mS which assigns prefix, lowkey, and version.
+.sy echo "\\$1" | \
+	awk -F\\\\\\*(f1 '/\\\\\\*(f1/ {printf ".mS %s %s",$1,$2}; \
+		!/\\\\\\*(f1/ {printf ".mS \\\\"\\\\" %s",$1}' | \
+	awk -F\\\\\\*(f2 '/\\\\\\*(f2/ {printf "%s %s\\\\n",$1,$2}; \
+		!/\\\\\\*(f2/ {printf "%s \\\\"\\\\"\\\\n",$1}' > \*(mF.D5
+'so \*(mF.D5
+.\" Now determine highkey.
+.ie \\$2 \{\
+.ie \\*(mH .)d "Ds:missing 2nd argument and gD not invoked"
+.el .ds rH "\\*(mH
+'br\} \" troff quirk: if \} were on the above line, mH would end with
+.\"      a  for some reason.  The 'br is basically a null command
+.\"      which inhibits the generation of a space in the hard copy.
+.el .ds rH "\\$2
+'br\}
+.\"***********************************************************************
+.\" m3=0: not deleted; 1: deleted, print text; 2: deleted, don't print text
+.if \\n(.$-2 .if !\\$3 \{\
+.ie \\$3d .nr m3 1
+.el .ie \\$3D .nr m3 2
+.el .)d "dS:3rd argument can only be 'd' or 'D'"\}
+.\"***********************************************************************
+.di rT    \"Begin diverting decision text
+..
+.\"
+.\"
+.\"
+.de De
+.br
+.di
+.if !\\n(m1 .)d "dE:missing dS"
+.\"*****************************************************************
+.\" restore DS DE macros
+.rn DS tS
+.rn ts DS
+.rn DE tE
+.rn te DE
+.\"*****************************************************************
+.\"Calculate current section number for use below
+.ds mN \\n(h1
+.if \\n(h2-0 .as mN .\\n(h2
+.if \\n(h3-0 .as mN .\\n(h3
+.if \\n(h4-0 .as mN .\\n(h4
+.if \\n(h5-0 .as mN .\\n(h5
+.if \\n(h6-0 .as mN .\\n(h6
+.if \\n(h7-0 .as mN .\\n(h7
+.\"*****************************************************************
+.\"If previous section number (mM) is different from current section
+.\"number (mN) then include current section heading in diversion.
+.if !\\*(mN\\*(mM \{\
+.ft 2
+\\*(mN  \\*(mT
+.ft
+.ds mM \\*(mN
+.br\}
+.\" dU is designed so users can define their own output format.
+.dU
+.rm rA rH rL rM rP rR rS rT rV rW rc ri rk mL mN mR mZ
+.rr m3 mx mX
+.\" *****************************************************************
+.\" m1 is reset here (not earlier) so as not to interfere with its use in dU.
+.nr m1 0
+..
+.\"
+.\"
+.\"
+.de dM
+.if !\\n(.$ .)d "dM: missing argument"
+.if !\\n(m1 .)d "dM: not within dS-dE pair"
+.ds rM "\\$1
+..
+.\"
+.\"
+.\"
+.de dR
+.if !\\n(.$ .)d "dR: missing argument"
+.if !\\n(m1 .)d "dR: not within dS-dE pair"
+.\" rR is for use in text, mR for table (only want high and low keys).
+.\" tH is used for output to *.D8 at end of .dR macro. Contents
+.\" must be identical to what is appended to .rR in each call of
+.\" the dR macro. 
+.\" Separate references in mR with  for use in table.
+.\" Separate references in rR and *.D8 with comma and space.
+.if !\\*(rR \{\
+.as rR ,   
+.ds tH ,   
+.as mR 
+'br\}
+.\" Append first of local highkey ($2), reference-to highkey (hR, defined
+.\" by dD or gD), or global high key (mH, again defined by dD or gD).
+.ie !\\$2 \{\
+.as rR "\\$2-
+.as tH "\\$2-
+.as mR "\\$2-
+'br\}
+.el \{\
+.ie !\\*(hR \{\
+.as rR "\\*(hR-
+.as tH "\\*(hR-
+.as mR "\\*(hR-
+'br\}
+.el \{\
+.as rR "\\*(mH-
+.as tH "\\*(mH-
+.as mR "\\*(mH-
+.\" Tie off warning since lots of existing docs do not care about it
+.\" If it gets turned back on, clarify the wording (e.g., why is it a problem
+.\"   and what should they do about it).
+.\" .tm "WARNING:(\\n(.F)input line \\n(.c: Referencing \\*(mH
+'br\}\}
+.\" Append lowkey.
+.as rR "\\$1
+.as tH "\\$1
+.as mR "\\$1
+.\" Append other arguments if exist.
+.if !\\$4 \{\
+.as rR " (\\$4)
+.as tH " (\\$4)
+'br\}
+.if !\\$3 \{\
+.as rR " \\$3
+.as tH " \\$3
+'br\}
+.sy echo "\\*(tH\\\\c" >> \*(mF.D8
+.rm tH
+..
+.\"
+.\"
+.\"
+.de dS
+.if \\n(m1 .)d "dS:missing dE"
+.nr m1 1
+.if \\n(:g .nr mX \\n(.i+\\n(.k
+.\"***********************************************************************
+.\" replace (rename) DS DE macros
+.rn DS ts
+.rn tS DS
+.rn DE te
+.rn tE DE
+.\"***********************************************************************
+.\" Start fresh.
+.br
+.\"***********************************************************************
+.\" if 1st argument is 0 then make rL 0
+.\" else set rP, rL and rV
+.\"      if 2nd argument null then
+.\"          if mH null then error
+.\"          else rH=mH
+.\"      else rH=$2
+.ie !\\n(.$ \{\
+.)d "dS:missing decision number"
+.ds rL 0\}
+.el .ie \\$10 .ds rL 0
+.el \{\
+.\" Parse 1st arg by passing it through awk to create line of form
+.\" .mS [prefix] lowkey [highkey], and store in //*(mF.D5.
+.\" Then 'so in which essentially invokes mS.  mS assigns prefix, lowkey,
+.\" and version.
+.sy echo "\\$1" | \
+	awk -F\\\\\\*(f1 '/\\\\\\*(f1/ {printf ".mS %s %s",$1,$2}; \
+		!/\\\\\\*(f1/ {printf ".mS \\\\"\\\\" %s",$1}' | \
+	awk -F\\\\\\*(f2 '/\\\\\\*(f2/ {printf "%s %s\\\\n",$1,$2}; \
+		!/\\\\\\*(f2/ {printf "%s \\\\"\\\\"\\\\n",$1}' > \*(mF.D5
+'so \*(mF.D5
+.\" Now determine highkey.
+.ie \\$2 \{\
+.ie \\*(mH .)d "dS: missing 2nd argument and gD not invoked"
+.el .ds rH "\\*(mH
+'br\} \" troff quirk: if \} were on the above line, mH would end with
+.\"      a  for some reason.  The 'br inhibits a space in the hard copy.
+.el .ds rH "\\$2
+'br\}
+.\"***********************************************************************
+.\" m3=0: not deleted; 1: deleted, print text; 2: deleted, don't print text
+.if \\n(.$-2 .if !\\$3 \{\
+.ie \\$3d .nr m3 1
+.el.ie \\$3D .nr m3 2
+.el .)d "dS:3rd argument can only be 'd' or 'D'"\}
+.\"***********************************************************************
+.di rT    \"Begin diverting decision text
+.nr hF \\n(.f
+.ft 3
+..
+.de mS
+.\" Set rP to local value if exists, otherwise to global value set by gP.
+.ie \\$1 .ds rP "\\*(mP
+.el .ds rP "\\$1
+.\" Must be lowkey, otherwise error.
+.ie \\$2 .)d "dS: label is required"
+.el .ds rL "\\$2
+.\" Set rV to version, if exists.
+.if !\\$3 .ds rV "\\$3
+..
+.\"
+.\"
+.\"
+.de dT
+.if \\n(m1 .)d "dT:missing dE"
+.\"
+.\" if no argument make decision table of contents
+.ie !\\n(.$ \{\
+.\" Set up for tbl
+.sy echo ".TS H\\\\ncenter tab();\\\\nc c c c c c\\\\nl l n10 l l n.\\\\n\
+LabelSectionPageLabelSectionPage\\\\n\\\\n.TH" > \*(mF.D3
+.\"
+.\" Sort by label, put in 2 columns
+.sy cut -d -f1-3 \*(mF.D1 | \
+sort -t +0 -1 +1n -2 | \
+awk -F '/./ {if(NF==1) {print} else {printf "%s\\\\*(f5%s\\\\n",$1,$2}}'| \
+awk -F '/./ {if(NF==1) {print} else {printf "%s\\\\*(f4%s\\\\n",$1,$2}}'| \
+pr -i50 -tar2 -w120 -s >>\*(mF.D3
+.sy echo .TE >>\*(mF.D3; tbl \*(mF.D3 >\*(mF.D4
+.\"
+.\" now print it all out
+.nf
+'so \*(mF.D4
+.fi
+.br\}
+.\" if there is any argument make same table with references
+.el \{\
+.sy echo ".TS H\\\\ncenter tab();\\\\nc c c c\\\\nl l l l.\\\\n\
+LabelSectionPageReference(s)\\\\n\\\\n.TH" > \*(mF.D3
+.sy sort -t +0 -1 +1n -2 \*(mF.D1|\
+awk -F '/./{if(NF==1){print}else{printf"%s\\\\*(f5%s\\\\n",$1,$2}}'|\
+awk -F '/./{if(NF==1){print}else{printf"%s\\\\*(f4%s\\\\n",$1,$2}}'|\
+awk -F '{printf("%s\\\\n",$1);for(i=2;i<=NF;i++)printf("%s\\\\n",$i)}'\
+>>\*(mF.D3
+.sy echo .TE >> \*(mF.D3; tbl \*(mF.D3 >\*(mF.D4
+.\"
+.\" now print it all out
+.nf
+'so \*(mF.D4
+.fi
+.br\}
+..
+.\"
+.\"
+.\"
+.\" This is the standard (default) macro for defining the RADIX macros
+.\" output format.  It is designed to be somewhat user definable, thus
+.\" enabling the user to specify a different output format.  It is written
+.\" in n/troff which is cryptic and meticulous so care should be taken when
+.\" making any changes.
+.\"
+.\" This macro will supersede the standard dU macro in RADIX by placing it
+.\" (i.e. the contents of this file with any changes) in the document source
+.\" file AFTER the point where the RADIX macros are sourced (.so) in.
+.\"
+.de dU
+.\" Separate previous text from this decision text with a vertical space
+.\" unless the previous text was a decision itself.  The exception is due to
+.\" the .sp at the end of this macro.
+.if !\\n(mV=\\n(nl .sp
+.\" Print right hand if using troff and called from dS (m4 = 1).
+.if t .if \\n(m4 \h'-\\n(.iu-\\n(.ku-200u'\(rh\h'|0'
+.\"
+.\" Print label to look like "<prefix-highkey-lowkeyVversion>     ***DELETED***"
+.\" or "<0>     ***DELETED***" where prefix-, Vversion, and ***DELETED***
+.\"may be null. It will all be in bold.
+.ft 3
+<\c
+.ie \\*(rL0 0\c
+.el \{\
+.if !\\*(rP \\*(rP\\*(f3\&\c
+\\*(rH\\*(f4\\*(rL\c
+.if !\\*(rV \&\\*(f5\\*(rV\c\}
+>
+.ie \\n(m3=1 \&    *** DELETED - ORIGINAL FOLLOWS ***
+.el.if \\n(m3=2 \&    *** DELETED ***
+.ft 1
+.br
+.\"
+.\" When a decision is deleted using the dS macro, it is possible to choose
+.\" whether or not to show the decision text.  This test to print / not print
+.\" is made here.  The next 2 lines should not be changed.
+.if !\\n(m32 \{\
+.if \\n(:g .in 0 \" Suppress indents if in a list.
+.\"
+.\" Print the decision text.
+.nf
+.rT
+.br
+.fi
+.\"
+.\" If called from dS (m4 = 1) continue printing, otherwise called from Ds so
+.\" don't print anything more.
+.if \\n(m4 \{\
+.\" Print the supplementary text if there is some (m1 = 2).
+.if \\n(m1=2 \{\
+.\" Put .sp here if you want a space between the decision and suppl. info.
+.nf
+.rS
+.br
+.fi\}
+.if \\n(:g .in \" Restore indents.
+.\"
+.\" The following sections separated by BBBBBBBBB for begin and EEEEEEEEE
+.\" for end can be deleted if the attribute should never be printed, even if
+.\" it has a value, or rearranged in a different order as desired.
+.\" BBBBBBBBB
+.if !\\*(rC\\*(rc \{\
+Clusters: \\*(rC \\*(rc
+.br\}
+.\" EEEEEEEEE
+.\" BBBBBBBBB
+.if !\\*(rK\\*(rk \{\
+Keywords: \\*(rK \\*(rk
+.br\}
+.\" EEEEEEEEE
+.\" BBBBBBBBB
+.if !\\*(rI\\*(ri \{\
+Contacts: 
+.ie !\\*(ri \\*(ri
+.el \\*(rI
+.br\}
+.\" BBBBBBBBB
+.if !\\*(rM \{\
+Modification reason: \\*(rM
+.br\}
+.\" EEEEEEEEE
+.\" BBBBBBBBB
+.if !\\*(rW \{\
+Weight: \\*(rW
+.br\}
+.\" EEEEEEEEE
+.\" BBBBBBBBB
+.if !\\*(rA \{\
+Abstract: \\*(rA
+.br\}
+.\" EEEEEEEEE
+.\" BBBBBBBBB
+.if !\\*(rR \{\
+References: \\*(rR
+.br\}
+.\" EEEEEEEEE
+.\" BBBBBBBBB
+.ft 3
+.ie \\*(rL0 <End of 0>
+.el <End of \\*(rH\\*(f4\\*(rL>
+.br
+.ft 1
+.\" EEEEEEEEE
+'br\} \"  matches ".if \\n(m4 \{\"
+'br\} \"  matches ".if !\\n(m32 \{\"
+.\" Separate decision from forthcoming text.
+.sp
+.nr mV \\n(nl
+..
+.\"
+.\"
+.\"
+.de dW
+.if !\\n(.$ .)d "dW: missing argument"
+.if !\\n(m1 .)d "dW: not within dS-dE pair"
+.ds rW "\\$1
+..
+.\"
+.\"
+.\"
+.de dX
+.br
+.di
+.\" Restore font used prior to invoking dS
+.ft \\n(hF
+.if !\\n(m1 .)d "dX: missing dS"
+.\" Set m1 = 2 to indicate that rS was defined - for use in dU.
+.nr m1 2
+.di rS
+..
+.\"************************************************************************
+.\" dP macro for 5ESS Systems Engineering compatability (formerly, .rP)
+.\"************************************************************************
+.de dP
+.\" Usage
+.if !\\n(.$ .)d "dP: missing argument"
+.rm tH
+.sy if [ ! -r \\$1 ]; then \
+	echo ".ds tH error" > /usr/tmp/\\n($$;\
+else \
+	echo ".rm tH" > /usr/tmp/\\n($$;\
+fi
+'so /usr/tmp/\\n($$
+.sy rm /usr/tmp/\n($$
+.if \\*(tHerror .)d "dP: file '\\$1' does not exist"
+.rm tH
+.\" Define formats
+.af r1 001
+.af r2 001
+.af r3 001
+.in 0
+.\" Output generated text and summary list
+The requirement classification statistics are:
+.in 1i
+.nr r7 \\n(r1+\\n(r2+\\n(r3
+.af r7 001
+.nf
+.sp 1
+Essential:\\h'|2i'\\n(r1
+Desirable:\\h'|2i'\\n(r2
+\\h'|2i'___
+.br
+.sp -1v
+Optional:\\h'|2i'\\n(r3
+TOTAL:\\h'|2i'\\n(r7
+.fi
+.in 0
+.sp 2
+The \f3ESSENTIAL PRODUCT REQUIREMENTS\f1 are:
+.sp 1
+.ie \\n(r1=0 NONE
+.el \{
+.sy /usr/lib/xpand \\$1 | \*(rXldecs.dP E \*(mF.D8 | tbl | eqn | pic  > \*(mF.D3
+'so \*(mF.D3
+\}
+.sp 2
+The \f3DESIRABLE PRODUCT REQUIREMENTS\f1 are:
+.sp 1
+.ie \\n(r2=0 NONE
+.el \{
+.sy /usr/lib/xpand \\$1 | \*(rXldecs.dP D \*(mF.D8 | tbl | eqn | pic  > \*(mF.D3
+'so \*(mF.D3
+\}
+.sp 2
+The \f3OPTIONAL PRODUCT REQUIREMENTS\f1 are:
+.sp 1
+.ie \\n(r3=0 NONE
+.el \{
+.sy /usr/lib/xpand \\$1 | \*(rXldecs.dP O \*(mF.D8 | tbl | eqn | pic  > \*(mF.D3
+'so \*(mF.D3
+\}
+.sp 2
+..
+.\"************************************************************************
+.\" dQ macro for 5ESS Systems Engineering compatability (formerly, .iP)
+.\"************************************************************************
+.de dQ
+.\" Define formats
+.af r4 001
+.af r5 001
+.af r6 001
+.\" Output generated text and summary list
+The implementation classification statistics are:
+.in 1i
+.nr r7 \\n(r4+\\n(r5+\\n(r6
+.af r7 001
+.nf
+.sp 1
+Implemented:\\h'|2i'\\n(r4
+Deferred:\\h'|2i'\\n(r5
+	___
+.br
+.sp -1v
+Not Specified:\\h'|2i'\\n(r6
+TOTAL:\\h'|2i'\\n(r7
+.fi
+.sp 2
+.in 0
+The requirements which are committed to be developed are:
+.sp 1
+.ie \\n(r4=0 NONE
+.el \{
+.sy grep "[SA]I$" \*(mF.D8 | cut -d"" -f2 | cut -d"\\*(f4" -f2 > \*(mF.D3
+'so \*(mF.D3
+\}
+.sp 2
+The requirements which are NOT committed to be developed are:
+.sp 1
+.ie \\n(r5=0 NONE
+.el \{
+.sy grep "[SA]D$" \*(mF.D8 | cut -d"" -f2 | cut -d"\\*(f4" -f2 > \*(mF.D3
+'so \*(mF.D3
+\}
+.sp 2
+The following requirements are NOT specified as IMPLEMENTED or DEFERRED:
+.sp 1
+.ie \\n(r6=0 NONE
+.el \{
+.sy grep -v "[SA][ID]$" \*(mF.D8 |cut -d"" -f2 |cut -d"\\*(f4" -f2 >\*(mF.D3
+'so \*(mF.D3
+\}
+.sp 2
+..
+.\" END RADIX MACROS

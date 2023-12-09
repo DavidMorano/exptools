@@ -1,0 +1,709 @@
+.tr ~
+.HC ^
+.PH
+.ce 2
+.B
+INSTRUCTIONS FOR GENERATING SSBU's
+"PERFORMANCE APPRAISAL RECORD"
+.R
+.sp
+A package of tools has been
+developed for generating
+the "Performance Appraisal Record"
+form.
+These tools
+consist of:
+.PH "'Instructions - %'''"
+.BL
+.LI
+a macro definition file (that is sourced in by the
+printing script); and
+.LI
+a printing script that allows the user to
+run a "macro checker" and a spell on the file
+before printing it.
+.LE
+.sp
+To use this package,
+you must:
+.BL
+.LI
+Have a login on a system that has the UNISON print
+spooler package available (prtfmt) and has exptools
+available.
+Your PATH variable in your \&.profile must
+include "\(galogdir unison\(ga/bin"
+and "\(galogdir exptools\(ga/bin".
+If it does not, the Computing Technology Center (CTC)
+Counseling group can help
+you set it up.
+(See the last section of these instructions entitled
+"OBTAINING HELP".)
+.LI
+Have access to a PostScript or Imagen printer.
+.LI
+Have working knowledge of an editor (vi, emacs, ed, etc.).
+.LE
+.sp
+It is important that you read through these instructions
+before attempting to generate and print your
+Performance Appraisal Record form.
+.sp
+.B
+USING THE MACROS
+.R
+.sp
+.fi
+To generate the form,
+you must create a file consisting of macros and text.
+You may create this file manually following the
+instructions below,
+or you may copy a template file and change the
+bracketed items to the proper text (see below for
+a description of each of the macros).
+The template is stored on line and can be
+copied as follows:
+.DS C
+cp  $TOOLS/lib/55recprt/55rec.tmpl  your_filename
+.DE
+If you choose to manually create your file,
+then the first line should contain the \&.EN macro.
+This macro generates the first six areas on the
+top of the form and takes
+6~arguments.
+Each argument corresponds to a boxed-in section
+on the form.
+For example:
+.DS C
+\&.EN  "Doe, John P."  123-45-6789  SGA2  NA1234567  01-01-89  9
+.DE
+That is,
+.TS
+center;
+L C L.
+argument 1	\&=	employee's name (in quotes)
+argument 2	\&=	social security number
+argument 3	\&=	classification, band, or tier
+argument 4	\&=	department/organization number
+argument 5	\&=	service record or net credited service date
+argument 6	\&=	years experience or years in level
+.TE
+Note that each individual argument that contains spaces
+must be enclosed in quotes;
+the \&.EN macro and all arguments must each be separated
+by one space.
+.sp
+The second line should contain the \&.AP macro followed
+by 3~arguments.
+This macro generates the last three boxed-in sections
+at the top of the form.
+For example:
+.DS C
+\&.AP  01-91  12-91  9-87
+.DE
+.SK
+That is,
+.TS
+center;
+L C L.
+argument 1	\&=	appraisal period "from" date
+argument 2	\&=	appraisal period "to" date
+argument 3	\&=	date assigned to supervisor
+.TE
+Again, remember that each individual argument that contains
+spaces must be enclosed in quotes.
+The "Date Generated" box is automatically filled in with the
+current date (i.e., the date that the form is printed).
+.sp
+The coach's comments are typed on the lines following
+the \&.AP macro.
+The form allows approximately 3~inches of space for comments.
+When you print the form on the printer,
+if the comments section is too long and overprints
+the next section of the form,
+then you'll have to revise the comments to fit within the
+allowed space.
+.sp
+Following the comments, your file should contain the
+\&.SS macro.
+This macro produces the signature section of the form.
+This macro takes 2~arguments, as follows:
+.DS C
+\&.SS  "Coach's Name"  "Manager's Name"
+.DE
+where both names should be supplied exactly as you want them to
+print in the "Print Name" boxes on the form.
+.sp
+The employee's comments are typed on the lines following
+the \&.SS macro.
+The form allows approximately 1-1/2~inches of space for comments.
+When you print the form on the printer,
+if the comments section is too long and overprints the
+next section of the form,
+then you'll have to revise the comments to fit within the
+allowed space.
+.sp
+Following the employee's comments,
+your file should contain the \&.EC macro.
+This macro ends the employee's comments section and produces
+the remainder of the first page of the form.
+.sp
+The next three macros (.C1, \&.C2, and \&.C3) generate the
+three columns of information required on page~2 of
+the form.  The \&.C1 macro (column~1) and the \&.C2 macro
+(column~2) require no arguments~-
+they are typed on lines by themselves.
+The \&.C3 macro takes one argument~-
+the rating descriptor.
+Each organization can use whatever rating descriptor(s)
+they choose (abbreviations [FE, E, FM, etc.], symbols [+, -, etc.],
+etc.).
+For example:
+.DS CB
+\&.C1
+This is the text for column~1
+(Responsibilities/Objectives/Expectations).
+This text can be many lines long.
+Carriage return freely when typing
+in this text.
+\&.C2
+This is the text for column~2
+(Results/Achievements).
+Again, this text can be many lines
+long.
+You should carriage return freely
+as the macro will take care of filling
+the lines up.
+\&.C3  \f2rating\f1
+.DE
+.sp
+.tr ~~
+where \f2rating\f1 is whatever rating descriptor your
+organization agreed to use.
+You may use as many \&.C1, \&.C2, and \&.C3 macros
+as you need, but they \f2must be used in groups
+of three\f1.  Note:  If you haven't determined
+the "rating" argument for the \&.C3 macro, then
+use a tilde (~), an X, or leave the argument
+off (produces a blank).
+For every \&.C1, there \f2must\f1 be a \&.C2 and \&.C3.
+.sp
+.tr ~
+NOTE:~~The text following the .C1 and .C2
+macros can be as long as necessary,
+providing it will fit on one page.
+If you have an individual objective or
+achievement that exceeds one page in length,
+it will have to be split up.
+This can be achieved by inserting a set of
+empty \&.C1s, \&.C2s, and \&.C3s in the
+appropriate order to make it break across
+pages and still look like one continuous
+item.
+If you are faced with this situation and need
+help resolving it,
+see the section entitled "OBTAINING HELP"
+at the end of these instructions.
+.sp
+After your very last group of these macros,
+use the \&.DA macro.
+This macro is typed on a line by itself (i.e.,
+requires no argument and expects none).
+This macro finishes off the ^3-column output,
+and starts the "Developmental Action Plan"
+section of the form.
+Type the text for this section on the lines
+following the macro.
+This section can be as long as needed.
+The macro will automatically generate new
+pages when necessary.
+.sp
+.B
+SUMMARY OF MACROS
+.R
+.sp
+Each "Performance Appraisal Record" form should contain the
+following macros in the following order:
+.DS CB
+.ta .6i
+\&.EN  \f2arg1  arg2  arg3  arg4  arg5  arg6\f1
+\&.AP  \f2arg1  arg3  arg3\f1
+Coach's comments on the performance
+of the employee.
+etc., etc., etc.
+\&.SS  \f2arg1  arg2\f1
+Employee's comments on the performance
+appraisal record.
+etc., etc., etc.
+\&.EC
+\&.C1	\(rt
+text	\(bv
+text	\(bv
+text	\(bv
+\&.C2	\(rk  \(em  as many of these as needed
+text	\(bv
+text	\(bv
+text	\(bv
+\&.C3  \f2arg1\f1	\(rb
+\&.DA
+text
+text
+text
+.DE
+.sp
+.B
+TEXT PORTION GUIDELINES
+.R
+.sp
+When inputting the text portions of your
+Performance Appraisal Record,
+that is, the lines of text that you type in
+following the \&.AP, \&.SS, \&.C1, \&.C2, and \&.DA
+macros,
+please note the following:
+.BL
+.LI
+You are automatically in "fill" mode.
+That is, the formatter will automatically
+put as much text as will fit on the line.
+Therefore, keep your input lines short.
+Carriage return freely.
+Do not let your lines of text
+wrap around past 80~characters.
+(If your data wraps past 150~characters,
+you will receive a "core dump" when attempting
+to print your file.)
+.LI
+If you need multiple "paragraphs" of text,
+use the \&.sp or \&.P command/macro to
+separate the paragraphs.
+.LI
+You can do just about anything within the
+text portion; that is,
+start and end lists, start and end tables,
+switch into "no fill" (.nf) mode and back
+again (.fi).
+\f2What is important is that whatever you
+start, you must finish within that
+same text portion.\f1~
+.br
+.tr ~~
+.LI
+The tilde (~) character may be used as the
+unpaddable space character.
+Use it to keep lines from breaking at
+a bad place.
+For example,
+Phase~II,
+November~11, 1991,
+Mr.~A.~R. Jones, etc.
+.br
+.tr ~
+.HC \%
+.LI
+The carat (^) has been set as the hyphenation
+character.
+Use it to keep hyphenated terms from splitting
+at the end of a line, or to force hyphenation
+in a long word.
+For example,
+^50-page memo,
+^979-1234,
+configura^tion.
+.br
+.HC ^
+.LI
+The Helvetica family of fonts is used to
+produce the form.
+You may switch fonts to obtain \f2italics\f1 and
+\f3bold\f1 as follows:
+.sp
+Many lines in italics:
+.DS CB
+\&.ft 2
+These lines will appear in
+italics.
+Now back to the regular font.
+\&.ft 1
+.DE
+A few words in italics:
+.DS CB
+This sentence contains \ef2a few words\ef1
+in italics.
+.DE
+.sp
+Many lines in bold:
+.DS CB
+\&.ft 3
+These lines will appear in
+bold.
+Now back to the regular font.
+\&.ft 1
+.DE
+A few words in bold:
+.DS CB
+This sentence contains \ef3a few words\ef1
+in bold.
+.DE
+.sp
+Instead of using font numbers, you may also
+use the font names H (regular), HI (italics),
+or HB (bold).
+For example, to obtain a few words in italics,
+.DS CB
+Here are \ef(HIa few words\efH in italics.
+.DE
+.LI
+The registered trademark (\(rg) is available
+by using \e(rg, as are all of the special
+character sequences.
+.LE
+.sp
+.B
+KEEPING YOUR FILE SECURE
+.R
+.sp
+To protect
+the privacy of your Performance Appraisal Record file
+you should encrypt it.
+(You do not have to~-
+the choice is yours!)~
+To do this,
+when you initially enter the editor to create a new file,
+type:
+.TS
+center box;
+C| C| C.
+.B
+vi users	ed users	emacs users
+.R
+=
+.T&
+L| L| L.
+vi  -x  filename	ed  -x  filename	emacs  -x  filename
+Key:	Enter a file encryption key:	Encryption Key?
+.TE
+As shown, you'll be prompted for an encryption key
+(similar to a password).
+Type in a keyword carefully (it will \f2not\f1 print),
+and \f2do not\f1 forget it.
+Once a file is encrypted this way,
+you cannot access it again unless you know its
+encryption key.
+Each time you edit the file,
+you'll have to use the "-x" option and supply the key.
+.SK
+If your file already exists in an unencrypted form,
+and you would like to encrypt it,
+then use
+.DS C
+crypt  <  filename  >  newfile
+.DE
+You will be prompted to type in a keyword.
+Now "newfile" is encrypted (if you "cat" it, it contains
+garbage).  Remember to remove "filename" (the unencrypted
+file).
+Continue to work with "newfile" following the above
+editing directions.
+.sp
+The most important thing about encryption is being careful
+when initially entering in the "keyword" and then remembering
+what that "keyword" is!
+There is absolutely no way to retrieve your file if you
+forget the "keyword";
+you must create a new file.
+.sp
+.B
+PRINTING YOUR FORM
+.R
+.sp
+A special printing script has been included for printing
+your Performance Appraisal Record file.
+This script handles the decrypting process as it
+prints the file.
+By using the script,
+it eliminates having an unencrypted (readable) copy of the
+file stored on the system.
+.sp
+In order to use this script, you \f2must\f1 have a \&.prt
+file in your $HOME directory.
+If you do not, you \f2must\f1 create one.
+It must minimally contain the following:
+.DS C
+-T  post  -d  ih12345z
+.DE
+where "post" is replaced with your printer type
+(post or i300) and "ih12345z" is replaced with your
+printer destination.
+If you do not currently have a \&.prt file and need
+help setting one up,
+see OBTAINING HELP below.
+.sp
+To use the script, type
+.DS C
+55recprt  [options]  filename
+.DE
+where [options] include
+.VL 12 5
+.LI "-c"
+Run the file through a "macro checker"
+to make sure that all of the proper
+macros have been used.
+.LI "-s"
+Run the file through the "spell" program
+including personal "spelldict" file if
+it exists.
+If errors are found,
+it gives you a chance to exit and
+fix the errors before obtaining a print.
+.LI "-p"
+Run the file through the "xproof/proof"
+program.
+If you have a terminal that allows you to
+preview troff output (630, 730, or dmd),
+and you are in layers,
+then this option formats the output and
+presents it to you via the "xproof" program
+(or "proof" if xproof is not available on
+your system).
+.LI "-Z"
+Send PostScript output to standard out
+instead of printing it.
+.LI "-V"
+Print the version number of this program
+and exit.
+.LE
+.sp
+If you do not supply the "-p" option (for
+proofing), then the script will send the
+file to the printer specified in your \&.prt
+file.
+(See the NOTE following these examples.)
+.sp
+Examples:
+.AL
+.LI
+To send a file to print at the printer with
+no preprocessing:
+.DS C
+55recprt  filename
+.DE
+.LI
+To send a file to print at the printer and
+run it through the macro checker:
+.DS C
+55recprt  -c  filename
+.DE
+.SK
+.LI
+To send a file to print at the printer and
+run it through the macro checker and the
+spell program:
+.DS C
+55recprt  -c  -s  filename
+.DE
+.LI
+To run a spell on the file and proof it
+on your terminal:
+.DS C
+55recprt  -s  -p  filename
+.DE
+.LI
+To direct the PostScript output to a file
+for printing on a PostScript device where
+UNISON is not available:
+.DS C
+55recprt -Z filename > newfilename
+.DE
+.LE
+.sp
+If your file is encrypted, you will be
+prompted for the keyword.
+In fact, you will be prompted for your
+keyword for each option that you request.
+(In a future release of UNIX\(rg, this script
+will be changed to only have to prompt
+you for your keyword one time.)
+.sp
+NOTE:~
+If you would like to send your file to
+print at a different printer (for privacy purposes) than the
+one you normally use,
+this script allows you to do that via
+your \&.prt file.
+This script calls the "-j 55record"
+trigger option on the embedded prtfmt command line.
+Therefore, to specify a printer that will
+be used only for your Performance Appraisal
+Record,
+add the following two lines to your \&.prt
+file:
+.DS CB
+-j  55record  :  -d  ih12345z
+-j  55record  :  -T  post
+.DE
+where "ih12345z" is replaced with your
+printer destination and "post" is replaced
+with your printer type.
+If you do not include these lines in your
+\&.prt file,
+then your file will print at the printer
+specified in the first line of your \&.prt
+file.
+.sp
+.B
+OBTAINING HELP
+.R
+.sp
+The CTC Counselors at Indian Hill
+are available to help you with any and all
+problems associated with the use of these
+tools.
+Please direct your questions/problems to
+^(708)~979-2555.
+.de TP
+.sp 2
+..
+.SK
+.pl +4
+.po .5i
+.nr O .5i
+.ll 7.5i
+.nr W 7.5i
+.S 16
+.ce 2
+.B
+PERFORMANCE APPRAISAL RECORD
+QUICK REFERENCE SHEET
+.R
+.S 10
+.sp 2
+.S 12
+.ce
+.B
+TWO WAYS TO CREATE YOUR FILE
+.R
+.S 10
+.2C
+.ll 3.5i
+.TS
+L| L2 S|.
+	_	_
+.sp
+\s20\f(ZD\(ul\fB\s0	Type It New:  (see chart below for .EN and .AP
+	\h'\w'Type It New:  ('u'argument placement):\fR
+.sp
+	\&.EN  \f2"your name"  SSN  class.  dept.  SRD  years\f1
+	\&.AP  \f2fromdate  todate  date\f1
+	Coach's comments on the performance
+	of the employee.
+	etc., etc., etc.
+	\&.SS  \f2"coach's name"  "manager's name"\f1
+	Employee's comments on the performance
+	appraisal record.
+	etc., etc., etc.
+	\&.EC
+.T&
+L| L L|.
+	\&.C1	\(rt
+	text of first	\(bv
+	resp., obj.,	\(bv
+	or expect.	\(bv
+	\&.C2	\(rk  \(em  as many of these as needed
+	text of first	\(bv
+	result or	\(bv
+	achievement	\(bv
+	\&.C3  \f2rating\f1	\(rb
+.T&
+L| L S|.
+	\&.DA
+	text of
+	development
+	action plan
+.sp
+	_	_
+.TE
+.sp
+.br
+.ne 50
+.DS
+.sp 10
+.DE
+.TS
+L| L|.
+	_
+.sp
+\s20\f(ZD\(or\fB\s0	Copy Template & Modify:\fR
+.sp
+	cp  $TOOLS/lib/55recprt/55rec.tmpl  your_filename
+.sp
+	_
+.TE
+.sp 10
+.1C
+.rs
+.po .5i
+.de EN
+.S 7
+\s36\l'7.25i'\s0
+.ta 3.125i 3.1875i 5.8125i 5.875i
+.nf
+.mk a
+Employee Name		Social Security Number		Classification/Band/Tier
+.ta 1.5625iC 4.5iC 6.5625iC
+\v'.8v'\s10	\\$1	\\$2	\\$3\s0\v'-.8v'
+\l'7.25i'
+.ta 3.125i 3.1875i 5.8125i 5.875i
+Department Number		Service Record/Net Credited Service Date		YTE/YPE/YIL (If Applicable)
+.ta 1.5625iC 4.5iC 6.5625iC
+\v'.8v'\s10	\\$4	\\$5	\\$6\s0\v'-.8v'
+\l'7.25i'
+..
+.de AP
+.S 7
+.ta 3.125i 3.1875i 5.8125i 5.875i
+Appraisal Period		Date Assigned To Supervisor		Date Generated
+.sp .8v
+.ta 0.9375iC 1.625i 2.375iC 4.5iC 6.5625iC
+From:	\s10\\$1\s0	To:	\s10\\$2	\\$3\s0	\s10\\n(mo/\\n(dy/\\n(yr\s0
+.sp -.8v
+\s36\l'7.25i'\s0
+.mk b
+.ta 3.125i 3.1875i 5.8125i 5.875i
+.sp |\\nau
+.sp -1v
+	\L'1.125i'\v'-1.125i'		\L'1.125i'\v'-1.125i'
+.sp |\\nbu
+..
+.EN "\f2your name\f1" \f2SSN\f1 \f2class.\f1 \f2dept.\f1 \f2SRD\f1 \f2years\f1
+.AP \f2fromdate\f1 \f2todate\f1 \f2date\f1
+.sp 3
+.S 12
+.ce
+.B
+HOW TO PRINT YOUR FILE
+.R
+.S 10
+.TS
+box center;
+C S.
+.sp
+55recprt  [options]  filename
+.sp
+.T&
+L L.
+Options:
+.sp
+    -c	run file through macro-checker
+    -s	do a spell on the file
+    -p	proof the file (on 630s, 730s, dmds \f2only\f1)
+    -Z	send PostScript output to standard out
+.sp
+.TE
+.sp
+.S 12
+.ft BI
+.ce 2
+Please read through the complete instructions one time
+before using this quick reference sheet!
+.ft R

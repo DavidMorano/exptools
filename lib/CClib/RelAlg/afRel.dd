@@ -1,0 +1,24 @@
+#ident "@(#) /sable/sdb/ra/rel/relation/s.afRel.dd"
+/*      Copyright (c) 1989, 1991 AT&T - All Rights Reserved */
+
+class AF_Relation : public Relation
+{
+include(afRel.pd)
+public:
+   AF_Relation(Intension &i,const char *file=0,char delim='\t',
+               Fileperm perm=READWRITE);
+   AF_Relation(Attribute &a,const char *file=0,char delim='\t',
+               Fileperm perm=READWRITE);
+   Tuple *const walk();
+   void endwalk();
+   Boolean_t operator=(Tuple *);
+   Boolean_t operator+=(Tuple *);
+   /*
+   ** the above declarations cause AF_Relation to lose inheritence of the 
+   ** below declarations due to scoping "feature" - inline definition is
+   ** effectively a redeclaration
+   */
+   Boolean_t operator=(Relation &r) { return Relation::operator=(r); }
+   Boolean_t operator+=(Relation &r) { return Relation::operator+=(r); }
+   Boolean_t walk(IntensionValue &iv) { return Relation::walk(iv); }
+};

@@ -1,0 +1,130 @@
+
+
+
+ MMMMAAAACCCCPPPPUUUUTTTT((((1111))))                                                         MMMMAAAACCCCPPPPUUUUTTTT((((1111))))
+9                                  EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS
+
+
+
+ NNNNAAAAMMMMEEEE
+      macput - send file to macintosh via modem7/macterminal
+
+ SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+      mmmmaaaaccccppppuuuutttt file
+      mmmmaaaaccccppppuuuutttt [ ----rrrrdddduuuubbbbxxxxkkkk ] file [ ----tttt type ] [ ----aaaa author ] [ ----nnnn name ]
+
+ DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+      _M_a_c_p_u_t sends a file to a Macintosh running MacTerminal.  The File
+      Transfer settings should specify the "Modem7" transfer method and a
+      "MacTerminal" remote system.  This program is designed for use with
+      the 1.1 Release version of MacTerminal or other terminal emulators
+      that support either Mac XModem or MacBinary XModem protocols.
+
+      To use this program, log into the unix system using MacTerminal, and
+      run macput specifying the desired options and one file to be sent.  If
+      MacTerminal is properly configured, it will recognize that a file is
+      arriving on the serial line and put up an indicator showing how much
+      of the file has been sent.  Several Control-X's may be used to force
+      macput to give up if the transfer fails.
+
+      If none of the ----rrrrdddduuuu flags are specified, _m_a_c_p_u_t sends three unix files
+      to the Mac: _f_i_l_e....iiiinnnnffffoooo, _f_i_l_e....ddddaaaattttaaaa, and _f_i_l_e....rrrrssssrrrrcccc.  These specify the
+      three parts of one Mac file:  the .data file becomes the data fork,
+      the .rsrc file becomes the resource fork, and the .info file specifies
+      the sizes of the two forks, as well as the file name, file type,
+      creation date, and other information.  This is useful for returning
+      files to the Mac which were stored using macget.
+
+      The ----rrrr flag specifies _r_e_s_o_u_r_c_e mode.  Either _f_i_l_e....rrrrssssrrrrcccc or _f_i_l_e will be
+      sent to the Mac, along with a forged ....iiiinnnnffffoooo file and an empty ....ddddaaaattttaaaa
+      file.  The file sent becomes the resource fork of the Mac file.
+
+      The ----dddd flag specifies _d_a_t_a mode.  Either _f_i_l_e....ddddaaaattttaaaa , _f_i_l_e....tttteeeexxxxtttt or _f_i_l_e
+      will be sent to the Mac, along with a forged ....iiiinnnnffffoooo file and an empty
+      ....rrrrssssrrrrcccc file.  The file sent becomes the data fork of the Mac file.
+
+      The ----xxxx flag causes a single file (in the MacBinary format) to be up
+      loaded to the mac.  This file must have the extension ".BIN".
+
+      The ----uuuu flag requests _u_n_i_x mode, which is the same as _d_a_t_a mode except
+      unix newline characters are converted into carriage returns.  Human-
+      readable unix text files sent to the Mac using this option will be
+      compatible with applications which expect "text only" files.
+
+      The ----bbbb flag causes macput to use the MacBinary protocol, it will also
+      attempt to use CRC16 instead of checksum.
+
+      The ----kkkk option causes macput to use 1024 byte packets instead of 128
+      byte packets.  The use of this option requires MacBinary protocol.
+9
+
+
+                                    - 1 -      Formatted:  February 16, 1995
+
+
+
+
+
+
+ MMMMAAAACCCCPPPPUUUUTTTT((((1111))))                                                         MMMMAAAACCCCPPPPUUUUTTTT((((1111))))
+9                                  EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS
+
+
+
+      The remaining options serve to override the default file type, author,
+      and file name to be used on the Mac.  The default type and author for
+      _r_e_s_o_u_r_c_e mode are "APPL" and "CCOM".  _d_a_t_a mode defaults are "TEXT",
+      "????", and _u_n_i_x mode defaults are "TEXT" and "MACA".
+
+      Any option may be preset by the environment variable MACPUT.  for
+      example, by adding the following line to your .profile file:
+
+           MACPUT=-x; export MACPUT
+
+      will cause macput to look for a MacBinary file by default.
+
+ WWWWAAAARRRRNNNNIIIINNNNGGGG
+      If arguments are given on the command line the environment is ignored.
+
+
+ SSSSEEEEEEEE AAAALLLLSSSSOOOO
+      macget(local)
+
+ BBBBUUUUGGGGSSSS
+      The modem7 protocol will not work over flow controlled communication
+      lines, some terminal concentrators, or when using rlogin.
+
+      Doesn't set the bundle bit on resource files, to incorporate any icons
+      into the Desk Top.  Use setfile to set the bundle bit.
+
+      MacTerminal Beta versions 0.5 and 0.9 incorrectly calculate record
+      checksums under certain circumstances, preventing some files from
+      being successfully transferred; this bug has been fixed in the
+      released version 1.1.
+
+ FFFFEEEEAAAATTTTUUUURRRREEEESSSS
+      Properly initializes the Creation Date.
+
+ AAAAUUUUTTTTHHHHOOOORRRR
+      Dave Johnson, Brown 7/31/84 -x option and Sys V port by Mark
+      Nettleingham
+
+ PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+      Mark Nettleingham
+
+
+
+
+
+
+
+
+
+
+9
+
+
+                                    - 2 -      Formatted:  February 16, 1995
+
+
+

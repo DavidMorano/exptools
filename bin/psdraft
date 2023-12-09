@@ -1,0 +1,113 @@
+#!/bin/sh
+# psdraft - PostScript filter to print DRAFT and date on each page
+#
+# Author:  Michael J. Sheehan
+# 	   based upon a program written by J. H. Presley
+#
+# Date:    March 7, 1994
+
+date=""
+gray="0.99"
+text="DRAFT"
+files=""
+
+for i
+do
+	case "$i" in
+		-d)	date=" " ;;
+		-d*)	date=`echo "$i" | sed 's/^-d//'` ;;
+		-g*)	gray=`echo "$i" | sed 's/^-g//'` ;;
+		-t*)	text=`echo "$i" | sed 's/^-t//'` ;;
+		-?*)	echo "Usage:  psdraft [-d{date}] [-g{graylevel}] [-t{text}] [file]" ; exit 255 ;;
+		*)	files="$files $i" ;;
+	esac
+done
+
+awkcmd='BEGIN {
+	date = "'"$date"'"
+	text = "'"$text"'"
+	gray = "'"$gray"'"
+
+	if (date == "") {
+		"date" | getline timestamp
+		i = split(timestamp,d)
+		date = sprintf("%d %s %s",d[3],d[2],d[i])
+	}
+	if (date ~ /[\\\(\)]/) {
+		gsub(/\\/,"\\\\",date)
+		gsub(/\(/,"\\(",date)
+		gsub(/\)/,"\\)",date)
+	}
+	if (text ~ /[\\\(\)]/) {
+		gsub(/\\/,"\\\\",text)
+		gsub(/\(/,"\\(",text)
+		gsub(/\)/,"\\)",text)
+	}
+	if (gray+0 < 0) gray = 0
+	if (gray+0 > 1) gray = 1
+}
+
+/^[^%]/ {
+	if (version != 1 || $0 !~ /setup$/) {
+		if (!version) {
+			if ($0 ~ /\/DpostDict[ \t]/)
+				version = 3
+			else if ($0 ~ /\/magnification[ \t]/)
+				version = 2
+			else if (!endcomments && $0 ~ /\/mag[ \t]/)
+				version = 1
+		}
+		print
+		next
+	}
+}
+
+/^%%End|setup$/ {
+	if ($0 ~ /^%%EndComments/)
+		endcomments = 1
+	else if (!defined && ($0 ~ /^%%EndProlog/ || (version == 1 && $0 ~ /setup$/))) {
+		defined = 1
+		if (version == 1) {
+			scale = " res mag div dup scale"
+			orient = " mode (portrait) eq"
+		} else if (version == 2) {
+			scale = " /resolution where {pop resolution} {72} ifelse magnification div dup scale"
+			orient = " orientation 0 eq"
+		} else if (version == 3) {
+			scale = " DpostDict begin resolution magnification div dup scale end"
+			orient = " DpostDict begin orientation 0 eq end"
+		} else {
+			version = -1
+			scale = " 72 72 scale"
+			orient = " /orientation where {pop orientation 0 eq} {true} ifelse dup {.25 10.9} {-.15 8.25} ifelse translate"
+		}
+		print "/PSDRAFT {"
+		print "	save"
+		print "	/center { gsave"
+		print "	  1 index stringwidth pop dup 3 1 roll"
+		print "	  2 copy lt { div 1 scale } { pop pop } ifelse"
+		print "	  -2 div 0 moveto show"
+		print "	 grestore } def"
+		print scale
+		printf("\t%g setgray\n", gray)
+		print "	/Times-Roman findfont dup"
+		print "	2.8 scalefont setfont"
+		print orient
+		print "	  { 2.3 -10 moveto 60 rotate }"
+		print "	  { 1.8 -6.7 moveto 30 rotate }"
+		print "	ifelse"
+		print "	4.6 0 rmoveto currentpoint translate"
+		printf("\t(%s) 9.2 center\n", text)
+		print "	1.4 scalefont setfont"
+		print "	0 -1.4 translate"
+		printf("\t(%s) 8 center\n", date)
+		print "	restore"
+		print "} def"
+	}
+}
+
+{ print }
+
+/^%%( ?Page:|EndPage%%|BeginScript%%)/	{ print "PSDRAFT" }'
+
+nawk "$awkcmd" $files

@@ -1,0 +1,227 @@
+#  @(#)  SID: 1.8;  module: regress;  last changed: 1/27/94  17:02:41
+
+USAGE="USAGE:  $0  [ -l ] [ -n | -d ] [ module ... ]"
+
+CMD=`basename $0`			# The basic command name
+ERRMSG="$CMD: ERROR: not running under ksh88 -- aborting!"
+
+KSHTEST=""
+echo OK | read KSHTEST
+if test "$KSHTEST" != "OK"; then
+    echo "$ERRMSG"
+    exit 2
+fi
+
+
+# -----------------------------< not
+
+not() {
+    if test "$@"; then
+	false
+    else
+	true
+    fi
+}
+
+
+# -----------------------------< main
+
+if test -z "$REGRESSDIR"; then
+    echo
+    echo "*** No test directory identified in REGRESSDIR -- aborting!"
+    exit 2
+elif test ! -d "$REGRESSDIR"; then
+    echo
+    echo "*** No test directory '$REGRESSDIR' (REGRESSDIR) found -- aborting!"
+    exit 2
+fi
+
+cd $REGRESSDIR
+
+set -- `getopt ldn $*`
+if test $? != 0; then
+    echo "$USAGE"
+    exit 2
+fi
+
+LIST=false
+NEW=false
+DESTROY=false
+for i in $*; do
+    case $i in
+    -l)
+	LIST=true
+	shift
+    ;;
+    -n)
+	NEW=true
+	shift
+    ;;
+    -d)
+	DESTROY=true
+	shift
+    ;;
+    --)
+	shift
+	break
+    ;;
+    *)
+	echo "$USAGE"
+	exit 2
+    ;;
+    esac
+done
+
+if $LIST; then
+    echo
+    echo "The following modules have been set up for regression testing:"
+    cd $REGRESSDIR
+    ls -d !(@*) 2>/dev/null | pr -o5 -t -5 -w80 2>/dev/null
+    if test $? -ne 0; then
+	echo "     NONE"
+    fi
+    echo
+    exit 0
+fi
+
+if $NEW  &&  $DESTROY; then
+    echo "Can't use '-n' and '-d' flags together!"
+    exit 2
+fi
+
+if test -x $REGRESSDIR/.regress; then
+    . $REGRESSDIR/.regress "$@"
+fi
+
+if test -x $HOME/.regress; then
+    . $HOME/.regress "$@"
+fi
+
+if $DESTROY; then
+    for MODULE; do
+	echo "Destroying regression tests for '$MODULE' module."
+	rm -rf $MODULE
+    done
+    exit 0
+fi
+
+DIRLIST="db stderr g_stderr stdout g_stdout stats g_stats results cases stdin"
+export DIRLIST
+
+if $NEW; then
+    RC=0
+    for MODULE; do
+	if test -d $MODULE; then
+	    echo "Directories for '$MODULE' already exist!"
+	else
+	    echo "Creating directories for '$MODULE' module."
+	    mkdir $MODULE
+	    for dir in $DIRLIST; do
+		if test ! -d $MODULE/$dir; then
+		    mkdir $MODULE/$dir
+		    if test $? -ne 0; then
+			echo "*** Error making directory '$MODULE/$dir'."
+		    fi
+		fi
+	    done
+	fi
+    done
+    exit 0
+fi
+
+
+echo
+
+MODULES=""						export MODULES
+MODCNT=0						export MODCNT
+
+if test $# -eq 0; then
+    WORKDIR=$REGRESSDIR
+    echo "Regression environment entered FOR EXAMINATION ONLY --"
+    echo "             no test modules specified!."
+else
+    case "$1" in
+    all | ALL )
+	ARGS=$(echo !(@*))
+    ;;
+    *)
+	ARGS="$@"
+    ;;
+    esac
+    cd $REGRESSDIR
+    ERROR=false
+    NL="
+"
+    for ARG in $ARGS; do
+	if test -d $ARG; then
+	    if test -z "$MODULES"; then
+		MODULES="$ARG"
+	    else
+		MODULES="$MODULES$NL$ARG"
+	    fi
+	    ((MODCNT += 1))
+	else
+	    echo "Can't find module '$ARG'"
+	    ERROR=true
+	fi
+    done
+    if test $MODCNT -eq 0; then
+	echo "Arguments in \"Regress\" command could not match any modules."
+	exit 2
+    elif test $MODCNT -eq 1; then
+	MODULE=$MODULES
+	db=$REGRESSDIR/$MODULE/db			export db
+	stderr=$REGRESSDIR/$MODULE/stderr		export stderr
+	g_stderr=$REGRESSDIR/$MODULE/g_stderr		export g_stderr
+	stdout=$REGRESSDIR/$MODULE/stdout		export stdout
+	g_stdout=$REGRESSDIR/$MODULE/g_stdout		export g_stdout
+	stats=$REGRESSDIR/$MODULE/stats			export stats
+	g_stats=$REGRESSDIR/$MODULE/g_stats		export g_stats
+	results=$REGRESSDIR/$MODULE/results		export results
+	cases=$REGRESSDIR/$MODULE/cases			export cases
+	stdin=$REGRESSDIR/$MODULE/stdin			export stdin
+	if test ! -d $cases; then
+	    echo "Unable to find test cases for product '$MODULE' -- aborting!"
+	    exit 2
+	fi
+	WORKDIR=$cases
+	echo "Using \"$MODULE\" module in all  @  commands."
+    else
+	WORKDIR=$REGRESSDIR
+	echo "Preparing  @  commands to test the following modules:"
+	echo "$MODULES" | pr -o5 -t -5 -w80
+    fi
+fi
+
+PATH=$TOOLS/lib/regress:/usr/5bin:$PATH				export PATH
+
+if test -n "$PAGER"; then
+    SHOW=$PAGER
+else
+    SHOW=$TOOLS/bin/more
+fi
+if test ! -x "$SHOW"; then
+    SHOW=/bin/cat
+fi
+export SHOW
+
+if test -z "$SHELL"; then
+    SHELL=/bin/sh
+fi
+export SHELL
+
+echo
+echo "Changing directory to '$WORKDIR'"
+echo "Type ^D to quit,  @help  for help"
+echo
+OWD=`pwd`
+cd $WORKDIR
+
+if test $MODCNT -eq 1; then
+    PS1="REGRESS($MODULE): " PS2="REGRESS($MODULE)> " $SHELL
+else
+    PS1="REGRESS: " PS2="REGRESS> " $SHELL
+fi
+
+echo "Returning to $OWD"
+echo

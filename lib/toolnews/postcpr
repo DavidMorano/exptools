@@ -1,0 +1,37 @@
+Version 3.3.1
+
+Postcpr is enhanced to allow shading requests like postnprint. The escape
+sequences needed are:
+
+	ESC-O	Increment Shading Level
+	ESC-N	Decrement Shading Level
+
+These escape sequences are now supported by Trueprint(Exptools) when it uses 
+postcpr.
+
+Mark Skeates
+att!mlsma!mskeates
+
+OLD NEWS:
+Version 3.3
+
+Postcpr is upgraded as follows:
+
+1) The proposed changed to look for files in DWB was not implemented as not
+all sites have DWB. This leaves the existing bug that looks for ps.requests
+in /usr/lib/postscript when -R is used. Since this may not exist, please use
+the format -R name:0:file where file is the full path to the ps.requests
+file.
+
+2) I split postcpr.ps into two files in $TOOLS/lib/cpr. The new file forms.ps
+is upgraded to fix the "outlineform" offending command problem. Forms.ps
+will now only be output if the -n option uses an argument greater than 1.
+Postcpr.ps is upgraded to fix the landscape printing problem (180 degrees
+rotation). Your prints should now come out with holes at the top. If not,
+and postnprint works ok, contact me.
+
+3) Postcpr is upgraded to be more like postnprint. It handles font changes
+easier and fixes mismatched restore commands.
+
+Mark Skeates.
+att!mlsma!mskeates

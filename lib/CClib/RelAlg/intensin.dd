@@ -1,0 +1,27 @@
+#ident "@(#) /sable/sdb/ra/rel/intension/s.intensin.dd"
+/* Copyright (c) 1989, 1990,1991 AT&T - All Rights Reserved */
+
+#define NULLINDEX -1
+
+const int NATTR=32;
+typedef short Degree_t;
+
+class Intension 
+   {
+include(intensin.pd)
+public:
+   Boolean_t constrain(Tuple *const t) const;
+   void use();
+   void done();
+
+   Boolean_t operator==(const Intension &r) const;
+   Boolean_t operator!=(const Intension &r) const;
+
+   Intension &operator%(const Attribute &a);       // end of key
+   Intension &operator/(const Attribute &a);       // simple concatenation
+   Intension &operator*(const Attribute &a);       // rename
+
+   friend Intension &operator%(const Attribute &l,const Attribute &r);
+   friend Intension &operator/(const Attribute &l,const Attribute &r);
+   friend Intension &operator*(const Attribute &l,const Attribute &r);
+   };

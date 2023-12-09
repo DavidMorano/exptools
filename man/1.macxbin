@@ -1,0 +1,132 @@
+
+
+
+MACXBIN(1)                User Commands                MACXBIN(1)
+
+
+
+NNNNAAAAMMMMEEEE
+     macxbin - convert mailable format BinHex  file  into  binary
+     before downloading to MacTerminal
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+     mmmmaaaaccccxxxxbbbbiiiinnnn [ ----oooo ] [ ----xxxx ] [ ----vvvv ] [ ----llll ] [ ----nnnn name ] [ ----ffff ] file]
+     ...
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+     _M_a_c_x_b_i_n converts a file created  by  BinHex  (usually  named
+     with  one  of the extensions ".hex", ".hcx", or ".hqx") into
+     three host-system files suitable for downloading to a Macin-
+     tosh  via macput.  This program is designed for use with the
+     1.1 Release version of MacTerminal, but includes a  compati-
+     bility option for the old -0.15X Almost-Alpha version.
+
+     The ----llll (list) option reads the header information and prints
+     out  all  the useful information there, without creating any
+     converted output files.
+
+     The ----xxxx option causes macxbin to create a MacBinary  file  (a
+     single  file  with  ".BIN"  for an extension) instead of the
+     usual three files.
+
+     The ----vvvv (verbose) option prints a line for each  file  to  be
+     converted, indicating the input and output file names.
+
+     The ----nnnn name option allows the user to specify  the  name  to
+     use  when  creating  the host files and the eventual name to
+     use on the mac.  This option must  precede  the  input  file
+     name it is to affect.
+
+     If this option is not used, the names will be  derived  from
+     either the input file name (.hex or .hcx files), or the name
+     encoded in the header information (.hqx files).  Spaces  and
+     slashes  will  be  converted  to  underscores,  and the .h?x
+     extension will be deleted, if one is included in  the  input
+     file name.
+
+     The ----ffff option will cause macxbin to  overwrite  an  existing
+     output  file.  If it is not set macxbin will simply print an
+     error message and abort.
+
+     A file name of "-" indicates that the input should be  taken
+     from  stdin.   If no mac file name is specified, the default
+     name (for .hex or .hcx files) is "stdin".
+
+     Mail or news headers and signatures  need  not  be  manually
+     stripped  --  macxbin  will  ignore  pretty much anything it
+     doesn't need.
+
+
+
+
+
+Sun Microsystems      Last change: EXPTOOLS                     1
+
+
+
+
+
+
+MACXBIN(1)                User Commands                MACXBIN(1)
+
+
+
+     _m_a_c_x_b_i_n creates three  host-system  files  from  each  input
+     file:  _n_a_m_e....iiiinnnnffffoooo, _n_a_m_e....ddddaaaattttaaaa, and _n_a_m_e....rrrrssssrrrrcccc.
+
+     The ----oooo flag specifies  "old"  (version  -0.15X)  MacTerminal
+     compatibility mode.
+
+     Any option may be preset by the environment  variable  MACX-
+     BIN.   for  example,  by  adding  the following line to your
+     .profile file:
+
+          MACXBIN=-x; export MACXBIN
+
+     will cause macxbin to write out a MacBinary file by default.
+
+WWWWAAAARRRRNNNNIIIINNNNGGGG
+     If arguments are given on the command line  the  environment
+     is ignored.
+
+
+BBBBUUUUGGGGSSSS
+     The "LOCKED" bit in the flags  cannot  be  set  by  macxbin.
+     This  is  due  to a bug in MacTerminal, which sets the flags
+     when the file is created, rather  than  after  it  has  been
+     transferred,  resulting  in  it  not being able to write the
+     file.
+
+     Input files must contain a line starting with  "(This  file"
+     to detect the beginning of the BinHex information.
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     macput(1), macget(1)
+
+AAAAUUUUTTTTHHHHOOOORRRR
+     Dave Johnson, Brown 12/16/84; CRC  handling  code  by  Darin
+     Adler,  TMQ  Software 3/16/85 -x option and port to Sys V by
+     Mark Nettleingham
+
+PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+     Mark Nettleingham
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sun Microsystems      Last change: EXPTOOLS                     2
+
+
+

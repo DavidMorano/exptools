@@ -1,0 +1,302 @@
+New news on perl:
+
+	perl has been updated to Release 4.0 Patchlevel 35.  The
+	changes list is at the bottom of this news.
+
+	MIPS Version has problems currently. I am trying to resolve 
+	them.
+
+Perl book info:
+
+	title:			Programming Perl
+	author:			Larry Wall & Randal L. Schwartz
+	publisher:		O'Reilly & Associates, Inc.
+	publication date:	1991
+	ISBN:			0-937175-64-1
+	Price:			$24.95
+
+What is perl:
+
+	perl is a combination of sh, sed, awk, c, ....  It is usually
+	faster than sed, awk and shell scripts, and it contains more
+	features. If you where looking for a do everything kind of
+	filter/tool, this is it.
+	
+	perl is officially supported on all exptools machines.  If you
+	need it on any other machine types, contact the provider.
+
+Changes to perl:
+
+Subject: added eval {}
+Subject: eval 'stuff' now optimized to eval {stuff}
+
+	This set of patches doesn't have many enhancements but this is
+	one of them.  The eval operator has two distinct semantic functions.
+	First, it runs the parser on some random string and executes it.
+	Second, it traps exceptions and returns them in $@.  There are times
+	when you'd like to get the second function without the first.  In
+	order to do that, you can now eval a block of code, which is parsed
+	like ordinary code at compile time, but which traps any run-time
+	errors and returns them in the $@ variable.  For instance, to
+	trap divide by zero errors:
+
+		eval {
+		    $answer = $foo / $bar;
+		};
+		warn $@ if $@;
+
+	Since single-quoted strings don't ever change, they are optimized
+	to the eval {} form the first time they are encountered at run-time.
+	This doesn't happen too often, though some of you have written things
+	like eval '&try_this;'.  However, the righthand side of s///e is
+	evaluated as a single-quoted string, so this construct should run
+	somewhat faster now.
+
+Subject: added sort {} LIST
+
+	Another enhancement that some of you have been hankering for.
+	You can now inline the sort subroutine as a block where the
+	subroutine name used to go:
+
+		@articles = sort {$a <=> $b;} readdir(DIR);
+
+Subject: added some support for 64-bit integers
+
+	For Convexen and Crayen, which have 64-bit integers, there's
+	now pack, unpack and sprintf support for 64-bit integers.
+
+Subject: sprintf() now supports any length of s field
+
+	You can now use formats like %2048s and %-8192.8192s.  Perl will
+	totally bypass your system's sprintf() function on these.  No,
+	you still probably can't say %2048d.  No, I'm not going to
+	change that any time soon.
+
+Subject: substr() and vec() weren't allowed in an lvalue list
+Subject: extra comma at end of list is now allowed in more places (Hi, Felix!)
+Subject: underscore is now allowed within literal octal and hex numbers
+
+	Various syntactic relaxations.  You can now get away with
+
+		(substr($foo,0,3), substr($bar,0,3)) = ('abc', 'def');
+		(1,2,3,)[$x];
+		$addr = 0x1a20_ff0b;
+
+Subject: safe malloc code now integrated into Perl's malloc when possible
+
+	To save a bunch of subroutine calls.  If you use your system's
+	malloc it still has to use wrappers.
+
+Subject: added support for dbz
+
+	By saying "make dbzperl" you can make a copy of Perl that can
+	access C news's dbz files.  You still have to follow the dbz rules,
+	though, if you're going to try to write a dbz file.
+
+Subject: there are now subroutines for calling back from C into Perl
+Subject: usub/curses.mus now supports SysV curses
+
+	More C linkage support.  I still haven't got Perl embeddable, but
+	we're getting there.  That's too big an enhancement for this
+	update, in which I've been trying to stick to bug fixes, with some
+	success.
+
+Subject: prepared for ctype implementations that don't define isascii()
+
+	A larger percentage of this update consists of code to do
+	consistent ctype processing whether or not <ctype.h> is 8-bit
+	clean.
+
+Subject: /$foo/o optimizer could access deallocated data
+Subject: certain optimizations of //g in array context returned too many values
+Subject: regexp with no parens in array context returned wacky $`, $& and $'
+Subject: $' not set right on some //g
+Subject: grep of a split lost its values
+Subject: # fields could write outside allocated memory
+Subject: length($x) was sometimes wrong for numeric $x
+
+	Recently added or modified stuff that you kind of expect to be
+	a bit flaky still.  Well, I do...
+
+Subject: passing non-existend array elements to subrouting caused core dump
+Subject: "foo" x -1 dumped core
+Subject: truncate on a closed filehandle could dump
+Subject: a last statement outside any block caused occasional core dumps
+Subject: missing arguments caused core dump in -D8 code
+Subject: cacheout.pl could dump core from invalid comparison operator
+Subject: *foo = undef coredumped
+Subject: warn '-' x 10000 dumped core
+Subject: index("little", "longer string") could visit faraway places
+
+	A bunch of natty little bugs that you wouldn't generally run into
+	unless you're trying to be coy.
+
+Subject: hex() didn't understand leading 0x
+
+	It wasn't documented that it should work, but oct() understands 0x,
+	so why not hex()?  I dunno...
+
+Subject: "foo\0" eq "foo" was sometimes optimized to true
+Subject: eval confused by string containing null
+
+	Yet more holdovers from the time before Perl was 8-bit clean.
+
+Subject: foreach on null list could spring memory leak
+Subject: local(*FILEHANDLE) had a memory leak
+
+	Kind of slow leaks, as leaks go.  Still...
+
+Subject: minimum match length calculation in regexp is now cumulative
+
+	More substitutions can be done in place now because Perl knows
+	that patterns like in s/foo\s+bar/1234567/ have to match a
+	certain number of characters total.  It used to be on that
+	particular pattern that it only knew that it had to match at
+	least 3 characters.  Now it know it has to match at least 7.
+
+Subject: multiple reallocations now avoided in 1 .. 100000
+
+	You still don't want to say 1 .. 1000000, but at least it will
+	refrain from allocating intermediate sized blocks while it's
+	constructing the value, and won't do the extra copies implied
+	by realloc.
+
+Subject: indirect subroutine calls through magic vars (e.g. &$1) didn't work
+Subject: defined(&$foo) and undef(&$foo) didn't work
+Subject: certain perl errors should set EBADF so that $! looks better
+Subject: stats of _ forgot whether prior stat was actually lstat
+Subject: -T returned true on NFS directory
+Subject: sysread() in socket was substituting recv()
+Subject: formats didn't fill their fields as well as they could
+Subject: ^ fields chopped hyphens on line break
+Subject: -P didn't allow use of #elif or #undef
+Subject: $0 was being truncated at times
+Subject: forked exec on non-existent program now issues a warning
+
+	Various things you'd expect to work the way you expect, but
+	didn't when you did, or I did, or something...
+
+Subject: perl mistook some streams for sockets because they return mode 0 too
+Subject: reopening STDIN, STDOUT and STDERR failed on some machines
+
+	Problems opening files portably.  So what's new?
+
+Subject: cppstdin now installed outside of source directory
+Subject: installperl now overrides installer's umask
+
+	People who used cppstdin for the cpp filter or who had their
+	umask set to 700 will now be happier.  (And Configure will now
+	prefer /lib/cpp over cppstdin like it used to.  If this gives
+	your machine heartburn because /lib/cpp doesn't set the symbols
+	it should, write a hints file to poke them into ccflags.)
+
+Subject: initial .* in pattern had dependency on value of $*
+
+	An initial .* was optimized to have a ^ on the front to avoid retrying
+	when we know it won't match.  Unfortunately this implicit ^ was
+	paying attention to $*, which it shouldn't have been.
+
+Subject: certain patterns made use of garbage pointers from uncleared memory
+
+	Many of you saw this as a failure in t/op/pat.t.
+
+Subject: perl now issues warning if $SIG{'ALARM'} is referenced
+
+	Since the book mentions "SIGALARM", I thought we needed this.
+
+Subject: solitary subroutine references no longer trigger typo warnings
+
+	You can now use -w (more) profitably on programs that require
+	other files.  I figured if you mistype a subroutine name you'll
+	get a fatal error anyway, unlike a variable, which just defaults
+	to being undefined.
+
+Subject: $foo .= <BAR> could overrun malloced memory
+
+	Good old-fashioned bug.
+
+Subject: \$ didn't always make it through double-quoter to regexp routines
+Subject: \x and \c were subject to double interpretation in regexps
+Subject: nested list operators could miscount parens
+Subject: sort eval "whatever" didn't work
+
+	Syntactic misfeatures of various sorts.
+
+Subject: find2perl produced incorrect code for -group
+Subject: find2perl could be confused by names containing whitespace
+Subject: in a2p, split on whitespace produced extra null field
+
+	Translator stuff.
+
+Subject: new complete.pl from Wayne Thompson
+Subject: assert.pl and exceptions.pl from Tom Christiansen
+Subject: added Tom's c2ph stuff
+Subject: getcwd.pl from Brandon S. Allbery
+Subject: fastcwd.pl from John Basik
+Subject: chat2.pl from Randal L. Schwartz
+
+	New contributed stuff.  Thanks!
+
+	(Not that a lot of the other stuff isn't contributed too...)
+
+Subject: debugger got confused over nested subroutine definitions
+Subject: once-thru blocks didn't display right in the debugger
+Subject: perldb.pl modified to run within emacs in perldb-mode
+
+	Debugger stuff.  The first two were caused by not saving line
+	numbers at exactly the right moment.
+
+Subject: documented meaning of scalar(%foo)
+
+	I also updated the Errata section of the man page.
+
+Subject: various portability fixes
+Subject: random cleanup
+Subject: saberized perl
+
+	Type casts, saber warning message suppression, hints files and various
+	metaconfig fiddlehoods.
+
+Subject: added little-endian pack/unpack options
+	
+	This is the only enhancement in this patch, but it seemed unlikely
+	to bust anything else, and added functionality that it was very
+	difficult to do any other way.  Compliments of David W. Sanderson.
+
+Subject: op/regexp.t failed from missing arg to bcmp()
+Subject: study was busted by 4.018
+Subject: sort $subname was busted by changes in 4.018
+Subject: default arg for shift was wrong after first subroutine definition
+
+	Things that broke in 4.018.  Shame on me.
+
+Subject: do {$foo ne "bar";} returned wrong value
+
+	A bug of long standing.  How come nobody saw this one?  Or if you
+	did, why didn't you report it before now?  Or if you did, why did
+	I ignore you?  :-)
+
+Subject: some machines need -lsocket before -lnsl
+Subject: some earlier patches weren't propagated to alternate 286 code
+Subject: compile in the x2p directory couldn't find cppstdin
+Subject: more hints for aix, isc, hp, sco, uts
+Subject: installperl no longer updates unchanged library files
+Subject: uts wrongly defines S_ISDIR() et al
+Subject: too many preprocessors can't expand a macro right in #if
+
+	The usual pastiche of portability kludges.
+
+Subject: deleted some unused functions from usersub.c
+
+	And fixed the spelling of John Macdonald's name, and included his
+	suggested workaround for a certain vendor's stdio bug...
+
+Subject: added readdir test
+Subject: made op/groups.t more reliable
+Subject: added test for sort $subname to op/sort.t
+Subject: added some hacks to op/stat.t for weird filesystem architectures
+
+	Improvements (hopefully) to the regression tests.
+
+
+Mark Trettin

@@ -1,0 +1,22 @@
+#  @(#)  SID: 1.1;  module: @showdo;  last changed: 6/3/91  13:16:13
+#
+#  This command allows shell scripts to be written that echo certain
+#  commands being executed.  During regression testing the commands are
+#  echoed to standard error as well.
+
+outmsg() {
+    echo
+    if test -n "$2"; then
+	echo "##########"
+	echo "# Testing: $2"
+    fi
+    echo "# Executing: $1"
+}
+
+outmsg "$@"
+
+if test ! -t 2; then
+    outmsg "$@" >&2
+fi
+
+eval "$1"

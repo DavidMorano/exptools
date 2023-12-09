@@ -1,0 +1,256 @@
+# Mary E. Crabb (Created: 06/27/91)
+#
+# This script is used to process and print the
+# SSBU's Performance Appraisal Record on a
+# PostScript printer.  This script uses UNISON's
+# "prtfmt" command and checks to see that the user has
+# a .prt file.  If not, the user is told to create one
+# and exited from this script.
+
+VERS="3.1 (12/17/93 - MEC)"
+PATH=/usr/5bin:/bin:/usr/bin:/usr/lbin:/usr/add-on/local/bin:/usr/add-on/unison/bin:/usr/add-on/wwb/bin:$PATH:
+IFS="	 
+"
+umask 077
+
+trap 'rm -f tmpmacs.$$; exit' 0 1 2 3 15
+
+#####################################################
+# check for .prt file - if not there, exit.
+#####################################################
+
+if [ ! -s $HOME/.prt ]
+then
+  /bin/cat <<!
+     You must have a ".prt" file in your \$HOME directory to
+     use this tool.  Minimally it must contain -Tdevice_type
+     and -ddestination (e.g., -Tpost -dih12345z).  Create a
+     .prt file containing the above information and execute
+     this command again.
+!
+  exit
+fi
+
+#####################################################
+# check for arguments - if none, usage message.
+# if there, assign them to variables.
+#####################################################
+
+if [ $# -lt 1 -o "${1}" = "-?" ]
+then
+  /bin/cat <<!
+     Usage:  $0 [-c] [-p] [-s] [-Z] [-V] filename
+
+     OPTIONS:
+       -c   Input file will be checked for proper macro usage.
+       -p   Input file will be formatted for proofing on the
+            terminal (must be in layers on a 630, 730, or dmd).
+       -s   Input file will be run through the spell program.
+       -Z   Send PostScript output to stdout instead of printing it.
+       -V   Print version number.
+!
+  exit
+fi
+
+while true
+do
+  case $1 in
+     -c) CHECK=y
+	 shift ;;
+     -p) PROOF=y
+         shift ;;
+     -s) SPELL=y
+         shift ;;
+     -Z) PSCRIPT=y
+         shift;;
+     -V) echo "VERSION: ${VERS}"
+         exit 0 ;;
+     -*) echo "Invalid option ${1} - sorry!"
+         exit 1 ;;
+      *) FN=${1}
+         break ;;
+  esac
+done
+
+#####################################################
+# check to see if file is encrypted
+#####################################################
+
+CRYPT=`/bin/file ${FN} | sed 's/.*	//'`
+case $CRYPT in
+  data|"c program text with garbage") CRYPT=y ;;
+                                   *) CRYPT=n ;;
+esac
+
+#####################################################
+# START OF "-c" STUFF
+#####################################################
+# if -c was called, then grep out the important
+# macros and put them in a temp file.
+#####################################################
+
+if [ "${CHECK}" = "y" ]
+then
+
+  if [ "${CRYPT}" = "y" ]
+  then
+       /bin/crypt < ${FN} | /usr/bin/egrep "^\.EN|^\.AP|^\.OV|^\.SS|^\.DA|^\.C[1-3]" > tmpmacs.$$
+  else
+       /usr/bin/egrep "^\.EN|^\.AP|^\.OV|^\.SS|^\.DA|^\.C[1-3]" ${FN} > tmpmacs.$$
+  fi
+
+  #####################################################
+  # check for use of must/should macros in temp file;
+  # if a "must" is missing (FLAG=1), exit
+  #####################################################
+  
+  for MAC in EN AP OV SS DA
+  do
+     NO=`/bin/grep -c "^\.${MAC}" tmpmacs.$$`
+     if [ "${NO}" -ne 1 ]
+     then
+       FLAG=
+       case ${MAC} in
+          DA) word1=should; word2=macro ;;
+           *) word1=must; word2=macro; FLAG=1 ;;
+       esac
+       echo "File ${word1} contain one .${MAC} ${word2}!"
+       if [ "${FLAG}" = 1 ]
+       then
+         echo "Fix file and try again!"
+         exit 1
+       fi
+     fi
+  done
+  
+  #####################################################
+  # check to make sure that the .C1, .C2, and .C3 are
+  # used in groups of three and in the proper order;
+  # then remove temp file.
+  #####################################################
+  
+  NOS=`/bin/grep "^\.C[1-3]" tmpmacs.$$ | cut -c3`
+  set $NOS
+  until [ "$1" = "" ]
+  do
+     if [ "$1" -eq 1 -a "$2" -eq 2 -a "$3" -eq 3 ]
+     then
+       shift 3
+     else
+       echo "The .C1, .C2, and .C3 macros must be used in groups of three.\nFix file and try again!"
+       exit 1
+     fi
+  done
+  
+fi
+#####################################################
+# END OF -c STUFF
+#####################################################
+
+#####################################################
+# START OF "-s" STUFF
+#####################################################
+# if "-s" was called, do a spell on the file;
+# include private spelling list; if errors found,
+# give chance to quit this script.
+#####################################################
+
+if [ "$SPELL" = "y" ]
+then
+  PRILST="${HOME}/lib/wwb/spelldict"
+  if [ -s "${PRILST}" -a -r "${PRILST}" ]
+  then
+    PRILST=+"${PRILST}"
+  else
+    PRILST=""
+  fi
+
+  if [ "${CRYPT}" = "y" ] 
+  then
+    ERRS=`/bin/crypt < ${FN} | /usr/bin/spell $PRILST`
+  else
+    ERRS=`/usr/bin/spell $PRILST ${FN}`
+  fi
+
+  if [ -n "$ERRS" ]
+  then
+    /bin/cat <<!
+     --------------- Possible Spelling Errors ---------------
+
+     If any of these words are spelled correctly, later type
+                  spelladd word1 word2 ... wordn
+     to have them added to your spelldict file.
+
+!
+    echo "$ERRS" | pr -t -w60 -o5 -4
+    echo "\nProof/Print the file anyway (y or n)? \c"
+    read ANS
+
+    case $ANS in
+       y) ;;
+       n) exit 1 ;;
+    esac
+  
+  else
+    echo "No spelling errors found!"
+  fi
+fi
+#####################################################
+# END OF -s STUFF
+#####################################################
+
+#####################################################
+# START OF "-p" STUFF
+#####################################################
+# if "-p" was called, check to see if they're in
+# layers and set path to include DMD stuff; if xproof
+# is available, use it, otherwise use proof; then
+# format the file and run it through the appropriate
+# "proofer"; if "-Z" was called, produce PostScript
+# output to stdout; if "-p" or "-Z" were not called,
+# then just format and print the file using prtfmt.
+#####################################################
+if [ "$PROOF" = "y" ]
+then
+  if ${DMD:?"variable not set; proofing not allowed"}/bin/ismpx 2> /dev/null || ismpx > /dev/null 2>&1
+  then
+    PATH=$PATH:${DMD}/bin
+    if [ "$TOOLS" -a -x "$TOOLS/bin/xproof" ]
+    then
+      PRFCMD=$TOOLS/bin/xproof
+    else
+      PRFCMD=$DMD/bin/proof
+    fi
+    case "$TERM" in
+      *[67]30*) CACHE=-c;;
+             *) CACHE=;;
+    esac
+    if [ "$CRYPT" = "y" ]
+    then
+      /bin/crypt < ${FN} | prtfmt -Z $TOOLS/lib/55recprt/o55rec.macs - | $PRFCMD ${CACHE}
+    else
+      prtfmt -Z $TOOLS/lib/55recprt/o55rec.macs ${FN} | $PRFCMD ${CACHE}
+    fi
+  else
+    echo "You must be in layers to proof!"
+    exit 1
+  fi
+elif [ "$PSCRIPT" = "y" ]
+then
+  if [ "$CRYPT" = "y" ]
+  then
+    /bin/crypt < ${FN} | prtfmt -j55record -Z $TOOLS/lib/55recprt/o55rec.macs - | dpost
+  else
+    prtfmt -j55record -Z $TOOLS/lib/55recprt/o55rec.macs ${FN} | dpost
+  fi
+else
+  if [ "$CRYPT" = "y" ]
+  then
+    /bin/crypt < ${FN} | prtfmt -j55record $TOOLS/lib/55recprt/o55rec.macs -
+  else
+    prtfmt -j55record $TOOLS/lib/55recprt/o55rec.macs ${FN}
+  fi
+fi
+#####################################################
+# END OF -p STUFF
+#####################################################

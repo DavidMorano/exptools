@@ -1,0 +1,594 @@
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          mf - METAFONT, a language for font design
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmffff [ first line ]
+
+          ccccmmmmmmmmffff [ first line ]
+
+          iiiinnnniiiimmmmffff [ first line ]
+
+          vvvviiiirrrrmmmmffff [ first line ]
+
+
+     EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS VVVVEEEERRRRSSSSIIIIOOOONNNN
+          This is a slightly modified (by Dan_Jacobson@ATT.COM)
+          version of a TeX family program manual page from the
+          official worldwide UNIXTeX distribution of the same date as
+          above.  Rather than make extensive changes to it which will
+          need to be integrated into new versions of this manual page
+          from there or elsewhere, we exptools' TeX package providers
+          maintain hints, tips, status commentaries, local bugs, and
+          information on our extensions and differences from the
+          standard TeX and LaTeX, METAFONT, etc.  distributions in the
+          directory $TOOLS/lib/tex/tips (TOOLS=`logdir exptools`).
+
+          Please look there for various caveats, including items
+          superseding this manual page.  Running TeX/LaTeX/SLITeX
+          brings you most of the way to obtaining printed output, but
+          the current method to make the last necessary steps is
+          discussed in the "tips" directory.
+
+          Note there are AT&T LaTeX "documentstyles" available, and
+          the exptools' docsubmit(1) command accepts the TeX family of
+          languages.
+
+          If you have any questions about TeX/LaTeX/SLITeX etc. after
+          looking in our "tips" directory, or perhaps can't find our
+          tips directory, you can contact us.  To find out who we, the
+          exptools tex package (TeX/LaTeX/SLITeX, etc.) providers,
+          currently are, use the exptools' command "providers tex".
+          As of this writing we were Mark_A_Hartman@ATT.COM and
+          Dan_Jacobson@ATT.COM.
+
+          LaTeX and SLITeX are versions of TeX with additional macros
+          to make writing papers and slides easy, see the LaTeX book,
+          reference below.
+
+          One needn't worry about references to initex, virtex, cmmf,
+          inimf, or virmf here...  See the tips directory for more
+          information on them if you're interested.  Those of these
+          that we make available would be located in directories
+          internal to the exptools' TeX package.
+
+
+
+     Page 1                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+          We now continue with the rest of the official man page.
+          (Note: note location and settings of a few of the things
+          below may superseded by what is mentioned in the
+          aforementioned "tips" directory.  Again, we have only made
+          minimal changes to the official man page.  Also, in an
+          effort to promote a single master man page worldwide, we
+          have sent any quibbles we've had about the typesetting of
+          this man page to Prof. MacKay, et. al., for inclusion in the
+          next version, rather than independently adjust the copy you
+          are reading here.)
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          METAFONT reads the program in the specified files and
+          outputs font rasters (in GF format) and font metrics (TFM
+          files).  METAFONT capabilities and language are described in
+          _T_h_e _M_E_T_A_F_O_N_T_b_o_o_k by Donald E. Knuth, published by Addison
+          Wesley.  There is also an older manual, _T_e_X _a_n_d _M_E_T_A_F_O_N_T,
+          which describes the older version of METAFONT, now called
+          METAFONT-in-SAIL, but this description is now obsolete.
+
+          Like TeX , METAFONT is normally used with a large body of
+          precompiled macros.  Font generation in particular requires
+          the support of several macro files.  The basic programs as
+          compiled are called _i_n_i_m_f and _v_i_r_m_f, and are distinguished
+          by the fact that _i_n_i_m_f can be used to precompile macros into
+          a ``*.base'' file, which is used by _v_i_r_m_f. _V_i_r_m_f can read a
+          precompiled ``*.base'' file, but it cannot create one.  It
+          is the version of METAFONT which lies behind most font
+          production systems.
+
+          By convention, the program used to compile the Computer
+          Modern fonts is called _c_m_m_f, which is essentially an alias
+          for _v_i_r_m_f with the Computer Modern support macros loaded in
+          as a ``base'' file.  In the following discussion, the name
+          METAFONT will be used whenever the behavior of all varieties
+          of the program is the same.  Otherwise, it should be assumed
+          that the behavior described is unique to the program named.
+          Any arguments given on the command line to one of the
+          METAFONT programs, such as _c_m_m_f, are passed to them as the
+          first input line.  As described in _T_h_e _M_E_T_A_F_O_N_T_b_o_o_k, that
+          line should begin with a file name or a \controlsequence.
+          The normal usage is to say
+
+               ccccmmmmmmmmffff  '\mode=<printengine>; [\mag=magstep(_n);]' input
+               _f_o_n_t
+
+          to start processing _f_o_n_t._m_f. The single quotes are the best
+          way of keeping the shell from misinterpreting the semicolons
+          and from removing the \ characters, which are needed here to
+          keep METAFONT from thinking that you want to produce a font
+          called ``mode'' or ``mag''. Other \controlsequences, such as
+
+
+
+     Page 2                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+          \batchmode (for silent operation) can also appear. The name
+          ``font'' will be the ``jobname'', and is used in forming
+          output file names.  If METAFONT doesn't get a file name in
+          the first line, the jobname is ``mfput''.  The default `.mf'
+          extension can be overridden by specifying an extension
+          explicitly.  There is no way to read a METAFONT input file
+          with no filename extension.
+
+          A log of error messages goes into  _f_o_n_t...._l_o_g where _f_o_n_t is
+          the jobname. The output files are  _f_o_n_t...._t_f_m and
+          _f_o_n_t....<number>_g_f where <number> depends on the resolution and
+          magnification of the font.  The ``\mode'' in this example is
+          shown generically as <printengine>, a symbolic term for
+          which the name of an actual printengine or the name
+          ``localfont'' (see below) must be substituted.  If the
+          ``\mode'' is not specified or is not valid for your site,
+          METAFONT will default to ``proof'' mode which produces large
+          character images for use in font design and refinement.
+          Proof mode can immediately be recognized by the appearance
+          of the suffix ._2_6_0_2_g_f
+           after the jobname.  Examples of proof mode output can be
+          found in _T_h_e _C_o_m_p_u_t_e_r _M_o_d_e_r_n _T_y_p_e_f_a_c_e_s, (Volume E of
+          _C_o_m_p_u_t_e_r_s _a_n_d _T_y_p_e_s_e_t_t_i_n_g ), by Donald Knuth.  The system of
+          _m_a_g_s_t_e_p_s is identical to the system used by TeX , with
+          values normally in the range 0.5, 1.0, 2.0, 3.0, 4.0 and
+          5.0.  A listing of GF numbers for 118-dpi, 120-dpi, 240-dpi
+          and 300-dpi fonts is shown below.
+
+                MAGSTEP        118 dpi   120 dpi   240 dpi   300 dpi
+            mag=magstep(0)       118       120       240       300
+            mag=magstep(0.5)     131       129       263       329
+            mag=magstep(1)       142       144       288       360
+            mag=magstep(2)       170       173       346       432
+            mag=magstep(3)       204       207       415       518
+            mag=magstep(4)       245       249       498       622
+            mag=magstep(5)       294       299       597       746
+
+          Magnification can also be specified not as a magstep but as
+          an arbitrary value, such as 1.315, to create special
+          character sizes.
+
+          Before font production can begin, it is necessary to set up
+          the appropriate `base' files.  The minimum set of components
+          for font production for a given print-engine is the _p_l_a_i_n._m_f
+          macro file and a `mode_def' file.  The macros in _p_l_a_i_n._m_f
+          can be studied in an appendix to the _M_E_T_A_F_O_N_T_b_o_o_k; they were
+          developed by Donald Knuth, and this file should never be
+          altered except when it is officially upgraded. Mode_def
+          specifications are tailored to each different print-engine.
+          There is a regular discussion of them in the journal of the
+          TeX Users Group, _T_U_G_b_o_a_t, and models can be found in the
+          file _m_o_d_e_s._m_f which is in the standard distribution of TeX
+
+
+
+     Page 3                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+          for Unix systems.  All sites are strongly encouraged to use
+          _m_o_d_e_s._m_f as their `mode_def' file to ensure consistency in
+          the fonts generated between sites.
+
+          With only _p_l_a_i_n._m_f and _m_o_d_e_s._m_f loaded it is possible to
+          create fonts of simple characters, such as those used for
+          the METAFONT logo, and those used for the LaTeX line and
+          circle fonts; but the production of Computer Modern fonts
+          requires that _c_m_b_a_s_e._m_f be loaded as well.  The best way to
+          do this is to create a small ``driver'' file with the lines
+                         input plain
+                         input modes
+                         input cmbase
+          and name this file ccccmmmmmmmmffff....mmmmffff.  Then run _i_n_i_m_f with the
+          arguments ``cmmf dump'', and you will finish up with a file
+          named _c_m_m_f._b_a_s_e . The `base' file is used by _v_i_r_m_f. It needs
+          to be given a base file name as the first thing it reads.  A
+          base file name is preceded by an &, which needs to be quoted
+          or escaped with \ if given on the command line.
+
+          Fortunately, it is no longer necessary to make explicit
+          references to the base file.  The present version of
+          METAFONT, when compiled from this distribution, looks at its
+          own command line to determine what name it was called under.
+          It then uses that name, with the ``.base'' suffix appended,
+          to search for the appropriate base file.  This is the reason
+          for naming the ``driver'' file above ccccmmmmmmmmffff....mmmmffff.  You should
+          probably also make up another base file using a driver named
+          mmmmffff....mmmmffff, with only the _p_l_a_i_n._m_f and `mode_def' file declared.
+          This will be your base file when you invoke _v_i_r_m_f with the
+          name _m_f.  To make the whole thing work, it is necessary to
+          link _v_i_r_m_f to all the names of base files that you have
+          prepared.  Hard links will do very nicely in this instance.
+          (These steps are by and large taken care of by the current
+          WEB to C makefile, but it is a good idea to understand them
+          for the regular use of METAFONT.)
+
+          If you choose to preload ``cmmf'' using the ``undump''
+          program you get a faster startup, but only at the price of
+          lost flexibility and of large storage requirements for the
+          preloaded version. WWWWAAAARRRRNNNNIIIINNNNGGGG.... Do not use a base with _c_m_b_a_s_e._m_f
+          preloaded when you make up the line and circle fonts for
+          LaTeX.  It causes subtle errors in the compiled font and
+          makes the production of clean drawings in LaTeX picture mode
+          virtually impossible.
+
+          There are some environment variables that can be used to set
+          up directory paths to search when METAFONT opens a file for
+          input.  For example, the _c_s_h command
+              setenv MFINPUTS .:/usr/me/mylib:$TOOLS/lib/tex/mf
+          or the _s_h command sequence
+              MFINPUTS=.:/usr/me/mylib:$TOOLS/lib/tex/mf
+
+
+
+     Page 4                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+              export MFINPUTS
+          would cause all invocations of METAFONT and its derivatives
+          to look for \input files first in the current directory,
+          then in a hypothetical user's ``mylib'', and finally in the
+          system library.  Normally, the user will place the command
+          sequence which sets up the MFINPUTS environment variable in
+          the ._c_s_h_r_c or ._p_r_o_f_i_l_e file.
+
+          The _e response to METAFONT's error-recovery mode invokes the
+          system default editor at the erroneous line of the source
+          file.  There is an environment variable, MFEDIT, that can be
+          used to override the default editor. It should contain a
+          string with "%s" indicating where the filename goes and "%d"
+          indicating where the decimal linenumber (if any) goes.  For
+          example, an MFEDIT string for the _v_i editor can be set with
+          the _c_s_h command:
+                  setenv MFEDIT "/usr/ucb/vi +%d %s"
+9          (replacing the path name for the editor as appropriate on
+          your system).  The environment variables section below lists
+          the relevant environment variables, and their defaults.
+
+          A convenient file in the library is _n_u_l_l._m_f, containing
+          nothing.  When _m_f can't find the file it thinks you want to
+          input, it keeps asking you for another file name;
+          responding `null' gets you out of the loop if you don't want
+          to input anything.
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Most sites need at least two families of font resolution:
+          one for printing and the other for previewing. If both
+          write-white and write-black printers are used at the same
+          site it may even be necessary to have two sets of fonts at
+          the same resolution.  When preloaded with a `mode-def' file
+          (_m_o_d_e_s._m_f is recommended) METAFONT has several modes, each
+          associated with a given print engine or display device. In
+          regular use the mode `localfont' is made equivalent to the
+          mode for the print-engine most in use.  There are also two
+          styles of proof mode for character designers.
+
+                           _p_r_o_o_f _m_o_d_e
+                               Generates full-page font proofs using
+                               gray-pixel fonts
+
+                           _s_m_o_k_e _m_o_d_e
+                               Generates full-page font proofs using
+                               black-pixel fonts
+
+                           _l_o_c_a_l_f_o_n_t _m_o_d_e
+                               Generates font at resolution suitable
+                               for printing
+9
+
+
+     Page 5                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+          Once a METAFONT source is written, the following steps may
+          be used to generate a GF file for proofing, TFM file for the
+          width table, and raster font files for printing and
+          previewing at each desired resolution.
+
+                          STEP 1. Compile font
+                              Input: _c_m_m_f _m_y_f_o_n_t
+                              Output: myfont.2602gf, myfont.log
+
+                          STEP 2. Generate DVI-file
+                              Input: _g_f_t_o_d_v_i _m_y_f_o_n_t._2_6_0_2_g_f
+                              Output: myfont.dvi, myfont.log
+
+                          STEP 3. Produce printable output
+                              (e. g. from a PostScript printer)
+                              Input: _d_v_i_t_p_s _m_y_f_o_n_t | _l_p_r
+                              Note: You need special black, gray and
+                              slant fonts for this.
+
+                          STEP 4. Generate generic format rastered font:
+                              Input: _c_m_m_f '\_m_o_d_e=_l_o_c_a_l_f_o_n_t;
+                              \_m_a_g=_m_a_g_s_t_e_p(_1._0);' _i_n_p_u_t _m_y_f_o_n_t
+                              Output: myfont.360gf, myfont.tfm,
+                              myfont.log
+                              Note: Steps 1 through 3 are necessarily
+                              only if you are working on a new design.
+                              If all you need is a specific size and
+                              resolution of a well-known font, then
+                              only step 4 is needed.
+
+
+     OOOONNNNLLLLIIIINNNNEEEE GGGGRRRRAAAAPPPPHHHHIIIICCCCSSSS OOOOUUUUTTTTPPPPUUUUTTTT
+          METAFONT can use most modern displays, so you can see its
+          output without printing.  Chapter 23 of _T_h_e _M_E_T_A_F_O_N_T_b_o_o_k
+          describes what you can do.  This implementation of METAFONT
+          uses environment variables to determine which display device
+          you want to use.  First it looks for a variable MFTERM, and
+          then for TERM.  If it can't find either, you get no online
+          output.  Otherwise, the value of the variable determines the
+          device to use: hhhhpppp2222666622227777, ssssuuuunnnn (for SunView), tttteeeekkkk, uuuunnnniiiitttteeeerrrrmmmm (for
+          an Atari ST Tek 4014 emuluator), xxxxtttteeeerrrrmmmm (for either X10 or
+          X11).  Some of these devices may not be supported in all
+          METAFONT executables; the choice is made at compilation
+          time.
+
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          The default values for all environment variables are set at
+          the time of compilation in a file called _s_i_t_e._h . See tttteeeexxxx(1)
+          for the details of the searching.  If the environment
+          variable TEXMFOUTPUT is set, METAFONT attempts to put its
+          output files in it, if they cannot be put in the current
+
+
+
+     Page 6                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+          directory. Again, see tttteeeexxxx(1).
+
+          MFINPUTS
+               Search path for \input and \openin files.  It should be
+               colon-separated, and start with ``.''.  The entire path
+               must be no longer than 700 characters long.  Default:
+               ....::::$$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////tttteeeexxxx////mmmmffff.
+
+          MFINPUTS_SUBDIR
+               Search path for directories with subdirectories of
+               input files.  Default:
+               [[[[nnnnoooonnnneeee iiiinnnn tttthhhheeee eeeexxxxppppttttoooooooollllssss TTTTeeeeXXXX iiiimmmmpppplllleeeemmmmeeeennnnttttaaaattttiiiioooonnnn]]]]
+
+          MFBASES
+               Search path for base files.  Default:
+               ....::::$$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////tttteeeexxxx////mmmmffff.
+
+          MFPOOL
+               Search path for METAFONT insternal strings.  Default:
+               $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////tttteeeexxxx////mmmmffff.
+
+          MFEDIT
+               Command template for switching to editor.  Default:
+               """"$$$$EEEEDDDDIIIITTTTOOOORRRR ++++%%%%dddd %%%%ssss"""",,,, oooorrrr iiiiffff EEEEDDDDIIIITTTTOOOORRRR nnnnuuuullllllll oooorrrr nnnnooootttt sssseeeetttt,,,, tttthhhheeeennnn
+               """"$$$$VVVVIIIISSSSUUUUAAAALLLL ++++%%%%dddd %%%%ssss"""",,,, eeeellllsssseeee iiiiffff VVVVIIIISSSSUUUUAAAALLLL nnnnuuuullllllll oooorrrr nnnnooootttt sssseeeetttt,,,, tttthhhheeeennnn
+               """"vvvviiii ++++%%%%dddd %%%%ssss"""" .
+
+          MFTERM, TERM
+               Determines the online graphics display.
+
+
+     FFFFOOOONNNNTTTT UUUUTTTTIIIILLLLIIIITTTTIIIIEEEESSSS
+          A number of utility programs are available (see the SEE ALSO
+          section, below). The following is a partial list of
+          available utilities and their purpose. Consult your local
+          METAFONT guru for details.
+
+                           ggggffffttttooooppppkkkk
+                         Takes a GF file and produces a more tightly
+                         packed PK font file
+
+                           ppppkkkkttttooooggggffff
+                         Unpacks a PK file into GF format
+
+                           ggggffffttttooooddddvvvviiii
+                         Produces proof sheets for fonts
+
+                           ggggffffttttyyyyppppeeee
+                         Displays the contents of a GF file in
+                         mnemonics and images
+
+                           ppppkkkkttttyyyyppppeeee
+
+
+
+     Page 7                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+                         Mnemonically displays the contents of a PK
+                         file
+
+                           mmmmfffftttt
+                         Formats a source file (font.mf) as shown in
+                         _C_o_m_p_u_t_e_r _M_o_d_e_r_n _T_y_p_e_f_a_c_e_s
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/lib/tex/mf
+                       METAFONT's library area
+
+          $TOOLS/lib/tex/mf/mf.pool
+                       Encoded text of METAFONT's messages
+
+          $TOOLS/lib/tex/mf/*.base
+                       METAFONT *.base files and short driver files
+                       for _i_n_i_m_f
+
+          $TOOLS/lib/tex/mf/plain.mf
+                       The ``standard'' macro package
+
+          $TOOLS/lib/tex/mf/modes.mf
+                       The file of ``mode_def''s for various output
+                       devices
+
+          $TOOLS/lib/tex/mf/cmbase.mf
+                       METAFONT macros for Computer Modern
+
+          $TOOLS/lib/tex/mf
+                       METAFONT sources for Computer Modern
+
+
+     SSSSUUUUGGGGGGGGEEEESSSSTTTTEEEEDDDD RRRREEEEAAAADDDDIIIINNNNGGGG
+          Donald E. Knuth, _T_h_e _M_E_T_A_F_O_N_T_b_o_o_k (Volume C of  _C_o_m_p_u_t_e_r_s
+          _a_n_d _T_y_p_e_s_e_t_t_i_n_g)
+          Donald E. Knuth, _M_E_T_A_F_O_N_T: _t_h_e _P_r_o_g_r_a_m (Volume D of
+          _C_o_m_p_u_t_e_r_s _a_n_d _T_y_p_e_s_e_t_t_i_n_g)
+          Donald E. Knuth, _C_o_m_p_u_t_e_r _M_o_d_e_r_n _T_y_p_e_f_a_c_e_s (Volume E of
+          _C_o_m_p_u_t_e_r_s _a_n_d _T_y_p_e_s_e_t_t_i_n_g)
+          _T_U_G_b_o_a_t (the publication of the TeX  Users Group)
+
+     CCCCOOOOMMMMMMMMEEEENNNNTTTTSSSS
+          Warning: ``Type design can be hazardous to your other
+          interests. Once you get hooked, you will develop intense
+          feelings about letterforms; the medium will intrude on the
+          messages that you read.  And you will perpetually be
+          thinking of improvements to the fonts that you see
+          everywhere, especially those of your own design.''
+
+     BBBBUUUUGGGGSSSS
+          On January 4, 1986, the ``final'' bug in METAFONT was
+          discovered and removed.  If an error still lurks in the
+
+
+
+     Page 8                                         (printed 10/17/91)
+
+
+
+
+
+
+     MMMMFFFF((((1111))))                  6666////11114444////99991111 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                   MMMMFFFF((((1111))))
+
+
+
+          code, D. E. Knuth promises to pay a finders fee which
+          doubles every year to the first person who finds it. Happy
+          hunting.
+
+          The ``no format preloaded'' message could be considered an
+          undesirable fossil, but it is not a bug.
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+          METAFONT was designed by Donald E. Knuth, who implemented it
+          using his WEB system for Pascal programs.  It was ported to
+          Unix by Paul Richards at the University of Illinois at
+          Urbana-Champaign. The version now offered with the Unix TeX
+          distribution is that generated by the WEB to C system, begun
+          by Tomas Rokicki and Tim Morgan, and developed and
+          maintained by a team of wizards headed by Karl Berry. This
+          page written by Pierre MacKay, with help from the anonymous
+          author of the page in the jTeX  software distribution;
+          changes incorporated as necessary by the WEB to C team.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          dvitype(1), gftopk(1), gftodvi(1), gftype(1), pktogf(1),
+          mft(1), pktype(1), pltotf(1), tftopl(1)
+
+
+
+
+     ````SSSSEEEEEEEE AAAALLLLSSSSOOOO'''' sssseeeeccccttttiiiioooonnnn ffffoooorrrr EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS TTTTeeeeXXXX PPPPAAAACCCCKKKKAAAAGGGGEEEE
+          bibtex(1), detex(1), dvips(1), latex(1), slitex(1), tex(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 9                                         (printed 10/17/91)
+
+
+

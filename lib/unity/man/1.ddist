@@ -1,0 +1,264 @@
+
+
+
+     ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          dist, ddist - single and double distributions on a UNITY
+          table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _d_i_s_t [-n] [-Itable] [-Otable] {aname1|count} _b_y aname2 _i_n table1 \
+           [_i_n_t_o table2] [where clause]
+          _d_d_i_s_t [-n] [-Itable] [-Otable] {aname1|count} _b_y aname2 aname3 \
+           _i_n table1 [_i_n_t_o table2] [where clause]
+          _t_a_l_l_y [-n] [-Itable] [-Otable] aname _i_n table1 [_i_n_t_o table2] \
+           [where clause]
+          _d_t_a_l_l_y [-n] [-Itable] [-Otable] aname1 aname2 _i_n table1 \
+           [_i_n_t_o table2] [where clause]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _d_i_s_t command does a "single distribution," tabulating
+          the sum of the values of a numeric attribute (aname1 in the
+          SYNOPSIS) corresponding to an alphanumeric attribute
+          (aname2) for the specified table.  The user is given the
+          option of producing sorted output (the default case) or
+          unsorted output (i.e., in retrieval order) by specifying the
+          -_n option.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The output is a three-column table:  column one contains
+          distinct values for aname2, column two contains the summed
+          numeric values for aname1 corresponding to each distinct
+          value of aname2, and column three contains counts indicating
+          the number of entries summed for each distinct aname2 value.
+          Records in the table that contain invalid (non-numeric)
+          attribute values for aname1 are omitted.  However, all
+          invalid entries are listed in the output as warning
+          messages.  If the keyword _c_o_u_n_t is used instead of a legal
+          attribute name from table, the output will contain only two
+          columns: the distinct values for aname2 and the count.  The
+          default command allows up to 1000 rows of output.
+
+          The _w_h_e_r_e clause can be used to limit the distribution to
+          only the selected records (see the Intro manual page for a
+          detailed description on use of the where clause).
+
+          The output is written to the standard output by default and
+          is NOT in a valid format for a UNITY table.  If an "into
+          clause" is specified, the output is written into the named
+          table (in table format) and a corresponding descrition file
+          is created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the file if it
+          already exists or the file is created and written if it does
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          not exist; the description file is created if it does not
+          exist.  The output description file attributes are _n_a_m_e,
+          _t_o_t_a_l and _c_o_u_n_t or just _n_a_m_e and _t_o_t_a_l depending on whether
+          the _c_o_u_n_t keyword is used.  The associated user-friendly
+          names are FIELD VALUE, TOTAL OF VALUE, and COUNT OF VALUES.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+          The _d_d_i_s_t command is similar to _d_i_s_t, except that it does a
+          "double distribution" of a numeric attribute (aname1) over
+          _t_w_o alphanumeric attributes (aname2 and aname3).  Hence the
+          summed values for aname1 and count are based on unique pairs
+          of aname2 and aname3 values.  The number of rows initially
+          allocated is 20 and this number grows dynamically as more
+          rows are needed (limited by the amount of space that can be
+          allocated dynamically).  The maximum number of columns is
+          fixed (default 100 columns).
+
+          The _w_h_e_r_e clause can be used to limit the distribution to
+          only the selected records.  If the -I option is used, the
+          table name specified is used to determine an alternate
+          description file to be used in reading the input table.
+
+          Input and output are similiar to that of _d_i_s_t.  The number
+          of columns in the resulting table (attributes) must not
+          exceed the maximum number of attributes allowed in a table
+          by UNITY (currently 100).  Since the attribute names of this
+          table are actual values, they may not follow the
+          restrictions placed on attribute names in UNITY.  Attribute
+          names beginning with a non-alphabetic character will have a
+          'v' prefix added and non-alphanumeric characters within the
+          value will be converted to an underscore.  Use of the _o_n_t_o
+          clause is strongly discouraged unless the user is certain
+          that the number of columns output will be exactly the same.
+
+          _t_a_l_l_y and _d_t_a_l_l_y are provided as a short hand notation for
+          "dist count by" and "ddist count by," respectively (see
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          synopsis for _d_i_s_t and _d_d_i_s_t).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          $ uprint INV
+          |-------------------------|
+          |snu|pnu| qty|price| total|
+          |mbe|mbe|    |     |      |
+          |r  |r  |    |     |      |
+          |-------------------------|
+          |s1 |p1 | 300|  .25| 75.00|
+          |s1 |p2 | 200|  .30| 60.00|
+          |s1 |p3 | 400|  .35|140.00|
+          |s2 |p1 | 100|  .23| 23.00|
+          |s2 |p2 | 200|  .32| 64.00|
+          |s3 |p1 | 300|  .24| 72.00|
+          |-------------------------|
+          $ tally pnumber in INV
+
+          NAME           COUNT
+
+          p1                 3
+          p2                 2
+          p3                 1
+                        ------
+          TOTAL              6
+          $ dist qty by pnumber in INV
+
+          NAME                TOTAL  COUNT
+
+          p1                    700      3
+          p2                    400      2
+          p3                    400      1
+
+          $ dtally pnumber snumber in INV
+                                 s1           s2           s3
+
+          p1                      1            1            1
+          p2                      1            1            0
+          p3                      1            0            0
+                              -----        -----        -----
+          TOTAL                   3            2            1
+
+          $ ddist qty by pnumber snumber in INV
+                                 s1           s2           s3
+
+          p1                    300          100          300
+          p2                    200          200            -
+          p3                    400            -            -
+
+
+     FFFFIIIILLLLEEEESSSS
+          unity/dist.c, ddist.c, zdist.c, zddist.c - the C source programs
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            ddddiiiisssstttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          bin/dist, tally - the executable programs (linked)
+          bin/ddist, dtally - the executable programs (linked)
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _I_n_t_r_o(UNITY), _s_t_a_t(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+

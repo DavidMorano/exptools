@@ -1,0 +1,198 @@
+
+
+
+     vvvvaaaalllliiiiddddaaaatttteeee((((UUUUNNNNIIIITTTTYYYY))))        UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll        vvvvaaaalllliiiiddddaaaatttteeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          validate - record validator
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _v_a_l_i_d_a_t_e [-Itable] table1
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _v_a_l_i_d_a_t_e is a table validator as described on the _v_a_l(UNITY)
+          manual page.  The validator validates files in the form of
+          UNITY tables:  this means that the records must contain a
+          fixed number of fixed width or terminator fields as
+          described on the manual page for _t_a_b_l_e(UNITY).
+
+          The default method for using _v_a_l_i_d_a_t_e is to name the table
+          to be validated as the only argument; the names of three
+          auxiliary files needed as described below are determined
+          from the simple file name of the specified table.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate set of auxiliary files (described
+          below).
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          auxiliary files can be determined.
+
+          Before _v_a_l_i_d_a_t_e can be invoked, three additional files to be
+          associated with the table must be created.
+
+          Description file:
+             This file contains a description of the layout of the
+             fields within the table as well as whether a field is a
+             fixed length field (and its associated length) or a
+             terminator field (and its associated terminator).  Field
+             names may be up to 11 characters in length, must begin
+             with an alphabetic character, and may contain only
+             alphanumeric characters or underscore (_).  The format is
+             further described on the _t_a_b_l_e(UNITY) manual page.  The
+             name of this file must be D<table> for a table with
+             simple file name <table> and must reside in the current
+             directory, the same directory as the table, or in one of
+             the directories specified in the $UNITYDFILES path
+             environment variable when _v_a_l_i_d_a_t_e is executed.
+
+          Validation script:
+             This file contains the validation criteria for the table.
+             The name of this file must be V<table> for a table with
+             simple file name <table> and must reside in the current
+             directory, the same directory as the table, or in one of
+             the directories specified in the $UNITYDFILES path
+             environment variable when _v_a_l_i_d_a_t_e is executed.  The
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaalllliiiiddddaaaatttteeee((((UUUUNNNNIIIITTTTYYYY))))        UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll        vvvvaaaalllliiiiddddaaaatttteeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+             format of the validation table is as described on the
+             val(UNITY) manual page.  _v_a_l_c_m_p produces the object file
+             W<table> in the current directory automatically when
+             W<table> does not exist or its modification date is older
+             than V<table>.
+
+          Error Table:
+             This table defines error messages corresponding to the
+             error codes used in the validation table.  The table has
+             two columns:  the first column contains the error code as
+             used in the validation script table and the second column
+             (separated from the first by a tab) contains the
+             associated error message.  The name of this file must be
+             E<table> for a table with simple file name <table> and
+             must reside in the current directory, the same directory
+             as the table, or in one of the directories specified in
+             the $UNITYDFILES path environment variable when _v_a_l_i_d_a_t_e
+             is executed.  If this table does not exist, the error
+             codes are printed out when an error occurs instead of the
+             corresponding error message.
+
+          As an example, suppose the /etc/passwd file is to be
+          validated.
+          The file Dpasswd could be as follows:
+
+          login  t:      8l       LOGIN NAME
+          passwd t:      14l      PASSWORD
+          uid    t:      5r       USER ID
+          gid    t:      5r       GROUP ID
+          acct   t:      20l      ACCOUTING INFORMATION
+          home   t:      15l      HOME DIRECTORY
+          shell  t\n     12l      LOGIN SHELL
+
+          The file Vpasswd could be as follows:
+
+          login % "[A-Za-z][A-Za-z0-9]{1,6}"                          l1
+          passwd == ""
+                  shell == "/bin/rsh" | shell == "/bin/uname" | \
+                          shell == "/bin/sync"                        p1
+          uid % "[0-9]{1,5}"                                          u1
+          gid % "[0-9]{1,5}"                                          g1
+          dept % "[0-9]{1,5}"                                         d1
+          home != ""                                                  h1
+
+          The file Epasswd could be as follows:
+
+          l1      login must be 1-6 alphanumeric characters
+          p1      entry must have a passwd
+          u1      user id must be 1-5 numeric characters
+          g1      group id must be 1-5 numeric characters
+          d1      department number must be 1-5 numeric characters
+          h1      entry must have a home specified
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaalllliiiiddddaaaatttteeee((((UUUUNNNNIIIITTTTYYYY))))        UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll        vvvvaaaalllliiiiddddaaaatttteeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          The /etc/passwd file could be validated by executing:
+             validate /etc/passwd
+          or validate -Ipasswd < /etc/passwd
+          or validate -Ipasswd /etc/passwd
+
+          Messages associated with error codes are written on the
+          standard error output.  If a message cannot be found
+          corresponding to the error code, the error code itself is
+          written out.  In either case, the record in error is printed
+          first followed by one or more lines with the record number
+          on which the error occurred followed by the error message.
+          Diagnostic messages from the machine are also printed on the
+          standard error output.  _v_a_l_i_d_a_t_e exits with a non-zero exit
+          code if any error occurs and 0 otherwise.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/validate.c - the C source program
+          bin/validate - the executable program
+          D<table>,E<table>,V<table>,W<table> - the auxiliary files
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _t_a_b_l_e(UNITY), _v_a_l_c_m_p(UNITY), _v_a_l(UNITY)
+
+     BBBBUUUUGGGGSSSS
+          For upward compatibility with older versions of _v_a_l_i_d_a_t_e,
+          the command will also read from the standard input if no
+          table name is specified, rather than just a table name of
+          "-".  Also, the syntax "-f table" may be used instead of "-
+          Itable".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

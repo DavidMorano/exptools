@@ -1,0 +1,132 @@
+
+
+
+     ddddeeeelllleeeetttteeee((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ddddeeeelllleeeetttteeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          delete - delete one or more records from a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _d_e_l_e_t_e [-q] [-Itable] [-Otable] _f_r_o_m table1 [_i_n_t_o table2]
+          where clause
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _d_e_l_e_t_e command allows the user to delete a set of
+          records from an existing table according to some criteria on
+          the values of certain attributes (i.e., records satisfying
+          the _w_h_e_r_e condition).  The user is not allowed to explicitly
+          delete all records; a where clause must be specified.
+          However, a where clause may be specified which will
+          implicitly delete all records.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          This command is considered an update command if a table name
+          is given (not "-") and the "into clause" is not specified.
+          In this case, a temporary file is updated (i.e., the records
+          satisfying the _w_h_e_r_e clause are not written out to the
+          temporary file), the original file is removed, and the
+          temporary file is linked to the original table, thus
+          updating the table.  Only one user may update the table at a
+          time but any number of users may read the table.  The user
+          must have write permission in the directory containing the
+          table, but needs only read permission on the table itself.
+          The group and user identification, and mode of the table are
+          preserved.
+
+          If an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  The input table is not
+          locked during the update.  If _o_n_t_o is specified instead of
+          _i_n_t_o, the output is appended to the table if it already
+          exists or the table created and written if it does not
+          exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table (note that no
+          lockfile is created).  The -I option must be used to specify
+          the name of a table from which the description file name can
+          be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ddddeeeelllleeeetttteeee((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ddddeeeelllleeeetttteeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are deleted.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ delete from SP where snumber leq s3 and pnumber leq p1
+          delete: 1 records deleted in SP.
+
+          BEFORE:            AFTER:
+
+          |------------|     |------------|
+          |snu|pnu| qty|     |snu|pnu| qty|
+          |mbe|mbe|    |     |mbe|mbe|    |
+          |r  |r  |    |     |r  |r  |    |
+          |------------|     |------------|
+          |s1 |p1 | 300|     |s1 |p1 | 300|
+          |s1 |p2 | 200|     |s1 |p2 | 200|
+          |s1 |p3 | 400|     |s1 |p3 | 400|
+          |s2 |p1 | 100|     |s2 |p1 | 100|
+          |s2 |p2 | 200|     |s2 |p2 | 200|
+          |s3 |p1 | 400|     |------------|
+          |------------|
+
+     FFFFIIIILLLLEEEESSSS
+          unity/delete.c, zdelete.c - the C source program
+          bin/delete - the executable program
+          /tmp/???????? - the lockfile
+          <directory of table>/dtmp?????? - the temporary update file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _I_n_t_r_o(UNITY), _a_l_t_e_r(UNITY), _i_n_s_e_r_t(UNITY), _u_e_d_i_t(UNITY),
+          _u_e_n_t_e_r(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

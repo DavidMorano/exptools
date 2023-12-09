@@ -1,0 +1,157 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/form/s.form.3"
+.\"
+.PH "'FORM(3SB)'SBLIB C++ Library'FORM(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.sp
+Form - input, output and update forms
+.LI "\fBSYNOPSIS\fP"
+.sp
+.EX
+\#include <sblib.h>
+
+.SO form.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.sp
+The \*(Fm class converts a list of fields to a screen form using curses(3X) and
+provides operations to input, display and update records through the form.  The
+Form class provides a consistent "look-and-feel" for the specified forms.
+.P
+The constructor takes the order, captions 
+and ASCII length of the fields as the \fIformfields\fP argument and the number
+of fields as the \fInfields\fP argument.
+A \fIheading\fP may be specified but is not required.
+The \fItype\fP argument specifies the type of form requested, RECORD or TABLE.
+A \fIwindow\fP may be specified or the default stdscr will be used.
+.P
+The application is responsible for allocating a large enough window to
+hold the data as well as the necessary form overhead.  Every form must allocate
+2 lines for the error subwindow, 1 line for the message subwindow and
+2 lines for the heading if present.
+If the RECORD FORMTYPE is used, 2 lines should be allocated for each field
+(double-spacing) and the window's width must be large enough to hold the 
+caption length + field length + four (leading space,
+a colon-space separator  and a terminating space) for every field.
+If the window is too
+small, \*(Fm will try to "squeeze" the form by single-spacing the
+lines and putting more than one field per line.  The result is ugly but
+readable.
+.P
+If the TABLE FORMTYPE is used 2 lines must be allocated for the caption names
+and at least 1 line for all the fields combined.  The field values will be
+printed horizontally (one column for each field).
+If the window size is too small to provide a TABLE,
+the constructor will try to generate the form using
+RECORD (see above for window size rules associated with FORMTYPE RECORD).
+The \fIformfields\fP and \fInfields\fP arguments remain publicly available as
+\fIfields\fP and \fInitems\fP.
+.P
+Each field structure contains 3 members.  The \fIcaption\fP is the field name.
+The \fIlength\fP is the maximum allowable length for a character representation
+of the field value.  The \fIlength\fP should not include the NULL terminator.
+For example, if "ABCD" is a longest possible string, \fIlength\fP should be 4,
+not 5.  Both of these fields must be initialized by the application code
+before constructing the Form.  The constructor will allocate a character buffer
+for the \fIdata\fP member of the field structure.  The application code should
+write to these buffers before calling the \fBdisplay()\fP or \fBupdate()\fP
+functions and should read from these buffers after calling the \fBinput()\fP or
+\fBupdate()\fP functions.  The buffer will
+always represent the data in character form, so sscanf(3), sprintf(3) or similar
+functions should be used by the application to read or write non-character data.
+.P
+The \fBinput()\fP function accepts a new record from the user and records it 
+in the \fIdata\fP member of the field structures.  The \fBdisplay()\fP function
+displays the information found in the \fIdata\fP
+member of the  field structures to the user.  The \fBupdate()\fP function
+displays the initial information found in the \fIdata\fP member of the field
+structures, then replaces it with new information specified by the
+user.  If \fIstartfield\fP is specified, fields less than
+\fIstartfield\fP will not be updated. 
+The \fBreread()\fP function allows an individual field to be reread, e.g. if an 
+error has been detected and the user should replace the value.  A zero-based
+\fIrow\fP number may be specified for each of these functions.  It is
+meaningful for
+TABLE format and should be passed.  It should always be zero for RECORD format
+and may be allowed to default.
+.P
+The \fBmessage()\fP function prints a \fImessage\fP string at the bottom
+of the window.  When called with no arguments 
+it erases the current message string.  The \fBprompt()\fP function also prints a
+\fImessage\fP at the bottom of the window, then waits for a character 
+to be typed by the user and erases the message.  \fBPrompt()\fP returns the
+character typed.
+The \fBerror()\fP function prints an error \fImessage\fP at the top of the
+window.  When called with no arguments it erases the current error message.
+In general, the string passed to \fBmessage()\fP, \fBprompt()\fP or
+\fBerror()\fP should not be larger than the number of columns in the window.
+A string larger than the number of columns in the window may wrap or be
+truncated.
+.P
+The constructor records the capacity of the form in records.  This may be
+obtained through the \fBcapacity()\fP function.  One is the expected value
+for RECORD
+format.  For TABLE format the value indicates the number of rows available for
+records on the form.
+The \fBfrefresh\fP function will redisplay the Form object, ensuring that it
+appears above any other curses windows that might be overlapping it.
+The friend \fBoperator <<\fP prints a character image of the form as a
+series of lines to a specified ostream.
+.P
+The destructor deallocates all buffers and subwindows allocated by the
+constructor.  It erases but does not refresh the original window.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The \*(Fm functions will fail and abort and
+syserr.errno will be set if
+one of the following are true:
+.VL 30 0
+.LI "[NULL_POINTER]"
+The constructor is called with a NULL fieldlist, 0 nfields or NULL base window.
+.LI "[UNEXPECTED_ERROR]"
+A \*(Fm function is called when the Form object has a NULL data member in fields
+or NULL internal windows.
+.LE sp
+The \*(Fm functions will fail and abort and formerr.errno will be set if
+one of the following are true:
+.VL 30 0
+.LI "[F_INVALID_FIELD]"
+The \fBreread()\fP function is called with a field number that is not
+between 0 and nitems-1.
+.LI "[F_GETCH_ERROR]"
+The \fBreread()\fP function is called and an error occurs on input through
+curses.  Input failure during input or update is nonfatal and simply
+terminates the operation.
+.LI "[F_TOO_FEW_COLUMNS]"
+The constructor determines that the longest field width or combined field and
+caption width plus 4 exceeds the width of the base window.
+.LI "[F_WINDOW_TOO_SMALL]"
+The constructor is called with too small a base window or reread, input, display
+or update is called with a row number that is not between 0 and capacity()-1.
+.LI "[F_CANT_SUBWIN]"
+A call to the curses(3X) subwin() function fails during the
+execution of the constructor.
+.LE
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO formE.ex
+.EE
+.LI "\fBWARNINGS\fP"
+.br
+\*(Fm creates subwindows.  On many versions of curses subwindows created from
+subwindows cause core dumps.  Therefore the window passed to the constructor
+probably should not be a subwindow.  Use newwin to create the window or let it
+default to stdscr.
+.P
+\*(Fm objects point to the fields rather than copying them.  It is the
+responsibility of the application to make sure that the fields are not
+destroyed before the form.
+.LI "\fBSEE ALSO\fP"
+.sp
+ curses(3X),\*(Cs,\*(Wg
+.LE

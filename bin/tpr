@@ -1,0 +1,275 @@
+# tpr          sid: 1.44 date: 1/11/92 time: 14:48:20 delta: 1/11/92 14:48:19";
+#
+USAGE="$0 [-y style] [-s speed] [-h] [-T printer] [-B buffer_size]
+       [-N|-F] [-o offset] [-H] [-7|-8] [-p e,o,n] [-V] [file/s]
+ -y style: is customizable.  It is defined in the tpr.info file.
+ -s speed: has to be in the range 0 to 160 chars/sec.
+ -h: does not strip control characters.
+ -T printer: printer can be:
+    any hp terminal printer (hp, hp2621, hp2626, etc)
+    HPinkjet (ink, hpink, HPink, HPinkjet, hpinkjet)
+    PC running CTRM (ctrmink)
+    teletype 5310 or 5320 (default) (5310, 5320, tele, teletype)
+    or others (See -P option)
+ -B buffer_size: This is the buffer size of the printer
+    (default for 5310=2000, for hpinkjet=800.
+ -N: This will turn off flow control and send characters through without
+     stopping (this will ignore -B and -s options).
+ -F: This will turn on flow control (this will use -B and -s options).
+ -o offset: this will give a margin on the left the number of spaces
+    specified by offset.
+ -H: This will print with high resolution for printers with this.
+     (This will ignore the -b option).
+ -7|-8 This will give the character size (default -8)
+ -p e,o,n this is the parity: e - even, o - odd, n - none (default).
+ -V dump SCCS ID version for all files.
+ -P dump known printers in tpr.info file"
+
+SLOW=1000
+TPRNICE=tprnice
+
+if [ -z "$TOOLS" ]; then 
+	TOOLS=`logdir exptools`;export TOOLS
+fi
+PATH=:$TOOLS/bin:/bin:/usr/bin:/usr/lbin:$TOOLS/lib/tpr
+
+set -- `getopt y:s:hT:t:B:FNo:H78p:VP $*`
+
+if [ $? != 0 ]
+then
+	echo "$USAGE" >&2
+	exit 1
+fi
+
+set +e
+for i in $*
+do
+	case $i in
+	-N) flowcontrol=notset;  shift;;
+	-F) flowcontrol=set;     shift;;
+	-s) if [ "$2" -gt 160 ] ;then
+			echo printer speed can not be greater than 160 chars/sec. >&2
+			echo "$USAGE" >&2
+			exit
+		fi
+		TPRSPEED=$2;           shift;shift;;
+	-B) TPRBUFFER=$2;        shift;shift;;
+	-T) TPRPRINTER=$2;       shift;shift;;
+	-t) HPTIMEOUT="-t $2";   shift;shift;;
+	-y) TPRSTYLE=$2;         shift;shift;;
+	-h) TPRHIGHLIGHT=set;    shift;;
+	-o) TPROFFSET=$2;        shift;shift;;
+	-H) TPRHIGHRES=set;      shift;;
+	-7) TPRCS="-7";          shift;;
+	-8) TPRCS="-8";          shift;;
+	-p) TPRPARITY="$2";      shift;shift;;
+	-P) dumpprinters=yes     shift;;
+	-V)
+		# dump the versions of all the commands
+(		for i in $TOOLS/bin/tpr $TOOLS/man/1.tpr $TOOLS/lib/toolnews/tpr $TOOLS/lib/tpr/tpr.info ;do
+			if [ -r $i ] ; then
+				grep "sid:" $i | grep -v grep
+			else
+				echo $i not found
+			fi
+		done
+		for i in $TOOLS/lib/tpr/tprnice $TOOLS/lib/tpr/1000;do
+			if [ -r $i ] ; then
+				$i -V
+			else
+				echo $i not found
+			fi
+		done ) | sed "s/^/`uname`:/"
+		exit 0;;
+	--) shift;               break ;;
+	esac
+done
+
+# set default value for TPRPRINTER
+if [ -z "$TPRPRINTER" ] ; then TPRPRINTER=teletype; fi
+
+# determine tprnice argument for high resolution
+if [ "$TPRHIGHRES" = set ] ; then highres=-H; else highres=; fi
+
+# set the TPRPARITY parameter correctly.
+case "$TPRPARITY" in 
+e|o|n) TPRPARITY="-p $TPRPARITY";; 
+"")true ;;
+*) echo bad parity selection;echo "$USAGE";exit 1;; 
+esac
+
+
+case $TPRPRINTER in
+hp)
+	if [ "$TPRHIGHLIGHT" != set ] ; then
+		pr -o$TPROFFSET -f -e -t $* | $SLOW -Thp $HPTIMEOUT
+	else
+		pr -o$TPROFFSET -f -e -t $* | hp | $SLOW -Thp $HPTIMEOUT
+	fi
+	;;
+
+*)
+	#	Get information from tpr.info file
+	# First find where tpr.info is
+	if [ -z "$TPRLIB" ] ; then 
+		TPRLIB=".:$TOOLS/lib/tpr" 
+	else
+		# put . for null directories
+		TPRLIB=`echo $TPRLIB | sed -e "s/^:/.:/" -e "s/::/:.:/" -e "s/:$/:./"`
+	fi
+
+	OIFS="$IFS"
+	IFS="${IFS}:"
+	for i in $TPRLIB ; do
+		if [ -f "$i/tpr.info" ] ; then
+			TPRFILE="$i/tpr.info"
+			break;
+		fi
+	done
+
+	# validate TPRFILE
+	if [ -z "$TPRFILE" ] ; then 
+		echo could not find tpr.info with TPRLIB=$TPRLIB >&2; exit; 
+	fi
+	IFS="${OIFS}"
+
+	if [ "$dumpprinters" = yes ] ; then
+		echo "Known printers in $TPRFILE:"
+		sed -n "
+		{
+			/^|/b pr
+			/--------/q
+			:pr
+			s/|//
+			s/|$//p
+			d
+		}" $TPRFILE | tr '|' '\012'
+		exit
+	fi
+
+	# set invalid printer and term
+	term=invalid
+	printer=invalid
+
+	# set TPRTERM
+	case $TPRPRINTER in
+	*ctrm*) TPRTERM=ctrm;;
+	*) TPRTERM="$TERM";;
+	esac
+
+	# eval output of tpr.info
+	sed -n "
+	{
+		:getline
+		/NEXTPRINTER/b anal
+		s/#.*//
+		N
+		b getline
+		:anal
+		/|$TPRPRINTER|/b print
+		d
+		:print
+		s/\nNEXTPRINTER//
+		s/.*|\n//p
+		q
+	}" $TPRFILE > /usr/tmp/tpr.$$
+	
+	eval `cat /usr/tmp/tpr.$$`
+	
+	eval `
+	sed -n "
+	{
+		/----------/b getline
+		d
+		:getline
+		/NEXTTERM/b anal
+		s/#.*//
+		N
+		b getline
+		:anal
+		/|$TPRTERM|/b print
+		/default/b print
+		n
+		b getline
+		:print
+		s/\nNEXTTERM//
+		s/.*|\n//p
+		q
+	}" $TPRFILE
+	`
+
+	# verify printer and term.
+	if [ "$term" = invalid -o "$printer" = invalid ] ; then
+		echo printer not known to tpr or tpr.info is incorect >&2
+		exit
+	fi
+
+	# determine TPRSTYLE
+	if [ -z "$TPRSTYLE" ] ; then TPRSTYLE=$style; fi
+	
+	# for backward compatability grep out ="no"
+	if OUT=`grep -i ${TPRSTYLE}= /usr/tmp/tpr.$$ | grep -v =\"no\"`; then
+		TPRSTYLE=`echo $OUT | cut -d\" -f2`
+		lines=`echo $OUT | sed -e "s/.*=//" -e "s/;.*//"`
+	else 
+		echo The style, $TPRSTYLE, is not known for printer, $TPRPRINTER >&2
+		exit
+	fi
+	rm /usr/tmp/tpr.$$
+	
+	# determine speed
+	if [ -z "$TPRSPEED" ] ; then TPRSPEED=$speed; fi
+	
+	# determine buffer size
+	if [ -z "$TPRBUFFER" ] ; then TPRBUFFER=$buffer; fi
+	
+	# determine char size
+	if [ -z "$TPRCS" -a -n "$cs" ] ; then TPRCS=$cs; fi
+	
+	# determine parity
+	if [ -z "$TPRPARITY" -a -n "$parity" ] ; then TPRPARITY="-p $parity"; fi
+	
+	# determine flow control
+	if [ -z "$flowcontrol" ] ; then flowcontrol=$flow; fi
+	
+	# does TERM require two escapes to send one to printer?
+	if [ "$TPRESC" = two ] ; then
+		TPRSTYLE="`echo $TPRSTYLE|sed "s///g"`"
+		TPRSTARTP="`echo $TPRSTARTP|sed "s///g"`"
+		TPRSTOPP="`echo $TPRSTOPP|sed "s///g"`"
+		TPRBEGP="`echo $TPRBEGP|sed "s///g"`"
+		TPRENDP="`echo $TPRENDP|sed "s///g"`"
+		TPRBOLDON="`echo $TPRBOLDON|sed "s///g"`"
+		TPRBOLDOFF="`echo $TPRBOLDOFF|sed "s///g"`"
+		TPRUNDERON="`echo $TPRUNDERON|sed "s///g"`"
+		TPRUNDEROFF="`echo $TPRUNDEROFF|sed "s///g"`"
+	fi
+	
+	# determine TPREND and TPRBEG
+	if [ -z "$TPRBEG" ] ; then TPRBEG="$TPRSTARTT$TPRSTARTP$TPRBEGP"; fi
+	if [ -z "$TPREND" ] ; then TPREND="$TPRENDP$TPRSTOPP$TPRSTOPT";fi
+	
+	if [ "$flowcontrol" != notset ] ; then
+		slowcmd="$SLOW -s$TPRSPEED -b$TPRBUFFER $TPRCS $TPRPARITY"
+		COL="col -xb"
+	else
+		slowcmd="$SLOW -N $TPRCS $TPRPARITY"
+		COL="col -xb"
+	fi
+	
+	# in case of interupt.
+	trap 'eval "echo \"$TPREND\c | $slowcmd\"";trap 0' 0 1 2 3 15
+	
+	# start
+	eval "echo \"$TPRBEG$TPRSTYLE\c\" | $slowcmd"
+	if [ "$TPRHIGHRES" = set -o "$TPRHIGHLIGHT" = set ] ; then
+		nicecmd="$TPRNICE -B\"$TPRBOLDON\" -b\"$TPRBOLDOFF\" -U\"$TPRUNDERON\" -u\"$TPRUNDEROFF\""
+		if [ "$TPRHIGHRES" = set ] ; then
+			nicecmd="$nicecmd -H"
+		fi
+		eval "pr -l$lines -r -t -o$TPROFFSET -e $* | $nicecmd | $slowcmd"
+	else
+		eval "pr -l$lines -r -t -o$TPROFFSET -e $* | cut -c1-500 | $COL | $slowcmd"
+	fi
+
+esac

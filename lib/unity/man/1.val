@@ -1,0 +1,924 @@
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          val - function to validate a UNITY record
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          val(fmt,errors,errcnt,Wname)
+          struct  fmt     *fmt;   /* record layout and values */
+          char    **errors;       /* array of pointers to error codes */
+          int     *errcnt;        /* count of validation errors */
+          char    *Wname;         /* validation object module */
+
+     IIIINNNNTTTTRRRROOOODDDDUUUUCCCCTTTTIIIIOOOONNNN
+          Most software systems validate their input data by passing
+          it through a program that tests the data items for such
+          things as proper syntax, inclusion in a numerical range,
+          appearance in a list of allowed values, and so on.  The
+          various tests are coded directly in a conventional
+          programming language.  This method is satisfactory if the
+          definition of the data items to be validated and the
+          validation criteria are stable and universal.  However, if
+          new data items are introduced or old ones redefined, or if
+          the validation criteria change with time or from customer-
+          to-customer, this method results in a major maintenance and
+          testing burden.
+
+          The validator described here uses a different approach.  The
+          validation criteria are expressed in a _v_a_l_i_d_a_t_i_o_n _t_a_b_l_e,
+          coded in a special-purpose _v_a_l_i_d_a_t_i_o_n _l_a_n_g_u_a_g_e that consists
+          of Boolean expressions describing _v_a_l_i_d_a_t_i_o_n _c_o_n_d_i_t_i_o_n_s and
+          _e_r_r_o_r _c_o_d_e_s denoting errors to be generated if certain
+          conditions are false.  The validation table is compiled by a
+          _v_a_l_i_d_a_t_i_o_n _c_o_m_p_i_l_e_r into instructions for a _v_a_l_i_d_a_t_i_o_n
+          _m_a_c_h_i_n_e.  When a set of data items (in the form of a record)
+          is to be validated, the validation machine executes the
+          compiled instructions and either reports success or issues a
+          list of error codes.
+
+          The approach to validation used here has these advantages
+          over the "hard-coded" approach:
+
+          1.   It is easier to learn the validation language and to
+               write validation conditions in it than it is to learn
+               and program in a programming language (such as COBOL,
+               PL/I, SNOBOL or C).  This makes it feasible for non-
+               programmers to code or modify the validation table.  In
+               fact, it is also substantially easier for programmers
+               to code in the validation language than in C.
+
+          2.   A desirable capability for some systems is for users to
+               be able to add their own table attributes.  Some method
+               for expressing the validation criteria for these added
+               fields is necessary.  Such a system will be more
+               uniform if that method is the same as the one used to
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               code validation criteria for the previously defined
+               fields.
+
+          3.   If the validation machine is operating correctly, it is
+               impossible for anything coded in the validation
+               language to generate a result outside of the definition
+               of the validation machine (for example, a PDP11 memory
+               fault).  Errors in coding the validation table are
+               either caught by the validation compiler or, at worst,
+               result in incorrect validation (a valid data item being
+               called invalid or an invalid data item being
+               overlooked).  If one is trying to fix a problem other
+               than incorrect validation, one has only to look at the
+               validation machine; one need not bother with the
+               validation table.  This simplifies maintenance
+               considerably.  In fact, it makes it possible for each
+               user to modify the validation table to suit themselves,
+               without jeopardizing another user's ability to maintain
+               the rest of the system.
+
+          4.   Since the effect of an error in the validation table is
+               limited to improper validation, and since the same
+               computer instructions in the validation compiler and
+               machine are executed by many different validation
+               conditions, it is easier to test the validation module
+               than if the validation conditions were coded in a
+               programming language.  It is easier to test the
+               validation table because the number of things to test
+               for is so limited.  It is easier to test the validation
+               compiler and machine because the number of relevant
+               test cases is not affected by the size or complexity of
+               the validation table.  Also, when the validation table
+               changes it is not necessary to retest the validation
+               compiler and machine.
+
+          5.   The validation table serves as a formal document (more
+               readable than a program) describing the validations
+               done by a particular system installation.  Users
+               wishing to interface other systems to a system using
+               the validator will find this document useful.
+
+          This manual page explains how to code the validation table.
+          The manual page for validate(UNITY) describes the other
+          tables and how to use the validator.
+
+     VVVVAAAALLLLIIIIDDDDAAAATTTTIIIIOOOONNNN TTTTAAAABBBBLLLLEEEE
+        OOOOvvvveeeerrrrvvvviiiieeeewwww
+          In its simplest form the validation table consists of
+          Boolean expressions, representing validation conditions,
+          along the left margin with an error code following each
+          expression.  For example:
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          LN != ""                                      ln1
+          NPA % "[2-9][01][1-9]"                        npa1
+
+          The first line implements the validation requirement that
+          the list name is required.  It tests if the _f_i_e_l_d LN ("list
+          name") is not equal (the != _o_p_e_r_a_t_o_r) to the null _s_t_r_i_n_g.
+          If this condition is false (that is, if the list name is
+          omitted), then error "ln1" is generated.  The second line
+          implements the validation requirement that the first digit
+          of the NPA (area code of a telephone number) must be between
+          2 and 9, the second digit must be 0 or 1, and the third
+          digit must be between 1 and 9.  It tests if the field NPA
+          matches (the % operator) the pattern, or _r_e_g_u_l_a_r _e_x_p_r_e_s_s_i_o_n,
+          given by the string within quotes.  This regular expression
+          consists of three subexpressions within brackets, one for
+          each digit.  Field references (such as LN and NPA) and
+          strings are _o_p_e_r_a_n_d_s.  Other operands are _n_u_m_b_e_r_s and
+          _f_u_n_c_t_i_o_n_s.  There is a wide variety of operators, including
+          ones for numerical and lexical comparisons, arithmetic,
+          Boolean relations and pattern matching.  Operands and
+          operators may be combined to form validation conditions of
+          arbitrary complexity.  Validation conditions may stand alone
+          (like the two above) or they may be arranged so that some
+          conditions are dependent on others.
+
+          The next three sub-sections describe operands, operators and
+          regular expressions, respectively.  The fourth sub-section
+          describes the format of the validation table.
+
+        OOOOppppeeeerrrraaaannnnddddssss
+          Strings
+             Strings consist of a sequence of zero or more characters;
+             a string of zero characters is called a _n_u_l_l string.
+             They are used for the values of fields, returned values
+             of some functions and results of some operators, as
+             described below.  String constants may also be coded
+             directly by enclosing the string by double quotes (").
+             Within string constants the character blank and the
+             characters
+             abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+             0123456789!#$%&'()*+,-./:;<=>?@[]^_`{|}~
+             represent themselves.  Other characters may be
+             represented by these escapes:
+
+             \" - "
+
+             \b - backspace
+
+             \n - newline
+
+             \r - return
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+             \t - tab
+
+             \\ - \
+
+             \N - the character whose internal representation is the
+             1, 2 or 3 digit octal number N.  N may not be equal to 0.
+
+             The following are some examples of string constants:
+
+             ""
+             "abcd"
+             "x\tx\234"
+
+             The last string consists of 4 characters: an "x", a tab,
+             another "x" and the character whose octal representation
+             is 234.
+
+          Numbers
+             Numbers are integers in the range -999999999 through
+             999999999.  Some functions and operators produce numbers;
+             number constants may also be coded directly.  In a
+             context (such as an operand of +) where a number is
+             required a string may also be used, but it must form a
+             legal number constant.  Number constants are written as a
+             sequence of digits and must be in the range 0 through
+             999999999.  Negative number constants may not be coded
+             directly, but the negation operator (unary -) may be used
+             to accomplish the same effect.
+
+             The following are examples of number constants:
+
+             0
+             123
+             987654321
+
+          Fields
+             The value of a data item may be incorporated into a
+             validation condition by coding the name of the field
+             corresponding to that item.  Field or attribute names
+             consist of up to 11 characters, chosen from the set "A"
+             through "Z", "a" through "z", "0" through "9" and "_".
+             The first character must be alphabetic.  Field names are
+             not defined by the validation module; any field name
+             listed in the _d_e_s_c_r_i_p_t_i_o_n _f_i_l_e may be used.  The meaning
+             of a field is determined by the module that passes the
+             record to be validated to the validation module.
+
+             A field reference always has a string value.  The string
+             is null if the field has a null value in the record.  The
+             following are examples of field references:
+
+             LN
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+             NPA
+             STATE
+
+          Functions
+             Functions provide facilities beyond those provided by
+             operators.  They are referenced by the function name,
+             followed by an opening parenthesis, followed by zero or
+             more arguments separated by commas, followed by a closing
+             parenthesis.  For example:
+             substr(NPA,2,1)
+
+             All functions are built into the validation machine; it
+             is not possible for the validation table coder to define
+             additional functions.  The following functions are
+             currently available:
+
+             _p_r_i_n_t( str)
+             This function prints its argument on the standard output
+             and returns 1.
+
+             _t_b_l_s_e_a_r_c_h(tbl, keycol, keyval, retcol)
+             This function provides a mechanism to search simple
+             tables.  Each of the 4 arguments are converted to strings
+             if necessary.  The first argument is the name of the
+             unity table containing the data to be searched.  The
+             second argument is the name of the column or attribute to
+             be searched, and the third argument is the value to be
+             searched for in that column.  The last argument gives the
+             name of the column or attribute in which the
+             corresponding value is returned.  If the search fails,
+             the returned string is null.  _t_b_l_s_e_a_r_c_h is used as in
+             this example:
+
+             tblsearch("TABLE", "IND", CS, "CS") != ""          badcs
+             to validate the CS attribute using attribute IND in unity
+             table TABLE.
+
+             _s_i_z_e(str)
+             This function returns the number of characters in its
+             argument, which is converted to a string if necessary.
+             For example,
+
+             size("") returns 0,
+             size("xxx") returns 3 and
+             size(12) returns 2.
+
+             _s_u_b_s_t_r(str, start, length)
+             This function returns a substring of its first argument.
+             The second argument specifies the starting character of
+             the substring; the first character is numbered 1.  The
+             third argument specifies the length of the substring; if
+             it is omitted it is taken to be infinity.  Only the
+
+
+
+     Page 5                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+             intersection of the specified substring and the actual
+             string is returned.  If this intersection is null then
+             the null string is returned.  For example,
+
+             substr("abc",2,2) returns "bc".
+             substr("xyzzyx",3) returns "zzyx".
+             substr("hijk",7,2) returns the null string.
+
+             _d_a_t_e()
+             The current date in a string of the form YYMMDD is
+             returned.
+
+             _t_i_m_e()
+             The current time in a string of the form HHMMSS is
+             returned.
+
+        OOOOppppeeeerrrraaaattttoooorrrrssss
+          The following table summarizes the available operators.  The
+          first column contains the operator.  The second column gives
+          the precedence; higher-numbered operators are performed
+          before lower-numbered ones.  For example, in the expression
+          1+2*3 the multiplication is performed before the addition
+          because the "*" operator has a precedence of 7 and the "+"
+          operator has a precedence of 6.  The third, fourth and fifth
+          columns indicate whether the left operand, right operand and
+          result are strings (S) or numbers (N).  Except for the right
+          operand of the regular expression operators, operands are
+          converted if necessary.  Numbers always convert successfully
+          to strings, but strings convert successfully to numbers only
+          if they consist of 9 or fewer digits.  The last column
+          explains the operator briefly.
+
+                            _L_e_f_t     _R_i_g_h_t
+          _O_p.      _P_r_e_c.    _O_p_e_r_a_n_d  _O_p_e_r_a_n_d  _R_e_s_u_l_t   _E_x_p_l_a_n_a_t_i_o_n
+
+          |        1        N        N        N        Or
+          &        2        N        N        N        And
+          ==       3        S        S        N        Lex. equal
+          !=       3        S        S        N        Lex. not equal
+          #==      3        N        N        N        Num. equal
+          #!=      3        N        N        N        Num. not equal
+          %        3        S        S        N        Reg. expr. match
+          %%       3        S        S        N        Reg. expr. word match
+          $<       4        S        S        N        Lex. less
+          $<=      4        S        S        N        Lex. less or equal
+          $>       4        S        S        N        Lex. greater
+          $>=      4        S        S        N        Lex. greater or equal
+          <        4        N        N        N        Num. less
+          <=       4        N        N        N        Num. less or equal
+          >        4        N        N        N        Num. greater
+          >=       4        N        N        N        Num. greater or equal
+          $        5        S        S        S        Concatenate
+
+
+
+     Page 6                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          +        6        N        N        N        Add
+          -        6        N        N        N        Subtract
+          *        7        N        N        N        Multiply
+          /        7        N        N        N        Divide
+          -        8                 N        N        Negative (unary)
+          !        8                 N        N        Not (unary)
+
+          Additional information about the operators:
+
+          |  &  !
+             The Boolean operators consider the value 0 to be _f_a_l_s_e
+             and any nonzero value to be _t_r_u_e.  The | operator
+             produces 1 if either of its operands is true; otherwise
+             it produces 0.  The & operator produces 1 only if both of
+             its operands are true; otherwise it produces 0.  The
+             unary ! operator produces 1 if its operand is false and 0
+             if its operand is true.  Both operands of | and & are
+             always evaluated.
+
+          ==  !=  $<  $<=  $>  $>=
+             The lexical comparison operators treat their operands as
+             strings and produce 0 or 1.  Strings are compared by
+             considering the characters from left to right using the
+             ASCII collating sequence.  If one string is a prefix of
+             the other, the shorter string is considered lexically
+             less than the longer string; for example, "abc" is
+             lexically less than "abcde".
+
+          #==  #!=  <  <=  >  >=
+             The numeric comparison operators treat their operands as
+             numbers and produce 0 or 1.  The operands are compared
+             numerically.  As an example, the expression 2<10 produces
+             1, while the expression 2$<10 produces 0.
+
+          +  -  *  /  -
+             The arithmetic operators treat their operands as numbers
+             and produce numbers.  Integer arithmetic is used, which
+             means that any remainder resulting from the / operator is
+             lost.
+
+          $  The only string operator is $.  It concatenates its right
+             operand onto the right of its left operand and produces
+             the resulting string.  Concatenation is a rather
+             expensive operator; it should be avoided if the same
+             effect can just as conveniently be achieved another way.
+
+          %  %%
+             The regular expression operators treat their left operand
+             as a string and convert it if necessary; the right
+             operand must be a _s_t_r_i_n_g _c_o_n_s_t_a_n_t.  The right operand is
+             interpreted as a regular expression.  The % operator
+             produces 1 if the regular expression matches the left
+
+
+
+     Page 7                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+             operand; otherwise it produces 0.  The %% operator is
+             similar, but it considers the left operand to be a
+             sequence of words separated by exactly one blank.  It
+             produces 1 if the regular expression matches every word;
+             otherwise it produces 0.  Regular expressions are
+             described the next section.
+
+        RRRReeeegggguuuullllaaaarrrr EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss
+          With a few exceptions, (the main one is that a regular
+          expression must match the entire string in order for the
+          match to be considered successful) regular expressions in
+          the validation language are identical to those used in the
+          UNIX(TM) text editor.  For completeness, however, they will
+          be described in this section.
+
+          A regular expression is a way of specifying a pattern that
+          will match certain strings.  Perhaps the simplest regular
+          expression is one that consists of characters to be matched
+          exactly.  For example, the regular expression "abcdef"
+          matches the string "abcdef".  In fact, the % operator need
+          not be used for simple regular expressions like these:  the
+          expressions "abcdef"%"abcdef" and "abcdef"=="abcdef" are
+          equivalent.
+
+          The power of regular expressions arises from the fact that
+          special characters may be used to specify more complex match
+          conditions.  These special characters are explained below.
+
+          "."  The period matches any character.  For example, the
+               regular expression "xyz.." matches any 5 character
+               string beginning with "xyz".
+
+          "*"  The asterisk causes the character preceding it to match
+               zero or more occurrences, instead of just one.  For
+               example, the regular expression "xy*z" will match the
+               strings "xz", "xyz", "xyyz", etc.  The regular
+               expression "x.*" will match any string beginning with
+               "x".  The regular expression ".*x.*" will match any
+               string that contains an "x" anywhere.
+
+          "+"  The plus is similar to the asterisk, except it matches
+               _o_n_e or more occurrences instead of _z_e_r_o or more.  For
+               example, the regular expressions "xx*" and "x+" are
+               equivalent.
+
+          "[]" A string of characters enclosed by square brackets
+               matches any character in the string.  This may be
+               thought of as a more restricted form of the period.
+               For example, the regular expression "[xyz]r" matches
+               "xr", "yr" and "zr".  The regular expression
+               "[abc][def]" matches "ad", "ae", "af", "bd", "be", etc.
+               A hyphen may be used to indicate a range of characters
+
+
+
+     Page 8                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               to save typing.  For example, "[a-k]" is equivalent to
+               "[abcdefghijk]".  A hyphen represents itself only if it
+               is the first or last character within the brackets.  If
+               a circumflex (^) follows the left bracket immediately,
+               then any character except those in the string is
+               matched.  For example, "[^fn]" matches any character
+               other than "f" or "n".
+
+               The asterisk and plus work with bracketed strings as
+               well as with single characters.  For example, the
+               regular expression "[xyz]*" matches "", "x", "xx",
+               "xy", "yx", "xxxzyxzzzy", etc.
+
+          "{}" Curly brackets following a single character or
+               bracketed string are used to indicate a range.  If a
+               single integer is within the curly brackets it
+               indicates exactly that many occurrences of the
+               preceding character or bracketed string.  For example,
+               the regular expression "x{4}" is equivalent to "xxxx".
+               The regular expression "[0-9]{3}" is equivalent to
+               "[0-9][0-9][0-9]".  If two integers separated by a
+               comma are within the curly brackets, the preceding
+               character or bracketed string is repeated at least as
+               many times as the first integer indicates and at most
+               as many times as the second integer indicates.  For
+               example, "x{2,5}" matches "xx", "xxx", "xxxx" and
+               "xxxxx", but not "x" or "xxxxxx".  If the comma is
+               present but the second integer is omitted, it is taken
+               to be infinity.  Hence, the asterisk and plus are
+               equivalent to {0,} and {1,}, respectively.
+
+          "()" Parentheses can be used to group characters and/or
+               bracketed strings to make them subject to the asterisk,
+               plus and curly brackets.  For example, the regular
+               expression "(x[ab]y){2,3}" matches "xayxay", "xbyxby",
+               "xayxby", "xbyxay", "xayxayxay", etc.  It doesn't match
+               "xay" or "xayxayxayxay", nor, of course, does it match
+               things like "xaby" or "xyxy".
+
+          If any of the special characters listed above are needed to
+          represent themselves, they may be preceded by a backslash
+          (\).  For example, the regular expression "\**" matches a
+          string of zero or more asterisks.
+
+        FFFFoooorrrrmmmmaaaatttt
+          Comments
+             Comments may appear anywhere a blank may appear, except
+             within string constants or other comments.  Comments
+             begin with /* and end with */.  The best place for
+             comments is probably above the validation conditions they
+             describe.  For example:
+             /* Street name must be capitalized alpha words. */
+
+
+
+     Page 9                                          (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+             STREET        %%        "[A-Z][a-z]*"                st1
+
+          Expressions
+             Operands and operators may be combined to form
+             expressions.  Parentheses may be used to override the
+             precedence of operators or to improve readability.  It is
+             also a good idea to use parentheses if one is not sure of
+             the precedence of an operator.
+             For example:
+                 (PROD == "plfd" | PROD == "smmt") & NPA == "609"
+             (We could have coded 609 as a number, but that would have
+             caused an unnecessary conversion since the value of a
+             field is always a string.)
+
+             Blanks may be used between operands and operators to
+             improve readability.  Whenever any of the characters
+                                   |&=<>#$+-*/%!
+             appear adjacent outside of string constants and comments,
+             they are assumed to be an operator even though such an
+             operator may not be defined (in which case a diagnostic
+             would result).  Therefore in coding expressions like
+             5 * -3
+             the blank between the asterisk and hyphen is required.
+
+        TTTTaaaabbbblllleeee SSSSttttrrrruuuuccccttttuuuurrrreeee
+          The validation table is contained in an ordinary UNIX text
+          file.  It is created and modified with the UNIX text editor.
+          The table is compiled with the _v_a_l_c_m_p(UNITY) command.
+          Compilation produces object code which the machine accesses
+          at execution time.
+
+          The validation machine executes the table for each record
+          presented to it.  The validation table is executed from top
+          to bottom.  If a validation condition is _f_a_l_s_e, as indicated
+          by its having zero as its value, the error code following it
+          is issued by the validation machine.  A maximum of 256 error
+          codes may be issued for a single record.
+
+          As in the examples that have appeared above, an error code
+          follows its validation condition with at least one tab and
+          any number of additional blanks and tabs in between.  Error
+          codes may be as long as 9 characters, and may consist of
+          characters chosen from the set "A" through "Z", "a" through
+          "z", "0" through "9" and "_".
+
+          An error table may be optionally provided which gives a
+          mapping from error codes specified in the validation script
+          to user-friendly error messages.  In this case, the error
+          message is printed instead of the error code.  See the
+          _v_a_l_i_d_a_t_e(UNITY) manual page for more details.
+
+          If a validation condition is indented by one tab under
+
+
+
+     Page 10                                         (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          another validation condition, the indented validation
+          condition, as well as validation conditions indented under
+          it, is not executed if the one above it is _f_a_l_s_e.  The
+          following skeletal validation table will be used to
+          illustrate this.  A, B, C, D, E and F are validation
+          conditions.
+          A                                e1
+                  B                        e2
+                          C                e3
+                          D                e4
+                  E                        e5
+          F                                e6
+          If A is false, error code e1 is issued and testing skips to
+          F.  If A is true, B is tested next.  If B is false, error
+          code e2 is issued and testing skips to E.  If B is true, C
+          is tested next, followed by D.  Error code e3 is issued if C
+          is false and error code e4 is issued if D is false.  After D
+          is tested E is tested.  Error code e5 is issued if E is
+          false.  Finally, F is tested and error code e6 is issued if
+          it is false.
+
+          Validation conditions that have other validation conditions
+          indented under them need not have error codes.  Such
+          validation conditions would serve to determine whether other
+          validation conditions are to be tested, but they themselves
+          would not cause an error code to be issued.
+
+          A validation condition may be continued on another line by
+          ending the continued line with a backslash (\).  Leading
+          tabs and blanks on the continuation line are ignored.
+          String constants may not be continued on another line.
+          Comments do not have to be continued with a backslash;
+          successive lines are considered part of the comment until
+          the */ is encountered.
+
+          The example in EXAMPLE section should be studied for further
+          illustration of the format and flow through the validation
+          table.
+
+     OOOOTTTTHHHHEEEERRRR TTTTAAAABBBBLLLLEEEESSSS
+          Description file
+            All fields referenced in the validation table must appear
+            in the description file.  A description of the layout of
+            this file is given on the _t_a_b_l_e(UNITY) manual page.  An
+            example description file appears the next section.
+
+          Error file
+            Messages corresponding to the error codes used in the
+            validation table are defined in the error table (see
+            _v_a_l_i_d_a_t_e(UNITY)).  See the next section for an error table
+            example.
+
+
+
+
+     Page 11                                         (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          This section contains an example of a validation table, a
+          description file, and an error table.  In studying this
+          example, the reader should not be concerned with the
+          appropriateness of validations, choice of field names,
+          human-engineering of error messages, or any other real-life
+          qualities.  The sole purpose is to illustrate the use of the
+          three tables.
+          _V_a_l_i_d_a_t_i_o_n _T_a_b_l_e
+
+          01 /* Non-numeric CO? */
+          02 !(CO % "[0-9]{3}")
+          03         /* 2LN? */
+          04         CO % "[A-Z]{2}[0-9]"                        co1
+          05                 /* 2nd letter can't be Q or Z */
+          06                 CO % ".[^QZ]."                      co2
+          07                 /* Manual mobile? */
+          08                 CO % "[JQYZ].."
+          09                         /* Legal letter combination? */
+          10                         CO % "J[KLPRS]." |\
+          11                         CO % "Q[ABFJPR]." |\
+          12                         CO % "Y[JKLPRS]." |\
+          13                         CO % "Z[ABFHLMORWY]."       co3
+          14 /* List name required. */
+          15 !(LNAME == "")                                      lname1
+          16         /* List name must be capitalized alpha words. */
+          17         LNAME %% "[A-Z][a-z]*"                      lname2
+          18 /* House number must be <=5 digits. */
+          19 HSNM % "[0-9]{0,5}"                                 hsnm1
+          20 /* Street is required. */
+          21 !(STRT == "")                                       strt1
+          22         /* Street must be capitalized alpha words. */
+          23         STRT %% "[A-Z][a-z]*"                       strt2
+          24 /* NPA must be numeric. */
+          25 NPA % "[0-9]{3}"                                    npa1
+          26         /* Check NPA syntax (NPA table not available) */
+          27         NPA % "[2-9][01][1-9]"                      npa2
+          28 /* Line numeric. */
+          29 /* THRFR must be alpha. */
+          30 THRFR % "[A-Z][a-z]*"                               thrfr1
+          31         /* THRFR must be in table */
+          32         tblsearch("thrfrtbl","thrfr",THRFR,"thrfr") \
+                          != ""      thrfr2
+
+          _D_e_s_c_r_i_p_t_i_o_n _f_i_l_e
+
+          LNAME     t:    20l     LISTING NAME
+          CO        t:    3l      CO
+          HSNM      t:    5l      HOUSE NUMBER
+          STRT      t:    20l     STREET
+          NPA       t:    3l      NPA
+          THRFR     t\n  10l     THOROUGHFARE
+
+
+
+     Page 12                                         (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          _E_r_r_o_r _T_a_b_l_e
+
+          co1        Non-numeric CO must be of the form 2LN.
+          co2        Second letter of 2LN CO can't be Q or Z.
+          co3        Illegal letter combination for Manual Mobile CO.
+          lname1     List name is required.
+          lname2     List name must be capitalized alpha words.
+          hsnm1      House number must consist of 5 digits or less.
+          strt1      Street is required.
+          strt2      Street must be capitalized alphabetic words.
+          npa1       NPA must consist of 3 digits.
+          npa2       Illegal digit combination for NPA.
+          line1      Line number must consist of 4 digits.
+          thrfr1     Thoroughfare designation must be capitalized word.
+          thrfr2     Thoroughfare designation must be in table.
+
+          The following notes will aid in understanding the validation
+          table.  They are keyed to the line numbers appearing at the
+          left of the table above.  These numbers are not part of the
+          table itself.
+
+          02  The part of the validation within parentheses is true if
+              the CO consists of exactly 3 digits from 0 to 9.  The !
+              operator inverts the truth value, so the entire
+              validation condition is true if the CO is non-numeric.
+              The indented validation conditions are concerned with
+              non-numeric COs, and they will be skipped if the CO is
+              numeric.
+
+          04  The regular expression matches two capital letters from
+              A to Z followed by a digit from 0 to 9.  Since this test
+              is not performed if the CO is numeric, if the test fails
+              error code co1 is issued and the validation machine
+              skips to line 15.
+
+          06  The bracketed string [^QZ] is adequate here only because
+              the second letter has already been tested on line 4.  If
+              it had not been, any character, including one like "4",
+              "g" or ":", would match.
+
+          10  This validation condition consists of 4 regular
+              expression matches connected by the | (or) operator.
+              The validation condition is written on 4 lines for
+              readability; the backslash is used for continuation.
+              The error code co3 applies to the entire validation
+              condition, not just to line 13.  Note that it is
+              possible for both error codes co2 and co3 to be issued
+              for the same set of field-value pairs.
+
+          17  The regular expression is coded to match one word of the
+              list name.  If it consists of multiple words separated
+              by blanks (for example, "Springsteen Bruce"), the %%
+
+
+
+     Page 13                                         (printed 1/19/90)
+
+
+
+
+
+
+     vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))             UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll             vvvvaaaallll((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+              operator will succeed only if every word is matched.
+
+          32  The table "thrfrtbl" is not defined by the validation
+              module itself; it was created as a separate unity table.
+              The  table "thrfrtbl" could be
+
+              Ave
+              Rd
+              St
+              Dock
+
+              with description file Dthrfrtbl containing the line:
+
+              thrfr   t\n
+
+              The function _t_b_l_s_e_a_r_c_h looks for the string value of the
+              attribute THRFR in the "thrfr" column (the only
+              attribute) and returns the value in column "thrfr",
+              namely the same string.  However, if it cannot find a
+              match it returns a null string.  This makes the
+              validation condition false, causing error code thrfr2 to
+              be issued.  Any number of tables may be used in
+              _t_b_l_s_e_a_r_c_h commands.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _v_a_l_i_d_a_t_e(UNITY), _v_a_l_c_m_p(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 14                                         (printed 1/19/90)
+
+
+

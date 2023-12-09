@@ -1,0 +1,20 @@
+#ident "@(#) /sable/sdb/ra/sblib/node/s.node.dd"
+/*      Copyright (c) 1991 AT&T - All Rights Reserved          */
+
+typedef int (*WALKFUNC)(char *,struct stat *, int);
+
+class Node
+   {
+   include(node.pd)
+public:
+   Node(const char *nodeName);
+   ~Node();
+   Boolean_t chown(int uid, int gid);
+   Boolean_t copy(const char *toNode);
+   Boolean_t link(const char *toNode);
+   Boolean_t remove();  
+   Boolean_t sameType(const char *toNode);
+   Boolean_t status(struct stat &buffer);
+   Boolean_t valid();
+   Boolean_t walk(WALKFUNC);
+   };

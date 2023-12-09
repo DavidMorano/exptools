@@ -1,0 +1,395 @@
+bl,is,ti,ch,y
+"
+For which AT&T entity is this cover sheet being prepared?
+	for Bell Laboratories, type:		bl
+	for Information Systems, type:		is
+	for Technologies, Inc., type:		ti
+	for Corporate Headquarters (ERC), type:	ch"
+bl:.aC BL:OUT
+is:.aC IS:OUT
+ti:.aC TI:OUT
+ch:.aC CH:OUT
+bl,is,ti,ch::PRINT & QUEST		* @(#)dcs:mcsdata	2.3	2/6/92*	
+"Do you want instructions (y or n)?"
+"
+The docgen program with the -mcs option is designed to help you generate
+a document cover sheet without understanding or remembering the special
+cover sheet formatting command names. Simply answer the questions with the
+correct information (or type a carriage return to indicate that there is
+no information).
+
+In several instances you will be given the choice of reading the text from
+a file (by typing ':r' followed by the filename) or typing the information in
+directly. If any of the following items are lengthy, it probably will be most
+convenient to read the data from a file prepared earlier: abstract, complete
+copy distribution list, cover sheet only distribution list. If you have no data
+to input for any one of these items, simply type a colon(:) followed by a
+carriage return.
+
+After you have answered all the questions, you will find that docgen has
+written (or appended) the information to the output file (default temp.cover)
+in your directory.
+"
+bl,is,ti,ch:.TL:MANY
+"
+Type in the full title of the document."
+bl:{
+	bl:.AU "$" "" "$" "" "$" "$" "$":STUFF
+"
+	Type the author's name."
+"	location code (2-3 characters)?"
+"	extension?"
+"	room number?"
+"	company if other than AT&T-BL?"
+} "are there more authors? (y or return)"
+is:{
+	is:.AU "$" "" "$" "" "$" "$" "$":STUFF
+"	Type the author's name."
+"	location code (2-3 characters)?"
+"	extension?"
+"	room number?"
+"	company if other than AT&T-IS?"
+} "are there more authors? (y or return)"
+ti:{
+	ti:.AU "$" "" "$" "" "$" "$" "$":STUFF
+"	Type the author's name."
+"	location code (2-3 characters)?"
+"	extension?"
+"	room number?"
+"	company if other than AT&T Technologies, Inc?"
+} "are there more authors? (y or return)"
+ch:{
+	ch:.AU "$" "" "$" "" "$" "$" "$":STUFF
+"	Type the author's name."
+"	location code (2-3 characters)?"
+"	extension?"
+"	room number?"
+"	company if other than AT&T Corporate Headquarters (ERC)?"
+} "are there more authors? (y or return)"
+bl:.rP:SKIP
+"
+Name of responsible AT&T-BL person (if no AT&T-BL author supplied)? (or return)"
+is:.rP:SKIP
+"
+Name of responsible AT&T-IS person (if no AT&T-IS author supplied)? (or return)"
+ti:.rP:SKIP
+"
+Name of responsible AT&T Technologies person
+			(if no AT&T Technologies author supplied)? (or return)"
+ch:.rP:SKIP
+"
+Name of responsible AT&T Corporate Headquarters (ERC) person
+			(if no AT&T Corporate Headquarters (ERC) author supplied)? (or return)"
+bl,is,ti,ch:.AS:MANY
+	"Type in the abstract."
+bl,is,ti,ch:.AE:OUT
+bl,is,ti,ch:.OK "$" "$" "$" "$" "$" "$" "$" "$" "$":QSTUFF
+"
+Keywords are words or phrases not already included in the document title
+that would be useful as index terms. A maximum of nine such words or phrases
+may be provided. Type carriage return to indicate no more keywords.
+
+	Type in first keyword (or keyword phrase)."
+"	another?"
+"	another?"
+"	another?"
+"	another?"
+"	another?"
+"	another?"
+"	another?"
+"	another?"
+bl:.MT:ARGS
+"
+Indicate the type of document to be submitted with this cover sheet. (1,2, or 3)
+	1: Technical Memorandum (a document of broad interest relating to
+		technical work done at AT&T-BL)
+	2: Internal Memorandum (a technical document that is generally project
+		specific and hence of less general interest or with less
+		potential for application outside the originating organization)
+	3: Technical Correspondence (an item of correspondence containing
+		technical information needed to preserve an adequate record
+		of AT&T-BL technical activities and relations)
+
+    Type 1, 2, or 3.
+"
+is:.MT:ARGS
+"
+Indicate the type of document to be submitted with this cover sheet. (1,2, or 3)
+	1: Technical Memorandum (a document of broad interest relating to
+		technical work done at AT&T-IS)
+	2: Internal Memorandum (a technical document that is generally project
+		specific and hence of less general interest or with less
+		potential for application outside the originating organization)
+	3: Technical Correspondence (an item of correspondence containing
+		technical information needed to preserve an adequate record
+		of AT&T-IS technical activities and relations)
+
+    Type 1, 2, or 3)
+"
+ti:.MT:ARGS
+"
+Indicate the type of document to be submitted with this cover sheet. (1,2, or 3)
+	1: Technical Memorandum (a document of broad interest relating to
+		technical work done at AT&T-TECHNOLOGIES, INC)
+	2: Internal Memorandum (a technical document that is generally project
+		specific and hence of less generalinterest or with less
+		potential for application outside the originating organization)
+	3: Technical Correspondence (an item of correspondence containing
+		technical information needed to preserve an adequate record
+		of AT&T-TECHNOLOGIES, INC. technical activities and relations)
+
+    Type 1, 2, or 3
+"
+ch:.MT:ARGS
+"
+Indicate the type of document to be submitted with this cover sheet. (1,2, or 3)
+	1: Technical Memorandum (a document of broad interest relating to
+		technical work done at AT&T-CORPORATE HEADQUARTERS (ERC))
+	2: Internal Memorandum (a technical document that is generally project
+		specific and hence of less generalinterest or with less
+		potential for application outside the originating organization)
+	3: Technical Correspondence (an item of correspondence containing
+		technical information needed to preserve an adequate record
+		of AT&T-CORPORATE HEADQUARTERS (ERC) technical activities and relations)
+
+    Type 1, 2, or 3
+"
+bl,is,ti,ch:.sF:QUEST & OUT
+"
+Does this document contain software (any nontrivial executable computer
+program routine, whether in source or object code)? (y or return)"
+bl,ch::PRINT
+"
+A document number (assigned to each document by each issuing organization)
+consists of the organization number, date, sequence number, category suffix,
+and possible software suffix.
+
+* The organization field has 5-10 digits: the number of the issuing department.
+* The date field has 6 digits: year month day.
+* The sequence field has 2 digits: the sequence number of the document among
+	documents issued by that department on that day (01, 02, 03, etc.)."
+is::PRINT
+"
+A document number (assigned to each document by each issuing organization)
+consists of the organization number, date, sequence number, category suffix,
+and possible software suffix.
+
+* The organization field has 8-9 digits: the number of the issuing department.
+* The date field has 6 digits: year month day.
+* The sequence field has 2 digits: the sequence number of the document among
+	documents issued by that department on that day (01, 02, 03, etc.)."
+ti::PRINT
+"
+A document number (assigned to each document by each issuing organization)
+consists of the organization number, date, sequence number, category suffix,
+and possible software suffix.
+
+* The organization field has 10 digits: the number of the issuing department.
+* The date field has 2 digits: year.
+* The sequence field has 2 digits: the sequence number of the document among
+	documents issued by that department that year (01, 02, 03, etc.)."
+bl,is,ti,ch::PRINT
+"* The category suffix is TM, IM, or TC (indicating one of the document types
+	defined above).
+* The software suffix is an S, added only if the document contains software
+	as defined above.
+
+If the document has multiple authors, there should be one document number
+for each organization represented. The order of the document numbers should
+correspond to the order in which the authors are listed.
+"
+bl,is,ti,ch:{
+	bl:.dN:ARGS
+"   What is the NUMERIC PORTION of the document number (org-date-sequence)?
+     (DO NOT include category or software suffix. Separate fields with dashes.)
+                         Example: 79111-880831-01"
+	is:.dN:ARGS
+"   What is the NUMERIC PORTION of the document number (org-date-sequence)?
+     (DO NOT include category or software suffix. Separate fields with dashes.)
+                         Example: 60545415-880831-01"
+	ti:.dN:ARGS
+"   What is the NUMERIC PORTION of the document number (org-date-sequence)?
+     (DO NOT include category or software suffix. Separate fields with dashes.)
+			Example: 11NW500000-88-01"
+	ch:.dN:ARGS
+"   What is the NUMERIC PORTION of the document number (org-date-sequence)?
+     (DO NOT include category or software suffix. Separate fields with dashes.)
+			Example: 60313-880831-01"
+} "are there more document numbers? (y or return)"
+ti::PRINT
+"
+At least one full date must be specified for each document. List all dates
+that pertain to the document. The date has 6 digits: year month day.
+"
+ti:{
+	ti:.fD:ARGS
+"	What is the full date?
+	    Example: 880831"
+} "are there more full dates? (y or return)"
+bl,is,ch::PRINT
+"
+At least one filing case must be specified for each document. List all filing
+cases that pertain to the document (with applicable subcases)."
+bl,is,ch:{
+	bl,is,ch:.fC:ARGS
+"	What is the filing case?"
+} "are there more filing cases? (y or return)"
+bl,is::PRINT
+"
+At least one project number must be specified for each document. List all
+project numbers that pertain to the document (with applicable
+subprojects)."
+bl,is:{
+	bl,is:.wP:ARGS
+"	What is the project number?"
+} "are there more project numbers? (y or return)"
+ti::PRINT
+"
+At least one time charge (or project code) number must be specified for each 
+document. List all that pertain to the document (with applicable subprojects)."
+ti:{
+	ti:.wP:ARGS
+"	What is the time charge (or project code) number?"
+} "are there more time charge (or project code) numbers? (y or return)"
+ch::PRINT
+"
+At least one time charge (or case)  number must be specified for each 
+document. List all that pertain to the document (with applicable subcases)."
+ch:{
+	ch:.wP:ARGS
+"	What is the time charge (or case) number?"
+} "are there more time charge (or case) numbers? (y or return)"
+bl,is,ti,ch:.mC "$" "$" "$":QSTUFF
+"
+Indicate the MERCURY Announcement Bulletin section(s), if any, in which you
+want the document to appear. You may choose up to three of the following
+categories; however, in most cases, one selection will suffice.
+
+	Code	Mercury Category
+
+	 chm	Chemistry and Materials
+	 cmm	Communications
+	 cmp	Computing
+	 elc	Electronics
+	 lfs	Life Sciences
+	 man	Manufacturing
+	 mas	Mathematics and Statistics
+	 mkt	Marketing
+	 phy	Physics
+	 std	Standards
+
+Type carriage return to indicate no more selections.
+
+	Type in first MERCURY code."
+"	another?"
+"	another?"
+bl,is,ti,ch:.PM:QUEST & ARGS
+"
+Do you wish to select a proprietary classification other than the default -
+AT&T - PROPRIETARY? (y or return)"
+"	for AT&T - PROPRIETARY (RESTRICTED) type: RS"
+bl,is,ti,ch:.gS:QUEST & OUT
+"
+Does this document carry a government security classification (e.g.,
+	Confidential, Secret, Top Secret)? (y or return)"
+bl,is,ti,ch:.eD:SKIP
+"
+If your document supersedes or amends an earlier document, provide complete
+document number (including TM, IM, or TC) of the earlier document (or return)"
+bl,is,ti,ch:.fA:ARGS
+"
+
+Indicate the policy you want ITDS to follow concerning the Future Distribution
+of your document to AT&T employees (excluding contract employees).
+NOTE: AT&T PROPRIETARY (RESTRICTED) documents require approval for each request.
+
+	To release to any AT&T employee, type: 			y
+
+	To obtain approval from you for each request, type: 	n
+
+    Type y or n.  
+"
+
+bl,is,ti,ch::PATH
+"
+Do you wish to have the names of those who will approve your document
+printed under the signature line(s) in the Organization Approval
+section of the cover sheet (y or return)?"
+y:{
+	y:.oA:SKIP
+"
+Name of individual (or return)?"
+} "are there more names? (y or return)"
+bl:.cC:MANY
+"
+Type the addressees (one per line) to whom you intend to send complete copies
+of the document. For non-BL recipients add tab character and company name;
+approval requirements are given in G.E.I. 2.2.
+"
+is:.cC:MANY
+"
+Type the addressees (one per line) to whom you intend to send complete copies
+of the document. For non-IS recipients add tab character and company name.
+"
+ti:.cC:MANY
+"
+Type the addressees (one per line) to whom you intend to send complete copies
+of the document. For recipients from company other than AT&T Technologies,Inc.
+add tab character and company name.
+"
+ch:.cC:MANY
+"
+Type the addressees (one per line) to whom you intend to send complete copies
+of the document. For non-AT&T recipients add tab character and company name.
+"
+bl,is,ti,ch:.cE:OUT
+bl:.cS:MANY
+"
+Type the addressees (one per line) to whom you intend to send cover sheets
+of the document. For non-BL recipients add tab character and company name;
+approval requirements are given in G.E.I. 2.2. Cover sheets may not be sent
+outside of AT&T.
+"
+is:.cS:MANY
+"
+Type the addressees (one per line) to whom you intend to send cover sheets
+of the document. For non-IS recipients add tab character and company name.
+Cover sheets may not be sent outside of AT&T.
+"
+ti:.cS:MANY
+"
+Type the addressees (one per line) to whom you intend to send cover sheets
+of the document. For recipients from AT&T company other than AT&T Technologies,
+Inc. add tab character and company name.  Cover sheets may not be sent outside
+of AT&T.
+"
+ch:.cS:MANY
+"
+Type the addressees (one per line) to whom you intend to send cover sheets
+of the document. For non-AT&T recipients add tab character and company name.
+Cover sheets may not be sent outside of AT&T.
+"
+bl,is,ti,ch:.cE:OUT
+bl,is,ti,ch: .CS "$":STUFF
+"
+Provide the total number of pages in the document, including attachments (if
+any). Do NOT include the number of cover sheet pages in the total.
+	total pages?"
+bl,is,ti,ch::PRINT
+"
+The document cover sheet information has been written (or appended) to your
+output file.  You should now use the docsend command to generate a paper cover
+sheet (via troff or nroff) on the Xerox 9700, APS-5 phototypesetter, Imagen,
+Postscript, or DASI 450 - and simultaneously to send an electronic copy to a
+special holding directory on the Center 7911 UNIX system at MH.
+"
+bl,is,ch::PRINT
+"When four copies of the approved paper version are received by ITDS, the"
+ti::PRINT
+"When ten copies of the approved paper version are received by ITDS, the"
+bl,is,ti,ch::PRINT
+"matching electronic copy is retrieved from the holding directory and used
+as the source of data entered into the ITDS database.
+
+For further information see 'man docsend' or 'toolman docsend'.
+"

@@ -1,0 +1,672 @@
+.nr Cl 3 \" table of contents headings
+.nr Hs 3 \" blank line after headings
+.nr Hb 7 \" no run-in headings
+.ds HF 3 3 3 3 3 3 3 \" bold and italic headings
+.ds HP +2 +2 \" point size for headings
+.BS
+.ce
+___________________________________________________________
+.ce
+AT&T BELL LABORATORIES \(em PROPRIETARY
+.ul 1
+.ce
+Use pursuant to G.E.I 2.2
+.BE
+.TL 515014-0001 47085
+Directed Graph Toolkit: Revised
+.AU "M. T. Emanuel" mte HO54141 2B502 1292 
+.AS 2
+This document covers the design, implementation
+and initial applications of the Directed Graph Toolkit.
+This toolkit was originally done in Common LISP with Flavors
+for the TI Explorer II Workstation, and then redone in C++ for
+the Sun Workstation.
+It was developed for the Satellite Facility Maintenance and Administration
+Console (SFMAC) portion of the Generic Satellite Network Control System (GSNCS).
+.P
+The document is broken
+down in several sections.
+The first section briefly describes what a directed graph
+is and potential applications for data in this format.
+The next section covers the toolkit in detail, describing
+the external design, internal design, support classes,
+and portability of the toolkit.
+.AE
+.MT 1
+.H 1 "Introduction"
+Digraph is a toolkit
+used for manipulating and maintaining directed graphs.
+It was developed for the Satellite Facility Maintenance and Administration Console 
+(SFMAC) portion of the Generic Satellite
+Network Control System (GSNCS).
+.P
+The toolkit was written in C++ with an object oriented design
+approach.
+It is meant to be used as a foundation in applications
+that use a directed graph model for data representation.
+It provides the base classes and the user interface to 
+manipulate, maintain and retrieve information from a directed graph.
+It is flexible, providing only the necessary
+functionality to accomplish directed graph manipulation.
+.P
+.H 1 "Overview"
+A directed graph is a natural model for 
+representing arbitrary relationships among data objects.
+Real world systems that can be characterized by a binary relationship
+between elements, can use a directed graph. 
+Examples where directed graphs can be used are:
+.BL
+.LI
+natural language processing
+.LI
+trafficing
+.LI
+routing
+.LI
+networking
+.LE
+.sp
+Almost any problem or circumstance that can be addressed through
+an object oriented network representation
+can
+do so using a directed graph.
+.P
+A directed graph consists of nodes and edges, having direction.
+The nodes and edges exist in a space known as the universe.
+This toolkit supports single or multiple disjoint universes.
+Nodes represent the elements or objects, and edges represent
+the relationship between these objects.
+The three primary objects in the toolkit:
+universe,
+node,
+and
+edge
+are not enough for an application.
+They are meant to be base classes
+for objects with additional characteristics defined.
+Digraph provides the interface to manipulate and maintain the data
+in a graph.
+.P
+In the SFMAC application, a single space directed graph is used
+to maintain network information.
+Each node in the graph represents a piece of equipment in the network;
+each edge represents the relationship between the equipment.
+By maintaining network information, in this format
+equipment can be dynamically
+added or removed from the network.
+It also allows the impact of equipment alarms and outages to be traced.
+This is done by
+evaluating the type and direction of the edges connecting nodes.
+The node class is used as a base class
+with equipment specific classes 
+built on top.
+The types of relationships
+that can exist in the network are defined in classes derived
+from the edge class.
+.P
+Other potential applications could include natural language processing.
+In this application nodes would represent words, and edges would
+represent verbs or the relationships between the words.
+It could also be used in expert systems, where the nodes
+would represent activities, and edges the relationships between the activities.
+.H 1 "Directed Graph Toolkit"
+Digraph is modeled after an existing single space LISP implementation.
+Because of this, the basic design of the toolkit already
+existed, which was restructured for C++.
+Restructuring consisted of taking the objects that had been defined in the LISP implementation, and creating C++
+classes.
+The make up of each of the classes is defined in the internal design section.
+It also meant that supporting tools had to be designed and written that
+modeled the functionality that exists in LISP.
+.P
+The two supporting objects are versions of singly linked lists.
+Existing list objects are not used because their design is inconsistent
+with the LISP view of data objects.
+In existing list objects element values are copied, and in the LISP
+implementation the values are not copied.
+The functionality and function names in the new list objects are the same as those provided
+in LISP.
+.H 2 "External Design"
+The basic interface provided by this toolkit allows the
+user to create, destroy, retrieve information, bind values
+and check for the existence of nodes or edges in a universe.
+Attachment I contains the manual page for the toolkit and a description of each public interface
+function used to manipulate the graph.
+The manual page also contains an example of a graph and a program that uses
+each interface function.
+Attachments II and III contain the manual pages for the singly linked
+lists.
+The set retrieval functions return singly linked lists of either type sllist or int_sllist.
+Lists are covered later in this document.
+.P
+Instead of going through each function for
+each object, only an overview of the implementation is covered.
+There are about 130 public interface functions among the three
+classes, many only differ
+because of the class from which they are invoked.
+Many of the interface functions can be invoked either through
+the universe object or node object.
+This provides more flexibility for the user.
+The following code fragment shows an example
+of invoking a function from either the universe or node class.
+In the example,
+.I "san"
+retrieves all the adjacent nodes for a specific node.
+.DS I
+
+		#include "sllist.h"
+		#include "universe.h"
+		#include "node.h"
+		#include "edge.h"
+		
+		// declarations
+		sllist  *adj_node_list;
+		universe my_world("disneyland");
+		node *teacups = new node("blue", &my_world);
+		
+		// invocation through a universe class
+		adj_node_list = my_world.san(&teacups);
+		
+		// invocation through the node class
+		adj_node_list = teacups->san();
+		
+.DE
+.ce
+.B "figure 1"
+.sp
+The results of either function call is the same.
+The only difference is the object it was invoked from, and where the node is specified.
+The edge class provides only three public interface functions, any can be invoked from an edge, a universe or a node.
+.H 3 "Creating a Universe, Nodes and Edges"
+A universe is created when a variable is declared as type universe.
+In the declaration the name of a universe must be provided.
+Multiple disjoint universes can be created by declaring multiple
+instances of universe. 
+Once a universe is created, nodes can be created and placed in the
+universe.
+.P
+A node is created when a variable of type node is declared.
+In the declaration, a unique node name and a pointer to a universe
+where the node will exist must be provided.
+A universe uses the unique node names to keep track of the nodes.
+If a unique name and pointer to a universe are not provided,
+a fatal error will occur, to prevent a user from creating a node outside the
+universe space.
+.P
+Once nodes are defined, edges
+can be created and placed between nodes.
+The relationships between nodes are represented by creating outpointing, inpointing or adjacent edges between them.
+When an edge is created 
+an integer value representing the type of
+relationship it will have between the nodes is supplied.
+Between two nodes there may only exist a single inpointing and/or outpointing edge of a specific
+type.
+The following code fragment shows a universe declaration, 
+node declaration  and creation of edges.
+.DS
+
+		#include "universe.h"
+		#include "node.h"
+		#include "edge.h"
+
+		// universe declaration
+		universe my_world("disneyland");
+	
+		// node declarations
+		node *teacups = new node("blue", &my_world);
+		node *saucers = new node("yellow", &my_world);
+
+		// edge creation
+		edge *nedge = new edge(5, &my_world);
+		teacups->cop(nedge, &saucers);
+		edge *nedge = new edge(4, &my_world);
+		saucers->cap(nedge, &teacups);
+
+
+.DE
+.ce
+.B "figure 2"
+.sp
+.H 3 "Destruction"
+After nodes and edges exist in the universe it is sometimes necessary to destroy them.
+When a node is destroyed, all edges adjacent to that node are also destroyed.
+Nodes can be destroyed individually or because of the relationship they have with another node.
+For example, you can destroy all the nodes with inpointing edges from a particular node.
+All edges between two nodes can be destroyed, or simply edges of a certain type between
+two nodes may be destroyed.
+A universe is destroyed when the variable declared goes out of scope.
+This makes it important that the universe declaration is placed properly
+within the application.
+.P
+The following code fragment is an example of node and edge destruction.
+.DS
+
+		#include "universe.h"
+		#include "node.h"
+		#include "edge.h"
+
+		// destroy nodes with inpointing edges from teacups
+		teacups.din();
+
+		// destroy nodes with adjacent edges from saucers
+		saucers.dan()
+
+		// destroy adjacent edges to teacups
+		teacups.dag();
+
+.DE
+.ce
+.B "figure 3"
+.sp
+.H 3 "Set Retrieval"
+Now that a graph can be created and destroyed it may be useful to retrieve information from it.
+This is done through several set retrieval functions.
+Based on the function called and the arguments provided to that function
+a list of nodes, edges or edge types meeting a certain
+criteria may
+be retrieved.
+All set retrieval functions return a list of either type sllist or
+int_sllist.
+.P
+The following code fragment is an example of several set retrieval functions.
+.DS
+
+		#include "sllist.h"
+		#include "int_slliat.h"
+		#include "universe.h"
+		#include "node.h"
+		#include "edge.h"
+
+		sllist *all_nodes, *adj_nodes, *sp_nodes;
+		int_sllist *adj_edges;
+		
+
+		// get all nodes in a universe
+		all_nodes = my_world.ssun();
+
+		// get all adjacent nodes to teacups
+		adj_nodes = teacups.san();
+
+		// get all inpointing node to teacups
+		// with edge type 5
+		sp_nodes = teacups.sing(5);
+		
+		// get a list of edge types inpointing to teacups
+		adj_edges = teacups.sig();
+
+.DE
+.ce
+.B "figure 4"
+.sp
+.H 3 "Binding"
+The universe, nodes and edges may each have a value associated with them.
+This value is assigned with several binding functions.
+The type of value is not known and can be any arbitrary object,
+such as a message.
+Therefore, the value is type cast as a void pointer to allow any type
+value to be assigned.
+A set of functions to retrieve these values is also provided. The value returned must
+be type cast appropriately or assigned to a void pointer.
+.P
+The following code fragment shows an example of binding an object of
+type message to a node, and binding an object of type descrip to a universe.
+.DS
+
+		#include "message.h"
+		#include "descrip.h"
+		#include "universe.h"
+		#include "node.h"
+		#include "edge.h"
+
+		message *mesg;
+		descrip *description;
+
+		// bind a message object to teacups
+		teacups.bun((void *)mesg);
+		
+		// bind a descrip object to a universe
+		my_world.bus((void *)description);
+
+		// retrieve the value stored in teacups
+		mesg = (message *)teacups.vun();
+
+		// retrieve the value stored in the universe
+		description = (descrip *)my_world.vus();
+
+		
+.DE
+.ce
+.B "figure 5"
+.H 3 "Existence"
+The last set of functions are existence functions. These are a set of functions that will tell the user
+if a certain pair of nodes or edges exist.
+These functions will return TRUE if the node or edge exists
+and FALSE if they do not.
+.P
+The following code fragment is an example of the existence functions:
+.DS
+
+		#include "univesre.h"
+		#include "node.h"
+		#include "edge.h"
+
+
+		// does this pair exist ?
+		my_world.xip(&teacups, 5, &saucers);
+
+		// does this edge exist between these nodes?
+		teacups.xip(5, &saucers);
+
+
+.DE
+.ce
+.B "figure 6"
+.H 2 "Internal Design"
+The internal design of the toolkit covers the private data for each class
+of objects, and gives an overview of the implementation.
+.H 3 "Universe Class"
+The first class is the universe.
+The universe is defined as the space where the graph, made
+up of nodes and edges, will exist.
+This object, as well as nodes and edges, contains little private data and
+functions.
+This is because the toolkit deals mainly with manipulation of the graph,
+and is meant to be a support
+tool for applications.
+As a support tool, each class is used as a base class. Application specific derived classes are built on top.
+.H 4 "Universe Private Data"
+The private data in the universe consists of the following:
+.BL
+.LI
+name
+.LI
+flag
+.LI
+list of edges
+.LI
+list of nodes
+.LI
+hashtable
+.LI
+value
+.LE
+.sp
+A universe has a name associated with it that is assigned when a universe is
+declared.
+No mechanism is provided to assign a name after the declaration of a universe.
+.P
+The universe maintains a list of all nodes and edges that exist
+in its graph.
+Each time a node or edge is created it is added to one of the lists.
+This is done to make the implementation of some functions quicker and easier.
+.P
+A universe also maintains a hashtable of nodes.
+The hashtable is indexed by the node name, making it necessary to have unique
+node names.
+.P
+The universe may also have a value associated with it.
+This is a void pointer to an arbitrary object that can be assigned using
+one of the public interface functions, or when it is declared.
+An example where a value may be associated with a universe is when assigning
+it to a description object.
+The description object may define characteristics of a particular
+universe,
+and enables the user to differentiate between universes based on the description
+and instead of the name.
+.H 4 "Universe Private Functions"
+The only private functions in this class are 
+.I "remove_edge"
+and
+.I "cun."
+.I "Remove_edge"
+removes an edge from the list of edges in the universe, and
+.I "cun"
+adds a node to the universe.
+The node and edge classes are declared as friends to the universe
+so they have access to the private functions.
+The implementation, of
+.I "remove_edge"
+requires it to be private.
+With this implementation
+an edge can be removed from the universe, but
+not from the appropriate nodes.
+It is used as an internal utility routine.
+.I "Cun"
+is called when a node is declared, with the node name and pointer to the newly created node
+as arguments.
+It adds the specified node to a universe.
+.H 3 "Node Class"
+The next class is the node.
+When a node is declared, a unique node name and a pointer to a universe
+must be specified.
+A node may only exist in one universe.
+You must specify the universe when a node is created.
+A value may also be specified, but this is optional.
+.H 4 "Node Private Data"
+The private data members in a node are:
+.BL
+.LI
+name
+.LI
+list of inpointing edges
+.LI
+list of outpointing edges
+.LI
+value
+.LI
+pointer to a universe
+.LE
+.sp
+A node must have a unique name associated with it.
+The node name is used by a universe to keep track of
+a node.
+.P
+Each node maintains a singly linked
+list of it's inpointing and outpointing edges.
+.P
+A node may also have a value assigned to it.
+An example of an object that might be assigned to
+a node is coord.
+Coord contains plotting coordinates, where the node appears
+on a screen.
+The user can assign this object, and then retrieve it when
+the node is displayed on a screen.
+.P
+A node must keep track of the universe it belongs in.
+This is done by assigning a pointer to a particular universe
+when the node is declared.
+Once a node is declared it cannot be placed in another universe.
+.H 4 "Node Private Functions"
+The private functions in a node are:
+.BL
+.LI
+add_edge_in
+.LI
+add_edge_out
+.LI
+remove_edge
+.LI
+remove_edge_in
+.LI
+remove_edge_out
+.LE
+.sp
+These functions are private and only available to node functions and the friend
+classes, edge and universe.
+Each of these functions is used to maintain the list of edges associated with a node.
+.H 3 "Edge Class"
+The last class is the edge.
+When an edge is created an integer,
+representing an edge type must be provided.
+.H 4 "Edge Private Data"
+An edge has the following private data members:
+.BL
+.LI
+node_ptr_start
+.LI
+node_ptr_end
+.LI
+edge_type
+.LI
+value
+.LI
+pointer to a universe
+.LE
+.sp
+Node_ptr_start and node_ptr_end are pointers to the starting and ending
+node for an edge.
+.P
+The edge_type is an integer assigned to an edge representing the relationship between nodes.
+Each node may have only one inpointing and one outpointing edge of a particular
+edge type.
+.P
+As with a node and a universe, an edge could also have a value associated with it.
+.P
+Finally, as with a node, an edge has a pointer to a universe where it exists.
+.H 4 "Edge Private Functions"
+The private functions of an edge are:
+.BL
+.LI
+get_start
+.LI
+get_end
+.LE
+.sp
+These functions return pointers to either the starting or ending node of an edge.
+They are only used by the universe or node class, to retrieve information about the relationship of the edge.
+.H 1 "Singly Linked List Classes"
+The two supporting classes are both singly linked lists.
+One holds pointers to arbitrary objects (sllist)
+and the other holds integers (int_sllist).
+These classes are used to manipulate singly linked lists of objects or integers.
+The sllist class can hold integers, but it would have to work
+with one more level of indirection using pointers to
+integers.
+To eliminate this problem a second singly linked list class
+is used, int_sllist.
+The functionality between the two lists is the same. The only
+differences are a few parameters in some member functions, and
+the return value of some member functions.
+Since both list classes are similar, they are discussed together
+making note of differences.
+.P
+Attachments II and III contain manual pages and examples of list manipulation.
+.H 2 "External Design"
+The design and use of the linked list classes is briefly covered, because
+it is necessary for manipulation of the lists returned by the
+set retrieval functions.
+Many of the function names, such as 
+.I "cdr, cddr,"
+etc.., are not descriptive
+of the functionality provided.
+However, they provide the same functionality that the LISP functions they
+are designed to mimic.
+.P
+An individual object or integer can be accessed in several ways, using
+the 
+.I "[] operator, car"
+or 
+.I "nth."
+.I "Nth"
+and the 
+.I "[] operator"
+require an index into the list.
+.I "Car"
+returns the first object or integer in the list.
+If an object is returned it must be type cast into the
+appropriate type.
+.P
+.I "Cdr, cddr"
+and 
+.I "nthcdr"
+return pointers into the list.
+.I "Cdr"
+returns a pointer starting at the second link in the list.
+.I "Cddr"
+returns a pointer starting at the third link.
+.I "Nthcdr"
+requires an index, and returns a pointer starting at the
+specified link.
+.P
+.I "Concat"
+concatenates two lists and returns a pointer to the newly created list.
+.P
+A list can be modified using 
+.I "remove, append, push, pop"
+and 
+.I "insert."
+.I "Append"
+creates a new link and places an object or integer at the end of the list.
+.I "Push"
+creates a new link and places an object or integer at the beginning of the list.
+.I "Insert"
+creates a new link and places an object or integer in the specified place.
+.I "Pop"
+removes the first link from the list and returns a pointer to the object or returns the integer.
+.I "Remove"
+deletes the link containing the specified object or integer.
+Matching objects are determined by comparing pointers, not the contents of the objects.
+.P
+The remaining functions are 
+.I "is_empty, length"
+and 
+.I "exist."
+.I "Is_empty"
+returns TRUE if a list is empty and FALSE
+if it is not.
+.I "Length"
+returns the length of a list.
+.I "Exist"
+takes an object or integer and determines if it exists in the list.
+It returns TRUE if it exists and FALSE if it does not.
+.H 2 "Internal Design"
+A list has a header that points to the first link in the list.
+A header makes the implementation of some member
+functions, such as push and pop, easier and more
+straight forward.
+The private members of the list class are: 
+.BL
+.LI
+pointer to the next link
+.LI
+pointer to the object or, for int_sllist, an integer
+.LE
+.sp
+The only private function is a copy routine that makes a copy of
+a list without the head link on the list. 
+In sllist the list elements are not copied,
+pointers to the objects are copied.
+In int_sllist the integer values are copied.
+.H 1 "Portability"
+The toolkit has been compiled and tested on a 3B2, Vax and Sun 3
+workstation. 
+It also works with either the AT&T 1.2 or 2.0 C++ translators.
+.H 1 "Summary"
+This document described Digraph,
+a directed graph toolkit,
+that was developed to support porting the GSNCS-SFMAC from 
+a TI Explorer II to a SUN Workstation.
+This toolkit was designed to mimic the TI implementation
+making the port more straight forward.
+It should be of interest to anyone involved in similar activities,
+from the standpoint that it mimics the LISP implementation.
+It should also be of interest to anyone designing and developing
+applications using an object oriented design approach and C++.
+.P
+.H 1 "Acknowledgements"
+I would like to thank Joe Eccles for showing me
+much patience while I learned C++ and
+the LISP code, and for some very
+valuable input on many redesigns of the list classes.
+.SG
+.NS
+54141 Supervision
+54141 Control Systems Group
+J. Armstrong
+T. Bar-David
+J. O. Coplien
+D. Kertz
+D. Liu
+R. Murray
+L. Stanfield
+.TC "" "" 3

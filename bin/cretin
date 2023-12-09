@@ -1,0 +1,232 @@
+# CRETIN - Main Shell Program
+# Connie L. O'Dell
+# December 17, 1987
+
+# $CRETIN - The directory that cretin resides under on this machine.
+CRETIN=${TOOLS:=`logdir exptools`}/lib/cretin
+
+# Add unison to PATH so prtfmt can be found if available.
+PATH=${PATH}:/usr/add-on/unison/bin; export PATH
+
+# Net address of person to report errors to (me!).
+MAINTAINER="att!iwcae!odell"
+
+# For Security, never set CRETINMAIL to true (12/17/92), even for severe error!
+
+# If CRETINMAIL="true", the termination status of every CRETIN run is mailed 
+# to me; otherwise, only ERROR termination reports are mailed.
+# Do not set sendmail to true if it's already set to false, 
+# or if user is in HV (Hilversum), DH (Der Haag), MA (?,Spain) 
+# or ML (Malmsbury, UK)!
+if [ -z "$CRETINMAIL" ]
+then
+# For Security, never set CRETINMAIL to true (12/17/92), even for severe error!
+	case `uname -n` in
+		hv*|dh*|ma*|ml*)	;;
+##		*)		CRETINMAIL="true" ;;
+	esac
+fi
+
+# Functions for logging results.
+logentry ()
+{
+ if [ "$CRETINMAIL" = "true" -a -x /bin/mail ]
+ then
+  (echo "CRETIN:  $*:  `date`"; 
+   echo \
+   " `uname -n` ${LOGNAME} `uname -m` : `echo $ARGZERO` `echo $ORIGARGS`"\
+  ) | /bin/mail $MAINTAINER
+ fi
+}
+
+logerror ()
+{
+	trap "" 1 2 3; 
+# For Security, never set CRETINMAIL to true (12/17/92), even for severe error!
+##	CRETINMAIL="true"
+	PLACE="logging ERROR in $PLACE";
+	logentry $*;
+	trap 1 2 3; 
+}
+
+PLACE='setup'
+ARGZERO=$0
+ORIGARGS=$*
+ALLARGS=$ORIGARGS
+	
+# If CRETIN is interrupted, log it, and exit.
+trap 	'trap "" 1 2 3; \
+	 echo; echo "Interrupt: terminating CRETIN, please wait..."; \
+	 logentry "Interrupt in $PLACE"; \
+	 echo "CRETIN Interrupted!";trap 1;exit 1'\
+1 2 3 15
+
+# Print the cretin news if there is any (it should be brief!)
+if [ -r $CRETIN/NEWS.cretin ]
+then
+	cat $CRETIN/NEWS.cretin
+fi
+
+# Parse options, build arg string for cretin2pic, and set flags for shell
+PLACE='option parsing'
+PRINT="true"
+VERBOSE="false"
+while [ $# -ge 1 ]
+do
+	case $1 in
+		-n)	PRINT="false" ;;
+		-v)	VERBOSE="true" ;;
+		-o)	if [ $# -ge 2 ]
+			then
+				PICFILE=$2
+				shift
+			fi ;;
+	esac
+
+	shift
+done
+
+# If $PICFILE is not writable, print a warning and use /tmp.
+if [ -z "$PICFILE" ]
+then
+	PICFILE='cretin.pic'
+	( >> $PICFILE ) 2>/dev/null
+	if [ $? != 0 ]
+	then
+		TMPPICFILE=/tmp/${LOGNAME}.pic
+		if [ $VERBOSE = "true" ]
+		then
+			echo
+			echo "WARNING: File $PICFILE not writable; creating file $TMPPICFILE instead."
+		fi
+		PICFILE=$TMPPICFILE
+		ALLARGS="-o $PICFILE $ALLARGS"
+	fi
+fi
+
+# Run cretin, and if successful, print the pic output.
+PLACE='cretin2pic'
+CRETIN2PIC=${CRETIN}/cretin2pic
+# First, make sure cretin2pic exists and is executable...
+if [ ! -x ${CRETIN2PIC} ]
+then
+	if [ ! -r ${CRETIN2PIC} ]
+	then
+		if [ ! -r $CRETIN ]
+		then
+			logerror "FAILURE - directory ${CRETIN} not found"
+			echo "Fatal error: directory ${CRETIN} not found!" 1>&2
+			# Check whether TOOLS is incorrectly set.
+			LOGTOOLS=`logdir exptools`
+			if [ "${LOGTOOLS}" -a "${LOGTOOLS}" != "${TOOLS}" ]
+			then
+				echo "Looks like your \$TOOLS variable is wrong! Try setting it like this:" >&2
+				echo "TOOLS=\`logdir exptools\`" >&2
+			fi
+		else	
+			logerror "FAILURE - ${CRETIN2PIC} not found"
+			echo "Fatal error: ${CRETIN2PIC} not found !" 1>&2
+		fi
+	else
+		logerror "FAILURE - ${CRETIN2PIC} not executable"	
+		echo "Fatal error: ${CRETIN2PIC} not executable !" 1>&2
+	fi
+	exit 1
+fi 
+
+##echo Running \'${CRETIN2PIC} $ALLARGS\'...
+${CRETIN2PIC} $ALLARGS
+
+case $? in 0)	echo
+		if [ $VERBOSE = "true" ]
+		then
+			PLACE='pic2text'
+			echo "CRETIN Preview Follows..."
+			case "$PAGER" in
+			    "")	case `type more` in
+				    *not*found) PAGER='pg';;
+				    *)		PAGER='more';;
+				esac;;
+			    *)	;;
+			esac
+			HLP=""
+			case $PAGER in
+			    pg)	  HLP=", hit <return> to go to next page, h for help";;
+			    more) HLP=", hit <space> to go to next page, ? for help";;
+			esac
+			echo "Using \$PAGER=$PAGER to show preview$HLP"
+			$CRETIN/pic2text $PICFILE | $PAGER
+			case $? in 
+			    0)	;;
+			    *)	logerror \
+				"FAILURE ($?) piping $PLACE through $PAGER" &
+				echo "Preview failed!" 1>&2;;
+			esac
+		fi
+
+		if [ $PRINT = "true" ]
+		then
+			# If there is a variable PPR that contains the name 
+			# of a printing script, use it to print the CRETIN 
+			# diagrams; else if there is an executable local 
+			# pic printing script named "local_ppr" in this
+			# user's path, use it; else if there is a local
+			# printing script "local_ppr" for the whole system in
+			# the CRETIN directory, use it; else use "ppr".
+			case "$PPR" in
+			    "")	tppr=`type local_ppr`
+				case $tppr in
+				    *not*found)
+					if [ -x $CRETIN/local_ppr ]
+					then
+						PPR="$CRETIN/local_ppr"
+					else
+						PPR="$CRETIN/ppr"
+					fi
+					PLACE=$PPR;;
+				    *)
+					PPR='local_ppr'
+					for word in $tppr
+					do
+						PLACE=$word
+					done;;
+				esac;;
+			    *)	PLACE=$PPR;;
+			esac
+			echo "Printing report using $PLACE..."
+			eval $PPR $PICFILE
+			case $? in 
+			    0)	echo '...Done.';;
+			    *)	logentry "Failure ($?) printing with $PLACE" &
+				echo "Fatal printing error in $PPR!" 1>&2
+				echo \
+"Possible solutions: To get CRETIN to automatically use UNISON, create a" >&2
+				echo \
+"\$HOME/.prt file with valid options and make sure prtfmt is in your path;" >&2
+				echo \
+"or customize your printing by setting PPR=\"custom_print_cmd\" in .profile;" >&2
+				echo \
+"or create suitable printing script 'local_ppr' and put it in your path," >&2
+				echo \
+"or use cretin -n option to suppress printing." >&2
+				exit 1;;
+			esac
+		fi
+
+		logentry "Success" &
+		;;
+
+	   2)	if [ -r $CRETIN/USAGE.cretin ]
+		then
+			cat $CRETIN/USAGE.cretin 1>&2
+		fi
+		logentry "Usage" &
+		exit 2;;
+
+	   *)   case $? in 3)	logentry "Failure (Input) in $PLACE" &;;
+			   4)	logerror "Failure (Size) in $PLACE" &;;
+			   *)	logerror "FAILURE ($?) in $PLACE" &;;
+		esac
+		echo 'Fatal CRETIN error; no report generated!' 1>&2
+		exit 1;;
+esac

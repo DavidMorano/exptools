@@ -1,0 +1,84 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/tuple/s.tuple.3"
+.\"
+.PH "'TUPLE(3RA)'Relational Algebra C++ Library'TUPLE(3RA)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Tuple - records for relational algebra
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <relation.h>
+
+.SO tuple.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+Tuples provide a buffer area for exchanging data between Extensions or 
+between an Extension and the rest of the application.  They must be 
+dynamically allocated so they can only be constructed by using the 
+Tuple_new() friend function.  In addition to the Tuple::data buffer 
+area, the size is stored and flags are available for marking the 
+Tuples.  Setting the flag T_CONSTRAINED shows that the Tuple is 
+guaranteed to meet the Constraints for all its Attributes.  The flag 
+T_MARK may be used for general marking purposes.  Other flags may be 
+defined privately by the application.  
+.P 
+Tuples may be shared using the share() and done() operations.  The 
+routine calling Tuple_new() is automatically given a reference to the 
+Tuple and will keep the reference until it calls done().  Other 
+routines that are passed the Tuple should call share() if they wish to 
+retain a reference to the data.  They release their reference with 
+done() as well.  The Tuple lives until all references to it have been 
+released with done().  
+.P 
+Since Tuples may be shared, the Tuple::data should not be arbitrarily 
+modified.  It is typically initialized by the routine calling 
+Tuple_new().  Once initialized, routines wishing to modify the Tuple 
+should call Tuple_new() to create a new Tuple and copy the information 
+into the new Tuple, modifying it as needed.  
+.P 
+Information may be copied into a Tuple from another memory area using 
+the = operator, or it may be read or written using Tuple::data.  
+If some of the fields being copied are character arrays, the string
+in the array should not only be NULL terminated, it should be padded
+with NULLs to the end of the array.  This is most likely to occur
+in programs that are iteratively staging structures through a buffer area
+before copying them into the tuple.  By eliminating the staging area
+and reading and writing directly to Tuple::data, the problem with "left-over"
+non-NULL data is eliminated and so is unnecessary copying of the data.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The Tuple::done() function will print an error message, set relerr.errno
+and abort under the following circumstances:
+.VL 10 0
+.LI "[R_BAD_TUPLE]"
+The tuple reference count is 0 or negative on entry.
+.LE
+.LI "\fBEXAMPLES\fP"
+.br
+.EX
+.SO tupleE.ex
+.EE
+.LI "\fBWARNINGS\fP"
+.br
+Tuples are potentially shared.  The data should only be modified by the
+routine calling Tuple_new(), and only before it has been made available to
+other routines.
+.P
+String data copied into tuples should be NULL terminated and padded with
+NULLs to the end of the character array.  Otherwise the results of the
+relational algebra expressions, which use both lexical and bitwise
+equivalence, may be unexpected.  BEWARE of strcpy and strncpy!  Use
+memcpy and a NULL-padded value wherever possible.
+.P
+Programs using Tuples should set _new_handler.
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Er, \*(Ex, \*(Rl, intro(3RA)
+.LE

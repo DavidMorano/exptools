@@ -1,0 +1,198 @@
+
+
+
+
+
+
+
+       SLICE(1)            UNIX 5.0 (EXPTOOLS)             SLICE(1)
+
+
+
+       NNNNAAAAMMMMEEEE
+            slice - slice a file by lines
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            sssslllliiiicccceeee [[[[ ----bbbbBBBB ----eeeeEEEE ----llllLLLL ----nnnn ----qqqqQQQQ ----ssssSSSS ----ttttTTTT ]]]] [[[[ ffffiiiilllleeeessss ]]]]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            The "sssslllliiiicccceeee command is used to cut a file by lines.  In
+            contrast to the standard UNIX ccccuuuutttt command, the sssslllliiiicccceeee
+            command cuts a file horizontally.  The SSSSlllliiiicccceeee command
+            may be used to provide periodic lines from a file, or a
+            single line, or the head or the tail of a file.  The
+            number of lines printed may be limited by the Q
+            (quantity) option.
+
+       PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+
+             ----bbbb BBBB   The line number to BEGIN at is B The default
+                    BEGIN line is 1
+
+             ----eeee EEEE   The line number to END at is E The default end
+                    number is the largest number that a 'long'
+                    interger has on this machine.  In other words,
+                    the default is the end of file.
+
+             ----llll LLLL   Print this LINE 'L' only.  The presence of this
+                    option pre-empts options b, e & t.
+
+             ----nnnn     Print the line numbers along with the lines.
+
+             ----qqqq QQQQ   The QUANTITY of lines to print per file.  The
+                    default QUANTITY is 1 + ((END-BEGIN)/STEP)
+
+             ----ssss SSSS   The STEP increment is S.  Print every S'th line
+                    The default STEP increment is 1
+
+             ----tttt TTTT   Tail: the number of lines to print from the end
+                    of file.  The presence of this option pre-empts
+                    options b & e.
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            In the examples below, the file "_g_r_a_n_d_f_i_l_e" contains
+            the numbers 1111 through 1111000000000000, with one number per line.
+            The output of each example is shown after each command
+            line.
+
+            Print every 10th line, beginning with line 344 and
+
+
+       Page 1                                     (printed 5/15/92)
+
+
+
+
+
+
+
+
+                                  - 2 -
+
+
+
+       SLICE(1)            UNIX 5.0 (EXPTOOLS)             SLICE(1)
+
+            ending with line 370:
+
+                    sssslllliiiicccceeee -b344   -e380  -s10   _g_r_a_n_d_f_i_l_e
+
+                    344
+                    354
+                    364
+
+            Print the 255th line along with its line number:
+
+                    sssslllliiiicccceeee -n -l 255 _g_r_a_n_d_f_i_l_e
+
+                        255 255
+
+            Print every 2nd line, at the tail of the file,
+            beginning with 8th line from the end:
+
+                    sssslllliiiicccceeee -b 4  -s2  -t8 _g_r_a_n_d_f_i_l_e
+
+                    993
+                    995
+                    997
+                    999
+
+            Read from standard in, and print the last 4 lines:
+
+                     cat _g_r_a_n_d_f_i_l_e  |  sssslllliiiicccceeee -n  -t4
+
+                        997 997
+                        998 998
+                        999 999
+                       1000 1000
+
+            Print the first three lines and the last three lines
+            from a file, along with their line numbers.
+
+                    sssslllliiiicccceeee -n -e3 _g_r_a_n_d_f_i_l_e ; echo "   .";  sssslllliiiicccceeee -n
+            -t3 _g_r_a_n_d_f_i_l_e
+
+                          1 1
+                          2 2
+                          3 3
+                          .
+                        998 998
+                        999 999
+                       1000 1000
+
+
+
+
+
+       Page 2                                     (printed 5/15/92)
+
+
+
+
+
+
+
+
+                                  - 3 -
+
+
+
+       SLICE(1)            UNIX 5.0 (EXPTOOLS)             SLICE(1)
+
+       EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+            PPPPoooossssssssiiiibbbblllleeee eeeennnnhhhhaaaannnncccceeeemmmmeeeennnnttttssss
+
+            One future option is to print both ENDS of a file.
+            This would give the user an overview of the file.  This
+            is equivalent to 2 calls to sssslllliiiicccceeee: "sssslllliiiicccceeee -e5 file" and
+            "sssslllliiiicccceeee -t5 file".  Another potential enhancement is to
+            option the thickness (-k K) of the slice.  This "-k K"
+            option would only be used with the "-s" option.
+            Another enhancements would be to name some other
+            character to represent the "end of the line" instead of
+            the line-feed character.  Another enhancements would be
+            to slice by absolute characters instead of lines, For
+            example, print every third character.
+
+            TTTTaaaaiiiillll aaaannnndddd ////ttttmmmmpppp
+
+            When standard-in or a pipe is used with the "-t"
+            option, a temporary file called /_t_m_p/_s_p_a_c_e._X_X_X_X_X_X is
+            created.  The temporary file is removed after the
+            command finishes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

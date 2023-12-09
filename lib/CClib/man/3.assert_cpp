@@ -1,0 +1,198 @@
+
+
+
+     AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP((((3333CCCC++++++++))))              CCCCCCCClllliiiibbbb              AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Assert_cpp (1.3) - Improved assert macro for C++: simple
+          debugging aid.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          This file replaces assert.h and provides several extra
+          features.  First, it can print the call stack if an
+          assertion fails or a signal happens.  Second, if you're
+          really in trouble, it can print entry into and exit from
+          functions.  Third, a new variant of assert is declared that
+          can print a user-defined value before aborting, to give the
+          programmer a better idea why it aborted.  This package could
+          improve feedback between users and developers in complex
+          programs that have been released, but have residual bugs.
+
+     UUUUSSSSAAAAGGGGEEEE
+          How to include it:
+          ####iiiinnnncccclllluuuuddddeeee aaaasssssssseeeerrrrtttt____ccccpppppppp....hhhh
+
+          Contents:
+
+          ####iiiiffffnnnnddddeeeeffff AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP____HHHH
+          #### ddddeeeeffffiiiinnnneeee AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP____HHHH
+          #### iiiiffffnnnnddddeeeeffff CCCC
+          ####  ddddeeeeffffiiiinnnneeee CCCC ccccoooonnnnsssstttt
+          #### eeeennnnddddiiiiffff
+          #### iiiiffffnnnnddddeeeeffff SSSSTTTTDDDD____HHHH
+           ttttyyyyppppeeeeddddeeeeffff sssshhhhoooorrrrtttt BBBBOOOOOOOOLLLL;;;;     ////**** UUUUsssseeee BBBBOOOOOOOOLLLL ffffoooorrrr llllooooggggiiiiccccaaaallll vvvvaaaarrrriiiiaaaabbbblllleeeessss aaaassss aaaa rrrreeeemmmmiiiinnnnddddeeeerrrr ttttoooo
+                                        tttthhhheeee pppprrrrooooggggrrrraaaammmmmmmmeeeerrrr.... ****////
+          #### eeeennnnddddiiiiffff
+          ccccllllaaaassssssss aaaasssssssseeeerrrrtttt____aaaasssssssseeeerrrrtttt {{{{
+               ppppuuuubbbblllliiiicccc::::        //////// ssssoooommmmeeee ffffuuuunnnnccccttttiiiioooonnnnssss aaaannnndddd ddddaaaattttaaaa nnnnooootttt sssshhhhoooowwwwnnnn
+               ////**** MMMMaaaayyyy bbbbeeee ccccaaaalllllllleeeedddd ttttoooo ttttrrrraaaacccceeee ppppsssseeeeuuuuddddoooo----ssssttttaaaacccckkkk:::: ****////
+               ssssttttaaaattttiiiicccc vvvvooooiiiidddd ttttrrrraaaacccceeee(((())));;;;
+               ////**** PPPPaaaarrrraaaammmmeeeetttteeeerrrrssss ttttoooo bbbbeeee sssseeeetttt bbbbyyyy uuuusssseeeerrrr:::: ****////
+               ssssttttaaaattttiiiicccc BBBBOOOOOOOOLLLL ddddeeeessssppppeeeerrrraaaatttteeee;;;;
+               ssssttttaaaattttiiiicccc vvvvooooiiiidddd ((((****ddddiiiissssppppllllaaaayyyy____mmmmssssgggg))))((((CCCC cccchhhhaaaarrrr ****ssss))));;;;
+               ssssttttaaaattttiiiicccc vvvvooooiiiidddd ((((****tttteeeerrrrmmmmiiiinnnnaaaatttteeee))))((((iiiinnnntttt))));;;;
+               }}}};;;;
+          eeeexxxxtttteeeerrrrnnnn aaaasssssssseeeerrrrtttt____aaaasssssssseeeerrrrtttt aaaasssssssseeeerrrrtttt____ttttmmmmpppp____rrrrnnnnmmmmnnnn;;;;
+          ####eeeennnnddddiiiiffff
+          ####ddddeeeeffffiiiinnnneeee aaaasssssssseeeerrrrtttt((((xxxx)))) ////**** nnnnooootttt sssshhhhoooowwwwnnnn ****////
+          ####ddddeeeeffffiiiinnnneeee aaaasssssssseeeerrrrtttt2222((((xxxx,,,,yyyy)))) ////**** nnnnooootttt sssshhhhoooowwwwnnnn ****////
+          ####ddddeeeeffffiiiinnnneeee EEEENNNNTTTTEEEERRRR____FFFFCCCCNNNN((((xxxx)))) ////**** nnnnooootttt sssshhhhoooowwwwnnnn ****////
+          ####ddddeeeeffffiiiinnnneeee MMMMAAAARRRRKKKK____LLLLIIIINNNNEEEE ////**** nnnnooootttt sssshhhhoooowwwwnnnn ****////
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The class assert_assert is used to maintain a stack of calls
+          to ENTER_FCN.  It is not intended to be used directly.
+
+          The user can call ENTER_FCN("any text here") once in any
+          block (typically, this would be called once per function).
+
+
+
+     Page 1                                           (printed 3/6/91)
+
+
+
+
+
+
+     AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP((((3333CCCC++++++++))))              CCCCCCCClllliiiibbbb              AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP((((3333CCCC++++++++))))
+
+
+
+          ENTER_FCN remembers the filename, the supplied text, and the
+          line number.  Calls of MARK_LINE can be scattered through
+          the program at will; they will update the line number
+          information that was stored by ENTER_FCN.
+
+          When an assertion fails, or a signal is caught, the stored
+          information is dumped into
+          (*assert_assert::display_msg)(const char *), which, by
+          default, flushes cout and places its argument on the cerr
+          stream.  Any user supplied function may be provided if the
+          default is not to the user's liking.  Next,
+          (*assert_assert::terminate)() is called to stop the process,
+          with an argument of 1 (for failed assertions) or 128 + the
+          signal number for caught signals.
+
+          The default terminate calls exit.  Display_msg and terminate
+          are given a default value in def_msg.c so that the user can
+          supply his or her own defaults.  The package is not tied to
+          any i/o model.  If terminate == 0, the default action will
+          be abort(), while a zero value of display_msg will cause an
+          abort when anything would otherwise be displayed.
+
+          Assert functions just like the normal assert(3); it prints a
+          message and aborts the process.  Assert2(x, y) is similar,
+          but yyyy is an expression which is evaluated just before the
+          stack is printed and the program is aborted.  A typical use
+          would be to print something (e.g. assert2(x==0,
+          cerr<<x<<endl);).  The second argument should not contain a
+          semicolon.
+
+          If the variable assert_assert::desperate is set nonzero,
+          every pass through ENTER_FCN or MARK_LINE will produce a
+          line of printout, as will every exit from a marked function.
+          The consistency of the stack will also be checked, and the
+          program terminated if there are problems.  Finally, if the
+          macro NDEBUG is defined, the package will not be included.
+          This package may be turned on and off by re-including
+          aaaasssssssseeeerrrrtttt____ccccpppppppp....hhhh with NDEBUG either defined or undefined.
+
+          This package will catch all catchable signals that are set
+          to SIG_DFL.  It will, therefore, ignore signals that might
+          have been caught by a user routine.  It is also safe even if
+          the user catches some signals in a global or static
+          constructor; the package will not catch signals that have
+          been changed from their default value.  The only possiblity
+          of problems is if the user depends on signals having their
+          default setting.
+
+
+     EEEExxxxaaaammmmpppplllleeee
+          #include "assert_cpp.h"
+          #include <iostream.h>
+
+
+
+     Page 2                                           (printed 3/6/91)
+
+
+
+
+
+
+     AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP((((3333CCCC++++++++))))              CCCCCCCClllliiiibbbb              AAAASSSSSSSSEEEERRRRTTTT____CCCCPPPPPPPP((((3333CCCC++++++++))))
+
+
+
+          void foo(void)
+          {
+           ENTER_FCN("foo()");                         // line 14
+           assert2(0, cerr << "assert_2 in foo"); // line 15
+          }
+
+          main()
+          {
+           ENTER_FCN("main()");
+           int a, b;
+           MARK_LINE;
+           assert(&a != &b);
+           MARK_LINE;                                       // line 24
+           {
+           ENTER_FCN("main-block");                    // line 26
+           }
+           foo();
+          }
+
+
+          Output:
+
+
+          assert_2 in foo                              // printed on line 15
+          Assertion failed:  0  Line: 15 File: assert_test.c
+          During constructors:GLOBAL SCOPE:0
+          assert_test.c:main():24
+          assert_test.c:foo():14
+          ABORT
+
+          One could even define (*display_msg)() to write to a file,
+          and (*terminate)() to mail the results back to the
+          developers.
+
+     BBBBUUUUGGGGSSSS
+          MARK_LINE only records the line number; if you have a
+          function with a MARK_LINE, but no ENTER_FCN, the filename
+          and function name can be wrong.  Similarly, if you have
+          uninstrumented functions, the printed stack will be
+          incomplete, but what is there will be correct.
+          Sufficiently bad problems (like bus errors or segmentation
+          violations) can corrupt the output.  The package makes a
+          reasonable attempt to check the stack for consistency, and
+          tries to print out as much as is meaningful.  The stack
+          checking only looks at the assert_assert classes, so it is
+          certainly not going to catch all problems.  It will detect,
+          with a high probability, if the data private to this class
+          has been overwritten.
+
+     SSSSeeeeeeee aaaallllssssoooo
+          assert(3), signal(2)
+
+
+
+
+     Page 3                                           (printed 3/6/91)
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+       UMODEM(1)	   UNIX	System V (Exptools)	       UMODEM(1)
+
+
+
+       NAME
+	    umodem - remote file transfer program for CP/M terminals
+
+       SYNOPSIS
+	    umodem -[rb!rt!sb!st][q][l][m][d][y][7] filename
+
+       DESCRIPTION
+	    Umodem cooperates with the MODEM.COM, YAM.COM, or similar
+	    program running on a CP/M based intelligent	terminal, to
+	    perform a file transfer.  The integrity of the transfer is
+	    enhanced by	use of a block checksum	for error detection, and
+	    block retransmission for error correction.
+
+	    Umodem requires exactly one	of the following commands:
+
+	    rb	    Receive Binary - transfer a	file from the terminal,
+		    in raw binary mode.	 Every byte of the file	will be
+		    transferred	intact.	 This mode is usually used to
+		    transfer, for example, .COM	files.
+
+	    rt	    Receive Text - transfer a file from	the terminal, in
+		    text mode.	In this	mode the program attempts to
+		    convert from the CP/M text file format to the Unix
+		    format on-the-fly, by stripping carriage-return
+		    characters,	and by ceasing to store	data after a
+		    control-z is detected.
+
+	    sb	    Send Binary	- transfer a file to the terminal, in
+		    raw	binary mode.  Every byte of the	file will be
+		    transferred	intact.	 This mode is usually used to
+		    transfer, for example, .COM	files.
+
+	    st	    Send Text -	transfer a file	to the terminal, in text
+		    mode.  In this mode	the program attempts to	convert
+		    from the Unix text file format to the CP/M format
+		    on-the-fly,	by adding carriage-return characters,
+		    and	by appending a control-z character to the end of
+		    the	file.
+
+	    In addition, umodem	recognizes the following options:
+
+	    q	    Quiet option - the initial "boiler plate" of program
+		    name, file size, etc., is suppressed.
+
+	    l	    Logfile option - enables logging the progress of the
+		    file transfer.  This option	is primarily useful for
+		    debugging.
+
+	    m	    "Mung-mode"	option - unless	this option is speci-
+		    fied, an attempt to	receive	a filename that	already
+		    exists will	be denied.  With this option, the exist-
+		    ing	file is	overwritten.
+
+
+
+       Page 1					      (printed 10/18/93)
+
+
+
+
+
+
+       UMODEM(1)	   UNIX	System V (Exptools)	       UMODEM(1)
+
+
+
+	    d	    Delete the logfile,	if it exists, before starting.
+
+	    y	    Display file status	(size) information only.
+
+	    7	    Seven-bit transfer option -	strip off the high-order
+		    bit	of each	byte before it is sent (-st case) or
+		    stored (-rt	case).	This option is valid only for
+		    text-mode transfers.
+
+       EXAMPLES
+	    To transfer	MODEM.COM (an executable binary	file) to UNIX:
+
+		      umodem -rb modem.com
+
+	    To transfer	MYDOC.TXT (a WordStar text file) to UNIX, and
+	    get	rid of the high-order formating	bits that WordStar loves
+	    to embed in	the file:
+
+		      umodem -rt7 mydoc.txt
+
+	    To transfer	foo.c (a UNIX C-source file) to	the CP/M termi-
+	    nal:
+
+		      umodem -st foo.c
+
+       FILES
+	    $HOME/umodem.log - created or appended to if the -l	option
+	    is specified.
+
+       SEE ALSO
+	    MODMPROT.001 - Ward	Christensen's description of the MODEM
+	    protocol
+
+	    MODEM7xx.DOC - Documentation for the MODEM7	series of CP/M
+	    smart terminal programs, written in	8080 assembly language
+
+	    YAMDOC.RNO - Documentation for the YAM smart terminal pro-
+	    gram, written in BDS C
+
+       BUGS
+	    The	program	supports only the checksum block error check,
+	    and	not the	more robust CRC.
+
+	    The	program	supports neither the MODEM7 nor	the YAM	batch
+	    file transfer protocols.  Only single file transfers are
+	    supported.
+
+       ORIGINAL	AUTHOR
+	    Lauren Weinstein
+
+       PROVIDER
+	    Mike Veach
+
+
+
+       Page 2					      (printed 10/18/93)
+
+
+

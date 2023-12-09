@@ -1,0 +1,517 @@
+% \iffalse meta-comment
+%
+% Copyright 1994 the LaTeX3 project and the individual authors.
+% All rights reserved. For further copyright information see the file
+% legal.txt, and any other copyright indicated in this file.
+% 
+% This file is part of the LaTeX2e system.
+% ----------------------------------------
+% 
+%  This system is distributed in the hope that it will be useful,
+%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+% 
+% IMPORTANT NOTICE:
+% 
+% For error reports in case of UNCHANGED versions see bugs.txt.
+% 
+% Please do not request updates from us directly.  Distribution is
+% done through Mail-Servers and TeX organizations.
+% 
+% You are not allowed to change this file.
+% 
+% You are allowed to distribute this file under the condition that
+% it is distributed together with all files mentioned in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% You are NOT ALLOWED to distribute this file alone.  You are NOT
+% ALLOWED to take money for the distribution or use of either this
+% file or a changed version, except for a nominal charge for copying
+% etc.
+% \fi
+
+%%% ====================================================================
+%%%  @LaTeX-file{
+%%%     author          = "David Carlisle",
+%%%     version         = "1.08",
+%%%     date            = "08 June 1994",
+%%%     filename        = "latexbug.tex",
+%%%     email           = "latex-bugs@uni-mainz.de",
+%%%     codetable       = "ISO/ASCII",
+%%%     keywords        = "LaTeX, bugs, reporting",
+%%%     supported       = "yes",
+%%%     docstring       = "
+%%%
+%%%     LaTeX bug report generator.
+%%%     %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%%     Processing this file with LaTeX should produce
+%%%     a file latexbug.msg in the current directory.
+%%%
+%%%     latexbug.msg may be used as a template for submitting bug
+%%%     reports concerning files in the standard LaTeX distribution.
+%%%
+%%%     Any bug report should include a small LaTeX test file
+%%%     that shows the bug, and the log that LaTeX produces on the
+%%%     test file.
+%%%
+%%%     Please check before submitting a bug report that your format is
+%%%     not more than one year old. New LaTeX releases occur at 6
+%%%     monthly intervals, and so your bug may be fixed in a later
+%%%     release.
+%%%
+%%%     Completed bug report forms should be submitted to:
+%%%     latex-bugs@uni-mainz.de
+%%%
+%%%  }
+%%% ====================================================================
+
+\ifcat{=
+
+\catcode`\{=1 \let\bgroup{
+\catcode`\}=2 \let\egroup}
+\catcode`\#=6 
+\catcode`\^=7
+\catcode`\@=11
+
+\newlinechar`\^^J
+\def\m@ne{-1 }
+\countdef\count@255
+
+\def\fmtname{INITEX}
+\def\fmtversion{9999/00/00}
+\def\space{ }
+\def\@spaces{\space\space\space\space}
+\let\@@end\end
+
+\chardef\msg15
+\immediate\openout\msg=\jobname.msg
+
+\expandafter\edef\csname newif\endcsname#1#2{%
+  \let\noexpand\ifinteractive
+    \expandafter\noexpand\csname iffalse\endcsname}
+
+\def\typeout{\immediate\write17}
+
+\def\two@digits#1{\ifnum#1<10 0\fi\number#1}
+
+\def\wmsg#1#{\bgroup\@wmsg}
+
+\else
+%%
+%% @ is a letter
+%%
+\catcode`\@=11
+
+%%
+%% Output stream to produce the bug report template.
+%%
+\newwrite\msg
+\immediate\openout\msg=\jobname.msg
+
+
+%%
+%% Check that LaTeX2e is being used.
+%%
+\ifx\undefined\newcommand
+ \newlinechar`\^^J%
+ \immediate\write17{^^J%
+    You must use LaTeX2e to generate the bug report!^^J^^J%
+    If there is a bug in the installation procedure,^^J%
+    and you can not create LaTeX2e, you may use initex^^J%
+    to generate the report}%
+
+ \let\relax\end
+\else
+\def\@tempa{LaTeX2e}\ifx\@tempa\fmtname\else
+ \immediate\write17{^^J%
+  Older Versions of LaTeX are no longer supported.^^J%
+  You must use LaTeX2e to generate the bug report!^^J^^J%
+  If there is a bug in the installation procedure,^^J%
+  and you can not create LaTeX2e, you may use initex^^J%
+  to generate the report}%
+ \let\relax\@@end
+\fi\fi
+
+%%
+%% \wmsg writes to the terminal, and the .msg file
+%% \wmsg* just writes to the .msg file
+%% \typeout just writes to the terminal
+%%
+
+\def\wmsg{\bgroup\@ifstar{\interactivefalse\@wmsg}\@wmsg}
+
+\fi
+
+\relax
+
+
+\def\@wmsg#1{%
+  \ifinteractive\immediate\write17{#1}\fi
+  \immediate\write\msg{#1}%
+  \egroup}
+
+
+%%
+%% if \interactivefalse just make a blank template.
+%%
+\newif\ifinteractive
+\interactivetrue
+
+
+%%%
+%%% For testing for blank lines.
+%%%
+\def\xpar{\par}
+
+
+%%
+%% Opening Banner.
+%%
+\typeout{^^J%
+============================================================^^J%
+^^J%
+LaTeX bug report generator^^J%
+==========================^^J%
+Processing this file with LaTeX will produce a template \jobname.msg^^J%
+for submitting bug reports for the LaTeX distribution.^^J%
+Please do not report bugs in other, non-standard, files to the^^J%
+latex-bugs address.^^J}
+
+\count@=0
+\ifinteractive
+\typeout{%
+Several categories of files are supported,^^J%
+corresponding to directories in the standard LaTeX distribution:^^J^^J
+0) base: \@spaces
+         The format itself, and the main classes such as `article'.^^J
+1) tools:\@spaces
+         Packages supported by the LaTeX3 project team.^^J
+2) graphics: 
+         The color and graphics packages.^^J
+3) mfnfss: \space\space
+         Packages for using MetaFont fonts with NFSS (ie LaTeX2e).^^J
+4) psnfss: \space\space
+         Packages for using PostScript fonts with NFSS (ie LaTeX2e).^^J
+5) amslatex:
+         Classes and Packages supported by the AMS.^^J
+6) babel:\@spaces
+         Packages supporting many different languages.^^J%
+}
+\message{Please select a category 0--6:  }
+\read\m@ne to \answer
+\count@=\answer
+\else
+\typeout{As you are using INITEX, I will assume category 0}
+\fi
+
+\ifcase\count@
+\wmsg{^^J>Category: latex}\or
+\wmsg{^^J>Category: tools}\or
+\wmsg{^^J>Category: graphics}\or
+\wmsg{^^J>Category: mfnfss}\or
+\wmsg{^^J>Category: psnfss}\or
+\wmsg{^^J>Category: amslatex}\or
+\wmsg{^^J>Category: babel}\else
+\errhelp{Quit with `x' and then re-start latexbug}
+\def\badcategory{Only categories 0,...,6 are supported at this time}
+\errmessage{\badcategory}
+\fi
+
+
+\typeout{%
+^^J%
+\ifinteractive
+This report generator may be used in one of two ways.^^J%
+If you choose the interactive option, you will be prompted to answer^^J%
+several questions. Otherwise a blank template will be created for^^J%
+you to fill in using your editor.^^J%
+\else
+INITEX should only be used for reporting bugs with the LaTeX2e^^J%
+installation procedure. If you have a working copy of LaTeX2e,^^J%
+please use that to generate the report.
+\fi}
+
+\ifinteractive
+\message{Interactive session (y/n) ? }
+\read\m@ne to \answer
+
+\ifx\answer\xpar
+   \def\answer{n}
+\fi
+
+%%
+%% Allow anything begining with `y' or `Y' for yes.
+%%
+\edef\answer{\uccode`\expandafter\@car\answer\@nil}
+\ifnum \answer=`Y \else\interactivefalse\fi
+\else
+\def\answer{`\N}
+\fi
+
+%%
+%% Header in the msg file.
+%%
+\wmsg*{^^J%
+ LaTeX2e bug report.^^J%
+\ifnum \answer=`Y Generated \else Template generated \fi
+ by latexbug.tex on \number\year/\two@digits\month/\two@digits\day^^J%
+ ============================================================}
+
+\ifinteractive
+%%
+%% if interactive, \wread reads a line (verbatim) and write it to the
+%% .msg file, until a blank line is entered.
+%%
+  \typeout{^^J%
+    The answer to each question may take several lines.^^J%
+    (Each line will be prompted by =>.)^^J%
+    Typing a blank line terminates the current answer.}
+  \def\wread{{\catcode`\^^I=12
+  \let\do\@makeother\dospecials
+  \message{=> }\read\m@ne to \answer
+  \ifx\answer\xpar\else
+    \immediate\write\msg{\answer}
+    \expandafter\wread
+  \fi}}
+\else
+%%
+%% If non-interactive, \wread just writes a blank line to the .msg file,
+%% and \wmsg does not write to the terminal.
+%%
+  \def\wread{\wmsg{}}
+\fi
+
+%%
+%% \copytomsg copies the contents of a file into the .msg file.
+%% (at least it does it as well as TeX can, so there may be
+%% transcription problems with 8-bit characters).
+%%
+
+\chardef\inputfile=15
+
+\def\copytomsg#1{{%
+   \def\do##1{\catcode`##1=11}%
+   \dospecials
+   \openin\inputfile#1
+   \@copytomsg
+   \closein\inputfile
+}}
+
+\def\@copytomsg{%
+   \ifeof\inputfile
+   \else
+      \read\inputfile to \inputline
+      \ifx\inputline\xpar
+         \wmsg*{}
+      \else
+         \wmsg*{\inputline}
+      \fi
+      \expandafter\@copytomsg
+   \fi
+}
+
+%% 
+%% \stripspaces...\endstripspaces strips space off the end of its
+%% argument. 
+%%
+
+\def\stripspaces#1 \endstripspaces{#1}
+
+%%
+%% Test which format is being used. These fields are completed
+%% automatically even if the blank template is being produced.
+%%
+\wmsg{^^J%
+Format:^^J%
+\expandafter\@secondoftwo\the\everyjob}
+
+%%
+%% Test the age of the current format.
+%%
+\def\getage#1/#2/#3\@nil{%
+  \count@\year
+  \advance\count@-#1\relax
+  \multiply\count@ by 12\relax
+  \advance\count@\month
+  \advance\count@-#2\relax}
+%
+\expandafter\getage\fmtversion\@nil
+%%
+%% \count@ should now be the age of the format in months.
+%%
+\ifnum\count@>12
+\def\oldformat{^^J%
+   ! Your LaTeX installation is more than one year old.^^J%
+   ! Please consider updating LaTeX before submitting this report.^^J%
+   ! At least check a current latex.bug file, to see if the bug^^J%
+   ! has been fixed in the current release.^^J%
+   !}
+%%
+%% Put the message in a macro to improve the look of the error mesage.
+%%
+
+\errhelp{If you still wish to complete the form, just type return.}
+\errmessage{\oldformat}
+\fi
+
+%%
+%% Three macros that vary their definitions betwen LaTeX installations.
+%%
+\wmsg*{^^J%
+TeX Version:^^J%
+\meaning\@TeXversion}
+
+\wmsg*{^^J%
+Current Directory Syntax:^^J%
+\meaning\@currdir}
+
+\wmsg*{^^J%
+Input Path:^^J%
+\meaning\input@path}
+
+
+%%
+%% Now just use \wmsg and \wread for each of the fields in the form.
+%%
+\wmsg{^^J%
+Your Name:}
+\wread
+
+\wmsg{^^J%
+Your Address (preferably email):}
+\wread
+
+\wmsg{^^J%
+Brief description of bug:}
+\wread
+
+\ifinteractive
+   \wmsg{^^J%
+      Name of a SHORT, SELF-CONTAINED file which indicates the problem:}
+   \message{=> }\read\m@ne to \filename
+\else
+   \def\filename{\par}
+\fi
+
+%% 
+%% Try to find the .tex file and .log file
+%%
+
+\ifx\filename\xpar
+
+\ifx\LaTeX\undefinedcommand\else
+
+\wmsg*{^^J%
+Sample file which indicates the problem:^^J%
+========================================^^J%
+^^J%
+The log file from running LaTeX on the sample:^^J%
+==============================================}
+
+\fi
+
+\else
+
+\wmsg*{\filename}
+
+\edef\filename{\expandafter\stripspaces\filename\endstripspaces}
+
+\filename@parse\filename
+
+\IfFileExists{\filename}{
+   \edef\samplefile{\filename}
+}{}
+
+\IfFileExists{\filename@area\filename@base.log}{
+   \edef\logfile{\filename@area\filename@base.log}
+}{
+   \IfFileExists{\filename@area\filename@base.lis}{
+      \edef\logfile{\filename@area\filename@base.lis}
+   }{}
+}
+
+
+%% 
+%% The example file goes here:
+%%
+
+\wmsg*{^^J%
+Sample file which indicates the problem:^^J%
+========================================}
+
+\ifx\samplefile\undefinedcommand
+   \typeout{^^J%
+      Sample file \filename not found.^^J%
+      Please edit \jobname.msg to include the sample file.}
+\else
+   \copytomsg{\samplefile}
+\fi
+
+
+%%
+%% The log file goes here:
+%%
+\wmsg*{^^J%
+The log file from running LaTeX on the sample:^^J%
+==============================================}
+
+\ifx\logfile\undefinedcommand
+   \typeout{^^J%
+      Log file \filename@area\filename@base.log not found.^^J%
+      Please edit \jobname.msg to include the log file.}
+\else
+   \copytomsg{\logfile}
+\fi
+
+\fi
+
+
+%%
+%% Closing Banner.
+%%
+\typeout{^^J%
+============================================================}
+
+\ifinteractive
+ \typeout{^^J%
+   You may wish to make further changes to the bug report file:^^J%
+   `\jobname.msg'^^J%
+   using your editor.}
+\else
+ \typeout{^^J%
+   A template for submitting bug reports has been left in the file:^^J%
+   \jobname.msg^^J%
+   Please use your editor to complete the file before submitting^^J%
+   your report.}
+\fi
+
+\let\ifinteractivetrue\iftrue
+\typeout{^^J%
+============================================================^^J%
+^^J%
+  If you have access to email, please send `\jobname.msg' to:^^J%
+  latex-bugs@uni-mainz.de^^J%
+^^J%
+  Thank you for taking the time to submit a bug report.^^J
+^^J%
+============================================================}
+
+\wmsg*{^^J%
+============================================================^^J
+^^J%
+   End of LaTeX2e bug report.^^J%
+^^J%
+============================================================}
+
+%%
+%% Close the .msg output stream.
+%%
+\immediate\closeout\msg
+
+%%
+%% This is the TeX primitive \end command.
+%%
+\@@end

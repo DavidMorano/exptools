@@ -1,0 +1,264 @@
+
+
+
+     pppprrrrmmmmssssgggg((((3333))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    pppprrrrmmmmssssgggg((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          prmsg - Print a formatted message.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"mmmmeeeessssssssaaaaggggeeee....hhhh""""
+
+          eeeexxxxtttteeeerrrrnnnn cccchhhhaaaarrrr ****pppprrrroooogggg;;;;
+
+          vvvvooooiiiidddd
+          pppprrrrmmmmssssgggg(((( mmmmssssggggttttyyyyppppeeee,,,, ffffoooorrrrmmmmaaaattttssssttttrrrr,,,, aaaarrrrggggssss,,,, ............ ))));;;;
+          iiiinnnntttt mmmmssssggggttttyyyyppppeeee;;;;
+          cccchhhhaaaarrrr ****ffffoooorrrrmmmmaaaattttssssttttrrrr;;;;
+          cccchhhhaaaarrrr ****aaaarrrrggggssss,,,, ............ ;;;;
+
+          char *
+          setmsgfmt( msgtype, msgformat )
+          int msgtype;
+          char *msgformat;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The pppprrrrmmmmssssgggg(((()))) routine prints the message given in _f_o_r_m_a_t_s_t_r
+          according to the type of message specified in _m_s_g_t_y_p_e.  The
+          _f_o_r_m_a_t_s_t_r may contain any formatting constructs recognized
+          by pppprrrriiiinnnnttttffff(3).  The _a_r_g_s will be used as needed, depending on
+          the format constructs in _f_o_r_m_a_t_s_t_r.
+
+          Normally, pppprrrrmmmmssssgggg() prints the message to ssssttttddddeeeerrrrrrrr or ssssttttddddoooouuuutttt.
+          However, the routine may be redefined within applications
+          with other needs, such as printing the messages to a window.
+
+          The external character pointer pppprrrroooogggg should be set by the
+          application to the name of the application.  This will be
+          used by pppprrrrmmmmssssgggg() in the printed message.
+
+          The sssseeeettttmmmmssssggggffffmmmmtttt() routine allows redefinition of the message
+          prefix for individual message types.  Each message is
+          normally preceded by the command name and a word or two
+          saying what type of message it is.  The default message
+          prefixes for each message type are explained below.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _m_s_g_t_y_p_e
+               The type of message to print.  This partially dictates
+               the format of the message and where the message will be
+               printed.  Except as noted, all messages are printed to
+               ssssttttrrrrddddeeeerrrrrrrr.  The recognized message types are defined
+               below, along with the default prefix for each message:
+
+               MSG_USAGE
+                    Print a usage message for the application.  The
+                    string ``USAGE: '' is printed, followed by the
+                    program name, the message, and a new-line.
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrmmmmssssgggg((((3333))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    pppprrrrmmmmssssgggg((((3333))))
+
+
+
+               MSG_NOTE
+                    The message is an informative or status message
+                    for the user; it does not represent an error
+                    message.  The message is printed to ssssttttddddoooouuuutttt.  The
+                    program name is printed, followed by ``: '', the
+                    message, and a new-line.
+
+               MSG_ERRNOTE
+                    The message is an informative or status message
+                    for the user, just like MSG_NOTE, but the message
+                    is printed to ssssttttddddeeeerrrrrrrr.  This can be used for
+                    messages within filters where ssssttttddddoooouuuutttt is used for
+                    data.  This is the default message type if _m_s_g_t_y_p_e
+                    is not recognized.
+
+               MSG_WARN
+                    The message reports a potential or non-serious
+                    error.  The program name is printed, followed by
+                    ``: WARNING: '', the message, and a new-line.
+
+               MSG_ALERT
+                    The message represents a non-fatal but potentially
+                    serious error.  The program name is printed,
+                    followed by ``: ALERT: '', the message, and a
+                    new-line.
+
+               MSG_ERROR
+                    The message represents a serious or fatal error.
+                    The program name is printed, followed by ``:
+                    ERROR:'', the message, and a new-line.
+
+               MSG_INTERNAL
+                    The message represents an error in the logic or
+                    internal workings of the application, e.g., errors
+                    that ``should not happen'' and array overflow.
+                    The program name is printed, followed by ``:
+                    INTERNAL ERROR: '', the message, and a new-line.
+
+               MSG_QUESTION
+                    The message is a prompt for a question.  The
+                    message routine does not collect input for the
+                    answer, however.  The program name is printed,
+                    followed by ``: '', the message, and a space.  No
+                    new-line is printed after the message.
+
+               MSG_DEBUG
+                    The message represents debugging information.  The
+                    program name is printed, followed by ``: DEBUG:
+                    '', the message, and a new-line.
+
+               MSG_ASIS
+                    Print only the message, exactly as is, to ssssttttddddoooouuuutttt.
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrmmmmssssgggg((((3333))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    pppprrrrmmmmssssgggg((((3333))))
+
+
+
+                    The program name is not printed as part of the
+                    message.  This is used for messages of a form not
+                    covered by the other message types.
+
+               MSG_ERRASIS
+                    This is equivalent to MSG_ASIS, but the message is
+                    printed on stderr.
+
+               The following flags may be OR'ed with any of the above
+               message types:
+
+               MSG_CONTINUE
+                    This flag may be passed in alone or with a message
+                    type.  If passed in without a message type, it
+                    indicates a continuation of whatever was the last
+                    type of message.  In this case a tab is printed
+                    and then the message.  If OR'ed with other message
+                    types this flag indicates that part of the message
+                    is still forthcoming in a subsequent call.  In
+                    this case a new-line is not printed at the end of
+                    the message.
+
+               MSG_INDENT(_n_u_m)
+                    Indent the message _n_u_m indentation levels.  An
+                    indentation level is four spaces.  This flag is
+                    useful in cases such as recursive calls, where the
+                    messages may be confusing or useless because the
+                    level of recursion is not known.
+
+          _f_o_r_m_a_t_s_t_r
+               The message string.  This must be in a form recognized
+               by pppprrrriiiinnnnttttffff(3).
+
+          _a_r_g_s, ...
+               The arguments useable by pppprrrriiiinnnnttttffff(3) according to the
+               formatting constructs in _f_o_r_m_a_t_s_t_r.
+
+          _m_s_g_f_o_r_m_a_t
+               The format of the message prefix for the given _m_s_g_t_y_p_e.
+               The _m_s_g_f_o_r_m_a_t must be in a form recognized by pppprrrriiiinnnnttttffff(3)
+               and may contain at most one ``%s'' construct (for the
+               command name).  No other formating constructs are
+               allowed.  The routine does not check for compliance of
+               this restriction.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Print an error message.
+
+               prmsg( MSG_ERROR, "There has been a fatal error on file %s", "filename" );
+
+          Assuming that pppprrrroooogggg is set to ``program'', the output from
+          this call would be
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrmmmmssssgggg((((3333))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    pppprrrrmmmmssssgggg((((3333))))
+
+
+
+               program: ERROR: There has been a fatal error on file filename
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          printf(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+

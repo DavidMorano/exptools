@@ -1,0 +1,1716 @@
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          nfed - new improved forms editor
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnnffffeeeedddd [----oooouuuuvvvvVVVVwwww] [----dddd ddddaaaattttaaaabbbbaaaasssseeee] [----MMMM cccc] [[----kkkk kkkkeeeeyyyy1111 [----kkkk kkkkeeeeyyyy2222] ... ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _N_f_e_d is an emacs-like editor which incorporates some of the
+          functions of both a full screen editor and of a relational
+          database management system.  Users interactively work on
+          sets of data, or tuples, which are visually displayed as
+          single forms, and which can be called up from a database,
+          reviewed, updated, and placed back into the database with a
+          minimum of effort, and without having to learn a complicated
+          set of query language rules.  Other operations that can be
+          performed on the database include inserting new forms
+          (tuples) and deleting old ones if desired.  _N_f_e_d is written
+          in the C programming language, and uses the curses screen
+          handling and optimization package to print information to
+          the user's terminal.  It therefore can be used with almost
+          any terminal type.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          Any combination of the following options may appear in any
+          order on the command line:
+
+          ----dddd ddddaaaattttaaaabbbbaaaasssseeee
+               Use the indicated data base file.
+               The name of the data base file can be supplied to _n_f_e_d
+               on the command line by using this option.  When this is
+               done, _n_f_e_d assumes that _d_a_t_a _b_a_s_e is the name of the
+               data base file that is to be used, and starts the
+               editing process directly without further prompting of
+               the user (unless the data base file does not exist).
+               It does not matter whether or not there is a space
+               between the "-d" and the "data base"; the command line
+               is interpreted correctly in either case.
+
+          ----kkkk kkkkeeeeyyyy
+               Use the indicated key.
+               A key is used to call up a particular tuple from the
+               data base.  The "-k" option allows the user to specify
+               the key(s) of the tuple to be edited on the command
+               line, so that he/she does not have to do this once in
+               the editor.  If more than one -k option is used on the
+               command line, then each succeeding key is used to fill
+               each of the key fields of the form before reading the
+               tuple.
+
+          ----MMMM cccc Use character 'c' instead of ESC for the M- key.
+               Normally, the ESC key on a user's terminal acts as the
+               meta- or M- key.  This option allows the user to change
+
+
+
+     Page 1                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+               the character which acts as the meta-key from ESC to
+               the character of his/her choice.
+
+          ----oooo   Start up in _o_v_e_r_w_r_i_t_e mode.
+               _N_f_e_d, by default, starts up in the _i_n_s_e_r_t mode of
+               operation; printable characters typed by the user will
+               be inserted just before the cursor in the field.  Using
+               "-o" option causes _n_f_e_d to begin operation in the
+               _o_v_e_r_w_r_i_t_e mode instead.  In this mode, the character
+               beneath the cursor's current position will be replaced
+               by any printable character typed by the user.
+
+          ----uuuu   Start up with all fields updatable.
+               As a safety feature, _n_f_e_d allows the user to specify
+               fields as being nonupdatable.  Normally, upon startup,
+               the user cannot modify these without issuing the "make
+               nonupdatable fields updatable" command.  The -u option
+               disables the protection feature so that nonupdatable
+               fields are updatable regardless of their declared
+               status in the data base file.
+
+          ----vvvv   Start up with auto-verify mode disabled.
+               As will be described later, fields can be checked for
+               syntactic validity against regular expressions as part
+               of the normal operation of _n_f_e_d. This is usually done
+               in the auto-verify mode of the program:  each time the
+               user attempts to leave a field of the tuple, the
+               contents of the field will be checked against the
+               stored list of regular expressions.  The "-v" option
+               disables this mode upon startup.
+
+          ----VVVV   Print which version of _n_f_e_d this is.
+
+          ----wwww   Start up in data base writable mode.
+               Another protection feature _n_f_e_d has involves data base
+               modification commands.  Upon startup, the "write tuple
+               to data base", "delete tuple from data base", and
+               "modify tuple in place in data base" commands are
+               disabled to prevent accidental modification.  Typically
+               the user would enable the commands while in the editor.
+               If the "-w" option is specified, these commands will be
+               enabled automatically, freeing the user of any need to
+               enable the commands himself.
+
+     OOOOVVVVEEEERRRRVVVVIIIIEEEEWWWW
+          _N_f_e_d operates by displaying a single data base tuple at a
+          time, in a format specified by a file supplied by the user.
+          The user is free to move the cursor around the screen, but
+          is allowed to modify only the parts of the screen
+          corresponding to data base tuple field entries.
+
+          While editing, _n_f_e_d checks the data being entered into the
+
+
+
+     Page 2                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          field against lists of regular expressions, also supplied by
+          the user.  Should the field being checked fail any of the
+          regular expression matches, the user is notified and the
+          cursor is placed on the character in the field at which the
+          regular expression first failed.  _N_f_e_d, while in this _a_u_t_o-
+          _v_e_r_i_f_y mode, will not allow the cursor to leave a field for
+          which the data is invalid (according to the regular
+          expression list for that field).
+
+          Once all desired changes have been made, the user can place
+          the tuple back in the data base, and perhaps call up another
+          one, to be displayed in the same format on the screen.  The
+          user also has the option of performing various other
+          manipulations on the data base.
+
+     NNNNFFFFEEEEDDDD''''SSSS FFFFIIIILLLLEEEESSSS
+          Using _n_f_e_d requires the existence of three files:  the _d_a_t_a
+          _b_a_s_e file, which can have any filename acceptable by
+          UNIX(Tm), the _d_e_s_c_r_i_p_t_o_r file, which conventionally ends
+          with a .desc suffix, and the _d_a_t_a _f_o_r_m_a_t file, usually
+          terminated by a .dfmt suffix.  It is not necessary for the
+          user to create these files; _n_f_e_d has built-in user
+          interfaces to create and maintain all files associated with
+          a form data base.
+
+        TTTThhhheeee DDDDaaaattttaaaa BBBBaaaasssseeee FFFFiiiilllleeee
+          The data base file is the central file to a particular data
+          base application, containing the data stored in the fields
+          of all forms in the data base.  It also contains (in the
+          first line) the complete pathnames of the descriptor and
+          data format files, and information determining whether or
+          not the data base has the history option turned on ("yes" or
+          "no").  It is important to note that the data base file
+          contains only the data from the form fields, and not the
+          form itself.  Normally, the user never need worry about the
+          internal structure of the data base file, since, as
+          mentioned above, _n_f_e_d creates and maintains the file.
+          However, it is helpful to know the format that _n_f_e_d uses for
+          the file should one decide to write a program which uses the
+          data stored there.  A typical example of this use might be a
+          program to convert an _n_f_e_d data base file to a form readable
+          by another data base management system, like INGRES or
+          UNITY.
+
+          DDDDaaaattttaaaa bbbbaaaasssseeee IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn LLLLiiiinnnneeee
+          For the following discussion, suppose that a data base file
+          was named "example" and contained the following information:
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+     example.desc example.dfmt yes
+     ^B111111111^EAlan Davis^F24^E IH^ENONE^E^E^T10/19/84 16:19:23^Va
+     ^B121212121^EEdward Johnson^F28^E IX^ENONE^E^ET10/19/84  16:15:13^Va
+     ^B999999999^EDave Jackson^F46^E IW^ENONE^E^E^T10/18/84  14:13:41^Va
+     ^B432109876^EJay Anderson^F36^E IH^ENONE^E^E^T10/17/84  22:50:18^Vd
+     ^B111111111^EJack Mitchell^F42^E IH^ENONE^E^E^T10/17/84  13:53:18^Va
+     ^B432109876^EJay Anderson^F36^E^ENONE^E^E^T10/16/84  12:24:15^Va
+     ^B121212121^EEdward Johnson^F44^E IX^ENONE^E^E^T10/15/84  15:10:33^Va
+     ^B^E^F^E^E^E^E^T10/14/84  11:33:46^Va
+
+
+          The first line of the data base file is the data base
+          information line, and it consists of three character strings
+          separated by spaces.  This line is read by _n_f_e_d upon startup
+          to determine the configuration under which the data base
+          file will operate.
+
+          The first string in the information line is the name of the
+          descriptor file to use for this data base.  By convention,
+          this filename should consist of the name of the data base
+          file appended with a ".desc"; the data base file in this
+          case is named "example" so that the descriptor file is named
+          "example.desc".
+
+          Second is the name of the data format file, which should end
+          with a ".dfmt".  The filename specified in this case is
+          "example.dfmt".
+
+          A string specifying whether _n_f_e_d should operate using the
+          history mechanism occurs last in the line.  The only valid
+          entries here are "yes" or "no."
+
+          DDDDaaaattttaaaa bbbbaaaasssseeee FFFFiiiilllleeee TTTTuuuupppplllleeeessss
+          The rest of the data base file consists of "tuples" (lines
+          or records of data), each containing the field data for one
+          entire form.  Tuples are not limited in size, since forms
+          can contain any number of fields.  The fields are stored in
+          the order that they are encountered in the descriptor file:
+          left to right, top to bottom.  At the end of each tuple is a
+          time stamp and a status character.
+
+          Data fields within each tuple are preceded by a control (non
+          printable) character which acts as a delimiter, and which
+          signifies to the program what kind of field the information
+          corresponds to.  The following table summarizes the
+          different control characters that can occur in the data base
+          file:
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+              ^A   updatable field, beginning of section
+              ^B   nonupdatable field, beginning of section
+              ^E   updatable field, not at beginning of section
+              ^F   nonupdatable field, not at beginning of section
+
+              ^T   time stamp of last update
+              ^V   field status marker
+
+
+          The concept of variable sectioned forms is not supported by
+          this version of _n_f_e_d. Thus the ^A and ^E, and the ^B and ^F
+          field delimiters mean the same things, respectively.  These
+          markers indicate whether the field data is to be displayed
+          as "nonupdatable" or as "updatable."  If a field is
+          "nonupdatable," then the user must issue a special command
+          (the "make nonupdatable fields updatable" command) before
+          _n_f_e_d will allow modifications to be made to that field.
+
+          The time stamp (following the ^T) indicates the time and
+          date the tuple was stored into the data base.  The time
+          stamp is always the second to last piece of information in a
+          tuple line.
+
+          Last is the field status, either an "a" for "active," or a
+          "d" for "deleted."  This character has meaning only if the
+          history option is enabled.
+
+        TTTThhhheeee DDDDeeeessssccccrrrriiiippppttttoooorrrr FFFFiiiilllleeee
+          The descriptor file is read by nfed at startup and contains
+          information describing how the form is to be layed-out or
+          displayed.  Which fields are key fields or protected fields
+          in the form are also specified in this file.  As a working
+          example, suppose a company wishes to use a form like the one
+          that follows to hold information about its employees:
+
+                              EMPLOYEE INFORMATION
+
+                      SSN _________
+                      NAME _____________________  AGE ____
+                      WORK LOCATION ____
+                      ADDRESS ____________________________
+                              ____________________
+                              ____________________
+
+          To set up this form for use with _n_f_e_d, one could use this
+          descriptor file:
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+                      key fields: 1,1
+                      nonupdatable fields: 1,1 1,3
+                      ^B
+
+                              EMPLOYEE INFORMATION
+
+                      SSN _________
+                      NAME _____________________  AGE ____
+                      WORK LOCATION ___
+                      ADDRESS ____________________________
+                              ____________________
+                              ____________________
+
+                      ^E
+
+          The information that _n_f_e_d gets from the file can be broken
+          down into four categories:  a list of fields to be treated
+          as key fields, a list of protected (nonupdatable) fields,
+          markings to specify the beginning and end of form sections,
+          and the body of the text, itself.
+
+          KKKKeeeeyyyy FFFFiiiieeeellllddddssss LLLLiiiinnnneeee
+          The first line of the descriptor file contains a list of the
+          key fields for this form.  To describe the purpose of a key
+          field, it is necessary to consider what happens when many of
+          these forms are present in a data base.  The user may wish
+          to call up a form for a particular employee, and to do so,
+          he/she will need to tell the computer which form he/she
+          wants.  A key field is a field that contains a key that is
+          used when searching the relational (form) data base for a
+          particular form.  In this example, the user could type the
+          social security number (SSN) of the employee in to identify
+          the desired form, and thus the SSN field of the form would
+          be the key field.  _N_f_e_d allows up to ten key fields, but in
+          this example only one will be used.
+
+          To tell _n_f_e_d which fields are key fields, the first line of
+          the descriptor file must contain the string "key fields:"
+          followed by a space, and up to ten entries consisting of a
+          section number, a comma, and a field number.  Both sections
+          and fields are numbered starting from "1", so the SSN field
+          is the first field in the first section and thus is
+          described by "1,1".  If the work location were also a key
+          field, it would be described by an entry of "1,4".  Note
+          that since variable sectioned forms are not yet supported,
+          all the fields in any form used by _n_f_e_d should be in
+          section 1.
+
+          NNNNoooonnnnuuuuppppddddaaaattttaaaabbbblllleeee FFFFiiiieeeellllddddssss LLLLiiiinnnneeee
+          The second line of the descriptor file lists the
+          nonupdatable fields in the form.  A nonupdatable field is a
+          field that cannot be changed by the user without his/her
+
+
+
+     Page 6                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          typing a special command.  Any field which contains
+          information that does not often change should be made
+          nonupdatable to protect it from accidental modification.  In
+          addition, key fields are commonly made nonupdatable so that
+          forms cannot accidentally be put back into the data base
+          with a different key.  If the user desires to insert a new
+          form into the data base, he/she must type a command to
+          enable editing of nonupdatable fields so that he/she can
+          enter a key into the key fields in this case.
+
+          _N_f_e_d allows up to ten nonupdatable fields to be specified.
+          In order for _n_f_e_d to know which fields are to be protected,
+          the second line of the descriptor file should contain the
+          phrase "nonupdatable fields:" followed by a space and then
+          by a list of the fields.  The SSN and AGE fields have been
+          made nonupdatable in the example used here.
+
+          FFFFoooorrrrmmmm SSSSeeeeccccttttiiiioooonnnnssss aaaannnndddd SSSSeeeeccccttttiiiioooonnnn MMMMaaaarrrrkkkkeeeerrrrssss
+          A form can be divided into sections, each simply a set of
+          consecutive lines.  One form has a maximum of ten non-
+          overlapping sections.  The beginning of each section is
+          marked by a control B (^B) in the first column of a blank
+          line.  Similarly, the end of each section is marked by a
+          control E (^E) in the first column of a blank line.  Only
+          the lines between the section markings are displayed as part
+          of the form, and sections are numbered starting from section
+          1.  As an example, the form in the example above contains
+          only one section, appropriately referred to as section 1.
+          In this version _n_f_e_d, the capability to divide a form into
+          sections is not utilized.  This capability will be used in
+          later versions of _n_f_e_d to implement the concept of variable
+          sectioned forms.  Therefore, it is advised (for now) that
+          the form be made into one section, as has been done in the
+          example.
+
+          Between the section beginning and ending markings (^B and
+          ^E) is the actual text of the form, exactly as it is to
+          appear on the user's terminal.  All printable characters are
+          allowed in this text, and tabs may also be used if desired.
+          Fields are specified by underscores (_) and can be from 1 to
+          80 characters in length.  A form can contain up to 100
+          fields.  The fields are the only part of the form that are
+          "editable" by _n_f_e_d.
+
+        TTTThhhheeee DDDDaaaattttaaaa FFFFoooorrrrmmmmaaaatttt FFFFiiiilllleeee
+          The third file that _n_f_e_d uses is the data format file.  The
+          purpose of the file is to specify, for each field in the
+          descriptor file, the proper "syntax" of data to be entered
+          there.  For instance, consider the SSN field in the example
+          form.  The only conceivable entry that could appear within a
+          social security field would consist of nine numbers in the
+          range of 0 through 9.  A common typographical error made is
+
+
+
+     Page 7                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          to substitute "l" (el) for "1" (one), and, on some terminals
+          and printers, the two are indistinguishable.  If this were
+          to happen in a key field of a form that was then inserted
+          into the data base, subsequent searches for the form using
+          the correct key would fail.  The form would seemingly
+          disappear.
+
+          It also may be desirable that other keying errors be
+          detected automatically, such as ensuring that WORK LOCATION
+          data is valid, or that information put in the AGE field
+          consists of a number between 0 and 99.
+
+          With these facts in mind, the data format file, itself
+          actually a mini data base, was created.  An example of a
+          data format file that would work with the present example is
+          shown below:
+
+       #
+       # Data Format File for Employee Information
+       #
+       1:3:Age must be of the form nn:[0-9 ][0-9]
+       1:1:SSN\: should be nine adjacent digits:[0-9]{1,}:[0-9]{9}
+       1:4:Work location must be 2-3 alphabetic characters:[a-zA-Z ]{1,}
+       1:4::[a-zA-Z ][a-zA-Z]{2}
+
+          CCCCoooommmmmmmmeeeennnntttt LLLLiiiinnnneeeessss
+          The first three lines of the example data format file are
+          comment lines.  Any line in the file which begins with a
+          pound sign (#) will be ignored.  Comment lines can occur
+          anywhere within the file.
+
+          DDDDaaaattttaaaa FFFFoooorrrrmmmmaaaatttt SSSSppppeeeecccciiiiffffiiiiccccaaaattttiiiioooonnnn LLLLiiiinnnneeeessss
+          Any line that is not a comment line is a _d_a_t_a _f_o_r_m_a_t
+          _s_p_e_c_i_f_i_c_a_t_i_o_n line, giving _n_f_e_d some information on the data
+          expected for one particular field.  Each line consists of a
+          minimum of four areas that are separated by colons.
+
+          SSSSppppeeeecccciiiiffffiiiiccccaaaattttiiiioooonnnn LLLLiiiinnnneeee -------- SSSSeeeeccccttttiiiioooonnnn NNNNuuuummmmbbbbeeeerrrr
+          The first area of a data format specification line should
+          contain the section number for the field.  Since variable
+          sectioned forms have not yet been implemented, in this
+          version of _n_f_e_d the number appearing here will usually be 1,
+          as in the example.
+
+          SSSSppppeeeecccciiiiffffiiiiccccaaaattttiiiioooonnnn LLLLiiiinnnneeee -------- FFFFiiiieeeelllldddd NNNNuuuummmmbbbbeeeerrrr
+          Following the section number is a colon, and then another
+          number which corresponds to the field number that this line
+          is for.  The section number and the field number uniquely
+          identify one field in the entire form that the line
+          corresponds to.  As an example, the first non comment line
+          in the sample data format file specify section 1, field 3:
+          the AGE field in the form.
+
+
+
+     Page 8                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          SSSSppppeeeecccciiiiffffiiiiccccaaaattttiiiioooonnnn LLLLiiiinnnneeee -------- EEEErrrrrrrroooorrrr MMMMeeeessssssssaaaaggggeeee
+          The third area in the line is a string of characters that
+          are printed when _n_f_e_d notices that the data input by the
+          user in the field is incorrect.  Since many messages might
+          contain the colon character (:), it can be included as part
+          of the error message by preceding it with a backslash, as is
+          done in the second non comment line.  A backslash followed
+          by a colon is, in fact, the only special character sequence
+          recognized by _n_f_e_d in the data format file; backslashes
+          which are not followed by a colon are treated as normal
+          characters.  Also, the sequence is special only in the error
+          message area of the data format specification lines (e.g.
+          between the second and third separating colons).
+
+          RRRReeeegggguuuullllaaaarrrr EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss
+          Following the error message is a series of colon-separated
+          "regular expressions," just like those used in editors like
+          ed and sed.  These regular expressions follow the form
+          specified by regcmp(3x) in the UNIX(Tm) System V
+          Programmer's Manual.  Each time the syntax of a field is
+          checked, it is compared to the regular expressions listed
+          for the field in the order that they are listed.  If any
+          comparison fails, the cursor moves to the first character
+          which does not satisfy the regular expression in that
+          comparison.
+
+          There must be one or more regular expressions at the end of
+          each line, but there is no upper limit for the number of
+          expressions supplied, other than the line length limit of
+          500 characters.  An example of multiple regular expressions
+          is shown in the entry for section 1, field 1 in the sample
+          data format file.
+
+          DDDDaaaattttaaaa FFFFoooorrrrmmmmaaaatttt SSSSppppeeeecccciiiiffffiiiiccccaaaattttiiiioooonnnn EEEExxxxtttteeeennnnssssiiiioooonnnn LLLLiiiinnnneeeessss
+          If more regular expressions are desired than can fit on one
+          line, then another line can be used with the same section
+          and field number.  The regular expressions for that line is
+          added to those of the first, and the error message from the
+          first occurrence of a data format specification line is
+          used.  An example of distributing the regular expressions
+          over several lines can be seen in the WORK LOCATION entries
+          in the data format file in the example data format file.
+          Note that the first line for section 1, field 4 contains the
+          error message, but that the next line, specifying the same
+          field, contains an empty location for the error message.
+
+          CCCChhhhoooooooossssiiiinnnngggg tttthhhheeee pppprrrrooooppppeeeerrrr eeeerrrrrrrroooorrrr mmmmeeeessssssssaaaaggggeeeessss
+          Care should be taken when choosing error messages.  An error
+          message like "invalid syntax" is too obscure to be of much
+          use to someone entering data into a form.  The best messages
+          mention the name of the field in the form that it
+          corresponds to, and the format that is expected in the
+
+
+
+     Page 9                                          (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          field.  A much better message would be something like "Age
+          must be of the form nn".
+
+          The reason for this is that nfed, by default, starts up in
+          "auto-verify" mode.  In this mode, _n_f_e_d checks for proper
+          syntax of the data entered into a field every time the user
+          tries to leave the bounds of that field, so it is obvious to
+          which field an error message, printed at the bottom of the
+          screen, corresponds.  However, a command exists which
+          verifies the syntax of all fields in the form.  _N_f_e_d, to
+          display the results, clears the screen and prints the
+          current contents of invalid fields followed by the error
+          message for the field.  No visual cue is provided in this
+          case to associate an error message with its field.
+
+          CCCChhhhoooooooossssiiiinnnngggg PPPPrrrrooooppppeeeerrrr RRRReeeegggguuuullllaaaarrrr EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss As the syntax checking
+          ability of _n_f_e_d was being developed, it became apparent that
+          since more than one regular expression could be used to test
+          a field, the regular expressions used and, especially, the
+          order in which they occurred, had a great impact on how well
+          the checking worked.  _N_f_e_d traverses the list of regular
+          expressions in the order in which they are supplied in the
+          data format file.  When a problem is detected, the program
+          tries to place the cursor on the first character that causes
+          the regular expression comparison to fail.  Success depends
+          on the regular expression list specified.
+
+          For example, "[0-9]{9}" only matches exactly nine numeric
+          characters, and always causes the cursor to be put on the
+          first character of the field should a syntax comparison
+          fail.  An expression like "[0-9]{1,}", however, matches more
+          than one numeric character, and causes _n_f_e_d to place the
+          cursor on the first non-numeric character appearing after
+          the first numeric character (the expression is not tied to
+          the beginning of the field with a ^).  Of course the problem
+          with this format is that the user could enter non numeric
+          characters followed by less than nine numeric characters.
+          The solution for complete syntax checking for a nine digit
+          numeric field would be to test against "[0-9]{1,}" followed
+          by "[0-9]{9}".  This is exactly the specification used for
+          the social security number field in the example data format
+          file.
+
+     RRRRUUUUNNNNTTTTIIIIMMMMEEEE OOOOPPPPEEEERRRRAAAATTTTIIIIOOOONNNN OOOOFFFF NNNNFFFFEEEEDDDD
+          The following sections describe how to invoke and run the
+          forms editor in detail.  There are four functional areas of
+          operation to consider:  starting up new form data bases,
+          editing the tuples in a form data base, editing the syntax
+          checking information, and setting or clearing boolean
+          operation parameters.
+
+
+
+
+
+     Page 10                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+        SSSSttttaaaarrrrttttiiiinnnngggg NNNNeeeewwww DDDDaaaattttaaaa BBBBaaaasssseeeessss
+          _N_f_e_d is invoked simply by typing "nfed."  The program asks
+          for the name of the data base file, and, if the form data
+          base specified by the user is already set up, _n_f_e_d is then
+          ready for forms editing.
+
+          In order for _n_f_e_d to work properly, the descriptor, data
+          format, and data base files must exist.  It is not
+          necessary, however, for the user to create them before
+          invoking nfed.  If _n_f_e_d discovers that the data base file
+          specified by the user is not present in the current working
+          directory, a series of questions will be asked to lead the
+          user through creating all of the files necessary for proper
+          operation.  This lead-through technique makes it very easy
+          to set up a brand new data base file; no file preparation is
+          needed before typing "nfed."
+
+          The sequence of steps to set up a new form data base is as
+          follows:
+
+          1.   The user types "nfed" from his/her login shell.  It is
+               not necessary to supply any command line arguments,
+               since the program asks for all necessary information.
+
+          2.   The first prompt to appear is "Enter data base file
+               name:".  The user types in the name that he/she wishes
+               the data base file to have, using standard UNIX(Tm)
+               file name rules.  For the data base file shown in
+               Figure 4, "example" would be a good choice.
+
+          3.    _N_f_e_d now checks to see if the data base file exists.
+               Upon finding that it does not, the program diverges
+               from the normal operation sequence to begin the lead-
+               through script.  Had the data base file existed (such
+               as would be the case if the user were editing a
+               previously created data base) _n_f_e_d would have begun
+               editing immediately.
+
+          4.   The user is now asked if he/she wants to create a new
+               data base with the message "Do you want to create an
+               entirely new data base? (y/n)".  The purpose of asking
+               this question is to make sure that the user really
+               wants to create a new data base, and did not just
+               accidentally misspell the name of an existing data base
+               file.
+
+          5.    _N_f_e_d now asks for the name of the descriptor file with
+               the prompt "Enter descriptor file name:".  If the user
+               responds with a carriage return, a default file name
+               consisting of the name of the data base file name
+               appended with a ".desc" is used.
+
+
+
+
+     Page 11                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          6.   After the descriptor file name has been input, _n_f_e_d
+               asks for the name of the data format file with a
+               similar prompt.  Again, the user can select the default
+               string of ".dfmt" tacked onto the data base file name
+               by responding to the question with a carriage return.
+
+          7.   The next prompt which is "Enter history option (yes or
+               no):"  asks the user to select whether he/she wants the
+               data base to use the history mechanism.
+
+          8.   At this point, _n_f_e_d has the name of all of the files,
+               but the files do not actually exist.  The first file to
+               be created is the descriptor file.  _N_f_e_d copies a
+               template file into the current directory and executes,
+               in a subshell, the editor specified by the EDITOR shell
+               environment variable.  If this variable is not set,
+               then ed(1) is used.  The user should create the
+               descriptor file according to the format discussed
+               above, writing it back to the same filename that the
+               editor was given.
+
+          9.    _N_f_e_d now creates the data format and data base files
+               without any need for user intervention.  The data base
+               file at this point contains only the data base
+               information line, since no tuples have been saved into
+               the new form data base.  The data format file is still
+               empty at this point, and no syntax checking is set up.
+
+          10.  Normal forms editing begins.
+
+        EEEEddddiiiittttiiiinnnngggg TTTTuuuupppplllleeeessss iiiinnnn tttthhhheeee FFFFoooorrrrmmmm DDDDaaaattttaaaa
+          When _n_f_e_d is in its editing mode of operation, there are two
+          forms in which the user can issue commands.  First, the user
+          can invoke a _f_u_n_c_t_i_o_n to perform editing operations such as
+          moving the cursor, or adding or deleting characters.
+          Functions may also toggle boolean operation parameters.  A
+          function consists of a single control character, or of the
+          escape key followed by a printable character.
+
+          Second, the user can execute a _c_o_m_m_a_n_d, which may operate on
+          data base tuples, quit the editor, read a form, or allow
+          other macroscopic operations.  Commands are invoked by
+          pressing the escape key twice.  The "command:" prompt will
+          appear at the bottom of the screen, at which the user should
+          type in the desired command.
+
+          In the listing of the available functions and commands,
+          below, the escape key is denoted by "M-" and control
+          characters, such as CTRL-B are listed as "^B".  Function
+          keys F1 through F8 may be used by _n_f_e_d and are listed as
+          "F1".  If several possibilities, separated by commas, are
+          listed as the keystrokes to invoke a function or a command,
+
+
+
+     Page 12                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          then any one of the sequences listed can be used.
+
+          FFFFuuuunnnnccccttttiiiioooonnnnssss
+          The following functions are provided by _n_f_e_d:
+
+          ^^^^aaaa   Move the cursor to the first character in the current
+               field.  This function causes no syntax checking, since
+               it can never move the cursor out of the current field.
+
+          ^^^^bbbb,,,, FFFF6666
+               Move cursor one position to the left.  If the cursor is
+               at the beginning of the field, and if auto-verify mode
+               is enabled, syntax checking is done on the field before
+               the cursor is moved out of the field.
+
+          ^^^^cccc   Clear the data in all the fields in the form.  A side
+               effect of this command is that nonupdatable fields that
+               have previously been made updatable are again made
+               nonupdatable.
+
+          ^^^^dddd   Delete the character at the current cursor position
+               (applies only to a character in a field).  If the
+               cursor is currently in a field, the character that the
+               cursor is resting on is deleted and the characters to
+               the right of the cursor are shifted left to take its
+               place.
+
+          ^^^^eeee   Move cursor to the end of the current field.  Note that
+               since a character typed in the last position of the
+               field causes the cursor to move to the next field,
+               executing this function and typing a character has a
+               net result of moving the cursor to the beginning of the
+               next field.
+
+          ^^^^ffff,,,, FFFF7777
+               Move the cursor to the right one space (if that
+               position is on the form).  Should this function result
+               in the cursor leaving a field while auto-verify mode is
+               enabled, the syntax of that field is checked before the
+               function is performed.  Note that it is not possible to
+               move the cursor beyond the bounds of the form itself.
+
+          ^^^^hhhh   Delete the character to the left of the cursor and move
+               cursor to that position (if that character is in a
+               field).  This function is an erasing backspace.
+
+          ^^^^kkkk   Delete all characters in the current field at and to
+               the right of the cursor.  This function can be used to
+               quickly clear the current field without modifying any
+               other field in the form.
+
+
+
+
+
+     Page 13                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          ^^^^llll   (Control-Lower Case L) Refresh the screen.  This
+               function is useful if some other process writes to your
+               terminal, or if the terminal is not exactly recognized
+               by curses(3x).  The screen is cleared, and the form is
+               redrawn.
+
+          ^^^^mmmm,,,, FFFF8888
+               Move cursor down one line in the same column.  This
+               function is helpful for moving the cursor directly to a
+               different field without having to go through all the
+               fields in between.  Note that if auto-verify mode is
+               enabled and if the cursor is in a field of the form
+               when the function is requested, _n_f_e_d checks the syntax
+               of the current field before allowing the cursor to be
+               moved.  When editing in _n_f_e_d, typing a carriage return
+               is the same (on most terminals) as typing this
+               function.
+
+          ^^^^nnnn,,,, FFFF4444,,,, TTTTaaaabbbb
+               Move cursor to the next field.  As with the '^p'
+               function, this is one of the general movement
+               functions.  Note that this function is automatically
+               invoked when a character is typed in the last position
+               of any field, so that the user can type data without
+               having to type a '^n' between fields.  If auto-verify
+               mode is enabled, the syntax of the current field is
+               verified before the cursor is allowed to leave the
+               field.
+
+          ^^^^pppp,,,, FFFF3333
+               Move the cursor to the first character of the _p_r_e_v_i_o_u_s
+               field.  This is one of the general movement commands of
+               _n_f_e_d. If auto-verify mode is enabled, then the syntax
+               of the current field is verified before the cursor is
+               allowed to leave the field.
+
+          ^^^^rrrr   Toggle between insert mode and overwrite mode.  When
+               insert mode is on, printable characters are inserted
+               into the field, if the cursor is on a field.  The
+               characters under and to the right of the cursor are
+               bumped one space to the right, and characters at the
+               end of the field are lost.  When overwrite mode is
+               enabled, printable characters will overwrite the
+               existing characters in the field.
+
+          ^^^^uuuu,,,, FFFF5555
+               Move the cursor up one line in the same column.  This
+               is the counterpart to the '^m' command, and allows the
+               user to move the cursor to another field without having
+               to go through all of the fields in between.  If auto-
+               verify mode is enabled, the syntax of the current field
+               is checked before the cursor is moved out of the field.
+
+
+
+     Page 14                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          ^^^^vvvv   Move down and display the next page.  This function has
+               exactly the same effect as its counterpart in the emacs
+               editor.  Syntax checking is done if the cursor is in a
+               field and if auto-verify mode is enabled.
+
+          MMMM----aaaa  Move the cursor to the left-most position on the screen
+               in the current line.  Syntax checking is performed on
+               the current field if auto-verify mode is enabled.
+
+          MMMM----eeee  Move cursor to the right-most position on the screen in
+               the current line.  This command, used to quickly move
+               the cursor to completely different part of the form
+               without going through all of the fields in between,
+               causes syntax checking on the current field if auto-
+               verify mode is enabled.
+
+          MMMM----hhhh  Move cursor to the first character in the first key
+               field.  This is useful since it provides a way to go
+               directly to the first key field without having to know
+               which fields are designated key fields.  Syntax
+               checking is performed on the current field if auto-
+               verify mode is enabled.
+
+          MMMM----HHHH,,,, FFFF1111
+               Move cursor to the home position of the form (the upper
+               left-hand corner).  Syntax checking is done on the
+               current field before the cursor is moved if auto-verify
+               mode is enabled.
+
+          MMMM----vvvv  Move up and display one page.  This is analogous to the
+               same command in the emacs editor.  Syntax checking
+               applies if the function moves the cursor out of the
+               current field and if auto-verify mode is enabled.
+
+          MMMM----VVVV  Verify the data as having been entered correctly in the
+               current field.  This function allows the user to check
+               the syntax of a field without having to use auto-verify
+               mode.  The syntax of the current field is checked
+               against the regular expression list for the field, and
+               the error message is printed at the bottom of the
+               screen if the field data fails.  Additionally, the
+               cursor moves to the first character in the field that
+               failed the syntax verification.  When auto-verify mode
+               is enabled, this function is invoked every time any
+               other function tries to move the cursor out of the
+               current field.
+
+
+
+
+
+
+
+
+
+     Page 15                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          MMMM----MMMM----,,,, FFFF2222
+               Enter the command mode.  This function, invoked by
+               typing the "escape" key twice, causes the prompt
+               "command: " to appear at the bottom of the screen.  The
+               user then types one of the available commands
+               (described in the next section) terminated by a
+               carriage return.
+
+          CCCCoooommmmmmmmaaaannnnddddssss
+          This subsection contains a summary of the commands provided
+          by _n_f_e_d. Commands are defined as editor options that provide
+          miscellaneous features such as data base manipulation,
+          escaping to the shell, help, entering the syntax editor, and
+          exiting the forms editor.  To enter the command mode, type
+          "M-M-" (the escape key twice).
+
+          The following commands are provided by _n_f_e_d:
+
+          !!!!ccccmmmmdddd Escape to the shell and execute the command _c_m_d. This
+               command clears the screen and executes a single shell
+               command.  After the command is done, _n_f_e_d prompts the
+               user to type a carriage return to continue normal
+               editing.
+
+          !!!!    Invoke an interactive subshell to work in.  When the
+               user types a single exclamation point after the
+               "command: " prompt, the screen is cleared and an
+               interactive subshell is immediately executed.  _N_f_e_d
+               changes the user's prompt for this shell to remind
+               him/her that he/she is still executing the forms
+               editor.  Of course, the same effect is produced by
+               typing "!sh", but the single exclamation point version
+               of the command executes the user's preferred shell (as
+               specified by the SHELL environment variable) by
+               default.  Also, because of the way that the subshell is
+               created, "!" is _m_u_c_h faster than "!sh" in general.
+
+          dddd    Delete the current form in the data base file (if the
+               delete command is enabled).  If the data base is using
+               the history mechanism, then the form is marked as
+               deleted (by changing the form status character to a
+               'd'), but it is not actually removed from the data base
+               and still can be retrieved by editing the data base
+               file and changing the 'd' back to an 'a'.  If the data
+               base is not using the history mechanism, then the tuple
+               corresponding to the form is actually removed from the
+               data base file and is gone forever.  Note that the
+               delete command is disabled upon entering _n_f_e_d, and can
+               be enabled with the 'W' command.
+
+
+
+
+
+
+     Page 16                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          ffff    Print current data base file name.  There is currently
+               no function or command available to print the current
+               descriptor file name or data format file name.  To do
+               this the user should use shell commands to look at the
+               first line of the data base file.
+
+          hhhh,,,, ???? List all valid functions and commands.  This is the
+               "help" command.  All valid functions and commands are
+               listed in a paged format; typing any character serves
+               to display the next page.
+
+          mmmm    Modify the data base tuples in place.  This command
+               overrides the history option by removing a data base
+               tuple and replacing it with the current version of the
+               form data.
+
+          pppp_f_i_l_e_n_a_m_e
+               Print the current form and data to the file called
+               _f_i_l_e_n_a_m_e. The resulting file can be printed (hard
+               copied) to a file just as it appears on the terminal.
+               This is the basic form of _n_f_e_d'_s output.
+
+          qqqq,,,, QQQQ Quit and exit _n_f_e_d. If the form currently displayed on
+               the screen has been modified since the last time it was
+               written into the data base file, this command prints an
+               error message rather than quitting.  To quit without
+               writing the form to the file, the 'q!' command is
+               provided, below.
+
+          qqqq!!!!,,,, QQQQ!!!!
+               Quit and exit _n_f_e_d without writing to data base.  This
+               command allows the user to exit _n_f_e_d without saving the
+               changes he/she has made to the current form into the
+               data base file.  As a protection feature, the user must
+               answer "yes" to another question which asks if he/she
+               is sure he/she wants to execute this command.
+
+          rrrr_n   Read the _n_t_h level form from the data base ( _n, which
+               is optional, must be an integer).  If _n = 1 or if _n is
+               not supplied, the most recent version of the form is
+               read.  If _n > 1, the (n-1)th most recent version is
+               read, if it exists.
+
+          ssssyyyynnnnttttaaaaxxxx
+               Enter the syntax editor.  This command is used for
+               editing the syntax information for the field on which
+               the cursor is current located.  The syntax editor is
+               entered displaying the error message and the first
+               regular expression in the regular expression list for
+               the field.  If the field has no syntax checking
+               information associated with it, then there will be no
+               "RE number: " and no regular expression or error
+
+
+
+     Page 17                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+               message is displayed.  A new regular expression can be
+               added in this case using the "Add new regular
+               expression BEFORE this one" or "Add new regular
+               expression AFTER this one" selections from the syntax
+               editor menu.
+
+          tttt    Print out the current form's last update time.
+
+          uuuu    Allow nonupdatable fields to be updated.  When _n_f_e_d
+               begins editing, fields that are designated nonupdatable
+               in the data base file are displayed on most terminals
+               without underlining the field data, while fields that
+               are updatable are displayed with the data underlined.
+               This command makes all fields updatable (temporarily),
+               so that editing can take place in the nonupdatable
+               fields.  Every time a new form is read or all the
+               fields are cleared with the '^c' function, the
+               nonupdatable fields are again made nonupdatable.
+
+          vvvv    Toggle auto-verify mode.  If auto-verify is enabled
+               before this command is executed, then the command
+               disables it.  Invoking the command when auto-verify
+               mode is disabled causes the mode to be enabled.  In
+               auto-verify mode, a syntax check will be performed on
+               the current field every time a function or command is
+               executed which would result in the cursor's leaving
+               that field.
+
+          VVVV    Verify all the fields in this entire form as being
+               correctly entered.  This command is a bulk verification
+               of the form.  If all of the fields satisfy syntax
+               requirements, then a message appears at the bottom of
+               the screen stating so.  If one or more fields fail the
+               syntax verification, the screen is cleared and the
+               contents of the fields along with the error messages
+               defined for the fields are displayed in a paged format.
+
+          wwww    Write the data from the current form to the data base
+               (if the write command is enabled).  This command pushes
+               the form onto the data base file stack of tuples if the
+               history option is enabled.  If the data base file is
+               not using the history mechanism, the tuple
+               corresponding to the form is removed and replaced by
+               the version currently displayed on the screen.  This
+               command is disabled upon first entering _n_f_e_d, and can
+               be enabled with the 'W' command.
+
+          WWWW    Toggle the write/delete/modify command enable flag (for
+               enabling and disabling the "write," "delete," and
+               "modify" commands).  _N_f_e_d,
+                by default, disables the "write," "delete," and
+               "modify" commands when it is invoked.  This command
+
+
+
+     Page 18                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+               enables them if they are disabled, and disables them if
+               they are enabled.
+
+          zzzz    Write everything and quit.  This command writes the
+               currently displayed tuple to the data base file if it
+               has been changed, writes the current syntax checking
+               information to the data format file if any syntax
+               checking changes have been made, and then exits.  The
+               command will operate only if the write/delete/modify
+               commands are enabled.
+
+        EEEEddddiiiittttiiiinnnngggg SSSSyyyynnnnttttaaaaxxxx CCCChhhheeeecccckkkkiiiinnnngggg IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn
+          Once the user is editing the form data base, syntax checking
+          becomes active.  It is never necessary to edit the data
+          format file explicitly, since _n_f_e_d is equipped with a user
+          interface called the "syntax editor" which is used to update
+          the regular expressions and error messages for each field.
+          To get into the syntax editor, the user moves the cursor
+          into the field for which the syntax checking information is
+          to be changed.  He/she then enters the command mode and
+          types "syntax", and syntax editing has begun.
+
+          Shown in the following figure is an example screen that
+          would be displayed if the user were to move the cursor to
+          the social security number field of the example form and
+          enter the syntax editor.
+
+         Section:__1__     Field:__1__     RE number:__1__
+
+         Error Message:
+
+         _S_o_c_i_a_l__s_e_c_u_r_i_t_y__n_u_m_b_e_r_s_:__s_h_o_u_l_d__b_e__n_i_n_e__a_d_j_a_c_e_n_t__d_i_g_i_t_s
+
+         Regular Expression:
+         _[_0_-_9_]_{_1_,_}
+
+
+         MENU:
+         1: Move to previous reg. exp.   6: Add new exp. AFTER this one
+         2: Move to next reg. exp.       7: Delete this reg. exp.
+         3: Edit this error message      8: Delete all info for field
+         4: Edit this reg. exp.          9: Save to data format file
+         5: Add new exp. BEFORE this     0: Return to NFED
+
+
+          SSSSttttaaaattttuuuussss LLLLiiiinnnneeee
+          The top line of the syntax editor screen is a status line,
+          and displays the section and field numbers of the field for
+          which syntax editing is currently being performed.  At the
+          far right of the top line is a number indicating which
+          regular expression is displayed in the list of regular
+          expressions for the field.  If the first regular expression
+
+
+
+     Page 19                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          for the field is currently on the screen, then a "1" appears
+          in this place.  The second regular expression is denoted by
+          a "2" in this field, and so on.  In this case, the social
+          security number field is section 1, field 1, and the first
+          regular expression is being displayed.
+
+          EEEErrrrrrrroooorrrr MMMMeeeessssssssaaaaggggeeee
+          Below the status line is the error message currently defined
+          for the field.  This is the message printed out when _n_f_e_d
+          discovers that the data entered into a field is incorrect.
+          This message is allocated only one line on the screen since
+          error messages in excess of 80 characters are not allowed.
+          Note that the error message in Figure 7 matches the error
+          message specified for the social security field in the data
+          format file.
+
+          RRRReeeegggguuuullllaaaarrrr EEEExxxxpppprrrreeeessssssssiiiioooonnnn
+          Displayed below the error message is one of the regular
+          expressions in the regular expression list.  Only one
+          regular expression, which can be up to 500 characters in
+          length, is displayed at any one time, and the location that
+          it occurs in the list of regular expressions for the field
+          is displayed on the status line, as mentioned.  In the
+          screen shown here, the first regular expression is being
+          displayed in the list of two regular expressions for this
+          field.
+
+          MMMMeeeennnnuuuu ooooffff OOOOppppeeeerrrraaaattttiiiioooonnnnssss
+          Finally is a menu of operations that the syntax editor can
+          perform.  When a number is pressed, the action is performed
+          immediately; the user is not required to press a carriage
+          return to perform any action.
+
+          The commands given in the menu are self explanatory, but a
+          few notes are in order concerning some of the options that
+          are available.
+
+          If the user decides to "Edit this error message," the error
+          message currently displayed is copied into a temporary file,
+          and the user's favorite editor (specified by the EDITOR
+          shell environment variable) is invoked in a subshell, much
+          as is done when the descriptor file is first created.  Upon
+          exiting the editor, _n_f_e_d reads the message from the
+          temporary file, replacing the current message.
+
+          When a regular expression is created or edited using
+          choices 4, 5, or 6, however, another screen (not shown) is
+          displayed giving the user a choice of what he/she wants to
+          do to the regular expression.  There are several pre-
+          generated regular expressions to choose from, and the option
+          to enter the text editor is also provided, under selection
+          "c" in the sub-menu.
+
+
+
+     Page 20                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          It is also helpful to know that when a field has no regular
+          expressions listed, operation 4, "edit this regular
+          expression," is not valid.  To add a new regular expression
+          to a field which does not have any, either of selections 5
+          or 6 can be used.
+
+          SSSSaaaavvvviiiinnnngggg tttthhhheeee UUUUppppddddaaaatttteeeedddd SSSSyyyynnnnttttaaaaxxxx IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn
+          A final note is that none of the modifications made to the
+          syntax checking information while in the syntax editor are
+          actually saved in the data format file until the user types
+          selection 9, "Save changes to data format file."  It is not
+          necessary to save the changes each time the syntax editor is
+          invoked since _n_f_e_d stores these in an internal data
+          structure, but they should be saved using this menu
+          selection before invoking the quit command to exit _n_f_e_d
+          entirely.
+
+        BBBBoooooooolllleeeeaaaannnn OOOOppppeeeerrrraaaattttiiiioooonnnn PPPPaaaarrrraaaammmmeeeetttteeeerrrrssss
+          A boolean operation parameter describes how the program acts
+          under certain circumstances.  There are four parameters
+          which can be modified while running _n_f_e_d using either a
+          function or a command, and a fifth which cannot be modified
+          except by editing the data format file.
+
+          IIIInnnnsssseeeerrrrtttt////OOOOvvvveeeerrrrwwwwrrrriiiitttteeee MMMMooooddddeeeessss
+          When the user wishes to modify information in a field of a
+          particular form (data base tuple), he/she moves the cursor
+          to that field and begins to type printable characters.  If
+          _n_f_e_d is in _i_n_s_e_r_t mode, then as each character is typed, it
+          is inserted just to the left of the cursor, and the
+          characters underneath and to the right of the cursor are
+          moved to the right one space to make room.  The character on
+          the far right end of the field is discarded.
+
+          Inserting characters may be inconvenient for some
+          applications, so the user has the option of specifying that
+          he/she wishes characters to be added in the _o_v_e_r_w_r_i_t_e mode,
+          instead.  Here, as a printable character is typed, it
+          replaces the character directly underneath the cursor, and
+          the cursor is moved one space to the right.
+
+          The default mode of operation is the insert mode, unless the
+          user invokes _n_f_e_d using the ----oooo option.  In addition, the
+          function invoked by typing ^^^^rrrr will toggle between insert and
+          overwrite mode.
+
+          NNNNoooonnnnuuuuppppddddaaaattttaaaabbbblllleeee FFFFiiiieeeellllddddssss UUUUppppddddaaaattttaaaabbbblllleeee////NNNNoooonnnnuuuuppppddddaaaattttaaaabbbblllleeee MMMMooooddddeeeessss
+          As a protection feature, _n_f_e_d allows users to specify
+          specific fields within a form to be "nonupdatable" (see the
+          section on the data base file).  Normally, each time the
+          editor reads a form (tuple) from the data base file, all
+          fields listed as nonupdatable will appear without an
+
+
+
+     Page 21                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          underline, and the user will not be allowed to put the
+          cursor in such fields.  This is the _n_o_n_u_p_d_a_t_a_b_l_e _f_i_e_l_d_s
+          _n_o_n_u_p_d_a_t_a_b_l_e mode.
+
+          In order to enter data into the fields marked nonupdatable,
+          it is necessary to put _n_f_e_d into the _n_o_n_u_p_d_a_t_a_b_l_e _f_i_e_l_d_s
+          _u_p_d_a_t_a_b_l_e mode.  In this mode, the nonupdatable fields act
+          just like normal fields.
+
+          The default is nonupdatable fields nonupdatable mode.  By
+          using the MMMM----MMMM----uuuu command sequence, the user can temporarily
+          make nonupdatable fields updatable.  This lasts until the
+          form is written, or until a new form is read from the form
+          data base.  If the user wishes to make the nonupdatable
+          fields updatable at all times, he/she can specify the ----uuuu
+          option on the command line.  This option is especially
+          helpful if it is necessary to enter many new forms at once.
+
+          AAAAuuuuttttoooo----VVVVeeeerrrriiiiffffyyyy MMMMooooddddeeee
+          Normally, syntax checking is performed automatically as the
+          user modifies data in to the fields of a form.  Each time
+          he/she invokes a function or a command which attempts to
+          move the cursor out of a field, the syntax of the data in
+          the field is checked using the regular expression list for
+          that field.  If the syntax fails any of the regular
+          expression matches then the error message is printed at the
+          bottom of the screen and the cursor is moved to the first
+          character in the field for which the data was incorrect.
+          This is the _a_u_t_o-_v_e_r_i_f_y _o_n mode of operation.  If, the user
+          does not wish to verify each field as the cursor passes
+          through it, he/she can disable this mode.
+
+          The default for this mode is for auto-verify to be turned
+          on.  The ----vvvv flag causes _n_f_e_d to begin operation with auto-
+          verify mode disabled, and the command MMMM----MMMM----vvvv typed at runtime
+          toggles the boolean parameter between on and off.
+
+          WWWWrrrriiiitttteeee////DDDDeeeelllleeeetttteeee////MMMMooooddddiiiiffffyyyy CCCCoooommmmmmmmaaaannnnddddssss OOOOnnnn////OOOOffffffff MMMMooooddddeeeessss
+          Another protection feature offered by _n_f_e_d is embodied in
+          disabling commands which change the existing data base file.
+          In this way, the user is required to consciously determine
+          that he/she really does wish to change the data base; he/she
+          must issue a specific command which makes the database
+          writable.  When the database is not writable, _n_f_e_d is in the
+          _w_r_i_t_e/_d_e_l_e_t_e/_m_o_d_i_f_y _c_o_m_m_a_n_d_s _d_i_s_a_b_l_e_d mode.  Any attempts to
+          modify the data base file will fail while in this mode.
+
+          Upon startup, the default mode is "write/delete/modify
+          commands disabled."  However, if the ----wwww flag is used on the
+          command line invoking _n_f_e_d, the program will begin operation
+          in the "write/delete/modify commands enabled" mode.  In
+          addition, typing the MMMM----MMMM----WWWW command to _n_f_e_d will toggle the
+
+
+
+     Page 22                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          sense of the mode during runtime.
+
+          TTTThhhheeee HHHHiiiissssttttoooorrrryyyy OOOOppppttttiiiioooonnnn
+          The boolean operation parameter of _n_f_e_d which cannot be
+          changed using a command line argument or during runtime is
+          the history option, enabled or disabled by the presence of a
+          "yes" or a "no", respectively, in the data base information
+          line of the data base file.
+
+          With the history mechanism enabled, tuples, once stored in
+          the data base, are never removed.  If a tuple is updated,
+          the original tuple is left untouched and the updated version
+          is stored at the beginning of the data base file with a new
+          time stamp containing the time it was stored into the data
+          base.  The tuples portion of the data base file can,
+          therefore, be thought of as a form of pushdown stack.  This
+          allows a history of all previous form modifications to be
+          kept in the data base, as well as the most up-to-date
+          versions.
+
+          When _n_f_e_d searches the data base program for a particular
+          form, it starts at the beginning of the file until the form
+          is found or until the End Of File (EOF) is encountered.  By
+          doing this, the program always finds the most up-to-date
+          version of the form.  If desired, however, nfed can search
+          for older versions of a form, if they exist.  Even forms
+          marked as deleted can be accessed.
+
+          Since tuples are never removed from the data base with
+          history enabled, _n_f_e_d provides a way of "deleting" them,
+          which, in this case, actually just makes them invisible
+          while running the program.  When the user wishes to delete a
+          tuple, he/she uses the delete command to mark the status of
+          the form as deleted by making the field status character a
+          "d".  If, at a later time, someone attempts to access the
+          form, a message is displayed indicating that the form has
+          been deleted.  Any form which has not been deleted remains
+          "active," and has an "a" for the field status character.
+
+          If the history option is disabled for a data base file, then
+          all tuples stored therein are marked as active, since
+          deleted forms are actually removed from the data base.
+          Furthermore, updated tuples are modified "in place" so that
+          only one copy of each form exists in the data base at any
+          one time.  Now, instead of a pushdown stack, the data forms
+          an unsorted heap of distinct records.
+
+          When deciding whether or not to use the history option, the
+          user must make a tradeoff between memory efficiency and data
+          base reliability.  Without the history option, a minimum of
+          mass storage is needed to store large data bases, since each
+          tuple is only recorded once.  There is very little
+
+
+
+     Page 23                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+          duplication of data for most applications.  Enabling the
+          history option, however, provides great data security.  No
+          data can be lost since every tuple that was ever saved still
+          exists in the data base file.  The user should decide which
+          form of _n_f_e_d best suits his/her needs.
+
+     SSSSHHHHEEEELLLLLLLL VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          _N_f_e_d recognizes some shell variables which may be set and
+          exported.
+
+          If the SSSSHHHHEEEELLLLLLLL environment variable is available to _n_f_e_d, then
+          whenever the user requests a subshell, or issues a system
+          command to be executed, the shell indicated by the variable
+          is used for this purpose.  If the variable is not available,
+          then the default shell is /bin/sh.
+
+          If the EEEEDDDDIIIITTTTOOOORRRR environment variable is set and exported, then
+          the indicated text editor will be used for such operations
+          as setting up the descriptor file in the start-up sequence,
+          editing the error message in the syntax editor, and editing
+          the regular expressions in the syntax editor.  The default
+          editor to use is /bin/ed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 24                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+     FFFFUUUUNNNNCCCCTTTTIIIIOOOONNNN////CCCCOOOOMMMMMMMMAAAANNNNDDDD SSSSUUUUMMMMMMMMAAAARRRRYYYY
+          The following table is provided as a one page summary of the
+          command line options, functions, and commands for _n_f_e_d.
+
+          FFFFUUUUNNNNCCCCTTTTIIIIOOOONNNN      KKKKEEEEYYYY((((ssss))))        DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+          BACKFIELD     ^p, F3        Move to start of previous field
+          CLEAR         ^c            Clear all fields
+          COMMAND       M-M-, F2      Enter command mode
+          DELETE        ^d            Delete character in field at cursor
+          DOWN          ^m, F8, cr    Move down one line
+          DOWN_PAGE     ^v            Move down a page
+          END_FIELD     ^e            Move to end of current field
+          END_LINE      M-e           Move to rightmost screen position
+          FIRST_KEY     M-h           Move to first key field
+          HOME          M-H, F1       Move to home position of form
+          INSERT        ^r            Toggle insert mode between on and off
+          KILL          ^k            Kill portion of field right of cursor
+          LEFT          ^b, F6        Move one space left
+          LEFTDELETE    ^h            Left delete character
+          NEXTFIELD     ^n, F4, Tab   Move to start of next field
+          REFRESH       ^l            Refresh screen (CTRL-Lower case L)
+          RIGHT         ^f, F7        Move right one space
+          START_FIELD   ^a            Move to beginning of current field
+          START_LINE    M-a           Move to leftmost screen position
+          UP_PAGE       M-v           Move up a page
+          UP            ^u, F5        Move up one line
+          VERIFY_FIELD  M-V           Verify syntax of this field
+
+
+          CCCCOOOOMMMMMMMMAAAANNNNDDDD        KKKKEEEEYYYY((((ssss))))     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+          ESCAPE         !          Escape to a subshell
+          ESCAPE         !cmd       Execute a command
+          HELP           ?, h       List valid functions and commands
+          LIST_FILE      f          Print current data base file
+          MODIFY         m          Update tuple in place
+          PRINT_FORM     p[file]    Print form to file
+          PROT_DISABLE   u          Allow nonupdatable fields to be updated
+          QUIT           q, Q       Quit and exit _n_f_e_d
+          QUIT           q!, Q!     Quit and exit _n_f_e_d without writing
+          READ           r[i]       Read [i] level form from data base
+          SYNTAX_EDIT    syntax     Enter the syntax editor
+          TUP_DELETE     d          Mark form as deleted in data base
+          UP_TIME        t          Print form's last update time
+          WRITE          w          Write form to data base
+          WRITE_OK       W          Toggle "data base writable" mode
+          WRITEQUIT      z          Write everything and quit
+          VERIFY_FORM    V          Verify syntax on entire form
+          VERIFY         v          Toggle auto verify
+
+
+
+
+
+     Page 25                                         (printed 2/19/88)
+
+
+
+
+
+
+     NNNNFFFFEEEEDDDD((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              NNNNFFFFEEEEDDDD((((1111))))
+
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ed(1), FE, regcmp(3X).
+
+     FFFFIIIILLLLEEEESSSS
+          Feel free to copy these data base files into your directory
+          as working examples.  The first set of three files
+          corresponds to the example used in this manual.  The second
+          set of three files represents another sample data base.
+
+          $TOOLS/lib/nfed/example               Example data base file #1
+          $TOOLS/lib/nfed/example.desc          Example descriptor file #1
+          $TOOLS/lib/nfed/example.dfmt          Example data format file #1
+
+          $TOOLS/lib/nfed/test                  Example data base file #2
+          $TOOLS/lib/nfed/test.desc             Example descriptor file #2
+          $TOOLS/lib/nfed/test.dfmt             Example data format file #2
+
+     BBBBUUUUGGGGSSSS
+          Please mail any gripes, bugs, or comments to Bryan R. Davies
+          at ihlpy!bdavies.
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+          B. R. Davies
+          D. B. Richards
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Bryan R. Davies
+          IH 4E-323 x3669
+          ihlpy!bdavies
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 26                                         (printed 2/19/88)
+
+
+

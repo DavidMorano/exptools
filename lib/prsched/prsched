@@ -1,0 +1,515 @@
+# %Z%sched/src/prsched.sh %M% %I% %D% %T%
+# Source File:
+#	prsched.sh
+#
+Helpinfo='
+# Description:
+# 
+# ----------------------------------------------------------------
+# | prsched (print schedule) converts ASCII agendas to a lively  |
+# | graphical timeline/bar presentation.                         |
+# ----------------------------------------------------------------
+# prsched prints all the days in your agenda file of a full month. 
+# The timebars shown are those scheduled from 08:00 till 20:00 hours.
+# Whenever there is an activity a certain day, the timebar
+# will be printed between the start and end time of the activity.
+# The activity itself is printed in the bar. Activities falling
+# outside the 08:00 till 20:00 window will be printed underneath
+# the agenda.
+# 
+# prsched accepts a straight forward ASCII file fully described
+# in the manual page. You can get a taste of the prsched output right
+# now:
+#       prtfmt -Z ~exptools/lib/prsched/prsched.troff | xproof
+#
+# prsched output consists of pic source and may for example be
+# processed by prtfmt. prsched produces its output onto standard out.
+#
+# Usage:
+#	prsched [ -HVnf ] [ -s <scale> ] [ -t <macros> ] {<schedfile>|-}
+#
+# Arguments:
+#	<schedfile>	Schedfiles day, week, and month are
+#			accepted. See the manual page for the file
+#			specification.
+#	-		Reading from standard input.
+#
+# Options:
+#	-H		Prints header of this file.
+#	-V		Return version identification.
+#	-n 		Put the numbered activities etc. on next page
+#	-f 		Suppress filling of the out of hours and special boxes.
+#	   		Might be necessary for some printer types.
+#	-s <scale> 	Scale the box part (default 100%).
+#	           	Note: >100 means a smaller box.
+#	-t <macros> 	User defined top of page macros. Use any number
+#	            	of -t options to specify more than one macro.
+#
+# Exit codes:
+#	0		Normal return
+#	1		Syntax error
+#
+# Example:
+#	prsched w19911008
+#	prsched -s 85 -t ".P" -t ".de TP" -t "\\\\&" -t ".." w19911008
+#	sched -p | prsched | prtfmt -K"TOPMARGIN -.6"
+#'
+# Change History:
+#	911113 - PRBnono - psanders
+#		 Add -f option for simple printers.
+#	911030 - PRBnono - psanders
+#		 The status is now printed in front of the text iso
+#		 behind.
+#	911008 - PRBnono - psanders
+#		 First release.
+
+
+# Set local variables
+
+Usage="Usage: prsched [ -HVnf ] [ -s <scale> ] [ -t <macro> ] {<schedfile> | -}
+Use -H option for help"
+Versid="1.2 (911113)"
+
+Scale=100
+while getopts :HVs:St:nf i  2>/dev/null	# Get options
+do
+	case $i in
+	H)	echo "${Helpinfo}"; exit 0;;
+	V)	echo "`basename ${0}`: ${Versid}"; exit 0;;
+	f)	SimPrin=True ;;
+	n)	TextNewPage=True ;; 
+	S)	Silent=True ;; 
+	s)	Scale=$OPTARG;; 
+	t)	if [ -z "$Top" ] 
+		then
+		  Top="$OPTARG"
+		else
+	  	  Top="${Top}
+$OPTARG"
+		fi ;;
+	\?)	echo "${Usage}" >&2; exit 1;;
+	esac
+done
+
+shift `expr $OPTIND - 1`
+
+
+# Check presence of argument
+
+input=file
+Tmp=/usr/tmp/Sched$$
+if [ $# -eq 0 ]
+then
+	set -- '-'
+	Input=stdin
+fi
+Progname=${0:-"prsched"}
+
+trap '[ "${Schedfile}" != "-" -a "${Schedfile}" != "${Tmp}" ] && /bin/rm -f ${Tmp}' 0 1 2 3 15
+
+for Schedfile in $*
+do
+
+if [ ${Schedfile} = '-' ]
+then
+  cat ${Schedfile} > ${Tmp}
+else
+  Tmp=${Schedfile}
+fi
+
+if [ ! -s "${Tmp}" -a "${Schedfile}" != '-' ]
+then
+  echo "${Progname%%/}: $Schedfile not existent" >&2
+  continue
+fi
+
+echo '\n.nr N 4'
+[ -n "${Top}" ] && echo "${Top}"
+cat <<%
+.nf
+.PS
+scale=${Scale}
+box ht 604 wid 640 with .sw at 0,95
+line from 641,685 to 641,95
+"\\f(HB\\s10\\\&Sched\\f1\\s0" at 295,675 ljust
+.ta .6iR
+%
+
+if [ "${Silent}" != True ]
+then
+  #
+  # I rather put this in a file than haveing a data dir. laying around
+  #
+  cat <<//
+"\f(HB\s10\&10\f1\s0" at 160,602 ljust
+"\f(HB\s10\&11\f1\s0" at 208,602 ljust
+"\f(HB\s10\&12\f1\s0" at 256,602 ljust
+"\f(HB\s10\&13\f1\s0" at 304,602 ljust
+"\f(HB\s10\&14\f1\s0" at 352,602 ljust
+"\f(HB\s10\&15\f1\s0" at 400,602 ljust
+"\f(HB\s10\&16\f1\s0" at 448,602 ljust
+"\f(HB\s10\&17\f1\s0" at 496,602 ljust
+"\f(HB\s10\&18\f1\s0" at 544,602 ljust
+"\f(HB\s10\&8\f1\s0" at 64,602 ljust
+"\f(HB\s10\&9\f1\s0" at 112,602 ljust
+line  from 0,112 to 640,112 
+line  from 0,128 to 640,128 
+line  from 0,144 to 640,144 
+line  from 0,160 to 640,160 
+line  from 0,176 to 640,176 
+line  from 0,192 to 640,192 
+line  from 0,208 to 640,208 
+line  from 0,224 to 640,224 
+line  from 0,240 to 640,240 
+line  from 0,256 to 640,256 
+line  from 0,272 to 640,272 
+line  from 0,288 to 640,288 
+line  from 0,304 to 640,304 
+line  from 0,320 to 640,320 
+line  from 0,336 to 640,336 
+line  from 0,352 to 640,352 
+line  from 0,368 to 640,368 
+line  from 0,384 to 640,384 
+line  from 0,400 to 640,400 
+line  from 0,416 to 640,416 
+line  from 0,432 to 640,432 
+line  from 0,448 to 640,448 
+line  from 0,464 to 640,464 
+line  from 0,480 to 640,480 
+line  from 0,496 to 640,496 
+line  from 0,512 to 640,512 
+line  from 0,528 to 640,528 
+line  from 0,544 to 640,544 
+line  from 0,560 to 640,560 
+line  from 0,576 to 640,576 
+line  from 0,592 to 640,592 
+line  from 112,592 to 112,96 dotted
+line  from 160,592 to 160,96 dotted
+line  from 208,592 to 208,96 dotted
+line  from 256,592 to 256,96 dotted
+line  from 304,592 to 304,96 dotted
+line  from 352,592 to 352,96 dotted
+line  from 400,592 to 400,96 dotted
+line  from 448,592 to 448,96 dotted
+line  from 496,592 to 496,96 dotted
+line  from 544,592 to 544,96 dotted
+line  from 592,592 to 592,96 dotted
+line  from 64,592 to 64,96 dotted
+line from 12,94 to 641,94
+//
+fi
+
+#
+# This is how I'm called
+#
+Ema="`uname -n 2>/dev/null`"
+Logn="`logname 2>/dev/null`"
+Myname="`pq -o'%^first\\ %^middle\\ %^middle2\\ %^last' ema=${Ema}!${Logn} 2>/dev/null`"
+Myname=${Myname:-`logname 2>/dev/null`}
+datum="`date +'%y/%m/%d\\ %T'`"
+
+#
+# Get a legible date
+#
+sed -n -e 's/^\([A-Z].. \) \([0-9]\{4\}\)-\([0-9]\{2\}\)-..*/\3 \2/p' \
+  ${Tmp} |
+  tail -1 |
+  sed -e 's/^01/January/' \
+      -e 's/^02/February/' \
+      -e 's/^03/March/' \
+      -e 's/^04/April/' \
+      -e 's/^05/May/' \
+      -e 's/^06/June/' \
+      -e 's/^07/July/' \
+      -e 's/^08/August/' \
+      -e 's/^09/September/' \
+      -e 's/^10/October/' \
+      -e 's/^11/November/' \
+      -e 's/^12/December/'\
+      -e 's/^/\"\\f(HB\\s10\\\&/' \
+      -e 's/$/\\f1\\s0\" at 270,654 ljust/'
+
+echo '"\\fH\s6\\&'${datum}'\\f1\s0" at  622,644 rjust'
+echo '"\\fH\s6\\&'${Myname}'\\f1\s0" at 622,634 rjust'
+
+#
+# Make sed convert the date
+# 1991-10-08 to 10-08
+#
+sed -e '/^$/d' \
+    -e '/^\([A-Z].. \) \([0-9]\{4\}-\)\([0-9]\{2\}-..\)/{
+       s/^\([A-Z].. \) \([0-9]\{4\}-\)\([0-9]\{2\}-..\)/\1\3/
+    }' \
+    -e 's/[ ]*$//' \
+    ${Tmp}  |
+    awk 'BEGIN{
+      MinUur=8      # Minimum Time showed
+      MaxUur=20     # Max time showed
+      Act_boxH=12   # Activity Box heigth
+      Xas_date=6    # Date X-position
+      Yas_date=583  # Date X-position 1 of the month 
+      Yas_box=590   # Date Y-position 1 of the month
+      Ddistance=16  # Y-distance between the days
+      EightXpos=64  # Here starts X position 8-oclock activity box
+      EightYpos=583 # Here starts Y position 8-oclock activity box
+      Udistance=48  # X-distance between the hours
+      LettersPhr=12 # Largest number of letters in a box per Hour.
+      MaxXbox=640   # Largest possible X pixeldistance
+      MaxYbox=624   # Largest possible Y pixeldistance
+      OutCnt=0      # Out of working hours counter
+      TooBigCnt=0   # Number of activities not fitting into a box
+      alphabet="abcdefghijklmnopqrstuvwxyz" # Small Boxes out/hours have letters
+      Alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ" # Small Note Boxes have letters
+      NoteCnt=0             # Count the number of notes.
+      Quarter=16            # 16 Minutes for a note
+      WhiteFill="fill 1"    # This box is not see thru
+      SeeThroughFill=""     # This box is see thru
+      MarkedFill="fill .95" # This box is dark
+      Marked="MARKED"
+      Markedtext=""
+      NoteFill="fill .87"   # This box is darker still
+      EmptyStatus=" "       # Status field is empty (may be PGCW)
+      DefBox="Default"      # The default box.
+      Notebox="Note"        # A Note.
+      OutHrsBox="Partlyprintable"   # The Boxes that cannot be shown fully 
+    }
+    { # Reset filled boxes for those poor suckers that use poor
+      # printers such as x9700. 
+      if ( SimplePrinter == "True" ) {
+	Markedtext="MARKED"
+	NoteFill=""           # This box is darker still (on a good printer)
+        MarkedFill=""         # This box is dark (on a good printer)
+      }
+    }
+
+    /^[A-Z][a-z][a-z] /{  # Found the date print left of table
+      Day=0+substr($2,4,2)
+      WeekDay=$1
+      MMDD=$2
+      if ( $1 ~ /Sat/ || $1 ~ /Sun/ )
+        print "\"\\fH\\s8\\&" $1 "	" substr($2,4) " \\f1\\s0\" at " Xas_date "," Yas_date-((Day-1)*Ddistance) " ljust"
+      else
+        print "\"\\f(HB\\s8\\&" $1 "	" substr($2,4) " \\f1\\s0\" at " Xas_date "," Yas_date-((Day-1)*Ddistance) " ljust"
+
+      if ( $3 == Marked ) {
+	Itismarked="True"
+	printf"box %s ht %d wid %d \"\\s-4\\fH%s\\fP\\s0\" with .nw at %d,%d\n", \
+	MarkedFill, Act_boxH, MaxXbox - EightXpos - 2, Markedtext,  \
+	EightXpos + 1, Yas_box-((Day-1)*Ddistance)
+      } else {
+	Itismarked="False"
+      }
+    }
+
+
+    /^   .....-...../{ # Time notation found
+      #
+      # Convert time to a box with activity in it if possible
+      # Get Status & Text belonging to activity
+      #
+      Act_text=substr($0,18)
+      Status=substr($0,16,1)
+      #if ( Status != EmptyStatus )
+        #Act_text="[" Status "]^"  Act_text # Add status of meeting
+      #else
+        #Act_text="^"  Act_text # empty status
+
+      Tijdrange=substr($0, 4, 12)
+      Ustart=0+substr(Tijdrange,1,2); Mstart=0+substr(Tijdrange,4,2)
+      Uend=0+substr(Tijdrange,7,2);   Mend=0+substr(Tijdrange,10,2)
+
+      Boxtype=DefBox
+
+      if (Tijdrange ~ /^[0-9].[\.:]..-[ ]*$/ ) {
+	# Only one time set.
+	Boxtype=Notebox
+	Uend=Ustart
+	Mend=Mstart + Quarter
+	if ( Mend > 60 ) {
+	  Mend = (Mend % 60)
+	  ++Uend
+	}
+      } else {
+        if (Tijdrange ~ /^[ ]*-[0-9].[\.:]..$/ ) { 
+	  Boxtype=Notebox
+	  Ustart=Uend
+	  Mstart=Mend
+	  Mend=Mstart + Quarter
+	  if ( Mend > 60 ) {
+	    Mend = (Mend % 60)
+	    ++Uend
+	  }
+	} else {
+	  if ( Tijdrange ~ /^[ ]*-[ ]*$/ ) {
+	    Boxtype=Notebox
+	    # No time specified for this note
+	    if ( UstartNote[MMDD] == 0 ) 
+	      MstartNote[MMDD] = MstartNote[MMDD] #dont add quarter first time round
+	    else 
+	      MstartNote[MMDD] = MstartNote[MMDD] + Quarter
+
+	    UstartNote[MMDD] = MaxUur - 2
+	    if ( MstartNote > 60 ) {
+	      MstartNote[MMDD] = (MstartNote[MMDD] % 60) + Quarter
+	      ++Ustart
+	    }
+	    UendNote[MMDD]   = UstartNote[MMDD] + 0
+	    MendNote[MMDD]   = MstartNote[MMDD] + Quarter
+	    if ( Mend > 60 ) {
+	      Mend = (MendNote[MMDD] % 60) + Quarter
+	      MendNote[MMDD] = Mend
+	      ++Uend
+	    }
+	    Ustart = UstartNote[MMDD] + 0
+	    Mstart = MstartNote[MMDD] + 0
+	    Uend   = UendNote[MMDD] + 0
+	    Mend   = MendNote[MMDD] + 0
+	  }
+	}
+      }
+
+
+
+      NoBox="False"
+      if ( Ustart < MinUur ) {
+        # Too Early to print start of box
+	Ustart=MinUur
+	Mstart=0;
+	Boxtype=OutHrsBox
+      } else {
+	if ( Ustart > (MaxUur-1) ){
+	  # Too late to print the whole box
+	  NoBox="True"
+	  Uend=MaxUur # Forceer MaxUur zodat er geen box geprint wordt
+	  Mend=0      # Forceer 0 zodat er geen box geprint wordt
+	  Boxtype=OutHrsBox # We want it in the list
+	}
+      }
+       
+      if ( ( Uend + Mend/60 ) <= MinUur ){
+	NoBox="True"
+	Boxtype=OutHrsBox
+      } else {
+	if ( (Uend+Mend/60) > MaxUur) {
+	  # Too Late to print the end of box
+	  Uend=MaxUur
+	  Mend=0
+	  Boxtype=OutHrsBox
+	}
+      }
+
+
+      Boxline=""
+      Filling=WhiteFill
+      #
+      # Convert Hours to pixelpostions
+      #
+      XboxStart=(Ustart-MinUur)*Udistance+EightXpos + (Mstart*Udistance/60)
+      XboxEnd=(Uend-MinUur)*Udistance+EightXpos     + (Mend*Udistance/60)
+
+      Boxlen=XboxEnd - XboxStart - 2
+      if ( length( Act_text ) < ( Boxlen * LettersPhr / Udistance ) ) {
+	#
+	# The text fits in the box! Great
+	#
+	if ( Status != EmptyStatus )
+	  Boxstring=Act_text " [" Status "]"
+	else
+	  Boxstring=Act_text # empty status
+
+	if ( Boxtype == OutHrsBox ) {
+          OutofHrs[ ++OutCnt ]=WeekDay "^" MMDD "^" Tijdrange "^"Status"^" Act_text
+	  Boxline="dashed"
+	  Filling=SeeThroughFill
+	}
+	# Remember that notes never fit in a box. (they are 15 min long)
+      }
+      else {
+	#
+	# The box is too small to print the text in
+	# Or there is no box at all to print the text in
+	# print a letter in it instead
+	#
+	if ( Boxtype == OutHrsBox ) {
+	  # Not everything of the box can be printed.
+	  # Sometimes the whole box cannot be printed (box falls betwee
+	  # 20.00 and 08.00 oclock
+	  Boxline="dashed"
+	  Boxstring=substr(alphabet,++OutCnt,1)
+	  OutofHrs[ OutCnt ]=WeekDay "^" MMDD "^" Tijdrange "^" Status"^"Act_text
+	} else {
+	  if ( Boxtype == Notebox ) {
+	    Boxline="dashed"
+	    Filling=NoteFill
+	    Boxstring=substr(Alphabet,++NoteCnt,1)
+	    Note[ NoteCnt ]=WeekDay "^" MMDD "^" Tijdrange "^" Status"^"Act_text
+	  }
+	  if ( Boxtype == DefBox ) {
+	    # Het boxje is te klein om de text er in te printen
+	    # print er een cijfer in.
+	    Boxstring=++TooBigCnt
+	    Smallbox[ TooBigCnt ]=WeekDay "^" MMDD "^" Tijdrange "^" Status"^"Act_text
+	  }
+	}
+      }
+      #
+      # We can only print boxes between 08.00 and 20.00 hours
+      #
+      if ( NoBox != "True" )
+	printf"box %s %s ht %d wid %d \"\\s-4\\fH%s\\fP\\s0\" with .nw at %d,%d\n", \
+	Filling,   Boxline,       Act_boxH,    Boxlen, \
+	Boxstring, XboxStart + 1, Yas_box-((Day-1)*Ddistance)
+
+    }
+    END{
+      print ".PE"
+      print ".ta 6.3iR"
+      print "\\s-2\\fH"
+      print ".vs 5"
+      print ".fi"
+      if ( nextpagelist == "True" )
+	print ".SK"
+      print ".vs 10"
+      if ( TooBigCnt > 0  ) {
+	print ".TS"
+	print "tab(^);"
+	print "lUw(.8c) s1 s s s s"
+	print "rU lUw(.5c) lU cUw(1.7c)  1 cUw(.7c) 1 lU."
+	printf"\\f(HBNumbered Activities\\fP\n"
+        for ( c=1; c <= TooBigCnt; c++){
+	  printf"%d^%s\n",c, Smallbox[ c ]
+	}
+	print ".TE"
+      }
+      if ( OutCnt > 0 ) {
+	print ".sp"
+	print ".TS"
+	print "tab(^);"
+	print "lUw(.8c) s1 s s s s"
+	print "rU lUw(.5c) lU cUw(1.7c) 1 cUw(.7c) 1 lU."
+	printf"\\f(HBOut of Working Hours\\fP\n"
+        for ( c=1; c <= OutCnt; c++){
+	  printf"%s^%s\n", substr(alphabet,c,1), OutofHrs[ c ]
+	}
+	print ".TE"
+      }
+      if ( NoteCnt > 0 ) {
+	print ".sp"
+	print ".TS"
+	print "tab(^);"
+	print "lUw(.8c) s1 s s s s"
+	print "rU lUw(.5c) lU cUw(1.7c) 1 cUw(.7c) 1 lU."
+	printf"\\f(HBNotes\\fP\n"
+        for ( c=1; c <= NoteCnt; c++){
+	  printf"%s^%s\n", substr(Alphabet,c,1), Note[ c ]
+	}
+	print ".TE"
+      }
+    }' nextpagelist="${TextNewPage}"  SimplePrinter="${SimPrin}" -
+
+  if [ $# -gt 1 ]
+  then
+    echo '.bp'
+  fi
+done
+exit 0 # Thanks for using me!

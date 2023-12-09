@@ -1,0 +1,264 @@
+
+
+
+     sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          settplfunc - Set a function to be called for each retrieved
+          tuple of a query.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          iiiinnnntttt
+          ((((****sssseeeettttttttppppllllffffuuuunnnncccc(((( qqqquuuueeeerrrryyyy,,,, ttttppppllllffffuuuunnnncccc ))))))))(((())))
+          ssssttttrrrruuuucccctttt uuuuqqqquuuueeeerrrryyyy ****qqqquuuueeeerrrryyyy;;;;
+          iiiinnnntttt ((((****ttttppppllllffffuuuunnnncccc))))(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The sssseeeettttttttppppllllffffuuuunnnncccc() routine associates a function, _t_p_l_f_u_n_c, to
+          be called for each retrieved tuple of a _q_u_e_r_y.  The tuple
+          function is called as each matching tuple is found by the
+          qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3) routine.  The function is passed the retrieved
+          tuple's attribute values and projection information about
+          each attribute.  (The projection information is explained in
+          the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section below.)  All information
+          passed to the tuple function is only valid until the tuple
+          function returns.  After qqqquuuueeeerrrryyyyeeeevvvvaaaallll() has returned, the query
+          result (the qresult structure) will be empty.  Therefore, it
+          is not possible to traverse the query result using
+          nnnneeeexxxxttttttttuuuupppplllleeee(3) if a tuple function is used with a query.
+
+          It is not possible to set up a tuple function for a query if
+          no attributes are projected as part of the query.  If this
+          is done, the tuple function will never be called, even
+          though qqqquuuueeeerrrryyyyeeeevvvvaaaallll() may succeed.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _q_u_e_r_y
+               A pointer to the query structure which will have the
+               tuple function associated with it.  The query must have
+               some projected attributes or the tuple function will
+               never be called.  If the query previously had another
+               tuple function associated with it, the address of the
+               previous function is returned.
+
+          _t_p_l_f_u_n_c
+               An application function that will be called once for
+               each matching tuple retrieved as part of the query
+               evaluation.  The interface for _t_p_l_f_u_n_c is
+
+                    int
+                    _t_p_l_f_u_n_c( _a_t_t_r_v_a_l_s, _a_t_t_r_c_n_t, _p_r_o_j_l_i_s_t )
+                    _c_h_a_r **_a_t_t_r_v_a_l_s;
+
+
+
+     Page 1                                          (printed 9/25/91)
+
+
+
+
+
+
+     sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))
+
+
+
+                    _i_n_t _a_t_t_r_c_n_t;
+                    _s_t_r_u_c_t _q_p_r_o_j_t_u_p_l_e *_p_r_o_j_l_i_s_t;
+
+               The tuple function must indicate whether to continue
+               the query evaluation or stop further evaluation by
+               returning either true (non-zero) or false (zero),
+               respectively.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          sssseeeettttttttppppllllffffuuuunnnncccc() returns the address of any tuple function
+          previously associated with the query, or NULL if there
+          wasn't one.
+
+          The tuple function must indicate whether to continue the
+          query evaluation or stop further evaluation by returning
+          either true (non-zero) or false (zero), respectively.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          Only one tuple function may be associated with a query.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Set up a tuple function which will print each retrieved
+          attribute value.  Each attribute value should have a colon
+          as a delimiter except the last attribute, which should have
+          a new-line delimiter.
+
+               #include "uquery.h"
+
+               int
+               writetplval( attrvals, attrcnt, projptr )
+               char **attrvals;
+               int attrcnt;
+               struct qprojtuple *projptr;
+               {
+                    register int i;
+
+                    for( i = 0; i < attrcnt; i++ )
+                         writeattrval( stdout, attrvals[i],
+                              i == attrcnt - 1 ? '\n' : ':' );
+                    return( TRUE );          /* always continue with the query */
+               }
+                . . .
+               struct uquery *query;
+               struct qresult result;
+                . . .
+               (void)settplfunc( query, writetplval );
+               queryeval( query, &result );
+
+          Set up the same tuple function again, but this time use the
+          attribute's normal delimiter in the output.  If the
+          attribute is a fixed width attribute, no delimiter will be
+          used.
+
+
+
+     Page 2                                          (printed 9/25/91)
+
+
+
+
+
+
+     sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))
+
+
+
+               #include "uquery.h"
+
+               int
+               writetplval( attrvals, attrcnt, projlist )
+               char **attrvals;
+               int attrcnt;
+               struct qprojtuple *projlist;
+               {
+                    register int i;
+                    struct uattribute *attrptr;
+
+                    for( i = 0; i < attrcnt; i++ ) {
+                         attrptr = &projlist[i]->rel->rel->attrs[projlist[i]->attr];
+                         writeattrval( stdout, attrvals[i],
+                              i == attrcnt - 1 ? '\n' :
+                              (attrptr->flags & A_ATYPEMASK) == A_FIXEDWIDTH ? '\0' :
+                              attrptr->terminate );
+                    }
+                    return( TRUE );          /* always continue with the query */
+               }
+                . . .
+               struct uquery *query;
+               struct qresult result;
+                . . .
+               (void)settplfunc( query, writetplval );
+               queryeval( query, &result );
+
+     EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        PPPPrrrroooojjjjeeeeccccttttiiiioooonnnn IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn SSSSttttrrrruuuuccccttttuuuurrrreeeessss
+          While most applications need only reference the attribute
+          values within a tuple function, there may occasionally be a
+          need to access the tuple or projection information.  The
+          structures accessible to a tuple function, are defined in
+          _u_q_u_e_r_y._h and _u_r_e_l_a_t_i_o_n._h.  The structures of interest are:
+          qprojtuple, qprojection, qnode, urelation, uattribute, and
+          utuple.
+
+          For each projected attribute, there is a corresponding
+          qprojtuple structure.  This structure serves only to point
+          to the tuple information and the projection information.
+
+          The utuple structure contains information about each tuple.
+          The most interesting element in this structure is the
+          tuplenum, which contains each tuple's positional number in
+          the original relation.
+
+          The qprojection structure gives information about each
+          projected attribute.  It gives the query node (i.e.,
+          relation) the attribute it is from, the index of the
+          attribute in the relation, and print information about the
+          attribute.  (This is mainly used to override the information
+          in the attribute structure itself.)
+
+
+
+     Page 3                                          (printed 9/25/91)
+
+
+
+
+
+
+     sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               sssseeeettttttttppppllllffffuuuunnnncccc((((3333))))
+
+
+
+          The qnode structure contains information about one ``query
+          node''.  A query node is an instance of a relation; the same
+          relation may be used multiple times in one query.  Each
+          query node points to the relation it represents, i.e., the
+          urelation structure.  To access relation information about a
+          projected attribute, the following reference will suffice:
+
+               struct qprojection *projptr;
+                . . .
+               projptr->rel->rel->...
+
+          See the ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3) manual page for details on the
+          urelation and uattribute structures.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cmpquery(1), nexttuple(3) and queryeval(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 9/25/91)
+
+
+

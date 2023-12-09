@@ -1,0 +1,345 @@
+#  @(#)  SID: 1.2;  module: cross;  last changed: 5/7/91  15:07:41
+
+USAGE="Usage:  $0  number avenue\n\nFor help type  '$0 help'.\n"
+
+if test $# -eq 1 -a "$1" = "help"; then
+    cat <<!
+
+This routine prints out, to the best of its ability, the nearest cross street
+to a given address on a given major Manhattan avenue of New York City.  Since
+the different avenues begin at different places up and down Manhattan, but
+the addresses almost always start at "1" on each avenue, figuring out cross
+streets based on addresses is particulary tricky.
+
+The principal algorithm used by this routine was taken from the Manhattan
+Yellow Pages, with supplementary details drawn from various maps and
+driver's guides.
+
+For example, to find the approximate nearest cross street to AT&T
+Headquarters, the command to issue would be
+
+			$0 550 Madison Avenue
+or simply
+			$0 550 Madison
+
+For a complete list of the avenues and streets known by this routine,
+enter the command
+			$0 list
+
+!
+    exit 0
+elif test $# -eq 1 -a "$1" = "list"; then
+    echo
+    echo "The following streets and avenues are known to this routine:"
+    echo
+    pr -3 -t -o5 <<!
+A
+B
+C
+D
+1st
+First
+2nd
+Second
+3rd
+Third
+4th
+Fourth
+5th
+Fifth
+6th
+Sixth
+Avenue of the Americas
+7th
+Seventh
+7th Avenue South
+Seventh Avenue South
+8th
+Eighth
+9th
+Ninth
+10th
+Tenth
+11th
+Eleventh
+12th
+Twelfth
+Adam Clayton Powell
+Amsterdam
+Audobon
+Broadway
+Columbus
+Convent
+Central Park West
+Edgecombe
+Fredrick Douglas
+Ft. Washington
+Lenox
+Lexington
+Madison
+Manhattan
+Park
+Park Avenue South
+Riverside Drive
+St. Nicholas
+Wadsworth
+West End
+York
+!
+    echo
+    exit 0
+elif test $# -lt 2; then
+    echo "$USAGE"
+    exit 2
+elif test $1 -le 0; then
+    echo "*** Street address \"$1\" unlikely!"
+    exit 2
+fi
+
+NUM=$1
+AVE=$2
+shift 2
+for ARG do
+    case $ARG in
+    [aA][vV]*)
+        : ignore this ar
+    ;;
+    *)
+        AVE="$AVE $ARG"
+    ;;
+    esac
+done
+
+AVE=`echo $AVE | tr "[A-Z]" "[a-z]"`
+case $AVE in
+a|ave*\ a)
+    MIN=1; MAX=230;
+    KEY="+ 3"
+;;
+b|ave*\ b)
+    MIN=1; MAX=230;
+    KEY="+ 3"
+;;
+c|ave*\ c)
+    MIN=1; MAX=350;
+    KEY="+ 3"
+;;
+d|ave*\ d)
+    MIN=1; MAX=230;
+    KEY="+ 3"
+;;
+first|one|1st|1)
+    MIN=1; MAX=2460;
+    KEY="+ 3"
+;;
+second|two|2nd|2)
+    MIN=1; MAX=2500;
+    KEY="+ 3"
+;;
+third|three|3rd|3)
+    MIN=1; MAX=2300;
+    KEY="+ 10"
+;;
+four*|4th|4)
+    MIN=1; MAX=155;
+    KEY="+ 8"
+;;
+fifth|five|5th|5)
+    MIN=1; MAX=2360;
+    if test $NUM -lt 200; then
+	KEY="+ 13"
+    elif test $NUM -lt 400; then
+	KEY="+ 16"
+    elif test $NUM -lt 600; then
+	KEY="+ 18"
+    elif test $NUM -lt 775; then
+	KEY="+ 20"
+    elif test $NUM -lt 1286; then
+	KEY="\* 2 - 18"
+    elif test $NUM -lt 1500; then
+	KEY="+ 45"
+    elif test $NUM -lt 2000; then
+	KEY=""
+    else
+	KEY="+ 24"
+    fi
+;;
+six*|6th|6|americ*|ave*\ of\ the\ americ*)
+    MIN=1; MAX=1440;
+    KEY="- 12"
+;;
+seven*|7th|7)
+    MIN=1; MAX=940;
+    KEY="+ 12"
+;;
+seven*\ s*|7th\ s*|7\ s*)	# 7th Ave South
+    MIN=1; MAX=200;
+    KEY="\* 0 - 1"
+;;
+eight*|8th|8)
+    MIN=1; MAX=2975;
+    KEY="+ 10"
+;;
+nin*|9th|9)
+    MIN=1; MAX=4175;
+    KEY="+ 13"
+;;
+ten*|10th|10)
+    MIN=20; MAX=4065;
+    KEY="+ 14"
+;;
+eleve*|11th|11)
+    MIN=1; MAX=865;
+    KEY="+ 14"
+;;
+twel*|12th|12)
+    MIN=140; MAX=860;
+    KEY="+ 16"
+;;
+adam\ cl*\ pow*|powel*)
+    MIN=1800; MAX=2700;
+    KEY="+ 20"
+;;
+amster*)
+    MIN=1; MAX=2520;
+    KEY="+ 60"
+;;
+audob*)
+    MIN=1; MAX=600;
+    KEY="+ 165"
+;;
+broad*)
+    MIN=10; MAX=5480;
+    if test $NUM -lt 4500; then
+	KEY="- 30"
+    else
+	KEY="- 37"
+    fi
+;;
+colum*)
+    MIN=1; MAX=1015;
+    KEY="+ 60"
+;;
+conven*)
+    MIN=1; MAX=500;
+    KEY="+ 127"
+;;
+cent*\ park\ w*)	# central park west
+    MIN=1; MAX=490;
+    KEY="\* 2 + 60"
+;;
+edgec*)
+    MIN=1; MAX=450;
+    KEY="+ 134"
+;;
+fred*\ dougl*)
+    MIN=2000; MAX=2975;
+    KEY="+ 10"
+;;
+ft\ wash*|ft.\ wash*|fort\ wash*)
+    MIN=1; MAX=700;
+    KEY="+ 158"
+;;
+lenox)
+    MIN=1; MAX=735;
+    KEY="+ 110"
+;;
+lexin*)
+    MIN=1; MAX=2185;
+    KEY="+ 22"
+;;
+madis*)
+    MIN=10; MAX=2180;
+    KEY="+ 26"
+;;
+manha*)
+    MIN=1; MAX=550;
+    KEY="+ 100"
+;;
+park)
+    MIN=1; MAX=1780;
+    KEY="+ 35"
+;;
+park\ s*)		# Park Ave South
+    MIN=200; MAX=480;
+    KEY="+ 8"
+;;
+river*)
+    MIN=1; MAX=1825;
+    KEY="\* 2 + 60"
+;;
+st\ ni*|st.\ ni*|saint\ ni*)
+    MIN=1; MAX=1670;
+    KEY="+ 110"
+;;
+wadsw*)
+    MIN=1; MAX=381;
+    KEY="+ 173"
+;;
+west\ end|w.\ end|w\ end)
+    MIN=1; MAX=955;
+    KEY="+ 60"
+;;
+york)
+    MIN=1100; MAX=1630;
+    KEY="+ 4"
+;;
+*)
+    echo "Unknown avenue: \"$AVE\"!"
+    exit 2
+esac
+if test $NUM -lt $MIN -o $NUM -gt $MAX; then
+    echo "*** Street address \"$NUM\" unlikely for \"$AVE\" avenue!"
+    exit 2
+fi
+X=`eval "expr $NUM / 20 $KEY"`
+if test $X -le 2; then
+    case $AVE in
+    seven*\ s*|7th\ s*|7\ s*)	# 7th Ave South
+	if test $NUM -lt 25; then
+	    X="Carmine St."
+	elif test $NUM -lt 90; then
+	    X="Bleecker St."
+	elif test $NUM -lt 130; then
+	    X="West 4th St."
+	else
+	    X="11th St."
+	fi
+    ;;
+    broad*)
+	if test $NUM -lt 150; then
+	    X="Wall St."
+	elif test $NUM -lt 240; then
+	    X="Fulton St."
+	elif test $NUM -lt 350; then
+	    X="Chambers St."
+	elif test $NUM -lt 475; then
+	    X="Canal St."
+	elif test $NUM -lt 590; then
+	    X="Spring St."
+	elif test $NUM -lt 640; then
+	    X="West Houston St."
+	else
+	    X="Bleecker St."
+	fi
+    ;;
+    six*|6th|6|americ*|ave*\ of\ the\ americ*)
+	if test $NUM -lt 40; then
+	    X="Church St."
+	elif test $NUM -lt 140; then
+	    X="Canal St."
+	elif test $NUM -lt 225; then
+	    X="Prince St."
+	elif test $NUM -lt 260; then
+	    X="West Houston St."
+	else
+	    X="Bleecker St."
+	fi
+    ;;
+    *)
+	echo "**** Unlikely address \"$NUM\" given for \"$AVE\" avenue!"
+	exit 2
+    ;;
+    esac
+fi
+echo "Nearest cross street: $X"

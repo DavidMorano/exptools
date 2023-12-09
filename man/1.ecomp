@@ -1,0 +1,396 @@
+
+
+
+     eeeeccccoooommmmpppp((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((eeeexxxxppppttttoooooooollllssss))))             eeeeccccoooommmmpppp((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ecomp - Emacs macro compiler
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ecomp [-f] [file]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Ecomp is the emacs macro  compiler,  and  compiles  the  eml
+          macro language into macros that can be loaded into emacs and
+          executed. If the argument "-f" is given, ecomp produces only
+          a  description  of  the  call flow in the source in a format
+          suitable for use with the exptools dt command (i.e. ecomp  |
+          dt  will  show a call trace) If a file argument is given, it
+          is the name of the source  file,  otherwise  the  source  is
+          assumed  to  be on standard input.  The suffix ".e" is added
+          to the file if not there already, and the resulting file  is
+          compiled.   The  output is put in the specified file without
+          the ".e" suffix.
+
+     MMMMAAAACCCCRRRROOOO LLLLAAAANNNNGGGGUUUUAAAAGGGGEEEE SSSSUUUUMMMMMMMMAAAARRRRYYYY
+          Macros are defined in a lisp like syntax.   The  information
+          provided  here is a brief summary only.  Anyone writing mac-
+          ros should consult the  macro  manual  listed  below.   Each
+          macro has the following format:
+
+          ((<character>) <type> <name> (help description)
+
+                  <declarations>
+
+                  body
+
+          )
+
+          (<character>) specifies the character to which the macro  is
+          to  be  bound,  and is optional.  <type> specifies the macro
+          type as one of the following:
+          SIMPLE  Takes a numeric argument and returns a numeric value
+
+          $SIMPLE Takes a numeric argument and returns a string value
+
+          STRING  Takes string argument(s) and returns a numeric value
+
+          $STRING Takes string argument(s) and returns a string value
+
+          Type is optional and defaults to  SIMPLE  if  not  supplied.
+          The  help description is required, and is the string printed
+          when the user asks for help on this macro.
+
+          The <declarations> declare names  local  to  the  macro  and
+          include the following types of expressions
+
+          (external [type] name)  declares name as another macro with the
+
+
+
+     Page 1                                           (printed 2/9/96)
+
+
+
+
+
+
+     eeeeccccoooommmmpppp((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((eeeexxxxppppttttoooooooollllssss))))             eeeeccccoooommmmpppp((((1111))))
+
+
+
+                                  specified type.
+          (local name)            name is a local numeric variable
+          (global name)           name is a global numeric variable
+          (local-string name)     name is a local string variable
+          (global-string name)    name is a global string variable
+
+          The body consists of sequence of forms, each of  which  per-
+          forms  some  function.   The following is a brief summary of
+          the forms in use. parameters and return values are described
+          as "xs", "xc" or "xn" for "x numeric values", "x characters"
+          or "x string values".
+
+          Name            Parameters      Returns         Description
+
+          !=              2n              1n              "
+          %               2n              1n      remainder
+          &               2n              1n      bitwise and
+          &&              2n              1n      logical and
+          *               2n              1n      multiplication
+          +               2n              1n      addition
+          -               2n              1n      subtraction
+          /               2n              1n      division
+          <               2n              1n              "
+          <=              2n              1n      numeric comparison
+          ==              2n              1n              "
+          >               2n              1n              "
+          >=              2n              1n              "
+          ^               2n              1n      bitwise xor
+          append-file     1s              1n      append buffer to file
+          append-strings  2s              1s      append two strings
+          append-to-killstack none        none    cause next entry to append.
+          arg             none            1n      returns the macro argument
+          assign-key-to-macro 1c,1s       none    bind key to macro.
+          back            1n              1n      move back n characters
+          back-page       1n              1n      move back n pages
+          back-word       1n              1n      move back n words
+          backspace-killstack none        none    (M-y command)
+          beep            none            none    ring bell
+          bottom          none            none    move to bottom of file
+          buffer-modified none            1n      return 1 if modified
+          buffer-position none            1n      character posn. in buffer
+          buffer-size     none            1n      number of chars in buffer
+          buffer-to-command 1s            1n      run with output to .exec
+          call-macro      1s              1n      call a macro by name
+          capitalize-character 1n         none    Capitalize n characters
+          capitalize-word 1n              none    capitalize n words
+          case            (na)            (na)    case control structure
+          change-buffer   1s              1n      returns 0 if failed
+          change-buffer-name 1s           none    set current buffer name
+          change-directory 1s             none    change working directory
+          change-editor-name 1s           none    sets editor name for display
+          change-file-name 1s             none    set current file name
+
+
+
+     Page 2                                           (printed 2/9/96)
+
+
+
+
+
+
+     eeeeccccoooommmmpppp((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((eeeexxxxppppttttoooooooollllssss))))             eeeeccccoooommmmpppp((((1111))))
+
+
+
+          char-to-string  1n              1s      converts to 1 character string
+          command-to-buffer 1s            1n      run with input from buffer
+          comment         none            none    start C language comment
+          cond            (na)            (na)    conditional execution
+          convert-to-number 1s            1n      convert string to number
+          convert-to-string 1n            1s      convert number to string
+          coredump        none            none    abort emacs with a coredump
+          current-character none          1n      value of character under cursor
+          current-char-type none          1n      type of character under cursor
+          current-transition none         1n      transition type at cursor
+          define-macro    1n              none    define macros from buffer
+          delete-back     1n              1n,1s   delete n characters
+          delete-forward  1n              1n,1s   delete n characters
+          delete-last-word 1n             1n,1s   delete previous words
+          delete-next-word 1n             1n,1s   delete n words
+          display-killstack 1s            none    display from killstack
+          display-menu    1n,ns           none    display n strings at top
+          display-prompt  1s              none    display string in echo area
+          down            1n              1n      move down n lines
+          duplicate-killstack 1n          1s      copy indicated item on top
+          ed-regular-replace 3s           none    ed-style replace, one per line
+          ed-replace      3s              none    ed-style replace, one per line
+          edit-file       1s              1n      locate and/or read file
+          else            (na)            (na)    else case for cond and while
+          end-keyboard-macro none         none    end recording user input
+          end-of-line     none            none    move to end of line
+          end-of-sentence 1n              1n      move forward n sentences
+          end-undo        1n              none    finish undo block
+          exchange-killstack 1n           none    exchange nth and current elements
+          exchange-mark   1n              1n      exchange mark and cursor
+          execute         1n              1n      execute a character command.
+          execute-keyboard-macro none     none    execute recorded sequence
+          exit            none            none    exit enclosing block
+          exit-emacs      none            none
+          expand-environment 1s           1s      expand environment variable
+          expand-shell    1s              1s      expand shell expression
+          expand-multiple     1s        ns   multiple shell expansions
+          false           none            1n      returns 0
+          file-character  none            1n      position in line in buffer
+          file-line       none            1n      line number in buffer
+          file-num-lines  none            1n      number of lines in buffer
+          fill-buffer     none            none    autofill whole buffer
+          fill-region     none            none    autofill the region.
+          first-visible-line none         1n      file line at top of window
+          format          ns              1s      formats strings like "sprintf"
+          forward         1n              1n      move forward by n characters
+          forward-word    1n              1n      move forward n words
+          get-key         none            1n,1s   get encryption key and length
+          get-all-modes   none            none    put all modes in buffer .modes
+          get-mode        1s              1n      get value of mode
+          get-replace-string none         1s      get last target for replace
+          get-search-string none          1s      get last string searched for
+
+
+
+     Page 3                                           (printed 2/9/96)
+
+
+
+
+
+
+     eeeeccccoooommmmpppp((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((eeeexxxxppppttttoooooooollllssss))))             eeeeccccoooommmmpppp((((1111))))
+
+
+
+          get-version     none            1s      return emacs version
+          goto-line       1n              none    goto line n
+          goto-screen     1n              1n      goto coded screen position
+          grow-window     1n              none    make window n lines larger
+          help            1c              none    print help for character command
+          input-count     none            1n      number of characters typed ahead
+          input-file      1s              none    execute emacs commands from file
+          insert          1s              none    insert text in quotes
+          insert-ascii    1n              none    insert ascii value n into file
+          insert-file     1s              1n      insert file at cursor position
+          interpret-character none        none    interprets one command from terminal
+          interrupt-process 1n            none    send signal to sub-process
+          invocation-char none            1n      character of macro call
+          kill-buffer     1s              none    delete buffer
+          kill-line       1n              1n,1s   delete n lines
+          kill-region     1n              1n,1s   delete text in region
+          last            none            1n      result of last command
+          last-visible-line none          1n      last line on the screen
+          literal         1c              1n      ascii code of the character
+          load-macro      1n,1s           none    load macros from file
+          load-character-tables none      none    load type & transition tables.
+          lowercase       1n              1n      change to lower case
+          macro-space     none            1n      amount of space left for macros
+          mail            none            none    mail the buffer
+          map-keys        2c              none    map one key to the other.
+          map-prefix-key  2c              none    Re-map ^X or escape
+          mark            1n              none    set mark
+          meta-quote      1c              none    inserts a meta character
+          mod             2n              1n      remainder
+          newline         1n              none    insert newlines
+          next-argument   none            1s      return next command line argument
+          next-page       1n              1n      move down n pages
+          not             1n              1n      logical not
+          one-window      none            none    return to one window
+          open-line       1n              none    open up n blank lines
+          other-window    none            1n      switch windows
+          output-raw-characters 1s        none    raw output to terminal
+          output-raw-killstack 1s         none    string comes from killstack
+          parse           2s              1n,ns   scans strings like "scanf"
+          pause           1n              none    pause for n seconds
+          pickup-region   1n              1s      pickup marked region
+          pop-killstack   1n              none    remove n items from stack
+          process-id      none            1n      returns the process id
+          push            1s              1s      push string onto kill stack
+          quote           1c              none    insert character in buffer
+          read-character  1s              1n      read character from terminal
+          read-character-killstack 1s     1n      prompt comes from killstack
+          read-file       1s              1n      read file into buffer
+          read-line       1s              1s      read line from terminal
+          read-line-killstack 1s          1s      prompt comes from killstack
+          read-process    none            1n,1s   read a line from a sub process
+          recursive-edit  none            1n      invoke emacs command interpreter
+
+
+
+     Page 4                                           (printed 2/9/96)
+
+
+
+
+
+
+     eeeeccccoooommmmpppp((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((eeeexxxxppppttttoooooooollllssss))))             eeeeccccoooommmmpppp((((1111))))
+
+
+
+          redisplay-page  1n              none    redisplay at a particular line
+          refresh         1n              none    redisplay the screen
+          regular-match   1s              1n      matches regular expression to line
+          regular-replace 3s              none    regular replace
+          regular-search  1n,1s           1n      regular expression search.
+          repeat-character 1c,1n          none    insert n characters
+          replace         3s              none    replace s1 by s2 controlled by s3
+          restore         1n              none    insert from top of killstack
+          return          1n              1n      return the value of a sequence
+          reverse-search  1s              1n      search backwards
+          run-command     1s              1n      run unix command
+          save-buffer     none            1n
+          screen-character none           1n      position in line on screen
+          screen-line     none            1n      line number on screen
+          search          1s              1n      search forwards
+          send-process    1s              none    send string to a sub-process
+          send-region-to-buffer 1s,1n     none    copy marked text to other buffer
+          sequence        (na)            (na)    execute a sequence of commands
+          set-key         1s              none    set encryption key
+          set-mode        1s,1n           1n      set specified mode
+          set-replace-string 1s           none    set default target for replace
+          set-search-string 1s            none    set default search string
+          set-terminal-type 1s            none    set terminal type
+          show-modes      none            none    display active modes
+          simulate        1s              1n      (see manual)
+          stack-active-buffers none       1n,ns   all active buffer names
+          stack-buffer    none            1s      current buffer name
+          stack-filename  none            1s      current file name
+          start-keyboard-macro none       none    start recording user input
+          start-of-line   none            none    move to start of line
+          start-of-sentence 1n            1n      move back n sentences
+          start-undo      none            1n      start undo block
+          statistics      none            none    display statistics
+          string-!=       2s              1n              "
+          string-<        2s              1n              "
+          string-<=       2s              1n      string comparison
+          string-==       2s              1n              "
+          string->        2s              1n              "
+          string->=       2s              1n              "
+          string-index    2s              1n      first match of string 1 in string 2
+          string-length   1s              1n      length of string
+          string-reverse-index 2s         1n      last match of string 1 in string 2
+          string-to-char  1s              1n      returns first char of string
+          sub-process     1s              none    starts a sub-process
+          substring       1s,2n           1s      segment of string
+          tab             1n              none    insert tabs.
+          top             none            none    move to top of file
+          top-killstack   none            1s      returns the top of the killstack
+          trace           (na)            (na)    trace the next command.
+          trace-buffer    (na)            (na)    trace, output to buffer .trace
+          transpose       1n              none    transpose characters
+          true            none            1n      returns 1
+
+
+
+     Page 5                                           (printed 2/9/96)
+
+
+
+
+
+
+     eeeeccccoooommmmpppp((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((eeeexxxxppppttttoooooooollllssss))))             eeeeccccoooommmmpppp((((1111))))
+
+
+
+          two-window      1s              none    split into two windows
+          underline-word  1n              none    underline n words
+          unget-character 1n              none    return input character
+          unmodify        1n              none    mark buffer as unmodified
+          up              1n              1n      move up n lines
+          update-display  none            none    make display up to date
+          wait-process    none            none    wait for input from sub-process
+          wallchart       none            none    build table of help messages
+          while           (na)            (na)    while loop control structure
+          window-bottom   none            1n      screen line at bottom of window
+          window-top      none            1n      screen line at top of window
+          write-file      1s              1n      write buffer to file
+          xor-region      none            none    (only on the PC7300)
+          |               2n              1n      bitwise or
+          ||              2n              1n      logical or, both arguments executed
+
+
+     FFFFIIIILLLLEEEESSSS
+          ~EMACS -- the emacs library directory on your local system.
+          ~EMACS/emacs_defs -- macro language definitions.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          emacs (1), _A_n _I_n_t_e_r_a_c_t_i_v_e _S_c_r_e_e_n _E_d_i_t_o_r _f_o_r _U_N_I_X  by  Warren
+          Montgomery  55235-85-1008-02TM  (updated  copies may also be
+          maintained in the emacs library on your local system.
+          _A _N_e_w _a_n_d  _I_m_p_r_o_v_e_d  _M_a_c_r_o  _F_a_c_i_l_i_t_y  by  Warren  Montgomery
+          55235-851014-01TM
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Warren Montgomery (ixserve!warren)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                           (printed 2/9/96)
+
+
+

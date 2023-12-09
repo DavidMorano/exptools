@@ -1,0 +1,990 @@
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          cscope - interactively examine a C program
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccssssccccooooppppeeee [ options ] [ C source files ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_s_c_o_p_e is an interactive screen-oriented tool that helps
+          you:
+
+               Learn how a C program works without endless flipping
+               through a thick listing.
+
+               Locate the section of code to change to fix a bug
+               without having to learn the entire program.
+
+               Examine the effect of a proposed change such as adding
+               a value to an _e_n_u_m variable.
+
+               Verify that a change has been made in all source files
+               such as adding an argument to an existing function.
+
+               Rename a global variable in all source files.
+
+               Change a constant to a preprocessor symbol in selected
+               lines of files.
+
+          It is designed to answer questions like:
+
+               Where is this symbol used?
+               Where is it defined?
+               Where did this variable get its value?
+               What is this global symbol's definition?
+               Where is this function in the source files?
+               What functions call this function?
+               What functions are called by this function?
+               Where does the message "out of space" come from?
+               Where is this source file in the directory structure?
+               What files include this header file?
+
+          _C_s_c_o_p_e answers these questions from a symbol database that
+          it builds the first time it is used on the source files.  On
+          a subsequent call, _c_s_c_o_p_e rebuilds the database only if a
+          source file has changed or the list of source files is dif-
+          ferent.  When the database is rebuilt the data for the
+          unchanged files is copied from the old database, which makes
+          rebuilding much faster than the initial build.
+
+
+
+
+
+
+
+
+     Page 1                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          After the database is ready _c_s_c_o_p_e will display these input
+          fields:
+
+               Find this C symbol:
+               Find this definition:
+               Find functions called by this function:
+               Find functions calling this function:
+               Find assignments to:
+               Change this grep pattern:
+               Find this egrep pattern:
+               Find this file:
+               Find files #including this file:
+
+          Press the TTTTAAAABBBB key repeatedly to move to the desired input
+          field, type the pattern to search for, and then press the
+          RRRREEEETTTTUUUURRRRNNNN key.  For the first 5 and last 2 input fields, the
+          pattern can be a regcmp(3X) regular expression.  If the
+          search is successful, you can use these command characters:
+
+          1111----9999    Edit the file containing the displayed line.
+          ssssppppaaaacccceeee  Display next lines.
+          ++++      Display next lines.
+          ----      Display previous lines.
+          ^^^^EEEE     Edit all lines.
+          >>>>      Write all lines to a file.
+          >>>>>>>>     Append all lines to a file.
+          <<<<      Read lines from a file.
+          ^^^^      Filter all lines through a shell command.
+          ||||      Pipe all lines to a shell command.
+
+          At any time you can use these command characters:
+
+          ^^^^PPPP     Move to the previous input field.
+          ^^^^AAAA     Search again with the last pattern typed.
+          ^^^^BBBB     Recall previous input field and search pattern.
+          ^^^^FFFF     Recall next input field and search pattern.
+          ^^^^CCCC     Toggle ignore/use letter case when searching.
+          ^^^^RRRR     Rebuild the symbol database.
+          !!!!      Start an interactive shell (type ^^^^DDDD to return to
+                 _c_s_c_o_p_e).
+          ^^^^LLLL     Redraw the screen.
+          ????      Display this list of commands.
+          ^^^^DDDD     Exit _c_s_c_o_p_e.
+
+          Note: If the first character of the pattern you want to
+          search for matches one of the above commands, type a \ char-
+          acter first.
+
+        CCCChhhhaaaannnnggggiiiinnnngggg TTTTeeeexxxxtttt
+          After typing the _g_r_e_p(1) pattern to be searched for, you
+          will be prompted for the replacement text, then the lines
+          containing the pattern will be displayed.  You select the
+
+
+
+     Page 2                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          lines to be changed with these command characters:
+
+          1111----9999    Mark or unmark the line to be changed.
+          ****      Mark or unmark all displayed lines to be changed.
+          ssssppppaaaacccceeee  Display next lines.
+          ++++      Display next lines.
+          ----      Display previous lines.
+          aaaa      Mark or unmark all lines to be changed.
+          ^^^^DDDD     Change the marked lines and exit.
+          RRRREEEETTTTUUUURRRRNNNN Exit without changing the marked lines.
+          !!!!      Start an interactive shell (type ^^^^DDDD to return to
+                 _c_s_c_o_p_e).
+          ^^^^LLLL     Redraw the screen.
+          ????      Display this list of commands.
+
+        SSSSppppeeeecccciiiiaaaallll KKKKeeeeyyyyssss
+          If your keyboard has arrow keys that work in _v_i(1) you can
+          use them to move around the input fields.  The up-arrow key
+          is useful to move to the previous input field instead of
+          using the TAB key repeatedly.  If you have the CLEAR, NEXT,
+          or PREV keys they will act as the ^^^^LLLL, ++++, and ---- commands
+          respectively.
+
+        MMMMoooouuuusssseeee
+          If you have an AT&T 5620/630/730 terminal and use the
+          _e_m_a_c_s_t_e_r_m(1), _m_y_x(1), or _v_i_t_e_r_m(1) terminal programs; or use
+          the X Window System and the _e_t_e_r_m_x(1) terminal program; or
+          SunView and the _e_t_e_r_m(1) terminal program; you can use your
+          mouse with _c_s_c_o_p_e.  If you use the _m_y_x(1) terminal program,
+          set the MMMMOOOOUUUUSSSSEEEE environment variable to _m_y_x (see ENVIRONMENT
+          VARIABLES).
+
+          Point with the mouse and click button 1 to move to the
+          desired input field, type the pattern to search for, and
+          then press the RETURN key.  If the search is successful, you
+          can edit the file containing a displayed line by pointing
+          with the mouse and clicking button 1.  When changing text,
+          point with the mouse and click button 1 to mark or unmark
+          the line to be changed.  Press mouse button 2 to get a menu
+          of commands.
+
+        OOOOppppttttiiiioooonnnnssss
+          When invoking _c_s_c_o_p_e you can use these options:
+
+          ----aaaa       When using the "Find this egrep pattern:" search,
+                   ask for a regular expression describing the subset
+                   of files to search.  If no expression is supplied,
+                   all files known to _c_s_c_o_p_e are searched.  This
+                   option is particularly useful for very large
+                   software systems where thousands of source files
+                   are used.  In such systems the set of files to be
+                   searched is a small subset of the total.  This
+
+
+
+     Page 3                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+                   option is only available in screen mode; the ----llll or
+                   ----LLLL options turn off this option.
+          ----bbbb       Build the database only.
+          ----cccc       Use only ASCII characters in the database file,
+                   that is, do not compress the data.
+          ----CCCC       Ignore letter case when searching.
+          ----dddd       Do not update the database.
+          ----eeee       Suppress the ^E command prompt between files.
+          ----ffff _f_i_l_e  Use _f_i_l_e as the database file name instead of the
+                   default (cscope.out).
+          ----FFFF _f_i_l_e  Read symbol reference lines from _f_i_l_e, just like
+                   the <<<< command.
+          ----iiii _f_i_l_e  Read any ----IIII, ----pppp, ----qqqq, and ----TTTT options and the list of
+                   source files from _f_i_l_e instead of the default
+                   (cscope.files).
+          ----IIII _d_i_r   Look in _d_i_r for #include files.  If you will be
+                   editing these files, use the ----ssss option instead so
+                   the rebuild (^R) command will notice they have
+                   changed.
+          ----llll       Line-oriented interface (see Calling Cscope with a
+                   Line-Oriented Interface).
+          ----LLLL       Do a single search with line-oriented output when
+                   used with the ----_n _p_a_t_t_e_r_n option.
+          ----oooo       Display OGS book and subsystem names.
+          ----pppp _n     Display the last _n file path components instead of
+                   the default (1).  Use 0 to not display the file
+                   name at all.
+          ----PPPP _p_a_t_h  Prepend _p_a_t_h to relative file names in a pre-built
+                   database so you do not have to change to the direc-
+                   tory where the database was built.  This option is
+                   only valid with the ----dddd option.  Do not use this
+                   option if a viewpath was used when building the
+                   database (see Viewpath subsection of EXAMPLES sec-
+                   tion).
+          ----qqqq       Build an inverted index for quick symbol seaching.
+                   If you use this option with the ----ffff option, you must
+                   use ----ffff on every call to _c_s_c_o_p_e, including building
+                   the database, because it changes the names of the
+                   inverted index files.
+          ----rrrr       Require pressing the RETURN key after typing the
+                   selection digit(s) for a displayed line to edit the
+                   file containing it, which allows as many lines as
+                   possible to be displayed.
+          ----ssss _d_i_r   Look in _d_i_r for additional source files.  This
+                   option is ignored if source files are given on the
+                   command line.
+          ----tttt _h_o_u_r_s No activity timeout in _h_o_u_r_s (minimum of 4 hours).
+                   Removing a database will not release the disk space
+                   if a _c_s_c_o_p_e process has the file open, so a project
+                   can use this option in its script to call _c_s_c_o_p_e on
+                   a large database so unattended _c_s_c_o_p_e processes
+                   will exit overnight.
+
+
+
+     Page 4                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          ----TTTT       Use only the first eight characters to match
+                   against C symbols.  A regular expression containing
+                   special characters other than a period (.)  will
+                   not match any symbol if its minimum length is
+                   greater than eight characters.
+          ----uuuu       Unconditionally build the database (assume that all
+                   files have changed).
+          ----UUUU       Do not check file time stamps (assume that some
+                   files have changed).
+          ----_n _p_a_t_t_e_r_n
+                   Go to input field _n (counting from 0) and find _p_a_t_-
+                   _t_e_r_n.
+
+          The ----IIII, ----pppp, ----qqqq, and ----TTTT options can also be in the
+          _c_s_c_o_p_e._f_i_l_e_s file.  See below for common uses of most of
+          these options.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+        CCCCaaaalllllllliiiinnnngggg CCCCssssccccooooppppeeee ffffrrrroooommmm tttthhhheeee SSSShhhheeeellllllll
+          To use _c_s_c_o_p_e on all the C, lex, yacc, breakpoint listing,
+          Ingres(TM), and SDL files in the current directory just type
+
+               cscope
+
+          You can use _c_s_c_o_p_e on particular files if you have more than
+          one program in the same directory.  The above is equivalent
+          to
+
+               cscope *.[chlyCGHL] *.bp *.q[ch] *.pr *.sd
+
+          If you want to use _c_s_c_o_p_e on all the source files in the
+          current and a few other directories, use the ----ssss option to
+          give the other directory names, e.g.
+
+               cscope -s ../common,../../common
+
+          If you want to use _c_s_c_o_p_e on all the source files in the
+          current and lower level directories, first create a list of
+          the files with
+
+               find . -name '*.[chlyCGHL]' -print >cscope.files
+
+          and then type
+
+               cscope
+
+          _C_s_c_o_p_e will look up the viewpath for the _c_s_c_o_p_e._f_i_l_e_s file,
+          so you can put it under change management to prevent
+          accidental destruction.
+
+          If a file #include's files that are in directories other
+          than the current directory or the standard directory
+
+
+
+     Page 5                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          (/usr/include), use the ----IIII option just like when using the
+          _c_c(1) command
+
+               cscope -I../hdr -I../../hdr
+
+          If you will be editing these files, use the ----ssss option
+          instead so the rebuild (^R) command will notice they have
+          changed.
+
+          If files may have the same base name, you will want to use
+          the ----pppp option to display the last _n file path components
+          instead of the default (1).
+
+          If you use a compiler that does not support flexnames, that
+          is, symbol name differences past eight characters are
+          ignored, you will want to use the ----TTTT option to have _c_s_c_o_p_e
+          do the same.
+
+          You can put ----IIII, ----pppp, ----qqqq, and ----TTTT options in the file contain-
+          ing the list of source files (see above).  This shortens the
+          _c_s_c_o_p_e command line and makes it easier to call _c_s_c_o_p_e from
+          an editor.
+
+          If you use _c_s_c_o_p_e on thousands of source files, use the ----bbbb
+          option to only build the database so you can do run it in
+          the background with a _b_a_t_c_h(1) or _a_t(1) job.
+
+               echo 'cscope -b' | batch
+
+          Use the ----dddd option on subsequent calls to cscope
+
+               cscope -d
+
+          to avoid the time spent checking if the database is out of
+          date, which can be significant.
+
+          If the source files change infrequently, you can get quick
+          symbol searching by building the database with the ----qqqq
+          option.  For a very large database you will be able to find
+          a symbol in a few seconds vs. several minutes if built
+          without ----qqqq, at the expense of about twice as much database
+          disk space and build CPU time.  Updating a ----qqqq database takes
+          about as half as long as building it.  It contains binary
+          numbers, so it is portable only between machines with the
+          same byte order.  Note that 3B, Amdahl/IBM, and MC680x0-
+          based machines like Suns all have the same byte order.
+
+          The ----qqqq option makes it practical to have databases for
+          entire projects.  If you try to build a project database and
+          get a "File too large" message, you need to get your login's
+          ulimit (file size limit) raised by your system administra-
+          tor.  If you get the "No space left on device" message you
+
+
+
+     Page 6                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          will have to use a file system with more space.  You can
+          change the temporary file system by setting the TMPDIR
+          environment variable.  If you have enough space to build the
+          database but not to rebuild it after some files have
+          changed, try removing the inverted index _c_s_c_o_p_e._i_n._o_u_t and
+          _c_s_c_o_p_e._p_o._o_u_t files.  If you still don't have enough space
+          to rebuild, you will have to remove the _c_s_c_o_p_e._o_u_t file.
+
+          If you want to use _c_s_c_o_p_e separately on several programs in
+          the same directory structure, but keep the databases in the
+          same (top) directory, use the ----ffff and ----iiii options to rename
+          the _c_s_c_o_p_e._o_u_t and _c_s_c_o_p_e._f_i_l_e_s file, respectively, e.g.
+
+               find dir1 -name '*.[chlyCGHL]' -print >dir1.files
+               find dir2 -name '*.[chlyCGHL]' -print >dir2.files
+               cscope -b -f dir1.db -i dir1.files
+               cscope -b -f dir2.db -i dir2.files
+
+          and call cscope with
+
+               cscope -d -f dir2.db
+
+          Note that options used only when building the database, such
+          as ----iiii, are not needed with the ----dddd option.  If other people
+          are going to use these databases, you will should provide a
+          shell script to call _c_s_c_o_p_e with the correct options.  If a
+          viewpath (see Viewpath below) was not used when building the
+          database, then use the ----PPPP option to give the path to rela-
+          tive file names so the script does not have to change to the
+          directory where the database was built, which can confuse
+          users.
+
+        CCCCaaaalllllllliiiinnnngggg CCCCssssccccooooppppeeee ffffrrrroooommmm aaaannnn EEEEddddiiiittttoooorrrr
+          To call _c_s_c_o_p_e from within _v_i(1) type ::::!!!!ccccssssccccooooppppeeee followed by
+          any options or file arguments.  From _e_m_a_c_s(1) type MMMM----!!!!ccccssssccccooooppppeeee
+          followed by any file arguments.  There is an _e_m_a_c_s(1) macro
+          for the two most common calls to _c_s_c_o_p_e.  Type MMMM----XXXX to call
+          _c_s_c_o_p_e with no file arguments, and type ^^^^UUUUMMMM----XXXX to call _c_s_c_o_p_e
+          with the ----dddd option to not update the database.  If nothing
+          happens when you type MMMM----XXXX, add this line to your
+          $_H_O_M_E/._e_m_a_c_s__i_n_i_t and/or $_H_O_M_E/._v_e__i_n_i_t file:
+
+               ^X^L~EMACS/macros/basic
+
+        SSSSttttaaaacccckkkkiiiinnnngggg CCCCssssccccooooppppeeee aaaannnndddd EEEEddddiiiittttoooorrrr CCCCaaaallllllllssss
+          When _c_s_c_o_p_e puts you in the editor to display one symbol
+          reference and you see another symbol of interest, don't
+          leave the editor, just call _c_s_c_o_p_e again from within the
+          editor.  In this way you can stack _c_s_c_o_p_e and editor calls
+          so you can go off on a tangent, and then back up to where
+          you were by exiting the tangential _c_s_c_o_p_e and editor calls.
+
+
+
+
+     Page 7                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          For example, when learning a program you will probably have
+          _c_s_c_o_p_e find the main function and display it with your edi-
+          tor.  You can visualize this as an inverse stack of calls:
+
+               cscope: find and display main()
+                    editor: display first lines of main()
+
+          You may then see that main calls an initialize function.
+          Rather than exiting the editor to go back to _c_s_c_o_p_e, call
+          _c_s_c_o_p_e again from within the editor to find the initialize
+          function and display it with another editor call.  Your
+          stack of calls now looks like this:
+
+               cscope: find and display main()
+                    editor: display first lines of main()
+                         cscope: find and display initialize()
+                              editor: display first lines of initialize()
+
+          When you are through looking at this function, you can exit
+          this second editor call, exit the second _c_s_c_o_p_e call, and
+          you are back in the first editor call that is displaying the
+          main function.  You are now back to:
+
+               cscope: find and display main()
+                    editor: display first lines of main()
+
+          and can continue reading the main function.
+
+        BBBBoooooooolllleeeeaaaannnn SSSSeeeeaaaarrrrcccchhhhiiiinnnngggg
+          You can do the equivalent of Boolean or logical AND, OR, and
+          NOT operations on searches with the ^, >, >>, and < com-
+          mands.  For example, if you wanted all references to the
+          symbol _s_t_d_e_r_r in file _i_n_v_l_i_b._c, search for the symbol and
+          then use the ^ command with shell command
+
+               grep invlib.c
+
+          If you wanted all the references not in this file, use the
+          _g_r_e_p(1) ----vvvv option.  If you wanted all the lines where sym-
+          bols _s_t_d_e_r_r or _s_t_d_o_u_t are used, search for the first symbol,
+          write the references to a file with the > command, search
+          for the second symbol, append the references to the same
+          file with the >> command, read the file with the < command,
+          and get rid of duplicate lines with the ^ command using the
+          shell command
+
+               sort | uniq
+
+          Note that all <global> references will no longer be first
+          because the references will be sorted by file name.
+
+        VVVViiiieeeewwwwppppaaaatttthhhh
+
+
+
+     Page 8                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          As described above, _c_s_c_o_p_e searches for source files in the
+          current directory by default.  When the VPATH environment
+          variable is set, _c_s_c_o_p_e searches for source files in direc-
+          tories that comprise your viewpath.  A viewpath is an
+          ordered list of directories, each of which has the same
+          directory structure below it.
+
+          For example, suppose you are part of a software project.
+          There is an official set of source files in directories
+          below /_f_s_1/_o_f_c and each user has some matching directories
+          under their home directory ($HOME).  If you make changes to
+          the software system, you may have copies of just those files
+          you are changing in $_H_O_M_E/_s_r_c/_c_m_d/_p_r_o_g_1.  The official ver-
+          sions of the entire program can be found in
+          /_f_s_1/_o_f_c/_s_r_c/_c_m_d/_p_r_o_g_1.
+
+          Suppose you use _c_s_c_o_p_e to browse through the three files
+          that comprise _p_r_o_g_1, namely _f_1._c, _f_2._c, and _f_3._c.  You would
+          set VPATH to $_H_O_M_E and /_f_s_1/_o_f_c, and export it:
+
+               VPATH=$HOME:/fs1/ofc
+               export VPATH
+
+          You would then make your current directory
+          $_H_O_M_E/_s_r_c/_c_m_d/_p_r_o_g_1 and invoke _c_s_c_o_p_e:
+
+               cd $HOME/src/cmd/prog1
+               cscope
+
+          _C_s_c_o_p_e will locate all files in the viewpath.  In case
+          duplicates are found, _c_s_c_o_p_e uses the file whose parent
+          directory appears earlier in VPATH.  Thus if _f_2._c is in your
+          directory (and all three files are in the official direc-
+          tory), _c_s_c_o_p_e will use _f_2._c from your directory and _f_1._c and
+          _f_3._c from the official directory.
+
+          The first directory in VPATH must be a prefix (usually
+          $HOME) of the directory you will be working in.  Each
+          colon-separated directory in VPATH must be a full path, that
+          is, it must start with a slash (/).
+
+        CCCCaaaalllllllliiiinnnngggg CCCCssssccccooooppppeeee wwwwiiiitttthhhh aaaa LLLLiiiinnnneeee----OOOOrrrriiiieeeennnntttteeeedddd IIIInnnntttteeeerrrrffffaaaacccceeee
+          The ----llll option lets you use _c_s_c_o_p_e where a screen-oriented
+          interface would not be useful, e.g. from another screen-
+          oriented program.  _C_s_c_o_p_e will prompt with ">> " when it is
+          ready for an input line starting with the field number
+          (counting from 0) immediately followed by the search pat-
+          tern, e.g. "1main" finds the definition of the _m_a_i_n func-
+          tion.  Field number 9 followed by any pattern, e.g. "9a",
+          finds all function and C++ class definitions.  If you just
+          want a single search, instead of the ----llll option use the ----LLLL
+          and ----_n _p_a_t_t_e_r_n options, and you won't get the ">> " prompt.
+
+
+
+     Page 9                                          (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          For ----llll, _c_s_c_o_p_e outputs the number of reference lines
+
+               cscope: 2 lines
+
+          For each reference found, _c_s_c_o_p_e outputs a line consisting
+          of the file name, function name, line number, and line text,
+          separated by spaces, e.g.
+
+               main.c main 161 main(argc, argv)
+
+          Note that the editor is not called to display a single
+          reference, unlike the screen-oriented interface.  You can
+          use the 'c' command to toggle ignoring/using letter case
+          when searching, the 'r' command to rebuild the database, and
+          the 'P' command to print the path to relative file names
+          (either the ----PPPP option path or the full current directory
+          path).  _C_s_c_o_p_e will quit when it detects end-of-file, or
+          when the first character of an input line is ^D or 'q'.
+
+          This option allows you to write a program like _s_a_m_u_e_l(1)
+          that uses _c_s_c_o_p_e to look up symbol information.  The program
+          can send search commands to _c_s_c_o_p_e and read the results.
+          The _x_c_s_c_o_p_e macro package available for _e_m_a_c_s(1) uses this
+          option to look up C symbols.  This option may also be useful
+          for terminals not supported by _t_e_r_m_i_n_f_o(4) or for sight-
+          impaired users of printing terminals.
+
+     SSSSYYYYMMMMBBBBOOOOLLLL DDDDAAAATTTTAAAABBBBAAAASSSSEEEE FFFFOOOORRRRMMMMAAAATTTT
+          The symbol database (cscope.out) file format is
+
+               <header>
+               <first file symbol data>
+                    ...
+               <last file symbol data>
+               <trailer>
+
+          The header is a single line
+
+               cscope <format version> <current dir> [-c] <trailer offset>
+
+          The format version is first number in the _c_s_c_o_p_e version
+          that wrote the database, e.g. the format version is 9 for
+          _c_s_c_o_p_e version 9.14.  When the format version number in the
+          _c_s_c_o_p_e program is greater than that in the database, the
+          entire database will be rebuilt when any part of it is out
+          of date.  The current directory is either a full path or
+          prefixed by $HOME, allowing the user's login to be moved to
+          a different file system without rebuilding the database.
+          The trailer offset is the fseek(3) offset of the trailer.
+
+          The header is followed by the symbol data for each file in
+          alphabetical order.  This allows fast updating of the
+
+
+
+     Page 10                                         (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          database when only a few files have changed, because the old
+          database is copied to the new database up to the point of
+          the changed file.  Then the changed file's symbol data is
+          added to the new database, the old database is copied up to
+          the next changed file, and so on.
+
+          Two data compression techniques are used on the symbol data:
+          (1) keywords and trailing syntax are converted to control
+          characters, and (2) common digraphs (character pairs) are
+          compressed to meta-characters (characters with the eight bit
+          set).  Since this makes it hard to read or postprocess the
+          database, you may want to use the -c option to turn off data
+          compression when the database is built.
+
+          The symbol data for each file starts with
+
+               <file mark><file path>
+               <empty line>
+
+          and for each source line containing a symbol
+
+               <line number><blank><non-symbol text>
+               <optional mark><symbol>
+               <non-symbol text>
+               repeat above 2 lines as necessary
+               <empty line>
+
+          Leading and trailing white space in the source line is
+          removed.  Tabs are changed to blanks, and multiple blanks
+          are squeezed to a single blank, even in character and string
+          constants.  The symbol data for the last file ends with
+
+               <file mark>
+
+          A mark is a tab followed by one of these characters:
+
+               Char Meaning
+
+               @    file
+               $    function definition
+               `    function call
+               }    function end
+               #    #define
+               )    #define end
+               ~    #include
+               =    direct assignment, increment, or decrement
+               ;    enum/struct/union definition end
+               c    class definition
+               e    enum definition
+               g    other global definition
+               l    function/block local definition
+               m    global enum/struct/union member definition
+
+
+
+     Page 11                                         (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+               p    function parameter definition
+               s    struct definition
+               t    typedef definition
+               u    union definition
+
+          A #include mark is followed by '<' or '"' to determine if
+          the current directory should be searched.  An untagged
+          _e_n_u_m/_s_t_r_u_c_t/_u_n_i_o_n definition has a mark without a symbol
+          name so its beginning can be found.
+
+          Historical note: The first three mark characters were chosen
+          because they are not used by the C language, but since they
+          can appear in a string constant, the tab prefix was added.
+          They were never changed to more meaningful characters
+          because other programs had been written to read the database
+          file.
+
+          The trailer contains lists of source directories, include
+          directories, and source files; its format is
+
+               <number of viewpath nodes>
+               <first directory in viewpath, if any>
+                    ...
+               <last directory in viewpath>
+               <number of source directories>
+               <first source directory path (always .)>
+                    ...
+               <last source directory path>
+               <number of include directories>
+               <first include directory path>
+                    ...
+               /usr/include
+               <number of source and included files>
+               <length of string space needed>
+               <first file path>
+                    ...
+               <last file path>
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          CCCCSSSSCCCCOOOOPPPPEEEEOOOOPPPPTTTTIIIIOOOONNNNSSSS
+                       _C_s_c_o_p_e options.
+          EEEEDDDDIIIITTTTOOOORRRR       Your editor, which defaults to _v_i(1).
+          HHHHOOOOMMMMEEEE         Your home directory, which is automatically set
+                       when you login.
+          MMMMOOOOUUUUSSSSEEEE        Set to _m_y_x if that is your 5620 terminal pro-
+                       gram.
+          MMMMOOOOUUUUSSSSEEEEMMMMEEEENNNNUUUU    Set to _n_o_n_e if you do not want _c_s_c_o_p_e to switch
+                       to its mouse menu so you can have your own cus-
+                       tomized _C_s_c_o_p_e submenu on the shell menu.
+          SSSSHHHHEEEELLLLLLLL        Your shell, which defaults to _s_h(1).
+          TTTTEEEERRRRMMMM         Your terminal type, which must be a screen ter-
+                       minal.
+
+
+
+     Page 12                                         (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          TTTTEEEERRRRMMMMIIIINNNNFFFFOOOO     Terminal information directory full path name.
+                       If your terminal is not in the standard _t_e_r_-
+                       _m_i_n_f_o directory, see _c_u_r_s_e_s(3X) and _t_e_r_m_i_n_f_o(4)
+                       for how to make your own terminal description.
+          TTTTMMMMPPPPDDDDIIIIRRRR       Temporary file directory, which defaults to
+                       /usr/tmp.
+          VVVVIIIIEEEEWWWWEEEERRRR       Your file display program, which overrides EDI-
+                       TOR (see above).
+          VVVVPPPPAAAATTTTHHHH        Viewpath (see Viewpath subsection of EXAMPLES
+                       section).
+
+          To set a variable such as EEEEDDDDIIIITTTTOOOORRRR to a value such as _e_m_a_c_s,
+          put this in your ._p_r_o_f_i_l_e:
+
+               export EDITOR
+               EDITOR=emacs
+
+     FFFFIIIILLLLEEEESSSS
+          cscope.files  Default file containing ----IIII, ----pppp, ----qqqq, and ----TTTT
+                        options and the list of source files (overrid-
+                        den by the ----iiii option).
+          cscope.out    Default symbol database file (overridden by
+                        the ----ffff option).  It is put in your home direc-
+                        tory if it cannot be created in the current
+                        directory.
+          cscope.in.out
+          cscope.po.out Default files containing the inverted index
+                        for quick symbol searching (----qqqq option).  If
+                        you use the ----ffff option to rename the _c_s_c_o_p_e._o_u_t
+                        file name, ._i_n and ._p_o will be suffixed to its
+                        base name to create these file names.
+          ncscope*.out  Temporary files containing the new database
+                        before it replaces the old database.  If you
+                        use the ----ffff option to rename the _c_s_c_o_p_e._o_u_t
+                        file name, an _n will be prefixed to its base
+                        name to create these file names.
+          /usr/include  Standard directory for #include files.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _g_r_e_p(1), _r_e_g_c_m_p(3X)
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          Spaces in the displayed source line text for a reference may
+          not exactly match the actual source line because of the data
+          compression used to store them in the database.  Leading
+          spaces and tab characters are removed, and sequences of them
+          are replaced with a single space, even inside a quoted
+          string.  A space may also be added after a keyword, e.g.
+          "(void)" will be displayed as "(void )".
+
+          The _F_u_n_c_t_i_o_n column of the search output for the "Find func-
+          tions called by this function:" input field will only
+
+
+
+     Page 13                                         (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          display the first function called in the line, that is, for
+          this function
+
+               e()
+               {
+                    return(f() + g());
+               }
+
+          the display would be
+
+               Functions called by this function: e
+
+                 File Function Line
+                 a.c  f        3 return(f() + g());
+
+     BBBBUUUUGGGGSSSS
+        CCCC PPPPaaaarrrrssssiiiinnnngggg BBBBuuuuggggssss
+          Occasionally, a function definition or call may not be
+          recognized because of braces inside #if statements.  Simi-
+          larly, the use of a variable may be incorrectly recognized
+          as a definition.
+
+          A _t_y_p_e_d_e_f name preceding a preprocessor statement will be
+          incorrectly recognized as a global definition, e.g.
+
+               LDFILE *
+               #if AR16WR
+
+          Preprocessor statements can also prevent the recognition of
+          a global definition, e.g.
+
+               char flag
+               #ifdef ALLOCATE_STORAGE
+                    = -1
+               #endif
+               ;
+
+          A function definition will not be recognized if the '('
+          after the function name is on the next line, e.g.
+
+               f
+               ()
+               {
+
+        CCCC++++++++ PPPPaaaarrrrssssiiiinnnngggg BBBBuuuuggggssss
+          Cscope recognizes C++ classes by looking for the _c_l_a_s_s key-
+          word, but doesn't recognize that a _s_t_r_u_c_t is also a class,
+          so it doesn't recognize inline member function definitions
+          in a structure.  It also doesn't expect the _c_l_a_s_s keyword in
+          a _t_y_p_e_d_e_f, so it incorrectly recognizes X as a definition in
+
+               typedef class X * Y;
+
+
+
+     Page 14                                         (printed 11/8/95)
+
+
+
+
+
+
+     CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSCCCCOOOOPPPPEEEE((((1111))))
+
+
+
+          It also doesn't recognize operator function definitions
+
+               Bool Feature::operator==(const Feature & other) {
+
+          and function definitions with a function pointer argument
+
+               ParseTable::Recognizes(int startState, char *pattern,
+                    int finishState, void (*FinalAction)(char *)) {
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Joe Steffen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 15                                         (printed 11/8/95)
+
+
+

@@ -1,0 +1,205 @@
+O		Blit cursor pad interpreter
+
+This file contains a number of macros for use with the blit or super-blit.
+It assumes that you have the file etty downloaded as the terminal emulator
+The actions available are described in blit_info, rather than here.
+
+
+
+This is a cursor pad and mouse interpreter for a Blit running
+the etty downloaded image (within a layer).  This version assumes
+that you are running BTL EMACS with the new mouse function bound to
+^Xg.
+
+C. Douglas Blewett (MH3-C-319) Version 4 or better
+
+Arguments supplied to these commands multiply the affect.
+
+
+	!û-<
+		ûA		Up
+			
+		ý
+		ûB		Down
+			
+		ý
+		ûC		Left
+			
+		ý
+		ûD		Right
+			
+		ý
+		ûE		Back a word
+			b
+		ý
+		ûF		Back a line - from move
+			
+		ý
+		ûG		Forward a line - from move
+			
+		ý
+		ûH		Forward a word
+			f
+		ý
+		ûÿ	Defaults
+			
+		ý
+	ý
+
+	Blit Mouse postioner
+
+C. Douglas Blewett (MH3-C-319) Version 4 or better
+
+The mouse transmits ^X ^_ <key> x y.  The key is ignored.
+
+					Collect the arguments
+	-<
+	-<
+	5-<
+	12~32	Subtract 32 to get the row and column
+	512~532
+	13~128	Shift the col over by 7 bits
+	11~5	Add in the row
+	g
+
+È		Move the cursor to home (top line)
+
+ The Move Macros
+
+ Interface routines
+	M-H - Home or top of screen
+	M-L - Last or bottom of screen
+	M-M - Middle of screen
+	M-^P- Back one line - adds a line at the top of the screen
+	M-^N- Forward one line - adds a line at the bottom of the screen
+
+	0			Get the display up to date
+	2=
+	|û
+		û2~1
+					^A as a nop
+		ý
+		û 
+			
+		ý
+	ý
+	^û2~2=0	Repeat until non-negative
+		
+	ý
+
+Ì		Move the cursor to the last line
+	
+	^û~0
+		|û
+			û~2=-1	Loop off thre screen
+				0
+			ý
+			û
+				
+			ý
+			û 
+				0
+			ý
+		ý
+	ý
+
+Í		Move the cursor to the middle of the screen
+	È60=
+	Ì712~0=6
+	714~72
+	7
+
+		Scroll up one line when on top line
+	^û3~0
+		12~1	Loop
+		ÈŒ0
+	ý
+
+Ž		Scroll down one line
+	^û3~0
+		12~1	Loop
+		ÈŒ0
+	ý
+	Ì0
+
+MCustom_Menu
+	³<M@!Scroll Bar!m@!3!
+	³<MA!Kill Region!mA!4!
+	³<MB!Change Buffers!mB!5!
+	³<MJ!Standard Menu!mJ!s!
+	³<MC!Mouse Action!mC!6!
+
+sStandard_Menu
+
+	³<M@!Top of File!m@!<!
+	³<MA!Bottom of File!mA!>!
+	³<MB!Page Back!mB!v!
+	³<MC!Page Forward!mC!!
+	³<MD!Scroll Back!mD!!
+	³<ME!Scroll Forward!mE!!
+	³<MF!Set Mark!mF! !
+	³<MG!Show Mark!mG!!
+	³<MH!Insert Last Kill!mH!!
+	³<MI!Kill Marked Area!mI!!
+	³<MJ!Custom Menu!mJ!M!
+
+6Mouse_action - set the action for the mouse
+
+Displays a set of choices.  Next action must
+be a mouse menu selection!!!
+
+	³<M@!Kill Region!m@!!
+	³<MA!Pickup Region!mA!!
+	³<MB!Mark Region!mB!!
+	!û­<Select with button 2
+		ûºAý
+		ûºDý
+		ûºCý
+	ýM
+
+5Change_buffers
+
+
+<
+­<Select one with the mouse
+­<
+-<
+-<
+5-<
+12~µ34
+~
+4Blit zap command
+
+
+­<
+­<
+ ­<
+­<
+
+3scroll_bar place scroll bar and reposition
+
+
+ °=¾³°=±2 ²±4~±3~µ0°=²X±2~µ0²-±2çbar
+­@
+­<
+-<
+-<
+5-<
+12~32
+±4~±3~³µ0ç
+AKill_Select - Kill selected area on screen
+
+
+ 
+CMark_Select - Mark the selected area
+
+
+ 
+DPick_select - Pick up the selected area
+
+
+ ð
+Mouse select - point at it only, don't mark
+
+
+

@@ -1,0 +1,97 @@
+%declare
+
+/* file checksum for bolt - this init can be changed to
+	reflect an enum version dependency */
+unsigned checksum = 1;
+
+/* temp */
+char *ptr;
+
+/* basename is for the bolt */
+char basename[1024];
+
+
+
+%grammar
+
+tables			: ( table_spec + )
+
+table_spec		: ( table_name
+				"{"
+					table_entry_group + separated-by ";"
+				"}" [ ";" ] )
+
+table_name		: <[a-zA-Z_][a-zA-Z0-9_]*>
+
+table_entry_group	: ( table_entry + separated-by "," )
+
+table_entry		: ( table_entry_spec [ ":" table_entry_pname ] )
+
+table_entry_spec	: ( table_entry_name | table_entry_string )
+
+table_entry_name	: <[a-zA-Z_][a-zA-Z0-9_]*>
+
+table_entry_string	: <\"([^"\\]|\\(.|\n))*\">
+
+table_entry_pname	: <[a-zA-Z_][a-zA-Z0-9_]*>
+
+
+
+%middlecode
+
+/* pick a basename for this file - last table... */
+FORALL(a,TABLE_NAME,top,Table_name) LOOP
+	upper(strcpy(basename,tok(a)));
+	break;
+ENDLOOP
+
+FORALL(d,TABLE_ENTRY,top,Table_entry) LOOP
+	if(!table_entry_name(table_entry_spec(d))) {
+		if(*tok(table_entry_pname(d)) == (char)0) {
+			reporterror(d,
+		"Must have program space name when using C strings");
+			continue;
+		}
+		{ char *ptr;
+		ptr = tok(table_entry_string(table_entry_spec(d))) =
+		  &(tok(table_entry_string(table_entry_spec(d)))[1]);
+		  ptr[strlen(ptr)-1] = (char)0;
+		}
+	}
+ENDLOOP
+
+/* Calculate the file checksum */
+FORALL(a,TABLE_NAME,top,Table_name) LOOP
+	for(ptr=tok(a);*ptr;) checksum += *ptr++;
+ENDLOOP
+FORALL(b,TABLE_ENTRY_NAME,top,Table_entry_name) LOOP
+	for(ptr=tok(b);*ptr;) checksum += *ptr++;
+ENDLOOP
+FORALL(c,TABLE_ENTRY_PNAME,top,Table_entry_pname) LOOP
+	for(ptr=tok(c);*ptr;) checksum += *ptr++;
+ENDLOOP
+FORALL(e,TABLE_ENTRY_STRING,top,Table_entry_string) LOOP
+	for(ptr=tok(e);*ptr;) checksum += *ptr++;
+ENDLOOP
+
+
+
+%option -b arg
+%do strcpy(basename , agoptarg['b']);
+%otherwise
+
+%product header -h arg
+%do
+	GEN_h(agoptarg['h']);
+%otherwise { fprintf(stderr,"No header Generated.\n"); agoption['h'] = 1; }
+
+%product code -c arg
+%do
+	GEN_c(agoptarg['c']);
+%otherwise { fprintf(stderr,"No code Generated.\n"); agoption['c'] = 1; }
+
+
+
+%finalcode
+
+fprintf(stderr,"Checksum is %u\n",checksum);

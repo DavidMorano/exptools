@@ -1,0 +1,26 @@
+# @(#)  SID: 1.2;  module: descend;  last changed: 1/30/90  23:58:24
+#
+# This routine breaks its filename argument into a sequence, in descending
+# order, of the directories the argument is contained in, ending finally
+# in the filename itself.  This is useful for generating a list of directory
+# names to be fed to an 'xargs' command to check or change all the directories
+# above a given filename, to make sure, for example, that they exist, or are
+# writable.
+
+descend() {
+    typeset WORKNAME=$1 DIRNAME PATHNAME
+    set +u
+
+    while test -n "$WORKNAME"; do
+	DIRNAME=${WORKNAME%%/*}
+	PATHNAME="$PATHNAME$DIRNAME"
+	if test -z "$PATHNAME"; then
+	    echo "/"
+	else
+	    echo "$PATHNAME"
+	fi
+	WORKNAME=${WORKNAME#$DIRNAME}
+	WORKNAME=${WORKNAME##*(/)}
+	PATHNAME="$PATHNAME/"
+    done
+}

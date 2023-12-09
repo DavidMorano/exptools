@@ -1,0 +1,264 @@
+
+
+
+     MMMMAAAANNNNUUUUAAAALLLL((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            MMMMAAAANNNNUUUUAAAALLLL((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          manual - manual page finder
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmaaaannnnuuuuaaaallll [<parameters>] [<string>]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Manual is a utility providing quick access to manual pages
+          for viewing them online.  Its main features are: it covers a
+          diverse range of manual pages, it is fast and it allows
+          matching with wildcards (useful if you do not remember the
+          full name).
+
+          From the main screen of manual you can enter the following
+          commands:
+
+          <<<<ssssttttrrrriiiinnnngggg>>>>
+                  Enter an alphanumeric string and manual will start a
+                  search for manual pages matching that name.  Use the
+                  asterisk as a wildcard (similar to the shell), for
+                  example str*py.
+
+          <<<<nnnnuuuummmmbbbbeeeerrrr>>>>
+                  After a search, enter the item's number to display
+                  the manual page for that item.  If your search needs
+                  to start with a digit, prefix the digit with a
+                  backslash.
+
+          SSSSPPPPAAAACCCCEEEE   will page to the next page of entries in the
+                  display.
+
+          ????       display the help information.
+
+          ^^^^RRRR      redraw the screen.
+
+          ^^^^DDDD      exit.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----HHHH      display the help information.
+
+          ----VVVV      display the version number.
+
+          ----dddd ffffiiiilllleeee use an additional database, with entries from ffffiiiilllleeee ....
+                  This allows you to create databases of the local
+                  tools on your system and share the database with
+                  other users.  For information on creating your own
+                  database see below.
+
+          <<<<ssssttttrrrriiiinnnngggg>>>>
+                  immediately search for this string.
+
+     SSSSUUUUPPPPPPPPOOOORRRRTTTTEEEEDDDD MMMMAAAANNNNUUUUAAAALLLL DDDDOOOOCCCCUUUUMMMMEEEENNNNTTTTAAAATTTTIIIIOOOONNNN
+
+
+
+     Page 1                                          (printed 5/17/94)
+
+
+
+
+
+
+     MMMMAAAANNNNUUUUAAAALLLL((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            MMMMAAAANNNNUUUUAAAALLLL((((1111))))
+
+
+
+          Manual supports a general list of documentation, covering
+          standard UNIX documentation, as covered by man(1), plus a
+          set of the most common AT&T tool sets, such as EXPTOOLS,
+          POST, UNISON etc.  See the help option of manual for a
+          fuller list.
+
+          Manual provides support of _g_e_n_e_r_i_c tools, that is tools
+          which are found on a large number of AT&T UNIX machines.
+          Manual does not support local tool sets, those that are
+          unique to particular AT&T sites or projects.
+
+
+     AAAADDDDDDDDIIIINNNNGGGG OOOOTTTTHHHHEEEERRRR MMMMAAAANNNNUUUUAAAALLLL LLLLOOOOCCCCAAAATTTTIIIIOOOONNNNSSSS
+          Although manual has a fairly comprehensive database of
+          manual page locations, it may not include all the manuals
+          that you need, perhaps of tools local to your system, or
+          your own login.  By creating a file in your home directory,
+          you can direct manual to search in additional places for
+          manual pages.
+
+          In your home directory create a file called ....mmmmaaaannnnuuuuaaaallll and in
+          the file create a list of one lines entries in the following
+          format:
+
+             <directory_path>   <format>
+
+          The directory path is the name of a directory where the
+          manual pages are located (not the manual page files: the
+          directory they are contained in).
+
+          The format is a single character which tells manual what
+          format those manuals are stored in.  This enables manual to
+          decide how the manual pages are displayed to you.  Permitted
+          values for format are:
+
+           N   nroff file
+           C   cat'able file
+           Z   compressed cat'able file
+           P   unix pack'ed cat'able file
+
+
+          A tilde (~) can be used in the directory path to refer to a
+          login directory, eg. ~username/man.
+
+          For example, a $HOME/.manual file could be like:
+
+           ~smith/tools/man/u_man/man1  N
+           ~jones/man    C
+           ~news/man     C
+
+          If the manuals you want to reference are in a tree structure
+          of directories it is not necessary to list each directory
+
+
+
+     Page 2                                          (printed 5/17/94)
+
+
+
+
+
+
+     MMMMAAAANNNNUUUUAAAALLLL((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            MMMMAAAANNNNUUUUAAAALLLL((((1111))))
+
+
+
+          individually.  If the manuals are all of the same type they
+          can be referenced with the top of the directory structure.
+          For example, instead of:
+
+           ~smith/tools/man/u_man/man1  N
+           ~smith/tools/man/u_man/man2  N
+           ~smith/tools/man/u_man/man3  N
+
+          you can abbreviate this to
+
+           ~smith/tools/man/u_man       N
+
+          which will extract manuals for every subdirectory under
+          u_man.  All manuals in that directory structure _m_u_s_t be of
+          the same type, and there must be no non-manual files in the
+          directory structure.
+
+          Manual skips over invalid entries in the database file
+          without reporting errors, so if you code the entries in your
+          .manual file incorrectly, you will not get any error mes-
+          sages, you will simply not be able to find manuals in those
+          locations.
+
+          As an alternative to creating a .manual file in your home
+          directory, you can create your additional database in any
+          filename and use the -d option to link it to manual.  This
+          also allows you to share your database file with other
+          users.
+
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          You can only retrieve a maximum of 100 entries from one
+          search.  Manual will notify you it has reached that limit by
+          showing you the number of retrieved entries as 100+.  Use a
+          more precise search pattern.
+
+          Manual will only correctly match entries where the file name
+          corresponds to the contents of the file.  Manual uses the
+          file names as an indication of the manual contents, eg. that
+          the manual page for grep is in grep.1.  This is the way in
+          which manual maintains its speed in searching, it scans
+          directory files to determine the files contained within, and
+          does not open individual manual page files to look at their
+          contents.  If the file names and contents do not match this
+          will create problems in trying to access the manual pages.
+
+          Manual has no interface for printing manual pages.  It is
+          purely an online, interactive tool.  Manual does display the
+          full pathname of manuals it locates, and you can use this to
+          find and print manual pages.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+
+
+
+     Page 3                                          (printed 5/17/94)
+
+
+
+
+
+
+     MMMMAAAANNNNUUUUAAAALLLL((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            MMMMAAAANNNNUUUUAAAALLLL((((1111))))
+
+
+
+          The screen pager defined by $$$$PPPPAAAAGGGGEEEERRRR variable is used to
+          display the manual.
+
+     CCCCRRRREEEEDDDDIIIITTTTSSSS
+          Manual is provided by:
+              Chris Varlese
+              AT&T Network Systems UK
+              Malmesbury
+              England
+              att!mlsma!cvarlese
+
+          Many thanks to David Dykstra, Mark Skeates and Joe Steffen
+          for their assistance in bringing manual to exptools.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          man(1)
+          toolman(1)
+          manx(1)
+          sysmans(1)
+          dmdman(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 5/17/94)
+
+
+

@@ -1,0 +1,45 @@
+checkpath 1.08B
+--------- -----
+
+The -K<directory> option in checkpath 1.08A is more "powerful."  It
+causes checkpath to retain symbolically (not exactly) redundant
+directories, as well as bad (missing or non-x) directories in the
+pathlist.
+
+For example: If the directory /home/me/you is a symbolic link to
+/home, and QPATH=/home:/home/me/you, we'll execute the following
+on QPATH: checkpath -K/home/me/you $QPATH
+
+With checkpath 1.07_ you get an output of just /home
+It didn't keep /home/me/you because it was redundant with /home, even
+though the -K option said to keep it.
+
+With checkpath 1.08_ you get an output of /home:/home/me/you
+because the -K says to keep the directory even if it is symbolically
+redundant with /home.
+
+This does NOT affect exactly (name-wise) redundant directories.  If
+QPATH=/home:/home/me/you:/home then checkpath will always remove the
+redundant /home.  The last one normally, or the first one if -l was
+used.
+
+Why?  The reason for this change is that on Solaris systems, the
+action of the echo command depends on what is in your PATH (yuck!).
+If /usr/bin is after /usr/ucb (or not in your PATH at all), echo
+behaves Berkeleyish.  If /usr/bin precedes /usr/ucb, or the latter
+is not present, it behaves SVish.  On some systems /usr/bin is just
+a symbolic link to /bin, so checkpath removes it, thus causing
+the Berkeley echo whether you want it or not.  With checkpath 1.08,
+using checkpath -K/usr/bin  allows it to keep that silly /usr/bin
+link just so that echo behaves "correctly."
+
+For more information, type: toolman checkpath
+(or checkpath, splitpath, purgepath, where, editpath, formpath,
+normfile, or searchpath)
+
+The checkpath package is
+authored and provided by:        /~~~~~~~~~~~~~~~~ ~ ~ ~ ~ ~  ~  ~  ~
+   Warren D. Swan  (WooDS)      Y n ni____ ___#_   ___n___  ________
+   AT&T Bell Laboratories      -(((((([__]/_____].(_______).\__  __/.
+   Naperville, Illinois        /o-OOOOO~~  oo oo   oo   oo  oo `' oo
+   woods@toontown.att.com    ########################################

@@ -1,0 +1,132 @@
+
+
+
+     PURGEPATH(1)        UNIX System V (EXPTOOLS)         PURGEPATH(1)
+
+
+
+     NAME
+          purgepath - Purge directories from a directory path list
+
+     SYNOPSIS
+          purgepath [ -V ] [ -p _p_a_t_h_l_i_s_t(_n_a_m_e) ]... [ _d_i_r_e_c_t_o_r_y ]...
+
+     DESCRIPTION
+          Takes the specified  path  list  (colon  separated  list  of
+          directories)  and  prints  the  path list with the specified
+          _d_i_r_e_c_t_o_r_y/_i_e_s removed.  If no _d_i_r_e_c_t_o_r_i_e_s are specified, the
+          current directory (.) is assumed.
+
+          The _p_a_t_h_l_i_s_t(_n_a_m_e) may be either the  name  of  an  exported
+          environment variable containing the path list (_e._g. CDPATH),
+          or the actual path list (_e._g. $PATH:$CDPATH).  The  presence
+          of  a colon (:), slash (/), dot (.) or dash (-) in the argu-
+          ment indicates the latter.  If no -p  option  is  specified,
+          PATH  is  assumed.  If more than one -p option is specified,
+          later path lists are concatenated into an accumulating  path
+          list with a separating colon supplied:
+             -pCDPATH -p:/etc:/lib
+          (There will be 2 colons between the contents of  CDPATH  and
+          the /etc:/lib part.)
+
+          Since _p_u_r_g_e_p_a_t_h allows more than one -p option, it  can  add
+          directories  to  and  subtract directories from a path list,
+          and is thus, a general path list construction  tool,  as  in
+          the examples below.
+
+          Each of the directories from the path  list  are  normalized
+          similarly to normfile(1) with compression.  Then, the speci-
+          fied _d_i_r_e_c_t_o_r_ys are normalized and tested against  the  nor-
+          malized  directories  from the path list.  Each _d_i_r_e_c_t_o_r_y is
+          removed from  the  path  list.   After  all  _d_i_r_e_c_t_o_r_ys  are
+          removed  from  the path list the result is output (using the
+          normalized directory names).
+
+          The -V option reports the program  version  number,  and  if
+          there are no other command line arguments, simply exits.
+
+     EXIT CODES
+          0 = OK, 1 = non-fatal error, -1 = fatal error.
+
+     EXAMPLES
+          path=`purgepath /etc` # I don't want /etc in my PATH.
+          PATH=${path:-$PATH}
+
+          # I want to add /lib and remove my parent directory from CDPATH:
+          path=`purgepath  -pCDPATH  -p/lib  ..`
+          CDPATH=${path:-$CDPATH}
+
+
+
+
+
+     Page 1                                          (printed 10/4/93)
+
+
+
+
+
+
+     PURGEPATH(1)        UNIX System V (EXPTOOLS)         PURGEPATH(1)
+
+
+
+          # Remove invalid directory "/etc/etc" accidentally put in my PATH:
+          path=`purgepath /etc/etc`
+          PATH=${path:-$PATH}
+
+          # Move the /usr/add-on/wwb/bin directory to the end of the PATH:
+          path=`purgepath /usr/add-on/wwb/bin`:/usr/add-on/wwb/bin
+          PATH=${path:-$PATH}
+
+     SEE ALSO
+          checkpath(1),   formpath(1),   normfile(1),   searchpath(1),
+          splitpath(1), where(1)
+
+     WARNINGS
+          As with all pathlist-changing commands, you should  use  the
+          form:
+             dummy=`command ...`
+             REALPATH=${dummy:-$REALPATH}
+          so that the real path list does not get cleared if something
+          goes wrong with the command.
+
+     PROVIDED BY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 10/4/93)
+
+
+

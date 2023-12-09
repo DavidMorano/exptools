@@ -1,0 +1,18 @@
+: use /bin/sh
+export MFBASES MFINPUTS MFPOOL
+MFBASES=$MFBASES${MFBASES:+:}.:$TOOLS/lib/tex/mf
+MFINPUTS=$MFINPUTS${MFINPUTS:+:}.:$TOOLS/lib/tex/mf
+MFPOOL=$TOOLS/lib/tex/mf
+
+$TOOLS/lib/tex/bin/virmf '&plain' $*
+
+# This script provides an alternative to preloading Metafont.  See the
+# README.WEB-to-C file for the tradeoffs that come by doing things this
+# way.  There is a short delay before Metafont gets working, but there
+# is a greater flexibility, and a tremendous saving in disk space.
+# Only one compilation of inimf and virmf needs to be stored, and it is
+# much smaller than any preloaded image, or even than the preloaded file
+# that results from using fmtdump.
+# 
+# To set this script up, copy it into a directory named in your
+# path environment, rename it mf, and insure that it is executable.

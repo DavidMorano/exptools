@@ -1,0 +1,264 @@
+
+
+
+       LLLLTTTT((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                LLLLTTTT((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            lt -- draw a tree representation of a directory structure
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            lllltttt [-af]  [-d depth]  [-w width]  [directories]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            _l_t "draws" a directory structure tree horizontally on stan-
+            dard output rooted by the directories specified on the com-
+            mand line.  If no directory is specified, the current work-
+            ing directory, and its subdirectories, will be drawn.  Stan-
+            dard ASCII characters are used so the tree can be drawn on
+            most any terminal.
+
+            Square brackets, '[]', will be printed surrounding each
+            directory name on the tree for clarity.  A '$' will be
+            printed before each directory writeable by others.  If a
+            directory contains subdirectories, but there is no room to
+            list them, a '>' will be printed to the right of the direc-
+            tory name.
+
+            ----aaaa        List names beginning with '.' also.  If not speci-
+                      fied, only names not starting with '.' are shown.
+
+            ----dddd_d_e_p_t_h   The -d option specifies the maximum number of lev-
+                      els to list.  If not specified, _l_t defaults to
+                      descending as many directory levels as will fit on
+                      the output device.  _l_t uses the ----wwww argument in the
+                      calculation.
+
+            ----ffff        List file, directory, device, symbolic link, and
+                      fifo names.  The tree will be spread out slightly
+                      to avoid visual clutter.
+
+                      Files which are writeable by others will have a
+                      '$' printed to the left of the name.  Files of
+                      zero length will have a '%' printed to the left of
+                      the name.  Files which are executable by owner,
+                      but not writeable by others will have a '*'
+                      printed to the left of the name.
+
+                      Files that fall into none of these three
+                      categories will be opened, and the first 512 bytes
+                      will be read as a heuristic to determine whether
+                      the file contains ASCII characters or data.  Non-
+                      ASCII files will have a '`' printed to the left of
+                      the name.  If the file cannot be opened for read-
+                      ing, a '?' will printed to the left of the name.
+
+                      Symbolic links will have a '@' printed to the left
+                      of the name.
+
+
+
+
+       Page 1                                          (printed 3/10/93)
+
+
+
+
+
+
+       LLLLTTTT((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                LLLLTTTT((((1111))))
+
+
+
+                      Devices and fifos will have a '=' printed to the
+                      left of the name.
+
+                      If ----ffff is not specified, only directory names are
+                      listed.
+
+            ----wwww_w_i_d_t_h   The -w option specifies the number of columns of
+                      the output device, and must be greater than 32.
+                      If not specified, _l_t assumes 80 columns.
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEE 1111
+                                 lt /usr/src/cmd/cc
+
+            produces this output:
+
+
+            /usr/src/cmd/cc:
+            |_[pcc]__
+            |        \_[mip]
+            |        |_[vax]
+            |_[pci]__
+                     \_[vax]
+
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEE 2222
+                               lt -f /usr/src/cmd/cc
+
+            produces this output:
+
+
+            /usr/src/cmd/cc:
+            |_ cc.c              cc.mk
+            |
+            |_[pcc]__
+            |        \_ pcc.mk
+            |        |
+            |        |_[mip]__
+            |        |        \_ INDEX             allo.c
+            |        |           cgram.y           comm1.c
+            |        |           comm2.c           common
+            |        |           convert           manifest
+            |        |           match.c           messages.c
+            |        |           messages.h        mfile1
+            |        |           mfile2            optim.c
+            |        |           pftn.c            reader.c
+            |        |           scan.c            trees.c
+            |        |           xdefs.c
+            |        |
+            |        |_[vax]__
+            |                 \_ :rofix            :yyfix
+
+
+
+       Page 2                                          (printed 3/10/93)
+
+
+
+
+
+
+       LLLLTTTT((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                LLLLTTTT((((1111))))
+
+
+
+            |                    code.c            local.c
+            |                    local2.c          loopdefs.c
+            |                    mac2defs          macdefs
+            |                    order.c           pcc.mk
+            |                    storclass.h       table.c
+            |
+            |_[pci]__
+                     \_ inter.c           optim.c           optim.h
+                     |
+                     |_[vax]__
+                              \_ README            c2.mk
+                                 defs              extdec.h
+                                 instrs.h          inter.c
+                                 local.l           oplook.c
+                                 optim.c           optim.h
+                                 supp.c            w1.c
+                                 w2.c              w3.c
+
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEE 3333
+                               lt -d1 /usr/src/cmd/cc
+
+            produces this output:
+
+
+            /usr/src/cmd/cc:
+            |_[pcc]___________>
+            |_[pci]___________>
+
+
+
+       EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+            0 for no serious errors, ignoring permissions clashes;
+
+            1 bad argument syntax.
+
+
+       DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+            All error messages are written to standard error and are
+            intended to be self-explanatory.
+
+
+       WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+            The current version of _l_t does not work with symbolic links
+            on Sun file systems.
+
+            When the ----ffff option is used, _l_t assumes a minimum screen
+            width of 80 columns.
+
+            _l_t will produce error messages on Sun systems if file or
+            directory names are longer than 24 characters.
+
+
+
+       Page 3                                          (printed 3/10/93)
+
+
+
+
+
+
+       LLLLTTTT((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                LLLLTTTT((((1111))))
+
+
+
+       AAAAUUUUTTTTHHHHOOOORRRR
+            The directory tree drawing tool was written by Bob Parnass.
+
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+            The directory tree drawing tool is provided by Bob Parnass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 4                                          (printed 3/10/93)
+
+
+

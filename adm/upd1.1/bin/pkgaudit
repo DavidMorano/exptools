@@ -1,0 +1,223 @@
+# remote package audit for exptools
+
+# configurable entities	
+HOMEID=exptools
+TOOLS=`logdir $HOMEID`
+RHUBCMD=rhub
+PRPKG=$TOOLS/adm/upd1.1/bin/prpkg		# maps pkgid to pathnames
+pkg_cmd=$TOOLS/adm/upd1.1/lib/package		# packages up the file for upd
+mach_cmd=$TOOLS/adm/upd1.1/bin/machines	# maps types to machine lists
+net_cmd=$TOOLS/adm/upd1.1/lib/netcmd		# figures out networking to machines
+send_cmd=$TOOLS/adm/upd1.1/lib/sendjob	# executes network commands
+PATH=/usr/5bin:$PATH:$TOOLS/adm/bin	# use System V commands on Suns
+export PATH
+
+: ${batch:=/bin/sh}	# no need for batching, unless the user overrides this
+
+umask 007	# private temp files
+set -u		# no slip-ups allowed
+
+tmpcom=/usr/tmp/$$pkgcom		# temp file for commands
+tmpfile=/usr/tmp/$$pkgaudit		# temp file for packaged commands
+
+: ${LOGNAME:=`id | sed -n 's/.*uid=[0-9]*(\([^)]*\)).*/\1/p'`}
+mailaddr=`uuname -l`!${LOGNAME:?}
+retval=0				# return code for this script
+cmd=$0
+case "$cmd" in
+*/*)
+	cmd=`basename ${0}`
+	;;
+esac
+
+usage="usage: ${cmd} [-c] [-M mailaddr] [-P pwdfile] [-r rextype] \\
+	-p pkgid machine-selection"
+
+case $# in
+0)
+    cat <<! >&2
+${usage}
+
+Examples:
+	${cmd} -pMail ibm
+	${cmd} -p Mail -M att!ihxxx!jdoe all
+	${cmd} -pemacs emacs
+
+Mails back an audit of the specified package on the machines specified
+by machine-selection.  Output includes ls -l of package files and checksums.
+
+Options:
+	-c override local password check
+	-M alternate return mail address (default ${mailaddr})
+	-P specifies a file containing the pkgid password
+	-p specifies the package ID for the update (required)
+	-r specifies remote execution type ("priv" or "nonpriv")
+!
+    exit
+    ;;
+esac
+
+cmdline="$cmd $*"
+
+# get any options.
+if options=`getopt 'cdM:N:P:p:r:' $*`
+then	:
+else
+	echo "$usage" >&2
+	exit 1
+fi
+set -- $options
+
+Debug=
+debug=
+options=
+packargs=
+pkgid=
+pwdfile=
+rextype=shell
+
+while :
+do
+	arg=$1
+	shift
+	case ${arg} in
+	-c)
+		packargs="${packargs} ${arg}"
+		;;
+	-d)
+		set -x
+		Debug="set -x"
+		debug=:
+		;;
+	-M)
+		mailaddr=${1}
+		shift
+		;;
+	-N)	# obsolete; uucp is the only network now
+		XNETPREF=$1
+		shift
+		export XNETPREF
+		;;
+	-P)
+		pwdfile="${arg} ${1}"
+		shift
+		;;
+	-p)
+		pkgid=$1
+		options="${options} ${arg}${1}"
+		packargs="${packargs} ${arg}${1}"
+		shift
+		;;
+	-r)
+		case $1 in
+		priv)
+			rextype=SHELL
+			;;
+		nonpriv)
+			rextype=shell
+			;;
+		*)
+			echo "unrecognized execution type: $1" >&2
+			exit 1
+			;;
+		esac
+		shift
+		;;
+	--)
+		break
+		;;
+	esac
+done
+
+: ${pkgid:?"must specify -p pkgid"}
+
+# other args are assumed to specify a machine list
+machines="${*:?'missing machine selector list'}"
+
+outdest= user=
+eval `echo "$mailaddr" | sed -n 's/^\([^!]*\)!\([^!]*\)$/outdest=\1 user=\2/p'`
+if [ -z "$outdest" -o -z "$user" ]
+then
+	echo "$cmd: cannot determine output destination from $mailaddr" >&2
+	retval=1
+	exit
+fi
+
+# Now is the time to arrange for certain temp files to disappear on exit.
+# From this point on, $retval controls the exit code for this command.
+trap "retval=1; exit" 1 2 3 15
+trap "$debug rm -f ${tmpcom} ${tmpfile}; exit \${retval}" 0
+
+cat <<!EOTF! > $tmpcom
+if test -r .machtype
+then	. ./.machtype
+elif test -r .cronprofile
+then	eval \`grep TYPE= .cronprofile\`
+else	TYPE=\`uname -n\`
+fi
+(
+	echo "Subject: pkgaudit of ${pkgid} on \$TYPE"	# \n doesn't work on some BSD-based types
+	echo
+	PATH=/usr/5bin:/usr/ucb:/bin:/usr/bin:/usr/lbin:/usr/local/bin export PATH	# use System V sum
+	HOME=\`logdir ${HOMEID}\`; export HOME
+	cd \$HOME
+	echo "expsys:\`uname -a\`"
+	while read path
+	do
+		if [ -d "\$path" ]
+		then	# can't use xargs because $HOME will be listed if no args
+			( find \$path -type d -exec ls -ld {} \; \
+			) 2>&1 | sed 's/^/expdir:/'
+			( find \$path -type f -exec ls -il {} \; \
+			) 2>&1 | sed 's/^/expfile:/'
+			( find \$path -type f -print \
+			  | while read p;do sum \$p;done \
+			) 2>&1 | sed 's/^/expsum:/'
+		else
+			ls -l \$path 2>&1 | sed 's/^/expfil:/'
+			if [ -r \$path ]
+			then
+				sum \$path 2>&1 | sed 's/^/expsum:/'
+			fi
+		fi
+	done <<-!EOPKGLIST! | sort -u
+		`$PRPKG ${pkgid} | sed -e 's/.*: *//' -e '/^$/d'`
+	!EOPKGLIST!
+) 2>&1 | sed -e "/./s/^/\$TYPE:/" -e "s/\$TYPE:Subject:/Subject:/" | /bin/mail ${mailaddr}
+!EOTF!
+
+if ${pkg_cmd} -A${rextype} ${pwdfile} ${packargs} -M${mailaddr} $tmpcom > $tmpfile
+then	: package ok
+else
+	echo "${cmd}: error: exit code $? from ${pkg_cmd}" >&2
+	retval=1
+	exit
+fi
+
+eval ${debug:+"cat $tmpfile"}
+
+$debug rm -f ${tmpcom}
+
+${batch:-batch} <<!!
+    (
+	${Debug}
+	set -u
+	trap "" 1 2
+	trap "retval=1; exit" 3 15
+	trap 'rm -f ${tmpfile}; exit \$retval' 0
+
+	echo "Subject: pkgaudit for ${machines}\n"
+	echo "${cmdline}"
+
+	${mach_cmd} -f addr name==exphub \
+	| ${net_cmd} \
+	| ${send_cmd} -! "$RHUBCMD upd $pkgid NULL $outdest $user BEGIN $machines END $options" -M $mailaddr $tmpfile
+
+	# just to be sure
+	rm -f ${tmpfile}
+
+    ) 2>&1 \
+    | /bin/mail ${LOGNAME}
+!!
+
+trap "exit \$retval" 0

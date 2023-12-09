@@ -1,0 +1,2706 @@
+                           PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS MMMMaaaannnnuuuuaaaallll
+
+
+
+
+
+     This document contains the manual pages for the object types  and
+     functions  included  in  the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeeessss package.  To create an
+     application program using the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeeessss  facilities,  include
+     the header file <_p_f._h> into your source code file which will pull
+     in several additional header files  automatically.   All  of  the
+     executable object modules for the package have been merged into a
+     library called _p_f._a and can be linked to  your  application  with
+     the following load command:
+
+
+             CC -o your_object.o pf.a -I/panelfeature_header_directory
+
+     Your application should not use the  resources  _s_t_d_i_n  or  _s_t_d_o_u_t
+     between  the  calls  to  the _b_e_g_i_n__P_F() and _e_n_d__P_F() functions as
+     these  are  used  for  interprocess  communications  between  the
+     application  and the graphics driver.  If _s_t_d_e_r_r is used, it must
+     be redirected to an output file when the application  is  invoked
+     to  prevent  spurious messages from interrupting the interprocess
+     protocol.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))   AAAASSSSCCCCIIIIIIII____DDDDIIIISSSSPPPPLLLLAAAAYYYY ((((CCCCCCCClllliiiibbbb))))   PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ASCIIdisp - Output only ASCII object nodes of a panelfeature
+          tree.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::AAAASSSSCCCCIIIIIIIIddddiiiisssspppp(((( nnnnaaaammmmeeee,,,, rrrroooowwwwssss,,,, ccccoooolllluuuummmmnnnnssss ))));;;;
+          AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::~~~~AAAASSSSCCCCIIIIIIIIddddiiiisssspppp(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee;;;;
+          iiiinnnntttt rrrroooowwwwssss,,,, ccccoooolllluuuummmmnnnnssss;;;;
+
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::ooooppppeeeerrrraaaattttoooorrrr<<<<<<<<((((cccchhhhaaaarrrr ****ssss))));;;;
+
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::mmmmoooovvvveeee____ttttoooo((((iiiinnnntttt ccccoooollll,,,, iiiinnnntttt rrrroooowwww))));;;;
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::hhhhoooommmmeeee(((())));;;;
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::cccclllleeeeaaaarrrr____ssssccccrrrreeeeeeeennnn(((())));;;;
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::cccclllleeeeaaaarrrr____lllliiiinnnneeee(((())));;;;
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::ttttrrrraaaapppp(((())));;;;
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIddddiiiisssspppp::::::::uuuunnnnttttrrrraaaapppp(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _A_S_C_I_I_d_i_s_p type displays are derived from the _p_a_n_e_l_f_e_a_t_u_r_e
+          base class and are used to provide a means for displaying
+          character data to the interactive screen.  Each _A_S_C_I_I_d_i_s_p
+          specification requires a name parameter and the size of the
+          display in character cells and produces a window object for
+          display on the interactive screen.
+
+          _A_S_C_I_I_d_i_s_p objects are write-only objects which can be
+          assigned only with a string value and cannot be read from.
+          Each string assignment results in one line being added to
+          the display with scrolling and truncation performed by the
+          underlying code as needed.  Assignment can be performed
+          using the << operator, or through the _s_e_t_u_p() and
+          _u_s_e_r__s_e_t_u_p() function calls.
+
+          Several support functions are provided to perform basic
+          screen functions.  The _h_o_m_e() and _m_o_v_e__t_o() functions allow
+          for programmed manipulations of the current cursor position
+          within the display window.  The _c_l_e_a_r__s_c_r_e_e_n() and
+          _c_l_e_a_r__l_i_n_e() functions blank out the display window from the
+          current cursor position to the end of the screen or line
+          respectively.
+
+          _T_r_a_p() and _u_n_t_r_a_p() provide a means to temporarily force all
+          communications between the host and display process to be
+          sent directly to the ASCIIdispl.  When a trap occurs, the
+          mouse is disabled and the keyboard is enabled providing the
+          effect of a crude terminal emulator within a panel window.
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))   AAAASSSSCCCCIIIIIIII____DDDDIIIISSSSPPPPLLLLAAAAYYYY ((((CCCCCCCClllliiiibbbb))))   PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          The intended usage of this feature is to allow UNIX[TM]
+          shell applications to manipulate a display.  The example
+          below shows how to use this feature to provide help text for
+          an application panel from a separate UNIX[TM] file.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // 24 line, 80 column ASCII type display
+               ASCIIdisp help("Help Screen", 24, 80);
+
+               help << "This is the first line of text";
+               help << "line 2" << "line 3";
+               help.move_to(0,23);
+               help << "and a line on the bottom";
+               help.home();
+               help.clear_screen();
+
+          //  here's a demo of a trap() --
+          //  note that the mouse is dead and the keyboard active
+          //  until the system call is terminated
+               help.trap();
+               system("TERM=dumb more -n24 helpfile");
+               help.untrap();
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          setup(3PF), user_setup(3PF).
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          The use of the trap function can be very powerful and very
+          dangerous.  Programmers should not invoke a process that
+          employs complex screen manipulations via "curses" without
+          overriding the environment TERM parameter as done in the
+          above example.  Further complications can occur if a shell
+          is spawned via the "system" command and the user logs out.
+          This is one command for the HACKS!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))    AAAASSSSCCCCIIIIIIII____KKKKNNNNOOOOBBBB ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ASCIIknob - ASCII input type object nodes of a panelfeature
+          tree.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb::::::::AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, qqqquuuueeeessssttttiiiioooonnnn,,,, vvvveeeerrrriiiiffffyyyy,,,, ddddeeeeffffaaaauuuulllltttt,,,, ffffuuuunnnncccc,,,,
+          wwwwiiiiddddtttthhhh ))));;;;
+          AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb::::::::AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, qqqquuuueeeessssttttiiiioooonnnn,,,, ffffmmmmaaaaxxxx,,,, ffffmmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          ffffuuuunnnncccc,,,, wwwwiiiiddddtttthhhh ))));;;;
+          AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb::::::::AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, qqqquuuueeeessssttttiiiioooonnnn,,,, iiiimmmmaaaaxxxx,,,, iiiimmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          ffffuuuunnnncccc,,,, wwwwiiiiddddtttthhhh ))));;;;
+          AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb::::::::~~~~AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee,,,, ****qqqquuuueeeessssttttiiiioooonnnn,,,, ****vvvveeeerrrriiiiffffyyyy,,,, ****ddddeeeeffffaaaauuuulllltttt;;;;
+          iiiinnnntttt wwwwiiiiddddtttthhhh,,,, iiiimmmmaaaaxxxx,,,, iiiimmmmiiiinnnn;;;;
+          ffffllllooooaaaatttt ffffmmmmiiiinnnn,,,, ffffmmmmaaaaxxxx;;;;
+          iiiinnnntttt((((****ffffuuuunnnncccc))))((((ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****))));;;;
+
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb::::::::ooooppppeeeerrrraaaattttoooorrrr<<<<<<<<((((cccchhhhaaaarrrr ****ssss))));;;;
+          vvvvooooiiiidddd AAAASSSSCCCCIIIIIIIIkkkknnnnoooobbbb::::::::ooooppppeeeerrrraaaattttoooorrrr>>>>>>>>((((cccchhhhaaaarrrr ****ssss))));;;;
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _A_S_C_I_I_k_n_o_b type displays are derived from the _p_a_n_e_l_f_e_a_t_u_r_e
+          base class and are used to provide a means for entering and
+          displaying character data on the interactive screen.
+          Interactive input to these knobs is accomplished by
+          selecting the response area with the mouse pointer and then
+          using the keyboard to type the new value in the highlighted
+          box.  Each _A_S_C_I_I_k_n_o_b specification requires a name
+          parameter, question string, default response string, action
+          function pointer, and response maximum width parameter.
+          Four flavors of ascii knobs are provided which are specified
+          by the remaining parameters to the constructor.  Numeric
+          type knobs can be specified which are either integer or
+          floating point by specifying the min and max values of the
+          knob's acceptable range.  Supplying a verification string
+          with the form
+
+               "string1|string2|string3|...|stringN"
+
+          causes the user response to be matched against each of the
+          specified strings to determine if the response is
+          acceptable.  If no match is found, the default string is
+          substituted in the assignment and the user is warned.
+          Supplying a NULL verification string creates a knob which
+          accepts any string.
+
+          _A_S_C_I_I_k_n_o_b objects are read/write objects which can be
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))    AAAASSSSCCCCIIIIIIII____KKKKNNNNOOOOBBBB ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          assigned to or from a string value Each string assignment
+          into the knob results in the validity checking and invokes
+          the action function.  Assignment can be performed using the
+          << operator, or through the _s_e_t_u_p() and _u_s_e_r__s_e_t_u_p()
+          function calls.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // integer type ascii knob
+               ASCIIknob ascint("AGE","Enter Your Age:", 100, 0, "21",
+                         NULLFUNC, 3);
+          // float type ascii knob
+               ASCIIknob ascflt("WEIGHT","Enter Your Weight:",
+                          300.0, 0.0, "150", NULLFUNC, 6);
+          // enumerate type ascii knob
+               ASCIIknob ascenum("TITLE","Enter Your Preference:",
+                    "Mr.|Mrs.|Ms.|Dr.|none", "none", NULLFUNC, 4);
+          // free string knob
+               ASCIIknob ascany("NAME","Enter Your Name:","","John
+          Doe",NULLFUNC,20);
+
+          // some assignments - assume char answer[100] exists
+               ascint << "35";
+               ascflt << "185.0";
+               ascenum << "Mr.";
+               ascany << "W. C. Fields";
+               ascany >> answer;
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          knob(3PF), operator(3PF), setup(3PF), user_setup(3PF).
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          The default string is not validated against the range or
+          verification specifications.  The programmer must specify a
+          valid default value to the constructor or provide code in
+          the associated interpretation function to handle an invalid
+          string when the default value is assigned.
+
+          The first three flavors of ASCII knobs provide similar
+          capabilities to the graphic knob types (INTknob, FLTknob,
+          and ENUMknob respectively) with the drawbacks that the
+          interactive user must maunally type and can enter an out-
+          of-range response.  Further, the programmer must parse the
+          string response to obtain a value.  The flavor of _A_S_C_I_I_k_n_o_b
+          which performs no verification on the input string provides
+          the only unique facility.
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 5                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEE ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          attribute: init_attribute, set_attribute, clr_attribute,
+          tog_attribute, test_attribute, get_attribute - manipulate
+          attributes of objects
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          vvvvooooiiiidddd ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::iiiinnnniiiitttt____aaaattttttttrrrriiiibbbbuuuutttteeee((((aaaattttttttrrrr))));;;;
+          vvvvooooiiiidddd ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::sssseeeetttt____aaaattttttttrrrriiiibbbbuuuutttteeee((((aaaattttttttrrrr))));;;;
+          vvvvooooiiiidddd ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ccccllllrrrr____aaaattttttttrrrriiiibbbbuuuutttteeee((((aaaattttttttrrrr))));;;;
+          vvvvooooiiiidddd ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ttttoooogggg____aaaattttttttrrrriiiibbbbuuuutttteeee((((aaaattttttttrrrr))));;;;
+          iiiinnnntttt ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::tttteeeesssstttt____aaaattttttttrrrriiiibbbbuuuutttteeee((((aaaattttttttrrrr))));;;;
+          iiiinnnntttt ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeetttt____aaaattttttttrrrriiiibbbbuuuutttteeee((((aaaattttttttrrrr))));;;;
+          iiiinnnntttt aaaattttttttrrrr;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions allow the application to access and modify
+          the value associated with the attribute parameter of a
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee object.  Currently, the only attribute
+          implemented is "greying" specified by the predefined
+          argument AAAA____GGGGRRRREEEEYYYY,,,, which dims the intensity of the image on
+          the graphics screen and prohibits the mouse from selecting
+          the object.  This capability allows the programmer to build
+          a knowledge base of operator skills into the control panel
+          by eliminating objects which are not relevant based on the
+          current knob settings.
+
+          _I_n_i_t__a_t_t_r_i_b_u_t_e is intended for use only during the
+          construction phase of a panel.  It modifies the host data
+          structure's attributes but does not inform the graphics
+          process.  Upon completion of the construction phase, the
+          entire ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree's data is transferred at once to
+          the graphics process including the attribute information.
+
+          _S_e_t, _c_l_r, and _t_o_g(_g_l_e) functions are used once the tree is
+          established to modify the attributes of the objects and
+          simultaneously update the graphic display.
+
+          _T_e_s_t__a_t_t_r_i_b_u_t_e returns TRUE or FALSE depending on the
+          outcome of a bitwise comparison of the argument with the
+          stored data.  _G_e_t__a_t_t_r_i_b_u_t_e returns the current setting of
+          the attribute flags.  Both functions can be called any time
+          during the program execution as neither involves
+          synchronization with the graphics process.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          begin_PF(3PF), cluster(3PF), display(3PF), find(3PF),
+          knob(3PF), panel(3PF), setup(3PF).
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 6                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEE ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     FFFFUUUUTTTTUUUURRRREEEE CCCCOOOONNNNSSSSIIIIDDDDEEEERRRRAAAATTTTIIIIOOOONNNNSSSS
+          Although there is currently only one attribute type, these
+          functions provide an interface which could support several.
+          Developers are cautioned that future enhancements may affect
+          the bit definitions of the attribute value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 7                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     BBBBEEEEGGGGIIIINNNN____PPPPFFFF ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          begin_PF: begin_PF, end_PF - interface process
+          administration
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....dddd>>>>
+
+          vvvvooooiiiidddd bbbbeeeeggggiiiinnnn____PPPPFFFF(((())));;;;
+          vvvvooooiiiidddd eeeennnndddd____PPPPFFFF(((())));;;;
+
+          eeeexxxxtttteeeerrrrnnnn iiiinnnntttt UUUUsssseeeerrrrmmmmooooddddeeee;;;;
+          - _t_h_e _g_l_o_b_a_l _U_s_e_r_m_o_d_e _i_s _s_e_t _t_o _t_h_e _p_r_e_d_e_f_i_n_e_d _v_a_l_u_e
+          IIIINNNNTTTTEEEERRRRAAAACCCCTTTTIIIIVVVVEEEE _o_r PPPPRRRROOOOGGGGRRRRAAAAMMMM
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions perform the initialization and cleanup tasks
+          associated with spawning a process to control the
+          interactive I/O capability for the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeeessss package.
+          _B_e_g_i_n__P_F() should be called before any constructors for
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee objects are run to establish the terminal
+          process and modify the I/O control parameters associated
+          with the user's TTY port for optimal communications.
+          _E_n_d__P_F() terminates the spawned process and restores TTY
+          control parameters to their previous state.
+
+          The global _U_s_e_r_m_o_d_e flag specifies whether the application
+          is running with the interactive interface or as a batch
+          process without I/O.  If set to PPPPRRRROOOOGGGGRRRRAAAAMMMM,,,, all dialog to the
+          terminal will be suppressed and these functions will not
+          invoke the interface process.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cluster(3PF), display(3PF), knob(3PF), panel(3PF),
+          setup(3PF), user_setup(3PF).
+
+     BBBBUUUUGGGGSSSS
+          The current implementation of the graphics I/O process
+          supports only the AT&T 630MTG terminal.  The functions do
+          not check environment variables to determine the terminal
+          type.  Future plans call for the development of a _c_u_r_s_e_s
+          based ascii interface to support most terminals and a
+          possibility exists for an _X-_w_i_n_d_o_w_s interface.  For now, it
+          is up to the programmer and user to insure that either a 630
+          terminal is used or the _U_s_e_r_m_o_d_e global is set to PPPPRRRROOOOGGGGRRRRAAAAMMMM
+          mode.
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 8                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))    CCCCHHHHAAAANNNNGGGGEEEEAAAAXXXXIIIISSSS ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          changeaxis - dynamically alter the parameters of a display
+          axis
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          vvvvooooiiiidddd ddddiiiissssppppllllaaaayyyy::::::::cccchhhhaaaannnnggggeeeeaaaaxxxxiiiissss(((( aaaaxxxxiiiissss____iiiidddd,,,, llllaaaabbbbeeeellll,,,, ssssccccaaaalllleeee____llllaaaabbbbeeeellll,,,, mmmmiiiinnnn,,,,
+          mmmmaaaaxxxx))));;;;
+          iiiinnnntttt aaaaxxxxiiiissss____iiiidddd {_p_r_e_d_e_f_i_n_e_d _v_a_l_u_e_s _i_n_c_l_u_d_e XXXXAAAAXXXXIIIISSSS,,,, YYYYAAAAXXXXIIIISSSS,,,, _a_n_d
+          ZZZZAAAAXXXXIIIISSSS }
+          cccchhhhaaaarrrr ****llllaaaabbbbeeeellll,,,, ****ssssccccaaaalllleeeellllaaaabbbbeeeellll;;;;
+          ffffllllooooaaaatttt mmmmiiiinnnn,,,, mmmmaaaaxxxx;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_h_a_n_g_e_a_x_i_s allows the programmer to modify the display's
+          axis parameters including labeling and scale range data
+          during the execution of the application.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          changefmt(3PF), display(3PF), setup(3PF).
+
+     BBBBUUUUGGGGSSSS
+          Execution of this function is not permitted during the
+          construction phase of a ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree.  Verbose labels
+          may be truncated on the graphics screen if they are
+          significantly longer than the original labels since the
+          object's image is not dynamically resized.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 9                                          (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     CCCCHHHHAAAANNNNGGGGEEEEFFFFMMMMTTTT ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          changefmt: - change the format used for numeric data fields
+          in panelfeature objects
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          vvvvooooiiiidddd kkkknnnnoooobbbb::::::::cccchhhhaaaannnnggggeeeeffffmmmmtttt((((nnnneeeewwwwffffmmmmtttt))));;;;
+          vvvvooooiiiidddd ddddiiiissssppppllllaaaayyyy::::::::cccchhhhaaaannnnggggeeeeffffmmmmtttt(((( aaaaxxxxiiiissss____iiiidddd,,,, nnnneeeewwwwffffmmmmtttt))));;;;
+          cccchhhhaaaarrrr ****nnnneeeewwwwffffmmmmtttt;;;;
+          iiiinnnntttt aaaaxxxxiiiissss____iiiidddd {_p_r_e_d_e_f_i_n_e_d _v_a_l_u_e_s _i_n_c_l_u_d_e XXXXAAAAXXXXIIIISSSS,,,, YYYYAAAAXXXXIIIISSSS,,,, _o_r
+          ZZZZAAAAXXXXIIIISSSS}}}}
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_h_a_n_g_e_f_m_t provides a way to override the default format
+          supplied by the constructors of numeric knobs and displays.
+          During construction, the default for all INT type objects is
+          set as %%%%----7777....0000ffff and float formats are set to %%%%----7777....2222ffff ....
+
+          Applications can modify the format specification to extend
+          the number of significant digits, obtain hex readouts for
+          integer objects, or switch to the exponential format.
+          Acceptable formats are specified as character strings using
+          the same rules that apply to the standard _p_r_i_n_t_f() function
+          with the exception that they must begin with a minus (-)
+          specification to force left justification for the graphics
+          presentation.  All internal conversions required to support
+          any practical mix of integer and float type format
+          specifications are built into the graphics I/O process.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          changeaxis(3PF), display(3PF), knob(3PF).
+
+     BBBBUUUUGGGGSSSS
+          _C_h_a_n_g_e_f_m_t is intended to be used during the construction
+          phase of the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree.  While the application
+          process data structures are updated when the function is
+          called, the graphics process structures are not refreshed
+          until the entire tree is downloaded for initial display.
+          While this is sufficient for knobs, it is sometimes
+          desirable to change the format of a display dynamically
+          during run-time.  This can be accomplished if the _c_h_a_n_g_e_f_m_t
+          calls for displays are followed by _c_h_a_n_g_e_a_x_i_s calls for the
+          affected display, since that function will transfer the
+          entire set of axis information when executed.
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 10                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))    CCCCHHHHAAAANNNNGGGGEEEESSSSIIIIZZZZEEEE ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          changesize - modify the number of current elements in a
+          variable width knob
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          iiiinnnntttt VVVVWWWWIIIINNNNTTTTkkkknnnnoooobbbb::::::::cccchhhhaaaannnnggggeeeessssiiiizzzzeeee(((( ttttoooossssiiiizzzzeeee ))));;;;
+          iiiinnnntttt VVVVWWWWFFFFLLLLTTTTkkkknnnnoooobbbb::::::::cccchhhhaaaannnnggggeeeessssiiiizzzzeeee(((( ttttoooossssiiiizzzzeeee ))));;;;
+          iiiinnnntttt ttttoooossssiiiizzzzeeee;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_h_a_n_g_e_s_i_z_e alters the current number of elements for the
+          knob against which it is invoked.  The function retains the
+          current values associated with the knob when establishing a
+          new width and fills any additional elements with the knob's
+          default value.  The return value is the new width of the
+          knob.  If the parameter is not between one and the maximum
+          width as specified to the object's constructor, an error
+          message is displayed and the knob width remains unchanged.
+          If the function is successful in establishing the requested
+          width, the internal itteration pointers for sequential
+          assignments are reset to the first element value.
+
+     BBBBUUUUGGGGSSSS
+          This function updates the width parameter in the main host
+          process but does not inform the graphics process to update
+          the display.  A workaround is to perform the changesize
+          function followed by an immediate assignment of the knob to
+          itself (e.g. knob1.changesize(3); knob1<<knob1).
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          getsize(3PF), knob(3PF), operators(3PF), setup(3PF),
+          user_setup(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 11                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       CCCCLLLLEEEEAAAARRRR ((((CCCCCCCClllliiiibbbb))))       PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          clear - erase all data stored in a display
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          vvvvooooiiiidddd ddddiiiissssppppllllaaaayyyy:::::::: cccclllleeeeaaaarrrr(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function clears a display object's storage and reflects
+          this state by updating the graphics display.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          display(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 12                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      CCCCLLLLUUUUSSSSTTTTEEEERRRR ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Cluster - intermediate nodes of a panelfeature tree which
+          link objects into logical groupings
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          cccclllluuuusssstttteeeerrrr::::::::cccclllluuuusssstttteeeerrrr(((( nnnnaaaammmmeeee,,,, aaaaccccttttiiiioooonnnnffffuuuunnnncccc,,,, _c_h_i_l_d-_l_i_s_t ))));;;;
+          cccclllluuuusssstttteeeerrrr::::::::~~~~cccclllluuuusssstttteeeerrrr(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee;;;;
+          iiiinnnntttt ((((****aaaaccccttttiiiioooonnnnffffuuuunnnncccc))))((((ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****))));;;;
+          WWWWhhhheeeerrrreeee _c_h_i_l_d-_l_i_s_t iiiissss aaaa lllliiiisssstttt ooooffff ffffrrrroooommmm 1111 ttttoooo 11110000 ccccoooommmmmmmmaaaa sssseeeeppppaaaarrrraaaatttteeeedddd
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ppppooooiiiinnnntttteeeerrrrssss....
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_l_u_s_t_e_r_s are derived from the _p_a_n_e_l_f_e_a_t_u_r_e base class and
+          are used to establish the connectivity of a ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee
+          tree.  Each _c_l_u_s_t_e_r specification requires a name parameter,
+          a list of pointers to the child ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee objects, and a
+          pointer to an interpretation function which performs any
+          application specific activities required whenever a
+          descendant node is assigned a new value.  The constant
+          NNNNUUUULLLLLLLLFFFFUUUUNNNNCCCC is defined which can be used to specify that no
+          action is associated with a particular knob object.
+
+          The order of execution for the interpretation functions
+          begins with the function associated with the modified node
+          followed by each parent's function in turn until a _P_a_n_e_l
+          type object is encountered.  The function's argument is
+          filled at run time with a pointer to the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee object
+          associated with the function call as the tree walk proceeds.
+
+          For the current version of the _6_3_0 _M_T_G terminal graphics,
+          the order of initial mapping of objects in the cluster to
+          the screen's ACTIVITY window is the reverse of the order in
+          which they are included in the _c_h_i_l_d-_l_i_s_t. The programmer
+          can alter the order of the list to obtain the best default
+          presentation of the objects on the screen.  However, since
+          the user has the ability to move object windows on the
+          screen, and the internal ordering of child pointers changes
+          during user interaction, no further assumptions can be made
+          about the child ordering / positioning relationships.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume previously defined knob, display, cluster, and
+          sub-panel objects
+          // where the sub-panel object class has a public member
+          _f_r_o_n_t_p_a_n_e_lwhich
+          // points to the root panel of the module
+          extern int func(panelfeature *);
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 13                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      CCCCLLLLUUUUSSSSTTTTEEEERRRR ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          panelfeature *newclus = new cluster("Test_Setup",
+                                   &test_knob,
+                                   &test_display,
+                                   &other_cluster,
+                                   sub_pan.frontpanel,
+                                   &func);
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          display(3PF), knob(3PF), panel(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 14                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))  DDDDEEEETTTTEEEECCCCTTTT____BBBBRRRRKKKK____CCCCMMMMDDDD ((((CCCCCCCClllliiiibbbb))))   PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          detect_brk_cmd - poll for interactive BREAK message
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          iiiinnnntttt ddddeeeetttteeeecccctttt____bbbbrrrrkkkk____ccccmmmmdddd(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function determines if the user has requested a BREAK
+          during the interval since the last call to this function
+          occurred.  The graphics interface process will send the
+          BREAK request to the application process which is held until
+          specifically requested by _d_e_t_e_c_t__b_r_k__c_m_d(). The function
+          returns _T_R_U_E or _F_A_L_S_E to indicate the presence or absence of
+          a request.  Applications should poll for a break during long
+          sequences of execution where the interactive capability is
+          disabled.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          mouse_active(3PF), user_setup(3PF) 630MTG(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 15                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      DDDDIIIISSSSPPPPLLLLAAAAYYYY ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Display - Output only object nodes of a panelfeature tree.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          ddddiiiissssppppllllaaaayyyy::::::::ddddiiiissssppppllllaaaayyyy(((( nnnnaaaammmmeeee,,,, _a_x_e_s-_l_i_s_t, nnnnuuuummmmppppooooiiiinnnnttttssss ))));;;;
+          ddddiiiissssppppllllaaaayyyy::::::::~~~~ddddiiiissssppppllllaaaayyyy(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee;;;;
+          iiiinnnntttt nnnnuuuummmmppppooooiiiinnnnttttssss;;;;
+          WWWWhhhheeeerrrreeee _a_x_e_s-_l_i_s_t, iiiissss aaaa lllliiiisssstttt ooooffff ffffrrrroooommmm 1111 ttttoooo 3333 ccccoooommmmmmmmaaaa sssseeeeppppaaaarrrraaaatttteeeedddd
+          _a_x_i_s-_s_p_e_c_i_f_i_c_a_t_i_o_n_s.
+          AAAAnnnn _a_x_i_s-_s_p_e_c_i_f_i_c_a_t_i_o_n iiiissss eeeeiiiitttthhhheeeerrrr tttthhhheeee lllliiiisssstttt::::
+               cccchhhhaaaarrrr ****aaaaxxxxiiiissssnnnnaaaammmmeeee,,,, cccchhhhaaaarrrr ****ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, ffffllllooooaaaatttt mmmmaaaaxxxx,,,, ffffllllooooaaaatttt mmmmiiiinnnn,,,,
+          oooorrrr aaaa rrrreeeeffffeeeerrrreeeennnncccceeee ttttoooo aaaannnn iiiinnnnssssttttaaaannnnttttiiiiaaaatttteeeedddd kkkknnnnoooobbbb ffffrrrroooommmm wwwwhhhhiiiicccchhhh tttthhhheeee _a_x_i_s-
+          _s_p_e_c_i_f_i_c_a_t_i_o_n ddddaaaattttaaaa iiiissss eeeexxxxttttrrrraaaacccctttteeeedddd....
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _D_i_s_p_l_a_y_s are derived from the _p_a_n_e_l_f_e_a_t_u_r_e base class and
+          are used to provide a means for displaying data to the
+          interactive screen.  Each display specification requires a
+          name parameter, specifications for the axes, and the number
+          of data points to be stored internally by the _d_i_s_p_l_a_y. One,
+          two, and three dimensional _d_i_s_p_l_a_y_s are supported.
+
+          Default presentation on the graphics display takes the form
+          of a list of data points but where appropriate, an
+          interactive icon is provided to permit changing to a
+          graphical representation.  Axis limits are ignored during
+          assignment of values but are used to provide the default
+          limits for scales during plotting.  Out of range data will
+          be presented but clipped to the window borders for the plot
+          format.  An auto-range icon is provided while in the
+          interactive interface mode which will rescale the limits
+          based on the data currently stored by the _d_i_s_p_l_a_y object.
+
+          The list format will store up to the specified number of
+          data points and then shift in new data by discarding old
+          values on a FIFO basis.  The plot format stores data in a
+          similar manner, but retains all points on the graphical
+          image.  Note that changing between the formats or resizing
+          the plot window will result in the _d_i_s_p_l_a_y redrawing only
+          the points stored in current storage.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume previously defined knob _m_e_a_s_f_r_e_q exists
+
+          // a one dimension, 1 point indicator display
+          panelfeature *newdispl = new display("Measured_Result",
+                              "Frequency", "Hz", 4000.0, 0.0, 1);
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 16                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      DDDDIIIISSSSPPPPLLLLAAAAYYYY ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          // a three dimension, 100 point display using a knob to
+          specify the X axis
+          panelfeature *newdisp2 = new display("Envelope Delay
+          Distortion",
+                              _m_e_a_s_f_r_e_q,
+                              "EDD", "uSec", 100.0, 0.0,
+                              "Level", "dBm", 20.0, -60.0, 100);
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          operators(3PF), knob(3PF), changeaxis(3PF), clear(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 17                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       FFFFIIIINNNNDDDD ((((CCCCCCCClllliiiibbbb))))        PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          find - search a tree for the specified node name
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ffffiiiinnnndddd((((llllooooooookkkknnnnaaaammmmeeee))));;;;
+          cccchhhhaaaarrrr ****llllooooooookkkknnnnaaaammmmeeee;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _F_i_n_d searches _d_o_w_n a ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree from the current node
+          looking for a node whose name matches the _l_o_o_k_n_a_m_e
+          parameter.  The function can be invoked against any object
+          type to perform a search down through the sub-tree rooted by
+          the current node.
+
+          _L_o_o_k_n_a_m_e should be a simple name for all node types except
+          PPPPAAAANNNNEEEELLLL objects.  The later type can accept either a simple
+          name or a unique pathname which invokes a recursive search.
+          Unique pathnames are a concatenation of one or more sub-
+          panel names followed by the desired object name which are
+          separated by exclamation marks (!) which uniquely specify
+          the branch of the tree leading to the object.  This feature
+          allows the application to locate an object who's name may be
+          duplicated within the overall tree structure.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume a main panel _m_a_c_h_i_n_e containing knob _F_r_e_q. _L_i_s_t
+          // with two instances of the same sub-panel _i_n_s_t_r named
+          _t_x_m_i_t and _r_c_v_r
+          // each of which contains a knob _m_e_a_s. _f_r_e_q.
+
+          panelfeature *masterknob = machine.find("Freq. List");
+          panelfeature *txfrq = machine.find("txmit!meas. freq.");
+          panelfeature *rxfrq = machine.find("rcvr!meas. freq.");
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cluster(3PF), display(3PF), getname(3PF), knob(3PF),
+          panel(3PF), setup(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 18                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))        GGGGEEEETTTT ((((CCCCCCCClllliiiibbbb))))        PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          get: getmin, getmax, getdflt, getscalelabel, getfmt - return
+          various parameters associated with knobs.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          cccchhhhaaaarrrr ****kkkknnnnoooobbbb::::::::ggggeeeettttssssccccaaaalllleeeellllaaaabbbbeeeellll(((())));;;;
+          cccchhhhaaaarrrr ****kkkknnnnoooobbbb::::::::ggggeeeettttffffmmmmtttt(((())));;;;
+          ffffllllooooaaaatttt kkkknnnnoooobbbb::::::::ggggeeeettttmmmmiiiinnnn(((())));;;;
+          ffffllllooooaaaatttt kkkknnnnoooobbbb::::::::ggggeeeettttmmmmaaaaxxxx(((())));;;;
+          ffffllllooooaaaatttt kkkknnnnoooobbbb::::::::ggggeeeettttddddfffflllltttt(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions return various parameters including range
+          data, default value, current numeric format, and the scale
+          label string which describe any of the derived types of
+          KNOBs.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          changefmt(3PF), getname(3PF), knob(3PF), operators(3PF),
+          setup(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 19                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))  GGGGEEEETTTT____TTTTHHHHIIIISSSS____MMMMOOOODDDDUUUULLLLEEEE ((((CCCCCCCClllliiiibbbb))))  PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          get_this_module - extract the class pointer from a panel
+          object
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          vvvvooooiiiidddd ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeetttt____tttthhhhiiiissss____mmmmoooodddduuuulllleeee(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function retrieves the pointer to the container class
+          that includes the object against which the function was
+          invoked.
+
+          The primary purpose of this function is to allow
+          interpretation functions associated with objects contained
+          within sub-panels to access other elements within their
+          class.  Since the interpretation functions are invoked
+          indirectly via the underlying ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee code, the
+          assignment of the C++ resource _t_h_i_s within those functions
+          is not provided.  _G_e_t__t_h_i_s__m_o_d_u_l_e returns the (void *)
+          pointer to the container class which was specified during
+          the construction phase of the root panel of the sub-module.
+
+          Note that during construction of the sub-panel objects, the
+          pointer has not yet been established. _G_e_t__t_h_i_s__m_o_d_u_l_e will
+          return NULL here, making it impossible to access other data
+          items in the class.  Further, the root panel of the overall
+          application tree will always have a NULL pointer assigned to
+          it since it cannot be part of a container class.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // part of a class definition for a re-useable sub-panel
+          class mytype
+          {
+               panelfeature *myknob;
+               panelfeature *mycluster;
+               int other_data_specific_to_mytype;
+          public:
+               panelfeature *mypanel;
+
+               mytype();
+               ~mytype();
+               int myknobfunc(panelfeature *);
+          }
+
+          // class constructor
+          mytype::mytype()
+          {
+               myknob = new INTknob("kname", "label", 100, 0, 40,
+          &mytype::myknobfunc);
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 20                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))  GGGGEEEETTTT____TTTTHHHHIIIISSSS____MMMMOOOODDDDUUUULLLLEEEE ((((CCCCCCCClllliiiibbbb))))  PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+               mycluster = new cluster("cname", NULLFUNC, myknob);
+
+              // NOTE the initialization of the class pointer is done
+          here!!!
+               mypanel = new panel("pname", (cluster *)mycluster,
+          this);
+          }
+
+          // class destructor
+          mytype::~mytype()
+          {
+               delete myknob;
+               delete mycluster;
+               delete mypanel;
+          }
+
+          // action function for myknob
+          mytype::myknobfunc(panelfeature *p)
+          {
+              // remember, the argument is a pointer to the invoking
+          object (myknob)
+
+               mytype *This;
+
+               if((This = (mytype *)p->get_this_module()) != NULL)
+               {
+                    // This now points to the instance of class mytype
+                    // which contains the invoking myknob ...
+
+                    ...
+               }
+          }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          panel(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 21                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      GGGGEEEETTTTNNNNAAAAMMMMEEEE ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          getname: getname, getpath - return the name associated with
+          the current panelfeature object
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          cccchhhhaaaarrrr ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeettttnnnnaaaammmmeeee(((())));;;;
+          cccchhhhaaaarrrr ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeettttppppaaaatttthhhh(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions return the identifying name tag of the
+          current node in the panelfeature tree.  _G_e_t_n_a_m_e returns only
+          the simple name of the node which is useful for subsequent
+          calls to _f_i_n_d() and _s_e_t_u_p().
+
+          _G_e_t_p_a_t_h returns a string which is a concatenation of all of
+          the sub-panel names and the current node name for the
+          corresponding ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree.  The root panel name is not
+          included and the fields of this string are separated with an
+          exclamation mark (!).  The string returned by _g_e_t_p_a_t_h() is
+          primarily used by internal functions to differentiate
+          between identically named knobs contained in different sub-
+          panels of an application.  A typical path name might look
+          like:
+
+          _s_u_b-_p_a_n-_n_a_m_e!_s_u_b-_p_a_n__n_a_m_e!_k_n_o_b-_n_a_m_e
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cluster(3PF), display(3PF), find(3PF), knob(3PF),
+          panel(3PF), setup(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 22                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))    GGGGEEEETTTTNNNNUUUUMMMMCCCCHHHHIIIILLLLDDDD ((((CCCCCCCClllliiiibbbb))))    PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          getnumchild - return the number of children related to a
+          node in the panelfeature tree
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          iiiinnnntttt ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeettttnnnnuuuummmmcccchhhhiiiilllldddd(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function returns the number of children attached to a
+          given node in the panelfeature tree.  The function will
+          always return a zero for all but _c_l_u_s_t_e_r or _p_a_n_e_l type
+          objects.  _P_a_n_e_l objects will always have one child while
+          _c_l_u_s_t_e_r_s can have from 1 to 10 children..
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          getparent(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 23                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     GGGGEEEETTTTPPPPAAAARRRREEEENNNNTTTT ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          getparent: getparent, getchild - return pointer to immediate
+          relative in panelfeature tree
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeettttppppaaaarrrreeeennnntttt(((())));;;;
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::ggggeeeettttcccchhhhiiiilllldddd((((iiiinnnntttt nnnnuuuummmmcccchhhhiiiilllldddd))));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions return pointers to the parent and child
+          nodes of a panelfeature tree if they exist.  They provide
+          the capabilities needed to traverse a panelfeature tree and
+          can be used to determine if the construction phase of the
+          tree is in progress.
+
+          The _g_e_t_p_a_r_e_n_t function returns a pointer to the immediate
+          parent of the current node.  The current node can be any of
+          the valid ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee types while the returned node will
+          always be a pointer to a _c_l_u_s_t_e_r or a _p_a_n_e_l object.  During
+          the construction phase of a panelfeature tree, a call to
+          _g_e_t_p_a_r_e_n_t() from a node's interpretation function will
+          always return the NULL pointer since the tree is always
+          constructed from the bottom up.  The NULL pointer will also
+          be returned if _g_e_t_p_a_r_e_n_t() is attempted on the root _p_a_n_e_l
+          node.
+
+          The _g_e_t_c_h_i_l_d function returns a pointer to the specified
+          child of the current node.  While the current node can be
+          any of the valid ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee types, the returned value will
+          always be a NULL pointer unless the object is of the _c_l_u_s_t_e_r
+          or _p_a_n_e_l type.  If the numchild argument is greater than or
+          equal to the object's number of children, the NULL pointer
+          will also be returned.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          getnumchild(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 24                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      GGGGEEEETTTTSSSSIIIIZZZZEEEE ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          getsize: getsize, getmaxsize - return the number of elements
+          in a knob
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          iiiinnnntttt kkkknnnnoooobbbb::::::::ggggeeeettttssssiiiizzzzeeee(((())));;;;
+          iiiinnnntttt kkkknnnnoooobbbb::::::::ggggeeeettttmmmmaaaaxxxxssssiiiizzzzeeee(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _G_e_t_s_i_z_e returns the current number of elements for the knob
+          against which it is invoked.  This function is useful when
+          creating control loops based on the current setting of a
+          variable width knob.
+
+          _G_e_t_m_a_x_s_i_z_e returns the maximum number of elements for the
+          knob against which it is invoked.  For fixed width and
+          single element knobs, the two functions will return the same
+          value.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume the previous definition of a variable
+          // width knob _f_r_e_q_l_s_t to specify a measurement frequency
+          list
+
+          for (int i=0; i<freqlst.getsize(); i++)
+          {
+               // perform the measurement
+          }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          changesize(3PF), knob(3PF), operators(3PF), setup(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 25                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       KKKKNNNNOOOOBBBB ((((CCCCCCCClllliiiibbbb))))        PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          knob: INTknob, FWINTknob, VWINTknob, FLTknob, FWFLTknob,
+          VWFLTknob, ENUMknob - derived object types from the
+          panelfeature base class.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+
+          IIIINNNNTTTTkkkknnnnoooobbbb::::::::IIIINNNNTTTTkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          aaaaccccttttiiiioooonnnnffffuuuunnnncccc ))));;;;
+          IIIINNNNTTTTkkkknnnnoooobbbb::::::::~~~~IIIINNNNTTTTkkkknnnnoooobbbb(((())));;;;
+          FFFFWWWWIIIINNNNTTTTkkkknnnnoooobbbb::::::::FFFFWWWWIIIINNNNTTTTkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          aaaaccccttttiiiioooonnnnffffuuuunnnncccc,,,, wwwwiiiiddddeeee ))));;;;
+          FFFFWWWWIIIINNNNTTTTkkkknnnnoooobbbb::::::::~~~~FFFFWWWWIIIINNNNTTTTkkkknnnnoooobbbb(((())));;;;
+          VVVVWWWWIIIINNNNTTTTkkkknnnnoooobbbb::::::::VVVVWWWWIIIINNNNTTTTkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          aaaaccccttttiiiioooonnnnffffuuuunnnncccc,,,, wwwwiiiiddddeeee,,,, mmmmaaaaxxxxwwwwiiiiddddeeee ))));;;;
+          VVVVWWWWIIIINNNNTTTTkkkknnnnoooobbbb::::::::~~~~VVVVWWWWIIIINNNNTTTTkkkknnnnoooobbbb(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee,,,, ****ssssccccaaaalllleeeellllaaaabbbbeeeellll;;;;
+          iiiinnnntttt mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt;;;;
+          iiiinnnntttt wwwwiiiiddddeeee,,,, mmmmaaaaxxxxwwwwiiiiddddeeee;;;;
+          iiiinnnntttt ((((****aaaaccccttttiiiioooonnnnffffuuuunnnncccc))))((((ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****))));;;;
+
+          FFFFLLLLTTTTkkkknnnnoooobbbb::::::::FFFFLLLLTTTTkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          aaaaccccttttiiiioooonnnnffffuuuunnnncccc ))));;;;
+          FFFFLLLLTTTTkkkknnnnoooobbbb::::::::~~~~FFFFLLLLTTTTkkkknnnnoooobbbb(((())));;;;
+          FFFFWWWWFFFFLLLLTTTTkkkknnnnoooobbbb::::::::FFFFWWWWFFFFLLLLTTTTkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          aaaaccccttttiiiioooonnnnffffuuuunnnncccc,,,, wwwwiiiiddddeeee ))));;;;
+          FFFFWWWWFFFFLLLLTTTTkkkknnnnoooobbbb::::::::~~~~FFFFWWWWFFFFLLLLTTTTkkkknnnnoooobbbb(((())));;;;
+          VVVVWWWWFFFFLLLLTTTTkkkknnnnoooobbbb::::::::VVVVWWWWFFFFLLLLTTTTkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, ssssccccaaaalllleeeellllaaaabbbbeeeellll,,,, mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt,,,,
+          aaaaccccttttiiiioooonnnnffffuuuunnnncccc,,,, wwwwiiiiddddeeee,,,, mmmmaaaaxxxxwwwwiiiiddddeeee ))));;;;
+          VVVVWWWWFFFFLLLLTTTTkkkknnnnoooobbbb::::::::~~~~VVVVWWWWFFFFLLLLTTTTkkkknnnnoooobbbb(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee,,,, ****ssssccccaaaalllleeeellllaaaabbbbeeeellll;;;;
+          ffffllllooooaaaatttt mmmmaaaaxxxx,,,, mmmmiiiinnnn,,,, ddddeeeeffffaaaauuuulllltttt;;;;
+          iiiinnnntttt wwwwiiiiddddeeee,,,, mmmmaaaaxxxxwwwwiiiiddddeeee;;;;
+          iiiinnnntttt ((((****aaaaccccttttiiiioooonnnnffffuuuunnnncccc))))((((ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****))));;;;
+
+          EEEENNNNUUUUMMMMkkkknnnnoooobbbb::::::::EEEENNNNUUUUMMMMkkkknnnnoooobbbb(((( nnnnaaaammmmeeee,,,, nnnnuuuummmmppppoooossssiiiittttiiiioooonnnn,,,, llllaaaabbbbeeeellllssss,,,, vvvvaaaalllluuuueeeessss,,,,
+          ddddeeeeffffaaaauuuulllltttt,,,, aaaaccccttttiiiioooonnnnffffuuuunnnncccc))));;;;
+          EEEENNNNUUUUMMMMkkkknnnnoooobbbb::::::::~~~~EEEENNNNUUUUMMMMkkkknnnnoooobbbb(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee;;;;
+          iiiinnnntttt nnnnuuuummmmppppoooossssiiiittttiiiioooonnnn,,,, ddddeeeeffffaaaauuuulllltttt;;;;
+          cccchhhhaaaarrrr ****llllaaaabbbbeeeellllssss[[[[]]]];;;;
+          iiiinnnntttt vvvvaaaalllluuuueeeessss[[[[]]]];;;;
+          iiiinnnntttt ((((****aaaaccccttttiiiioooonnnnffffuuuunnnncccc))))((((ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee ****))));;;;
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Several flavors of knob types are derived from the
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee base class to provide the functionality which
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 26                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       KKKKNNNNOOOOBBBB ((((CCCCCCCClllliiiibbbb))))        PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          parallels the utility of simple types provided in any
+          reasonable programming language.  Included are single
+          element integer and float knobs, and both fixed width and
+          variable width array knobs for the two basic types.
+          Enumeration type knobs provide an alternative method for
+          defining integer elements by allowing label values to be
+          associated with integer constants.
+
+          Each of the object constructors require a name parameter and
+          a pointer to an interpretation function which is invoked
+          each time the knob is assigned a new value (including the
+          assignment of the default value during construction).  Name
+          strings must consist of at least one alphanumeric character
+          and cannot contain a dash (-), an exclamation mark (!), or a
+          semicolon (;).  The scale labels also restrict the use of
+          the dash and semicolon but can be any string containing one
+          or more characters.  Note that a string with a single space
+          character (" ") will result in no scale label being shown
+          for the knob.  The constant function pointer NNNNUUUULLLLLLLLFFFFUUUUNNNNCCCC is
+          defined for use when the programmer wishes to eliminate the
+          interpretation activity associated with a particular knob
+          object.
+
+          The numeric type objects also require a scale label to
+          identify the units represented and the maximum and minimum
+          parameters which bound the range of acceptable assignment
+          values.  Array type knobs require width parameters to
+          specify the width of the knob upon initialization, and in
+          the case of variable width elements, the maximum width for
+          which storage will be allocated.
+
+          Enumeration type knobs associate an array of label strings
+          with an array of integer values.  Appropriate values for
+          assignment operations both in to and out of the knob
+          (including the default parameter) are specified by the
+          contents of the value array, not the index into the array.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // a single element float knob (allocation from free store)
+          extern int func(panelfeature *);
+          panelfeature *fknob = new FLTknob("Temperature", "Deg. C",
+          100.0, 0.0, 23.9, &func);
+
+          // a variable width integer array (automatic allocation)
+          with 10 elements max.
+          VWINTknob flist("Measurement Freq.", "Hz", 4000, 200, 1800,
+          NULLFUNC, 7, 10);
+
+          // an enumerated knob example
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 27                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       KKKKNNNNOOOOBBBB ((((CCCCCCCClllliiiibbbb))))        PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          extern int runbath(panelfeature *);
+          static char *tlabs[] = {"Freezing", "Boiling", "Room",
+          "Bath"};
+          static int tvals[] = {32, 212, 68, 90};
+          ENUMknob wtemp("WATER TEMP.", 4, tlabs, tvals, 68,
+          &runbath);
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          operators(3PF), displays(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 28                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     LLLLOOOOAAAADDDDLLLLOOOOGGGGOOOO ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          loadlogo - load an application specific logo
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+
+          vvvvooooiiiidddd llllooooaaaaddddllllooooggggoooo((((ttttiiiittttlllleeee,,,, ssssuuuubbbbttttiiiittttlllleeee1111,,,, ssssuuuubbbbttttiiiittttlllleeee2222,,,, ddddaaaatttteeee,,,, iiiiccccoooonnnn))));;;;
+          cccchhhhaaaarrrr ****ttttiiiittttlllleeee,,,, ****ssssuuuubbbbttttiiiittttlllleeee1111;;;;
+          cccchhhhaaaarrrr ****ssssuuuubbbbttttiiiittttlllleeee2222,,,, ****ddddaaaatttteeee;;;;
+          cccchhhhaaaarrrr ****iiiiccccoooonnnn;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function allows the applications developer to override
+          the default logo for the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeeessss package on the
+          graphics interface.  The logo box allows for 3 lines of
+          title information, a copyright blurb, and space for a 48x48
+          bitmap icon.  Due to space limitations on the screen, the
+          following length limits are imposed on the title data:
+               _t_i_t_l_e - _u_p _t_o _6 _c_h_a_r_a_c_t_e_r_s
+               _s_u_b_t_i_t_l_e_s - _u_p _t_o _1_0 _c_h_a_r_a_c_t_e_r_s
+               _d_a_t_e - _a_l_w_a_y_s _4 _c_h_a_r_a_c_t_e_r_s
+
+          The icon data is represented as a continuous string of 768
+          HEX characters which describe a 64x48 bitmap for the
+          displayable image.  Only the top left 48x48 pixels of this
+          bitmap are displayed.  Each HEX character defines 4 pixels
+          in a horizontal row beginning with the top left corner so
+          that each group of 16 characters describe a complete row.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          The following code segment uses the data that is built in to
+          the code as default values.  If executed, it would load a
+          new logo which appears identical to the default.
+               static char title[] = {"PANEL"};
+               static char subtitle1[] = {"FEATURES"};
+               static char subtitle2[] = {"by:"};
+               static char date[] = {"1988"};
+               static char icon[] = {"FFFFFFFFFFFFC000FFFFFFFFFFFFC000
+          FFFFFFFFFFFFC000FFFFFFFFFFFFC000FFFFFC1FFFFFC000FFFFF841FFFFC000
+          FFFFE0407FFFC000FFFF80403FFFC000FFFE00401FFFC000FFFE00C00FFFC000
+          FFFC008007FFC000FFF800C047FFC000FFF8208083FFC000FFF0208243FFC000
+          FFF0008420FFC000FFE3018000FFC000FFE883F8207FC000FFE03FFC107FC000
+          FFC8FFFFCC3FC000FFC40000013FC000FF817F6FF03FC000FFC15068A43FC000
+          FFC10961A01FC000FFC07E77E03FC000FF82BE73C00FC000FF00C174300FC000
+          FF007F77E21FC000FFC07EFBE01FC000FF80FEFBF01FC000FF017E73F01FC000
+          FF007FFFE00FC000FF84F801E01FC000FF807000E10FC000FF903000603FC000
+          FF806004018FC000FF84A3FE0007C000FF01C1F8219FC000FE43E00136DFC000
+          FF81F1083F7FC000FFFDF0887FFFC000FFFFF000FFFFC000FFFFF000FFFFC000
+          FFFFFC01FFFFC000FFFFFC01FFFFC000FFFFFE03FFFFC000FFFFFFFFFFFFC000
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 29                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     LLLLOOOOAAAADDDDLLLLOOOOGGGGOOOO ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          FFFFFFFFFFFFC000FFFFFFFFFFFFC000 "};
+
+               loadlogo(title, subtitle1, subtitle2, date, icon);
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          begin_PF(3PF), 630MTG(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 30                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     MMMMEEEESSSSSSSSAAAAGGGGEEEESSSS ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          messages: errormsg, infomsg - message capability to the
+          screen's MESSAGE box
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          vvvvooooiiiidddd eeeerrrrrrrroooorrrrmmmmssssgggg((((tttteeeexxxxtttt))));;;;
+          vvvvooooiiiidddd iiiinnnnffffoooommmmssssgggg((((tttteeeexxxxtttt))));;;;
+          cccchhhhaaaarrrr ****tttteeeexxxxtttt;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These functions provide a message facility for reporting
+          errors or passing along general information about the
+          application's progress.  _E_r_r_o_r_m_s_g will display a line on the
+          screen's MESSAGE box, ring the bell, and wait for a mouse
+          key to be pressed prior to clearing the message and
+          continuing.  _I_n_f_o_m_s_g simply clears the box of any existing
+          message and provides the new text, allowing it to remain
+          visible as the application continues.
+
+          The message text will be accepted as one long string which
+          will be broken into lines for display.  The MESSAGE box
+          permits 6 lines of 50 characters.  Programmers can force a
+          newline with a _t_i_l_d_e (~) character.  A predefined constant,
+          EEEERRRRAAAASSSSEEEE____MMMMSSSSGGGG is available for use with _i_n_f_o_m_s_g which will erase
+          any existing text and leave the box blank;
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          begin_PF(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 31                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))   MMMMOOOOUUUUSSSSEEEE____AAAACCCCTTTTIIIIVVVVEEEE ((((CCCCCCCClllliiiibbbb))))    PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          mouse_active: mouse_active, mouse_inactive - manual
+          enable/disable of the interactive mouse
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          vvvvooooiiiidddd mmmmoooouuuusssseeee____aaaaccccttttiiiivvvveeee(((())));;;;
+          vvvvooooiiiidddd mmmmoooouuuusssseeee____iiiinnnnaaaaccccttttiiiivvvveeee(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _M_o_u_s_e__a_c_t_i_v_e enables the mouse for interactive operations on
+          the screen.  The mouse icon is changed to a pointer to
+          signal the user that interaction may begin.
+
+          _M_o_u_s_e__i_n_a_c_t_i_v_e disables the mouse for interactive
+          operations.  The mouse icon is changed to a coffee cup to
+          signal the user that interaction has ended.
+
+          Under normal conditions, the mouse is disabled when the
+          initial panel is constructed and is automatically activated
+          when the program executes a call to the _u_s_e_r__s_e_t_u_p function.
+          These facilities are primarily useful from within
+          interpretation functions which require long periods of time
+          to complete.  The capability is provided both to prevent the
+          user from making further modifications while the task is in
+          progress and to signal the user that activity is occurring
+          via the mouse icon change.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          begin_PF(3PF), user_setup(3PF).
+
+     FFFFUUUUTTTTUUUURRRREEEE CCCCOOOONNNNSSSSIIIIDDDDEEEERRRRAAAATTTTIIIIOOOONNNNSSSS
+          Future plans call for the development of a _c_u_r_s_e_s type ascii
+          interface driver which will not support a mouse.  The
+          functionality provided by these routines will be extended to
+          the cursor control.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 32                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     OOOOPPPPEEEERRRRAAAATTTTOOOORRRRSSSS ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          operators: >>, << - assignment operators for panelfeature
+          objects
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee&&&& _a_s_s_i_g_n_a_b_l_e__p_a_n_e_l_f_e_a_t_u_r_e ::::::::ooooppppeeeerrrraaaattttoooorrrr<<<<<<<< (((( _o_p_e_r_a_n_d
+          ))))
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee&&&& _a_s_s_i_g_n_a_b_l_e__p_a_n_e_l_f_e_a_t_u_r_e ::::::::ooooppppeeeerrrraaaattttoooorrrr>>>>>>>> (((( _o_p_e_r_a_n_d
+          ))))
+          wwwwhhhheeeerrrreeee _a_s_s_i_g_n_a_b_l_e__p_a_n_e_l_f_e_a_t_u_r_e iiiissss oooonnnneeee ooooffff tttthhhheeee ffffoooolllllllloooowwwwiiiinnnngggg::::
+               IIIINNNNTTTTkkkknnnnoooobbbb,,,, FFFFWWWWIIIINNNNTTTTkkkknnnnoooobbbb,,,, VVVVWWWWIIIINNNNTTTTkkkknnnnoooobbbb,,,,
+               FFFFLLLLTTTTkkkknnnnoooobbbb,,,, FFFFWWWWFFFFLLLLTTTTkkkknnnnoooobbbb,,,, VVVVWWWWFFFFLLLLTTTTkkkknnnnoooobbbb,,,,
+               EEEENNNNUUUUMMMMkkkknnnnoooobbbb,,,, ddddiiiissssppppllllaaaayyyy {{{{ffffoooorrrr aaaassssssssiiiiggggnnnnmmmmeeeennnntttt ((((<<<<<<<<)))) oooonnnnllllyyyy}}}}
+          aaaannnndddd wwwwhhhheeeerrrreeee _o_p_e_r_a_n_d iiiissss oooonnnneeee ooooffff tttthhhheeee ffffoooolllllllloooowwwwiiiinnnngggg::::
+               iiiinnnntttt ooooppppeeeerrrraaaannnndddd;;;;
+               iiiinnnntttt ****ooooppppeeeerrrraaaannnndddd;;;;
+               ffffllllooooaaaatttt ooooppppeeeerrrraaaannnndddd;;;;
+               ffffllllooooaaaatttt ****ooooppppeeeerrrraaaannnndddd;;;;
+               _a_s_s_i_g_n_a_b_l_e__p_a_n_e_l_f_e_a_t_u_r_e &&&&pppp;;;;
+               _a_s_s_i_g_n_a_b_l_e__p_a_n_e_l_f_e_a_t_u_r_e ****pppp;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The operators described above provide the basic operations
+          of _a_s_s_i_g_n_m_e_n_t (<<) and _r_e_t_r_i_e_v_a_l (>>) of values associated
+          with a panelfeature object.  Both operations apply to knob
+          type objects while displays are assignable only.
+
+          Assignment to and from single element objects {INTknob,
+          FLTknob, ENUMknob, and single dimension displays} will
+          transfer a single value between the addressed object and the
+          operand.  Range checking, display updating, and execution of
+          the interpretation functions along the branch of the
+          ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree are all side affects of the assignment
+          operation which will be completed prior to the execution of
+          subsequent statements.  Since the returned value of the
+          operators is a reference to the accessed panelfeature,
+          several assignments can be chained together in a single
+          statement.
+
+          Similar operations exist for multi-element object types
+          {FWINTknob, VWINTknob, FWFLTknob, VWFLTknob, and multi-
+          dimensional displays} but are overloaded differently for the
+          various operand types.  For these types, if the operand is a
+          pointer to float or integer, the assignment operator assumes
+          the pointer is to an array of size equal to or greater than
+          the current size of the object.  The entire contents of the
+          object are transferred.  If the operand is a non-pointer of
+          type integer or float, the assignment is made with only one
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 33                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     OOOOPPPPEEEERRRRAAAATTTTOOOORRRRSSSS ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+          value.  An internal counter is maintained for both the
+          last_read and last_written values which is incremented on
+          each single value assignment so that subsequent assignments
+          iterate over the list of element values.  These counters are
+          reset to the first value each time an array assignment is
+          made and are wrapped around when they access the last value
+          of the current object width.
+
+          When the operand is another panelfeature object or a pointer
+          to one, the assignment operation transfers a single value if
+          the source object is smaller then the destination object.
+          If the opposite is true, then the number of values
+          transferred is equal to the size of the destination object.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume previously defined VWFLTknob _f_r_e_q_l_i_s_t exists
+          // and a two dimension indicator display _f_r_e_q__v_s__m_e_a_s_u_r_e_d
+               float thisfreq, result;
+
+          for (int i=0; i<freqlist.getsize(); i++)
+          {
+               freqlist >> thisfreq;
+               result = my_measure_func(thisfreq);    // pretend it
+          exists!!!
+               freq_vs_measured << thisfreq << result;
+          }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          clear(3PF), display(3PF), knob(3PF), changesize(3PF),
+          getsize(3PF), setup(3PF), user_setup(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 34                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       PPPPAAAANNNNEEEELLLL ((((CCCCCCCClllliiiibbbb))))       PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Panel - root node of a panelfeature tree or a sub-panel
+          module
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          ppppaaaannnneeeellll::::::::ppppaaaannnneeeellll(((( nnnnaaaammmmeeee,,,, cccclllluuuusssstttteeeerrrrppppttttrrrr,,,, ccccllllaaaassssssssppppttttrrrr))))
+          ppppaaaannnneeeellll::::::::~~~~ppppaaaannnneeeellll(((())));;;;
+          cccchhhhaaaarrrr ****nnnnaaaammmmeeee;;;;
+          cccclllluuuusssstttteeeerrrr ****cccclllluuuusssstttteeeerrrrppppttttrrrr;;;;
+          <<<<aaaapppppppplllliiiiccccaaaattttiiiioooonnnn ddddeeeeppppeeeennnnddddeeeennnntttt ccccllllaaaassssssss>>>> ****ccccllllaaaassssssssppppttttrrrr;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _P_a_n_e_l_s are derived from the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee base class and are
+          used to provide a root to a ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree or a re-usable
+          sub-panel module.  Each _p_a_n_e_l specification requires a name
+          parameter, a pointer to the primary _c_l_u_s_t_e_r of the tree, and
+          a pointer to the containing class structure if the _p_a_n_e_l
+          represents a root of a re-usable module or a NULL pointer
+          for the root node.  With the exception of the root of the
+          tree, all _p_a_n_e_l nodes must be associated with a class
+          structure.  The root _p_a_n_e_l must be assigned the NULL pointer
+          at construction time.
+
+          _P_a_n_e_l nodes of modules provide a conceptual boundary for the
+          processing tools provided in the PANELFEATURE package.  The
+          tree walk operation which executes interpretation functions
+          in a branch associated with a modified leaf node is
+          terminated upon reaching any panel type object.  Search and
+          modify functions ( _f_i_n_d() and _s_e_t_u_p() ) which traverse down
+          a ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree can begin at any _p_a_n_e_l node within the
+          tree.  _P_a_n_e_l constructors which are supplied a non NULL
+          class pointer perform a walk down their sub-tree visiting
+          each node and storing the class pointer to allow access to
+          class members from the associated interpretation functions.
+          Finally, the constructor for the panel type object
+          interprets a NULL class pointer to signify the root of a
+          complete tree and invokes a protocol with the graphics
+          display process to download the default tree description for
+          display.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume previously defined cluster and sub-tree
+               panel newpanel("MAIN CONTROL", &prevcluster, NULL);
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cluster(3PF), find(3PF), setup(3PF), user_setup(3PF).
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 35                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     RRRREEEESSSSEEEETTTTKKKKNNNNOOOOBBBB ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          resetknob - restore the default value of a knob without
+          performing the interpretation function.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          vvvvooooiiiidddd kkkknnnnoooobbbb::::::::rrrreeeesssseeeettttkkkknnnnoooobbbb(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This function changes the current knob's value[s] back to
+          the default as specified to the object's constructor.  The
+          execution of interpretation functions is _n_o_t performed
+          during this value assignment.  For variable width type
+          knobs, only the elements specified by the current width are
+          reset and the width is not reset to the value set during
+          construction.
+
+          The primary use for this function is for creating momentary
+          toggle type knobs which reset themselves.  _R_e_s_e_t_k_n_o_b() is
+          the only assignment function which may be invoked upon the
+          triggering knob object from within an interpretation
+          function without the risk of infinite recursion.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          getsize(3PF), knob(3PF), operators(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 36                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       SSSSEEEETTTTUUUUPPPP ((((CCCCCCCClllliiiibbbb))))       PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Setup - modify a panelfeature value from an ascii string
+          parameter
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          ppppaaaannnneeeellll::::::::sssseeeettttuuuupppp((((ccccoooommmmmmmmaaaannnndddd____lllliiiinnnneeee))));;;;
+          cccchhhhaaaarrrr ****ccccoooommmmmmmmaaaannnndddd____lllliiiinnnneeee;;;;
+
+          WWWWhhhheeeerrrreeee ccccoooommmmmmmmaaaannnndddd____lllliiiinnnneeee ssssyyyynnnnttttaaaaxxxx iiiissss ddddeeeessssccccrrrriiiibbbbeeeedddd bbbbyyyy tttthhhheeee ffffoooolllllllloooowwwwiiiinnnngggg
+          ggggrrrraaaammmmmmmmaaaarrrr::::
+                         _s_e_t_u_p__c_o_m_m_a_n_d <= _s_u_b_p_a_n_e_l__n_a_m_e;
+                               | _o_b_j_e_c_t__a_s_s_i_g_n_e_r;
+                               | _s_e_t_u_p__c_o_m_m_a_n_d [_s_e_t_u_p__c_o_m_m_a_n_d]
+
+                         _o_b_j_e_c_t__a_s_s_i_g_n_e_r <= _o_b_j_e_c_t__n_a_m_e = _o_b_j_e_c_t__v_a_l_u_e
+                                   | _o_b_j_e_c_t__a_s_s_i_g_n_e_r [_o_b_j_e_c_t__a_s_s_i_g_n_e_r]
+
+                         _s_u_b_p_a_n_e_l__n_a_m_e <= _n_a_m_e _a_s_s_o_c_i_a_t_e_d _w_i_t_h _a _P_A_N_E_L
+          _o_b_j_e_c_t
+
+                         _o_b_j_e_c_t__n_a_m_e <= _n_a_m_e _a_s_s_o_c_i_a_t_e_d _w_i_t_h _a _K_N_O_B
+                                    _o_r _D_I_S_P_L_A_Y _o_b_j_e_c_t
+
+                         _o_b_j_e_c_t__v_a_l_u_e <= _v_a_l_i_d _v_a_l_u_e _f_o_r _a_n
+                               | _o_b_j_e_c_t__v_a_l_u_e [_o_b_j_e_c_t__v_a_l_u_e]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _S_e_t_u_p() provides a facility to search the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree
+          for a specific node and to modify the value of that node
+          with input specifications from an ascii string.  The
+          function is usually invoked by the application program
+          against the root ppppaaaannnneeeellll object but may be used directly on
+          embedded sub-panels.  The argument string may be supplied by
+          the programmer or accepted as input from the user on the
+          command line at run-time to permit overriding of default
+          settings.
+
+          The argument consists of one or more parameters which
+          specify the target node and the desired assignment values.
+          When an assignment occurs, the side affect operations of
+          updating the display and invoking the interpretation
+          functions on the node's branch are performed.  If the
+          argument string contains the name of a sub-panel, that panel
+          becomes the root of the subtree which is searched for the
+          duration of the set-up operation for the current command
+          unless the requested node cannot be found.  In this case,
+          the range of the search expands to the entire tree.
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 37                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))       SSSSEEEETTTTUUUUPPPP ((((CCCCCCCClllliiiibbbb))))       PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume previously defined tree rooted by panel _m_a_i_n_p_a_n
+          with sub-panel _t_e_s_t_s_e_t
+          // which contains an array knob _f_r_e_q and a single element
+          knob _l_e_v_e_l
+          // and the mainpan panel contains an ENUM knob _m_o_d_e
+
+          mainpan.setup("mode = gaintest; testset; freq = 100 200 300;
+          level = -10.0;");
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          display(3PF), knob(3PF), panel(3PF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 38                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))    UUUUSSSSEEEERRRR____SSSSEEEETTTTUUUUPPPP ((((CCCCCCCClllliiiibbbb))))     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          User_setup - allow interactive runtime control of the panel
+          by the user
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          iiiinnnntttt ppppaaaannnneeeellll::::::::uuuusssseeeerrrr____sssseeeettttuuuupppp(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _U_s_e_r__s_e_t_u_p() performs the coordination tasks required to
+          allow the user to interactively modify the control panel
+          during runtime.  This function is typically invoked after
+          all of the program's default setup activities have been
+          performed but before the main activity associated with the
+          application is begun.
+
+          When invoked, the function activates the mouse and signals
+          the user by changing the mouse icon from a coffee cup to a
+          pointer.  The user is free to traverse the ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee tree
+          modifying knob values and performing window formatting
+          operations.  Each user modification results in a coordinated
+          modification of the program's object which invokes the
+          associated interpretation function.
+
+          Upon completing the desired setup activity, the user selects
+          either the _G_O or _E_X_I_T keys from the screen's KEY box.  The
+          mouse is changed back to a coffee cup and deactivated.  The
+          function returns a value of 0000 if the user terminated with _G_O
+          or ----1111 if with _E_X_I_T.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          // assume previously defined tree rooted by panel _m_a_i_n_p_a_n
+
+          // perform any setups desired to obtain default conditions
+          for the application
+
+          if(mainpan.user_setup() == -1)
+               // terminate the application
+          else
+               // perform the application control based on current
+          knob settings
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          operators(3PF), panel(3PF), setup(3PF).
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 39                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))     WWWWHHHHAAAATTTTTTTTYYYYPPPPEEEE ((((CCCCCCCClllliiiibbbb))))      PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          whattype: whattype, ispanel - determine the type of
+          panelfeature object
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<ppppffff....hhhh>>>>
+          iiiinnnntttt ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::wwwwhhhhaaaattttttttyyyyppppeeee(((())));;;;
+          iiiinnnntttt ppppaaaannnneeeellllffffeeeeaaaattttuuuurrrreeee::::::::iiiissssppppaaaannnneeeellll(((())));;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _W_h_a_t_t_y_p_e returns the object type tag of the current node in
+          the panelfeature tree.  Values returned are from the
+          predefined set: PPPPAAAANNNNEEEELLLL,,,, CCCCLLLLUUUUSSSSTTTTEEEERRRR,,,, DDDDIIIISSSSPPPPLLLLAAAAYYYY,,,, EEEENNNNUUUUMMMM,,,, IIIINNNNTTTT,,,, FFFFLLLLTTTT,,,,
+          FFFFWWWWIIIINNNNTTTT,,,, FFFFWWWWFFFFLLLLTTTT,,,, VVVVWWWWIIIINNNNTTTT,,,, VVVVWWWWFFFFLLLLTTTT,,,, AAAASSSSCCCCIIIIIIIIKKKKNNNNOOOOBBBB,,,, or AAAASSSSCCCCIIIIIIIIDDDDIIIISSSSPPPP....
+
+          _I_s_p_a_n_e_l returns TTTTRRRRUUUUEEEE is the object is of type _p_a_n_e_l or FFFFAAAALLLLSSSSEEEE
+          if not.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ascii_display(3PF), ascii_knob(3PF), cluster(3PF),
+          display(3PF), knob(3PF), panel(3PF),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 40                                         (printed 11/9/90)
+
+
+
+
+
+
+     PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))      666633330000MMMMTTTTGGGG ((((CCCCCCCClllliiiibbbb))))       PPPPAAAANNNNEEEELLLLFFFFEEEEAAAATTTTUUUURRRREEEESSSS((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          630MTG - keyboard commands
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          A few useful key stroke commands are provided by the
+          graphics process that drives the 630MTG terminal display.
+          They include:
+
+          HHHH
+           - which invokes a hard copy sequence for screen images.
+          After the key is pressed, use mouse button 1 to select any
+          panel object which will then be printed on the system's
+          default printer if it supports PostScript.  Selecting any
+          area outside of the objects will result in the entire screen
+          being dumped.
+
+          DDDD
+           - creates a documentation file for each panel or sub-panel
+          which contains a hierarchical dump of the the structure and
+          parameters associated with each knob and display.
+
+          BBBB
+           - queues up a _b_r_e_a_k command to the application process
+          which can be detected by the _d_e_t_e_c_t__b_r_k__c_m_d() function.
+          Testing this function for a non-zero value periodically is
+          recommended for applications which execute long sequences
+          beyond the scope of the _u_s_e_r__s_e_t_u_p() function to allow a
+          user to break the sequence.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+                   Use pursuant to Company Instructions.
+
+
+
+     Page 41                                         (printed 11/9/90)
+
+
+

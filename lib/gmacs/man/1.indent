@@ -1,0 +1,330 @@
+
+
+
+     IIIINNNNDDDDEEEENNNNTTTT((((1111))))	    UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm	VVVV ((((SSSSeeeepppptttteeeemmmmbbbbeeeerrrr 11115555,,,, 1111999988888888))))	     IIIINNNNDDDDEEEENNNNTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  indent - indent and format C program source
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  iiiinnnnddddeeeennnntttt  [ _i_n_p_u_t-_f_i_l_e [ _o_u_t_p_u_t-_f_i_l_e ] ] [ ----bbbbaaaadddd	| ----nnnnbbbbaaaadddd	]
+		 [ ----bbbbaaaapppp	| ----nnnnbbbbaaaapppp	] [ ----bbbbbbbbbbbb | ----nnnnbbbbbbbbbbbb ] [ ----bbbbcccc | ----nnnnbbbbcccc	]
+		 [ ----bbbbllll ] [ ----bbbbrrrr ] [ ----cccc_n ] [ ----ccccdddd_n	] [ ----ccccddddbbbb | ----nnnnccccddddbbbb ]
+		 [ ----cccceeee | ----nnnncccceeee ]	[ ----cccciiii_n ] [ ----cccclllliiii_n ] [ ----dddd_n ] [ ----ddddiiii_n ]
+		 [ ----ffffcccc1111	| ----nnnnffffcccc1111	] [ ----iiii_n	] [ ----iiiipppp	| ----nnnniiiipppp ] [ ----llll_n ]
+		 [ ----llllcccc_n	] [ ----llllpppp	| ----nnnnllllpppp ] [ ----ppppccccssss	| ----nnnnppppccccssss	] [ ----nnnnpppprrrroooo ]
+		 [ ----ppppssssllll	| ----nnnnppppssssllll	] [ ----sssscccc	| ----nnnnsssscccc ] [ ----ssssoooobbbb	| ----nnnnssssoooobbbb	]
+		 [ ----sssstttt ] [ ----ttttrrrrooooffffffff ] [ ----vvvv | ----nnnnvvvv ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _I_n_d_e_n_t is a CCCC	program	formatter.  It reformats the CCCC program
+	  in the _i_n_p_u_t-_f_i_l_e according to the switches.	The switches
+	  which	can be specified are described below. They may appear
+	  before or after the file names.
+
+	  NNNNOOOOTTTTEEEE:	If you only specify an _i_n_p_u_t-_f_i_l_e, the formatting is
+	  done `in-place', that	is, the	formatted file is written back
+	  into _i_n_p_u_t-_f_i_l_e and a	backup copy of _i_n_p_u_t-_f_i_l_e is written
+	  in the current directory.  If	_i_n_p_u_t-_f_i_l_e is named
+	  `/blah/blah/file', the backup	file is	named file._B_A_K.
+
+	  If _o_u_t_p_u_t-_f_i_l_e is specified, _i_n_d_e_n_t checks to	make sure it
+	  is different from _i_n_p_u_t-_f_i_l_e.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  The options listed below control the formatting style
+	  imposed by _i_n_d_e_n_t.
+
+	  ----bbbbaaaapppp,----nnnnbbbbaaaapppp	 If ----bbbbaaaapppp is specified, a blank line is forced
+			 after every procedure body.  Default: ----nnnnbbbbaaaapppp....
+
+	  ----bbbbaaaadddd,----nnnnbbbbaaaadddd	 If ----bbbbaaaadddd is specified, a blank line is forced
+			 after every block of declarations.  Default:
+			 ----nnnnbbbbaaaadddd....
+
+	  ----bbbbbbbbbbbb,----nnnnbbbbbbbbbbbb	 If ----bbbbbbbbbbbb is specified, a blank line is forced
+			 before	every block comment.  Default: ----nnnnbbbbbbbbbbbb....
+
+	  ----bbbbcccc,----nnnnbbbbcccc	 If ----bbbbcccc	is specified, then a newline is	forced
+			 after each comma in a declaration. ----nnnnbbbbcccc turns
+			 off this option.  The default is ----bbbbcccc.
+
+	  ----bbbbrrrr,----bbbbllll	 Specifying ----bbbbllll	lines up compound statements
+			 like this:
+			     if	(...)
+			     {
+				 code
+			     }
+
+
+
+     Page 1					     (printed 6/23/91)
+
+
+
+
+
+
+     IIIINNNNDDDDEEEENNNNTTTT((((1111))))	    UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm	VVVV ((((SSSSeeeepppptttteeeemmmmbbbbeeeerrrr 11115555,,,, 1111999988888888))))	     IIIINNNNDDDDEEEENNNNTTTT((((1111))))
+
+
+
+			 Specifying ----bbbbrrrr	(the default) makes them look
+			 like this:
+			     if	(...) {
+				 code
+			     }
+
+	  ----cccc_n		 The column in which comments on code start.
+			 The default is	33.
+
+	  ----ccccdddd_n		 The column in which comments on declarations
+			 start.	 The default is	for these comments to
+			 start in the same column as those on code.
+
+	  ----ccccddddbbbb,----nnnnccccddddbbbb	 Enables (disables) the	placement of comment
+			 delimiters on blank lines.  With this option
+			 enabled, comments look	like this:
+			      /*
+			       * this is a comment
+			       */
+			 Rather	than like this:
+			      /* this is a comment */
+			 This only affects block comments, not
+			 comments to the right of code.	The default is
+			 ----ccccddddbbbb ....
+
+	  ----cccceeee,----nnnncccceeee	 Enables (disables) forcing `else's to cuddle
+			 up to the immediatly preceeding `}'.  The
+			 default is ----cccceeee	....
+
+	  ----cccciiii_n		 Sets the continuation indent to be _n.
+			 Continuation lines will be indented that far
+			 from the beginning of the first line of the
+			 statement.  Parenthesized expressions have
+			 extra indentation added to indicate the
+			 nesting, unless ----llllpppp is	in effect.  ----cccciiii
+			 defaults to the same value as ----iiii.
+
+	  ----cccclllliiii_n		 Causes	case labels to be indented _n tab stops
+			 to the	right of the containing	sssswwwwiiiittttcccchhhh
+			 statement.  ----cccclllliiii0000....5555 causes case labels	to be
+			 indented half a tab stop.  The	default	is
+			 ----cccclllliiii0000 ....
+
+	  ----dddd_n		 Controls the placement	of comments which are
+			 not to	the right of code.  The	default	----dddd1111
+			 means that such comments are placed one
+			 indentation level to the left of code.
+			 Specifying ----dddd0000	lines up these comments	with
+			 the code.  See	the section on comment
+			 indentation below.
+
+	  ----ddddiiii_n		 Specifies the indentation, in character
+
+
+
+     Page 2					     (printed 6/23/91)
+
+
+
+
+
+
+     IIIINNNNDDDDEEEENNNNTTTT((((1111))))	    UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm	VVVV ((((SSSSeeeepppptttteeeemmmmbbbbeeeerrrr 11115555,,,, 1111999988888888))))	     IIIINNNNDDDDEEEENNNNTTTT((((1111))))
+
+
+
+			 positions, from a declaration keyword to the
+			 following identifier.	The default is ----ddddiiii11116666 ....
+
+	  ----ffffcccc1111,----nnnnffffcccc1111	 Enables (disables) the	formatting of comments
+			 that start in column 1.  Often, comments
+			 whose leading `/' is in column	1 have been
+			 carefully hand	formatted by the programmer.
+			 In such cases,	----nnnnffffcccc1111 should be	used.  The
+			 default is ----ffffcccc1111.
+
+	  ----iiii_n		 The number of spaces for one indentation
+			 level.	 The default is	4.
+
+	  ----iiiipppp,----nnnniiiipppp	 Enables (disables) the	indentation of
+			 parameter declarations	from the left margin.
+			 The default is	----iiiipppp ....
+
+	  ----llll_n		 Maximum length	of an output line.  The
+			 default is 75.
+
+	  ----nnnnpppprrrroooo		 Causes	the profile files, `./.indent.pro' and
+			 `~/.indent.pro', to be	ignored.
+
+	  ----llllpppp,----nnnnllllpppp	 Lines up code surrounded by parenthesis in
+			 continuation lines.  If a line	has a left
+			 paren which is	not closed on that line, then
+			 continuation lines will be lined up to	start
+			 at the	character position just	after the left
+			 paren.	 For example, here is how a piece of
+			 continued code	looks with -nlp	in effect:
+			     p1	= first_procedure(second_procedure(p2, p3),
+				 third_procedure(p4, p5));
+			 With ----llllpppp in effect (the default) the code
+			 looks somewhat	clearer:
+			     p1	= first_procedure(second_procedure(p2, p3),
+						  third_procedure(p4, p5));
+			 Inserting a couple more newlines we get:
+			     p1	= first_procedure(second_procedure(p2,
+								   p3),
+						  third_procedure(p4,
+								  p5));
+
+	  ----ppppccccssss ,,,, ----nnnnppppccccssss	 If true (----ppppccccssss)	all procedure calls will have
+			 a space inserted between the name and the
+			 '('.  The default is ----nnnnppppccccssss
+
+	  ----ppppssssllll ,,,, ----nnnnppppssssllll	 If true (----ppppssssllll)	the names of procedures	being
+			 defined are placed in column 1	- their	types,
+			 if any, will be left on the previous lines.
+			 The default is	----ppppssssllll
+
+	  ----sssscccc,----nnnnsssscccc	 Enables (disables) the	placement of asterisks
+
+
+
+     Page 3					     (printed 6/23/91)
+
+
+
+
+
+
+     IIIINNNNDDDDEEEENNNNTTTT((((1111))))	    UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm	VVVV ((((SSSSeeeepppptttteeeemmmmbbbbeeeerrrr 11115555,,,, 1111999988888888))))	     IIIINNNNDDDDEEEENNNNTTTT((((1111))))
+
+
+
+			 (`*'s)	at the left edge of all	comments.
+
+	  ----ssssoooobbbb,----nnnnssssoooobbbb	 If ----ssssoooobbbb is specified, indent will swallow
+			 optional blank	lines.	You can	use this to
+			 get rid of blank lines	after declarations.
+			 Default: ----nnnnssssoooobbbb
+
+	  ----sssstttt		 Causes	iiiinnnnddddeeeennnntttt to take its input from stdin,
+			 and put its output to stdout.
+
+	  ----TTTT_t_y_p_e_n_a_m_e	 Adds _t_y_p_e_n_a_m_e to the list of type keywords.
+			 Names accumulate: ----TTTT can be specified more
+			 than once.  You need to specify all the
+			 typenames that	appear in your program that
+			 are defined by	ttttyyyyppppeeeeddddeeeeffffs - nothing will	be
+			 harmed	if you miss a few, but the program
+			 won't be formatted as nicely as it should.
+			 This sounds like a painful thing to have to
+			 do, but it's really a symptom of a problem in
+			 C: ttttyyyyppppeeeeddddeeeeffff causes a syntactic change in the
+			 laguage and _i_n_d_e_n_t can't find all ttttyyyyppppeeeeddddeeeeffffs.
+
+	  ----ttttrrrrooooffffffff	 Causes	iiiinnnnddddeeeennnntttt to format the program for
+			 processing by troff.  It will produce a fancy
+			 listing in much the same spirit as vvvvggggrrrriiiinnnndddd....
+			 If the	output file is not specified, the
+			 default is standard output, rather than
+			 formatting in place.
+
+	  ----vvvv,----nnnnvvvv	 ----vvvv turns on `verbose' mode, ----nnnnvvvv turns it off.
+			 When in verbose mode, _i_n_d_e_n_t reports when it
+			 splits	one line of input into two or more
+			 lines of output, and gives some size
+			 statistics at completion. The default is ----nnnnvvvv.
+
+     FFFFUUUURRRRTTTTHHHHEEEERRRR DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  You may set up your own `profile' of defaults	to _i_n_d_e_n_t by
+	  creating a file called ...._i_n_d_e_n_t...._p_r_o in	either your login
+	  directory or the current directory and including whatever
+	  switches you like.  A	`.indent.pro' in the current directory
+	  takes	precedence over	the one	in your	login directory.  If
+	  _i_n_d_e_n_t is run	and a profile file exists, then	it is read to
+	  set up the program's defaults.  Switches on the command
+	  line,	though,	always override	profile	switches.  The
+	  switches should be separated by spaces, tabs or newlines.
+
+	  CCCCoooommmmmmmmeeeennnnttttssss
+
+	  `_B_o_x'	_c_o_m_m_e_n_t_s.  _I_n_d_e_n_t assumes that any comment with	a dash
+	  or star immediately after the	start of comment (that is,
+	  `/*-'	or `/**') is a comment surrounded by a box of stars.
+	  Each line of such a comment is left unchanged, except	that
+
+
+
+     Page 4					     (printed 6/23/91)
+
+
+
+
+
+
+     IIIINNNNDDDDEEEENNNNTTTT((((1111))))	    UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm	VVVV ((((SSSSeeeepppptttteeeemmmmbbbbeeeerrrr 11115555,,,, 1111999988888888))))	     IIIINNNNDDDDEEEENNNNTTTT((((1111))))
+
+
+
+	  its indentation may be adjusted to account for the change in
+	  indentation of the first line	of the comment.
+
+	  _S_t_r_a_i_g_h_t _t_e_x_t.  All other comments are treated as straight
+	  text.	 _I_n_d_e_n_t	fits as	many words (separated by blanks, tabs,
+	  or newlines) on a line as possible.  Blank lines break
+	  paragraphs.
+
+	  CCCCoooommmmmmmmeeeennnntttt iiiinnnnddddeeeennnnttttaaaattttiiiioooonnnn
+
+	  If a comment is on a line with code it is started in the
+	  `comment column', which is set by the	----cccc_n command line
+	  parameter.  Otherwise, the comment is	started	at _n
+	  indentation levels less than where code is currently being
+	  placed, where	_n is specified by the ----dddd_n command line
+	  parameter.  If the code on a line extends past the comment
+	  column, the comment starts further to	the right, and the
+	  right	margin may be automatically extended in	extreme	cases.
+
+	  PPPPrrrreeeepppprrrroooocccceeeessssssssoooorrrr lllliiiinnnneeeessss
+
+	  In general, _i_n_d_e_n_t leaves preprocessor lines alone.  The
+	  only reformmatting that it will do is	to straighten up
+	  trailing comments.  It leaves	imbedded comments alone.
+	  Conditional compilation (####iiiiffffddddeeeeffff............####eeeennnnddddiiiiffff) is recognized and
+	  _i_n_d_e_n_t attempts to correctly compensate for the syntactic
+	  peculiarites introduced.
+
+	  CCCC ssssyyyynnnnttttaaaaxxxx
+
+	  _I_n_d_e_n_t understands a substantial amount about	the syntax of
+	  C, but it has	a `forgiving' parser.  It attempts to cope
+	  with the usual sorts of incomplete and misformed syntax.  In
+	  particular, the use of macros	like:
+		  #define forever for(;;)
+	  is handled properly.
+
+     FFFFIIIILLLLEEEESSSS
+	  ./.indent.pro	 profile file
+
+     BBBBUUUUGGGGSSSS
+	  _I_n_d_e_n_t has even more switches	than _l_s.
+
+	  A common mistake that	often causes grief is typing:
+	      indent *.c
+	  to the shell in an attempt to	indent all the CCCC programs in a
+	  directory.  This is probably a bug, not a feature.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Tony Hansen, pegasus!hansen
+
+
+
+
+
+     Page 5					     (printed 6/23/91)
+
+
+

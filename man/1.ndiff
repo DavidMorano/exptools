@@ -1,0 +1,528 @@
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ndiff - shade (diffshade, redline) differences between troff
+          and nroff files for X9700 and postscript printers
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnnddddiiiiffffffff [[[[----TTTT _d_e_v_i_c_e_t_y_p_e]]]] [[[[----xxxx]]]] [[[[----cccc _c_t_h_r_e_s_h]]]] [[[[----dddd _d_t_h_r_e_s_h]]]]
+                [[[[----mmmm _m_a_r_g_i_n]]]] [[[[----ssss _s_h_a_d_i_n_g]]]] [[[[----tttt||||----vvvv||||----iiii||||----DDDD]]]]
+                [[[[----hhhh]]]] [[[[----CCCC]]]] _o_l_d_f_i_l_e _n_e_w_f_i_l_e [_o_u_t_f_i_l_e]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _n_d_i_f_f is similar in flavor to _d_i_f_f_m_k(1).  Two versions of a
+          _t_r_o_f_f(1) (or _n_r_o_f_f(1)) file are compared and a third version
+          containing difference notation is generated.  The notation
+          can contain three types of difference indicators:
+
+          1.  Shaded text for new or modified text.  This is an exam-
+              ple of shaded text.
+
+          2.  Overstruck text for old or deleted text.  T=h=i=s= i=s= a=n=
+              e=x=a=m=p=l=e= o=f= o=v=e=r=s=t=r=u=c=k= t=e=x=t=.=
+
+          3.  Margin notes giving an indication of the extent of the
+              changes and whether _t_r_o_f_f/_n_r_o_f_f requests (formatting
+              commands) were modified.  An example of margin notes is       _3_7 _c
+              shown at right.  Margin notes are an advanced form of
+              changebars or revision marks.
+
+          The supported printer types are xxxx9999777700000000 and ppppoooossssttttssssccccrrrriiiipppptttt....
+
+          _O_l_d_f_i_l_e and _n_e_w_f_i_l_e are the old and new versions of the
+          file.  _n_d_i_f_f generates on standard output (or, to be compa-
+          tible with _d_i_f_f_m_k, in _o_u_t_f_i_l_e) a new version containing the
+          lines of _n_e_w_f_i_l_e plus inserted _n_r_o_f_f/_t_r_o_f_f requests.  When
+          _n_e_w_f_i_l_e is formatted by _t_r_o_f_f or _n_r_o_f_f, changed or inserted
+          text is highlighted by the above difference indicators.
+          This type of functionality is sometimes called _d_i_f_f_s_h_a_d_i_n_g
+          or _r_e_d_l_i_n_i_n_g.
+
+          The following summarizes the options described in detail
+          later:
+
+          ----TTTT _d_e_v_i_c_e_t_y_p_e  ____TTTTarget output device.  Default is xxxx9999777700000000 ....
+
+          ----xxxx             ____xxxx-out or overstrike deleted/changed text.
+
+          ----tttt             ____tttterse margin notes.  This the default margin
+                         note setting.
+
+          ----vvvv             ____vvvverbose margin notes.
+
+          ----iiii             ____iiiinline notes.
+
+
+
+
+     Page 1                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+          ----DDDD             ____DDDDebugging notes.
+
+          ----dddd _d_t_h_r_e_s_h     set the "____ddddelete" margin note threshold to
+                         _d_t_h_r_e_s_h words.  Default is ----dddd 1111.
+
+          ----cccc _c_t_h_r_e_s_h     set the "____cccchange" margin note threshold to
+                         _c_t_h_r_e_s_h words.  Default is ----cccc 1111.
+
+          ----CCCC             show isolated _t_r_o_f_f/_n_r_o_f_f ____CCCCommands in the
+                         margin notes.
+
+          ----ssss _s_h_a_d_i_n_g     (X9700 only) set ____sssshading intensity level to
+                         _s_h_a_d_i_n_g.  Default is ----ssss 2222.
+
+          ----mmmm _m_a_r_g_i_n      set ____mmmmargin note distance to _m_a_r_g_i_n.
+
+          ----hhhh             "____hhhhalf-hearted" _d_i_f_f(1) mode.
+
+        DDDDeeeevvvviiiicccceeeettttyyyyppppeeee OOOOppppttttiiiioooonnnn
+          The following option specifies the target devicetypes:
+
+          ----TTTT _d_e_v_i_c_e_t_y_p_e  where _d_e_v_i_c_e_t_y_p_e can be either xxxx9999777700000000 or ppppoooosssstttt....
+                         The default _d_e_v_i_c_e_t_y_p_e is xxxx9999777700000000....
+
+                      xxxx9999777700000000      denotes the X9700 printer.  A recom-
+                                 mended way to run _n_d_i_f_f is as fol-
+                                 lows:
+
+          ---------------------------------------------------------------
+          |                                                             |
+          |  ndiff _o_l_d_f_i_l_e _n_e_w_f_i_l_e | tbl | neqn | gc |                  |
+          |       nroff -rE1 -rU1 -rL71 -rW67 -rO0 -TX97 -mm |          |
+          |       x9700 -h19 -TX | n9700 | prt -l raw                   |
+          |                                                             |
+          ---------------------------------------------------------------
+
+                              The _n_9_7_0_0(exptools) command clips super-
+                              fluous shading that would otherwise
+                              appear in the margins.
+
+                      ppppoooosssstttt    specifies a _p_o_s_t_s_c_r_i_p_t devicetype; the
+                              output from _n_d_i_f_f should be run through
+                              _p_r_t_f_m_t (_1). Simply use:
+
+          ---------------------------------------------------------------
+          |                                                             |
+          |       ndiff -Tpost _o_l_d_f_i_l_e _n_e_w_f_i_l_e | prtfmt -Tpost          |
+          |                                                             |
+          ---------------------------------------------------------------
+
+          Remember that in both of the above examples, _o_l_d_f_i_l_e and
+          _n_e_w_f_i_l_e may need to be ....ssssoooo expanded.  Programs such as
+
+
+
+     Page 2                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+          ssssooooeeeexxxxppppaaaannnndddd((((eeeexxxxppppttttoooooooollllssss)))) or ////uuuussssrrrr////lllliiiibbbb////xxxxppppaaaannnndddd can evaluate ....ssssoooo
+          requests.
+
+        DDDDeeeelllleeeetttteeeedddd TTTTeeeexxxxtttt OOOOppppttttiiiioooonnnn
+          The following option shows deleted text:
+
+          ----xxxx   (_x'_e_d _o_u_t) Show changed and deleted text with over-
+               strikes.  This option is like typing the letter X
+               through deleted text.  The deleted text is (usually)
+               still readable.  For example:
+
+                 S=o=m=e= e=i=g=h=t=y= Fourscore and seven years ago our         _2 _c
+                 fathers brought forth on this continent a new
+                 nation, b=o=r=n= i=n= c=o=n=f=l=i=c=t=,= conceived in liberty        _3 _d
+                 and dedicated to the proposition that all men are
+                 created equal.
+
+        MMMMaaaarrrrggggiiiinnnn NNNNooootttteeee FFFFoooorrrrmmmmaaaatttt OOOOppppttttiiiioooonnnnssss
+          Knowing the extent and magnitude of the revisions against
+          _o_l_d_f_i_l_e is often important.  For example, we may want to
+          know whether few or many words have been modified or
+          deleted.  Some indication can be especially useful if the ----xxxx
+          option is not chosen.  Also, it is occasionally helpful to
+          know if formatting requests were changed.  _n_d_i_f_f has four
+          mutually exclusive options (----tttt,,,, ----vvvv,,,, ----iiii,,,, and ----DDDD) for printing
+          notes showing how many words have been changed or deleted.
+          They differ in the location and verbosity of the notes.  At
+          most, only one of the four options may be specified;
+          requesting two or more is an error condition.  ----tttt is the
+          default.
+
+          ----tttt   (_t_e_r_s_e) print the number of words changed or deleted in
+               a terse manner in the right margin in italics.  The
+               number of words changed or deleted is noted in the
+               right margin in italics.  A _d indicates deleted words,
+               while a _c denotes changed words.  An ampersand (&)
+               indicates that a _t_r_o_f_f/_n_r_o_f_f formatting request (e.g.,
+               ....PPPP) has been changed or deleted along with the text.
+               Formatting requests do not cause shading and are not
+               counted as deleted or changed words. The terse option
+               prints phrases such as
+
+                    _1_2 _d
+
+               or
+
+                    _5_3_8 _c&
+
+               In the first case, 12 words were deleted, while in the
+               second case, 538 words and at least one _t_r_o_f_f/_n_r_o_f_f
+               request was changed.  The example for the ----xxxx option
+               above also illustrates the ----tttt option.
+
+
+
+     Page 3                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+          ----vvvv   (_v_e_r_b_o_s_e) print the number of words changed or deleted
+               in a verbose manner in the right margin in italics.
+               The verbose option prints phrases such as
+
+                    _1_2 _w_o_r_d_s _d_e_l_e_t_e_d
+
+               or
+
+                    _5_3_8 _w_o_r_d_s _c_h_a_n_g_e_d&
+
+               The ----vvvv option is appropriate when the audience reading
+               the document is not familiar with _n_d_i_f_f output and may
+               wonder what all the funny numbers and letters in the
+               right margin are all about.
+
+                 Fourscore and seven years ago our fathers brought   _2 _w_o_r_d_s _c_h_a_n_g_e_d
+                 forth on this continent a new nation, conceived in  _3 _w_o_r_d_s _d_e_l_e_t_e_d
+                 liberty and dedicated to the proposition that all
+                 men are created equal.
+
+               Because the verbose margin notes are wider than the
+               terse notes and hence more apt to overprint actual
+               text, you may want to either place the margin notes
+               further to the right by using the ----mmmm option described
+               below, or else make the page width narrower.  (If you
+               are using the mmmmmmmm((((5555)))) macros, this can be done by using
+               ----rrrrWWWW_n option for ttttrrrrooooffffffff////nnnnrrrrooooffffffff or the ----FFFF""""ttttrrrrooooffffffff ----rrrrWWWW_n""""
+               option for _p_r_t_f_m_t.  For example, _n could be 5555iiii.)
+
+          ----iiii   (_i_n_l_i_n_e) print the number of words changed or deleted
+               inline using phrases such as "37 words deleted" and "8
+               words changed."  For the X9700 printer, the position of
+               deleted text is shown by shading at level 1, while mes-
+               sages about changes are shaded at level 3.  (See the ----ssss
+               option below.)  For postscript printers, everything is
+               shaded identically.  The ----iiii option is useful when mar-
+               gin notes are not possible.
+
+                 Fourscore and seven years ago 2 words changed: our
+                 fathers brough forth on this continent a new nation,
+                 3 words deleted conceived in liberty and dedicated to
+                 the proposition that all men are created equal.
+
+          ----DDDD   (_D_e_b_u_g) print the number of words changed or deleted in
+               a debugging mode.  This option is similar to the ----iiii
+               option; changes and deletions are noted inline, but are
+               delimited by phrases such as ">c>>" and "<<c<" instead
+               of shading.  This option can be useful for seeing the
+               changes on a terminal.  ("a" stands for "append" and
+               denotes inserted text, "c" stands for "changed" and
+               signifies changed text, "d" stands for "deleted" and
+               signifies deleted text, "w" stands for "word" and is
+
+
+
+     Page 4                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+               used when individual words within a line are being
+               denoted, "comm" stands for "command" and means a com-
+               mand (request) is being changed or deleted, "text"
+               stands for "text" and is used to delimit text inserted
+               by _n_d_i_f_f.)
+
+                 >w>>Fourscore and<w<< seven years ago >wtext>> 2
+                 words changed: <<wtext< our fathers brough forth on
+                 this continent a new nation, >wtext>> 3 words deleted
+                 <<wtext< conceived in liberty and dedicated to the
+                 proposition that all men are created equal.
+
+        MMMMaaaarrrrggggiiiinnnn NNNNooootttteeee TTTThhhhrrrreeeesssshhhhoooolllldddd OOOOppppttttiiiioooonnnnssss
+          Sometimes, we want the margin notes to show only major
+          changes or deletions.  Two options control this:
+
+          ----dddd _d_t_h_r_e_s_h  _d_t_h_r_e_s_h denotes the minimum number of words that
+                      must be deleted before the deletion is noted in
+                      the margin.  The default for dthresh is 1.
+
+          ----cccc _c_t_h_r_e_s_h  _c_t_h_r_e_s_h denotes the minimum number of words that
+                      must be changed before the change is noted in
+                      the margin.  The default is 1.
+
+          Margin notes can be effectively disabled altogether by set-
+          ting _d_t_h_r_e_s_h and _c_t_h_r_e_s_h to be large, e.g., 1000000.
+
+        OOOOppppttttiiiioooonnnn ffffoooorrrr SSSShhhhoooowwwwiiiinnnngggg IIIIssssoooollllaaaatttteeeedddd RRRReeeeqqqquuuueeeessssttttssss
+          Any _t_r_o_f_f/_n_r_o_f_f line beginning with "." or "'" is inter-
+          preted as a formatting request.  _n_d_i_f_f indicates in the mar-
+          gin notes if a formatting request was changed in the midst
+          of a text block by printing an ampersand (&).
+
+          Sometimes a _t_r_o_f_f/_n_r_o_f_f formatting request was changed, but
+          no text was changed, e.g., a solitary ....PPPP macro was added.
+          _n_d_i_f_f has an option to indicate these isolated request
+          changes:
+
+          ----CCCC   (Command) note changes to _t_r_o_f_f/_n_r_o_f_f commands even
+               when there are no changes to text.  An ampersand (&)
+               with no numbers is included in the margins, e.g.,
+
+                    _d&
+
+               or
+
+                    _c&
+
+               The ----CCCC option does not apply when the ----iiii or ----DDDD option
+               is chosen.  ----CCCC is provided as a separate option since
+               at times it may be confusing seeing margin notes with
+
+
+
+
+     Page 5                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+               no corresponding shaded or x'ed out text.
+
+        OOOOtttthhhheeeerrrr OOOOppppttttiiiioooonnnnssss
+          ----ssss _s_h_a_d_i_n_g  (for ----TTTT xxxx9999777700000000 only) (e.g., ----ssss3333) Set the darkness
+                      of shading for inserted and changed text.
+                      _S_h_a_d_i_n_g is an integer between 0 and 3, with 3
+                      being the darkest and 0 being no shading at all.
+                      The default is 2.  The ----ssss shading option cannot
+                      be used with ----iiii or ----DDDD.
+
+                                 This is shading level 0
+                                 This is shading level 1
+                                 This is shading level 2
+                                 This is shading level 3
+
+                      See the section below on "Shading Levels for
+                      Postscript" to see how to vary shading levels
+                      for postscript printers.
+
+          ----mmmm _m_a_r_g_i_n   (e.g., ----mmmm 5555iiii) notation in the right margin can
+                      extend up to _m_a_r_g_i_n from the left margin.  All
+                      margin notes are right adjusted at _m_a_r_g_i_n with
+                      the text growing as far to the left as neces-
+                      sary.  By default, margin notes for xxxx9999777700000000
+                      printers are right adjusted at 77 columns
+                      (technically, at 77m), while for ppppoooosssstttt,,,, the
+                      default is 7.0i (7 inches).  Any _t_r_o_f_f/_n_r_o_f_f
+                      numerical parameter and scale indicator can be
+                      used for _m_a_r_g_i_n. If no scale indicator is sup-
+                      plied, the default is _m.
+
+          ----hhhh          Use the "half-hearted" mode of _d_i_f_f when deter-
+                      mining the differences.  This can be useful for
+                      extremely large files if the differences between
+                      the files are not extreme.  In particular, use
+                      ----hhhh if the message "files too big, try -h"
+                      appears on standard error.
+
+        CCCCoooonnnnttttrrrroooollll ooooffff SSSShhhhaaaaddddiiiinnnngggg
+          _n_d_i_f_f recognizes the phrases nnnnddddiiiiffffffffooooffffffff and nnnnddddiiiiffffffffoooonnnn as control
+          words to turn off and on the change indicators.  The words
+          are recognized anywhere in the input stream of _n_e_w_f_i_l_e; gen-
+          erally, they should be used within _t_r_o_f_f/_n_r_o_f_f comment
+          lines.  Thus, the nroff line
+
+               .\" ndiffoff
+
+          will inhibit shading and margin notes, while
+
+               .\" ndiffon
+
+          will restore the markings.  nnnnddddiiiiffffffffoooonnnn and nnnnddddiiiiffffffffooooffffffff turn on or
+
+
+
+     Page 6                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+          off indicators starting at the _b_e_g_i_n_n_i_n_g of the line.  If
+          shading is on, nnnnddddiiiiffffffffooooffffffff takes precedence over nnnnddddiiiiffffffffoooonnnn,,,, and
+          conversely.
+
+          _n_d_i_f_f automatically turns off shading and tracking in
+          _e_q_n/_n_e_q_n(1), _g_c(1), _g_r_a_p(1), _p_i_c(1), and _t_b_l(1) blocks to
+          keep those preprocessors from being confused by shading con-
+          structs.
+
+        SSSShhhhaaaaddddiiiinnnngggg LLLLeeeevvvveeeellllssss ffffoooorrrr PPPPoooossssttttssssccccrrrriiiipppptttt
+          Shading intensity for postscript printers can be controlled
+          indirectly by using the following script:
+
+          ndiff -Tpost _o_l_d_f_i_l_e _n_e_w_f_i_l_e | prtfmt -Z -Tpost | dpost |
+            sed "s#yellow^I^I^I{ 1 1 0 }#yellow { 1 1 _l_e_v_e_l__A }#p" |
+            prt -l post
+
+          where ^I is the tab character.  Replace _l_e_v_e_l__A with a
+          number between 0 and 1, e.g., 0.5.  The larger the number,
+          the lighter the shading.  Setting _l_e_v_e_l__A to 1 will turn off
+          shading.  Darker shading can be obtained by using the script
+
+          ndiff -Tpost _o_l_d_f_i_l_e _n_e_w_f_i_l_e | prtfmt -Z -Tpost | dpost |
+            sed "s#yellow^I^I^I{ 1 1 0 }#yellow { 1 _l_e_v_e_l__B 0 }#p" |
+            prt -l post
+
+          Replace _l_e_v_e_l__B with a number between 0 and 1.  The smaller
+          the number, the darker the shading.  Setting _l_e_v_e_l__B to 0
+          will result in all black shading.  If you like, you can
+          experiment with also making the first number "1" smaller, as
+          well as other combinations.
+
+     BBBBUUUUGGGGSSSS AAAANNNNDDDD NNNNOOOOTTTTEEEESSSS
+          The intensity of the printed shading can vary from job to
+          job (even on the same printer) and seems to be related to
+          the time since the last maintenance.  Occasionally, the
+          shading can vary from the top of the page to the bottom.
+          Try resubmitting the job at a later time.  Be aware that
+          shading sometimes does not xerox crisply; light shading
+          sometimes disappears altogether.  Again, the condition of
+          the copying machine seems to be a factor.
+
+          On the X9700 printer, only the vint and mini fonts support
+          shading; see the _x_9_7_0_0(1) man page.
+
+          Shading is supported for all postscript fonts.  The shading
+          is actually produced by using color macros that create a box
+          around the changed text and fill the background with the
+          color yellow.  On a color printer, shaded text will appear
+          as black on a yellow background.  You can change the color
+          of the background using the scripts in the section above on
+          "Shading Levels for Postscript."  The first number controls
+
+
+
+     Page 7                                          (printed 11/5/92)
+
+
+
+
+
+
+     NNNNDDDDIIIIFFFFFFFF((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             NNNNDDDDIIIIFFFFFFFF((((1111))))
+
+
+
+          red, the second green, and the third blue.
+
+          _p_r_t will usually give a warning about detecting non-
+          printable characters; the ----BBBB option of _p_r_t will suppress
+          this message.
+
+          Arguments to macros (e.g., the word "IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn" in
+          ....SSSSHHHH 1111 IIIInnnnttttrrrroooodddduuuuccccttttiiiioooonnnn) may not be shaded if there are no sur-
+          rounding text changes since _n_d_i_f_f ignores differences in
+          macros and requests.
+
+          Footnotes that extend over more than one page and that ini-
+          tiate shading on one page and turn it off on another page
+          may cause unexpected shading results on the pages with the
+          continued footnote and on the page after the footnote.
+
+          In a few rare circumstances, deleted text might not be over-
+          struck when using the ----xxxx option.  In particular, deleted
+          troff/nroff strings and macros are printed but not over-
+          struck since _n_d_i_f_f cannot predict their contents.
+
+          Occasionally, some postscript printers are unable to print a
+          page with heavy shading using _p_r_t_f_m_t. Try using the follow-
+          ing command to call certain drivers directly:
+          ---------------------------------------------------------------
+          |                                                             |
+          |       ndiff -Tpost _o_l_d_f_i_l_e _n_e_w_f_i_l_e | prtfmt -Z -Tpost       |
+          |            dpost | prt -l post                              |
+          |                                                             |
+          ---------------------------------------------------------------
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+        DDDDiiiiffffffffeeeerrrreeeennnncccciiiinnnngggg
+          diff(1), diff2c(5ESS), diffmk(1).
+
+        PPPPrrrriiiinnnnttttiiiinnnngggg
+          dpost(1), n9700(exptools), prt(1), prtfmt(1), x9700(1).
+
+        TTTTeeeexxxxtttt PPPPrrrroooocccceeeessssssssiiiinnnngggg
+          eqn(1), gc(1), grap(1), mm(5), neqn(1), nroff(1), pic(1),
+          soexpand(exptools), tbl(1), troff(1).
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          D. G. Furchtgott.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRRSSSS
+          B. R. Davies
+          D. G. Furchtgott.
+
+
+
+
+
+
+
+     Page 8                                          (printed 11/5/92)
+
+
+

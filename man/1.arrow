@@ -1,0 +1,462 @@
+
+
+
+     AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          arrow -- draw arrows between lines in a file
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          aaaarrrrrrrroooowwww [-nsv]  [-c column]  [-a arrowfile] [-m minsize] [-M
+          maxsize] [-F fieldsep] [textfile]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _a_r_r_o_w reads text files, draws arrows between specified
+          lines, and writes the product to standard output.  When used
+          to postprocess the output of a language specific front end,
+          _a_r_r_o_w is useful for drawing branches and control flows on a
+          source listing.
+
+          The arrows consist of printable ASCII characters, so the
+          output may be displayed on simple terminals or printers.
+
+          Arrow locations are specified by pairs of line numbers con-
+          tained in aaaarrrrrrrroooowwwwffffiiiilllleeee,,,, a file containing lines of the form:
+
+                            ffffrrrroooommmm____lllliiiinnnneeee####<_t_a_b>ttttoooo____lllliiiinnnneeee####
+
+          A line number of 0 or some number greater than the number of
+          lines in tttteeeexxxxttttffffiiiilllleeee will make it appear as if the arrow begins
+          or ends off the page, useful for showing references outside
+          the scope of the text file.
+
+          If an arrow starts and ends on the same line, a row of '='
+          characters will be displayed on that line to distinguish it
+          from longer arrows.  If an arrow starts on the same line on
+          which another arrow ends, the output for that line may
+          appear confusing.
+
+          _a_r_r_o_w employs an arrow placement strategy which tries to
+          avoid line crossings among nested arrows.  Arrow placement
+          is not affected by the order of the arrows specified in
+          aaaarrrrrrrroooowwwwffffiiiilllleeee....
+
+          If no text file is specified on the command line, _a_r_r_o_w
+          reads from standard input.
+
+          The output of _a_r_r_o_w can be piped to printer programs like
+          _p_r, _o_p_r, and _x_c_l. You can also pipe the output to _c_p_r if you
+          use cpr's -m option to realign the left column.
+
+          Command line options are:
+
+          ----cccc_c_o_l_u_m_n  Display arrows beginning in the specified column.
+                    The default is column 0.  This option essentially
+                    "cuts" a text file vertically and draws the arrows
+                    between the two halves.  It is useful for
+
+
+
+     Page 1                                          (printed 6/15/92)
+
+
+
+
+
+
+     AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+                    processing the output of another tool which
+                    already uses the left margin for information like
+                    diffmarks or line numbers.
+
+
+          ----FFFF_f_i_e_l_d_s_e_p
+                    Use ffffiiiieeeellllddddsssseeeepppp as a field separator character in
+                    aaaarrrrrrrroooowwwwffffiiiilllleeee.... Tabs or spaces are used by default.
+
+
+          ----mmmm_m_i_n_s_i_z_e Ignore arrows spanning less than _m_i_n_s_i_z_e lines.
+                    If this option is specified, _m_i_n_s_i_z_e must be 1 or
+                    more.  If -m is not specified, _a_r_r_o_w will ignore
+                    arrows spanning less than 3 lines.
+
+
+          ----MMMM_m_a_x_s_i_z_e Ignore arrows spanning more than _m_a_x_s_i_z_e lines.
+                    If this option is specified, _m_a_x_s_i_z_e must be 1 or
+                    more.  If -M is not specified, _a_r_r_o_w will ignore
+                    arrows spanning more than 300 lines.
+
+
+          ----nnnn        Print line numbers down the left margin.  These
+                    line numbers correspond to the line numbers one
+                    would get when using _v_i(_1) or _e_m_a_c_s(_1) to edit the
+                    file.  Be aware that files containing Control-L
+                    characters can cause problems.  Such files, when
+                    printed by _p_r(_1) or _x_c_l may not be numbered con-
+                    sistently as they treat form feed characters dif-
+                    ferently than the popular editors when the form
+                    feed is not the only character on the line.
+
+
+          ----ssss        Draw separate vertical lines for arrows which have
+                    a common end point and which go in the same direc-
+                    tion.  If the -s option is not specified, _a_r_r_o_w
+                    will try eliminate unnecessary lines by combining
+                    the vertical portions of arrows which have the
+                    same endpoint and which go in the same direction.
+
+
+          ----vvvv        Draw arrows using the vertical bar character, '|'.
+                    If -v is not specified, _a_r_r_o_w will default to
+                    using different characters to draw adjacent
+                    arrows, which helps to distinguish one arrow from
+                    another.
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 6/15/92)
+
+
+
+
+
+
+     AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+     If file.c contains:
+
+     main()
+     {
+             int i;
+             goto L3;
+             printf ("hi");
+     L1:     printf ("there");
+             if(1 > 2)
+                     goto L1;
+
+     L2:     printf ("howdy");
+             i = 5;
+             goto L1;
+     L3:
+             i = 2;
+             goto L2;
+             i = 9;
+     L8:
+             i = 40;
+             goto L8;
+             return 0;
+     }
+
+
+     and arrowfile contains:
+
+     4    13
+     8    6
+     12   6
+     15   10
+     19   17
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 3                                          (printed 6/15/92)
+
+
+
+
+
+
+AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+                      arrow -a arrowfile file.c
+
+     writes this to standard output:
+
+         main()
+         {
+                 int i;
+     +---        goto L3;
+     |           printf ("hi");
+     |+->L1:     printf ("there");
+     |!          if(1 > 2)
+     |+--                goto L1;
+     |!
+     |!+>L2:     printf ("howdy");
+     |!:         i = 5;
+     |+:-        goto L1;
+     +-:>L3:
+       :         i = 2;
+       +-        goto L2;
+                 i = 9;
+     +-->L8:
+     |           i = 40;
+     +---        goto L8;
+                 return 0;
+         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 4                                          (printed 6/15/92)
+
+
+
+
+
+
+AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+                     arrow -s -a arrowfile file.c
+
+     writes this to standard output:
+         main()
+         {
+                 int i;
+     +---        goto L3;
+     |           printf ("hi");
+     |++>L1:     printf ("there");
+     |!:         if(1 > 2)
+     |!+-                goto L1;
+     |!
+     |!+>L2:     printf ("howdy");
+     |!:         i = 5;
+     |+:-        goto L1;
+     +-:>L3:
+       :         i = 2;
+       +-        goto L2;
+                 i = 9;
+     +-->L8:
+     |           i = 40;
+     +---        goto L8;
+                 return 0;
+         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 5                                          (printed 6/15/92)
+
+
+
+
+
+
+AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+                    arrow -svn -a arrowfile file.c
+
+     writes this to standard output:
+
+         1)     main()
+         2)     {
+         3)             int i;
+         4) +---        goto L3;
+         5) |           printf ("hi");
+         6) |++>L1:     printf ("there");
+         7) |||         if(1 > 2)
+         8) ||+-                goto L1;
+         9) ||
+        10) ||+>L2:     printf ("howdy");
+        11) |||         i = 5;
+        12) |+|-        goto L1;
+        13) +-|>L3:
+        14)   |         i = 2;
+        15)   +-        goto L2;
+        16)             i = 9;
+        17) +-->L8:
+        18) |           i = 40;
+        19) +---        goto L8;
+        20)             return 0;
+        21)     }
+
+WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+     A large number of overlapping arrows will move the printed
+     text over to the right a corresponding number of columns.
+     _a_r_r_o_w can display a maximum of 79 overlapping arrows.
+
+     Multiple arrows which begin or end on the same lines may
+     confuse _a_r_r_o_w.
+
+     If the text file contains tab characters, the -c option
+     might cause _a_r_r_o_w output to appear misaligned.
+
+     If the text file contains a Control-L form feed character,
+     then the line numbers produced by piping the output of _a_r_r_o_w
+     to _p_r(_1) and _x_c_l(_1) may not agree with those produced by
+     _a_r_r_o_w. Editors like _v_i(_1) and _e_m_a_c_s(_1) treat Control-L char-
+     acters differently than does _p_r(_1) when the Control-L char-
+     acters are mixed with other characters on the same line.
+
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     _s_h_o_w_l_o_o_p(_E_X_P_T_O_O_L_S), _s_h_o_w_l_o_o_p - _A _T_o_o_l _f_o_r _S_h_o_w_i_n_g _C_o_n_t_r_o_l
+     _F_l_o_w _i_n _P_r_o_c_e_d_u_r_a_l _L_a_n_g_u_a_g_e _P_r_o_g_r_a_m_s, by R. S. Parnass.
+     55813-901030-01TMS.
+
+
+AAAAUUUUTTTTHHHHOOOORRRR
+
+
+
+Page 6                                          (printed 6/15/92)
+
+
+
+
+
+
+AAAARRRRRRRROOOOWWWW((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAARRRRRRRROOOOWWWW((((1111))))
+
+
+
+     The arrow drawing tool was written by Bob Parnass.
+
+
+PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+     The arrow drawing tool is provided by Bob Parnass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 7                                          (printed 6/15/92)
+
+
+

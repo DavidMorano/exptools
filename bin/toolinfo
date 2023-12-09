@@ -1,0 +1,96 @@
+#!/bin/sh
+#
+#  @(#)  SID: 1.6;  module: toolinfo;  last changed: 1/28/93  13:18:35
+#
+#  This routine is used to tell exptools users which tools they currently
+#  subscribe to and provide a brief explanation about all tools available
+#  for the current machine type whether subscribed to or not.
+#
+#  Currently, only the optional exptools available on the current machine
+#  type are reported on.  This will be expanded to all tools as time permits.
+
+set -e
+
+# On Sun3 and Sparc machines, make sure we get the right commands
+PATH=/usr/5bin:$PATH					export PATH
+
+cd $TOOLS/lib/toolinfo
+
+if test ! -f .toollist; then
+    echo "$0: ERROR: tool list cannot be found -- aborting!"
+    exit 0
+elif test ! -r .toollist; then
+    echo "$0: ERROR: tool list cannot be read -- aborting!"
+    exit 0
+fi
+
+if test "$1" = "-l"; then
+    echo "\nInformation is available about the following optional tools:"
+    pr -t -o4 -4 .toollist
+    echo
+    exit 0
+elif test $# -gt 0; then
+    TOOLLIST=""
+    for tool do
+	if fgrep -x "$tool" .toollist >/dev/null 2>&1; then
+	    TOOLLIST="$TOOLLIST $tool"
+	else
+	    echo "\nSorry, '$tool' is not an optional tool on this machine type\n"
+	    exit 2
+	fi
+    done
+else
+    TOOLLIST=`cat .toollist`
+fi
+
+if test -z "$LINES"; then
+    LINES=24
+fi
+
+if test ! -f $TOOLS/.machtype; then
+    echo "$0: ERROR: machine type file cannot be found -- aborting!"
+    exit 0
+elif test ! -r $TOOLS/.machtype; then
+    echo "$0: ERROR: machine type file cannot be read -- aborting!"
+    exit 0
+elif test ! -r $TOOLS/.machtype; then
+    echo "$0: ERROR: machine type file cannot be executed -- aborting!"
+    exit 0
+fi
+
+. $TOOLS/.machtype
+
+{
+    echo "\nOptional tools available on $TYPE exptools machines:"
+
+    for tool in $TOOLLIST; do
+	echo "\n-------------------------------"
+	echo "TOOL:"
+	echo "   $tool"
+	echo "\nDESCRIPTION:"
+	if test -s $tool/description; then
+	    cat $tool/description
+	else
+	    echo "Sorry, no description file available!"
+	fi | pr -t -o3
+	if test -s $tool/notes; then
+	    echo "\nNOTES:"
+	    cat $tool/notes | pr -t -o3
+	fi
+	echo "\nCOMMANDS:"
+	if test -s $tool/name; then
+	    cat $tool/name
+	else
+	    echo "Sorry, no command names available!"
+	fi | pr -t -o3
+	echo "\nSIZE IN BLOCKS:"
+	if test -s $tool/size; then
+	    cat $tool/size
+	else
+	    echo "Sorry, no size available!"
+	fi | pr -t -o3
+    done
+} |
+eval ${PAGER:-'pg -e -p"(Enter RETURN to continue): "'}
+
+echo

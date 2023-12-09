@@ -1,0 +1,148 @@
+# remote rmdir for exptools
+
+umask 007	# private temp files
+set -u		# no slip-ups allowed
+
+: ${LOGNAME:=`id | sed -n 's/.*uid=[0-9]*(\([^)]*\)).*/\1/p'`}
+mailaddr=`uuname -l`!${LOGNAME:?}
+retval=0				# return code for this script
+cmd=$0
+case $cmd in
+*/*)
+	cmd=`basename $cmd`
+	;;
+esac
+
+usage="usage: $cmd [-v] [-P pwdfile] [-u userid] -p pkgid -d directory machine-selection"
+
+case $# in
+0)
+	cat <<! >&2
+$usage
+
+Examples:
+	$cmd -p god -d lib/emacs/olddir emacs
+	$cmd -p god -d lib/ctrace all
+
+The pkgid given must have privileged remote execution permission on each
+machine selected.  The directory must be empty on the remote site.
+
+Options:
+	-c override local password check
+	-d directory
+	-m specifies octal mode for target
+	-M alternate return mail address (default ${mailaddr})
+	-P specifies a file containing the pkgid password
+	-p specifies the package ID for the update (required)
+	-u alternate target userid to receive files
+	-v mail back verbose output
+!
+	exit 1
+	;;
+esac
+
+tfile=$$rrmdir
+tmpfile=/usr/tmp/$tfile
+
+if options=`getopt "cd:M:N:P:p:u:v" $*`
+then	:
+else
+	echo "$usage" >&2
+	exit 1
+fi
+set -- $options
+
+debug=
+dirs=
+pkgid=
+options=
+Subject=
+verbose=
+
+while :
+do
+	arg=$1
+	shift
+	case $arg in
+	-c)
+		options="$options $arg"
+		;;
+	-d)
+		dirs="$dirs $1"
+		shift
+		;;
+	-M|-N|-P|-u)
+		options="$options ${arg} ${1}"
+		shift
+		;;
+	-p)
+		pkgid=$1
+		options="$options ${arg} ${1}"
+		shift
+		;;
+	-v)
+		Subject="echo \"Subject: rrmdir remote runlog\"; echo"
+		verbose='if [ $? = 0 ];then echo "$d removed";fi'
+		;;
+	--)
+		break
+		;;
+	esac
+done
+
+: ${pkgid:?"must specify pkgid (-p)"}
+: ${dirs:?"must specify dir (-d)"}
+machines="$*"
+
+# Now is the time to arrange for certain temp files to disappear on exit.
+# From this point on, $retval controls the exit code for this command.
+trap "retval=1; exit" 1 2 3 15
+trap "$debug rm -f $tmpfile; exit \$retval" 0
+
+cat <<!! > $tmpfile
+(
+	dirs="$dirs"
+	$Subject
+	for d in $dirs
+	do
+		dname=\`/bin/dirname \$d\`
+		mode=\`ls -ld \$dname | cut -f1 -d' ' | awk '
+			BEGIN {
+				setuid   = 4000
+				setgid   = 2000
+				value[2] =  400
+				value[3] =  200
+				value[4] =  100
+				value[5] =   40
+				value[6] =   20
+				value[7] =   10
+				value[8] =    4
+				value[9] =    2
+				value[10]=    1
+			}
+			{
+				flags = \$1
+				mode = 0
+				for (i=2; i<11; i=i+1) {
+					if (substr(flags,i,1) != "-") {
+						mode = mode + value[i]
+					}
+				}
+				if (substr(flags,4,1) == "s") {
+					mode = mode + setuid
+				}
+				if (substr(flags,7,1) == "s") {
+					mode = mode + setgid
+				}
+				print mode
+			}
+		'\`
+		/bin/chmod 777 \$dname
+		/bin/rmdir \$d
+		$verbose
+		/bin/chmod \$mode \$dname
+	done
+) 2>&1 | sed "/^Subject:/!s/./\`uname -n\`:rrmdir:&/" 2>&1
+!!
+
+$debug rex $options -f $tmpfile -r priv $machines

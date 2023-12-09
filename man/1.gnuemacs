@@ -1,0 +1,594 @@
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          gnuemacs - GNU project Emacs
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ggggnnnnuuuueeeemmmmaaaaccccssss [ _c_o_m_m_a_n_d-_l_i_n_e _s_w_i_t_c_h_e_s ] [ _f_i_l_e ... ]
+
+     EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS VVVVEEEERRRRSSSSIIIIOOOONNNN
+          Since GNU Emacs (gnuemacs) is large(est of all the exptools
+          (as of 10/1991)), it is an "optionally installed" exptool.
+          If it is not already installed on your machine, please
+          request installation from the exptools gnuemacs providers.
+          You can get our current names from the exptools' "providers"
+          command.  [The "ruginfo" command can be used to check the
+          health of your machine's link with the exptools network.]
+
+          The name _e_m_a_c_s was already taken as an exptool name, so we
+          have called this program _g_n_u_e_m_a_c_s, and altered this manual
+          page's headers to reflect that.  When reading any GNU Emacs
+          documentation, such as the remainder of this manual page,
+          please remember that to invoke the exptool GNU Emacs you
+          must use the name "gnuemacs".
+
+          There is a "tips directory" in which we have placed various
+          chit-chat on the workings of exptools gnuemacs in our
+          environment: $TOOLS/lib/gnuemacs/local/tips (TOOLS=`logdir
+          exptools`).  Please look there for various caveats etc. (in
+          fact, some parts you may be required to read).  In order to
+          reduce our maintenance effort, all information as to how the
+          exptools version acts differently than that described in the
+          standard GNU Emacs distribution's documentation will be
+          placed there, including items superseding this manual page.
+          If you have any questions about GNU Emacs after looking in
+          our "tips" directory, or perhaps can't find our tips
+          directory, you can contact us.
+
+          To find out who we, the gnuemacs exptool providers,
+          currently are, do "providers gnuemacs".  As of 10/1991 we
+          are Dan_Jacobson@ATT.COM, Scott_F_Thompson@ATT.COM, and
+          Charles_A_Webb@ATT.COM (Chip).  By the way, "toolnews
+          gnuemacs" may display additional information.
+
+          Though the following is from the GNU Emacs version 18.57
+          manual page (with date unaltered), we are not necessarily
+          using version 18.57 across all architectures.  The startup
+          screen or "(emacs-version)" command within gnuemacs will
+          tell you the current version.
+
+          And now we resume the original manual text (warning: the
+          paths described under FILES below are not the same as in our
+          exptool version, of course.  Also, on some versions we have
+          not compiled in X Windows support)...
+
+
+
+
+     Page 1                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _G_N_U _E_m_a_c_s is a new version of _E_m_a_c_s, written by the author
+          of the original (PDP-10) _E_m_a_c_s, Richard Stallman. Its user
+          functionality encompasses everything other _E_m_a_c_s editors do,
+          and it is easily extensible since its editing commands are
+          written in Lisp.
+
+          _E_m_a_c_s has an extensive interactive help facility, but the
+          facility assumes that you know how to manipulate _E_m_a_c_s
+          windows and buffers.  CTRL-h (backspace or CTRL-h) enters
+          the Help facility.  Help Tutorial (CTRL-h t) requests an
+          interactive tutorial which can teach beginners the
+          fundamentals of _E_m_a_c_s in a few minutes.  Help Apropos
+          (CTRL-h a) helps you find a command given its functionality,
+          Help Character (CTRL-h c) describes a given character's
+          effect, and Help Function (CTRL-h f) describes a given Lisp
+          function specified by name.
+
+          _E_m_a_c_s'_s Undo can undo several steps of modification to your
+          buffers, so it is easy to recover from editing mistakes.
+
+          _G_N_U _E_m_a_c_s'_s many special packages handle mail reading
+          (RMail) and sending (Mail), outline editing (Outline),
+          compiling (Compile), running subshells within _E_m_a_c_s windows
+          (Shell), running a Lisp read-eval-print loop (Lisp-
+          Interaction-Mode), and automated psychotherapy (Doctor).
+
+          There is an extensive reference manual, but users of other
+          Emacses should have little trouble adapting even without a
+          copy.  Users new to _E_m_a_c_s will be able to use basic features
+          fairly rapidly by studying the tutorial and using the self-
+          documentation features.
+
+          Emacs Options
+
+          The following options are of general interest:
+
+          _f_i_l_e    Edit _f_i_l_e.
+
+          ++++_n_u_m_b_e_r Go to the line specified by _n_u_m_b_e_r (do not insert a
+                  space between the "+" sign and the number).
+
+          ----qqqq      Do not load an init file.
+
+          ----uuuu _u_s_e_r Load _u_s_e_r'_s init file.
+
+          ----tttt _f_i_l_e Use specified _f_i_l_e as the terminal instead of using
+                  stdin/stdout.  This must be the first argument
+                  specified in the command line.
+
+          The following options are lisp-oriented (these options are
+          processed in the order encountered):
+
+
+
+     Page 2                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+          ----ffff _f_u_n_c_t_i_o_n
+                  Execute the lisp function _f_u_n_c_t_i_o_n.
+
+          ----llll _f_i_l_e Load the lisp code in the file _f_i_l_e.
+
+          The following options are useful when running _E_m_a_c_s as a
+          batch editor:
+
+          ----bbbbaaaattttcccchhhh _c_o_m_m_a_n_d_f_i_l_e
+                  Edit in batch mode using the commands found in
+                  _c_o_m_m_a_n_d_f_i_l_e. The editor will send messages to
+                  stdout.  This option must be the first in the
+                  argument list.
+
+          ----kkkkiiiillllllll   Exit _E_m_a_c_s while in batch mode.
+
+          Using Emacs with X
+
+          _E_m_a_c_s has been tailored to work well with the X window
+          system.  If you run _E_m_a_c_s from under X windows, it will
+          create its own X window to display in.  You will probably
+          want to start the editor as a background process so that you
+          can continue using your original window.
+
+          _E_m_a_c_s can be started with the following X switches:
+
+          ----rrrrnnnn _n_a_m_e
+                  Specifies the program name which should be used when
+                  looking up defaults in the user's X resources.  This
+                  must be the first option specified in the command
+                  line.
+
+          ----wwwwnnnn _n_a_m_e
+                  Specifies the name which should be assigned to the
+                  _E_m_a_c_s window.
+
+          ----rrrr      Display the _E_m_a_c_s window in reverse video.
+
+          ----iiii      Use the "kitchen sink" bitmap icon when iconifying
+                  the _E_m_a_c_s window.
+
+          ----ffffoooonnnntttt _f_o_n_t, ----ffffnnnn _f_o_n_t
+                  Set the _E_m_a_c_s window's font to that specified by
+                  _f_o_n_t. You will find the various _X fonts in the
+                  /_u_s_r/_l_i_b/_X_1_1/_f_o_n_t_s directory.  Note that _E_m_a_c_s will
+                  only accept fixed width fonts.  Under the X11
+                  Release 4 font-naming conventions, any font with the
+                  value "m" or "c" in the eleventh field of the font
+                  name is a fixed width font.  Furthermore, fonts
+                  whose name are of the form _w_i_d_t_hx_h_e_i_g_h_t are
+                  generally fixed width, as is the font _f_i_x_e_d.  See
+                  _x_l_s_f_o_n_t_s(1) for more information.
+
+
+
+     Page 3                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+                  When you specify a font, be sure to put a space
+                  between the switch and the font name.
+
+          ----bbbb _p_i_x_e_l_s
+                  Set the _E_m_a_c_s window's border width to the number of
+                  pixels specified by _p_i_x_e_l_s. Defaults to one pixel on
+                  each side of the window.
+
+          ----iiiibbbb _p_i_x_e_l_s
+                  Set the window's internal border width to the number
+                  of pixels specified by _p_i_x_e_l_s. Defaults to one pixel
+                  of padding on each side of the window.
+
+          ----wwww _g_e_o_m_e_t_r_y, ----ggggeeeeoooommmmeeeettttrrrryyyy _g_e_o_m_e_t_r_y
+                  Set the _E_m_a_c_s window's width, height, and position
+                  as specified.  The geometry specification is in the
+                  standard X format; see _X(1) for more information.
+                  The width and height are specified in characters;
+                  the default is 80 by 24.
+
+          ----ffffgggg _c_o_l_o_r
+                  On color displays, sets the color of the text.
+
+                  See the file /_u_s_r/_l_i_b/_X_1_1/_r_g_b._t_x_t for a list of
+                  valid color names.
+
+          ----bbbbgggg _c_o_l_o_r
+                  On color displays, sets the color of the window's
+                  background.
+
+          ----bbbbdddd _c_o_l_o_r
+                  On color displays, sets the color of the window's
+                  border.
+
+          ----ccccrrrr _c_o_l_o_r
+                  On color displays, sets the color of the window's
+                  text cursor.
+
+          ----mmmmssss _c_o_l_o_r
+                  On color displays, sets the color of the window's
+                  mouse cursor.
+
+          ----dddd _d_i_s_p_l_a_y_n_a_m_e, ----ddddiiiissssppppllllaaaayyyy _d_i_s_p_l_a_y_n_a_m_e
+                  Create the _E_m_a_c_s window on the display specified by
+                  _d_i_s_p_l_a_y_n_a_m_e.  Must be the first option specified in
+                  the command line.
+
+          ----nnnnwwww     Tells _E_m_a_c_s not to use its special interface to X.
+                  If you use this switch when invoking _E_m_a_c_s from an
+                  _x_t_e_r_m(1) window, display is done in that window.
+                  This must be the first option specified in the
+                  command line.
+
+
+
+     Page 4                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+          You can set _X default values for your _E_m_a_c_s windows in your
+          ._X_r_e_s_o_u_r_c_e_s file (see _x_r_d_b(1)).  Use the following format:
+
+               emacs.keyword:value
+
+          where _v_a_l_u_e specifies the default value of _k_e_y_w_o_r_d. _E_m_a_c_s
+          lets you set default values for the following keywords:
+
+          ffffoooonnnntttt ((((class FFFFoooonnnntttt))))
+                  Sets the window's text font.
+
+          rrrreeeevvvveeeerrrrsssseeeeVVVViiiiddddeeeeoooo ((((class RRRReeeevvvveeeerrrrsssseeeeVVVViiiiddddeeeeoooo))))
+                  If _r_e_v_e_r_s_e_V_i_d_e_o'_s value is set to _o_n, the window
+                  will be displayed in reverse video.
+
+          bbbbiiiittttmmmmaaaappppIIIIccccoooonnnn ((((class BBBBiiiittttmmmmaaaappppIIIIccccoooonnnn))))
+                  If _b_i_t_m_a_p_I_c_o_n'_s value is set to _o_n, the window will
+                  iconify into the "kitchen sink."
+
+          bbbboooorrrrddddeeeerrrrWWWWiiiiddddtttthhhh ((((class BBBBoooorrrrddddeeeerrrrWWWWiiiiddddtttthhhh))))
+                  Sets the window's border width in pixels.
+
+          iiiinnnntttteeeerrrrnnnnaaaallllBBBBoooorrrrddddeeeerrrr ((((class BBBBoooorrrrddddeeeerrrrWWWWiiiiddddtttthhhh))))
+                  Sets the window's internal border width in pixels.
+
+          ffffoooorrrreeeeggggrrrroooouuuunnnndddd ((((class FFFFoooorrrreeeeggggrrrroooouuuunnnndddd))))
+                  For color displays, sets the window's text color.
+
+          bbbbaaaacccckkkkggggrrrroooouuuunnnndddd ((((class BBBBaaaacccckkkkggggrrrroooouuuunnnndddd))))
+                  For color displays, sets the window's background
+                  color.
+
+          bbbboooorrrrddddeeeerrrrCCCCoooolllloooorrrr ((((class BBBBoooorrrrddddeeeerrrrCCCCoooolllloooorrrr))))
+                  For color displays, sets the color of the window's
+                  border.
+
+          ccccuuuurrrrssssoooorrrrCCCCoooolllloooorrrr ((((class FFFFoooorrrreeeeggggrrrroooouuuunnnndddd))))
+                  For color displays, sets the color of the window's
+                  text cursor.
+
+          ppppooooiiiinnnntttteeeerrrrCCCCoooolllloooorrrr ((((class FFFFoooorrrreeeeggggrrrroooouuuunnnndddd))))
+                  For color displays, sets the color of the window's
+                  mouse cursor.
+
+          ggggeeeeoooommmmeeeettttrrrryyyy ((((class GGGGeeeeoooommmmeeeettttrrrryyyy))))
+                  Sets the geometry of the _E_m_a_c_s window (as described
+                  above).
+
+          ttttiiiittttlllleeee ((((class TTTTiiiittttlllleeee))))
+                  Sets the title of the _E_m_a_c_s window.
+
+          iiiiccccoooonnnnNNNNaaaammmmeeee ((((class TTTTiiiittttlllleeee))))
+
+
+
+     Page 5                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+                  Sets the icon name for the _E_m_a_c_s window icon.
+
+          If you try to set color values while using a black and white
+          display, the window's characteristics will default as
+          follows: the foreground color will be set to black, the
+          background color will be set to white, the border color will
+          be set to grey, and the text and mouse cursors will be set
+          to black.
+
+          Using the Mouse
+
+          The following lists the mouse button bindings for the _E_m_a_c_s
+          window under X11.
+
+          MOUSE BUTTON         FUNCTION
+          left                 Set point.
+          middle               Paste text.
+          right                Cut text into X cut buffer.
+          SHIFT-middle         Cut text into X cut buffer.
+          SHIFT-right          Paste text.
+          CTRL-middle          Cut text into X cut buffer and kill it.
+          CTRL-right           Select this window, then split it into
+                               two windows.  Same as typing CTRL-x 2.
+          CTRL-SHIFT-left      X buffer menu--hold the buttons and
+                               keys down, wait for menu to appear,
+                               select buffer, and release.  Move mouse
+                               out of menu and release to cancel.
+          CTRL-SHIFT-middle    X help menu--pop up index card menu for
+                               Emacs help.
+          CTRL-SHIFT-right     Select window with mouse, and delete
+                               all other windows.  Same as typing
+                               CTRL-x 1.
+
+     MMMMAAAANNNNUUUUAAAALLLLSSSS
+          You can order printed copies of the GNU Emacs Manual for
+          $15.00/copy [$20 -Dan J. 2/91] postpaid from the Free
+          Software Foundation, which develops GNU software (contact
+          them for quantity prices on the manual).  Their address is:
+              Free Software Foundation
+              675 Mass Ave.
+              Cambridge, MA 02139
+          Your local Emacs maintainer might also have copies
+          available.  As with all software and publications from FSF,
+          everyone is permitted to make and distribute copies of the
+          Emacs manual.  The TeX source to the manual is also included
+          in the Emacs source distribution.
+
+     FFFFIIIILLLLEEEESSSS
+          /usr/local/emacs/src - C source files and object files
+
+          /usr/local/emacs/lisp - Lisp source files and compiled files
+          that define most editing commands.  Some are preloaded;
+
+
+
+     Page 6                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+          others are autoloaded from this directory when used.
+
+          /usr/local/emacs/man - sources for the Emacs reference
+          manual.
+
+          /usr/local/emacs/etc - various programs that are used with
+          GNU Emacs, and some files of information.
+
+          /usr/local/emacs/etc/DOC.* - contains the documentation
+          strings for the Lisp primitives and preloaded Lisp functions
+          of GNU Emacs.  They are stored here to reduce the size of
+          Emacs proper.
+
+          /usr/local/emacs/etc/DIFF discusses GNU Emacs vs. Twenex
+          Emacs;
+          /usr/local/emacs/etc/CCADIFF discusses GNU Emacs vs. CCA
+          Emacs;
+          /usr/local/emacs/etc/GOSDIFF discusses GNU Emacs vs. Gosling
+          Emacs.
+          /usr/local/emacs/etc/SERVICE lists people offering various
+          services to assist users of GNU Emacs, including education,
+          troubleshooting, porting and customization.
+          These files also have information useful to anyone wishing
+          to write programs in the GNU Emacs Lisp extension language,
+          which has not yet been fully documented. [Now it has -Dan J.
+          10/91]
+
+          /usr/local/emacs/info - files for the Info documentation
+          browser (a subsystem of Emacs) to refer to.  Currently not
+          much of Unix is documented here, but the complete text of
+          the Emacs reference manual is included in a convenient tree
+          structured form.
+
+          /usr/local/emacs/lock - holds lock files that are made for
+          all files being modified in Emacs, to prevent simultaneous
+          modification of one file by two users.
+
+          /usr/local/emacs/cpp - the GNU cpp, needed for building
+          Emacs on certain versions of Unix where the standard cpp
+          cannot handle long names for macros.
+
+          /usr/local/emacs/shortnames - facilities for translating
+          long names to short names in C code, needed for building
+          Emacs on certain versions of Unix where the C compiler
+          cannot handle long names for functions or variables.
+
+          /usr/lib/X11/rgb.txt - list of valid X color names.
+
+     BBBBUUUUGGGGSSSS
+          There is a mailing list, bug-gnu-emacs@prep.ai.mit.edu on
+          the internet (ucbvax!prep.ai.mit.edu!bug-gnu-emacs on
+          UUCPnet), for reporting Emacs bugs and fixes.  But before
+
+
+
+     Page 7                                          (printed 10/5/91)
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+          reporting something as a bug, please try to be sure that it
+          really is a bug, not a misunderstanding or a deliberate
+          feature.  We ask you to read the section ``Reporting Emacs
+          Bugs'' near the end of the reference manual (or Info system)
+          for hints on how and when to report bugs.  Also, include the
+          version number of the Emacs you are running in _e_v_e_r_y bug
+          report that you send in.
+
+          Do not expect a personal answer to a bug report.  The
+          purpose of reporting bugs is to get them fixed for everyone
+          in the next release, if possible.  For personal assistance,
+          look in the SERVICE file (see above) for a list of people
+          who offer it.
+
+          Please do not send anything but bug reports to this mailing
+          list.  Send requests to be added to mailing lists to the
+          special list info-gnu-emacs-request@prep.ai.mit.edu (or the
+          corresponding UUCP address).  For more information about
+          Emacs mailing lists, see the file
+          /usr/local/emacs/etc/MAILINGLISTS [which also discusses
+          relevant USENET "netnews" groups -Dan J 10/91].  Bugs tend
+          actually to be fixed if they can be isolated, so it is in
+          your interest to report them in such a way that they can be
+          easily reproduced.
+
+          Bugs that I know about are: shell will not work with
+          programs running in Raw mode on some Unix versions.
+
+     UUUUNNNNRRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          _E_m_a_c_s is free; anyone may redistribute copies of _E_m_a_c_s to
+          anyone under the terms stated in the _E_m_a_c_s General Public
+          License, a copy of which accompanies each copy of _E_m_a_c_s and
+          which also appears in the reference manual.
+
+          Copies of _E_m_a_c_s may sometimes be received packaged with
+          distributions of Unix systems, but it is never included in
+          the scope of any license covering those systems.  Such
+          inclusion violates the terms on which distribution is
+          permitted.  In fact, the primary purpose of the General
+          Public License is to prohibit anyone from attaching any
+          other restrictions to redistribution of _E_m_a_c_s.
+
+          Richard Stallman encourages you to improve and extend _E_m_a_c_s,
+          and urges that you contribute your extensions to the GNU
+          library.  Eventually GNU (Gnu's Not Unix) will be a complete
+          replacement for Berkeley Unix.  Everyone will be able to use
+          the GNU system for free.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          X(1), xlsfonts(1), xterm(1), xrdb(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+
+
+
+     PPPPaaaaggggeeee 8888                                          ((((pppprrrriiiinnnntttteeeedddd 11110000////5555////99991111))))
+
+
+
+
+
+
+     GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))        1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11113333 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))        GGGGNNNNUUUUEEEEMMMMAAAACCCCSSSS((((1111))))
+
+
+
+          _E_m_a_c_s was written by Richard Stallman and the Free Software
+          Foundation.  Joachim Martillo and Robert Krawitz added the X
+          features.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 9                                          (printed 10/5/91)
+
+
+

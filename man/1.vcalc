@@ -1,0 +1,1650 @@
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+     NNNNAAAAMMMMEEEE
+          vcalc - a spreadsheet calculator
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          vvvvccccaaaallllcccc [[[[----vvvv]]]] [[[[----eeee]]]] [[[[----iiii]]]] [[[[----ssss]]]] [[[[ ffffiiiilllleeeennnnaaaammmmeeee ]]]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _V_c_a_l_c is a spreadsheet calculator very similar to products
+          such as VisiCalc and Supercalc available to users of
+          personal computers. (VisiCalc is a registered trademark of
+          VisiCorp; Supercalc is a trademark of Sorcim.)  _V_c_a_l_c is
+          designed to work in the UNIX environment and is compatible
+          with many popular terminals.
+
+          _V_c_a_l_c's main utility is that values may be specified to be
+          functions of other values.  Thus, when one value is changed,
+          the other values dependent on it may be seen to change
+          "instantaneously." You can play "What if...?" type games and
+          see what happens to a modeled situation if one or more
+          constituent variables or formulas are changed.
+
+        CCCCoooommmmmmmmaaaannnndddd LLLLiiiinnnneeee OOOOppppttttiiiioooonnnnssss
+               ----eeee   emacs style cursor positioning
+               ----iiii   turn off terminal insert/delete
+               ----ssss   turn off standout mode
+               ----vvvv   print out version and exit
+
+        TTTThhhheeee SSSShhhheeeeeeeetttt
+          The spreadsheet is arranged as 702 columns by 9999 rows of
+          cells.  Each column is indicated by one or two letters (A,
+          B, ..., Z, AA, ..., AZ, Thus, the upper left hand cell is
+          A1, and the lower rightmost is ZZ9999.  See the MMMMEEEEMMMMOOOORRRRYYYY UUUUSSSSAAAAGGGGEEEE
+          section for a discussion of memory usage.  At any time, the
+          values of as many cells as can fit on the screen are
+          displayed.
+
+          At any time, one cell is highlighted (generally reverse
+          video or underlined).  This marks the position of _v_c_a_l_c's
+          cursor.  The cursor may be moved to anywhere on the sheet.
+          If it is moved to a location not appearing on the screen,
+          the sheet scrolls so that the new cursor position does
+          appear.
+
+          The cell at the cursor position may have its contents
+          changed by one of the commands described below.  The four
+          general types of cell contents are _e_m_p_t_y, _l_a_b_e_l, _r_e_p_e_a_t_i_n_g
+          _l_a_b_e_l, _a_n_d _v_a_l_u_e.
+
+          Besides the spreadsheet itself, things appearing on the
+          screen include:
+
+
+
+
+     Page 1                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          ENTRY LINE
+               Line One shows the contents (i.e. the formula, rather
+               than the value) and format of the highlighted cell.
+
+          PROMPT LINE
+               Line Two prompts you for the next menu item or
+               information to be typed for the current command.
+
+          EDIT LINE
+               Line Three holds character strings typed by you to
+               represent cell contents, file names, etc.  This
+               information is generally editable until you type a
+               terminating character, such as a carriage return.  In
+               cases where there is a default string, the edit line
+               will initially show the default.  You can select the
+               default by simply typing the terminator.
+
+          AXES Axes of course identify the rows and columns being
+               displayed.
+
+        MMMMoooovvvviiiinnnngggg tttthhhheeee CCCCuuuurrrrssssoooorrrr
+          To move the cursor one cell to the left, down, up, or right,
+          use your terminal's arrow keys.  If your terminal does not
+          have such keys, you may use
+               ^^^^HHHH, ^^^^JJJJ, ^^^^KKKK, or ^^^^LLLL,
+          (where "^^^^HHHH" means Control-H, etc.)  for LLLLEEEEFFFFTTTTAAAARRRRRRRROOOOWWWW,
+          DDDDOOOOWWWWNNNNAAAARRRRRRRROOOOWWWW, UUUUPPPPAAAARRRRRRRROOOOWWWW, and RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW, respectively.
+          (Hereinafter, the arrow keys will be generally be called
+          _a_r_r_o_w.)  If _v_c_a_l_c was invoked with the "----eeee" option or the
+          environment variable TERM ends in "macs", you use emacs
+          style cursor positioning controls
+               ^^^^BBBB, ^^^^NNNN, ^^^^PPPP, or ^^^^FFFF,
+          for LLLLEEEEFFFFTTTTAAAARRRRRRRROOOOWWWW, DDDDOOOOWWWWNNNNAAAARRRRRRRROOOOWWWW, UUUUPPPPAAAARRRRRRRROOOOWWWW, and RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW,
+          respectively.
+
+          In general, when you want to type a coordinate, you may
+          instead type a series of arrows as above.  For example, if
+          the cursor is at cell A1, and you wish to type
+               1111++++CCCC1111++++2222
+          you may instead type
+               1111++++ ---->>>> ---->>>> ++++2222
+          where ---->>>> means RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW.  (The spaces in the above line
+          are there just for clarity and need not be typed.)  The
+          cursor moves as you type the _a_r_r_o_ws, and then goes back to
+          its original position when you type the second ++++.  The
+          advantage of using this method is that you can indicate a
+          nearby cell without paying attention to its coordinates.
+
+          To move more than one cell at a time, type
+               >>>> _c_o_o_r_d RRRREEEETTTT
+          where RRRREEEETTTT is a carriage return.  _C_o_o_r_d above may be a fully
+
+
+
+     Page 2                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          specified coordinate, such as BBBB11110000, or it may be partially
+          specified if you wish to go to a cell in the same row or
+          column as the cursor.  For example, if the cursor is at
+          location B2, you may go to location B10 by typing either
+               >>>> BBBB11110000 RRRREEEETTTT
+          or
+               >>>> 11110000 RRRREEEETTTT
+
+          Similarly, from B10 you may move the cursor to G10 by typing
+          either
+               >>>> GGGG11110000 RRRREEEETTTT
+          or
+               >>>> GGGG RRRREEEETTTT
+
+          To jump between windows (see the ////WWWW command), type
+               ;;;;
+
+          The <<<< command allows you to return to the first column or
+          row of a table very easily.  You may think of it as the
+          carriage return of a typewriter.  A margin is set by the ////WWWWMMMM
+          margin command. Thereafter, the location to which the cursor
+          moves depends on the last _a_r_r_o_w typed.  If the last arrow
+          was a RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW, typing <<<< moves the cursor one row down and
+          to the column set by ////WWWWMMMM.  If the last arrow was DDDDOOOOWWWWNNNNAAAARRRRRRRROOOOWWWW,
+          <<<< moves the cursor one column to the right and to the set
+          margin's row.  If the last arrow was LLLLEEEEFFFFTTTTAAAARRRRRRRROOOOWWWW, <<<< moves the
+          cursor one row up and to the set margin's column.  If the
+          last arrow was UUUUPPPPAAAARRRRRRRROOOOWWWW, <<<< moves the cursor one column to the
+          left and to the set margin's row.  Thus, to enter a table of
+          numbers, you can set the left margin with ////WWWWMMMM, type the
+          numbers across the first row using RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW to move across
+          the row, and, when you reach the end of the first row, type
+          <<<<.  The cursor will move to the first column in the second
+          row.  Similarly, you can enter the table a column at a time
+          with DDDDOOOOWWWWNNNNAAAARRRRRRRROOOOWWWW and <<<<.  You can traverse the table backwards
+          with LLLLEEEEFFFFTTTTAAAARRRRRRRROOOOWWWW or UUUUPPPPAAAARRRRRRRROOOOWWWW and <<<<.
+
+        SSSSppppeeeecccciiiiaaaallll CCCChhhhaaaarrrraaaacccctttteeeerrrrssss
+          DDDDEEEELLLL  (DELETE, called RUBOUT on some terminals).  Erase the
+               character just typed.  If you are several levels into a
+               menu, DDDDEEEELLLL should back you up one level.  The present
+               implementation of _v_c_a_l_c allows the reverse slash `\\\\' as
+               a synonym for DDDDEEEELLLL.  Previous versions of _v_c_a_l_c expected
+               EEEESSSSCCCC instead of DDDDEEEELLLL; use of EEEESSSSCCCC is now discouraged.
+
+          ^^^^CCCC   Cancel or abort the current command.
+
+          ^^^^EEEE   Enter the edit mode (see ////EEEE) from within the the middle
+               of typing data such as the contents of a cell or a file
+               name.  If a default response is being displayed, you
+               may edit the default by immediately typing ^^^^EEEE.
+
+
+
+     Page 3                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          ^^^^RRRR   Redraw the screen if it becomes corrupted.
+
+          !!!!    A one character command to recalculate the values of
+               all the cells in the sheet.  Recalculation is normally
+               done whenever a value cell receives a new entry, but !!!!
+               may be used if this feature has been disabled by the
+               ////GGGGRRRRMMMM command.
+
+          ////    Initiate a _s_l_a_s_h command as described below.
+
+          Note that, in general, when an upper case (capital) letter
+          is required for a menu selection, you may type either upper
+          or lower case.  Lower case characters are interpreted as
+          their upper case equivalents everywhere except in labels
+          (and in labels, too, if the ////GGGGLLLLUUUU command has been invoked).
+
+        EEEEmmmmppppttttyyyy CCCCeeeellllllllssss
+          These cells are displayed as blanks.  When the program
+          begins, all of the cells are empty.  You may reset one or
+          more non-empty cells to the blank state with the ////BBBB command
+          (see below).
+
+        LLLLaaaabbbbeeeellll CCCCeeeellllllllssss
+          Label cells display alphanumeric information about the
+          sheet.  To enter a label at the cursor position, type the
+          single quote character ('''') followed by the text of the
+          label.  If the label text begins with a letter, the quote is
+          unnecessary.  If a left-justified label is too wide to fit
+          in the present cell and the cell to its right is empty, the
+          text will overflow into that cell (and empty cells to the
+          right of that).  Similarly, a right-justified label may
+          "underflow" into empty cells to its left.  See the ////FFFF1111
+          command to see how to left or right justify a cell.
+
+          Remember that you may edit what you've typed by typing DDDDEEEELLLL
+          (to erase) or ^^^^EEEE.  You also may abort the label assignment
+          by typing ^^^^CCCC.
+
+          The text string is terminated by your typing RRRREEEETTTT.
+          Alternately, you may type one of the _a_r_r_o_w keys to terminate
+          the string and simultaneously move the cursor one cell to
+          the left, down, up, or right.
+
+          Label and empty cells have value zero when referenced in
+          arithmetic expressions.  (They are actually ignored when
+          they appear in ranges in the argument lists of arithmetic
+          functions.  See FFFFuuuunnnnccccttttiiiioooonnnnssss below.)  Label cells may, however,
+          be referenced in value cells which perform operations on
+          strings.
+
+        RRRReeeeppppeeeeaaaattttiiiinnnngggg LLLLaaaabbbbeeeellllssss
+
+
+
+     PPPPaaaaggggeeee 4444                                           ((((pppprrrriiiinnnntttteeeedddd 2222////1111////99990000))))
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          Repeating labels are like regular labels in every way except
+          that the character or characters in them is/are repeated to
+          the end of the column (without continuing into the next
+          column.)
+
+          To enter a repeating label, type """" (double quote) followed
+          by the character or characters.  For example, if you want
+          the cell at the cursor position to be filled with dashes,
+          type
+               """"----
+
+        VVVVaaaalllluuuueeee cccceeeellllllllssss
+          A value cell contains a formula for a numeric or string
+          value.  The value is generally shown on the spreadsheet
+          proper; its formula is shown on the Entry Line.  The
+          numerical values of value cells are stored as double
+          precision floating point numbers.  Enter a value cell by
+          typing its formula.  For Example:
+               1111++++AAAA2222****SSSSIIIINNNN((((AAAA1111****PPPPIIII))))
+
+          Note that if the formula starts with a letter (i.e. a
+          function name or coordinate), you will have to precede it
+          with a plus sign so that it isn't interpreted as a label.
+
+          Valid formula tokens are:
+
+          ^^^^    Exponentiation operator.  For example, the value of
+                    2222^^^^3333
+               is 8, because 2*2*2 is 8.
+
+          **** ////  Multiplication and division operators.
+
+          ++++ ----  Addition and subtraction operators (unary and binary).
+
+          <<<< >>>> ==== >>>>==== <<<<==== <<<<>>>>
+               Relational operators
+
+          &&&&&&&&   Logical And (See also the AAAANNNNDDDD function)
+
+          ||||||||   Logical Or (See also the OOOORRRR function)
+
+          (((( ))))  Parentheses
+
+          _c_o_o_r_d
+               A coordinate, either of the form AAAABBBB111122223333 or as a series
+               of _a_r_r_o_ws.  This represents the value of the indicated
+               cell.
+
+          _f_u_n_c_t_i_o_n
+               A function, with arguments if appropriate.  A list of
+               the valid functions is given below.
+
+
+
+     Page 5                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          _n_u_m_b_e_r
+               A number, with optional decimal places and optional
+               power of 10 exponent.  An example is 11112222....33334444EEEE----4444 .
+
+          _s_t_r_i_n_g
+               A string is a series of characters enclosed in single
+               quotes.  Strings, like label cells, have a numerical
+               value of zero.  Thus, the value of
+                    2222++++''''aaaabbbbccccdddd''''
+               is 2.  Certain functions, including MMMMAAAAXXXX(((()))), MMMMIIIINNNN(((()))),
+               CCCCHHHHOOOOOOOOSSSSEEEE(((()))), IIIINNNNDDDDEEEEXXXX(((()))), and IIIIFFFF(((()))), may accept arguments which
+               are strings or labels.  Thus, for example, the
+               expression
+                    ++++MMMMAAAAXXXX((((''''aaaabbbbcccc'''',,,,''''xxxxyyyyzzzz'''',,,,''''ddddeeeeffff''''))))
+               has a value of ''''xxxxyyyyzzzz''''.
+
+               The expression
+                    ++++MMMMAAAAXXXX((((''''aaaabbbbcccc'''',,,,2222,,,,''''ddddeeeeffff''''))))
+               has value 2 because numbers are selected preferentially
+               over strings (just as numbers and strings are selected
+               preferentially over empty cells in ranges).
+
+               Strings may also be compared by the relational
+               operators.  Strings are compared according to the ASCII
+               collating sequence.  Thus, ''''bbbb'''' > ''''aaaa'''', and ''''aaaa'''' > ''''AAAA'''',
+               etc.  A cell whose expression evaluates to a string
+               will display the string, just as if the cell were a
+               label cell.
+
+          The exponentiation operator ^^^^ has the highest priority;
+          relational operators have the lowest.  Thus, the expression
+               1111++++2222****3333^^^^4444
+          is equivalent to
+               1111++++((((2222****((((3333^^^^4444))))))))
+          or 163.
+
+          There also are two special characters that may be typed when
+          you are entering an expression:
+
+          !!!!    Replace the expression typed so far with its numeric
+               value.
+
+          ####    Replace the coordinate just typed (default is the
+               present coordinate position if none was typed) with its
+               value.  For example, if the cursor position cell is the
+               value 16.34 and you want to add 2 to it, you may type
+               ####++++2222 RRRREEEETTTT
+          The new cell expression (and value) will be 18.34 .
+
+          If you type a character inappropriate for the expression, an
+          error message will be displayed, and the character will not
+
+
+
+     Page 6                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          be accepted.
+
+          Like labels, value entries are terminated with RRRREEEETTTT or an
+          _a_r_r_o_w.
+
+        FFFFuuuunnnnccccttttiiiioooonnnnssss
+          Function names are character strings.  Some functions
+          require one or more arguments in parentheses; others do not
+          take arguments.
+
+          In the list below, the following nomenclature is used:
+
+          _v    Any value, such as a number, coordinate, function, or
+               expression.
+
+          _l    Any logical value.
+
+          _l_i_s_t A combination of values and ranges separated by commas.
+
+          _r_a_n_g_e
+               A number of contiguous cells, specified by the
+               beginning coordinate, a dot (displayed as an ellipsis),
+               and the end coordinate.  For example,
+                    AAAA11110000........AAAA22220000
+               means "all of the cells between AAAA11110000 and AAAA22220000,
+               inclusive."
+                    AAAA11110000........CCCC22220000
+               means all of the cells in the block or rectangle bound
+               by AAAA11110000 at the upper left and CCCC22220000 at the lower right.
+
+               Note that empty or label cells in ranges in function
+               argument lists are ignored.  Thus you may "double
+               space" entries if you so desire.  You also may put
+               blank cells or labels on either end of a range and then
+               not have to worry about retyping expressions
+               referencing the range if you later insert or delete
+               rows or columns at the ends (see ////IIII and ////DDDD).
+
+          The functions and special values are:
+
+          FFFFAAAALLLLSSSSEEEE
+               The logical value FALSE This is identical to the number
+               0.
+
+          TTTTRRRRUUUUEEEE The logical value TRUE.  This is identical to the
+               number 1.
+
+          EEEERRRRRRRROOOORRRR
+               Makes all expressions referencing the value display
+               EEEERRRRRRRROOOORRRR.  This is also displayed as the value of
+               expressions with illegal computations (such as dividing
+
+
+
+     Page 7                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               by 0).
+
+          NNNNAAAA   Makes all expressions referencing the value display NNNNAAAA.
+
+          PPPPIIII   3.141592653589793238
+
+          IIIINNNNTTTT((((_v))))
+               Integer portion of _v.
+
+          AAAABBBBSSSS((((_v))))
+               Absolute value of _v.
+
+          RRRROOOOUUUUNNNNDDDD((((_v_1,_v_2))))
+               Round _v_1 to the nearest _v_2.  For example,
+                    RRRROOOOUUUUNNNNDDDD((((111177775555,,,,111100000000))))
+               is 200 because 200 is the closest multiple of 100 to
+               175.
+
+               Similarly
+                    RRRROOOOUUUUNNNNDDDD((((11117777,,,,5555))))
+               is 15.
+
+          MMMMOOOODDDD((((_v_1,_v_2))))
+               The remainder of _v_1 divided by _v_2.  For example
+                    MMMMOOOODDDD((((9999,,,,4444))))
+               is 1 because 9 divided by 4 is 2 with a remainder of 1.
+
+          AAAAVVVVEEEERRRRAAAAGGGGEEEE((((_l_i_s_t))))
+               Average of the values in _l_i_s_t.
+
+          CCCCOOOOUUUUNNNNTTTT((((_l_i_s_t))))
+               Count of the numerical entries in list.  Recall that
+               empty and label cells in ranges are ignored.
+
+          SSSSUUUUMMMM((((_l_i_s_t))))
+               Sum of the values in _l_i_s_t.
+
+          MMMMAAAAXXXX((((_l_i_s_t))))
+               Maximum value in _l_i_s_t.
+
+          MMMMIIIINNNN((((_l_i_s_t))))
+               Minimum value in _l_i_s_t.
+
+          NNNNPPPPVVVV((((_d_r,,,,_l_i_s_t))))
+               Net Present Value of the cash flow in _l_i_s_t, discounted
+               at the rate _d_r.  The formula is
+                    NPV = _v_1 / _D_R + _v_2 / _D_R^2 + _v_3 / _D_R^3 + ....
+               for _D_R = _d_r++++1111, _v_1 = item one of _l_i_s_t, etc.
+
+          EEEEXXXXPPPP((((_v))))
+               Natural exponential.
+
+
+
+     Page 8                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          LLLLNNNN((((_v))))
+               Natural logarithm.
+
+          LLLLOOOOGGGG11110000((((_v))))
+               Common logarithm.
+
+          SSSSQQQQRRRRTTTT((((_v))))
+               Square root.
+
+          AAAACCCCOOOOSSSS((((_v))))
+               Arccosine in radians.
+
+          AAAASSSSIIIINNNN((((_v))))
+               Arcsine in radians.
+
+          AAAATTTTAAAANNNN((((_v))))
+               Arctangent in radians.
+
+          CCCCOOOOSSSS((((_v))))
+               Cosine (angle in radians).
+
+          SSSSIIIINNNN((((_v))))
+               Sine.
+
+          TTTTAAAANNNN((((_v))))
+               Tangent.
+
+          FFFFAAAACCCCTTTT((((_v))))
+               Factorial.
+
+          CCCCHHHHOOOOOOOOSSSSEEEE((((_v,,,,_l_i_s_t))))
+               The function's value is the value of the _vth element in
+               _l_i_s_t.  If _v is non-integral, truncate it to the next
+               lower integer.  If _v is 0 or greater than the number of
+               items in _l_i_s_t, the function's value is NNNNAAAA.  As an
+               example, the value of
+                    CCCCHHHHOOOOOOOOSSSSEEEE((((2222,,,,11110000,,,,22220000,,,,33330000))))
+               is 20.
+
+               Also, the value of
+                    CCCCHHHHOOOOOOOOSSSSEEEE((((2222,,,,''''aaaabbbbcccc'''',,,,''''xxxxyyyyzzzz'''',,,,''''ddddeeeeffff''''))))
+               is ''''xxxxyyyyzzzz''''.
+
+          IIIINNNNDDDDEEEEXXXX((((_v,,,,_l_i_s_t))))
+               Find the largest value in _l_i_s_t that is less than or
+               equal to _v.  The value of the function is the relative
+               position of that value in the list.  If no value in
+               _l_i_s_t is less than or equal to _v, the function's value
+               is NNNNAAAA.
+
+               As an example, the value of
+
+
+
+     Page 9                                           (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                    IIIINNNNDDDDEEEEXXXX((((22220000,,,,11110000,,,,22220000,,,,33330000))))
+               is 2.  Also, the value of
+                    IIIINNNNDDDDEEEEXXXX((((''''xxxxyyyyzzzz'''',,,,''''aaaabbbbcccc'''',,,,''''xxxxyyyyzzzz'''',,,,''''ddddeeeeffff''''))))
+               is 2.
+
+          IIIIFFFF((((_l,,,,_v_1,,,,_v_2))))
+               _v_1 if _l is TTTTRRRRUUUUEEEE, else _v_2.
+
+          AAAANNNNDDDD((((_l_i_s_t))))
+               The logical AND of all the items in _l_i_s_t.  For example,
+               the value of
+                    AAAANNNNDDDD((((5555>>>>4444,,,,4444>>>>3333,,,,3333>>>>2222))))
+               is TTTTRRRRUUUUEEEE, and the value of
+                    AAAANNNNDDDD((((5555>>>>4444,,,,4444>>>>3333,,,,3333<<<<2222))))
+               is FFFFAAAALLLLSSSSEEEE.
+
+          OOOORRRR((((_l_i_s_t))))
+               The logical OR of all the items in _l_i_s_t.  For example,
+               the value of
+                    OOOORRRR((((5555>>>>4444,,,,4444<<<<3333,,,,3333<<<<2222))))
+               is TTTTRRRRUUUUEEEE, and the value of
+                    AAAANNNNDDDD((((5555<<<<4444,,,,4444<<<<3333,,,,3333<<<<2222))))
+               is FFFFAAAALLLLSSSSEEEE.
+
+          NNNNOOOOTTTT((((_l))))
+               The logical negation of _l.  For example, the value of
+                    NNNNOOOOTTTT((((3333>>>>2222))))
+               is FFFFAAAALLLLSSSSEEEE.
+
+          IIIISSSSEEEERRRRRRRROOOORRRR((((_v))))
+               TTTTRRRRUUUUEEEE _i_f _v is EEEERRRRRRRROOOORRRR, else FFFFAAAALLLLSSSSEEEE.
+
+          IIIISSSSNNNNAAAA((((_v))))
+               TTTTRRRRUUUUEEEE _i_f _v is NNNNAAAA, else FFFFAAAALLLLSSSSEEEE.
+
+        CCCCoooommmmmmmmaaaannnnddddssss
+          ////BBBB   Blank - Erase a cell or cells to EMPTY.  You will be
+               prompted for the range of cells to be blanked.  Type
+               the desired coordinate or range, and terminate the
+               command with RRRREEEETTTT.  The default is just the cell at the
+               cursor position.  That is, if you do not type a
+               coordinate or range, _v_c_a_l_c will take the default action
+               of blanking the cell at the cursor position.
+
+          ////CCCC   Clear - Clear the worksheet, and revert to initial
+               window and format configurations.  The program will
+               prompt you for a YYYY to confirm that you really want to
+               do this.
+
+          ////DDDD   Delete - Delete one or more partial or complete rows or
+               columns.  The command asks you for several pieces of
+
+
+
+     Page 10                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               information.  First you are asked for a number
+               indicating the number of rows or columns to be deleted.
+               If you do not type a number, 1 is assumed.  Follow the
+               number (or lack thereof) with RRRR or CCCC to indicate
+               whether you wish to delete rows or columns.  Finally,
+               you are asked for an indication of where to delete
+               from.  Type a coordinate or range followed by RRRREEEETTTT.  The
+               default is the row or column in which the cursor rests.
+
+               For example:
+                    ////DDDD 2222 RRRR 11115555 RRRREEEETTTT
+               means that you want to delete two complete rows
+               starting at row 15.  Rows 15 and 16 are deleted.
+
+                    ////DDDD 2222 RRRR CCCC11115555........EEEE11115555 RRRREEEETTTT
+               deletes two partial rows.  Cells C15..E15 and C16..E16
+               are deleted.
+
+               Cells below or to the right of the deleted area are
+               shifted up or to the left to fill in the created gap.
+               All references throughout the worksheet to coordinates
+               in the area below the deleted area are adjusted to
+               reflect their shift in position.  Any references to the
+               deleted area itself receive the value EEEERRRRRRRROOOORRRR.
+
+          ////EEEE   Edit - Allow editing of the contents of the cell at the
+               cursor position.  Typing LLLLEEEEFFFFTTTTAAAARRRRRRRROOOOWWWW backs you up one
+               cell, RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW moves you one cell forward, UUUUPPPPAAAARRRRRRRROOOOWWWW
+               puts you at the beginning of the entry, and DDDDOOOOWWWWNNNNAAAARRRRRRRROOOOWWWW
+               puts you at the end.  DDDDEEEELLLL erases the character to the
+               left of the edit cursor, and any other character will
+               be added at the cursor position.  Terminate it all with
+               RRRREEEETTTT.
+
+               If you are editing a value cell and you introduce a
+               syntax error into the expression, the error will not be
+               noticed until you type RRRREEEETTTT.  You will then see an error
+               message, and you will remain in edit mode, with the
+               cursor at the position immediately after the error.
+
+               Recall that you may enter the edit mode while initially
+               entering a cell expression (or other data to be
+               terminated by RRRREEEETTTT) by typing ^^^^EEEE.
+
+          ////FFFF   Format - Specify the format of a cell or cells.
+
+               Specify the domain for the format specification with
+               one of the characters EEEE, CCCC, RRRR, or WWWW:
+
+               EEEE    indicates that the specification is valid for the
+                    single entry only.
+
+
+
+     Page 11                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               CCCC    indicates that it applies to the entire column,
+
+               RRRR    that it applies to the row, and
+
+               WWWW    that it applies globally to the present window
+                    (see ////WWWW).
+
+               In case of conflict, the entry specification has
+               highest priority, followed by column, row, and window
+               with lowest priority.
+
+               You must then enter the relevant format specifications
+               for the specified domain.  Enter one or more of these
+               specifications, followed by a RRRREEEETTTT or an _a_r_r_o_w.
+               Possible specs are:
+
+               DDDD    Default - Default to the specs of the next lower
+                    priority domain.
+
+               EEEE    Exponential - Force the entry to be in exponential
+                    format (scientific notation).
+
+               FFFF    Fixed - Force the entry to be in fixed point
+                    format.  That is, it will never be in exponential
+                    format.  For example, the value 31.4 will be
+                    displayed as 3333....11114444eeee1111 in EEEE format and as 33331111....4444 in FFFF
+                    format.
+
+               GGGG    General format - Display values in either fixed or
+                    exponential format, depending on which will show
+                    the most significant figures.
+
+               ,,,,    Comma format - Display values exactly as in the FFFF
+                    fixed format, but with commas separating thousands
+                    to the left of the decimal point.  Thus, 1000000
+                    is displayed as 1,000,000 with the comma format.
+
+               ****    Graph format - Replace values with an appropriate
+                    number of stars.
+
+                    Note that EEEE, FFFF, GGGG, and **** are mutually exclusive.
+                    If one of those has been specified and you wish to
+                    instead default to the spec of the next lower
+                    priority domain, type the appropriate character
+                    followed by DDDD.
+
+               LLLL    Left - Align entries with the leftmost column of
+                    their cell.  This is the default alignment for
+                    labels and ****'s.
+
+               RRRR    Right - Align entries with the rightmost column of
+
+
+
+     Page 12                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                    their cell.  This is the default alignment for
+                    values displayed as numbers.
+
+                    LLLL and RRRR are mutually exclusive.  If one has been
+                    specified and you wish to instead specify the
+                    alignment of the next lower priority domain, type
+                    the appropriate character followed by DDDD.
+
+               PPPP    Specify the number of decimal places with EEEE and FFFF
+                    formats.  You may type a number between 0 and 13.
+                    Alternatively, you may type VVVV to specify that the
+                    precision should be varying, according to how many
+                    significant decimal places can fit in a column.
+                    Finally, you may type DDDD to indicate the precision
+                    should default to that of the next higher domain.
+                    Note that the precision is ignored when the GGGG or ****
+                    spec is enabled.
+
+               CCCC    Specify the column width (valid only with global
+                    and column domains).  Follow the CCCC with a number,
+                    which must be greater than or equal to 3 and less
+                    than or equal to the present window width.  For
+                    the column domain, you may type DDDD instead of a
+                    number in order to default to the global width.
+
+               WWWW    Specify write protection for the indicated
+                    cell(s).  Follow WWWW with YYYY to enable write
+                    protection, NNNN to disable protection, and DDDD to use
+                    the default.  A write protected cell may not be
+                    overwritten by a succeeding command or operation.
+                    If you try to change the contents of a write
+                    protected cell, _v_c_a_l_c will ask you if you really
+                    wish to change it.  The change will take place
+                    only if you respond with YYYY.
+
+               For example,
+                    ////FFFFEEEEFFFFPPPP2222
+               indicates that you want the cell at the cursor position
+               to have two decimal places in fixed format.
+
+                    ////FFFFWWWWCCCC6666 RRRREEEETTTT
+               indicates that you want the window containing the
+               cursor to have columns 6 characters wide.
+
+                    ////FFFFCCCC****RRRRPPPPDDDDCCCCDDDDWWWWYYYY
+               indicates that you want the column containing the
+               cursor to have right aligned "star" format, with
+               default decimal places and column width, and write
+               protection turned on.
+
+               The initial state of the sheet is:
+
+
+
+     Page 13                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                    ////FFFFWWWWGGGGPPPPVVVVWWWWYYYYCCCC9999 ////FFFFRRRRDDDD ////FFFFCCCCDDDD ////FFFFEEEEDDDD
+               for all rows, columns, and entries.
+
+          ////GGGG   Global - Specify or display global parameters and
+               flags.
+
+               ////GGGGOOOO  Order of recalculation.  Normally, when the values
+                    on the sheet are calculated, the program runs down
+                    the first column, then down the second column, and
+                    so on to the last column.  But your data may be
+                    arranged so that the value of one cell depends on
+                    the value of a cell to its right.  In case, the
+                    value of the dependent cell will not be right
+                    after one pass through the sheet.  For example, if
+                    you have
+                         A1: 20          B1: 10+A1
+                         A2: 5*B1        B2: whatever
+                    you can see that if you type a new value for A1
+                    the new value for A2 will be calculated before B1
+                    is recalculated.  Since A2's new value depends on
+                    the new value of B1, A2's value will be wrong.  If
+                    you type !!!!, the sheet will be recalculated, and A2
+                    will get the proper value because it will use B1's
+                    new value this time.  But there is a better way to
+                    handle this situation.  You can type
+                         ////GGGGOOOORRRR RRRREEEETTTT
+                    to specify that the calculations are to proceed in
+                    "row major order", i.e.  that the first row will
+                    be calculated, then the second row, and so on to
+                    the last row.  You of course may reset the order
+                    to the default with
+                         ////GGGGOOOOCCCC RRRREEEETTTT
+
+                    In the interest of efficiency, it is recommended
+                    that you arrange the formulas in your sheet so
+                    that they will all receive the proper values in
+                    one pass, either in row major or column major
+                    order.  But there may be some instances where this
+                    is not possible.  In these cases, you may specify
+                    multiple passes.  For example,
+                         ////GGGGOOOORRRRCCCC RRRREEEETTTT
+                    specifies that the sheet is to be calculated twice
+                    on recalculations.  The first calculation is in
+                    row major order, the second in column order.  You
+                    may have any combination of R's and C's, but
+                    remember that each pass adds to the time of
+                    recalculation.
+
+               ////GGGGRRRR  Automatic recalculation flag.  Normally, whenever
+                    a value cell is written to, the entire sheet is
+                    recalculated.  This is an important feature of
+
+
+
+     Page 14                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                    _v_c_a_l_c, but sometimes it can slow you down when you
+                    want to enter a lot of data without having to wait
+                    for the values to be recalculated and the screen
+                    redrawn for each entry.  Disable the automatic
+                    calculation by typing
+                         ////GGGGRRRRMMMM
+
+                    You can still do recalculation manually with the !!!!
+                    command, and you can reset automatic calculation
+                    with
+                         ////GGGGRRRRAAAA
+
+               ////GGGGSSSS  Show pertinent parameters on the prompt line.
+                    These parameters include the column, row, and
+                    global formats, title fixing status (see ////TTTT), and
+                    the amount of memory used in storing the sheet.
+                    The information remains on the screen until you
+                    type a character for the next command.
+
+               ////GGGGLLLL  Label upper/lower case flag.  You may want all or
+                    most of your labels to be in upper case
+                    (capitals).  This flag allows you to type lower
+                    case letters and have them appear as upper case in
+                    the labels.  (When you hit the shift key, the
+                    upper case letters you type are mapped to lower
+                    case.)
+
+                    This flag is initially disabled, so that label
+                    characters are stored "as typed".  To turn it on,
+                    type
+                         ////GGGGLLLLUUUU
+
+                    To turn it back off, type
+                         ////GGGGLLLLLLLL
+
+          ////HHHH   Help - Display a rudimentary help screen describing the
+               top level command functions.
+
+          ////IIII   Insert - Insert one or more empty partial or complete
+               rows or columns.  You are prompted for a number, an RRRR
+               or a CCCC, and a range indicating where the new cells are
+               to be inserted.  As in the ////DDDD delete command, 1 is the
+               default number, and the present row or column is the
+               default position.
+
+               For example, if you type
+                    ////IIII 2222 RRRR 11115555 RRRREEEETTTT
+               two new rows will be inserted above row 15.  If you
+               type
+                    ////IIII 2222 RRRR CCCC11115555........EEEE11115555 RRRREEEETTTT
+               six new cells will be inserted, two above C15, two
+
+
+
+     Page 15                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               above D15, and two above E15.
+
+               Cells at and beyond the insertion position are shifted
+               down or to the right to make way for the insertion.
+               All references throughout the worksheet to coordinates
+               in the area below to the right of the inserted area are
+               adjusted to reflect their shift in position.
+
+          ////MMMM   Move - Move one or more partial or complete rows or
+               columns to another position in the sheet.  You will be
+               prompted for a number, RRRR or CCCC, and two ranges.  The
+               first range indicates the starting location of the
+               moved cells, and the second range indicates the end
+               location.
+
+               For example, if you type
+                    ////MMMM 2222 RRRR 11115555 RRRREEEETTTT 22220000
+               rows 15 and 16 will be moved to the position before row
+               20, i.e. between rows 19 and 20.  Row 17 will be
+               shifted up into the row 15 position, 18 into 16, and 19
+               into 17.  The old 15 thus becomes row 18, and 16
+               becomes row 19.
+
+               If you type
+                    ////MMMM 2222 RRRR 11115555 RRRREEEETTTT 11110000
+               rows 15 and 16 are moved to the position before row 10,
+               i.e. between rows 9 and 10.  Rows 10 through 14 are
+               shifted down to make room.
+
+               If you type
+                    ////MMMM 2222 RRRR CCCC11115555........EEEE11115555 RRRREEEETTTT 11110000
+               the six cells C15..E15 and C16..E16 are moved to above
+               row 10.
+
+               All references throughout the worksheet to coordinates
+               in the area affected by the move are adjusted.
+
+               Note that rows may be moved down or up and columns left
+               or right.  There is no way to move a group of cells
+               simultaneously down and to the right.
+
+          ////PPPP   Print - Print all or part of the sheet.  You first are
+               prompted for options.  If the default options are
+               satisfactory, just type RRRREEEETTTT.  To change one or more
+               options, type OOOO.  The options that appear are:
+
+               TTTToooopppp   Type TTTT to change the size of the top margin on
+                    each printed page.  The default is 5 lines left
+                    blank on each page.
+
+               MMMMaaaarrrrggggiiiinnnn
+
+
+
+     Page 16                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                     Type MMMM to change the size of the left-hand margin
+                    of each printed page.  The default is 10 blanks at
+                    the beginning of each line.
+
+               LLLLiiiinnnneeeessss
+                     Type LLLL to change the number of lines printed on
+                    each page.  The default is 56.
+
+               WWWWiiiiddddtttthhhh
+                     Type WWWW to change the maximum number of characters
+                    typed on each line after the left margin.  The
+                    default is 65.
+
+               PPPPaaaaggggeeee lllleeeennnnggggtttthhhh
+                     Type PPPP to change the total length, including top
+                    margin, printed matter, and bottom margin, of each
+                    printed page.  The default is 66 lines.
+
+               After typing an option, you may type a colon (`:') to
+               see the list of options again or else just type the
+               letter for one of the options.  After you finish
+               specifying the options, type RRRREEEETTTT to return to printing,
+               or type QQQQ to quit the print command.
+
+               You are prompted for the range of cells to be printed.
+               The default is the whole sheet.  You will then be
+               prompted for an FFFF or PPPP, specifying whether you want to
+               direct your output to a file or to a printer program.
+               Note that the "program" may actually be a UNIX
+               pipeline.  Finally you are asked for the name of the
+               file or program.  Type the name, followed by RRRREEEETTTT.
+               (Note that if you wish to use the default specified the
+               last time you executed the ////PPPP program, you may just
+               type RRRREEEETTTT.)  The indicated cells are printed just as
+               they should appear on your screen in the present
+               window.
+
+               _V_c_a_l_c prints as many rows and columns as can fit onto
+               each page.  Anything left over is continued on
+               succeeding pages.
+
+          ////QQQQ   Quit - You can quit _v_c_a_l_c by typing
+                    ////QQQQ
+               You will be prompted for a confirming YYYY.
+
+               In an emergency, you can quit without the confirming YYYY
+               by typing ^^^^|||| or your standard _Q_u_i_t character.
+
+          ////RRRR   Replicate - Copy a cell or cells to another
+               position(s).  The contents of the source cells,
+               including format information, is copied.  You must
+
+
+
+     Page 17                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               specify both the source and the destination, with a RRRREEEETTTT
+               in between.  Both the source and destination may be
+               single coordinates or ranges.
+
+               For example, to copy cell AAAA2222 to DDDD11110000, type
+                    ////RRRR AAAA2222 RRRREEEETTTT DDDD11110000 RRRREEEETTTT
+
+               To copy column AAAA1111 through AAAA22220000 to a position beginning
+               at BBBB1111, type
+                    ////RRRR AAAA1111........AAAA22220000 RRRREEEETTTT BBBB1111 RRRREEEETTTT
+               Location AAAA1111 will be copied to BBBB1111, AAAA2222 to BBBB2222, etc.
+
+               If the destination is a range, the source cell or cells
+               will be copied multiple times.  The source block will
+               be copied to a group of adjacent block positions, each
+               of whose upper left hand corner is in the specified
+               destination range.  For example, to copy cell A1 to the
+               whole sheet (not recommended), type
+                    ////RRRR AAAA1111 RRRREEEETTTT AAAA1111........ZZZZZZZZ9999999999999999 RRRREEEETTTT
+
+               To copy row BBBB2222 through EEEE2222, making several copies
+               beginning at MMMM5555 through MMMM22220000, type
+                    ////RRRR BBBB2222........EEEE2222 RRRREEEETTTT MMMM5555........MMMM22220000 RRRREEEETTTT
+               Cells BBBB2222..EEEE2222 will be copied to MMMM5555..PPPP5555, and also to
+               MMMM6666..PPPP6666, etc.
+
+               To copy block AAAA1111........BBBB2222 to the four locations beginning at
+               EEEE6666, GGGG6666, EEEE8888, and GGGG8888, type
+                    ////RRRR AAAA1111........BBBB2222 RRRREEEETTTT EEEE6666........GGGG8888 RRRREEEETTTT
+
+               If a coordinate is omitted, it is assumed to be the
+               present location.  For example, if the cursor is at AAAA1111,
+               you may copy AAAA1111 through AAAA11110000 to the position beginning
+               at DDDD1111 by typing
+                    ////RRRR ....AAAA11110000 RRRREEEETTTT DDDD1111 RRRREEEETTTT
+               The "default" coordinate will be displayed to remind
+               you that you've indicated it.
+
+               When you copy a formula that has coordinates in it, you
+               may want the coordinates in the copy to be adjusted to
+               take account of that fact.  For example, if cell AAAA1111 has
+               the value 1 and cell AAAA2222 has formula 1+A1 and value 2,
+               you may want to put 1+A2 in cell AAAA3333 and so on down to
+               1+A19 in AAAA22220000 so you'll have a column of the numbers 1
+               through 20.  You may type
+                    ////RRRR AAAA2222 RRRREEEETTTT AAAA3333........AAAA22220000
+               You then will be prompted with a question asking
+               whether you want AAAA2222 in the formula to be copied "No
+               Change", "Relative", or "Value".  Type RRRR to make the
+               coordinate in the copy relative to its new position.
+               If you had wanted the coordinate to remain as AAAA1111, so
+
+
+
+     Page 18                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               you'd get the value 2 in A3..A20, you would have typed
+               NNNN for no change.  You will be similarly prompted for
+               each coordinate in each formula in the source range.
+               You may precede the NNNN or RRRR with a number to indicate
+               that you wish the NNNN or RRRR to apply for that number of
+               coordinate references.  This saves you having to type
+               the same response time after time.  You may also
+               precede the response with **** to indicate that the
+               response applies for the remainder of the coordinate
+               references in the replicate.
+
+               You may type VVVV if you want expressions involving
+               coordinates to be copied so that they are converted to
+               their values alone.  For example, if cell AAAA3333 is the
+               expression 1+A2, evaluating to 17, you may place the
+               value 17 into cell BBBB3333 by typing
+                    ////RRRR AAAA3333 RRRREEEETTTT BBBB3333
+               and typing VVVV when _v_c_a_l_c asks you for the disposition of
+               the coordinate.
+
+          ////SSSS   Storage - Save worksheets to files, and load from
+               files.
+
+               ////SSSSSSSS   Save a copy of the sheet in a UNIX file.  You
+                    will be prompted for a file name.  Type the name,
+                    followed by RRRREEEETTTT.  The file name may include shell
+                    metacharacters such as **** and ????, and may include
+                    shell variables such as $$$$HHHHOOOOMMMMEEEE.  If the file
+                    already exists, you will be prompted for a YYYY to
+                    confirm that it's okay for the file to be
+                    overwritten (this confirmation is unnecessary if
+                    the file is being written by a command file
+                    executed by ////SSSSLLLL (see below)).  Saved information
+                    includes the formulas and formats of all the
+                    cells, windows, columns, and rows, window
+                    information, printout options, recalc order and
+                    auto/manual options, and the default label case
+                    flag.
+
+               You may specify that ////SSSSSSSS output is to be to a pipe to
+               another program rather than a file by typing the
+               program preceded by the `|' character when you are
+               prompted for the file name.
+
+               ////SSSSLLLL   Load a previously saved worksheet from a file.
+                    You will be prompted for a file name.  Type the
+                    name, followed by RRRREEEETTTT.  Non-empty cells on your
+                    present sheet will not be overwritten unless the
+                    saved file had data in those positions.  You can
+                    also use the ////SSSSLLLL command to execute a series of
+                    commands that are stored in a Unix file.
+
+
+
+     Page 19                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                    You may specify that ////SSSSLLLL input is to be from a
+                    pipe to another program rather than a file by
+                    typing the program preceded by the `|' character
+                    when you are prompted for the file name.
+
+                    Note that specifying a file name on the command
+                    line in invoking _v_c_a_l_c is similar in effect to
+                    typing ////SSSSLLLL_f_i_l_e_n_a_m_e as the first command.
+
+               ////SSSSRRRR   Read data from a non-_v_c_a_l_c format ASCII file.
+                    You may wish _v_c_a_l_c to read a table of numbers
+                    and/or labels that were produced by another
+                    program or by a standard text editor.  The ////SSSSRRRR
+                    command reads a file of data items separated by
+                    some delimiter.
+
+                    You are first prompted for one or more delimiters.
+                    Type the delimiters, followed by RRRREEEETTTT.  For
+                    example, if your input file consists of a list of
+                    numbers separated by commas, type a comma and RRRREEEETTTT.
+                    The default delimiter is TTTTAAAABBBB.  Note that if two
+                    delimiters are read without intervening
+                    characters, a column is skipped.  For example,
+                    2222,,,,,,,,6666 is interpreted as 2, skipped column, 6.  This
+                    rule is not true for the SSSSPPPPAAAACCCCEEEE character as a
+                    delimiter.  That is, two or more adjacent SSSSPPPPAAAACCCCEEEEs
+                    character delimiters are the same as one SSSSPPPPAAAACCCCEEEE.
+
+                    You next are prompted for characters to be
+                    ignored.  For example, if the input file has
+                    dollar signs in front of numbers, you'll want to
+                    specify that dollar sign is to be ignored because
+                    _v_c_a_l_c does not understand the meaning of these
+                    characters.
+
+                    You are then prompted for the upper left hand
+                    corner of the region to receive the input.  Type a
+                    coordinate followed by RRRREEEETTTT.  The default position
+                    is the cursor position.
+
+                    You finally are prompted for a file name.  Type
+                    the name followed by RRRREEEETTTT.
+
+                    Successive lines in the input file are read into
+                    successive rows in the spreadsheet.
+
+               ////SSSSDDDD   Change directory.  You are prompted for a
+                    directory name.  Type a name followed by RRRREEEETTTT.
+                    $$$$HHHHOOOOMMMMEEEE is the default.
+
+          ////TTTT   Title fixing - You may find that you want to work on a
+
+
+
+     Page 20                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               distant corner of your worksheet while still keeping
+               some column headers or other titles way up in the upper
+               left of the sheet in view.  The title fixing feature
+               tells the program that you want certain rows and/or
+               columns to stay put while you scroll through the rest
+               of the sheet.  The way to do this is to move the cursor
+               to the lower right of the region you want to fix in
+               place and type:
+                    ////TTTTAAAA RRRREEEETTTT or ////TTTTLLLL RRRREEEETTTT or ////TTTTAAAALLLL RRRREEEETTTT
+               for fixing at and above the cursor, at and to the left
+               of the cursor, or both.
+
+               Type
+                    ////TTTTNNNN
+               to negate column fixing.
+
+          ////VVVV   Version.  Type ////VVVV to display the current version of the
+               program.
+
+          ////WWWW   Windows - You may split the screen either horizontally
+               or vertically into two windows.
+
+               ////WWWWHHHH  splits the screen into a window above the cursor
+                    position and a window below.
+
+               ////WWWWVVVV  splits the screen into a window to the left of the
+                    cursor position and a window to the right.
+
+                    After the ////WWWW command executes, the cursor will be
+                    in the first (left/upper) window.  Type the
+                    character ;;;; to jump back and forth between the
+                    windows.
+
+               ////WWWW1111  returns the screen to the single window state,
+                    effectively undoing a ////WWWWVVVV or ////WWWWHHHH.  The single
+                    window has the attributes of the window that the
+                    cursor was in at the command's invocation.
+
+               ////WWWWSSSS  synchronizes scrolling.  Thus, when one window
+                    scrolls, the other one will also (for example, you
+                    may want to simultaneously examine the same rows
+                    in two distant columns).  With vertically
+                    separated windows, up and down scrolling will be
+                    synchronized.  With horizontally separated
+                    windows, right/left scrolling will be
+                    synchronized.
+
+               ////WWWWUUUU  to disables the synchronization feature
+                    (unsynchronizes the windows).
+
+               ////WWWWMMMM  Set a margin for use with the <<<< command.  You are
+
+
+
+     Page 21                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+                    prompted for the position where the margin is to
+                    be set.  Type a coordinate followed by RRRREEEETTTT.  The
+                    default is the current cursor position.
+
+          ////ZZZZ   Zone/Scroll - Shift the worksheet so that a different
+               portion is displayed on the screen.
+
+               A window is scrolled by following ////ZZZZ with an arrow
+               indicating the direction of scrolling.  For example, if
+               the screen currently displays columns AAAA through HHHH, and
+               the cursor is at position DDDD11110000, and you'd like to look
+               at column IIII while keeping the cursor in column DDDD, you
+               can type
+                    ////ZZZZ RRRRIIIIGGGGHHHHTTTTAAAARRRRRRRROOOOWWWW
+
+               The cursor stays at the same cell if that position is
+               still on the screen.  The arrow may be preceded by an
+               integer if you wish to scroll more than one column or
+               row at a time.
+
+               A second flavor of the ////ZZZZ command allows you to shift
+               the worksheet so that the coordinate on which the
+               cursor lies is in one of 9 positions on the screen.
+               Follow the ////ZZZZ with a digit
+                    1111 2222 3333
+                    4444 5555 6666
+                    7777 8888 9999
+
+               and then RRRREEEETTTT.  For example, ////ZZZZ1111 will put the cursor in
+               the upper left corner of the screen, ////ZZZZ2222 puts it at the
+               upper center, ////ZZZZ5555 puts it at the center, etc.
+
+               Note that the movement may only be approximate and that
+               there are constraints placed by the size of the sheet.
+               For example, with the cursor at AAAA1111, typing ////ZZZZ9999 will
+               have no effect because there are no cells which can
+               appear to the upper left of AAAA1111.  Also, the zone command
+               has no effect if the cursor is in an area fixed in
+               place by the ////TTTT command.
+
+          ////!!!!   Shell escape - Execute a single command via the UNIX
+               shell.  Type ////!!!! and a command name.  The screen will be
+               cleared and the command will execute.
+
+               If you want to execute an interactive shell, type
+                    ////!!!!sssshhhh
+
+               When the command finishes, type any character to redraw
+               the worksheet, or type another !!!! to execute another
+               shell escape.
+
+
+
+
+     Page 22                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+        MMMMiiiisssscccceeeellllllllaaaannnneeeeoooouuuussss
+          If your terminal line is dropped, the program will save your
+          sheet in file $HOME/vcalc.hup .  If you have not specified
+          shell environment $HOME, the program will save the sheet in
+          the file ./vcalc.hup .
+
+          Invoking vcalc with the flag ----vvvv causes _v_c_a_l_c to display its
+          version number and exit.
+
+     MMMMOOOOUUUUSSSSEEEE SSSSUUUUPPPPPPPPOOOORRRRTTTT
+          There is mouse support for {emacs|vi}term.  If your TERM
+          variable is set to either one, mouse selection are enabled.
+
+          What happens when you use the mouse to point, depends on
+          what mode you are in.
+
+        MMMMooooddddeeeessss
+          STARTMODE
+               Before you are ready to do something.  In this state
+               you type a '/' to get into:
+
+          CMDMODE
+               In this mode you pick a command like B to blank, C to
+               clear,....
+
+          LABMODE
+               In this mode you are entering a label into a cell.
+
+          VALMODE
+               In this mode you are entering a value into a cell.
+
+          COORDMODE
+               In this mode you are adding a cell coordinate or
+               coordinate..coordinate.
+
+        MMMMooooddddeeee FFFFuuuunnnnccccttttiiiioooonnnnssss
+          If you are in STARTMODE:
+               Pointing with button 1 sends you to that cell.
+               Sweeping a region is like pointing at the upper left
+               hand corner of the region.
+
+               Pointing to an area above or below the cells, takes you
+               to the column you pointed to (stays in line you are
+               at).
+
+               Pointing to an area to the left or right of the cells,
+               takes you to the row pointed to (stays in column you
+               are at).
+
+               Pointing to the left or right of the cells AND above or
+               below the cells, sends you to the corner cell nearest
+
+
+
+     Page 23                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+               to where you pointed.  (This may change to allow some
+               sort of scrolling.)
+
+               If you point to a cell that is in the other window, you
+               will move to that cell in the other window.
+
+          If you are in CMDMODE:
+               Any mouse pointing is ignored.
+
+          If you are in LABMODE:
+               Any pointing will have the same effect as a carriage
+               return.
+
+          If you are in VALMODE:
+               The coordinates of a cell pointed to or region swept
+               are included into the value.
+
+               If you are in two window mode and you sweep a region
+               that is across both windows, it picks one cell from
+               each window to compose the region.  This MAY make
+               sense, but I wouldn't count on it.
+
+          If you are in COORDMODE:
+               Same as VALMODE.
+
+     MMMMEEEEMMMMOOOORRRRYYYY UUUUSSSSAAAAGGGGEEEE
+          Large chunks of dynamic memory may be allocated for:
+          Pointers: 4 Bytes * LastRow * LastCol
+                          LastRow (LastCol) is the rightmost row (bottom column) used.
+                          Putting a label into cell ZZ9999 requires about 28MB
+                          of main memory.
+          Contents of cells: Varies with formula used.  Cells with
+                          null contents use no memory.
+          It is easy to exhaust the available memory on most exptools
+          computers.
+
+     FFFFIIIILLLLEEEESSSS
+          By default, the exptools version of vcalc uses the terminfo
+          database.  Some sites may have a vcalc which uses the older
+          termcap database.  One can use "vcalc -v" to find out which
+          version a particular file is.
+
+          /etc/termcap            if "vcalc -v" returns .... (termcap)
+          /usr/lib/terminfo       if "vcalc -v" returns ....
+          (terminfo)
+          /tmp/vcp??????
+          $HOME/vcalc.hup
+
+     VVVVCCCCAAAALLLLCCCC PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR FFFFOOOORRRR AAAATTTT&&&&TTTT //// EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS
+          Steve Sommars
+          AT&T
+
+
+
+     Page 24                                          (printed 2/1/90)
+
+
+
+
+
+
+     VVVVCCCCAAAALLLLCCCC((((1111))))                  UUUUNNNNIIIIXXXX SSSSYYYYSSSSTTTTEEEEMMMM VVVV                  VVVVCCCCAAAALLLLCCCC((((1111))))
+
+
+
+
+          IW 2Z106
+          ihlpl!sesv
+
+     AAAAUUUUTTTTHHHHOOOORRRR AAAANNNNDDDD BBBBUUUUGGGG RRRREEEEPPPPOOOORRRRTTTT SSSSIIIINNNNKKKK
+          Tom Skrobala
+          AT&T Information Systems Laboratories Holmdel
+          miranda!tas
+
+     BBBBUUUUGGGGSSSS
+          Some arithmetic overflow conditions are not caught.
+
+          -x^n (unary minus) is treated as (-x)^n instead of -(x^n)
+
+          ////WWWWVVVV with cursor in last column on screen is buggy for
+          certain column width combinations.
+
+          Terminal character insert/delete capabilities are not
+          exploited.
+
+          Repeating labels referenced in value cells act like non-
+          repeating labels, i.e. the expression
+               ++++AAAA1111
+          where A1 is the repeating label """"---- , displays as a single
+          dash.
+
+          Doesn't handle "standout" (e.g. reverse video) mode properly
+          for some terminals.  For some terminals this fault is
+          recognized automatically, and standout mode is disabled.
+          For others, you must explicitly disable it with the ----ssss flag.
+          For some terminals, there are only intermittent problems,
+          which can be cleared up by typing ^^^^RRRR to redraw the screen.
+
+          _V_c_a_l_c uses terminal insert and delete capabilities to
+          optimize screen redrawing in some cases.  This capability
+          has been tested on some, but not all, terminals.  If you
+          find that your screen is sometimes corrupted by cursor
+          motions, invoke _v_c_a_l_c with the ----iiii flag; this should clear it
+          up.  Please report such problems to the author.
+
+          The program can be very picky about what value you give to
+          your $TERM variable.  For example, specifying TERM=hp when
+          you should have TERM=2621 or vice versa will cause standout
+          problems.
+
+          Some terminals send ^| for their arrow keys.  People using
+          these terminals must make sure that their terminal "Quit"
+          character is set to something else.
+
+
+
+
+
+
+
+     Page 25                                          (printed 2/1/90)
+
+
+

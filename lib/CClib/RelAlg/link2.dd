@@ -1,0 +1,29 @@
+#ident "@(#) /sable/sdb/ra/sblib/list/s.link2.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+class Link2_List_item : public List_item
+   {
+   friend class Link2;
+   Link2_List_item *prev;
+   Link2_List_item *next;
+   Link2_List_item() : List_item(LINK2) { next = prev = (Link2_List_item *) 0; }
+public:
+   };
+
+class Link2 : public List
+   {
+   Link2_List_item head;
+   Link2_List_item *cursor;
+public:
+   ~Link2(); // a non-inline function (if any) must go first
+   Link2();
+   List_item *itemize(void *data);
+   Boolean_t append(List_item *li);
+   Boolean_t remove(List_item *li);
+   Boolean_t push(List_item *li);
+   List_item *pop();
+
+   Boolean_t startwalk();
+   List_item * walk();
+   Boolean_t endwalk();
+   };

@@ -1,0 +1,726 @@
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          bvi - screen-oriented (visual) editor similar to vi, for
+          non-printable files
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          bbbbvvvviiii     [ name ]
+
+          bbbbeeeexxxx     [ name ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _B_v_i is a  display-oriented  binary  editor  for  ASCII  full
+          screen  terminals.  It is modeled on the text editor _v_i but,
+          unlike _v_i, it treats a file as  a  single  string  of  mixed
+          binary  and  ASCII (or EBCDIC) bytes rather than as lines of
+          text.  Thus, while  one  may  insert,  append,  replace,  or
+          delete  bytes (characters) in _b_v_i, one may not delete a line
+          or do any other line-oriented operations.  In _v_i, for  exam-
+          ple,  one  might use the GGGG command to go to line number 327,
+          but in _b_v_i one uses the GGGG command to go to byte number 327.
+
+          An exception to the no-lines rule is that the screen naviga-
+          tion  commands  behave  as  though the file were composed of
+          lines of 16 data bytes each.  (The number of data bytes  per
+          line varies, depending on the size of the screen on the ter-
+          minal you are using, and is 16 for  an  80-column  display.)
+          Thus,  the  jjjj command, that in _v_i would move the cursor down
+          one line, in _b_v_i moves the cursor down to the next row of 16
+          data bytes on the screen.
+
+          When using _b_v_i, changes you make to the file  are  reflected
+          in  what  you  see on your terminal screen.  The position of
+          the cursor on the screen indicates the position  within  the
+          file.   However, the screen is divided into two side-by-side
+          pieces, as shown in this example of a screen  with  10  data
+          bytes per line:
+
+          00000000   aabc   7465   7874   20ac   dbff   |   ........text ............
+          0000000a   ff64   6174   6120   ffff   ffaa   |   ....data ................
+          00000014   cb                                 |   ....
+
+          where the left half is the hexadecimal half  and  the  right
+          half  is  the  same  data represented in ASCII.  (Throughout
+          this manual page - except for the few exceptions noted below
+          -  you can substitute EBCDIC wherever it says ASCII, without
+          loss of generality.  However, to keep the prose uncluttered,
+          the discussion assumes ASCII.)
+
+          In the ASCII data, unprintable characters are represented in
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 1                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+          standout  mode,  if  the "standout" option has been selected
+          via the sssseeeetttt command.  (Standout mode  is  generally  inverse
+          video  on  terminals that support inverse video.)  For exam-
+          ple, ASCII 'control A', which is  often  represented  as  in
+          standout  mode.   Non-printable characters with no commonly-
+          recognized representation are represented as a '.' in  stan-
+          dout  mode.  If the "standout" option has not been selected,
+          all control characters and unprintable characters appear  as
+          simple  '.'  characters,  which  can  be useful on terminals
+          where standout mode obscures the location of the cursor.
+
+          Each of the hexadecimal numbers on the far left is the  byte
+          location  in the file of the first byte in the corresponding
+          row.  These byte locations can also be displayed in octal or
+          decimal  (see  the sssseeeetttt command below).  The actual data from
+          the file, however, is always displayed in hexadecimal on the
+          left  and  ASCII on the right.  Various conversion functions
+          are provided to allow you to map from one  base  to  another
+          (see xtod, etcetera, below).
+
+          The cursor may be on one side of the screen  or  the  other,
+          depending  upon how you want to treat the particular section
+          of the file that you are working on.  (The **** command toggles
+          between  the  two sides of the screen.)  When you are on the
+          hexadecimal side, you  must  append,  insert,  replace,  and
+          search  for  bytes  in hexadecimal.  When on the ASCII side,
+          you must work with ASCII characters.
+
+          _B_v_i is modeled closely on _v_i, but only a subset  of  the  _v_i
+          commands  have  been  implemented  (along with some commands
+          that _v_i doesn't have).  Many of the navigation commands  are
+          available,  along  with aaaa, iiii, xxxx, rrrr, RRRR, YYYY, PPPP, pppp, uuuu, ...., ????, and
+          ////.  The available commands  are  described  in  more  detail
+          below.
+
+     IIIINNNNVVVVOOOOCCCCAAAATTTTIIIIOOOONNNN
+          _B_v_i does not take any command-line options except for one or
+          more  optional  file names.  If file names are present, then
+          the first one is opened for editing and is displayed on  the
+          screen  starting at byte 0.  You can move to the other files
+          given on the command line by using the ::::nnnn  command.   If  no
+          file  name  is  given,  then  an empty file is opened, which
+          (after editing) may be written to  a  file  of  your  choice
+          using the ::::wwww command.
+
+     BBBBVVVVIIII MMMMOOOODDDDEEEESSSS
+          Visual         Normal and initial mode when entered as  _b_v_i.
+                         Other  modes  (except command mode) return to
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 2                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+                         visual mode upon completion.
+
+          Input          Entered from visual mode by aaaa, iiii,  rrrr,  or  RRRR.
+                         Arbitrary text (ASCII side of screen) or hex-
+                         adecimal digits (hexadecimal side of  screen)
+                         may  then be entered.  Input mode is normally
+                         terminated  with  the  'ESC'  character,   or
+                         abnormally  with the 'DEL' (delete) character
+                         ('^C' on BSD systems).
+
+          Last line      Reading input for :::: or //// or ????; terminate with
+                         'CR' to execute, 'DEL' to cancel ('^C' on BSD
+                         systems).  The //// and ???? commands can  only  be
+                         entered from visual mode.
+
+          Command        Normal and initial mode when entered as  _b_e_x.
+                         Only  those commands beginning with ':' below
+                         are allowed - all such commands are  intended
+                         for use exclusively in command mode.  When in
+                         command mode, the leading ':' on  these  com-
+                         mands  is  not  required;  the leading ':' is
+                         actually a visual-mode command that  provides
+                         a  temporary  escape  to command mode so that
+                         the corresponding command-mode command can be
+                         entered  and  executed.  The commands are all
+                         shown here with  their  leading  ':'  because
+                         most  people spend little or no time actually
+                         in command mode  -  they  enter  command-mode
+                         commands  by  temporarily escaping to command
+                         mode from visual mode.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD SSSSUUUUMMMMMMMMAAAARRRRYYYY
+        CCCCoooouuuunnnnttttssss bbbbeeeeffffoooorrrreeee bbbbvvvviiii ccccoooommmmmmmmaaaannnnddddssss
+          Numbers may be typed as prefixes to some commands.  They are
+          interpreted in one of these ways:
+
+          byte number     GGGG
+          scroll amount   ^^^^DDDD  ^^^^UUUU
+          repeat effect   most of the rest
+
+          If a number begins with '0x', it is interpreted as a hexade-
+          cimal  number.   If  it begins with simply '0', it is inter-
+          preted as an octal number.  When a number is used to  modify
+          a  ^^^^DDDD  or ^^^^UUUU command, the number becomes the new default for
+          future ^^^^DDDD and ^^^^UUUU commands.
+
+        IIIInnnntttteeeerrrrrrrruuuuppppttttiiiinnnngggg,,,, ccccaaaannnncccceeeelllliiiinnnngggg
+           EEEESSSSCCCC       end insert, append, replace, or incomplete command
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 3                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+           ^^^^????        ('DEL' or 'RUBOUT') System V interrupt
+           ^^^^CCCC        BSD interrupt
+           ^^^^LLLL        reprint screen if scrambled by ^^^^???? or line noise
+           ^^^^RRRR        same as ^^^^LLLL
+
+        FFFFiiiilllleeee mmmmaaaannnniiiippppuuuullllaaaattttiiiioooonnnn
+           ::::qqqqCCCCRRRR                      quit
+           ::::qqqquuuuiiiittttCCCCRRRR                   quit
+           ::::qqqq!!!!CCCCRRRR                     quit, discard changes
+           ::::qqqquuuuiiiitttt!!!!CCCCRRRR                  quit, discard changes
+           ::::wwwwCCCCRRRR                      write back changes
+           ::::wwwwrrrriiiitttteeeeCCCCRRRR                  write back changes
+           ::::wwww!!!!CCCCRRRR                     overwrite changes
+           ::::wwwwrrrriiiitttteeee!!!!CCCCRRRR                 overwrite changes
+           ::::wwww _n_a_m_eCCCCRRRR                 write file _n_a_m_e
+           ::::wwwwrrrriiiitttteeee _n_a_m_eCCCCRRRR             write file _n_a_m_e
+           ::::wwww!!!! _n_a_m_eCCCCRRRR                overwrite file _n_a_m_e
+           ::::wwwwrrrriiiitttteeee!!!! _n_a_m_eCCCCRRRR            overwrite file _n_a_m_e
+           ::::wwwwqqqqCCCCRRRR                     combination of ::::wwww and ::::qqqq commands
+           ::::wwwwqqqq!!!!CCCCRRRR                    combination of ::::wwww!!!! and ::::qqqq commands
+           ::::xxxxCCCCRRRR                      identical to ::::wwwwqqqq
+           ::::xxxx!!!!CCCCRRRR                     identical to ::::wwwwqqqq!!!!
+           ::::rrrr _n_a_m_eCCCCRRRR                 read in contents of file _n_a_m_e after
+                                     current cursor location
+           ::::rrrreeee _n_a_m_eCCCCRRRR                read in contents of file _n_a_m_e after
+                                     current cursor location
+           ::::rrrreeeeaaaadddd _n_a_m_eCCCCRRRR              read in contents of file _n_a_m_e
+                                     after current cursor location
+           ::::rrrr                        read in contents of currently edited file after
+                                     current cursor location
+           ::::rrrreeee                       read in contents of currently edited file after
+                                     current cursor location
+           ::::rrrreeeeaaaadddd                     read in contents of currently edited file after
+                                     current cursor location
+           ::::eeeeCCCCRRRR                      reedit
+           ::::eeeexxxxCCCCRRRR                     reedit
+           ::::eeeeddddiiiittttCCCCRRRR                   reedit
+           ::::vvvviiiiCCCCRRRR                     reedit (from visual mode)
+           ::::vvvviiiiCCCCRRRR                     enter visual mode (from command mode - opposite
+                                     of QQQQ)
+           ::::eeee!!!!CCCCRRRR                     reedit, discard changes
+           ::::eeeexxxx!!!!CCCCRRRR                    reedit, discard changes
+           ::::eeeeddddiiiitttt!!!!CCCCRRRR                  reedit, discard changes
+           ::::vvvviiii!!!!CCCCRRRR                    reedit, discard changes (from visual mode)
+           ::::vvvviiii!!!!CCCCRRRR                    enter visual mode (from command mode - opposite
+                                     of QQQQ)
+
+
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 4                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+           ::::eeee _n_a_m_eCCCCRRRR                 edit file _n_a_m_e
+           ::::eeeexxxx _n_a_m_eCCCCRRRR                edit file _n_a_m_e
+           ::::eeeeddddiiiitttt _n_a_m_eCCCCRRRR              edit file _n_a_m_e
+           ::::vvvviiii _n_a_m_eCCCCRRRR                edit file _n_a_m_e
+           ::::eeee!!!! _n_a_m_eCCCCRRRR                force editing of file _n_a_m_e
+           ::::eeeexxxx!!!! _n_a_m_eCCCCRRRR               force editing of file _n_a_m_e
+           ::::eeeeddddiiiitttt!!!! _n_a_m_eCCCCRRRR             force editing of file _n_a_m_e
+           ::::vvvviiii!!!! _n_a_m_eCCCCRRRR               force editing of file _n_a_m_e
+           ::::nnnnCCCCRRRR                      edit the next in a list of files given on the
+                                     command line
+           ::::nnnn!!!!CCCCRRRR                     force editing the next in a list of files given
+                                     on the command line
+           ::::nnnneeeexxxxttttCCCCRRRR                   edit the next in a list of files given on the
+                                     command line
+           ::::nnnneeeexxxxtttt!!!!CCCCRRRR                  force editing the next in a list of files given
+                                     on the command line
+           ::::rrrreeeewwwwCCCCRRRR                    rewind the list of files given on the command
+                                     line
+           ::::rrrreeeewwww!!!!CCCCRRRR                   force rewinding the list of files given on the
+                                     command line
+           ::::rrrreeeewwwwiiiinnnnddddCCCCRRRR                 rewind the list of files given on the command
+                                     line
+           ::::rrrreeeewwwwiiiinnnndddd!!!!CCCCRRRR                force rewinding the list of files given
+                                     on the command line
+           ::::ffff _n_e_w _f_i_l_e _n_a_m_eCCCCRRRR        change the currently edited file
+                                     name to _n_e_w _f_i_l_e _n_a_m_e
+           ::::ffffiiii _n_e_w _f_i_l_e _n_a_m_eCCCCRRRR       change the currently edited file
+                                     name to _n_e_w _f_i_l_e _n_a_m_e
+           ::::ffffiiiillll _n_e_w _f_i_l_e _n_a_m_eCCCCRRRR      change the currently edited file
+                                     name to _n_e_w _f_i_l_e _n_a_m_e
+           ::::ffffiiiilllleeee _n_e_w _f_i_l_e _n_a_m_eCCCCRRRR     change the currently edited file
+                                     name to _n_e_w _f_i_l_e _n_a_m_e
+           ::::ffffCCCCRRRR                      print information about currently edited file
+           ::::ffffiiiiCCCCRRRR                     print information about currently edited file
+           ::::ffffiiiillllCCCCRRRR                    print information about currently edited file
+           ::::ffffiiiilllleeeeCCCCRRRR                   print information about currently edited file
+
+        OOOOppppttttiiiioooonnnn sssseeeettttttttiiiinnnngggg
+           ::::sssseeeetttt                     display the current option settings
+           ::::sssseeeetttt aaaallllllll                 display all available option settings
+           ::::sssseeeetttt _a_s_c_i_iCCCCRRRR             move cursor to ASCII side of screen
+                                    (see also the **** command)
+           ::::sssseeeetttt _n_o_a_s_c_i_iCCCCRRRR           move cursor to hexadecimal side of screen
+                                    (see also the **** command)
+           ::::sssseeeetttt _e_b_c_d_i_cCCCCRRRR            interpret the file as EBCDIC
+           ::::sssseeeetttt _n_o_e_b_c_d_i_cCCCCRRRR          interpret the file as ASCII
+
+
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 5                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+           ::::sssseeeetttt _s_t_a_n_d_o_u_tCCCCRRRR          display unprintables in standout mode
+           ::::sssseeeetttt _n_o_s_t_a_n_d_o_u_tCCCCRRRR        display unprintables as periods in
+                                    non-standout mode
+           ::::sssseeeetttt _n_u_m_b_e_rCCCCRRRR            include byte numbers at side of screen
+           ::::sssseeeetttt _n_o_n_u_m_b_e_rCCCCRRRR          don't include byte numbers at side of screen
+           ::::sssseeeetttt _w_r_a_p_s_c_a_nCCCCRRRR          searches using //// and ???? wrap around at
+                                    end or beginning of file
+           ::::sssseeeetttt _n_o_w_r_a_p_s_c_a_nCCCCRRRR        searches using //// and ???? don't wrap around
+                                    at end or beginning of file
+           ::::sssseeeetttt _n_u_m_b_e_r_b_a_s_e=_1_6CCCCRRRR     byte locations will be displayed in
+                                    hexadecimal
+           ::::sssseeeetttt _n_u_m_b_e_r_b_a_s_e=_1_0CCCCRRRR     byte locations will be displayed in
+                                    decimal
+           ::::sssseeeetttt _n_u_m_b_e_r_b_a_s_e=_8CCCCRRRR      byte locations will be displayed in octal
+
+          Note that ::::sssseeeetttt can be abbreviated as ::::sssseeee.
+
+        CCCCoooonnnnvvvveeeerrrrssssiiiioooonnnnssss
+           ::::xxxxttttoooodddd _n_u_m_b_e_rCCCCRRRR     convert hexadecimal _n_u_m_b_e_r to decimal
+                              and print
+           ::::xxxxttttoooooooo _n_u_m_b_e_rCCCCRRRR     convert hexadecimal _n_u_m_b_e_r to octal
+                              and print
+           ::::xxxxttttoooocccc _n_u_m_b_e_rCCCCRRRR     convert hexadecimal _n_u_m_b_e_r to character
+                              information and print
+           ::::oooottttoooodddd _n_u_m_b_e_rCCCCRRRR     convert octal _n_u_m_b_e_r to decimal and print
+           ::::oooottttooooxxxx _n_u_m_b_e_rCCCCRRRR     convert octal _n_u_m_b_e_r to hexadecimal
+                              and print
+           ::::ddddttttooooxxxx _n_u_m_b_e_rCCCCRRRR     convert decimal _n_u_m_b_e_r to hexadecimal
+                              and print
+           ::::ddddttttoooooooo _n_u_m_b_e_rCCCCRRRR     convert decimal _n_u_m_b_e_r to octal and print
+
+        PPPPoooossssiiiittttiiiioooonnnniiiinnnngggg wwwwiiiitttthhhhiiiinnnn ffffiiiilllleeee
+           ^^^^FFFF          forward screen
+           ^^^^BBBB          backward screen
+           ^^^^DDDD          scroll down half screen
+           ^^^^UUUU          scroll up half screen
+           wwww           move ahead by two characters
+           WWWW           move ahead by two characters
+           bbbb           move back by two characters
+           BBBB           move back by two characters
+           GGGG           go to specified byte (end of file is default)
+           ////_s_t_r_i_n_g     next (forward) byte location matching _s_t_r_i_n_g
+                       (a literal string, not a regular expression pattern)
+           ????_s_t_r_i_n_g     next (backwards) byte location matching _s_t_r_i_n_g
+                       (a literal string, not a regular expression pattern)
+           nnnn           repeat last //// or ????
+
+
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 6                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+           NNNN           reverse last //// or ????
+
+          Note that only the initial //// or  ????  has  any  meaning  in  a
+          search,  and  that  there is currently no regular expression
+          parsing.  Thus ////////  searches  for  the  next  ////,  and  ////[[[[111122223333]]]]
+          searches  for the literal string '[123]'.  The '\' character
+          has no special meaning either, except that it can be used to
+          escape  the  backspace character - in all other cases, it is
+          just another character.
+
+        AAAAddddjjjjuuuussssttttiiiinnnngggg tttthhhheeee ssssccccrrrreeeeeeeennnn
+           ^^^^LLLL        clear and redraw
+           ^^^^RRRR        same as ^^^^LLLL
+           ^^^^EEEE        scroll window down 1 line
+           ^^^^YYYY        scroll window up 1 line
+
+        RRRRoooowwww ppppoooossssiiiittttiiiioooonnnniiiinnnngggg
+           CCCCRRRR                (RETURN) beginning of next row of bytes
+           jjjj or ^^^^NNNN or ^^^^JJJJ     next row of bytes, same column if possible
+           kkkk or ^^^^PPPP           previous row of bytes, same column
+
+        BBBByyyytttteeee ppppoooossssiiiittttiiiioooonnnniiiinnnngggg wwwwiiiitttthhhhiiiinnnn rrrroooowwww
+           ^^^^         first byte in row
+           $$$$         last byte in row
+           hhhh         backwards
+           llll         forward
+           ^^^^HHHH        same as h
+           space     same as l
+
+        CCCCoooorrrrrrrreeeeccccttttiiiioooonnnnssss dddduuuurrrriiiinnnngggg iiiinnnnsssseeeerrrrtttt,,,, aaaappppppppeeeennnndddd,,,, oooorrrr rrrreeeeppppllllaaaacccceeee
+           ^^^^HHHH      erase last byte
+           \\\\       quotes ^^^^HHHH when editing in ASCII mode (not allowed in EBCDIC)
+           EEEESSSSCCCC     ends insert, append, or replace
+           ^^^^????      ('DEL' or 'RUBOUT') System V interrupt, terminates operation
+           ^^^^CCCC      BSD interrupt, terminates operation
+
+        AAAAppppppppeeeennnndddd,,,, iiiinnnnsssseeeerrrrtttt,,,, aaaannnndddd rrrreeeeppppllllaaaacccceeee
+           aaaa       append after cursor
+           iiii       insert before cursor
+           RRRR       replace starting at cursor
+           rrrr_x      replace single byte with _x (_x is one ASCII or two
+                   hexadecimal characters)
+
+
+
+
+
+
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 7                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+        MMMMiiiisssscccceeeellllllllaaaannnneeeeoooouuuussss OOOOppppeeeerrrraaaattttiiiioooonnnnssss
+           xxxx               delete bytes (and copy them into the yank buffer)
+           YYYY               copy bytes into the yank buffer without changing file
+           pppp               append the contents of the yank buffer after the
+                           cursor
+           PPPP               insert the contents of the yank buffer before the
+                           cursor
+           ****               toggle between ASCII and hexadecimal sides of screen
+           ====               display information about the byte under the cursor
+                           (ASCII representation; value in decimal, hexadecimal,
+                           and octal; parity (ASCII only, not EBCDIC); and
+                           address in decimal, hexadecimal, and octal)
+           ZZZZZZZZ              exit _b_v_i, saving changes (similar to ::::wwwwqqqq)
+           QQQQ               leave the visual mode of _b_v_i and enter command
+                           mode, in which commands beginning with ':' are the
+                           norm
+           ::::!!!!_c_o_m_m_a_n_dCCCCRRRR     perform shell escape and execute _c_o_m_m_a_n_d
+           ::::vvvveeeerrrrssssiiiioooonnnn        print the version number of the editor
+
+        UUUUnnnnddddoooo,,,, RRRReeeeddddoooo
+           uuuu       undo last change
+           ....       repeat last change
+
+     CCCCUUUUSSSSTTTTOOOOMMMMIIIIZZZZAAAATTTTIIIIOOOONNNN
+          You can customize _b_v_i at  startup  by  providing  a  _B_E_X_I_N_I_T
+          shell variable, a ./._b_e_x_r_c file, and/or a $_H_O_M_E/._b_e_x_r_c file.
+          _B_v_i handles these three alternatives as follows.   It  first
+          checks  if the shell variable _B_E_X_I_N_I_T is set.  If it is, and
+          is not null (as in _B_E_X_I_N_I_T=),  options  are  read  from  the
+          shell  variable,  and  the  two  files  (if  they exist) are
+          ignored.  If there is no shell variable,  options  are  read
+          from  the  $_H_O_M_E/._b_e_x_r_c  file,  if  it  exists.   After  the
+          $_H_O_M_E/._b_e_x_r_c file is checked, a check is made for a ./._b_e_x_r_c
+          file, and it is also processed if it exists.  Any options in
+          the  local  file  that  contradict  the  $_H_O_M_E/._b_e_x_r_c  file,
+          replace the ones in the $_H_O_M_E/._b_e_x_r_c file.
+
+          The format of the files is a sequence of sssseeeetttt commands,  each
+          on  a  separate line, without a leading ':'.  (Actually, any
+          of the commands that can be entered in command mode will  be
+          accepted,  but  graceful results are not guaranteed for com-
+          mands other than sssseeeetttt.)  The format for the shell variable is
+          the same as for the files.  If you have trouble figuring out
+          how to set it properly, _B_E_X_I_N_I_T=`_c_a_t ._b_e_x_r_c` is  one  possi-
+          bility.   (This technique may lose the newline at the end of
+          the file, but _b_v_i can handle that.)
+
+          Note that, if a syntax error is detected in a line of input,
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 8                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+          processing  will  proceed at the next line and the offending
+          line will be ignored.  An error message  will  be  generated
+          for  each  input  error, but may flash by too quickly to see
+          unless you start up the program as _b_e_x instead of _b_v_i.
+
+     OOOODDDDDDDDSSSS AAAANNNNDDDD EEEENNNNDDDDSSSS
+          You can specify the directory in which _b_v_i creates its  tem-
+          porary  file  by setting the _T_M_P_D_I_R shell variable.  If your
+          selection can't be used, an alternative may be silently used
+          instead  (usually  /_u_s_r/_t_m_p) or you may get an error message
+          (depending on the host you are running on).
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          vi(1).
+
+          _A_n _I_n_t_r_o_d_u_c_t_i_o_n _t_o _D_i_s_p_l_a_y _E_d_i_t_i_n_g _w_i_t_h _V_i, and _E_x _R_e_f_e_r_e_n_c_e
+          _M_a_n_u_a_l in the _U_N_I_X _S_y_s_t_e_m _D_o_c_u_m_e_n_t_a_t_i_o_n _W_o_r_k_b_e_n_c_h.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS AAAANNNNDDDD BBBBUUUUGGGGSSSS
+          _B_v_i was developed to meet the author's  occasional  need  to
+          examine  and  modify files with embedded control data and/or
+          very long strings of data.  To quickly meet this  goal,  _b_v_i
+          was implemented with a limited set of commands and capabili-
+          ties.
+
+          The uuuu command cannot undo the xxxx  and  RRRR  commands  if  large
+          numbers  of  bytes  (around  500  or  more)  are  deleted or
+          replaced at once.  Similarly, the .... command cannot re-do the
+          aaaa,  iiii, or RRRR commands if large numbers of bytes are involved.
+          The yank buffer also has  a  limited  size  (of  about  1000
+          bytes).
+
+          Since either the escape character or  the  delete  character
+          will  end  an  iiii,  aaaa, rrrr, or RRRR operation, it is impossible to
+          insert these two characters  from  the  ASCII  half  of  the
+          screen.   They  can be inserted from the hexadecimal half of
+          the screen, if desired.  (The escape  character  is  hexade-
+          cimal  1b in ASCII, and doesn't exist in EBCDIC.  The delete
+          character is hexadecimal 7f in ASCII, and hexadecimal 07  in
+          EBCDIC.)  On BSD systems, '^C' usually serves the same func-
+          tion as delete does on System V.  Thus, '^C' must  be  input
+          by  remembering  that  it  is  hexadecimal  03 in ASCII, and
+          doesn't exist in EBCDIC.  (On some BSD systems,  the  inter-
+          rupt  character can be changed to something other than '^C'.
+          _B_v_i is not designed to  handle  this,  so  its  behavior  is
+          system-dependent.)
+
+          _B_v_i  will  let  you  edit  a  directory  on  some  System  V
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 9                                          (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+          compatible  systems,  but the directory file will be treated
+          as "read only" regardless of the permission bit settings.
+
+          If _b_v_i is killed (by  a  system  crash,  for  example),  the
+          current  changes  will  be  left in a file called _B_V_I._X_X_X_X_X_X
+          (where _X_X_X_X_X_X is a string chosen for its  uniqueness).   You
+          may  search the /_u_s_r/_t_m_p and /_t_m_p directories (or the direc-
+          tory specified by the _T_M_P_D_I_R shell variable)  for  any  such
+          files that belong to you.
+
+          Users may notice some problems with I/O  when  working  with
+          _b_v_i  in  the  BSD  environment.  For example, in some modes,
+          type-ahead appears to be discarded when it is typed at  cer-
+          tain  points during execution.  Also, under some conditions,
+          cursor updates can't keep up with the actual cursor position
+          and the cursor may end up in the wrong spot.  These problems
+          don't appear to  be  generally  harmful,  just  occasionally
+          annoying; and they may not appear with your hardware or your
+          version of the operating system.
+
+          _B_v_i has not yet been modified to recognize and  handle  some
+          features  of  the  BSD  environment  and  the newer System V
+          environments, such as symbolic links and the way directories
+          are  implemented.   It  may fail in an ungraceful fashion if
+          you attempt to edit something that is not a file.
+
+          _B_v_i silently exits when it can't find a terminfo description
+          for your terminal type.
+
+          _B_v_i has to operate in a dual world when it is in EBCDIC mode
+          -  it has to read and process commands in ASCII, while still
+          interpreting some input data as EBCDIC.  It makes a  valiant
+          attempt,  but there is at least one inconsistency introduced
+          by this dichotomy:  the backspace character can be quoted by
+          a  backslash  and used in a search string, but the backspace
+          character cannot be quoted by a backslash and entered during
+          an  insert, append, or replace operation (it must be entered
+          as  hexadecimal  data  from  the  hexadecimal  side  of  the
+          screen).  This is because EBCDIC has no backslash character,
+          so you can't insert a backslash and then backspace  over  it
+          to  insert a backspace character.  (Search strings are accu-
+          mulated in ASCII  and  then  converted  to  EBCDIC,  so  the
+          backslash  character  can  be used to quote a backspace in a
+          search string.  However, if you enter a backslash as one  of
+          the  characters  to  search for, the search will always fail
+          because EBCDIC has no backslash character.)
+
+          When a list of files is given on the command line,  and  you
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 10                                         (printed 10/8/92)
+
+
+
+
+
+
+     BBBBVVVVIIII((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((11110000////7777////99992222))))               BBBBVVVVIIII((((1111))))
+
+
+
+          haven't  edited  all of them, a ::::qqqq command will exit immedi-
+          ately.  (_V_i will warn you first that you have more files  to
+          edit and make you enter the ::::qqqq command again.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     _C_o_p_y_r_i_g_h_t _(_c_) _1_9_8_5_, _1_9_8_6_, _1_9_8_7_, _1_9_8_8_, _1_9_8_9_, _1_9_9_0_, _1_9_9_1_, _1_9_9_2 _A_T_&_T
+                            _A_l_l _R_i_g_h_t_s _R_e_s_e_r_v_e_d
+
+
+
+
+     Page 11                                         (printed 10/8/92)
+
+
+

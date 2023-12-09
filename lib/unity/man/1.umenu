@@ -1,0 +1,330 @@
+
+
+
+     uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          umenu - menu access to UNITY commands
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_m_e_n_u
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _u_m_e_n_u command provides a menu access to the UNITY
+          uselect, asort, uprint, and catalog commands.
+
+          The only thing needed to get started is a file named _d_b_f_i_l_e_s
+          in either the directory of execution or in one of the
+          directories specified in the $UNITYDFILES path (a shell
+          environment variable).  This file contains a list of
+          database tables, one per line, to be accessed by the menu.
+          The table names specified may be full pathnames for the
+          tables (e.g., /usr/user1/table), relative pathnames (e.g.,
+          user1/table), or simple pathnames (e.g., table).  The
+          _d_b_f_i_l_e_s file may also contain "user" titles for each table
+          which will be printed out by the menu program when prompting
+          for table access (i.e., the actual table name is used by the
+          programs for access but the "user" names are the names that
+          user sees).  These may be entered by following each table
+          name by appending a vertical bar (|) and then the user name.
+          Any character following the vertical bar is taken to be part
+          of the user name including white space.  The only
+          restriction is that no line may contain a double quotes.  If
+          any line in _d_b_f_i_l_e_s contains a shell meta-character, the
+          line is first expanded using eeeecccchhhhoooo(1) and the shell.  Thus,
+          the line
+
+          `logdir unity`/users|USERS OF UNITY
+
+          will be expanded to pick up the "users" file in the home
+          directory of the unity login.
+
+          In addition to providing the _d_b_f_i_l_e_s file, an _o_v_e_r_v_i_e_w file
+          may be provided which gives an overview of the tables
+          accessible by this menu.  It may exist in either the
+          directory of execution or in one of the directories
+          specified in the $UNITYDFILES path (a shell environment
+          variable).  The contents of _o_v_e_r_v_i_e_w may be anything
+          desirable for the application; the file is simply printed to
+          the standard error output of the _u_m_e_n_u command.
+
+          The menu starts with three options for the user.  The _o
+          option prints the overview.  The _e option indicates that the
+          menu will be used in expanded format; this option produces
+          more verbose output and generally lists the possible options
+          before each prompt.  The _n option provides for normal mode;
+          this will provide a series of prompts (questions) for the
+          user that is more experienced with the menu and allows for
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          expanded output at each prompt by entering a question mark.
+          The user first selects the table to be accessed, the
+          attribute(s) to be printed, the selection criteria by which
+          to select records (prompted for by attribute name, then
+          comparison operator, then comparison value, optionally "and"
+          or "or" and further criteria), the attribute on which to
+          sort, and the output format (i.e., the use of the uprint or
+          catalog command).  If user-friendly names have been provided
+          in the associated description files, these are printed
+          instead of the attribute names on the menus by _u_m_e_n_u and on
+          final output by _c_a_t_a_l_o_g and _u_p_r_i_n_t (see _t_a_b_l_e(UNITY) for
+          further information).  The example below should be provide
+          any further details.
+
+          All prompts and messages are printed to the standard error
+          output; the actual output of the _u_p_r_i_n_t and _c_a_t_a_l_o_g commands
+          is printed to the standard output.  This allows the standard
+          output to be redirected to a file to which will contain the
+          printed output while allowing the user to enter the
+          necessary information at the terminal.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          In the following example, the data entered by the user is in
+          bold.
+
+          $ cat dbfiles
+          SP|SUPPLIER/PARTS
+          S|SUPPLIER
+          P|PARTS
+          INV|INVENTORY
+          $ umenu
+          Welcome to the unity menu system.
+          You may select an overview of the sequence of operations (type o),
+          or an expanded instruction option (type e),
+          or a normal prompt option (type n) or quit (type q).
+          Option = eeee
+          Select your area of interest from the following list of database file names
+          Valid Database file names:
+                1 SUPPLIER/PARTS                      2 SUPPLIER
+                3 PARTS                               4 INVENTORY
+
+          Enter the number of Database file you selected = 1111
+          A list of characteristics will be displayed which describe the database
+          file you have chosen.  Select the characteristic(s) which will tell you
+          what you want to know about this database file.
+          Valid characteristics for database file SUPPLIER/PARTS are:
+              1 SUPPLIER NUMBER                   2 PART NUMBER
+              3 QUANTITY
+          Enter number(s) of characteristic(s) you chose separated by commas
+          or spaces.  If you want to see all of them press Return.
+          2222,,,, 3333
+          You have a choice of displaying only those records in your database file
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          which have specific characteristics you choose.  Each characteristic you
+          choose is compared to a specific value chosen by you to select the desired
+          records from the database file.  Choose the characteristic you want to use
+          in selecting which records are displayed from the following list.
+          Valid characteristics for database file SUPPLIER/PARTS:
+              1 SUPPLIER NUMBER                   2 PART NUMBER
+              3 QUANTITY
+          Enter number of characteristic you want to use in selecting which records
+          are displayed.  If you do not want to choose characteristics, press
+          Return and your records will be displayed.
+          1111
+          You have a choice of ways of making this comparison such as
+          less than, equal to or greater than a numeric value, and lexically
+          equal to a word.  Select the comparison method you want to use
+          from the following list.
+          1  numerically equals          2  numeric less than
+          3  numeric greater than        4  numeric < or equal to
+          5  numeric > or equal to       6  numeric not equal to
+          7  lexically equal to          8  lex less than
+          9  lex greater than           10 lex < or equal to
+          11 lex > or equal to          12 lex not equal to
+          13 reg expr equal to          14 reg expr not equal to
+          Enter the number of the comparison method you chose = 8888
+          Now choose the value of the characteristic used in the comparison.  If
+          you don't know how the values are specified press "?" and a list of
+          the values in the database file will be displayed.
+          Enter the value for PART NUMBER you select for the comparison.
+          ????
+          p1
+          p2
+          p3
+          Enter the value for PART NUMBER you select for the comparison.
+          pppp3333
+          If you want to use additional characteristics to select which records are
+          displayed, you may choose to display only records which meet all the
+          conditions you choose ("and") or those which meet any one of the
+          conditions ("or").  Enter "and" or "or" (without quotes).
+          If you do not want to use any additional characteristics press Return
+          and your records will be displayed.
+          aaaannnndddd
+          You have a choice of displaying only those records in your database file
+          which have specific characteristics you choose.  Each characteristic you
+          choose is compared to a specific value chosen by you to select the desired
+          records from the database file.  Choose the characteristic you want to use
+          in selecting which records are displayed from the following list.
+          Valid characteristics for database file SUPPLIER/PARTS:
+              1 SUPPLIER NUMBER                   2 PART NUMBER
+              3 QUANTITY
+          Enter number of characteristic you want to use in selecting which records
+          are displayed.  If you do not want to choose characteristics, press
+          Return and your records will be displayed.
+          2222
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          You have a choice of ways of making this comparison such as
+          less than, equal to or greater than a numeric value, and lexically
+          equal to a word.  Select the comparison method you want to use
+          from the following list.
+          1  numerically equals          2  numeric less than
+          3  numeric greater than        4  numeric < or equal to
+          5  numeric > or equal to       6  numeric not equal to
+          7  lexically equal to          8  lex less than
+          9  lex greater than           10 lex < or equal to
+          11 lex > or equal to          12 lex not equal to
+          13 reg expr equal to          14 reg expr not equal to
+          Enter the number of the comparison method you chose = 9999
+          Now choose the value of the characteristic used in the comparison.  If
+          you don't know how the values are specified press "?" and a list of
+          the values in the database file will be displayed.
+          Enter the value for PART NUMBER you select for the comparison.
+          pppp1111
+          If you want to use additional characteristics to select which records are
+          displayed, you may choose to display only records which meet all the
+          conditions you choose ("and") or those which meet any one of the
+          conditions ("or").  Enter "and" or "or" (without quotes).
+          If you do not want to use any additional characteristics press Return
+          and your records will be displayed.
+          <Return>
+          The characteristics for the file will be displayed.  Select the
+          characteristic by which you want the selected data sorted.
+          Valid characteristics for database file SUPPLIER/PARTS:
+              1 SUPPLIER NUMBER                   2 PART NUMBER
+              3 QUANTITY
+          Enter number of characteristic on which to sort or press RETURN
+          if no sort is desired.
+          2222
+          There are two different types of displaying the data.
+          table - the data is printed in a tabular format with characteristic
+                  names appearing at the top of each column.
+          packet - the data is printed horizontally with the characteristic
+                  names appearing at the left and the data immediately following
+                  at the right.
+          Enter t for table format or p for packet format
+          pppp
+
+          ---------------------------------------------------------------------------
+          ---------------------------------------------------------------------------
+
+          PART NUMBER                        p2
+          QUANTITY                           200
+
+          ---------------------------------------------------------------------------
+          ---------------------------------------------------------------------------
+
+          PART NUMBER                        p2
+          QUANTITY                           300
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           uuuummmmeeeennnnuuuu((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          Do you wish to continue? (y or n) = nnnn
+
+     FFFFIIIILLLLEEEESSSS
+          unity/umenu.c - the C program
+          bin/umenu - the executable program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _a_s_o_r_t(UNITY), _c_a_t_a_l_o_g(UNITY), _u_p_r_i_n_t(UNITY), _u_s_e_l_e_c_t(UNITY),
+          _t_a_b_l_e(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 1/19/90)
+
+
+

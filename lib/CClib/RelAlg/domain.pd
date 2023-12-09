@@ -1,0 +1,26 @@
+#ident "@(#) /sable/sdb/ra/rel/domain/s.domain.pd"
+/*      Copyright (c) 1989, 1991 AT&T - All Rights Reserved */
+
+   friend ostream & operator<<(ostream &stream,const Domain &domain);
+   friend ostream &operator<<(ostream &o,const Predicate &p);
+   friend ostream & operator<<(ostream &stream,Relation &relation);
+   friend class Constraint;
+   friend class Attribute;
+   friend class AttributeValue;
+   friend class Intension;
+   friend class IntensionValue;
+   friend class Combine_attributes;
+   friend class Relation;
+   friend class AF_Relation;
+   friend class Form_Relation;
+
+   Dname name;  // unfortunately const classes can't be passed by reference
+   const Dtype type;
+   const Dlength length;
+   Constraint *constraint;
+   Sized_string build_constraint_string(const Constraint *const expression)
+                                                                     const;
+   Boolean_t test_constraint(const void *item,
+          const Constraint *const expression) const;
+   Boolean_t operator==(const Domain &domain) const;
+   Boolean_t operator!=(const Domain &domain) const;

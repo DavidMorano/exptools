@@ -1,0 +1,40 @@
+Emacs 5.6e has been installed on this system.  The following list
+outlines changes introduced with this version, some of which have
+been previously installed.  Please report any problems to ixserve!warren
+
+11/11/94 Change to the BASIC macro package.
+
+Due to user complaints about the consequence of
+accidentally invoking the mail processing macros (M-M), these
+macros are no longer automatically loaded as part of the "basic"
+package.  If you wish to continue to use this package, you must
+load the macro ~EMACS/macros/mail AFTER you load the basic
+package.  To make this happen automatically, either add the line
+^X^L~EMACS/macros/mail after loading "basic" in your .emacs_init,
+or if you do not have a .emacs_init already, copy the file
+$TOOLS/lib/emacs/.emacs to $HOME/.emacs_init, and add the line
+above to the end of the file. 
+
+1/1/95 The fill command (M-") will now avoid reformatting text between
+.nf and .fi, .DS and .DE, .TS, and .TE, etc.
+
+7/15/95 -- Emacs will now automatically re-size the kill buffer
+(which holds text you have picked up or deleted) if you exceed the
+built in limit of 256K.  You should no longer get warnings when
+trying to delete or move large blocks of text, but may get a fatal
+error if the block you are moving exceeds the amount of file space
+available to emacs.  When the buffer is expanded, previously
+deleted text will still be lost.
+
+7/15/95 -- a New mode, "kill_space" indicates the amount of total memory
+emacs has for saving deleted text.  The space available is 1024
+times the value of this mode.  Normally users should not need to
+touch this mode, but reducing it may be of value if your system
+frequently runs out of temporary space and increasing it may be
+useful if you know you will be moving very large blocks of text.
+
+9/15/95 -- a new macro command expand-multiple (M-2M-E) allows
+you to expand file name expressions with multiple expansions
+(e.g. *.c) and retrieve all the expansions (within implementation
+limits of 256 characters or 16 expansions total).
+

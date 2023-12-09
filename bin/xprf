@@ -1,0 +1,168 @@
+#	Copyright (c) 1993 AT&T
+#	All Rights Reserved
+#
+#	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
+#	The copyright notice above does not evidence any
+#	actual or intended publication of such source code.
+
+
+# make sure xproof is available
+if [ ! -x ${XPROOF:=$TOOLS/bin/xproof} ]
+then	echo "xprf:  cannot find xproof" >&2
+	return 1
+fi
+
+
+# default action is to make xproof window current when it starts
+action=current
+
+# default orientation is portrait mode
+mode=port
+mode_opt=
+
+# add -mm or -man option to troff options unless user has alread specified
+# a -m troff option or the -M xprf option
+ADD_M_OPT=true
+
+
+# check for xprf and/or troff options
+while [ $# -gt 0 ]
+do
+	case $1 in
+	-B)	# move xproof window to the bottom (i.e., into the background)
+		action=bottom
+		shift
+		;;
+
+	-C)	# use the current window rather than creating a new one
+		action=cur_window
+		shift
+		;;
+
+	-L)	# display file in landscape mode
+		mode=land
+		mode_opt=l
+		shift
+		;;
+
+	-m*)	# user specified -m troff option, so don't add -mm or -man
+		ADD_M_OPT=false
+		TROFF_OPTS="$TROFF_OPTS $1"
+		shift
+		;;
+
+	-*)	# not an xprf option, add to troff option list
+		TROFF_OPTS="$TROFF_OPTS $1"
+		shift
+		;;
+
+	*)	# must be a file option
+		break
+		;;
+	esac
+done
+
+
+# define temporary files for troff input and output
+tmpin=/usr/tmp/xprfin.$$
+tmpout=/usr/tmp/xprfout.$$
+
+# set a cleanup trap to remove temp files if user aborts
+trap "/bin/rm -f $tmpin $tmpout" 0 1 2 3 15
+
+
+# produce troff input file
+if [ "$mode" = "land" ]
+then	echo ".ll 11i\n.pl 8.5i" >$tmpin
+fi
+
+if  where -fx prtfmt >/dev/null 2>&1
+then
+	cat ${*:--} >>$tmpin
+	fmtcmd="prtfmt -Z -Tpost -F 'troff$TROFF_OPTS' -p$mode $tmpin"
+
+else
+	if  where -fx soelim >/dev/null 2>&1
+	then	soelim ${*:--} >>$tmpin
+
+	elif  where -fx soexpand >/dev/null 2>&1
+	then	soexpand ${*:--} >>$tmpin
+
+	elif  grep "^\.so" ${*:--} >/dev/null 2>&1
+	then	echo "xprf:  cannot expand .so macros contained in the input" >&2
+		return 1
+
+	else	cat ${*:--} >>$tmpin
+	fi
+
+	fmtcmd=`awk '
+BEGIN	{ macros = " -mm"; pipe = "" }
+/^\.EQ/	{ doeqn = 1; next }
+/^\.GS/	{ dogc = 1; next }
+/^\.G1/	{ dograp = 1; next }
+/^\.PS/	{ dopic = 1; next }
+/^\.TS/	{ dotbl = 1; next }
+/^\.TH  *[^ ]|^\.SH/	{ macros = " -man"; next }
+END	{ if (dogc) { cmd = cmd pipe "gc2pic" fn; fn = ""; pipe = " | " }
+	  if (dopic) { cmd = cmd pipe "pic" fn; fn = ""; pipe = " | " }
+	  if (dotbl) { cmd = cmd pipe "tbl" fn; fn = ""; pipe = " | " }
+	  if (doeqn) { cmd = cmd pipe "eqn" fn; fn = ""; pipe = " | " }
+	  if (dograp) { cmd = cmd pipe "grap" fn; fn = ""; pipe = " | " }
+
+	  if (addMacros == "false")  macros = ""
+	  cmd = cmd pipe "troff" macros troffOpts fn
+	  print cmd }
+' addMacros=$ADD_M_OPT troffOpts="$TROFF_OPTS" fn=" $tmpin" $tmpin`
+fi
+
+# format the file
+echo "Formatting output, please wait..."
+eval $fmtcmd >$tmpout
+
+
+# display the formatted file using xproof
+if [ "$action" = "cur_window" ]
+then	# run xproof in the current window
+	$XPROOF -cL$mode_opt $tmpout
+
+else	# create a new xproof window
+	# get current channel/window number
+	curchan=`agent -c`
+
+	# set the xproof window coordinates
+	if [ "$mode" = "land" ]
+	then	: ${XPRF_COORDS:='6 6 1014 787'}
+	else	: ${XPRF_COORDS:='237 10 1018 1018'}
+	fi
+
+	# set the xproof window startup action
+	if [ "$action" = "bottom" ]
+	then	# push the window to the back while xproof is drawing
+		START_ACTION=BOTTOM
+	else # "$action" = "current"
+		# make the xproof window current
+		START_ACTION=CURRENT
+	fi
+
+
+	# Note that the following commands are done in the background so that
+	# the user can get control of their current window back while xproof
+	# is drawing.
+
+	( # create xproof window and display results
+	  newchan=`agent -c "!agent $START_ACTION;\
+			     $XPROOF -cL$mode_opt $tmpout" 1 $XPRF_COORDS`
+
+	  # remake startup window current
+	  agent CURRENT $curchan
+
+	  # delete xproof window
+	  agent DELETE $newchan
+
+	  # cleanup temporary files
+	  /bin/rm -f $tmpin $tmpout
+	) &
+
+	# clear the cleanup trap because background job will remove temp files
+	trap "" 0 1 2 3 15
+fi

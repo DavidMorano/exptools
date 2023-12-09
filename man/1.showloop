@@ -1,0 +1,528 @@
+
+
+
+     SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          showloop -- show loops, branches, and jumps in program
+          source files
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          sssshhhhoooowwwwlllloooooooopppp [-l language] [-nsv] [-c column] [-m minsize] [-M
+          maxsize] [sourcefile]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _s_h_o_w_l_o_o_p reads and analyzes program source files, then
+          writes them to standard output with arrows drawn to show
+          control flow.  It is useful for making an unfamiliar program
+          more readable.
+
+          _s_h_o_w_l_o_o_p uses the _a_r_r_o_w experimental tool.
+
+          The graphics consist of printable ASCII characters, so the
+          output may be displayed on simple terminals or printers.
+
+          If no source file is specified on the command line, _s_h_o_w_l_o_o_p
+          reads from standard input.
+
+          To mark branches whose destinations are outside of the
+          source file, use the argument ----mmmm 1.
+
+          The output of _s_h_o_w_l_o_o_p can be piped to printer programs like
+          _p_r, _o_p_r, and _x_c_l. You can also pipe the output to _c_p_r if you
+          use cpr's -m option to realign the left column.
+
+          Command line options are:
+
+
+          ----cccc_c_o_l_u_m_n  Display arrows beginning in the specified column.
+                    The default is column 0.  This option essentially
+                    "cuts" a text file vertically and draws the arrows
+                    between the two halves.  It is useful for process-
+                    ing the output of another tool which already uses
+                    the left margin for information like diffmarks or
+                    line numbers.
+
+
+          ----llll_l_a_n_g_u_a_g_e
+                    Valid languages are amdahl, bal, b16, c, epl,
+                    mc68, 4escu, 4escc, procdef, snobol, spitbol, and
+                    3b.  Lines within conditional assembly regions in
+                    EPL source files can be annotated.  Parsers to
+                    support other languages may be provided in the
+                    future.
+
+                    If -l is not specified on the command line, c is
+                    the language default.
+
+
+
+     Page 1                                           (printed 8/5/92)
+
+
+
+
+
+
+     SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                    aaaammmmddddaaaahhhhllll denotes an assembly language for the Amdahl
+                    (IBM 370-like) processor.  _s_h_o_w_l_o_o_p looks for
+                    labels as well as the following opcodes: bnh, bnl,
+                    bne, bno, b, bo, bz, bh, bl, and be.
+
+                    bbbbaaaallll denotes an assembly language for the IBM 370
+                    type processor.  _s_h_o_w_l_o_o_p looks for labels as well
+                    as the following opcodes: B, BO, BZ, BNZ, BH, BNH,
+                    BL, BNL, BE, BNE, b, bo, bz, bnz, bh, bnh, bl,
+                    bnl, be, and bne.
+
+                    bbbb11116666 denotes an assembly language for the Intel
+                    8086 processor.  _s_h_o_w_l_o_o_p looks for labels as well
+                    as the following opcodes: bcc, ja, jae, jb, jbe,
+                    je, jl, jle, jmp, and jne.
+
+                    cccc denotes a C language program.  _s_h_o_w_l_o_o_p looks
+                    for ggggoooottttoooo,,,, ddddoooo,,,, wwwwhhhhiiiilllleeee,,,, and ffffoooorrrr loops, bbbbrrrreeeeaaaakkkk,,,, and
+                    ccccoooonnnnttttiiiinnnnuuuueeee statements.  rrrreeeettttuuuurrrrnnnn statements are marked
+                    as starting and ending on the same line as which
+                    they occur.  iiiiffff and eeeellllsssseeee statements are ignored
+                    otherwise the resultant output would complicate
+                    rather than simplify the typical C program.
+
+                    If the output of _s_h_o_w_l_o_o_p is not to your liking,
+                    try the experimental tool _c_l_o_o_p instead.
+
+                    eeeeppppllll denotes EPL/SWAP language for 1A and 1B pro-
+                    cessors, used in the AT&T 4 ESS8TM9 switch.
+                    _s_h_o_w_l_o_o_p _i_g_n_o_r_e_s _l_i_n_e _n_u_m_b_e_r_s, _i_f _p_r_e_s_e_n_t.
+                    _s_h_o_w_l_o_o_p looks for labels, 1A/1B assembly language
+                    opcodes T, TA, TI, TIA.
+
+                    EPL statements GOTO and GOTO= are recognized, but
+                    some GOTO= statements which span multiple lines
+                    may be ignored.
+
+                    _s_h_o_w_l_o_o_p annotates EPL/SWAP iterative DOTO-WHILE-
+                    ENDO loops by drawing an arrow from the ENDO
+                    statement to the DOTO statement. Conditional
+                    DOTO-ENDO constructs are annotated by drawing an
+                    arrow from the DOTO statement to the ENDO state-
+                    ment.
+
+                    EPL/SWAP source files should not contain line
+                    numbers.
+
+                    eeeeppppllllffff denotes an EPL/SWAP language for 1A and 1B
+                    processors.  To annotate conditional assembly
+                    regions, _s_h_o_w_l_o_o_p draws arrows between lines con-
+                    taining INFOR and RESUME statements.  and between
+                    lines containing OUTFOR and RESUME statements.
+
+
+
+     Page 2                                           (printed 8/5/92)
+
+
+
+
+
+
+     SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                    eeeeppppllllllll denotes an EPL assembly listing.  This option
+                    is not yet implemented.
+
+                    mmmmcccc66668888 denotes an assembly language for the Motorola
+                    MC68000 processor.  _s_h_o_w_l_o_o_p looks for labels as
+                    well as the following opcodes: bcc, bcs, beq, bge,
+                    bgt, bhi, ble, bls, blt, bra, and bne.
+
+                    pppprrrrooooccccddddeeeeffff denotes a procedure definition language
+                    source file for the IBM 370 series.  _s_h_o_w_l_o_o_p
+                    looks for labels as well as JUMP statements.
+                    Labels are assumed to be enclosed in single quotes
+                    and start in column 1.  _s_h_o_w_l_o_o_p will ignore lead-
+                    ing TSS line numbers of the form ddddd.dddd fol-
+                    lowed by a single space.
+
+                    ssssnnnnoooobbbboooollll denotes the SNOBOL or SPITBOL languages.
+                    _s_h_o_w_l_o_o_p looks for labels as well as branch desti-
+                    nations of the form :(dest), :F(dest), or :T(dest)
+
+                    ssssppppiiiittttbbbboooollll denotes the SNOBOL or SPITBOL languages.
+                    _s_h_o_w_l_o_o_p looks for labels as well as branch desti-
+                    nations of the form :(dest), :F(dest), or :T(dest)
+
+                    3333bbbb denotes an assembly language for the AT&T 3b
+                    series processors.  _s_h_o_w_l_o_o_p looks for labels as
+                    well as the following opcodes: ja, jb, jbe, jcc,
+                    je, jg, jge, jl, jle, jmp, jnae, jnb, jne, jnl,
+                    jns, jnz, and jz.
+
+                    4444eeeesssscccccccc denotes an assembly language generated from
+                    the MICA micro assembler generator used in the 4
+                    ESS Service Circuit Controller.  _s_h_o_w_l_o_o_p looks
+                    for labels as well as the following opcodes: jmp,
+                    jeq, jne, jmi, jpl, jcs, jcc, jvc, and jvs.
+
+                    4444eeeessssccccuuuu denotes an assembly language generated from
+                    the MICA micro assembler generator used in the 4
+                    ESS Service Circuit Unit.  _s_h_o_w_l_o_o_p looks for
+                    labels as well as the following opcodes: jmp,
+                    jmpf, jmpia, jmpid, and jmpt.
+
+
+          ----mmmm_m_i_n_s_i_z_e Ignore arrows spanning less than _m_i_n_s_i_z_e lines.
+                    If this option is specified, _m_i_n_s_i_z_e must be 1 or
+                    more.  If -m is not specified, _s_h_o_w_l_o_o_p will show
+                    all arrows.  To ignore branches whose destinations
+                    are outside of the source file, use the argument
+                    ----mmmm 2, otherwise they will be marked with a several
+                    equal (=) signs.
+
+
+
+
+
+     Page 3                                           (printed 8/5/92)
+
+
+
+
+
+
+     SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+          ----MMMM_m_a_x_s_i_z_e Ignore arrows spanning more than _m_a_x_s_i_z_e lines.
+                    If this option is specified, _m_a_x_s_i_z_e must be 1 or
+                    more.  If -M is not specified, _s_h_o_w_l_o_o_p will
+                    ignore arrows spanning more than 1000 lines.
+
+
+          ----nnnn        Print line numbers down the left margin.  These
+                    line numbers correspond to the line numbers one
+                    would get when using _v_i(_1) or _e_m_a_c_s(_1) to edit the
+                    file.  Be aware that files containing Control-L
+                    characters can cause problems.  Such files, when
+                    printed by _p_r(_1) or _x_c_l may not be numbered con-
+                    sistently as they treat form feed characters dif-
+                    ferently than the popular editors when the form
+                    feed is not the only character on the line.
+
+
+          ----ssss        Draw separate vertical lines for arrows which have
+                    a common end point and which go in the same direc-
+                    tion.  If the -s option is not specified, _a_r_r_o_w
+                    will try eliminate unnecessary lines by combining
+                    the vertical portions of arrows which have the
+                    same endpoint and which go in the same direction.
+
+
+          ----vvvv        Draw arrows using the vertical bar character, '|'.
+                    If -v is not specified, _a_r_r_o_w will default to
+                    using different characters to draw adjacent
+                    arrows, which helps to distinguish one arrow from
+                    another.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                           (printed 8/5/92)
+
+
+
+
+
+
+     SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+     If the mc68 type source file ssssoooouuuurrrrcccceeeeffffiiiilllleeee contains:
+
+          tst  8(%fp)    / opltype 10
+          beq  .61
+          addl $4,10(%fp)     / asg plus 8.1
+          movel     -4(%fp),%a0    / opltype 7
+          cmpb $45,(%a0)
+          beq  .62
+          movel     %d0,-8(%fp)    / assign 12
+          tstl %d0  / reg     7
+          bne  .64
+          movel     -4(%fp),-(%sp) /    opltype   29
+          bne  outside
+          lea  12(%sp),%sp
+          move $1,-(%sp) / opltype 13
+          jsr  exit / u call 1
+          addl $2,%sp
+      .64:
+          movel     -8(%fp),-(%sp) /    opltype   29
+          jsr  process   / u call 1
+          addl $4,%sp
+          movel     -8(%fp),-(%sp) /    opltype   29
+          jsr  fclose    / u  call 1
+          addl $4,%sp
+      .62:
+          bra  .59
+      .61:
+          bra  .70
+      .59:
+          jsr  process   / u call 1
+      .70:
+          move $0,-(%sp) / opltype 13
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 5                                           (printed 8/5/92)
+
+
+
+
+
+
+SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     Then
+
+                   showloop -m2 -l mc68 sourcefile
+
+     would write this to standard output:
+
+              tst       8(%fp)  / opltype 10
+     +---     beq       .61
+     |        addl    $4,10(%fp)       / asg plus 8.1
+     |        movel   -4(%fp),%a0      / opltype 7
+     |        cmpb    $45,(%a0)
+     |+--     beq       .62
+     |!       movel   %d0,-8(%fp)      / assign 12
+     |!       tstl    %d0         / reg 7
+     |!+-     bne       .64
+     |!:      movel   -4(%fp),-(%sp)  / opltype 29
+     |!:      bne       outside
+     |!:      lea       12(%sp),%sp
+     |!:      move    $1,-(%sp)        / opltype 13
+     |!:      jsr       exit    / u     call 1
+     |!:      addl    $2,%sp
+     |!+>.64:
+     |!       movel   -8(%fp),-(%sp)  / opltype 29
+     |!       jsr       process / u     call 1
+     |!       addl    $4,%sp
+     |!       movel   -8(%fp),-(%sp)  / opltype 29
+     |!       jsr       fclose  / u     call 1
+     |!       addl    $4,%sp
+     |+->.62:
+     | +-     bra       .59
+     +-:>.61:
+      +:-     bra       .70
+      !+>.59:
+      !       jsr       process / u     call 1
+      +->.70:
+              move    $0,-(%sp)        / opltype 13
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 6                                           (printed 8/5/92)
+
+
+
+
+
+
+SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                     showloop -l mc68 sourcefile
+
+     would mark references it could not resolve with several
+     equal characters (=) and write this to standard output:
+
+               tst     8(%fp)  / opltype 10
+     +----          beq     .61
+     |         addl    $4,10(%fp)       / asg plus     8.1
+     |         movel   -4(%fp),%a0     / opltype 7
+     |         cmpb    $45,(%a0)
+     |+---          beq     .62
+     |!        movel   %d0,-8(%fp)     / assign 12
+     |!        tstl    %d0     / reg 7
+     |!+--          bne     .64
+     |!:       movel   -4(%fp),-(%sp)  / opltype 29
+     =====          bne     outside
+     |!:       lea     12(%sp),%sp
+     |!:       move    $1,-(%sp)        / opltype 13
+     |!:       jsr     exit    / u call 1
+     |!:       addl    $2,%sp
+     |!+->.64:
+     |!        movel   -8(%fp),-(%sp)  / opltype 29
+     |!        jsr     process / u call 1
+     |!        addl    $4,%sp
+     |!        movel   -8(%fp),-(%sp)  / opltype 29
+     |!        jsr     fclose  / u call 1
+     |!        addl    $4,%sp
+     |+-->.62:
+     | +--          bra     .59
+     +-:->.61:
+      +:--          bra     .70
+      !+->.59:
+      !        jsr     process / u call 1
+      +-->.70:
+               move    $0,-(%sp)        / opltype 13
+
+
+WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+     Programs which contain syntax errors might not be annotated
+     correctly.
+
+     _s_h_o_w_l_o_o_p uses the _n_e_w_f_o_r_m program, furnished with the AT&T
+     UNIX operating system, but missing on Berkeley versions.
+
+     If the text file contains a Control-L form feed character,
+     then the line numbers produced by piping the output of
+     _s_h_o_w_l_o_o_p to _p_r(_1) and _x_c_l(_1) may not agree with those pro-
+     duced by _s_h_o_w_l_o_o_p. Editors like _v_i(_1) and _e_m_a_c_s(_1) treat
+     Control-L characters differently than does _p_r(_1) when the
+     Control-L characters are mixed with other characters on the
+     same line.
+
+
+
+
+Page 7                                           (printed 8/5/92)
+
+
+
+
+
+
+SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          SSSSHHHHOOOOWWWWLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     _a_r_r_o_w, hence _s_h_o_w_l_o_o_p, has a capacity of processing a max-
+     imum of 30000 lines for a text file.  If a text file is
+     piped instead, then _a_r_r_o_w will complain if more than 30000
+     lines are piped.
+
+     For C language programs, _s_h_o_w_l_o_o_p naively assumes that the
+     labels specified as the destinations of ggggoooottttoooo statements are
+     unique within the file and are not used as variable names.
+
+     EPL source files should not contain line numbers.  Some
+     GOTO= statements which span multiple lines may be ignored.
+
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     _s_h_o_w_l_o_o_p - _A _T_o_o_l _f_o_r _S_h_o_w_i_n_g _C_o_n_t_r_o_l _F_l_o_w _i_n _P_r_o_c_e_d_u_r_a_l
+     _L_a_n_g_u_a_g_e _P_r_o_g_r_a_m_s, by R. S. Parnass.  55813-901030-01TM.
+
+     _c_l_o_o_p - _A _T_o_o_l _f_o_r _S_h_o_w_i_n_g _L_o_o_p_s _a_n_d _C_o_n_t_r_o_l _S_t_a_t_e_m_e_n_t_s _i_n _C
+     _P_r_o_g_r_a_m_s, by R. S. Parnass.  55013-900417-01TM.
+
+     _a_r_r_o_w(_E_X_P_T_O_O_L_S), _c_l_o_o_p(_E_X_P_T_O_O_L_S)
+
+
+AAAAUUUUTTTTHHHHOOOORRRR
+     The multi-language loop drawing tool was written by Bob Par-
+     nass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 8                                           (printed 8/5/92)
+
+
+

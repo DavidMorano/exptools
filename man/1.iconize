@@ -1,0 +1,858 @@
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  iconize - manipulate windows with icons on DMD5620, 630 and
+	  730
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  iiiiccccoooonnnniiiizzzzeeee [[[[ooooppppttttiiiioooonnnnssss]]]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _I_c_o_n_i_z_e provides its user the	ability	to manipulate windows
+	  on the DMD5620, 630 and 730 terminals	with icons.  Icons are
+	  small	entities symbolizing larger ones.  When	_i_c_o_n_i_z_e	starts
+	  up, it examines the currently	active processes.  It places
+	  all processes	with layers windows into a list	of "known
+	  processes".  This list is made up of names in	boxes, one per
+	  window/layer (the icons).
+
+	  An appropriate name for each window/layer is chosen based on
+	  the information available.  Processes	which can not be
+	  reshaped are initialially hidden, but	can be exposed via the
+	  KKKKnnnnoooowwww menu selection which is described below.	 When shown,
+	  they have a border around their associated box to signify
+	  the fact that	the process is not reshapeable.
+
+	  Each window's	name is	based on whether the window is local,
+	  and whether the window is a windowproc window.  If the
+	  window is a windowproc window, two naming strategies exist.
+	  If the window	has a "label line", that text will always be
+	  the first choice for the label (lines	longer than the	set
+	  number of characters will be truncated to that length).  If
+	  no label text	has been set, the name LLLLaaaayyyyeeeerrrr, will be chosen.
+	  Any non-local	window will always have	its xt-channel number
+	  displayed with its name.
+
+	  The _x_t channel number	associated with	the layer will be
+	  displayed to the left	of the label chosen, and all labels
+	  will be right	justified.  For	example, the label for a
+	  normal layer will appear as shown below.
+
+				  ___________
+				 ||_c____L_a_y_e_r__||
+
+	  cccc is the channel number.
+
+	  If the window	is not a windowproc window, the	basename of
+	  the image that was downloaded	will be	used as	the label.
+	  Any extension	....mmmm, ....nnnn,	....jjjjxxxx, ....666633330000 or ....jjjjxxxxnnnn will be removed.
+	  For example, the program /somepath/dmdlock.m will have the
+	  label	ddddmmmmddddlllloooocccckkkk.  A program like ddddmmmmddddppppssss,	that is	not local,
+	  will have a label as shown below.
+
+
+
+
+
+
+     Page 1					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+				  ___________
+				 ||_c____d_m_d_p_s__||
+
+	  The cccc	is replaced with the appropriate value for the channel
+	  that the window is associated	with.
+
+	  The labels are arranged in _i_c_o_n_i_z_e'_s window in a vertical
+	  (horizontal if the -hori command line	option is used)	list.
+	  Iconize'd windows are	accessed by first making the _i_c_o_n_i_z_e
+	  window current.  The windows are sorted according to the
+	  port they are	associated with.  Local	layers are grouped
+	  together.  Each group	is separated by	the other using	a box
+	  which	contains the name of the port that the group is
+	  associated with.  The	horizontal format is sorted from left
+	  to right.  A sample _i_c_o_n_i_z_e window on	the 730	might look
+	  like the following (the 630 looks similar except for the
+	  port names)
+
+				________________
+			       |_____L_o_c_a_l_______|
+			       |     dmdlock   |
+			       |________________|
+			       |______M_a_i_n_______|
+			       | 2     Layer   |
+			       |________________|
+			       |_3_____v_r_m_a_i_l_____|
+			       | 6     Layer   |
+			       |________________|
+			       |_____M_a_i_n_2_______|
+			       | 1   cbnewsc   |
+			       |________________|
+
+	  Once the _i_c_o_n_i_z_e window is current, the mouse	pointer	is
+	  used to select the windows, by pointing at the label (think
+	  of the window	as a normal menu, even though it is not).  As
+	  the mouse cursor moves into the rectangle that the label is
+	  contained in,	one of two things happens.
+
+	  If a window is hidden	(it is shrunk behind the _i_c_o_n_i_z_e
+	  window), it will be redrawn in its previous position for
+	  viewing.  If the window is not hidden, it will be placed on
+	  top of all windows, except the _i_c_o_n_i_z_e window.
+
+	  When the cursor moves	from the label rectangle, the window
+	  is hidden again if it	previously was.	 If a window was not
+	  hidden, nothing happens to that window as the	cursor leaves
+	  its label rectangle.
+
+	  A window is moved from the hidden state by depressing
+	  button-1 while pointing at its label.	 If the	window is not
+	  hidden, depressing button-1 will hide	the window.  So,
+	  button-1 provides a toggle to	hide or	display	any of the
+	  windows that _i_c_o_n_i_z_e has in its list.	 When _i_c_o_n_i_z_e is on a
+
+
+     Page 2					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  different logical screen then	the layer being	manipulated,
+	  hiding that layer and	then unhidding it will cause it	to
+	  move to the screen that _i_c_o_n_i_z_e is on.
+
+	  Depressing button-2 always causes the	window associated with
+	  the label to become current, top and visible (not hidden).
+
+	  Button-3 provides a menu for performing customization	and
+	  option setting.  The initial menu looks like the following
+
+			       __________________
+			      |_L_a_b_e_l__________-_>__|
+			      |	Deactivate	|
+			      |__________________|
+			      |_F_o_n_t_s__________-_>__|
+			      |	Options	      ->|
+			      |__________________|
+			      |_S_i_z_e___________-_>__|
+			      |	Ignore		|
+			      |__________________|
+			      |_K_n_o_w___________-_>__|
+			      |	Screens	      ->|
+			      |__________________|
+			      |_S_w_a_p___________-_>__|
+			      |	Version	x.y	|
+			      |__________________|
+
+	  Some selections are greyed when they are not applicable due
+	  to the mouse cursor position (it is not on a label) or if
+	  they are not available on the	terminal (5620 features	vs 630
+	  features vs 730 features).  The VVVVeeeerrrrssssiiiioooonnnn xxxx....yyyy selections only
+	  purpose is to	show the version information.
+
+
+	  o    The LLLLaaaabbbbeeeellll selection is used to manipulate the label
+	       associated with a wwwwpppprrrroooocccc window or the host that the
+	       window is associated with.  Four	sub-selections are
+	       provided.  The RRRReeeennnnaaaammmmeeee sub-selection will	allow you to
+	       type a new label	for the	window.	 The RRRReeeesssseeeetttt sub-
+	       selection resets	the fact that you previously forced a
+	       name for	the window via the RRRReeeennnnaaaammmmeeee sub-selection.  The
+	       HHHHoooosssstttt selection will allow you to	change the name	of the
+	       host (on	the 730	only).	The NNNNoooo LLLLaaaabbbbeeeellll selection causes
+	       _i_c_o_n_i_z_e to ignore the window label on a 630/730 wwwwpppprrrroooocccc
+	       layer that is at	the top	of the window (the status line
+	       label set via an	escape sequence	as described in	the
+	       630 user's guide).  On the 730, the bottom status line
+	       is used when the	top line is empty (see caveat below).
+
+
+	  o    The DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeee (RRRReeeeaaaaccccttttiiiivvvvaaaatttteeee if DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeee	was done
+	       previously) selection allows individual layers to be
+	       deactivated without having to turn the DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeee
+
+
+     Page 3					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	       option on (see discussion below).  The layer
+	       corresponding to	the label highlighted at the time the
+	       menu is displayed will be the only one effected.	 After
+	       DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeee has been done, the selection will change to
+	       RRRReeeeaaaaccccttttiiiivvvvaaaatttteeee when the mouse cursor	is on the
+	       corresponding label, and	button-3 is pressed.  A	layer
+	       may be DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeeedddd only when it is visible on the
+	       screen.	If it is hidden, the bell will sound and
+	       nothing will be done.
+
+
+	  o    The FFFFoooonnnnttttssss selection allows the user to change the fonts
+	       used for	the labeling, and the menus.  The
+	       FFFFoooonnnnttttssss---->>>>LLLLaaaabbbbeeeellllssss selection is used to choose the labels
+	       font, and the FFFFoooonnnnttttssss---->>>>OOOOtttthhhheeeerrrrssss selection is	used to	choose
+	       the menus (except the fonts themselves) and the "Icons"
+	       header font.
+
+
+	  o    The OOOOppppttttiiiioooonnnnssss menu	presents a list	of options that	can be
+	       changed to alter	how _i_c_o_n_i_z_e behaves while in use.  The
+	       options are either on or	off settings.  The activation
+	       is indicated in the menu	by the presence	of a checkmark
+	       next to the option name.	 Non-active options have
+	       circles with slashes drawn through them,	next to	the
+	       associated option.
+
+	       The options and their associated	actions	are:
+
+	  NNNNoooo llllaaaabbbbeeeellllssss	 This option causes _i_c_o_n_i_z_e to hide the	llllaaaabbbbeeeellllssss
+			 list whenever it is not the "current" layer.
+			 Normally, the labels are always displayed.
+
+	  HHHHoooorrrriiiizzzzoooonnnnttttaaaallll	 By default, the label for each	window is
+			 placed	in a vertical stack.  Selecting	the
+			 HHHHoooorrrriiiizzzzoooonnnnttttaaaallll option, causes the labels to be
+			 displayed in rows from	left to	right.	If
+			 necessary (when the right border is reached),
+			 more than one row will	be used.
+
+	  FFFFllllaaaasssshhhh		 Selecting the FFFFllllaaaasssshhhh option will cause the
+			 window	corresponding to the _i_c_o_n_i_z_e label
+			 that the mouse	is pointing to (while it is
+			 current) to flash, when the mouse first moves
+			 onto the label.  This provides	a visual cue
+			 of what layer/window is really	associated
+			 with that label.
+
+	  IIIInnnnvvvveeeerrrrtttt	 Selecting the IIIInnnnvvvveeeerrrrtttt option will cause	the
+			 window	corresponding to the _i_c_o_n_i_z_e label
+			 that the mouse	is pointing to (while it is
+			 current) to invert while the mouse is
+
+
+
+     Page 4					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+			 pointing to that label.  This provides	a
+			 visual	cue of what layer/window is really
+			 associated with that label.  One problem with
+			 this is that if that layer window changes
+			 while it is inverted, portions	of the window
+			 will not be redisplayed correctly when	the
+			 window	is redrawn after the mouse leaves the
+			 label.
+
+	  DDDDeeeeaaaacccctttt		 Selecting this	option causes all future
+			 hide/unhide action associated with button one
+			 to deactivate layers rather than hiding them.
+			 When a	layer is deactivated, the window is
+			 deleted and the associated process halted.
+			 It will not run again until it	is unhidden by
+			 either	dragging the cursor across its label
+			 or unhidding it.
+
+	  KKKKnnnnoooowwwwaaaallllllll	 This selection	enables	or disables _i_c_o_n_i_z_e'_s
+			 knowledge of windows/layers which can not be
+			 reshaped.  This feature can be	toggled	on and
+			 off to	be used	in conjunction with the	SSSSiiiizzzzeeee
+			 selection to allow the	size of	non-reshapable
+			 layers	to be determined, but they can be
+			 eliminated from the _i_c_o_n_i_z_e list since	they
+			 are of	little interest	otherwise.  By default
+			 this option is	turned on.
+
+	  PPPPoooopppp OOOOuuuutttt	 This selection	enables	or disables the	action
+			 of poping hidden windows out when the mouse
+			 cursor	enters the associated label in the
+			 _i_c_o_n_i_z_e layer.	 Normally, this	option is
+			 enabled which causes _i_c_o_n_i_z_e to reshape the
+			 layer back to its original position so	that
+			 its contents can be seen.
+
+	  TTTToooopppp		 This selection	enables	or disables the	action
+			 of bringing windows to	the top, when the
+			 mouse cursor enters the associated label in
+			 the _i_c_o_n_i_z_e layer.  Normally this option is
+			 enabled which causes _i_c_o_n_i_z_e to bring the
+			 layer to the top so that it is	visible.
+
+	  SSSSccccrrrreeeeeeeennnn LLLLaaaabbbbeeeellll	 On the	730 only, this selection causes	the
+			 screen	number,	for the	screen that a
+			 particular layer is on, to be included	as
+			 part of the layers label.  The	screen
+			 designation is	prepended to the label as in
+			 "1.2 Layer" i.e.  the layer associated	with
+			 channel 2 is on the screen numbered 1
+			 according to the screen list.
+
+
+
+
+     Page 5					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  HHHHoooommmmeeee SSSSccccrrrreeeeeeeennnn	 This selection	causes the iconize layer to
+			 only contain layers which are on the current
+			 screen.  Otherwise, these layers will be
+			 displayed, but	will be	greyed.
+
+	  FFFFoooolllllllloooowwww	 This option provides a	sub menu which
+			 contains three	selections.  These are,	TTTToooopppp,
+			 CCCCuuuurrrrrrrreeeennnntttt and CCCCuuuurrrrssssoooorrrr.  The TTTToooopppp option causes
+			 _i_c_o_n_i_z_e to bring the layer which the mouse
+			 pointer is in to the top.  The	CCCCuuuurrrrrrrreeeennnntttt	option
+			 causes	_i_c_o_n_i_z_e	to make	current	the layer that
+			 the mouse cursor is in.  The CCCCuuuurrrrssssoooorrrr option
+			 causes	_i_c_o_n_i_z_e	to blank the mouse cursor from
+			 the screen when the mouse sets	still for more
+			 than 15 seconds.  The IIIImmmmmmmmeeeeddddiiiiaaaatttteeee option
+			 determines whether _i_c_o_n_i_z_e makes the layer
+			 CCCCuuuurrrrrrrreeeennnntttt and/or	TTTToooopppp immediately, or when the
+			 mouse stops moving.  The SSSSwwwwaaaappppppppeeeerrrr option
+			 determines whether or not _i_c_o_n_i_z_e follows the
+			 screen	swapper	(730 only) when	a new screen
+			 is selected.  When this option	is on, the
+			 checkmark is displayed	beside the selection,
+			 _i_c_o_n_i_z_e will notice that the screen that it
+			 is mapped to is no longer the current screen
+			 and switch to it.  The	sub menu appears as
+			 shown here.
+
+					_______________
+				       |_0_/___T_o_p________|
+				       | 0/   Current  |
+				       |_______________|
+				       |_0_/___C_u_r_s_o_r_____|
+				       | 0/   Immediate|
+				       |_______________|
+				       ||_0_/___S_w_a_p_p_e_r____||
+
+			 By default, none of these options are
+			 enabled.
+
+
+	  SSSSiiiizzzzeeeessss		 This option provides a	submenu	which allows
+			 you to	set the	maximum	width of the the
+			 _i_c_o_n_i_z_e layer and the maximum number of
+			 characters that will be used from the
+			 windowproc label line.	 The menu appears as
+			 shown below
+
+					______________
+				       |_I_c_o_n_s_____1_0_0__|
+				       | Labels	   20|
+				       |______________|
+
+
+
+
+     Page 6					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+				       |______________|
+
+			 Selecting either item will allow you to
+			 change	the associated value by	typing the
+			 desired number.  The range of values allowed
+			 are 4 to 100.	These represent	the number of
+			 characters that will be used from the derived
+			 label excluding the channel number and	a
+			 space separator (when a channel number	is
+			 present).
+
+
+	  o	  The SSSSiiiizzzzeeee selection produces a	submenu	which is not
+		  really a menu.  Rather, it shows the size of the
+		  layer	associated with	the label that the mouse
+		  pointer was pointing at when button-3	was pressed.
+		  The menu appears as
+				_______________________
+			       |	    X	   Y  |
+			       |_______________________|
+			       |_o_r_i_g_i_n____(_x_x_x_,____y_y_y_)__|
+			       | corner	  (xxx,	  yyy)|
+			       |_______________________|
+			       |_d_i_f_f_e_r____(_x_x_x_,____y_y_y_)__|
+
+		  It shows the cooridinates of the origin, the corner,
+		  and their difference (the size of the	layer).
+
+
+	  o	  The IIIIggggnnnnoooorrrreeee selection causes the layer	corresponding
+		  to the label that the	mouse arrow was	pointing at to
+		  be "ignored" by _i_c_o_n_i_z_e.  While _i_c_o_n_i_z_e is ignoring
+		  a layer, it does not display the label for that
+		  layer.  By default, all non-reshapable layers	are
+		  "ignored" when they are first	discovered.  The KKKKnnnnoooowwww
+		  selection allows them	to be displayed	in the list
+		  with the other layers.
+
+
+	  o	  The KKKKnnnnoooowwww ---->>>> selection	is used	to remove layers from
+		  the "ignored"	list.  The menu	is generated based on
+		  the layers which are currently being ignored.	 This
+		  item will be greyed when no layers are being
+		  ignored.
+
+
+	  o	  The SSSSwwwwaaaapppp ---->>>> selection	is used	to tell	_i_c_o_n_i_z_e	to
+		  swap the layer, that the mouse arrow was pointing
+		  at, to a particular screen.  Selecting SSSSwwwwaaaapppp without
+		  following the	submenu	will cause the swap status of
+		  all screens to be toggled for	the indicated layer.
+		  Typically this is used to turn swapping for all
+
+
+
+     Page 7					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+		  screens on or	off.  Following	the submenu allows the
+		  swap status for a particular screen to be toggled.
+		  The current screen has a '*' beside the screen
+		  number.  A sample SSSSwwwwaaaapppp submenu is shown here
+
+				   _________________
+				  |_v_/___S_c_r_e_e_n____1_*__|
+				  | v/	Screen	 2 |
+				  |_________________|
+				  ||_____S_c_r_e_e_n____3___||
+
+
+	  o	  The SSSSccccrrrreeeeeeeennnnssss ---->>>> selection is used to create new
+		  virtual screens on the 730 terminals.	 This
+		  selection produces a menu that appears as show here.
+
+				       __________
+				      |_C_r_e_a_t_e____|
+				      |	Delete	|
+				      |__________|
+				      |_N_e_x_t______|
+				      |	Previous|
+				      |__________|
+				      ||_P_u_s_h______||
+
+		  This menu provides access to the screen swapper
+		  primatives.  CCCCrrrreeeeaaaatttteeee will create a new	virtual	screen
+		  that can have	windows	created	on it.	The windows
+		  remain associated with this screen until they	are
+		  moved	or move	themselves to a	different screen.  The
+		  CTRL-space keystroke switches	between	screens.
+		  Alternatively, the NNNNeeeexxxxtttt and PPPPrrrreeeevvvviiiioooouuuussss menu selections
+		  above	will switch to the next	or previous screen.
+		  The DDDDeeeelllleeeetttteeee selection removes a virtual screen.  The
+		  DDDDeeeelllleeeetttteeee option	requires that there be no windows on
+		  the current screen, which _i_c_o_n_i_z_e can	not swap to
+		  another screen, when it is selected.	The PPPPuuuusssshhhh
+		  selection causes the mouse pointer to	change to the
+		  target, selection icon.  Clicking on a layer with
+		  button 3 will	cause that layer to be pushed to the
+		  next screen.
+
+		  The FFFFoooolllllllloooowwww---->>>>SSSSwwwwaaaappppppppeeeerrrr option should be selected	when
+		  using	screens	so that	_i_c_o_n_i_z_e	moves to the next
+		  selected screen.  When the DDDDeeeelllleeeetttteeee option is
+		  selected, _i_c_o_n_i_z_e will move itself to	the next
+		  screen before	attempting to delete the requested
+		  screen.  If a	bell sounds when one of	these
+		  functions is selected, the underlying	terminal
+		  primative failed for some reason, probably because a
+		  layer	was left on the	screen and _I_c_o_n_i_z_e was not
+		  told to swap it.
+
+
+
+     Page 8					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  _I_c_o_n_i_z_e recognizes the command line options that are
+	  outlined below.
+
+	  ----llllffffoooonnnntttt fontname    The LLLLaaaabbbbeeeellll font is changed from "medium
+			     font" to "fontname".  Note	that all of
+			     the built-in fonts	of the 630/730
+			     terminals have a literal space in the
+			     middle of them.  This space must be
+			     present in	the font name if one of	these
+			     fonts is selected.
+
+	  ----ooooffffoooonnnntttt font_name   The OOOOtttthhhheeeerrrrssss	font is	changed	from "medium
+			     font" to "fontname".
+
+	  ----sssseeeettttllllaaaabbbb	     777733330000 oooonnnnllllyyyy ffffeeeeaaaattttuuuurrrreeee
+
+			     Sets a label on the window	specified.
+			     There are three arguments to this option.
+			     The first is the host name, i.e. "Host
+			     1".  The second is	the label name with
+			     the white space between the channel
+			     (non-local	processes) and the label
+			     compressed	to one space, i.e. "1 Layer".
+			     The third is the new label.  e.g.
+
+				      iiiiccccoooonnnniiiizzzzeeee ----sssseeeettttllllaaaabbbb MMMMaaaaiiiinnnn """"''''1111 LLLLaaaayyyyeeeerrrr''''""""
+			     """"ssssoooommmmeeeetttthhhhiiiinnnngggg	uuuusssseeeeffffuuuullll""""
+				      iiiiccccoooonnnniiiizzzzeeee ----sssseeeettttllllaaaabbbb LLLLooooccccaaaallll iiiiccccoooonnnniiiizzzzeeee
+			     """"ssssoooommmmeeeetttthhhhiiiinnnngggg	eeeellllsssseeee""""
+
+
+	  ----llllaaaabbbbeeeellllssss	     The LLLLaaaabbbbeeeellllssss	(the default) option is
+			     enabled.
+
+	  ----nnnnoooollllaaaabbbbeeeellllssss	     The LLLLaaaabbbbeeeellllssss	option is disabled.
+
+	  ----llllaaaabbbbssssccccrrrrnnnn	     The SSSSccccrrrreeeeeeeennnn	LLLLaaaabbbbeeeellll option is	enabled.
+
+	  ----nnnnoooollllaaaabbbbssssccccrrrrnnnn	     The SSSSccccrrrreeeeeeeennnn	LLLLaaaabbbbeeeellll option is	disabled (the
+			     default).
+
+	  ----ppppooooiiiinnnntttt x y	     The origin	of the _i_c_o_n_i_z_e window is
+			     changed to	the coordinates	specified.  By
+			     default, _i_c_o_n_i_z_e retains the upper	left
+			     hand corner of the	window that it starts
+			     with.
+
+	  ----iiiiwwwwiiiiddddtttthhhh	     The maximum width,	in characters, of the
+			     _i_c_o_n_i_z_e window is set to the argument
+			     value.  The minimum value is 5, the
+			     maximum value is 100.
+
+
+
+
+     Page 9					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  ----llllwwwwiiiiddddtttthhhh	     The maximum number	of characters of the
+			     windowproc	label line used	is set to the
+			     argument value.  The maximum value	is
+			     100.
+
+	  ----hhhhoooorrrriiii		     Enables the HHHHoooorrrriiiizzzzoooonnnnttttaaaallll option.
+
+	  ----nnnnoooohhhhoooorrrriiii	     Disables the HHHHoooorrrriiiizzzzoooonnnnttttaaaallll option (the
+			     default).
+
+	  ----ccccaaaacccchhhheeee	     Enables caching of	_i_c_o_n_i_z_e	in the
+			     terminal (the default).
+
+	  ----nnnnooooccccaaaacccchhhheeee	     Disables caching of _i_c_o_n_i_z_e in the
+			     terminal.
+
+	  ----kkkknnnnoooowwwwaaaallllllll	     Enables recognition of non-reshapable
+			     layers (the default).
+
+	  ----nnnnooookkkknnnnoooowwwwaaaallllllll	     Disables recognition of non-reshapable
+			     layers.
+
+	  ----ffffllllaaaasssshhhh	     Enables the FFFFllllaaaasssshhhh option.
+
+	  ----nnnnooooffffllllaaaasssshhhh	     Disables the FFFFllllaaaasssshhhh	option (the default).
+
+	  ----iiiinnnnvvvveeeerrrrtttt	     Enables the IIIInnnnvvvveeeerrrrtttt	option.
+
+	  ----nnnnooooiiiinnnnvvvveeeerrrrtttt	     Disables the IIIInnnnvvvveeeerrrrtttt option	(the default).
+
+	  ----ddddeeeeaaaacccctttt	     Enables the DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeee option.
+
+	  ----nnnnooooddddeeeeaaaacccctttt	     Disables the DDDDeeeeaaaaccccttttiiiivvvvaaaatttteeee option (the
+			     default).
+
+	  ----ttttoooopppp		     Enables the TTTToooopppp option (the default).
+
+	  ----nnnnoooottttoooopppp	     Disables the TTTToooopppp option.
+
+	  ----ppppoooopppp		     Enables the PPPPoooopppp OOOOuuuutttt option	(the default).
+
+	  ----nnnnooooppppoooopppp	     Disables the PPPPoooopppp OOOOuuuutttt option.
+
+	  ----ffffoooollllttttoooopppp	     Enables the FFFFoooolllllllloooowwww---->>>>TTTToooopppp option.
+
+	  ----nnnnooooffffoooollllttttoooopppp	     Disables the FFFFoooolllllllloooowwww---->>>>TTTToooopppp option (the
+			     default).
+
+	  ----ffffoooollllccccuuuurrrr	     Enables the FFFFoooolllllllloooowwww---->>>>CCCCuuuurrrrrrrreeeennnntttt option.
+
+	  ----nnnnooooffffoooollllccccuuuurrrr	     Disables the FFFFoooolllllllloooowwww---->>>>CCCCuuuurrrrrrrreeeennnntttt option (the
+			     default).
+
+
+
+     Page 10					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  ----ffffoooollllccccrrrrssss	     Enables the FFFFoooolllllllloooowwww---->>>>CCCCuuuurrrrssssoooorrrr	option.
+
+	  ----nnnnooooffffoooollllccccrrrrssss	     Disables the FFFFoooolllllllloooowwww---->>>>CCCCuuuurrrrssssoooorrrr option	(the
+			     default).
+
+	  ----ffffoooolllliiiimmmmmmmm	     Enables the FFFFoooolllllllloooowwww---->>>>IIIImmmmmmmmeeeeddddiiiiaaaatttteeee option.
+
+	  ----nnnnooooffffoooolllliiiimmmmmmmm	     Disables the FFFFoooolllllllloooowwww---->>>>CCCCuuuurrrrssssoooorrrr option	(the
+			     default).
+
+	  ----ffffoooollllsssswwwwpppp	     Enables the FFFFoooolllllllloooowwww---->>>>SSSSwwwwaaaappppppppeeeerrrr option.
+
+	  ----nnnnooooffffoooollllsssswwwwpppp	     Disables the FFFFoooolllllllloooowwww---->>>>SSSSwwwwaaaappppppppeeeerrrr option (the
+			     default).
+
+	  ----hhhhoooommmmeeeessssccccrrrrnnnn	     Enables the HHHHoooommmmeeee SSSSccccrrrreeeeeeeennnn option.
+
+	  ----nnnnoooohhhhoooommmmeeeessssccccrrrrnnnn	     Disables the HHHHoooommmmeeee SSSSccccrrrreeeeeeeennnn option (the
+			     default).
+
+	  ----sssswwwwaaaapppp	name	     The nnnnaaaammmmeeee argument to ----sssswwwwaaaapppp	is a label
+			     name (case	is significant).  Any layer
+			     having the	name will aaaallllwwwwaaaayyyyssss be swapped to
+			     all new screens as	they are discovered.
+			     Swapping to a particular screen can be
+			     turned off	via the	SSSSwwwwaaaapppp---->>>> selection of
+			     the main menu.  The argument to ----sssswwwwaaaapppp is
+			     only the text portion of the label.  i.e.
+			     the channel number	is not required.  Note
+			     that ----sssswwwwaaaapppp	iiiiccccoooonnnniiiizzzzeeee	is always in effect.
+
+	  ----iiiiggggnnnnoooorrrreeee name	     The argument to ----iiiiggggnnnnoooorrrreeee is	a label	name
+			     (case is significant).  Any layer having
+			     that name,	when it	is initially
+			     recognized	by _i_c_o_n_i_z_e, will be
+			     automatically ignored.  The layer can be
+			     subsequently "known" using	the "Know"
+			     menu selection, without interference from
+			     _i_c_o_n_i_z_e.  _i_c_o_n_i_z_e remembers that you
+			     asked a layer name	to be ignored for the
+			     life of the program.
+
+     SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCSSSS
+	  _I_c_o_n_i_z_e keeps	an eye on the windows that it is manipulating.
+	  It checks periodically to see	if the associated processes
+	  are still active.  Those that	are not, it removes from its
+	  list.	 Any newly created windows/layers are automatically
+	  added	to the list.  Periodically it checks for changes in
+	  the names of the processes running in	each window.  While a
+	  process is loading, the name may not be set correctly.  Once
+	  the process is finished loading, more	information is
+	  available to select the proper name.	Local editing windows
+
+
+
+     Page 11					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  will be named	LLLLooooccccaaaallll EEEEddddiiiitttt.
+
+	  When selecting a menu	item which will	require	you to type
+	  information to _i_c_o_n_i_z_e, the layer is reshaped	into a long
+	  rectangle in the middle of the terminal screen.  A prompt is
+	  issued that describes	the desired information.  After	the
+	  return key is	typed, _i_c_o_n_i_z_e will return to its previous
+	  place	and take action	on the typed data.
+
+	  On the 730 terminal, when _i_c_o_n_i_z_e is reloaded	from the
+	  cache, any specified parameters will be passed to the	copy
+	  that is already running.  E.g.
+
+		   iiiiccccoooonnnniiiizzzzeeee ----nnnnoooollllaaaabbbbeeeellllssss
+
+	  will start up	_i_c_o_n_i_z_e	(from the cache) and send the
+	  ----nnnnoooollllaaaabbbbeeeellllssss argument to	the copy already running.
+
+	  Some parameters take effect immediately while	others (e.g.
+	  -labels) won't take effect until after _i_c_o_n_i_z_e is made the
+	  current layer.  The communication method is through a	shared
+	  message queue	which may be documented	in the future.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	  When a layer is first	discovered, if it is marked as
+	  NONRESHAPABLE, _i_c_o_n_i_z_e will IIIIggggnnnnoooorrrreeee it	automatically.	This
+	  may sometimes	cause confusion	as to where a layer's label
+	  is.  This is a result	of the process structure not being
+	  fully	initialized at the time	that the process is inserted
+	  into the process list	that _i_c_o_n_i_z_e looks at.
+
+	  _I_c_o_n_i_z_e makes	use of some undocumented procedures to keep
+	  track	of processes.  Namely, the design of the PPPPrrrroooocccc and
+	  LLLLaaaayyyyeeeerrrr	structures.
+
+	  When the DDDDeeeeaaaacccctttt option	is used, the deactivated layer process
+	  does not process characters from the host.  This means that
+	  output from the host could eventually	cause the host
+	  process(es) to be put	to sleep because of output blocking by
+	  the xt devices.  This	can result in resource shortages on
+	  the host if done for extended	periods	of time.
+
+	  Sometimes _i_c_o_n_i_z_e makes the wrong guess for the name of a
+	  layer.  Generally this is during the down-loading process.
+	  You may explicitly have to rename the	layer.	Due to
+	  inconsistancies in the process data structures, during
+	  down-loading,	this behavior is not easily corrected.
+
+	  When a new process is	loaded into a layer, _i_c_o_n_i_z_e ignores
+	  previous, explict renaming, and selects a new	name using the
+	  previously outlined procedures.
+
+
+
+
+     Page 12					     (printed 10/3/91)
+
+
+
+
+
+
+     IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    IIIICCCCOOOONNNNIIIIZZZZEEEE((((1111))))
+
+
+
+	  Because _i_c_o_n_i_z_e is competing with the	terminal control
+	  process for information about	the mouse cursor, and its
+	  current "picture", the mouse cursor may sometimes be wrong.
+	  Moving the mouse around, and/or out of the current layer and
+	  back usually restores	the correct cursor.
+
+	  The 730 corrects several problems that exist in the 630.  In
+	  particular, the reason the -setlab option is not available
+	  on the 630 is	due to a problem with caching.
+
+	  The SSSSwwwwaaaapppp ---->>>> option can not be	used to	control	_i_c_o_n_i_z_e
+	  itself.  _I_c_o_n_i_z_e must	be present on a	screen inorder to swap
+	  a layer to that screen.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  _I_c_o_n_i_z_e was written and is provided by Gregg Wonderly.
+
+	  Version 1.33 extracted at 23:46:01 on	10/2/91
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 13					     (printed 10/3/91)
+
+
+

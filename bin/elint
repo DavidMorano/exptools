@@ -1,0 +1,170 @@
+#	Copyright (c) 1988 AT&T
+#	  All Rights Reserved
+
+#	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
+#	The copyright notice above does not evidence any
+#	actual or intended publication of such source code.
+
+#ident	"@(#)lint:lint.sh	1.10"
+
+LIB=$TOOLS/lib/elint
+CPPF=				# options for the cpp command
+TOUT=/usr/tmp/lint.t$$		# combined input for second pass
+HOUT=/usr/tmp/lint.h$$		# header messages file
+LDIR=$LIB			# where first & second pass are
+LLDIR=$LIB			# where lint libraries are found
+PATH=/bin:/usr/bin
+LINTF=				# options for both lint passes
+LINT1F=				# options for lint pass 1
+LINT2F=				# options for lint pass 2
+FILES=				# the *.c and *.ln files in order
+NDOTC=0				# how many *.c were there
+DEFL=$LLDIR/llib-lc.ln		# the default library to use
+LLIB=				# lint library file to create
+CONLY=				# set for ``compile only''
+DIRLST=				# ordered list of args to -L option
+LIBLST=				# lint libs to look for in DIRLST
+#
+trap "rm -f $POUT $TOUT $HOUT; exit 2" 1 2 3 15
+#
+# First, run through all of the arguments, building lists
+#
+USAGE="Usage: lint [-abcGhnPpstuvx] [-lx] [-L dir] [-m module] [-o lib] file ..."
+CCOPTARG=I:D:U:gOW:
+OPTARG=abcGhL:l:m:no:Ppstuvx$CCOPTARG
+set -- `getopt $OPTARG "$@"`
+if [ $? -ne 0 ]
+then
+	echo "$USAGE"	# the quotes avoid matching a file name
+	exit 2
+fi
+while [ $# -gt 0 ]
+do
+	case $1 in
+	-P)     LINTF="$LINTF $1"; shift;
+		DEFL=$LLDIR/llib-port.ln;;
+
+	-p)     LINTF="$LINTF $1"; shift;
+		DEFL=$LLDIR/llib-lc.ln;;
+
+	-n)     shift; DEFL=;;
+
+	-c)     shift; CONLY=1;;
+
+	-[Ghx]) LINTF="$LINTF $1"; shift;;
+	-[abstv]) LINT1F="$LINT1F $1"; shift;;
+	-u)	LINT2F="$LINT2F $1"; shift;;
+
+	-[gO])	shift;;
+	-[IDU])	CPPF="$CPPF $1$2"; shift 2;;
+	-W)	shift 2;;
+	-L)     DIRLST="$DIRLST $2"; shift 2;;
+	-l)     LIBLST="$LIBLST llib-l$2.ln"; shift 2;;
+	-m)	LINT1F="$LINT1F $1 $2"; shift 2;;
+	-o)     OPT=`basename $2`; LLIB="llib-l$2.ln"; shift 2;;
+	--)     shift;
+		while [ $# -gt 0 ]
+		do
+			case $1 in
+			-*)     set -- `getopt $OPTARG "$@"`; 
+				if [ $? -ne 0 ]
+				then
+					echo "$USAGE"	# the quotes avoid matching a file name
+					exit 2
+				fi
+				break;;
+			*.c)    FILES="$FILES $1" 
+				NDOTC=`expr $NDOTC + 1`
+				shift;;
+			*.ln)    FILES="$FILES $1"; shift;;
+			*)       echo "lint: file with unknown suffix ignored: $1"; shift;;
+			esac
+		done
+		;;
+	-*)	echo "lint: bad option ignored: $1"; shift;;
+	esac
+done
+
+LLDIR="$DIRLST $LLDIR"
+
+for LIB in $LIBLST
+do
+    for DIR in $LLDIR
+    do
+	if [ -r "$DIR"/"$LIB" ]
+	then
+	    FILES="$FILES $DIR/$LIB"
+	    break
+	fi
+    done
+    if [ ! -r "$DIR"/"$LIB" ]
+    then
+	echo "lint: $LIB not found"
+    fi
+done
+
+if [ "$FILES" = "" ]
+then	echo "lint: no file arguments"
+	exit
+fi
+#
+# Second, walk through the FILES list, running all .c's through
+# lint's first pass, and just adding all .ln's to the running result
+#
+if [ "$CONLY" ]		# run lint1 on *.c's only producing *.ln's
+then
+	for i in $FILES
+	do
+		case $i in
+		*.c)	T=`basename $i .c`.ln
+			if [ $NDOTC -gt 1 ]
+			then
+				echo $i:
+			fi
+			($LDIR/lint1 $CPPF $LINTF $LINT1F -H$HOUT $i >$T) 2>&1
+
+			# if lint1 has a fatal error, the temp file may cause
+			# lint2 to core dump
+			if [ $? = 0 ]
+			then	$LDIR/lint2 -H$HOUT
+			fi
+			rm -f $HOUT;;
+		esac
+	done
+else			# send all *.c's through lint1 run all through lint2
+	rm -f $POUT $TOUT $HOUT
+	for i in $FILES
+	do
+		case $i in
+		*.ln)	cat <$i >>$TOUT;;
+		*.c)	if [ $NDOTC -gt 1 ]
+			then
+				echo $i:
+			fi
+			($LDIR/lint1 $CPPF $LINTF $LINT1F -H$HOUT $i >>$TOUT) 2>&1
+
+			# if lint1 has a fatal error, the temp file may cause
+			# lint2 to core dump, so exit now
+			if [ $? != 0 ]
+			then	rm -f $POUT $TOUT $HOUT
+				exit
+			fi
+			;;
+		esac
+	done
+	if [ "$LLIB" ]
+	then
+		cp $TOUT $LLIB
+	fi
+	if [ "$DEFL" ]
+	then
+		cat <$DEFL >>$TOUT
+	fi
+	if [ -s "$HOUT" ]
+	then
+		$LDIR/lint2 -T$TOUT -H$HOUT $LINTF $LINT2F
+	else
+		$LDIR/lint2 -T$TOUT $LINTF $LINT2F
+	fi
+fi
+rm -f $POUT $TOUT $HOUT

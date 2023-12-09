@@ -1,0 +1,396 @@
+
+
+
+     nnnnaaaalllltttteeeerrrr((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnaaaalllltttteeeerrrr((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          nalter - change attribute values in a UNITY relation
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnnaaaalllltttteeeerrrr [-adioqrV] <_a_t_t_r> [f]<_a_l_t_e_r-_o_p> <_v_a_l_u_e/_a_t_t_r> ...  in
+               <_t_a_b_l_e_1>[=<_a_l_t__t_a_b_l_e>]
+               [with <_t_a_b_l_e_2>[=<_a_l_t__t_a_b_l_e>]...  [where <_w_h_e_r_e-_c_l_a_u_s_e>]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The nnnnaaaalllltttteeeerrrr command allows the selective modification of  one
+          or  more attributes in a UNITY table.  The attributes can be
+          set to new values or, if numeric, can have simple arithmetic
+          performed on them.
+
+          By default, all records in the table are  changed,  but  the
+          use  of  a  _w_h_e_r_e clause allows restricting the changes to a
+          subset of the records.  The _w_h_e_r_e clause allows checking the
+          values  of attributes in each record.  If the _w_i_t_h parameter
+          is given, attributes can also be matched against records  in
+          other tables (a join).
+
+          In normal operation,  nnnnaaaalllltttteeeerrrr  prints  out  a  count  of  the
+          altered  records.   It  will  exit if a change is ambiguous.
+          The problem of ambiguous alterations arises when  using  the
+          _f-prefixed  alter  operations  and a _w_h_e_r_e-_c_l_a_s_e that does a
+          join.  If the  record  being  modified  joins  with  mutiple
+          records  with  different  values in the attribute containing
+          the new value, nnnnaaaalllltttteeeerrrr does not know which single  new  value
+          to use.
+
+          While alterations are taking  place,  the  table  is  locked
+          against other users changing it.
+
+          The rrrreeeettttrrrriiiieeeevvvveeee command manual page provides  a  more  detailed
+          explanation   of  _w_h_e_r_e  clauses  and  cross-table  matching
+          (joins).
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----aaaa   Print the  altered  (new)  values  of  the  <_a_t_t_r_s>  on
+               standard output, one record per line.  When both -_a and
+               -_o are specified, the old value is printed  first,  and
+               separated  from  the  new value with an equal sign (=).
+               See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN for more information.
+
+          ----dddd   Demo  or  no-change   mode.    Do   not   perform   any
+               alterations,  but act as if they were being done.  This
+               option is used to see  how  nnnnaaaalllltttteeeerrrr  would  act  without
+               actually doing the change.
+
+          ----iiii   Ignore the case  of  letters  in  _a_l_l  the  string  and
+               regular  expression  comparisons  of  the where-clause.
+               This option is a short hand notation to pre-pending the
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnaaaalllltttteeeerrrr((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnaaaalllltttteeeerrrr((((1111))))
+
+
+
+               ``cccc''  prefix  to  all  the comparison operators in the
+               where-clause.  With this option,  the  string  ``this''
+               would   match   ``This''   or  ``THIS''.   The  regular
+               expression ``this'' would match ``This is a  test''  or
+               ``THIS  IS  A  TEST''.   (There is no need for grouping
+               with square brackets.)  This option is analogous to the
+               -i option of ggggrrrreeeepppp(1).
+
+          ----oooo   Print the old values of the <_a_t_t_r_s> on standard output,
+               one record per line.  This is useful, for example, when
+               a  record  has  a  field  that  must  be  accessed  and
+               incremented.   When  both  -_a and -_o are specified, the
+               old value is printed first, and separated from the  new
+               value  with  an  equal  sign  (=).   See  the  EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD
+               DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN for more information.
+
+          ----qqqq   Quiet mode.  Do not print a  count  of  the  number  of
+               records altered.
+
+          ----rrrr   For each record  that  is  changed,  print  its  record
+               number  on  standard  output,  one record per line.  If
+               either -_a or -_o is also specified, the record number is
+               followed  by  a  colon  (:)  to  separate  it  from the
+               attribute value(s).  See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD  DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN  for
+               more information.
+
+          ----VVVV   Print the version of the command and exit.  No  changes
+               are made to the table.
+
+          <_a_t_t_r_1> [ffff]<_a_l_t_e_r-_o_p> <_v_a_l_u_e/_a_t_t_r_2>
+               Replace the value  of  attribute  <_a_t_t_r_1>  using  alter
+               operation <_a_l_t_e_r-_o_p>.  If <_a_l_t_e_r-_o_p> is not preceded by
+               the optional ffff, the third item is a  constant  <_v_a_l_u_e>;
+               if  the  ffff  is  present, the third item is an attribute
+               name, <_a_t_t_r_2>, whose value is to be used.   If  <_a_t_t_r_2>
+               is  not  unique  among the tables listed on the command
+               line, it must take the  form  of  table-name.attribute-
+               name.
+
+               See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN for a list  of  the  alter
+               operations.
+
+          iiiinnnn <_t_a_b_l_e_1>[====<_a_l_t__t_a_b_l_e>]
+               The table whose values are to be altered.
+
+               By default, the descriptor file for the table is  named
+               D<_t_a_b_l_e_1>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>''  after  the  table
+               name.    The   alternate   descriptor   file   will  be
+               D<_a_l_t__t_a_b_l_e>.  Note  that  if  <_a_l_t__t_a_b_l_e>  contains  a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the  UNITYDFILES  directories
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnaaaalllltttteeeerrrr((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnaaaalllltttteeeerrrr((((1111))))
+
+
+
+               or in the current directory.
+
+          wwwwiiiitttthhhh <_t_a_b_l_e_2>[====<_a_l_t__t_a_b_l_e>]...
+               Extra table(s)  containing  records  that  are  matched
+               against  in  the  _w_h_e_r_e  clause.   A  table named ``-''
+               refers to standard input.  The standard input can  only
+               be used once.
+
+               If this option is used, attribute  names  appearing  in
+               more  than  one  table  must be prefixed with the table
+               name and a period (table.attribute) or  the  relation's
+               positional  number and a period (2.attribute).  See the
+               rrrreeeettttrrrriiiieeeevvvveeee(1)  manual  page  for  more   information   on
+               attribute name syntax.
+
+               By default, the descriptor file for the table is  named
+               D<_t_a_b_l_e_2>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>''  after  the  table
+               name.    The   alternate   descriptor   file   will  be
+               D<_a_l_t__t_a_b_l_e>.  Note  that  if  <_a_l_t__t_a_b_l_e>  contains  a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the  UNITYDFILES  directories
+               or in the current directory.
+
+          wwwwhhhheeeerrrreeee <_w_h_e_r_e-_c_l_a_u_s_e>
+               Specify a subset of records to be  considered.   If  no
+               _w_h_e_r_e-_c_l_a_u_s_e is given, all records will be considered.
+
+               The _w_h_e_r_e-_c_l_a_u_s_e is made up  of  expressions  comparing
+               the value of an attribute to a constant or to the value
+               of another attribute.  The expressions can be  combined
+               using boolean operators and parenthesis.
+
+               The comparison operators are: lllltttt (less than), lllleeee  (less
+               than  or equal to), ggggtttt (greater than), ggggeeee (greater than
+               or equal to), eeeeqqqq (equal to), and nnnneeee (not equal to).  If
+               they  appear as is, they are numeric comparisons.  They
+               can  also  have  the  following  prefixes:  llll  (lexical
+               comparison), cccc (lexical comparison, but ignore the case
+               of  letters),  nnnn  (numeric  comparison),   rrrr   (regular
+               expression  comparison  -  eeeeqqqq and nnnneeee only), dddd (date and
+               time comparison), and ffff  (field-to-field  comparison  -
+               may also be combined with llll, cccc, nnnn, and dddd prefixes).
+
+               The boolean operations are: !!!! (negation), aaaannnndddd  (logical
+               conjunction),   oooorrrr   (logical  disjunction),  ((((  and  ))))
+               (grouping), and eeeellllsssseeee (selection precedence).
+
+               See the rrrreeeettttrrrriiiieeeevvvveeee(1) manual page for more information.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnaaaalllltttteeeerrrr((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnaaaalllltttteeeerrrr((((1111))))
+
+
+
+                    A colon-separated list of  directories  to  search
+                    for  table  descriptor  files.   If  this  is  not
+                    specified, or if a needed file is not found in one
+                    of  the  directories,  the  current  directory  is
+                    searched.  If that fails, the directory where  the
+                    associated  table  is  located (based on the table
+                    name on the command line) is searched.
+
+                    NOTE: UNITY commands in _e_x_p_t_o_o_l_s only  accept  one
+                    directory  in  this  variable.   Also, they use it
+                    only after looking in the current directory and in
+                    the table's directory; some commands do not use it
+                    at all.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          No more than eight tables may be given.
+
+          There is no maximum record size limit, but  each  individual
+          attribute  is  limited  to  the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and  4K
+          on other smaller machines.
+
+          There is a limit on the number of attributes each table  can
+          have.   Currently,  this is 200 on mainframes and 100 on all
+          other machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Alter the supervisor and department for a given owner in  an
+          ownership data base:
+
+               nalter supv = 'J. Doe' dept = 12345 in owninfo \
+                   where login leq own1
+
+          Increment a sequence number for a given prefix  string,  and
+          retrieve the old value:
+
+               OLDNUM=`nalter -o seqno += 1 in sequence \
+                       where string leq SSlmr`
+
+          Look up owners in the  /_e_t_c/_p_a_s_s_w_d  file  and  update  their
+          department  number  if  it  is null in the _o_w_n_i_n_f_o relation.
+          (This does a join between the owninfo and passwd, and copies
+          a field from one to the other).
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnaaaalllltttteeeerrrr((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnaaaalllltttteeeerrrr((((1111))))
+
+
+
+               nalter owninfo.login f= /etc/passwd.login    \
+                   in ownerinfo with /etc/passwd       \
+                   where owninfo.dept = "" and              \
+                         owninfo.login f= /etc/passwd.login
+
+     EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        DDDDiiiissssppppllllaaaayyyyiiiinnnngggg AAAAttttttttrrrriiiibbbbuuuutttteeee VVVVaaaalllluuuueeeessss
+          The -_a, -_o, and -_r options can result in some or all of  the
+          following information begin printed:
+               <_r_e_c_o_r_d__n_u_m_b_e_r>:<_o_l_d__v_a_l_u_e>=<_n_e_w__v_a_l_u_e>...
+          This format is chosen so that the output can be treated as a
+          UNITY relation if desired.
+
+          The colon after <_r_e_c_o_r_d__n_u_m_b_e_r> is only printed if -_r and -_a
+          or -_o is specified.  The equal sign after <_o_l_d__v_a_l_u_e>is only
+          printed if -_a and -_o are both specified.
+
+          If more than one attribute is being altered, each  attribute
+          (<_o_l_d__v_a_l_u_e>,  <_n_e_w__v_a_l_u_e>,  or <_o_l_d__v_a_l_u_e>=<_n_e_w__v_a_l_u_e>), is
+          displayed as  it  is  in  the  relation.   That  is,  it  is
+          terminated  with  the  attribute terminator, or displayed as
+          fixed width.
+
+          Occurrences of terminators in a value  are  escaped  with  a
+          backslash.   (This  includes the terminating equal sign when
+          -_a and -_o are both selected.)
+
+        AAAAlllltttteeeerrrr OOOOppppeeeerrrraaaattttiiiioooonnnnssss
+          In the following descriptions, the _o_l_d _v_a_l_u_e is the value of
+          the  attribute  on  the left of the alter operation.  If the
+          alter operation is prefixed with ffff, the  _n_e_w  _v_a_l_u_e  is  the
+          value  of the attribute on the right of the alter operation;
+          otherwise, the _n_e_w _v_a_l_u_e is the value on the  right  of  the
+          alter operation.
+
+          ====    Replace the old  value  with  the  new  value.   To  be
+               compatible  with aaaalllltttteeeerrrr(UNITY), the word ``ttttoooo'' may also
+               be used.
+
+          ++++====   Add the new value to the old value.  Both new  and  old
+               values  will  be  taken  as  numbers;  if they are non-
+               numeric, they will be treated as zero.
+
+          ----====   Subtract the new value from the old  value.   Both  new
+               and  old  values  will be taken as numbers; if they are
+               non-numeric, they will be treated as zero.
+
+          ****====   Multiply the old value by the new value.  Both new  and
+               old  values  will be taken as numbers; if they are non-
+               numeric, they will be treated as zero.
+
+          ////====   Divide the old value by the new value.   Both  new  and
+
+
+
+     Page 5                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnnaaaalllltttteeeerrrr((((1111))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   nnnnaaaalllltttteeeerrrr((((1111))))
+
+
+
+               old  values  will be taken as numbers; if they are non-
+               numeric, they will be treated as zero.  Divide by  zero
+               will cause the operation to be aborted.
+
+     FFFFIIIILLLLEEEESSSS
+          AAAA<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e> and BBBB<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e>
+                    - Index files for <_a_t_t_r_i_b_u_t_e> in <_t_a_b_l_e>.
+
+          DDDD<_t_a_b_l_e>  -  Descriptor  file  for  <_t_a_b_l_e>,   listing   the
+                    attributes,  their  delimiting-character or width,
+                    printing information, and user-friendly names.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          alter(UNITY),     ndelete(1),     ninsert(1),     nuedit(1),
+          retrieve(1), and uedit(UNITY).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 10/8/91)
+
+
+

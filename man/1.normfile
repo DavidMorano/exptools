@@ -1,0 +1,132 @@
+
+
+
+     NORMFILE(1)         UNIX System V (EXPTOOLS)          NORMFILE(1)
+
+
+
+     NAME
+          normfile - Normalize file names to their shortest legal form
+
+     SYNOPSIS
+          normfile [ -kV ] _f_i_l_e__n_a_m_e ...
+
+     DESCRIPTION
+          Normalizes file names, shortening them to the shortest legal
+          form.   This  process is described below.  Each of the argu-
+          ment _f_i_l_e__n_a_m_es is normalized and output on a separate line.
+          Empty file names are output as is (with no error message).
+
+          The process  of  normalizing  a  file  (or  directory)  name
+          entails:
+
+          _S_T_E_P:                                _B_E_F_O_R_E:   _A_F_T_E_R:
+          1. Extraneous slashes are removed.   a///b     a/b
+                                               abc/      abc
+          2. . and .. are removed              a/../b    b
+                                               a/./b     a/b
+                                               /..       /
+          or changed,                          a/..      .
+          except those that shouldn't be.      ../a      ../a
+                                               .         .
+
+
+          The -k option causes it to skip step 2.  Thus,  only  redun-
+          dant slashes are eliminated; but extraneous .  and .. refer-
+          ences aren't removed.
+
+          The -V option reports the program  version  number,  and  if
+          there are no other command line arguments, simply exits.
+
+     EXIT CODES
+          -1 on a usage message, otherwise the  number  of  _f_i_l_e__n_a_m_es
+          that  were  empty,  or that had too many path components for
+          _n_o_r_m_f_i_l_e.
+
+     PROVIDED BY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 1                                          (printed 10/4/93)
+
+
+
+
+
+
+     NORMFILE(1)         UNIX System V (EXPTOOLS)          NORMFILE(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 10/4/93)
+
+
+
+
+
+

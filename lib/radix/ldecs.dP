@@ -1,0 +1,65 @@
+#	ldecs version 2.1
+#
+#	ldecs.dP - format decision list for RADIX dP macro
+#	usage: ldecs2 weight tmpfile
+#		where weight is E, D, or O per Systems Engineering
+#		where tmpfile (typically *.D8 from macros) contains fields:
+#			references^Glabel^Gsection^Gpage^Gweight
+#	assumes: .so's already processed via xpand
+#	last rev: 9/12/89 Bruce Snow
+#
+
+if [ $# -ne 2 ]						# usage message
+then	echo "usage: ldecs.dP weight tmpfile"
+	exit 1
+fi
+
+TMPFILE="$2"
+
+if [ ! -r "$TMPFILE" ]					# verify tmp file
+then	echo "$TMPFILE not readable"
+	exit 1
+fi
+
+awk '
+    BEGIN { FS=""; i=1; j=1; prtext=0 }		# field sep - BELL
+							# i - 1st file index
+							# j - 2nd file index
+							# prtext-print text flag
+    FILENAME == tmpfile {
+	refs[i]    = $1
+	label[i]   = $2					# save dec attributes
+	section[i] = $3					# from tmp file
+	page[i]    = $4
+	weight[i]  = $5
+	i++
+	next
+    }
+							# parse doc source now
+    /^\.dS/	{
+	if (weight[j] == wt) {				# if weight matches $1
+            printf(".sp\n.nf\n")			# then list decision
+	    printf(".tl '\''Tag: %s'\''Section: %s'\''Page: %s'\''\n.fi\n",    \
+		label[j], section[j], page[j])
+	    printf("Source: %s\n.br\n.B\n", refs[j])
+	    prtext = 1
+	}
+	j++
+	next
+    }
+
+    /^\.d[XE]/	{
+	if (prtext == 1) {				# if listing decision
+	    printf(".R\n")				# then stop
+	    prtext = 0
+	}
+	next
+    }
+
+    /^\.d[^SEX]/ { next }				# skip other RADIX macs
+
+    prtext == 1 { print $0 }				# print decision text
+
+' wt="$1" tmpfile="$TMPFILE" "$TMPFILE" -
+
+exit 0

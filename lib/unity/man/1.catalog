@@ -1,0 +1,264 @@
+
+
+
+     ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          catalog - vertically formatted presentation of a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _c_a_t_a_l_o_g [-llines] [-mmargin] [-wwidth] [-n] [-b] [-e] [-d] \
+            [-Itable] [-h header] [-f footer] [aname ... _i_n ] table1 \
+            [_i_n_t_o table2] [where clause]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _c_a_t_a_l_o_g program provides a printout of a UNITY table in
+          vertical (rather than tabular form) for those records that
+          satisfy the _w_h_e_r_e condition.  The attribute name is printed
+          in the left margin and then the attribute value is printed.
+
+          _c_a_t_a_l_o_g automatically handles wrapping attribute names and
+          values onto more than one line if it encounters a lengthy
+          value.  By default, up to 34 characters are printed for the
+          attribute name in the left margin, space characters fill up
+          to column 35, and up to 44 bytes of the attribute value are
+          printed on a single line.  Continuing attribute names begin
+          at column 1 and continuing data values begin at column 35.
+          An attribute name and attribute value is broken at the last
+          space, comma, semi-colon, colon, or if not found, the last
+          non-alphanumeric character that can fit on a line for the
+          attribute.  Blanks that would appear at the beginning of the
+          next line are ignored.  If the value does not have a non-
+          alphanumeric character that fits on the line, the program
+          will split the value at the end of the line.
+
+          Two lines of dashed lines are printed between each record or
+          tuple.
+
+          _c_a_t_a_l_o_g can also be used to output only some of the
+          attributes of a table, thus incorporating the effect of a
+          projection function.  If no attribute names are specified,
+          then all attributes of the table are printed.  If a list of
+          attributes appears, then the output will contain only those
+          fields listed in the order that they appear.  Duplicate
+          attribute names are allowed and the number of attributes
+          specified is limited by the number of attributes allowed in
+          a description file (currently 100 attributes).
+
+          The "user-friendly" names are printed instead of the
+          attribute names if they are stored in the description file
+          (see _t_a_b_l_e for details).
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The command line options are as follows:
+
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          -w_k  The width of lines is set to _k character positions.  By
+               default, the print width is 79 characters per line; the
+               default was chosen so that tables will be printed
+               nicely on video terminals.  The minimum width that may
+               be specified is 10 characters.  This width also
+               controls the width of the separator lines.
+
+          -d   A blank line is printed between each attribute value
+               (double-spacing).
+
+          -m_k  The width of the left margin is set to _k character
+               positions.  By default, the left margin, in which the
+               attribute names are printed, is 35 characters.  This
+               means that up to 34 characters of attribute name are
+               printed and spaces are used to fill up to column 35.
+               Attribute values are printed in columns 36 up to the
+               width of the page (default 79 characters).  The print
+               width for attribute values is equal to the page width
+               minus the margin width.  Thus, increasing the margin
+               size without increasing the page width will cause the
+               print width for attribute values to decrease.
+
+          -l_k  The length of a page is set to _k lines.  If "-l" is
+               specified with no page length, the default is the
+               standard UNIX default of 66 lines per page.  The
+               minimum allowable page length is 10.  Each record
+               begins printing on a new page with this option and the
+               printing of the dashed separator lines is suppressed.
+
+          -n_c  This option causes all occurrences of '_c' to be
+               translated into a skip to the next line.  Thus, the
+               user can explicitly control where breaks occur in
+               attribute values even if the value would not fill the
+               line.  The newline character is not printed.  This
+               option takes priority of normal line splitting.  The
+               program will first scan for a newline character.
+               Failing to find one, it scans backwards trying to find
+               a break character _o_n_l_y if the entire attribute value
+               will not fit on the current line.  Failing to find a
+               break character, it splits the attribute value exactly
+               at the width of the line.  Note that all strings
+               between the newline delimiters must be less than or
+               equal to the 40 characters per line.  The default for _c
+               is tilde (~).
+
+          -b   This option will suppress the printing of blank
+               attributes.  That is, if a value does not exist for an
+               attribute, the line (which would consist only of the
+               attribute name) is not printed.
+
+          -e   Record numbers are printed at the beginning of each
+               record (enumeration).  If the -l option is specified,
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               then a separate line is printed at the beginning of
+               each record in the form "--- # ---", where "#" is the
+               number of the record being printed (records which are
+               in the database file but not printed are not included
+               in the count).  If the -l option is not specified, then
+               the record number is printed on the second of the
+               dashed separator lines.
+
+          -h   The next argument is used as a header to be printed at
+               the top of each page.  Four blank lines will be printed
+               at the top of the page, followed by the header line,
+               followed by two blank lines, and the data.  The header
+               argument may consist of multiple lines but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page (e.g., if the header
+               consists of two lines, the user should specify -l65 to
+               get the right number of data lines output for a default
+               page length of 66 lines).  Note that '\n' is _n_o_t
+               expanded to a newline.  The only expansion that is done
+               is that "%d" expands to the current page number.  A
+               side effect of this is that the user must specify "%%"
+               to get a single "%" printed (problems may occur if a
+               "%" is used in any other way).  This option is ignored
+               if the -l option is not specified.
+
+          -f   The next argument is used as a footer to be printed at
+               the bottom of each page.  The bottom of the page output
+               will consist of two blank lines, followed by the footer
+               line, and followed by two more blank lines.  The footer
+               argument may consist of multiple lines but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page (e.g., if the footer
+               consists of two lines, the user should specify -l65 to
+               get the right number of data lines output for a default
+               page length of 66 lines).  Note that '\n' is _n_o_t
+               expanded to a newline; use an actual newline as part of
+               the value within quotes.  The only expansion that is
+               done is that "%d" expands to the current page number.
+               A side effect of this is that the user must specify
+               "%%" to get a single "%" printed (problems may occur if
+               a "%" is used in any other way).  This option is
+               ignored if the -l option is not specified.
+
+          The _c_a_t_a_l_o_g program has no limitations regarding the amount
+          of data that can be printed.  The program prints lines as
+          they are generated rather than setting them up in arrays.
+          The resulting program has no data limitations.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table.  An output description file is not created
+          since the output of the catalog command is not a UNITY
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         ccccaaaattttaaaalllloooogggg((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          table.  An error is printed if the output table already
+          exists.  If _o_n_t_o is specified instead of _i_n_t_o, the output is
+          appended to the table if it already exists or the table
+          created and written if it does not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ catalog -m35 -w75 S
+
+          ---------------------------------------------------------------------------
+          ---------------------------------------------------------------------------
+
+          SUPPLIER NUMBER                    s1
+          SUPPLIER NAME                      smith
+          SUPPLIER'S CITY                    london
+
+          ---------------------------------------------------------------------------
+          ---------------------------------------------------------------------------
+
+          SUPPLIER NUMBER                    s2
+          SUPPLIER NAME                      jones
+          SUPPLIER'S CITY                    nice
+
+          ---------------------------------------------------------------------------
+          ---------------------------------------------------------------------------
+
+          SUPPLIER NUMBER                    s3
+          SUPPLIER NAME                      blake
+          SUPPLIER'S CITY                    paris
+
+     FFFFIIIILLLLEEEESSSS
+          unity/catalog.c, zcatalog.c - the C source program
+          bin/catalog - the executable programs (linked)
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _t_a_b_l_e(UNITY), _u_p_r_i_n_t(UNITY)
+
+     CCCCAAAAVVVVEEEEAAAATTTT
+          The command name _c_a_t_a_l_o_g comes from the command's original
+          use which was for printing a data catalog.
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+

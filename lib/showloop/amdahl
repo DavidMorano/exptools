@@ -1,0 +1,158 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Find branches in an Amdahl assembly language program
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    amdahl   source_files
+#
+# This program parses an Amdahl assembly language source file
+# and writes lines of the form:
+#
+#	start_line# end_line#
+#
+#
+# The argument to this script should be assembly language
+# source files.
+#
+##########################################################
+
+
+FORHELP="\n\n(For more help, contact Bob Parnass)\n"
+USAGE="*** error, USAGE:  `basename $0`   files ${FORHELP}"
+
+TMP=/usr/tmp
+LABELFILE=$TMP/a1a$$
+BRANCHFILE=$TMP/a2a$$
+JUNKFILE=$TMP/a3a$$
+
+TMPFILES="$LABELFILE $BRANCHFILE $JUNKFILE"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# check for bad command line args which start with a minus sign
+for ARG do
+	case "${ARG}" in
+		-*)
+			echo "${USAGE}" 1>&2
+			echo "        Bogus command line argument" 1>&2
+			exit 1
+			# script exits
+			;;
+		*)
+			;;
+	esac
+done
+
+# input file of fcn calls must be specfied
+if [ $# -ge 1 ]
+then
+	while [ $# -ne 0 ]
+	do
+		# cull out lines of interest
+		INFILE=${1}
+		# grep -v '^\*' $INFILE 
+		cat $INFILE \
+			| awk ' \
+				# for each line of input
+				(index($0, ".") != 1) \
+					&& (index($0, "*") != 1) \
+					{
+					wholeline = $0
+					len = length(wholeline)
+
+					# if line has a label
+					colon = index(wholeline, ":")
+					space = index(wholeline, " ")
+					if((len > 0) && colon && ((colon < space) || (space == 0)))
+						{
+						label = substr($0, 1, colon-1)
+						}
+					else label = ""
+					# if line has a label
+					if(label != "")
+						{
+						printf "%s %d LABELFOO\n", label, NR
+						opcode = $2
+						dest = $3
+						}
+					else
+						{
+						opcode = $1
+						dest = $2
+						}
+
+					k = index(opcode, " ")
+					if(k > 0)
+						opcode = substr(opcode, 1, k-1)
+	
+					if((opcode == "bnh") \
+						|| (opcode == "bnl") \
+						|| (opcode == "bne") \
+						|| (opcode == "bno") \
+						|| (opcode == "b") \
+						|| (opcode == "bo") \
+						|| (opcode == "bz") \
+						|| (opcode == "bh") \
+						|| (opcode == "bl") \
+						|| (opcode == "be") )
+						{
+						if(length(dest) > 0)
+							{
+							printf "%s %d\n", dest, NR
+							}
+						}
+					 } ' > $JUNKFILE
+
+
+				
+		grep 'LABELFOO$' $JUNKFILE \
+			| cut -d' ' -f1,2 \
+			| sort -u > $LABELFILE
+		
+		# labelfile now contains lines of the form:
+		#	label line#
+		
+		
+		grep -v 'LABELFOO$' $JUNKFILE \
+			| cut -d' ' -f1,2 \
+			| sort -u > $BRANCHFILE
+		
+		# branch now contains lines of the form:
+		#	label line#
+		
+		
+		
+		
+		join  -t' ' -a1 -j1 1 -j2 1 -o 1.2 2.2 $BRANCHFILE $LABELFILE \
+			| awk '\
+				{
+				if(NF == 2)
+					printf "%s %s\n", $1, $2
+				else
+					printf "%s %s\n", $1, $1
+				}'
+				
+
+		shift
+	done
+
+	rm -f "${TMPFILES}"
+
+	exit 0
+else
+	# input file not specified on cmd line
+	echo "${USAGE}" 1>&2
+	echo "        Input file must be specified" 1>&2
+	exit 1
+fi

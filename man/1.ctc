@@ -1,0 +1,132 @@
+
+
+
+     CCCCTTTTCCCC((((1111))))                      UUUUNNNNIIIIXXXX 5555....0000                       CCCCTTTTCCCC((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ctc - ctrace and compile a C program
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccttttcccc [ctrace options] files [makefile target] [make macros]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_t_c traces (with _c_t_r_a_c_e(1)) and compiles the _f_i_l_e_s.  It will
+          use  an  existing  makefile  in the current directory if the
+          _f_i_l_e is in it, otherwise a temporary  makefile  is  created.
+          Each _f_i_l_e must have the ....cccc suffix.
+
+          If the _m_a_k_e_f_i_l_e _t_a_r_g_e_t is not given and there is a  makefile
+          in  the  current  directory  then  it  is  assumed to be the
+          directory name, otherwise _a._o_u_t is used.  To distinguish the
+          traced  target file from the untraced one, ._t is appended to
+          the target name.  So if the  target  is  _c_t_r_a_c_e  the  traced
+          target file will be _c_t_r_a_c_e._t, and if the target is _a._o_u_t the
+          traced target file will be _a._o_u_t._t.
+
+          The _m_a_k_e _m_a_c_r_o_s are of the form _n_a_m_e=_v_a_l_u_e and are  optional
+          arguments to _m_a_k_e(1).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          To trace and compile a program contained in a  single  file,
+          instead of entering
+
+               ctrace program.c >temp.c
+               cc temp.c
+               a.out
+
+          enter
+
+               ctc program.c
+               a.out.t
+
+          To trace one function in a program, enter
+
+               ctc -f function file.c
+
+          To trace two files in a program that has a makefile, enter
+
+               ctc file1.c file2.c
+
+          To do this to a specified makefile target and also define  a
+          make macro, enter
+
+               ctc file1.c file2.c program CC=3bcc
+
+     FFFFIIIILLLLEEEESSSS
+          [Mm]akefile         Possible makefile name.
+          s.[Mm]akefile       Possible makefile name.
+
+
+
+     Page 1                                          (printed 6/22/84)
+
+
+
+
+
+
+     CCCCTTTTCCCC((((1111))))                      UUUUNNNNIIIIXXXX 5555....0000                       CCCCTTTTCCCC((((1111))))
+
+
+
+          _t_a_r_g_e_t.mk           Possible makefile name.
+          ctc_runtime.c       Ctrace run-time functions source file.
+          ctc_runtime.o       Ctrace run-time functions object file.
+          ctc_temp.mk         Temporary makefile.
+          ctc_temp.c          Temporary C file.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ctrace(1), make(1)
+
+     BBBBUUUUGGGGSSSS
+          The _m_a_k_e_f_i_l_e _t_a_r_g_e_t cannot contain special characters  other
+          than the underscore (_).
+
+          The  makefile  cannot   contain   commands   for   compiling
+          individual C files, e.g.
+
+               a.o: a.c global.h
+                    cc -c a.c
+
+          Let _m_a_k_e(1) use its default  rule  instead.   You  can  have
+          dependencies  on  header  files--just  do  not  include  the
+          compiler command, e.g.
+
+               a.o: global.h
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Joe Steffen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 6/22/84)
+
+
+

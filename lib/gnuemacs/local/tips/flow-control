@@ -1,0 +1,43 @@
+From: Dan_Jacobson@ATT.COM
+Subject: Control-S Control-Q (X-on/X-off flow control protocol) problems
+Date: 11/1990
+
+On many system/network/terminal combinations there is difficulty
+passing the characters Control-S and Control-Q, as they are used by
+the computer/terminal to tell one side to start/stop sending
+characters to prevent buffer overflow.
+
+Early on I decided to always use Control-] for Control-S, and
+Control-\ for Control-Q (set in my ".emacs" file), (i.e.  I hit a
+Control-] and GNU Emacs interprets it at a low level internally as a
+Control-S, I don't hit Control-S on my keyboard anymore...  same with
+the Control-\ Control-Q pair) here's how:
+
+(setq term-setup-hook
+      (function (lambda ()
+	;always use C-] for C-s, and C-\ for C-q for uniformity, even though
+	;some terminals and baud rates do not have a "flow control" problem
+	(set-input-mode nil t)
+	(let ((the-table (make-string 128 0)) (i 0))
+	  (while (< i 128)
+	    (aset the-table i i)
+	    (setq i (1+ i)))
+	  (aset the-table ?\C-\\ ?\C-q)
+	  (aset the-table ?\C-\] ?\C-s)
+
+	  ;;If you also wish to swap backspace (C-h) and delete
+	  ;;("DEL"), uncomment these lines, and select the other
+	  ;;"message" at the end:
+	  ;;(aset the-table ?\C-? ?\C-h)
+	  ;;(aset the-table ?\C-h ?\C-?)
+
+	  (setq keyboard-translate-table the-table))
+	(message "Using C-] for C-s, and C-\\ for C-q")
+	;;(message "Using C-] for C-s, and C-\\ for C-q, Swapped C-h and DEL")
+      )))
+
+Though I liked control-] as a remap choice because it is usually in
+the same spot on most keyboards, I am having second thoughts, as it is
+often the "telnet" program's default enter-command-mode character
+(telnet is one remote login method).  And as of this writing, telnet
+doesn't read a ".telnetrc" file to allow changes at start-up time...

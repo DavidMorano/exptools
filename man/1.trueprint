@@ -1,0 +1,924 @@
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  trueprint - print program listings.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  trueprint [-HV]
+	  [-D] [-b <bin>] [-c <copies>]	[-d <dest>] [-e	<n>] [-f <forms>]
+	  [-F <defines>] [-h <string>] [-i <input>] [-K	<keyword>] [-l <n>]
+	  [-M <modfcn>]	[-n] [-N] [-o p|l|2|4] [-O <file>] [-p <n>] [-P	<prefix>]
+	  [-s <font style>] [-S	<shading>] [-t <language>] [-T <printer	type>]
+	  [-u <user>] [-v] [-w <n>] [-x	<feature>[|[+]<feature>]*]
+	  [-X <horiz>] [-Y <vert>] [-z]	[-0] [-1] [-2] file...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _T_r_u_e_p_r_i_n_t is a general purpose program printing program.  It
+	  tries	 to  produce  everything  that anybody could need in a
+	  program printout without  the	 need  for  large  numbers  of
+	  switches or pipelines, and as	such it	replaces xcl(exptools)
+	  and cpr(exptools).  _T_r_u_e_p_r_i_n_t	 can  currently	 handle	 C/C++
+	  source, 5ESS(Tm) breakpoints,	ECMS cmspr output, pascal pro-
+	  grams, 5ESS prl5 poprules, shell scripts (including csh  and
+	  ksh),	Lisp and Version Editor	(ve) print dumps.
+
+	  Each page in the output  has	a  _h_e_a_d_e_r  consisting  of  the
+	  current  date	 or  a user-defined string, (which may contain
+	  finfo(exptools) format directives), the current  title,  and
+	  the  overall page number (which is used in the indexes); and
+	  a footer consisting of the date, the current file  name  and
+	  page	number	within file, and the overall page number.  The
+	  current _t_i_t_l_e	is normally the	function at  the  top  of  the
+	  page or for pascal programs, it may be the current sub-title
+	  as given in the %S compiler directive.
+
+	  The printout has two _i_n_d_e_x_e_s	at  the	 front.	 The  _f_u_n_c_t_i_o_n
+	  index	 is  an	 alphabetically	 sorted	list of	all functions,
+	  showing the file the function	was found in.  The _f_i_l_e	 index
+	  is  a	 list of files,	expanded to their full path-name, with
+	  functions in each file sorted	into alphabetical order.
+
+	  There	is an optional _N_C_S_L summary printed after the indexes.
+	  This	shows  statistics for each file, on the	non-commentary
+	  part of the source being printed,  in	 the  same  format  as
+	  ncsldiff(exptools).  Please  be aware	that with this option,
+	  only NCSL additions and deletions will be shown in the prin-
+	  tout.
+
+	  The _t_e_x_t of the printout has line numbers with  the  current
+	  braces depth (by default only	for C/C++ and pascal) down the
+	  left hand side.  Function names and C++ class	names  are  in
+	  _b_o_l_d	and  comments  are in _i_t_a_l_i_c_s. Long lines are split at
+	  _b_r_e_a_k	characters (;({,. ^I), folded onto the	next  line  at
+	  the current indentation, then	split again, if	necessary, and
+	  the result _r_i_g_h_t justified. This action  is  to  attempt  to
+
+
+
+     Page 1					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+	  print	 the  code  in	similar	fashion	to the accepted	coding
+	  methods generally in use, rather than	use  traditional  wrap
+	  around  that	no-one would ever use in producing the code in
+	  the first place!
+
+	  Each _f_u_n_c_t_i_o_n	starts on a new	page - or more accurately each
+	  function  ends  on  a	 page  break.  This  means that	if you
+	  include '^L' printer directives or use  pascal  %S  compiler
+	  directive, you will get more page breaks than	you may	want.
+
+	  Each _i_n_d_e_x or	_f_i_l_e starts on an odd page to  allow  replace-
+	  ment by more up-to-date versions of the file (use -0 to pro-
+	  duce new indexes).
+
+	  It is	possible to show _d_i_f_f_e_r_e_n_c_e_s between file versions, in
+	  which	 case  _d_e_l_e_t_e_d lines are shown in italics with a minus
+	  sign in the extreme left-hand	margin,	and  _a_d_d_e_d  lines  are
+	  shown	in bold	with a plus sign in the	extreme	left-hand mar-
+	  gin. It is possible to highlight changes  with  _s_h_a_d_i_n_g,  if
+	  the font supports it.
+
+	  For ease of _l_o_c_a_t_i_n_g differences in the printout, the	 first
+	  modified pages are shown on the _f_i_l_e _i_n_d_e_x in	brackets after
+	  the start page for both files	and functions. For _f_i_l_e_s, glo-
+	  bal  (i.e.  non-function)  changes are limited to before the
+	  first	function and after the	last  function.	  Changes  in-
+	  between  _f_u_n_c_t_i_o_n_s  are  tagged as applying to the following
+	  function.  Omitted pages are shown explicitly	to avoid  con-
+	  fusion.
+
+	  By design, _T_r_u_e_p_r_i_n_t will only produce printouts  using  the
+	  AT&T	_U_N_I_S_O_N	print spooling system. This performs filtering
+	  (i.e.	postprocessing using filters like postcpr, x9700  Etc)
+	  and  scheduling  to  the specified printer.  _T_r_u_e_p_r_i_n_t print
+	  options all relate to	the _p_r_t	 command  options.   _T_r_u_e_p_r_i_n_t
+	  will work out	your print defaults from the $HOME/.prt	file.
+
+	  If _U_N_I_S_O_N is not supported on	your  system,  then  _t_r_u_e_p_r_i_n_t
+	  will	_n_o_t  perform  any  printing  and will direct output to
+	  standard output.  It is up to	the user to pipe the output to
+	  a  print command (e.g. lpr).	The output will	already	be run
+	  through a postprocessor however (e.g.	postcpr	or x9700),  as
+	  this	provides  some	essentials  of	the printout, e.g. the
+	  font,	point size, Etc. Some apparent print options (e.g. -1,
+	  -2, -T) will therefore affect	the output produced.
+
+	  Most of the above features can be  _e_x_c_l_u_d_e_d  if  you	prefer
+	  using	the -x option.
+
+	  _T_r_u_e_p_r_i_n_t is under constant development, and any problems or
+	  suggested enhancements will be welcomed.
+
+
+
+
+     Page 2					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+     AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+	  _f_i_l_e_n_a_m_e_s	 The name of the files containing source  code
+			 to be printed out.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  Normal users will only use the first 5 or 6 options after -H
+	  and  -V to print out source code.  The other options are not
+	  intended for normal use and all  default  to	sensible  set-
+	  tings.  Options  can	be  set	 from the environment variable
+	  TRUEPROPTS which is handled before command line  options  to
+	  provide defaults in your .profile. _P_l_e_a_s_e _n_o_t_e _t_h_a_t _r_e_p_e_a_t_e_d
+	  _o_p_t_i_o_n_s _a_r_e _i_g_n_o_r_e_d _a_n_d _o_n_l_y	_t_h_e  _f_i_r_s_t  _o_c_c_u_r_r_e_n_c_e	_o_f  _a_n
+	  _o_p_t_i_o_n  _i_s  _u_s_e_d. _T_h_i_s _m_e_a_n_s _y_o_u _c_a_n_n_o_t _o_v_e_r_r_i_d_e _o_p_t_i_o_n_s _s_e_t
+	  _i_n $_T_R_U_E_P_R_O_P_T_S. _H_o_w_e_v_e_r  _s_e_t_t_i_n_g  _t_h_i_s  _w_i_l_l	_m_e_a_n  _y_o_u  _c_a_n
+	  _m_o_d_i_f_y _s_c_r_i_p_t_s _c_a_l_l_i_n_g _t_r_u_e_p_r_i_n_t!
+
+	  ----HHHH		 Type help information.
+
+	  ----VVVV		 Type version number.
+
+	  ----tttt <language>	 Specify the language  type.  The  default  is
+			 C/C++.	 If not	specified then the language is
+			 set based on the  prefix  or  suffix  of  the
+			 input file. Files without recognised prefixes
+			 or suffixes are assumed to be shell programs.
+			 Valid languages are as	follows:
+
+			  c		  C/C++	source.	Set from  suf-
+					  fixes:  c, C,	h, H, G, i, l,
+					  L, md, y, cpp	and CPP.
+
+			  bp		  5ESS(Tm) C breakpoint	 list-
+					  ings with an eight character
+					  tab in. Set from suffix: bp.
+
+			  cmspr		  ECMS C listings with a  six-
+					  teen	character  tab in. Set
+					  from suffix: cms or  prefix:
+					  c.
+
+			  fit		  FIT programs.	Set from  suf-
+					  fix: t.
+
+			  lisp		  Lisp programs. Set from suf-
+					  fix:	ml,  cl	 and  lisp  (l
+					  clashes with lex code).
+
+			  pascal	  Pascal source. Set from suf-
+					  fix: p.
+
+			  perl		  Perl source. Set  from  suf-
+					  fix: pl.
+
+
+
+     Page 3					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			  prl5		  5ESS PRL5.0 population  rule
+					  language.  Set  from suffix:
+					  R.
+
+			  ps		  Postscript	     programs.
+					  Indended  for	prlogues only.
+					  Set from suffix: ps.
+
+			  sh		  Korn,	Bourne or C shell pro-
+					  grams.
+
+			  ve		  Version   Editor   C	 print
+					  dumps.  Set  from prefix: P.
+					  This	language  type	allows
+					  the  :P or ^XP command in _V_e
+					  to be	processed. The viewmap
+					  at  the start	of the file is
+					  ignored and the  text	 lines
+					  (beginning  with "T x" where
+					  x is a  screen  highlighting
+					  code)	 are processed so emu-
+					  late	differences   in   the
+					  printout.   The  print  uses
+					  bold and italic for inserted
+					  and deleted lines as normal,
+					  with the addition  of	 bold-
+					  italic  for  affected	lines.
+					  The lines are	counted	in the
+					  NCSL statistics so full emu-
+					  lation of a  trueprint  com-
+					  parison is achieved.
+
+	  ----hhhh		 Print the specified string in the page	header
+			 instead of the	current	date and time. You may
+			 use any finfo(exptools) format	 directive  to
+			 modify	 the header output as long as at least
+			 one '#' or '%'	occurs in the command.	 _F_i_n_f_o
+			 will  be  run	for every header line with the
+			 current file as the only parameter. Obviously
+			 the  totals  options will therefore not work.
+			 The resulting string will be  silently	 trun-
+			 cated if greater than the page	width allows.
+
+	  ----OOOO _f_i_l_e_n_a_m_e	 Specify the old version of  the  file	to  be
+			 printed.   The	 differences  will be shown in
+			 the output as specified above.	  This	option
+			 only  works when one source file is specified
+			 on the	command	line - see -_P and -_i below for
+			 when several source files are to be printed.
+
+	  ----PPPP _p_r_e_f_i_x	 Specify a prefix to old  versions  of	files.
+			 This  can  work  in  two  ways	 -  if the old
+
+
+
+     Page 4					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			 versions are in the current directory and are
+			 prefixed  by,	e.g.  OLD.,  then  the command
+			 trueprint -P OLD. *.c will work.  If the  old
+			 versions  are	in  another directory then the
+			 command  trueprint  -P	 ../oldversions/  will
+			 work	-   note  that	the  trailing  "/"  is
+			 required.  For	each file _t_r_u_e_p_r_i_n_t will  then
+			 attempt  to  run  diff(1) on the filename and
+			 the _p_r_e_f_i_x_e_d  filename,  and  will  show  the
+			 differences  in  the  printout.   See	the -_v
+			 option	for use	 of  the  VPATH	 in  producing
+			 differences.
+
+	  ----nnnn		 Print a NCSL  summary	page  after  the  file
+			 index.	 This  shows for each added, unchanged
+			 and deleted line, totals for the previous and
+			 current  versions plus	the delta, in the sum-
+			 mary. NCSL is defined as the resulting	 lines
+			 after	stripping  the leading white space and
+			 comments from the file	and deleting resulting
+			 blank	lines.	 Note that all white space and
+			 comments _a_f_t_e_r	real source code will be  left
+			 intact.  Also	note  that ^L page breaks on a
+			 line will be seen  as	an  source  line  like
+			 ncsl(1).    If	 you  use  the	-xw  exclusion
+			 option, then white space will not be stripped
+			 as above and the original numerical counts of
+			 source	lines summary will  be	printed.  This
+			 shows	for  each added, unchanged and deleted
+			 line, totals for comments and source lines in
+			 the   print,  which  equates  directly	 to  a
+			 diff(1) of the	old and	new files.
+
+	  ----vvvv		 Use the VPATH to find files  to  run  diff(1)
+			 against,  like	 -_P.  If  the  file  given  to
+			 _t_r_u_e_p_r_i_n_t does	not  exist,  but  one  in  the
+			 VPATH	does,  then  the  file	name  will  be
+			 changed to the	first file found and the  file
+			 shown as being	new by being printed in	bold.
+
+	  ----ssss style	 Set the font style.  The  default  for	 xerox
+			 printers is lp, see x9700(1).	For postscript
+			 printers,  the	 default   is	Courier,   see
+			 postcpr(exptools).   The  full	 list of fonts
+			 available is as follows:
+
+			  elite			    Xerox - 11 point.
+
+			  gothic		    Xerox - 12 point.
+
+			  goth24		    Xerox - 24 point.
+
+
+
+
+     Page 5					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			  mini			    Xerox - 6 point.
+
+			  pica			    Xerox - 12 point.
+
+			  times14		    Xerox - 14	point,
+						    proportionally
+						    spaced.
+
+			  times28		    Xerox - 28	point,
+						    proportionally
+						    spaced.
+
+			  vint(age)		    Xerox - 11 point.
+
+			  vint20		    Xerox - 20 point.
+
+			  lp			    Xerox -  8	point,
+						    landscape.
+
+			  lp18			    Xerox - 18	point,
+						    landscape.
+
+			  2on1			    Xerox  -  6	 point
+						    (mini font).
+
+			  Times-Roman		    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+			  Helvetica		    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+			  Courier		    Postscript	-   10
+						    point.
+
+			  Palatino-Roman	    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+			  Helvetica-Narrow	    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+			  AvantGarde-Book	    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+			  Bookman-Light		    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+
+
+
+     Page 6					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			  NewCenturySchlbk-Roman    Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+			  ZapfChancery-MediumItalic Postscript	-   10
+						    point, proportion-
+						    ally spaced.
+
+	  ----iiii _i_n_p_u_t	 Use filenames from the	file specified or  '-'
+			 for  standard	input,	in addition to command
+			 line arguments. You can use  this  option  to
+			 provide  old to new file specifications (like
+			 -O but	with multiple files. This is  achieved
+			 by  providing	a  file	of filenames where the
+			 old file is listed first, prefixed with a '-'
+			 character, followed by	the new	file, prefixed
+			 with a	'+' character.
+
+	  ----bbbb _b_i_n	 Print in the specified	 bin  instead  of  the
+			 default (see prt(1)).
+
+	  ----cccc _c_o_p_i_e_s	 Print the specified  number  of  copies  (see
+			 prt(1)).
+
+	  ----dddd _d_e_s_t_i_n_a_t_i_o_n Print	at  the	 specified  print  destination
+			 instead  of  the  default  (see prt(1)).  For
+			 postscript output, _t_r_u_e_p_r_i_n_t  translates  the
+			 -Tpost	 option	 into  -lpost  to work out the
+			 default destination using prt(1). You need an
+			 entry	like  -l  post	: -d post in your .prt
+			 file to take advantage	of this.
+
+	  ----ffff _f_o_r_m_s	 Specify hole or a4hole	(for  Europe)  to  get
+			 correct  paper	 sizing	instead	of the default
+			 for your site (see prt(1)).
+
+	  ----uuuu _u_s_e_r	 Print with the	specified username on the  job
+			 (see prt(1)).
+
+	  ----TTTT printer type
+			 Set the printer type. The  default  is	 post.
+			 The following printer types are available:
+
+			  post		  This	      uses	   the
+					  postcpr(exptools) filter and
+					  translates	the	escape
+					  sequences  used by _t_r_u_e_p_r_i_n_t
+					  into bold and/or italic  and
+					  supports shading.
+
+			  print		  This	uses  the  DWB	 post-
+					  print(1)   filter   but  you
+
+
+
+     Page 7					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+					  won't	get any	bold or	italic
+					  using	  this,	  nor  shading
+					  either.
+
+			  nprint	  This uses the	 optional  DWB
+					  postnprint(1)	  filter   and
+					  this	allows	 bold	and/or
+					  italic  to  be  printed  and
+					  supports shading.
+
+			  x9700		  This uses the	 DWB  x9700(1)
+					  filter  and  allows  bold or
+					  italic and shading.
+
+			  raw		  If the type is raw  then  no
+					  postprocessing  using	UNISON
+					  (prt)	is performed  and  the
+					  output  is  directed	to the
+					  terminal.   This  option  is
+					  different   from   the   -xu
+					  exclusion option  since  raw
+					  does	not  allow  a  printer
+					  type	to  be	specified.  In
+					  fact	the output will	be set
+					  such that  escape  sequences
+					  for  the  Courier postscript
+					  font	are  output  (although
+					  this is not used on the ter-
+					  minal),   unless   the   -xe
+					  option is provided
+
+			  term		  If you  want	true  terminal
+					  viewing,  use	the type term.
+					  This	will  set   the	  page
+					  length to the	terminal lines
+					  less	one,  and  you	should
+					  view	the  output  using the
+					  more(1) command with the  -c
+					  and  -f  options.  The pg(1)
+					  command always  keeps	 shows
+					  the  last line of the	previ-
+					  ous page at the top  of  the
+					  next	 page.	 The  more  -c
+					  option does not do this  and
+					  this	  suits	  the	output
+					  better.  _T_r_u_e_p_r_i_n_t will  use
+					  reverse  for	italic with or
+					  without bold	and  underline
+					  for shading.
+
+	  ----SSSS <shading>	 Highlight the start of	the line with  shading
+			 for added and deleted lines.  The text	is not
+
+
+
+     Page 8					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			 shaded, so the	shading	ends after the	braces
+			 depth	level  on  each	 line.	The  levels  0
+			 through 3  are	 supported  for	 compatibility
+			 with x9700(1).	To set the add and delete lev-
+			 els, the format +X-Y should be	used, where  X
+			 is the	add level number (0 to 3) and Y	is the
+			 delete	level number, e.g. +3-1.
+
+	  ----xxxx <feature>[|[+]<feature>]*
+			 Exclude  the	default	  _t_r_u_e_p_r_i_n_t   printing
+			 features.   Combinations are made by concate-
+			 nation	using an optional '+' character,  e.g.
+			 b+i or	just bi.  Combinations of all features
+			 are provided by using y or n.	Using  y  will
+			 turn  OFF all features	and n will turn	ON all
+			 features.  The	 default  is  'n'  except  for
+			 language  "sh",  which	 has default 'b'.  The
+			 exclusions possible are as follows:
+
+			  b		  Do  not  print  the	braces
+					  depth	count.
+
+			  c		  Do not print	the  count  of
+					  line numbers.
+
+			  d		  Turn off diffs on  filenames
+					  that are given as parameters
+					  (i.e.	 not  using   the   -i
+					  option). This	can be used to
+					  include   files   that   you
+					  always want printed.
+
+			  e		  Inhibit  raw	 mode	escape
+					  sequences.
+
+			  f		  Do not print full  pathnames
+					  on the file index.
+
+			  i		  Do not print	the  file  and
+					  function indexes.
+
+			  j		  Do not attempt right	justi-
+					  cation  of  long  lines, but
+					  use  traditional  line  wrap
+					  around.
+
+			  l		  Do not show ^L page breaks.
+
+			  m		  Only	print  modified	 func-
+					  tions	 and  file global sec-
+					  tions.
+
+
+
+
+     Page 9					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			  o		  Do  not  start  indexes  and
+					  files	on odd pages.
+
+			  p		  Do not  print	 one  function
+					  per page.
+
+			  r		  Reverse  the	function   and
+					  file indexes ordering.
+
+			  s		  Do not sort the functions on
+					  the file index.
+
+			  u		  Do  not  generate   warnings
+					  about	 no  UNISON support if
+					  not installed. Also postpro-
+					  cess	 the  output  for  the
+					  given	 -T  printer  type  so
+					  that	it  can	 be  passed to
+					  "lpr"	or some	other printing
+					  or (postscript) viewing pro-
+					  gram.
+
+			  w		  Do not strip white space and
+					  hence	 do  not  produce true
+					  NCSL statistics.
+
+	  ----DDDD		 Debug option  -  prints  all  output  to  the
+			 screen	 instead  of  to  the  printer.	  This
+			 option	uses the {,},<,>,/, characters instead
+			 of escape sequences.
+
+	  ----llll _l_e_n_g_t_h	 Set the page length.  The default page	length
+			 is  set  to be	appropriate for	the font style
+			 for  xerox  printers  (see   x9700(1)).   For
+			 postscript, the default is 66.
+
+	  ----wwww _w_i_d_t_h	 Set the page width.  The default  page	 width
+			 is  set  to be	appropriate for	the font style
+			 for xerox printers (see x9700(1)).  For  pro-
+			 portionally  spaced  fonts, the page width is
+			 not possible to calculate!
+
+	  ----oooo p|l|2|4	 Set  the  orientation	to  either   portrait,
+			 landscape,  2on1 or 4on1. 2on1	or 4on1	print-
+			 ing for postscript printers causes the	 point
+			 size  to  be adjusted to print	2 or 4 logical
+			 pages on a single page	in landscape  or  por-
+			 trait	orientation.  For  xerox printers, the
+			 font style used is "mini" in  order  to  make
+			 enough	 room to print 2 pages on one physical
+			 page.	The   default	orientation   is   set
+			 appropriate to	the font style (see x9700(1)).
+
+
+
+     Page 10					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+	  ----pppp _p_o_i_n_t _s_i_z_e	 Set the point size  for  postcript  printers.
+			 For  xerox  printers the style	determines the
+			 point size. The default  is  10  point.  Note
+			 that point sizes less than 5 are not allowed.
+
+	  ----eeee tab size	 Expand	tabs to	 any  number  of  spaces.  The
+			 default is 8.
+
+	  ----0000		 Run pass zero of _t_r_u_e_p_r_i_n_t only  (i.e.	 print
+			 only the indexes).
+
+	  ----1111		 Set single sided printing on the prt(1)  com-
+			 mand line.
+
+	  ----2222		 Set double sided printing on the prt(1)  com-
+			 mand line (default).
+
+	  ----KKKK _k_e_y_w_o_r_d _t_e_x_t
+			 Pass the keyword and text to prt(1).
+
+	  ----XXXX _h_o_r_i_z_o_n_t_a_l	_o_f_f_s_e_t
+			 Move the print	horizontally on	 the  page  to
+			 avoid	 getting  holes	 in  the  print.   The
+			 default is 0.2	inches across.
+
+	  ----YYYY _v_e_r_t_i_c_a_l _o_f_f_s_e_t
+			 Move the print	 vertically  on	 the  page  to
+			 avoid	 getting  holes	 in  the  print.   The
+			 default is 0.5	inches down.
+
+	  ----FFFF _f_u_n_c_t_i_o_n _d_e_f_i_n_e_s
+			 Pass a	function definition string for	exten-
+			 sible languages like lisp.  Lisp provides the
+			 default "defun" string	if  -F	is  not	 used,
+			 otherwise   you  must	include	 all  strings,
+			 including "defun" if you need it, in multiple
+			 -F options.
+
+	  ----MMMM _m_o_d_i_f_i_e_d _f_u_n_c_t_i_o_n
+			 Provide a modified function name for use with
+			 the  -xm  option.   This provides a mechanism
+			 for "turning on"  printing  of	 a  particular
+			 function or list of functions,	if multiple -M
+			 options  are  used.   Using  -xm  on  a  file
+			 without  using	 file  comparison options nor-
+			 mally results in null output (apart from  the
+			 indexes  showing  everything  being omitted).
+			 Using -M with -xm allows the specified	 func-
+			 tion to print,	without	a modified page	number
+			 on the	file index.  When  used	 with  regular
+			 file  comparison  options,  this only adds to
+			 the list of functions	printed	 (although  if
+
+
+
+     Page 11					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+			 you  specify  a "real"	modified function, you
+			 will lose the modified	 page  number  on  the
+			 file index).
+
+	  ----zzzz		 Debug	the  print  command.  Note  that  this
+			 option	 will  not  print file names, as it is
+			 only used for debugging options.
+
+     BBBBUUUUGGGGSSSS
+	  In shell scripts, beware of using "echo" without  quotes  as
+	  _t_r_u_e_p_r_i_n_t will accept	"if .. then" or	"do" as	a new block.
+
+	  The default "-xb" for	shell languages	is only	set if -tsh is
+	  provided.   There is currently no way	to unset this, so omit
+	  the -tsh if you want braces depth printed.
+
+	  All the postscript postprocessors do not print in  10	 point
+	  in  landscape	mode because they scale	the printout. Thus you
+	  will get the correct number of lines but it will appear in a
+	  smaller  font	 than for portrait. Because of this scaling it
+	  is not possible for me to work out how many lines would make
+	  the  printout	appear in 10 point since I cannot tell whether
+	  they are using 10 point or not. Therefore landscape printing
+	  will	have  the  same	number of lines	as portrait until this
+	  can be solved.
+
+	  Please be aware that CPP #if statements  and	ECMS  #feature
+	  lines	 cause havoc with program printing because you may not
+	  have correct C syntax. It is too much	to expect _t_r_u_e_p_r_i_n_t to
+	  be  able  to get rid of these	conditional comiplation	state-
+	  ments. As _t_r_u_e_p_r_i_n_t parses the syntax	of the code  in	 order
+	  to  find  the	 end  of the function, it may get confused and
+	  think	a '}' in the first column. This	causes problems	 miss-
+	  ing  function	defintions and recognising statements as func-
+	  tions	incorrectly.  _T_r_u_e_p_r_i_n_t	attempts to solve this by sav-
+	  ing  the  braces depth on #elif or #else statements and res-
+	  toring it on the #endif so only one  part  of	 the  code  is
+	  parsed.  Similarly  for  adjacent #if	or #feature statements
+	  the #endif or	#endfeature statement saves the	 braces	 depth
+	  which	 is  restored  at  the end of the next #if or #feature
+	  statement.  It is not	recommended to use the 'cmspr'	option
+	  with	 heavily  featured  files  or  the  've'  option  with
+	  "whole=y" set.
+
+	  Please note that the perl language is	context	 sensitive  on
+	  certain  syntax and without a	symbol table, _T_r_u_e_p_r_i_n_t	cannot
+	  make the correct decision on how to parse the	language.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  To print out all the C source	files in  the  current	direc-
+	  tory:
+
+
+
+
+     Page 12					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+	    trueprint *.c
+
+	  To print out all the	breakpoint  listings  in  the  current
+	  directory:
+
+	    trueprint -t bp *.bp
+
+	  To print an inspect-like package of the  changes  introduced
+	  by an	MR:
+
+	    . setenv ...
+	    cd $ROOT
+	    zapnode -f $ROOT
+	    getversion g=5ee4_2n mr=ccs123456aN	mkdir=y
+	    find .  -type  f  -print  |	 trueprint  -i	-  -v  -h  "mr
+	  ccs123456aN"
+
+	  To print out a shell script on a postscript printer:
+
+	    trueprint -t sh -Tpost shellscript
+
+	  To print out a shell script showing changes:
+
+	    trueprint -t sh -O oldshell	shellscript
+
+	  To print out a listing with a	NCSL summary:
+
+	    trueprint -n *.c
+
+	  To print out a pascal	program:
+
+	    trueprint -t pascal	prog.p
+
+	  To print out only modified functions from the	viewpath:
+
+	  trueprint -nv	-xm *.[ch]
+
+	  To print out standard	include	files and only modified	 func-
+	  tions:
+
+	  ls *.[ch] | trueprint	-nv -xdm -i - standard.h
+
+	  To print out only this "modified" function:
+
+	  trueprint -xm	-M this_function myprog.c
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  Lezz Giles
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  cc(1)
+	  diff(1)
+
+
+
+     Page 13					      (printed 5/9/96)
+
+
+
+
+
+
+     TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  TTTTRRRRUUUUEEEEPPPPRRRRIIIINNNNTTTT((((1111))))
+
+
+
+	  finfo(exptools)
+	  ksh(1)
+	  more(exptools)
+	  ncsl(exptools)
+	  ncsldiff(exptools)
+	  pc(1)
+	  postcpr(exptools)
+	  postnprint(1)
+	  postprint(1)
+	  prt(1)
+	  sh(1)
+	  ve(exptools)
+	  x9700(1)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Mark T. Skeates     mskeates@lucent.com Lucent Technologies UK Ltd.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 14					      (printed 5/9/96)
+
+
+

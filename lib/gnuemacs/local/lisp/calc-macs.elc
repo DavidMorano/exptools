@@ -1,0 +1,72 @@
+
+(provide (quote calc-macs))
+
+(defun calc-need-macros nil (byte-code "À‡" [nil] 1))
+
+(defmacro calc-record-compilation-date-macro nil (byte-code "ÀÁÂ ÃÄ QE‡" [setq calc-installed-date current-time-string " by " user-full-name] 7))
+
+(defmacro calc-wrapper (&rest body) (byte-code "ÂÃÄÅÀD	\"DD‡" [nil body calc-do function append lambda] 5))
+
+(defmacro calc-slow-wrapper (&rest body) (byte-code "ÂÃÄÅÀD	\"D`E‡" [nil body calc-do function append lambda] 5))
+
+(defmacro math-showing-full-precision (body) (byte-code "ÁÂE‡" [body let ((calc-float-format calc-full-float-format))] 3))
+
+(defmacro math-with-extra-prec (delta &rest body) (byte-code "ÂÃÄÅÆÅEDCD	\"D‡" [delta body math-normalize append let calc-internal-prec +] 7))
+
+(defmacro Math-zerop (a) (byte-code "ÁÂDÃÄÅÆDÇEDÁÈÆDÉEÈÊËEÌEÍDFEÈÌEF‡" [a if consp and not memq car (quote (bigpos bigneg)) eq (quote float) nth 1 0 math-zerop] 10))
+
+(defmacro Math-integer-negp (a) (byte-code "ÁÂDÃÄDÅEÆÇEF‡" [a if consp eq car (quote bigneg) < 0] 6))
+
+(defmacro Math-integer-posp (a) (byte-code "ÁÂDÃÄDÅEÆÇEF‡" [a if consp eq car (quote bigpos) > 0] 6))
+
+(defmacro Math-negp (a) (byte-code "ÁÂDÃÄÅDÆEÇÈÄÅDÉEDÁÊÅDËEÌÍÎEDÏDFEEĞÑEF‡" [a if consp or eq car (quote bigneg) and not (quote bigpos) memq (quote (frac float)) Math-integer-negp nth 1 math-negp < 0] 12))
+
+(defmacro Math-looks-negp (a) (byte-code "ÁÂDÃÄDÁÅÆDÇEÃÈÆDÉEÁÊËÌEDÊËÍEDEEEEE‡" [a or Math-negp and consp eq car (quote neg) memq (quote (* /)) math-looks-negp nth 1 2] 14))
+
+(defmacro Math-posp (a) (byte-code "ÁÂDÃÄÅDÆEÇÈÄÅDÉEDÁÊÅDËEÌÍÎEDÏDFEEĞÑEF‡" [a if consp or eq car (quote bigpos) and not (quote bigneg) memq (quote (frac float)) Math-integer-posp nth 1 math-posp > 0] 12))
+
+(defmacro Math-integerp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg))] 5))
+
+(defmacro Math-natnump (a) (byte-code "ÁÂDÃÄDÅEÆÇEF‡" [a if consp eq car (quote bigpos) >= 0] 6))
+
+(defmacro Math-ratp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac))] 5))
+
+(defmacro Math-realp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float))] 5))
+
+(defmacro Math-anglep (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float hms))] 5))
+
+(defmacro Math-numberp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float cplx polar))] 5))
+
+(defmacro Math-scalarp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float cplx polar hms))] 5))
+
+(defmacro Math-vectorp (a) (byte-code "ÁÂDÃÄDÅEE‡" [a and consp eq car (quote vec)] 5))
+
+(defmacro Math-messy-integerp (a) (byte-code "ÁÂDÃÄDÅEÆÇÈEÉEF‡" [a and consp eq car (quote float) >= nth 2 0] 7))
+
+(defmacro Math-objectp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float cplx polar hms date sdev intv mod))] 5))
+
+(defmacro Math-objvecp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float cplx polar hms date sdev intv mod vec))] 5))
+
+(defmacro Math-integer-neg (a) (byte-code "ÁÂDÁÃÄDÅEÆÇÈDEÆÉÈDEFÊDF‡" [a if consp eq car (quote bigpos) cons (quote bigneg) cdr (quote bigpos) -] 9))
+
+(defmacro Math-equal (a b) (byte-code "ÂÃ	EÄE‡" [a b = math-compare 0] 4))
+
+(defmacro Math-lessp (a b) (byte-code "ÂÃ	EÄE‡" [a b = math-compare -1] 4))
+
+(defmacro math-working (msg arg) (byte-code "ÂÃÄ	EE‡" [msg arg if (eq calc-display-working-message (quote lots)) math-do-working] 5))
+
+(defmacro calc-with-default-simplification (body) (byte-code "ÁÂE‡" [body let ((calc-simplify-mode (and (not (memq calc-simplify-mode (quote (none num)))) calc-simplify-mode)))] 3))
+
+(defmacro Math-primp (a) (byte-code "ÁÂÃDDÄÅDÆEE‡" [a or not consp memq car (quote (bigpos bigneg frac float cplx polar hms date mod var))] 5))
+
+(defmacro calc-with-trail-buffer (&rest body) (byte-code "ÁÂÃÄÅ\"ÆEE‡" [body let ((save-buf (current-buffer)) (calc-command-flags nil)) unwind-protect append (progn (set-buffer (calc-trail-display t)) (goto-char calc-trail-pointer)) (set-buffer save-buf)] 6))
+
+(defmacro Math-num-integerp (a) (byte-code "ÁÂÃDDÄÅDÆEÇÈÅDÉEÊËÌEÍEEF‡" [a or not consp memq car (quote (bigpos bigneg)) and eq (quote float) >= nth 2 0] 9))
+
+(defmacro Math-bignum-test (a) (byte-code "ÁÂDÃDF‡" [a if consp math-bignum] 5))
+
+(defmacro Math-equal-int (a b) (byte-code "ÂÃ	EÄÅÆDÃÇDÈEÃÉÊE	EËÉÌEÍE%E‡" [a b or eq list and consp car (quote float) nth 1 = 2 0] 11))
+
+(defmacro Math-natnum-lessp (a b) (byte-code "ÂÃDÄÃ	DÅÆÇDÇ	DEÈEEÉÃ	DÊ	EEF‡" [a b if consp and = math-compare-bignum cdr -1 or <] 9))
+
+(defmacro math-format-radix-digit (a) (byte-code "ÁÂE‡" [a aref math-radix-digits] 3))

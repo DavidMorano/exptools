@@ -1,0 +1,27 @@
+# @(#)  SID: 1.1;  module: expandtools;  last changed: 1/7/90  10:21:59
+#
+# This routine expands the list of tools provided on input and expands
+# any special metatool names encountered.  All other names are passed
+# along unchanged.
+
+expandtools() {
+    set +u
+    cat $1 |
+    while read TOOL; do
+	case "$TOOL" in
+	STD)
+	    listtools std
+	;;
+	ALL)
+	    listtools std
+	    listtools opt
+	;;
+	OPT)
+	    listtools opt
+	;;
+	*)
+	    echo "$TOOL"
+	;;
+	esac
+    done
+}

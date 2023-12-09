@@ -1,0 +1,28 @@
+#ident "@(#) /sable/sdb/ra/rel/domain/s.constr.pd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+   friend class Domain;
+   const Op op;
+   Domain * domain;         // left operand for everything but &&, ||
+   const Constraint * left; // non-null for &&, ||
+   union
+      {
+      const Constraint * c;
+      Int_t i;
+      Float_t f;
+      const char * s;
+      const Pattern * r;
+      } right;
+   Constraint(const Op op,const Constraint *const r);
+                                        // NOT
+   Constraint(const Op op,const Constraint *const l,const Constraint *const r);
+                                        // AND,OR
+   Constraint(const Op op,const Domain *const l,const Int_t r);
+                                        // EQ,NE,LE,GE,LT,GT 
+   Constraint(const Op op,const Domain *const l,const Float_t r);
+                                        // EQ,NE,LE,GE,LT,GT 
+   Constraint(const Op op,const Domain *const l,const char *const r);
+                                        // EQ,NE,LE,GE,LT,GT 
+   Constraint(const Op op,const Domain *const l,const Pattern *const r);
+                                        // MATCH, NOMATCH 
+   ~Constraint();

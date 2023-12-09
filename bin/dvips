@@ -1,0 +1,19 @@
+: use /bin/sh
+#
+# dvips.sh (wrapper shell script for dvips executable)
+#
+#
+# Set environment variables needed by dvips and MakeTeXPK
+#
+PATH=${TOOLS:?}/lib/tex/bin:$PATH; export PATH
+TEXCONFIG=${TEXCONFIG:+$TEXCONFIG:}.:${TOOLS:?}/lib/tex; export TEXCONFIG
+if [ -d /usr/local/TeX/fonts -a -w /usr/local/TeX/fonts ]
+then
+	LOCALFONTS=${LOCALFONTS:-/usr/local/TeX/fonts}; export LOCALFONTS
+else
+	LOCALFONTS=${LOCALFONTS:-/usr/tmp}; export LOCALFONTS
+fi
+#
+# Run the real executable
+#
+exec $TOOLS/lib/tex/bin/dvips ${1+"$@"}

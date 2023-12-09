@@ -1,0 +1,132 @@
+
+
+
+     sssseeeetttt____aaaattttttttrrrraaaalllllllloooocccc((((3333))))            NNNNeeeewwww UUUUNNNNIIIITTTTYYYY            sssseeeetttt____aaaattttttttrrrraaaalllllllloooocccc((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          set_attralloc - Set maximum tuple size in application.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          iiiinnnntttt
+          sssseeeetttt____aaaattttttttrrrraaaalllllllloooocccc(((( mmmmaaaaxxxxaaaattttttttrrrrccccnnnntttt ))))
+          iiiinnnntttt mmmmaaaaxxxxaaaattttttttrrrrccccnnnntttt;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The sssseeeetttt____aaaattttttttrrrraaaalllllllloooocccc() routine establishes the maximum number
+          of attributes any relation used in an application will use.
+          This routine does not affect the functionality of query
+          evaluation, but instead is a way of optimizing memory usage.
+          All tuple structures allocated during query evaluation have
+          space for the same number of attributes.  By default, this
+          is MAXATT attributes (defined in _u_r_e_l_a_t_i_o_n._h as 100) so that
+          any relation can be used.  However, most relations have a
+          lot less than 100 attributes.  This can be a significant
+          waste of space.
+
+          This routine may be called as often as needed as long as no
+          queries are still outstanding at the time of the call, i.e.,
+          all previously evaluated queries must be freed using
+          ffffrrrreeeeeeeerrrreeeessssuuuulllltttt(3).
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _m_a_x_a_t_t_r_c_n_t
+               The maximum number of attributes any relation used in a
+               subsequent query will use.  If this number is less than
+               or equal to zero, or greater than 100, the maximum will
+               be set to 100 instead.
+
+               If any relation passed to qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3) has more
+               attributes than _m_a_x_a_t_t_r_c_n_t, qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3) will fail.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          True (non-zero) is returned on success.  False (zero) is
+          returned if there is still an outstanding query.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          The maximum number of attributes for any tuple is MAXATT.
+          This is currently defined in _u_r_e_l_a_t_i_o_n._h as 200 from main
+          frames and 100 for other machines.
+
+          This routine can only be called while no queries are being
+          evaluated or used, i.e., all previously evaluated queries
+          must be freed using ffffrrrreeeeeeeerrrreeeessssuuuulllltttt(3).  (See the nnnneeeexxxxttttttttuuuupppplllleeee(3)
+          manual page.)  Within these limits, the routine may be
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     sssseeeetttt____aaaattttttttrrrraaaalllllllloooocccc((((3333))))            NNNNeeeewwww UUUUNNNNIIIITTTTYYYY            sssseeeetttt____aaaattttttttrrrraaaalllllllloooocccc((((3333))))
+
+
+
+          called as often as needed to tailor the tuple size.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Given a query, set the allocation size to the largest of the
+          relations used in the query.
+
+               struct urelation *rellist;
+               int relcnt, maxatt, i;
+                . . .
+               maxatt = 0;
+               for( i = 0; i < relcnt; i++ ) {
+                    if ( rellist[i].attrcnt > maxatt )
+                         maxatt = rellist[i].attrcnt;
+               }
+               set_attralloc( maxatt );
+                . . .
+               queryeval( . . . );
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cmpquery(1), nexttuple(3) and queryeval(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+

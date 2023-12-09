@@ -1,0 +1,858 @@
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+       NNNNAAAAMMMMEEEE
+            timecards - timecard work and attendance database
+            program
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            timecards [ -w week ] [ -p pan ] [ -acmtsbv ] [ -news ]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            _t_i_m_e_c_a_r_d_s is a program that allows interactive entry of
+            weekly timecards that keeps the timecard information
+            on-line in an nroff/troff format for easy printing.
+            Typically, this entry function would be performed by a
+            secretary.  This program also produces several reports
+            and audits and provides some basic administrative
+            features.
+
+            _G_e_t_t_i_n_g _S_t_a_r_t_e_d
+
+            Initially, a directory must be created where the
+            timecard information will reside (by default, assumed
+            to be $HOME/timecards) and the TIMECARDS shell variable
+            must be set to this directory and exported.  Typically,
+            this would be done as follows:
+
+                        mkdir $HOME/timecards
+                        TIMECARDS=$HOME/timecards
+                        export TIMECARDS
+
+            If the timecards reside in a directory other than
+            $HOME/timecards, the TIMECARDS shell variable MUST be
+            set and exported every time you login to use this
+            program.  Normally, you should do this in your .profile
+            so it gets set up automatically every time you login.
+
+            You should also create a $TIMECARDS/valid_wpns file
+            that is initialized to contain the standard work WPNs
+            (work project numbers) used in your work area.  Every
+            time a timecard is entered, the WPN that is entered is
+            checked to see if it exists in this file unless it is a
+            loading WPN (begins with a 9).  If the WPN is not in
+            this valid_wpns file, you will be asked if it is a good
+            WPN.  The WPNs in the valid_wpns file are listed one
+            WPN per line such as 121150-0001.  You can use your
+            favorite editor to create this file.
+
+            Alternatively, you can use the TCWPNS shell variable to
+            specify one or more files that contain valid WPNs, one
+            per line.  For instance,
+
+
+
+
+       Page 1                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+                  TCWPNS="/f2/auser/tcwpns $HOME/mywpns"
+                  export TCWPNS
+
+            in your .profile would direct timecards to check WPNs
+            against the list in both the tcwpns and mywpns files.
+
+            Once you have taken care of the preliminaries, you can
+            invoke the program without any options which is the
+            standard invocation for interactive mode.  The program
+            has three simple menus - the main menu and the
+            administrative and report sub-menus.  Initially, you
+            are put in the main menu and prompted with your choices
+            which are selected by a single character.  Here is the
+            main menu:
+
+
+                 Main menu - enter e, h, p, w, r, a, q, !, or ? (for help):
+
+
+            If you type ???? in response, you will get this:
+
+
+                 e - enter timecards
+                 h - holiday entry
+                 p - PAN to name
+                 w - weekending
+                 r - report menu
+                 a - administrative menu
+                 q - quit
+                 ! - escape to UNIX command level
+                 ? - help
+
+
+            Much of this is self-explanatory but will be elaborated
+            on a little later.  For now, you will want to type aaaa to
+            get in the administrative menu so that you can add the
+            names of the members of your work area to the database.
+            When you do this, you will be prompted as follows:
+
+
+                 Administrative menu -
+                         enter a, s, b, m, d, e, p, t, l, n, q, !, or ? (for help):
+
+
+            Typing ???? will give this explanation:
+
+
+
+
+
+
+
+
+
+       Page 2                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+                 a - add employee to database
+                 s - set standard work time for employee (if not 40 hours)
+                 b - change boss (supervisor) for employee(s)
+                 m - moved employee (another dept or gone)
+                 d - delete employee
+                 e - edit employee work and/or attendance file
+                 p - put (ship/send) database or work/attendance information
+                 t - take (receive) a database shipped (put) to you
+                 l - list all employees
+                 n - new year setup
+                 q - quit
+                 ! - UNIX command escape (e.g., !ksh to get to command level and
+                       'exit' to get back to timecards)
+                 ? - help
+
+
+            Then you can type aaaa and you will be prompted for the
+            necessary information for each employee to be added to
+            the database.
+
+            Once you are finished with the administrative menu, you
+            will return to the main menu when you type qqqq.  Now you
+            can type rrrr to get to the report menu which will give
+            you this:
+
+
+                 Report menu - enter a, m, c, t, o, s, b, f, v, q, !, or ? (for help):
+
+
+            Typing ???? will give this explanation:
+
+
+                 a - audit timecards
+                 m - missing timecard check
+                 c - WPN (case) charging by employee report
+                 t - time charging summary report
+                 o - overtime by employee report
+                 s - standard weekly checks/reports (a+m+c+t+b)
+                 b - backup creation
+                 f - forms printout for work/attendance
+                 v - vacation/PDO/NFH report
+                 q - quit
+                 ! - escape to UNIX command level
+                 ? - help
+
+
+            Typing qqqq will return you to the main menu and typing
+            another qqqq will exit you from the main menu and out of
+            the program entirely.
+
+
+
+
+
+       Page 3                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+            The normal mode of operation will be to collect the
+            weekly timecards and enter them one-by-one into the
+            database.  To do this, you invoke the program which
+            will put you in the main menu and type eeee to enter
+            timecards.  Initially, you will be prompted to enter
+            the week for which the timecard data is being entered
+            in mm-dd format (two digit month and day but leading
+            zeros can be ignored so 01 and 1 are equivalent).  The
+            week is specified as a Sunday (e.g., 11-9 for 11/9/86).
+
+            Next, you will be prompted for the definition of the
+            standard time for a work week which defaults to a 40
+            hour work week of 8 hours Monday through Friday.  In
+            some cases, it will make entry of timecard data easier
+            if the standard time is defined to be something else.
+            For instance, if Monday were a holiday, then the
+            standard time would be more logically defined as
+            32;;8;8;8;8 or 32 hours of 8 hours Tuesday through
+            Friday.
+
+            After these preliminaries, you will be prompted for a
+            payroll account number (PAN).  You can either enter the
+            PAN or the person's last name (in upper or lower case).
+            If you choose to enter the name, it must uniquely
+            identify the person in your database.  If it doesn't,
+            all of the people who have the same last name will be
+            printed at your terminal with their PAN and you will be
+            prompted again for a PAN which you will have to enter
+            as a number.
+
+            Once you have successfully entered a valid PAN (or
+            name), you will be prompted to enter the time worked or
+            not worked as follows:
+
+
+                 Enter s, m, o, n, t, r, p, a, q, or ? (for help):
+
+
+            Requesting help will give you:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 4                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+                 s = Single WPN, standard time
+                 m = Multiple WPNs or multiple entries
+                 o = Overtime
+                 n = Standard time not worked
+                 a = Add another timecard
+                 q = Quit
+                 t or t.tag = Tag timecard data for repeat
+                 r or r.tag = Repeat timecard data
+                 d or d.tag = Display repeat timecard data
+                 p or p.tag = Preserve timecard data permanently for repeat
+
+
+            When you enter time worked, you will be prompted for
+            the WPN and the time charged.  In the special case
+            where a person has worked a standard (e.g., 40 hour)
+            work week charged to a single WPN, you can indicate
+            that and you need only identify the WPN.  The program
+            will automatically charge 40 hours to this WPN and show
+            the hours as 8 hours for Monday through Friday.
+
+            When the time charged is not the simple single WPN,
+            standard hours or for overtime, you will be prompted
+            for the WPN and hours and hours per day as:
+
+                 WPN;time;m;t;w;t;f;s;s
+
+            For instance, responding as 121150-0000;32;;8;8;8;8 is
+            interpreted as 32 hours charged to 121150-0000 with no
+            time charged on Monday and 8 hours charge for Tuesday
+            through Friday.  Note that trailing, empty days can be
+            left off if desired as was done for Saturday and Sunday
+            in this example.
+
+            If you request to enter time not worked (nnnn), you will
+            be prompted as follows:
+
+
+                 Enter vac, nfh, pdo, hol, sick, per, other, <cr>, or ? (for help):
+
+
+            Requesting help will give you:
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 5                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+                 vac = vacation
+                 nfh = non fixed holiday
+                 pdo = paid day off
+                 hol = holiday
+                 sick = sick time
+                 per = personal time
+                 other = other time
+                 <carriage return> = continue
+
+
+            When time not worked is entered, you will be prompted
+            to enter the days of the week as one or more of the
+            following:
+
+                 mon tue wed thu fri sat sun
+
+            In addition, for sick, personal, or other time, you
+            will be prompted for whether the "time off" is being
+            paid.
+
+            If you inadvertently get into the standard, multiple,
+            overtime, or not worked entry mode, you can get out by
+            simply typing a carriage return.
+
+            When timecard entry is completed for an individual, the
+            next timecard entry is started by typing a aaaa.  Once you
+            have entered all timecards, you quit by typing a qqqq
+            instead of a PAN.  Then you will be prompted whether
+            you want to check the timecards.  If you type yyyy, you
+            will be put in the report menu where you can request
+            various checks.  Typically, you will want to at least
+            check to see if there are any missing timecards.  In
+            addition, you will probably want to type tttt to find how
+            many hours were charged for the week.  The t option
+            will show the time charged per WPN including overtime.
+            This is a very useful crosscheck to see that the
+            correct total number of hours for the week was entered
+            and that no unexpected work WPNs were entered
+            inadvertently.  If any of this data looks suspicious,
+            typing aaaa will run an audit that may well uncover some
+            errors.  The audit will, for instance, identify any
+            "invalid" WPNs and any employee whose standard time
+            (worked plus non-worked) does not total up to 40 hours.
+
+            _R_e_p_e_a_t_e_d _T_i_m_e_c_a_r_d _D_a_t_a
+
+            In order to simplify timecard entry, a repeat (e.g.,
+            memory) capability is provided.  This feature allows
+            the timecard data entered for a person to be remembered
+            and repeated for as many other people as desired.  This
+            feature is invoked by requesting the tag (tttt) option
+
+
+
+       Page 6                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+            which will save all the timecard data entered after the
+            tag option is requested and the save will stop with the
+            next timecard.  This saved timecard data can then be
+            repeated for any other person by requesting the repeat
+            (rrrr) option.  This saved timecard data is erased upon
+            exiting from the timecards program unless it is
+            preserved indefinitely by exercising the pppp option.
+            Preserved information is retained and available for
+            future timecard entry.
+
+            The repeat feature also allows the timecard data to be
+            tagged with a name to allow multiple repeat "memories".
+            By default, the repeat data has a "null" or empty tag.
+            A repeat tag can be provided by specifying tttt...._t_a_g for
+            the tttt option where _t_a_g is a string of alphanumerics
+            with a maximum length of 5 characters (e.g., tttt....5555eeee5555).
+            Similarly, this tagged data can be repeated or
+            preserved by providing the same tag with the rrrr and pppp
+            options (e.g., rrrr....5555eeee5555 and pppp....5555eeee5555).  This capability
+            allows tagging to be used to simplify entry of
+            timecards charged to the same WPN and time.  It also is
+            useful for weeks where most or all of an entire
+            department attends a common function such as an AA
+            meeting.  In this case, the timecard entry can be
+            tagged and made for a single person and repeated for as
+            many others as necessary.
+
+            Note that the repeat data is saved for both work and
+            attendance information.  Also note that the use of tags
+            allows multiple repeat memories that can be applied for
+            any timecard entry in any order.  For additional
+            convenience, the dddd option (or dddd.tag) displays the
+            contents of a repeat memory.
+
+            _S_p_e_c_i_a_l _S_i_t_u_a_t_i_o_n_s
+
+            If you have an employee who is a part-time employee, be
+            sure to use the ssss option of the administrative menu to
+            set the standard work week hours.
+
+            If an employee moves to another department or leaves
+            the company, you should normally use the mmmm option of
+            the administrative menu to change the employee's
+            department number to his/her new department (or use
+            00000 for someone who leaves the company).
+
+            If an employee moves to your department from a
+            department that has been using the timecards program,
+            you will want to get a copy of that person's timecard
+            information so that you have an up-to-date record of
+            that person's absences (vacation, PDOs, etc.).  To do
+
+
+
+       Page 7                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+            this, you will need to copy the person's previous
+            department's work file to your work directory
+            ($TIMECARDS/work) and the attendance file to your
+            attendance directory ($TIMECARDS/attendance).  Then you
+            will need to use the bbbb and mmmm options of the
+            administrative menu to change the person's supervisor
+            and department to those of the new department.
+
+            _B_a_t_c_h _M_o_d_e
+
+            Normally, the timecards program is used interactively.
+            However, some of the reports are more useful if they
+            are captured in a file which can be either printed or
+            used as input for additional processing by other
+            programs.  If the timecards program is entered with any
+            option besides the -w, it is assumed the program is
+            being run in batch mode and the menus are bypassed.
+            The options you can specify in batch mode are:
+
+
+            -w        The week is identified by specifying the
+                      Sunday that ends the week in mm-dd-yy or mm-
+                      dd format (e.g., 11-10 or 11-10-88) where mm
+                      is the month, dd is the day, and yy is the
+                      year.  Leading zeros may be suppressed (e.g.,
+                      1-5 is equivalent to 01-05).
+
+
+            -p        The payroll account number is specified as a
+                      6 digit number (e.g., 012345) with leading
+                      zeros as necessary.  This option is useful
+                      with the -v (vacation) option to produce
+                      vacation reports for all employees.  The -p
+                      option defaults to all payroll account
+                      numbers which is useful when timecards is
+                      being used in a batch mode to produce a
+                      report for everyone.
+
+
+            -acwmtsbv These options are the same as those defined
+                      for the menu selections (e.g., the -a is the
+                      audit option of the report menu).
+
+
+            -news     This option will print the latest news about
+                      timecards changes and enhancements.
+                      Normally, this news will only be printed the
+                      first time a new version of the timecards
+                      program is used.  Thereafter, the only way to
+                      see this news again is with this option.
+
+
+
+
+       Page 8                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+            _M_e_n_u_s _D_e_s_c_r_i_p_t_i_o_n_s
+
+            Main Menu Selections
+
+
+            e   enter timecard information for the week.
+
+            h   mark a holiday for everyone in the database.  You
+                will be prompted for the day.  Note also that a
+                week with a holiday is not a standard 40 hour work
+                week so the single WPN option cannot be used.
+
+            p   print the name associated with a payroll account
+                number for which you will be prompted.
+
+            w   set the week date.  This is useful if timecard
+                information is going to be added to more than one
+                week in a single session.
+
+            r   enter the report menu.
+
+            a   enter the administrative menu.
+
+            q   quit the menu and exit the program.
+
+            !command escape out of timecards and execute the UNIX
+                command.  Typing !date will execute the UNIX date
+                command and return to timecards.  More useful is to
+                type !/bin/sh which will escape out of timecards
+                and put you back in the UNIX shell.  Now, all
+                regular UNIX commands can be typed.  Typing exit
+                will return you back to where you were in
+                timecards.
+
+            ?   print help information.
+
+            Report Menu Selections
+
+
+            a   audit the timecards to identify questionable WPNs
+                and time that does not add up to the standard hours
+                (40) for a week.
+
+            m   print any timecards missing for the week.
+
+            w   print the time worked (including overtime) and WPNs
+                charged by employees for the week along with the
+                time not worked (e.g., sick).  The output is sorted
+                by supervisory group and by name within the group.
+
+
+
+
+
+       Page 9                                     (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+            c   same as w option.
+
+            t   print a summary of the time chargin for the week,
+                showing standard and overtime charging by WPN,
+                loading, and total.
+
+            o   print the list of employees charging overtime for
+                the week.
+
+            s   do options a, m, w, t, and b.
+
+            b   create a backup file for the week's data in the
+                $TIMECARDS/backup directory.  This is useful to
+                provide additional protection against losing
+                timecard information in the event of a system
+                crash.  However, there is no automatic recovery
+                procedure to use this data to restore the database;
+                it must be done manually.
+
+            f   print the work and/or attendance information for
+                all employees in the database.  You must have
+                read/write access to the work and attendance files
+                to exercise this option.  You will be prompted to
+                determine what to print.  Note that this option
+                will take a few minutes to complete.  When it is
+                finished, a Xerox 9700 print job will be scheduled
+                as a batch job.  Alternatively, you can change the
+                print destination by setting the TCPRINT shell
+                variable to a command with any desired options and
+                this command will be executed with all of the
+                work/attendance files as arguments.  For instance,
+                TCPRINT is set by default to:
+
+                      TCPRINT="mmx -rN0 -t -ybell "
+
+                to get the standard Xerox 9700 print job.
+
+            v   print the time not worked.  You will be prompted
+                for a PAN and will get a printout of the vacation,
+                PDOs, NFHs, holidays, sick, personal, and other
+                time not worked.
+
+            q   exit from the report menu and return to the main
+                menu.
+
+            !command escape out of timecards and execute the UNIX
+                command.  Typing !date will execute the UNIX date
+                command and return to timecards.  More useful is to
+                type !/bin/sh which will escape out of timecards
+                and put you back in the UNIX shell.  Now, all
+                regular UNIX commands can be typed.  Typing exit
+
+
+
+       Page 10                                    (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+                will return you back to where you were in
+                timecards.
+
+            ?   print help information.
+
+            Administrative Menu Selections
+
+
+            a   add employee to database.
+
+            s   set standard work time for employee (if not 40
+                hours).  This is useful for part-time employees.
+
+            b   change employee's supervisor.  You will be prompted
+                for the supervisor's name and then all of the
+                employees that should show that supervisor.  This
+                is useful for reorganizations.
+
+            m   mark employee as moved (another dept or gone).
+                Alternatively, you can entirely remove an employee
+                by removing his/her work and attendance files.
+                However, if you do that you will lose the ability
+                to include the time a moved employee charged while
+                a member of your organization in any future
+                generated reports.
+
+            e   edit employee's work and/or attendance file.  You
+                will be prompted for the employee's PAN (or name)
+                and then will be asked whether you want to edit the
+                work or attendance file.  For each file, you will
+                be put in your favorite editor as indicated by the
+                EDITOR shell variable.  If the EDITOR variable is
+                not specified, the regular UNIX ed editor will be
+                used.
+
+            n   save last year's timecard information if requested
+                and initialize work and attendance files for new
+                year.  Attendance files will also need to be
+                manually editted where the vacation/PDO/NFH
+                allowance changes for an employee.
+
+            p   put (ship/send) either some of the timecard
+                database files or weekly work/attendance
+                information to another user.  You will be prompted
+                for who to send the database/information to, for
+                which PANs (all or a designated list), and for
+                which weeks (all or a designated list).  This is
+                sent (as a cpio file when a database is sent) to
+                the specified user via uuto.
+
+
+
+
+
+       Page 11                                    (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+            t   take (receive) the database put (shipped) by
+                another user.  You must have first picked up the
+                database using uupick.  You can use a list (l)
+                sub-option to check what is in the database so you
+                don't inadvertently take something and overwrite
+                some PAN.  Note this option only makes sense when a
+                database (cpio file) is sent.  In the case of
+                weekly work/attendance information, the information
+                is sent as a plain file and simply using uupick
+                will retrieve this file.
+
+            q   exit from the administrative menu and return to the
+                main menu.
+
+            !command escape out of timecards and execute the UNIX
+                command.  Typing !date will execute the UNIX date
+                command and return to timecards.  More useful is to
+                type !/bin/sh which will escape out of timecards
+                and put you back in the UNIX shell.  Now, all
+                regular UNIX commands can be typed.  Typing exit
+                will return you back to where you were in
+                timecards.
+
+            ?   print help information.
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            timecards -t -w 11-9  >>time.db
+
+            This command could be run every week to append to a
+            simple file to keep a record of the time charging week
+            by week.  Other UNIX commands can then be used to graph
+            or further massage this data for tracking or other
+            purposes.
+
+
+            ls $TIMECARDS/work/[0-9][0-9][0-9][0-9][0-9][0-9] |
+                    while read pan
+                    do
+                            timecards -v -p $pan >$pan
+                    done
+
+
+            This example shows how to create a file per employee
+            showing the employee's use to date of
+            vacation/PDOs/NFHs.  Then you can use your favorite
+            print command to print each of these files to pass out
+            to each employee.
+
+
+
+
+
+
+       Page 12                                    (printed 2/18/91)
+
+
+
+
+
+
+
+
+       timecards(1)             (EXPTOOLS)             timecards(1)
+
+
+       SSSSHHHHEEEELLLLLLLL VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+
+             TIMECARDS -  to specify location of timecards
+                        directory (default:  $HOME/timecards)
+
+             TCWPNS -   to provide one or more valid WPN files
+                        (default:  $TIMECARDS/valid_wpns)
+
+             TCPRINT -  to change default timecard record print
+                        command and options (default: mmx -rN0 -t
+                        -ybell)
+
+
+       FFFFIIIILLLLEEEESSSS
+
+             $TIMECARDS/valid_wpns -        valid WPN file, one WPN
+                                            per line
+
+             $TIMECARDS/work/* -            one work file per
+                                            employee named as PAN
+
+             $TIMECARDS/attendance/* -      one attendance file per
+                                            employee named as PAN
+
+             $TIMECARDS/repeat/[aw].* -     preserved repeat
+                                            timecard data for work
+                                            (w.*) and attendance
+                                            (a.*)
+
+             $TIMECARDS/backup/* -          backup file per week
+                                            with name of mm-dd
+
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+            ksh
+
+
+       CCCCAAAAVVVVEEEEAAAATTTTSSSS
+            This is a shell program that uses a number of shell
+            features and has been tested under ksh.  Hopefully,
+            this program will run with the regular shell as well
+            but there are some subtle differences between the two
+            so no guarantee is made other than for the ksh.  The
+            chsh(1) command can be used to set ksh as your standard
+            shell.
+
+
+       AAAAUUUUTTTTHHHHOOOORRRR
+            Denis Kertz
+
+
+
+
+
+       Page 13                                    (printed 2/18/91)
+
+
+
+

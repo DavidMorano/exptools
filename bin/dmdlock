@@ -1,0 +1,128 @@
+: ${DMD:?}
+: ${TOOLS:?}
+
+KEYFILE=$HOME/.dmd.lock
+
+if [ "$1" = "-p" ] 
+then
+	echo "Compiling program to encrypt dmdlock key - hold on..." 1>&2
+	cd /usr/tmp
+	trap "stty echo;rm -f mkkey$$.c mkkey$$;trap 0;exit" 0 1 2 3 15
+	cat > mkkey$$.c << !!
+#include <stdio.h>
+
+extern char *crypt(), *getenv();
+
+main(argc,argv)
+int argc; 
+char *argv[]; 
+{ 
+    char *tmpstr;
+    if ( argc != 2 )
+	fprintf(stderr,"Usage: mkkey env_var_name\n");
+    else
+    	if ( (tmpstr=getenv(argv[1])) != (char *) 0 )
+  	    printf("%s\n",crypt(tmpstr,"V0")); 
+    	else
+	    fprintf(stderr,"mkkey: error: %s not set in environment\n",argv[1]);
+}
+!!
+	cc -o mkkey$$ mkkey$$.c
+	if [ $? != 0 ]
+	then
+		echo "Can't compile mkkey - can't go on to make key." 1>&2
+		exit 1
+	else
+		passwd=andy ; pass2=schnable
+		while [ "$passwd" != "$pass2" ]
+		do
+			stty -echo
+			echo "Enter passwd:\c" ; passwd=`line`
+			echo
+			echo "Re-enter passwd:\c" ; pass2=`line`
+			echo
+			if [ "$passwd" != "$pass2" ]
+			then
+				echo "They don't match! Try again." 1>&2
+			fi
+		done
+		export passwd
+		./mkkey$$ passwd > $KEYFILE
+		chmod 600 $KEYFILE
+		echo "Your password is stored in $KEYFILE." 1>&2
+		echo "dmdlock -u will use this file to set the key." 1>&2
+		exit 0
+	fi
+fi
+
+if ismpx -
+then
+	if [ -r $KEYFILE ]
+	then
+		KEY=`cat $KEYFILE`
+	else	if [ -f /etc/private ]
+	    then
+		unset KEY
+	    else
+		KEY=`sed -n "s/^${LOGNAME}:\([^,:]*\)[,:].*/\1/p" /etc/passwd`
+	    fi
+	fi
+	if [ -z "${KEY}" ]
+	then
+	    # password not found in /etc/passwd (/etc/private not readable):
+	    opts=
+	    for arg
+	    do
+		case "${arg}" in
+		-u)
+			echo "$0: error: login password not readable" >&2
+			echo "$0: run dmdlock -p to create a password file" >&2
+			echo "$0: then try again." >&2
+			exit 1
+			;;
+		*)
+			opts="${opts} ${arg}"
+			;;
+		esac
+	    done
+	else
+		# password ok, just pass all arguments
+		opts="$* -U${KEY}"
+	fi
+
+	# ?????
+	#case $TERM in
+	#  emacsterm|viterm)
+	#	;;
+	#  *)
+	#	${debug} ${DMD}/bin/jterm 2> /dev/null
+	#	${debug} sleep 2
+	#	;;
+	#esac
+
+	# figure out which downloader to use...
+	case $TERM in
+	*630* | *730* )
+		;;
+	*)
+		TERM=`ttype -Tdmd`
+		;;
+	esac
+
+	case $TERM in
+	*630* | *730* | emacsterm | viterm )
+		JPATH=$JPATH:$TOOLS/lib/630 $debug dmdld dmdlock.m ${opts}
+		;;
+	*blit* | *jerq* )
+		JPATH=$JPATH:$TOOLS/lib/dmd $debug 68ld dmdlock.m ${opts}
+		;;
+	*)
+		JPATH=$JPATH:$TOOLS/lib/dmd $debug 32ld dmdlock.m ${opts}
+		;;
+	esac
+
+	exit $?
+else
+	echo "$0 only runs under layers" >&2
+	exit 1
+fi

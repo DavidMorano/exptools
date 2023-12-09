@@ -1,0 +1,330 @@
+
+
+
+     eeeennnnuuuummmm((((3333CCCC++++++++))))                    CCCCCCCClllliiiibbbb                    eeeennnnuuuummmm((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          enum - Produce C++ Enumeration and Set Classes
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          eeeennnnuuuummmm [-b _s_t_r_i_n_g ] [-h _f_i_l_e ] [-c _f_i_l_e ] _d_e_f__f_i_l_e
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          EEEEnnnnuuuummmm translates definitions for enumerations into c++
+          classes to be used in an application program.  The _d_e_f__f_i_l_e
+          contains the definition of the enumeration.  The hhhh option
+          specifies the name of the output header file, the cccc option
+          the name of the c++ file, typically a .C file, needed to
+          support the header.
+
+          The definitions contain the strings (or `image's) of the
+          elements of the enumeration.  A typical definition might be:
+
+          object_types { Scan_point; tnc; ude; sde; class :
+          object_class };
+
+          This defines an enumeration class named `object_types' whose
+          possible string values are `scan_point', `tnc', `ude', or
+          `sde'.
+
+          A program variable may be declared then as `object_types
+          x;'.  Variables of the type may be assigned and compared for
+          equality.  The translator determines integers to represent
+          the strings, as well as conversion support to convert back
+          and forth from integer to string and vice versa.  Class
+          member functions are provided to give access to the raw
+          values.  Member iiiimmmmaaaaggggeeee(((()))) returns a pointer to character and
+          iiiinnnntttteeeeggggeeeerrrr(((()))) returns the integer representation.
+
+          A sample application code use might be:
+
+               #include "mydefs.h"
+
+               object_types x;
+               object_types y;
+
+               x = "Scan_point";
+               y = x;
+               // test equality based on assignment
+               if (x == y) printf("Of course x == y\n");
+               char buffer[] = "tnc";
+               x = buffer;
+               // test integer values based on string assignment
+               switch (x.integer()) {
+               case TNC:
+                    printf("Of course it refers to tnc\n");
+                    break;
+               case SCAN_POINT:
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     eeeennnnuuuummmm((((3333CCCC++++++++))))                    CCCCCCCClllliiiibbbb                    eeeennnnuuuummmm((((3333CCCC++++++++))))
+
+
+
+                    printf("Hmmmmm...\n");
+               };
+               y = ude;
+               // test inequality
+               if(y == sde) printf("Of course not!\n");
+               int zz = y;
+               // test transitivity
+               if (zz == sde) printf("Of course its sde\n");
+
+               // assignment from global constant of type object_types
+               x = object_class;
+               // assignment from cpp defined integer macro
+               y = OBJECT_CLASS;
+               printf("%s %s\n",x.image(),y.image());
+
+          The output of such code would be:
+
+          Of course x == y
+          Of course it refers to tnc
+          Of course not!
+          Of course its sde
+          class class
+
+          Running eeeennnnuuuummmm results in producing a header and a code file.
+          The header file contains the class definitions, overloaded
+          operator definitions and constant references.  The constants
+          are the names of the elements of the enumeration.  In the
+          above example the use of the lower case version of an
+          element refers to a constant of type `object_types' that is
+          initialized to the appropriate values.  The upper case names
+          are integer constants provided to support the use of these
+          enumerations in switch statements.
+
+          The last enumeration element in the above example
+          illustrates a last feature, name redefinition.  This allows
+          for the program named constants to be different from the
+          image string of the enumeration element.  As in the example,
+          the string `class' would create a problem since it is a
+          reserved word in the c++ language.  The name `object_class'
+          is used instead of `class' for the constant names, the
+          string `class' is still used as the string image of the
+          element.
+
+          Assignments to a generated enumeration class of raw integers
+          or strings which are not part of the original definition
+          succeed and can be later retrieved via the member functions.
+          The complimentary member function will return a value, -1
+          for integer() and the null string("") for image().  Equality
+          and inequality tests pick the appropriate method of
+          comparing.
+
+          Identifiers are: [a-zA-Z_][a-zA-Z0-9_]*.  This applies to
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     eeeennnnuuuummmm((((3333CCCC++++++++))))                    CCCCCCCClllliiiibbbb                    eeeennnnuuuummmm((((3333CCCC++++++++))))
+
+
+
+          images and redefinition names.  See Arbitrary Strings below
+          for more flexible image definitions.
+
+          C style comments (/* */) are allowed anywhere in the
+          _d_e_f__f_i_l_e.
+
+     AAAALLLLIIIIAAAASSSSIIIINNNNGGGG
+          Aliasing allows differing string images to be in an
+          equivalence class of their own.  In terms of implementation
+          this means that they have the same numeric value and
+          equality and inequality operators report equality based on
+          the equivalence class.
+
+          The syntax for aliases is the following:
+
+              days { mon, monday; tues, tuesday; wed, wednesday; thur, thursday;
+                fri, friday; Sat, sat: leisure_day1 , saturday : l2 ; sun, sunday};
+
+          As should be obvious, "mon" and "monday" are members of the
+          same equivalence class.
+
+          Note that program space names can be specified for each
+          image.  This allows for explicit image selection when
+          necessary.  The defined integer constants for members of an
+          equivalence class have the same value.  When being used as
+          labels for a switch statement only one constant from an
+          equivalence class should be used as a case label or else
+          compiler errors will ensue.
+
+     SSSSEEEETTTTSSSS
+          Equivalence classes are fine but insufficient.
+
+          eeeennnnuuuummmm also produces a C++ class for set operations.  The name
+          of the set class is  the  name of the table with "_set"
+          appended.  For example, the above mentioned days of the week
+          table would have a set class named "days_set".
+
+          Overloaded operators *(intersection, which is also &),
+          +(union, which is also |), ^(exclusive-or), ~(unary
+          inversion), >(superset boolean), <(subset boolean),
+          ==(equality), !=(inequality) and -(set difference).
+
+          A member test boolean is provided in the form of the >
+          operator where the left hand operand is is of the type of
+          the base enumeration type and the right hand operand is of
+          the enumeration set type.
+
+          Automatic conversion from the base enumeration type to the
+          set type is provided.
+
+          An example of some code might based on the above days
+          enumeration type might be:
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     eeeennnnuuuummmm((((3333CCCC++++++++))))                    CCCCCCCClllliiiibbbb                    eeeennnnuuuummmm((((3333CCCC++++++++))))
+
+
+
+          main(int argc, char* argv[])
+          {
+              days_set work_days = mon + tues + wed + thur + fri;
+              days_set leisure_days = ~work_days;
+
+              days user_day = argv[1];
+
+              // if this is a business day tell them!
+              if ( user_day > work_days ) printf("I think you're busy that day!\n");
+          };
+
+     AAAARRRRBBBBIIIITTTTRRRRAAAARRRRYYYY IIIIMMMMAAAAGGGGEEEE SSSSTTTTRRRRIIIINNNNGGGGSSSS
+          eeeennnnuuuummmm allows for C like strings.  A string image may enclosed
+          in double quotes.  The rules that apply to C double quoted
+          strings apply here as well.  That is to say that a back
+          slash is the escape character which may be followed by an
+          octal value, or any character with appropriate meanings for
+          \n, \t, etc.
+
+          Use of an arbitrary string, one that is enclosed by double
+          quotes must have a redefinition name associated with it.
+
+          An example would be:
+
+          slogans { "Pepsi Generation" : pepsi ; "The Real Thing" : coke };
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following produces a header and .C file:
+
+          enum -h header.h -c mycode.C object_enums
+
+          The following produces only a header:
+
+          enum -h objects.h object_enums
+
+          The following produces only a .C file:
+
+          enum -c objects.C object_enums
+
+          And the following will do just a syntax check on the
+          definitions file:
+
+          enum object_enums
+
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          Checksum bolts are used to tie the header file to the code
+          file.  The bbbb option on the command line can be used to
+          specify the base name for building the bolt symbol.
+
+     BBBBUUUUGGGGSSSS
+          User cannot specify his/her own integer values for a given
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+
+
+
+
+     eeeennnnuuuummmm((((3333CCCC++++++++))))                    CCCCCCCClllliiiibbbb                    eeeennnnuuuummmm((((3333CCCC++++++++))))
+
+
+
+          enumeration element.  Current underlying implementation
+          assigns integers starting from 0 increasing by 1 for each
+          equivalence class through the list within a table.  This is
+          nnnnooootttt guaranteed to be true in the future.
+
+          eeeennnnuuuummmm is a Stage product, with appropriate thanks to J. Craig
+          Cleveland for this excellent tool.  Use of Stage based tools
+          with parallel path make facilities such as Fourth Generation
+          Make have problems with temporary file names not being
+          unique.  If this is desirable then a simple solution is to
+          the Stage standard option '-3' with enum.  This will cause
+          eeeennnnuuuummmm to bypass the use of intermediate temporary files.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          eeeennnnuuuummmm was conceived, designed and developed by Mitchell Bass.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          CC(1), tipc(3T), g2(3T), stage(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 11/9/90)
+
+
+

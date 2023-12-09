@@ -1,0 +1,620 @@
+#  %Z%  SID: %I%;  module: %M%;  last changed: %G%  %U%
+#
+#  This routine is used to tell users about Exptools
+
+#  On sun machines, make sure we have access to SVR3/4 commands
+PATH=/usr/5bin:$PATH					export PATH
+
+CMD=`basename $0`			# The basic command name
+CMDDIR=`dirname $0`			# The command directory
+
+KSH_SEARCH_PATH="$CMDDIR:$PATH"
+ERRMSG="$CMD: ERROR: not running under ksh88 -- aborting!"
+
+RC=""
+KSHTEST=""
+echo OK | read KSHTEST
+if test "$JUST_TRYING_KSH" = "yes"; then
+    #
+    # This is just a probe of this shell, so indicate in the return code
+    # whether it is a ksh88.
+    #
+    if test "$KSHTEST" = "OK"; then
+	RC=0
+    else
+	RC=2
+    fi
+elif test "$KSHTEST" != "OK"; then
+    #
+    # This is the first time through, but we don't have a ksh88.
+    # So we will search for one.
+    #
+    echo "Looking for ksh88 ... \c"
+    DIR_SEARCH_LIST=`echo $KSH_SEARCH_PATH|tr ":" " "`
+    for DIR in $DIR_SEARCH_LIST; do
+	KSH=$DIR/ksh
+	if test -x $KSH; then
+	    if JUST_TRYING_KSH="yes" $KSH $0; then
+		#
+		# Got it, let's use it
+		#
+		echo "got it"
+		if test $# -gt 0; then
+		    $KSH $0 "$@"	# This is for real!
+		else
+		    $KSH $0		# This is for real!
+		fi
+		RC=$?			# Final error code
+		break			# All done, let's go home
+	    fi
+	fi
+    done
+    if test -z "$RC"; then
+	#
+	# Never found a ksh88 
+	#
+	echo
+	echo "$ERRMSG" >&2
+	RC=2
+    fi
+fi
+
+if test -n "$RC"; then
+    #
+    # No more work to be done -- exit
+    #
+    exit $RC
+fi
+
+#
+# We passed the tests, and are now running ksh88.
+# Let's get to work!
+#
+
+
+#-------------------------< not
+
+not() {
+    if "$@"; then
+	false
+    else
+	true
+    fi
+}
+
+
+# --------------------------------< append
+#
+# This routine helps construct lists.  The first argument is the current
+# list, the second is the item to be added to the list, and the third is
+# the separator to be used between list items.
+
+append() {
+    typeset RESULT SPACE=" "
+    if test -z "$1"; then
+	RESULT="$2"
+    else
+	RESULT="$1${3-$SPACE}$2"
+    fi
+    echo "$RESULT"
+}
+
+
+# --------------------------------< addACTION
+
+addACTION() {
+    ((ACTIONCNT+=1))
+    ACTIONCODE[$ACTIONCNT]=$1
+    ACTIONPROMPT[$ACTIONCNT]=$2
+    LIST=$(append "$LIST" "$ACTIONCNT" ",")
+}
+
+
+# --------------------------------< getACTION
+
+getACTION() {
+    typeset ans
+    echo
+    echo "-----------------------------------"
+    echo "$1"
+    echo
+    if test -n "$2"; then
+	echo "$2"
+    fi
+    integer I=1
+    while ((I <= ACTIONCNT)); do
+	if ((I >= 10)); then
+	    PREFIX="   "
+	else
+	    PREFIX="    "
+	fi
+	echo "$PREFIX$I) ${ACTIONPROMPT[$I]}"
+	((I += 1))
+    done
+    echo "    q) Quit"
+    echo
+    getans "Selection ($LIST,q)" "@($(mkpattern $ACTIONCNT)|q)"
+    if test "$ans" = "q"; then
+	exit 0
+    fi
+    ACTION=${ACTIONCODE[$ans]}
+    test -n "$ACTION"
+}
+
+
+# --------------------------------< mkpattern
+
+mkpattern() {
+    integer MAXNUM=$1
+    typeset pattern
+
+    if ((MAXNUM < 10)); then
+	pattern="[1-$MAXNUM]"
+    else
+	pattern="[1-9]"
+	integer UNITS=$MAXNUM%10
+	integer TENS=$MAXNUM/10
+	pattern="$pattern|$TENS[0-$UNITS]"
+	if ((TENS > 1)); then
+	    ((TENS = TENS - 1))
+	    pattern="$pattern|[1-$TENS][0-9]"
+	fi
+    fi
+
+    echo "$pattern"
+}
+
+
+#-------------------------< getans
+
+getans() {
+    set +u
+    typeset prompt=$1 pattern=$2 default=$3 helptext=$4
+
+    until
+	if test -n "$default"; then
+	    echo "$prompt [$default] \c"
+	else
+	    echo "$prompt \c"
+	fi
+	read ans
+	if test -z "$ans"; then
+	    if test -z "$default"; then
+		echo "No default!"
+		false
+	    else
+		ans="$default"
+		true
+	    fi
+	elif test "$ans" = "?"; then
+	    false
+	elif test -z "$pattern"; then
+	    true
+	else
+	    eval [[ "$ans" = $pattern ]]
+	fi
+    do
+	if test "$ans" = "?"; then
+	    if test -z "$helptext"; then
+		echo "Sorry -- no help available"
+	    else
+		echo "$helptext"
+	    fi
+	else
+	    echo "Try again ... \c"
+	fi
+    done
+}
+
+
+# --------------------------------< setupmenu
+#
+# This routine sets up the main menu for this routine.  Since some menu
+# actions can change the environment on which the menu is based, we need
+# to recalculate the menu now and then.
+
+typeset ACTIONPROMPT ACTIONCODE ACTION LIST=""
+integer ACTIONCNT=0
+
+setupmenu() {
+    ACTIONCNT=0
+    LIST=""
+
+    addACTION "intro"     "Introduction to Exptools"
+    addACTION "suppliers" "Who supplies the tools?"
+    addACTION "probs"     "Reporting problems or asking questions"
+    addACTION "cmds"      "Exptools documentation/information commands"
+    addACTION "std"       "The standard tools"
+    addACTION "opt"       "The optional tools"
+    addACTION "toolinfo"  "Details about specific optional tools"
+    addACTION "whichtool" "Show which tool a given file belongs to"
+    addACTION "support"   "The tool support levels"
+    addACTION "machines"  "The machine types available"
+    addACTION "admins"    "The Exptools administrators at major sites"
+    addACTION "ruginfo"   "How tools arrive on this machine"
+    addACTION "newtools"  "Submitting new tools to Exptools"
+    addACTION "request"   "Requesting Exptools"
+    addACTION "charges"   "Exptools charges"
+}
+
+
+#-------------------------< probs
+
+problems() {
+    cat <<-\!
+	
+	Problems with *individual tools* should be reported to that tool's provider,
+	who can be identified by issuing the command
+	
+	    provider <tool>
+	
+	where <tool> is the name of the Exptool the user has a problem with.
+	Alternatively, the command can be used with a filename instead (relative to
+	the exptools HOME directory), which is useful when it is not known which tool
+	the file belongs to.  For example, the command
+
+	    provider bin/ll
+
+	will show the provider information for the 'lf' tool, since bin/ll is part of
+	the 'lf' tool.
+
+	****************************************************************************
+	NOTE: When sending mail to a provider describing your problem, it is helpful
+	to include the output from the 'ruginfo' command as well.  This output will
+	help the provider determine how fixes can be directed to your machine.
+	****************************************************************************
+	
+	Problems with or questions about the local Exptools *environment* should be
+	reported to the local Exptools Administrator.  This can usually be done by
+	sending mail to the 'exptools' userid on the local system.  To contact the
+	Exptools Administrator directly, you could try the command
+	
+	    provider admin
+	
+	to get a list of the administrators at the major sites, or the SA of the local
+	machine can be asked who the local Exptools administrator is.
+	
+	Problems with or questions about Exptools *in general* should be sent to the
+	Exptools Central Administrators at att!exptools.
+	
+	!
+}
+
+
+#-------------------------< charges
+
+charges() {
+    cat <<-\!
+	
+	The Exptools are distributed under a strictly BARTER arrangement.  The tools
+	are supplied free by their Providers, the distribution code and distribution
+	expertise are supplied free by the Central Administrators, and the disk
+	space, cycles, and transmission costs are supplied free by the owners of the
+	machines.  Machine administration is jointly provided by the Exptools
+	Administrators and some Comp Centers.
+
+	PLEASE NOTE, this freedom from cost also applies to writing tapes for new
+	clients, helping new clients get their setups going, feeding clients, and
+	other services.  There should never be a charge for any of these services.
+	The Exptools have VALUE, and it is the value of the tools and their
+	distribution that is being bartered for these other services.
+
+	If you are being charged for any service related to Exptools, please bring
+	this to the attention of the Exptools Central Administrators at att!exptools.
+	
+	!
+}
+
+
+#-------------------------< requests
+
+requests() {
+    cat <<-\!
+	
+	To request Exptools be put on a new machine, first make sure that the given
+	machine type supports Exptools.  This can be done by selecting the 'expinfo'
+	menu item
+	
+	    The machine types available
+
+	and checking to make sure the given machine type is listed.  If it is not,
+	you will find instructions there telling you how a completely new machine
+	type can be added to the Exptools distribution.
+
+	Once you have determined that Exptools is available for the give machine
+	type, you should contact your local Exptools Administrator to see about
+	getting the tools set up on the given machine.  If you don't know who your
+	local Exptools administrator is, you might try the following:
+
+	1) select the 'expinfo' menu item
+	
+	        The Exptools administrators at major sites
+	
+	   to see if your site's Exptools administrator is listed, or
+
+	2) send mail to the 'exptools' userid on a machine that has the tools
+	   installed, or
+
+	3) if the new machine already has Exptools installed, but without the nightly
+	   updates, issue the command
+	
+	        ruginfo
+	
+	   to see where the tools were copied from, and then contact the SA of that
+	   machine to see who administers Exptools there.
+	
+	Otherwise, email should be sent to the Exptools Central Administrators at
+	att!exptools to request an Exptools feed.
+	
+	!
+}
+
+
+#-------------------------< main
+
+if test -z "$TOOLS"  -o  ! -d $TOOLS/lib/toolnews; then
+    OLDTOOLS=$TOOLS
+    TOOLS=$(logdir exptools)
+    if test "$TOOLS" = "$OLDTOOLS"; then
+	echo "\n\aWARNING: Your exptools environment appears to be incorrectly set up"
+	echo "         Please contact your exptools administrator for help."
+	exit 2
+    else
+	echo "\n\aWARNING: Your TOOLS environmental variable is incorrectly set."
+	echo "         The current value is '$OLDTOOLS'"
+	echo "         Instead, it should be"
+	echo "               TOOLS=\`logdir exptools\`   (=$TOOLS)"
+    fi
+    echo
+    echo "Hit RETURN to continue: \c"
+    read
+fi
+
+echo
+echo "                 E X P T O O L S   I N F O R M A T I O N"
+echo "                      $(date)"
+
+setupmenu
+
+while
+    getACTION "The following information is available:"
+do
+    case "$ACTION" in
+    intro)
+	toolnews Intro | ${PAGER:-pg}
+    ;;
+    whichtool)
+	DONE=false
+	while not $DONE; do
+	    getans "\nCommand or filename ('q' to quit):"
+	    if test "$ans" = "q"; then
+		DONE=true
+	    else
+		echo "Searching ... \c"
+		provider "$ans" | read TOOL TTYPE REST
+		echo
+		if test -z "$TOOL"; then
+		    echo "No such command or filename found!"
+		else
+		    (
+			echo "\n'$ans' is in the following tool:"
+			set -- $REST
+			PROV=""
+			SEP=""
+			while (($# > 3)); do
+			    PROV="$PROV$SEP$1"
+			    SEP=" "
+			    shift
+			done
+			case "$TTYPE" in
+			opt)
+			    TTYPE="optional"
+			;;
+			std)
+			    TTYPE="standard"
+			esac
+			echo
+			echo "           TOOL: $TOOL"
+			echo "      TOOL TYPE: $TTYPE"
+			echo "       PROVIDER: $PROV"
+			echo "          EMAIL: $1"
+			echo "  MACHINE TYPES: $3"
+			echo "  SUPPORT LEVEL: $2"
+		    )
+		fi
+	    fi
+	done
+    ;;
+    suppliers)
+	{
+	    echo
+	    echo "The Exptools consist of two parts: the tools themselves and the distribution"
+	    echo "mechanism that puts the tools on machines throughout AT&T.  The individual"
+	    echo "tools are provided by people throughout AT&T as identified by the 'providers'"
+	    echo "command.  The files associated with each tool are under the direct control"
+	    echo "of its provider; hence, problems with any tool or questions about its use"
+	    echo "should be directed to its provider for resolution."
+	    echo
+	    echo "The distribution mechanism is called RUG (Remote Update Gateway), and it is"
+	    echo "controlled and maintained by volunteers and some Computer Center"
+	    echo "personnel at all the sites that support Exptools.  This list of volunteers is"
+	    echo "also displayed using the 'providers' command."
+	    echo
+	    echo "The design of RUG and the decision about which tools are allowed to be"
+	    echo "distributed by it are under the control of a small group of volunteers called"
+	    echo "the Central Exptools Administrators.  The email address of this group is"
+	    echo "att!exptools.  Mail to this address will be routed to the person best able to"
+	    echo "handle the topic presented."
+	    echo
+	    echo "Please note that the tool providers and the administrative volunteers that"
+	    echo "support Exptools are not affiliated with any single organization, and as a"
+	    echo "result, the Exptools distribution generally does not recognize organizational"
+	    echo "boundaries.  This means that it makes no difference to us whether a new"
+	    echo "machine that wants Exptools is part of a Comp Center or not.  What is"
+	    echo "important is whether there is someone at that site who is willing to"
+	    echo "administer the Exptools userid and keep the distribution flowing.  The first"
+	    echo "person or organization to volunteer at a site usually gets the job."
+	    echo
+	} | ${PAGER:-pg}
+    ;;
+    newtools)
+	{
+	    echo
+	    echo "The command 'toolsubmit' can be used to submit information to the Exptools"
+	    echo "Administrators about a new tool to be considered for inclusion in Exptools."
+	    echo "The command 'toolman toolsubmit' will give you detailed information about"
+	    echo "how to use this command."
+	    echo
+	    echo  "The following is important information that potention providers of new tools"
+	    echo "should know."
+	    echo
+	    cat $TOOLS/lib/toolsubmit/newprovider
+	    echo
+	} | ${PAGER:-pg}
+    ;;
+    cmds)
+	{
+	    echo
+	    echo "The following are the common commands that can be used to get information"
+	    echo "about Exptools:"
+	    echo
+	    echo "COMMAND             EXPLANATION"
+	    echo "-------             -----------"
+	    echo "expinfo             Provides general information about Exptools to help"
+	    echo "                    users better understand how to work with the system."
+	    echo
+	    echo "-------"
+	    echo "providers           Show information about all tools and their providers,"
+	    echo "                    the support levels, machine types supported, the major"
+	    echo "                    Exptool administrators, and their email addresses."
+	    echo
+	    echo "provider <tool>     Show who provides the tool named <tool>, listing the"
+	    echo "                    machine types on which it is provided and its support"
+	    echo "                    level."
+	    echo
+	    echo "provider <file>     Show what tool contains the file named <file>, otherwise,"
+	    echo "                    same as the above."
+	    echo
+	    echo "-------"
+	    echo "toolnews            Show the latest news about all the Exptools."
+	    echo
+	    echo "toolnews -n         Show if there is any new Exptools news (useful in"
+	    echo "                    .profile files)."
+	    echo
+	    echo "toolnews <tool>     Show the latest news about the tool named <tool>."
+	    echo
+	    echo "-------"
+	    echo "toolman <tool>      Show the man page for tool named <tool>."
+	    echo
+	    echo "toolman toolman     Show the man page for the 'toolman' command (good to"
+	    echo "                    understand all the output options)."
+	    echo
+	    echo "toolman -X <tool>   Send the man page for <tool> to the default printer."
+	    echo
+	    echo "toolman Contents    Show the Table of Contents for all Exptools man pages."
+	    echo
+	    echo "toolman Index       Show the Permuted Index for all Exptools man pages."
+	    echo
+	    echo "-------"
+	    echo "ruginfo             Show details about how tools are shipped to this system"
+	    echo "                    using the Exptools RUG (Remote Update Gateway) code."
+	    echo
+	    echo "-------"
+	    echo "toolinfo            Show detailed information about all the OPTIONAL tools"
+	    echo "                    available for the local machine type.  Optional tools are"
+	    echo "                    the larger, more specialized tools that may not be on all"
+	    echo "                    systems."
+	    echo
+	    echo "toolinfo <tool>     Show detailed information about the OPTIONAL tool named"
+	    echo "                    <tool> if it is available for the local machine type."
+	    echo
+	    echo "toolinfo -l         Display a list of all the optional tools available on"
+	    echo "                    the current machine type."
+	    echo
+	    echo "-------"
+	    echo "toolsubmit          Submit a new tool to be considered for distribution"
+	    echo "                    with Exptools.  When called without arguments, this"
+	    echo "                    command explains what information is needed when"
+	    echo "                    submitting information about proposed new tools, and the"
+	    echo "                    basic rules such new tools should adhere to."
+	    echo
+	} | ${PAGER:-pg}
+    ;;
+    toolinfo)
+	echo
+	echo "The optional Exptools are usually larger and more complex than the standard"
+	echo "tools, and may not appear on all machine types.  Such tools may be removed"
+	echo "from some systems due to space considerations, unless the tool is requested"
+	echo "by users."
+	while
+	    toolinfo -l
+	    echo
+	    getans "Name of optional tool to be described ('q' to quit):"
+	    test "$ans" != "q"
+	do
+	    toolinfo $ans | ${PAGER:-pg}
+	done
+    ;;
+    admins)
+	providers admins | ${PAGER:-pg}
+    ;;
+    machines)
+	{
+	    providers types
+	    echo "                                NOTICE:"
+	    echo
+	    echo "For a new machine type to be considered for Exptools distribution, there must"
+	    echo "be"
+	    echo
+	    echo "  1) at least one machine of that type with DKHOST/CommKit software running"
+	    echo "     on it"
+	    echo "  2) with a Datakit MUX board accessible to the AT&T Corporate PSDN/CWAN"
+	    echo "     network,"
+	    echo "  3) that the owners will allow to be used as an Exptools manufacturing"
+	    echo "     machine."
+	    echo
+	    echo "Such a machine could be used to compile the necessary first set of tools to"
+	    echo "be used to distribute to other machines.  Please contact the Exptools Central"
+	    echo "Administrators at att!exptools to let us know of any new machine types"
+	    echo "meeting the above conditions that want Exptools."
+	    echo
+	} | ${PAGER:-pg}
+    ;;
+    probs)
+	problems | ${PAGER:-pg}
+    ;;
+    request)
+	requests | ${PAGER:-pg}
+    ;;
+    charges)
+	charges | ${PAGER:-pg}
+    ;;
+    opt)
+	echo
+	echo "The optional tool packages are generally larger and more complex than the"
+	echo "standard tool packages, and they are not offered to all machine types.  They"
+	echo "are often removed from client Exptools machines to save space unless there"
+	echo "are active users who want them on a given machine."
+	providers optional | ${PAGER:-pg}
+    ;;
+    std)
+	echo
+	echo "The standard tool packages are generally available on all Exptools machines"
+	echo "unless there are problems converting them.  They are the core tools of the"
+	echo "Exptools distribution."
+	providers standard | ${PAGER:-pg}
+    ;;
+    support)
+	echo
+	echo "The following explain the support levels listed with each tool package:"
+	providers support | ${PAGER:-pg}
+    ;;
+    ruginfo)
+	ruginfo | ${PAGER:-pg}
+    ;;
+    *)
+	echo "ERROR: Unknown request '$ACTION' encountered!"
+    esac
+done
+
+echo

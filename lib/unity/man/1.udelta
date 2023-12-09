@@ -1,0 +1,132 @@
+
+
+
+     uuuuddddeeeellllttttaaaa((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuuddddeeeellllttttaaaa((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          udelta - make a delta to a UNITY table stored under SCCS
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_d_e_l_t_a [-rSID] [-s] [-n] [-glist] [-m[mrlist]] [-y[comment]] \
+            [-p] file ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _u_d_e_l_t_a is used to introduce permanently changes in a UNITY
+          table stored under the Source Code Control System (SCCS).
+          _u_d_e_l_t_a works the same as the SCCS command _d_e_l_t_a(1) with the
+          following exceptions:
+
+          -    _u_d_e_l_t_a deltas two files, the UNITY table and the
+               description file (Dtable) for each table named.
+
+          -    Only tables can be named.  _u_d_e_l_t_a will not accept a
+               directory name or read from the standard input.  A
+               table name of "-" (indicating take the standard input)
+               is not valid.
+
+          -    The records in the tables are sorted by the first
+               attribute (which should be a key attribute) and
+               modified to be compatible with SCCS.  Sorting the
+               records by the first attribute reduces the chance that
+               a record will appear to be deleted and inserted during
+               a delta if it has only changed positions in the table.
+               The sorted records are broken into multiple lines of
+               500 characters or less.  A carrot (^) is placed at the
+               end of each record.  This will permit the records to be
+               reconstructed when they are unloaded from SCCS.
+
+          All keyletter arguments function as described for the SCCS
+          _d_e_l_t_a(1) command.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          The command
+
+          udelta -y"updated table" /usr/test/table
+
+          will used the files "table" and "Dtable" in the current
+          directory to update /usr/test/s.table.s and
+          /usr/test/s.Dtable, respectively.
+
+     FFFFIIIILLLLEEEESSSS
+          _u_d_e_l_t_a uses the same auxiliary files as _d_e_l_t_a(1), with one
+          additional file which is the modified table.
+
+          unity/udelta.c, zuadmin.c - the C source program
+          bin/udelta - the executable program
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+
+
+
+     PPPPaaaaggggeeee 1111                                          ((((pppprrrriiiinnnntttteeeedddd 1111////11119999////99990000))))
+
+
+
+
+
+
+     uuuuddddeeeellllttttaaaa((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuuddddeeeellllttttaaaa((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          A delta that changes only one record may cause more then one
+          line to be inserted and deleted, since long records are
+          split into more than one physical line.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _u_a_d_m_i_n(UNITY), _u_g_e_t(UNITY), _a_d_m_i_n(1), _d_e_l_t_a(1), _g_e_t(1)
+          Source Code Control User's Guide by L. E. Bonanni and C. P.
+          Salemi.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

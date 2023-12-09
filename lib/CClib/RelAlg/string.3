@@ -1,0 +1,65 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/string/s.string.3"
+.\"
+.PH "'STRING(3SB)'SBLIB C++ Library'STRING(3SB)'"
+.PF "'10/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910006'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910006'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+strstr - locate a substring within a string
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <sblib.h>
+
+.SO string.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The \*(St function locates the substring (\fIsubStr\fP) within the
+specified string (\fIstr\fP).  If the substring is found, \*(St returns
+a pointer to the first character of the substring.
+Note that the substring is not NULL terminated.
+If the substring is not found, \*(St returns a NULL pointer.
+.P
+The canonSpan() function converts spans of 1 or more occurences of the
+spanChar into a single occurence of the canonical length canLength.
+It searches fromStr and copies into toStr.  The calling function is
+responsible for allocating char arrays of the appropriate length for
+fromStr and toStr.  The default spanChar is space (' ') and the default
+canLength is 1.  This would convert spans of 1 or more spaces to a single
+space.  If the canLength were 0, all spaces would be eliminated.
+If the canLength were 7, all spans of 1 or more spaces would be converted
+to a span of 7 spaces.  The canonSpan() function returns a pointer to
+toStr.
+.P
+The split() function separates a string into newline separated lines
+based on lineLen.  Each internal newline-separated line that exceeds
+lineLen is broken into 2 or more newline-separated lines less than or equal to
+lineLen.  The line will be split on the lineSeparator character when possible.
+If the line can't be split on a lineSeparator
+because none occurs within lineLen characters, the line will be split at
+lineLen.
+If preserveSeparator is TRUE, the lineSeparator character will become the
+first character of the next line.  This does not occur when there was no
+original lineSeparator character (i.e. it had to be split at lineLen).
+The fromStr is searched and changes are made to the toStr.
+The calling function is responsible for allocating char arrays of the
+appropriate length for fromStr and toStr.  The split() function returns
+the number of \fIadditional\fP lines in the string, i.e. the number of
+newlines that it \fIadded\fP to the string.
+.P
+When called with the default arguments, split() will break the fromStr
+into lines of 80 characters or less using word-wrap (splitting on space
+and not preserving the space on the following line).
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO stringE.ex
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+string(3)
+.LE

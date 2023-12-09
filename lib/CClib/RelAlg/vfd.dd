@@ -1,0 +1,24 @@
+#ident "@(#) /sable/sdb/ra/sblib/vfd/s.vfd.dd"
+/*        Copyright (c) 1989,1991 AT&T All Rights Reserved         */
+
+class Vfd
+   {
+   friend class Vfile;
+   static Link2 freelist;
+   static int count;
+   static const int max_fd;
+   List_item *freelist_item;
+   unsigned long offset;
+   int _fd;
+   Boolean_t available, unlink_flag;
+   virtual void close();
+   virtual Boolean_t open();
+public:
+   Vfd(const char *name=(char *)0,const int flags=O_RDWR|O_CREAT);
+   ~Vfd();
+   char *const filename;
+   int openflags;
+   int fd();
+   virtual void notavail();
+   virtual void avail();
+   };

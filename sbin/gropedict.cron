@@ -1,0 +1,50 @@
+#!/usr/bin/ksh
+# GROPEDICT
+
+
+: ${LOCAL:=/usr/add-on/local}
+: ${NCMP:=/usr/add-on/ncmp}
+: ${TOOLS:=/usr/add-on/exptools}
+export LOCAL NCMP TOOLS
+
+
+WORDS=${LOCAL}/share/dict/words
+
+
+if [[ ! -r ${WORDS} ]] ; then
+  print -u2 "${0}: cannot read WORDS file=${WORDS}"
+  exit 1
+fi
+
+DICTDIR=${TOOLS}/var/grope
+DICTFILE=${DICTDIR}/dic_a
+
+FBIN=${LOCAL}/fbin
+if [[ ! -d ${FBIN} ]] ; then
+  FBIN=${NCMP}/fbin
+fi
+if [[ ! -d ${FBIN} ]] ; then
+  FBIN=${TOOLS}/fbin
+fi
+if [[ ! -d ${FBIN} ]] ; then
+  print -u2 "${0}: no function directory found"
+  exit 1
+fi
+FPATH=${FBIN}
+export FPATH
+
+pathadd PATH ${LOCAL}/bin
+pathadd LD_LIBRARY_PATH ${LOCAL}/lib
+
+pathadd PATH ${TOOLS}/bin
+pathadd LD_LIBRARY_PATH ${TOOLS}/lib
+
+
+if [[ -d ${DICTDIR} ]] ; then
+  if [[ ${WORDS} -nt ${DICTFILE} ]] ; then
+    gropedict ${WORDS} -d ${DICTDIR}
+  fi
+fi
+
+
+

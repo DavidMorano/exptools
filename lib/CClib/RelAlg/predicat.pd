@@ -1,0 +1,37 @@
+#ident "@(#) /sable/sdb/ra/rel/attribute/s.predicat.pd"
+/* Copyright (c) 1990, 1991 AT&T - All Rights Reserved */
+
+   friend class Attribute;      // makes use of the constructors
+   friend class Relation;       // uses the values of the members
+   friend ostream &operator<<(ostream &o,const Predicate &p);
+   const Op op;
+   const Compare_to compare_to;
+   union
+      {
+      const Predicate *p;       // left operand for &&, ||
+      const Attribute *a;       // left operand for everything except &&, ||
+      } left;
+   union
+      {
+      const Predicate *p;
+      const Attribute *a;
+      Int_t i;
+      Float_t f;
+      const char *s;
+      const Pattern *r;
+      } right;
+   Predicate(const Op op,const Predicate *r);
+                                                           // NOT
+   Predicate(const Op op,const Predicate *l,const Predicate *r);
+                                                           // AND,OR
+   Predicate(const Op op,const Attribute *l,const Attribute *r);
+                                                           // GT,LT,EQ,NE,GE,LE
+   Predicate(const Op op,const Attribute *l,const Int_t r);
+                                                           // GT,LT,EQ,NE,GE,LE
+   Predicate(const Op op,const Attribute *l,const Float_t r);
+                                                           // GT,LT,EQ,NE,GE,LE
+   Predicate(const Op op,const Attribute *l,const char *r);
+                                                           // GT,LT,EQ,NE,GE,LE
+   Predicate(const Op op,const Attribute *l,const Pattern *r);
+                                                           // MATCH, NOMATCH
+   ~Predicate();

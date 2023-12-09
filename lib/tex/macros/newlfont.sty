@@ -1,0 +1,140 @@
+%% 
+%% This is file `newlfont.sty', generated 
+%% on <1992/9/24> with the docstrip utility (2.0r).
+%% 
+%% The original source files were:
+%% 
+%% basefont.doc  (with options: `newlf')
+%% 
+%% Copyright (C) 1989-1992 by Frank Mittelbach, Rainer Schoepf. 
+%% All rights reserved. 
+%% 
+%% This file is part of the NFSS (New Font Selection Scheme) package. 
+%% 
+%% IMPORTANT NOTICE: 
+%% 
+%% You are not allowed to change this file. You may however copy 
+%% this file to a file with a different name and then change the copy 
+%% if you obey the restrictions on file changes described in 
+%% readme.mz. 
+%% 
+%% You are allowed to distribute this file under the condition that 
+%% it is distributed together with all files mentioned in readme.mz3. 
+%% If you receive only some of these files from someone, complain! 
+%% 
+%% You are NOT ALLOWED to distribute this file alone. You are NOT 
+%% ALLOWED to take money for the distribution or use of either this 
+%% file or a changed version, except for a nominal charge for copying 
+%% etc. 
+%% 
+%% For error reports in case of UNCHANGED versions see readme files. 
+%% 
+%% Please do not request updates from us directly. Distribution is 
+%% done through Mail-Servers and TeX organizations. 
+%% 
+\def\fileversion{v1.4d}
+\def\filedate{92/09/22}
+\def\docdate {92/09/22}
+
+%% \CheckSum{626}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\immediate
+  \write\sixt@@n{Style-Option: `newlfont'
+ \fileversion\space <\filedate> (FMi and RmS)}
+\immediate
+ \write\sixt@@n{English Documentation
+  \@spaces\@spaces\space <\docdate> (FMi and RmS)}
+ \ifx\@latexerr\undefined\else
+ \@ifundefined{selectfont}
+     {\@latexerr{%
+       `newlfont' style option can only be used
+        with the new font selection scheme}\@eha
+       \endinput}{}
+ \fi
+\def\newfont#1#2{\@ifdefinable#1{\global
+                        \font#1=#2\relax}}
+\def\symbol#1{\char #1\relax}
+\def\@gobbletwo#1#2{}
+\let\load\@gobbletwo
+\def\@setsize#1#2#3#4{\@nomath#1%
+    \ifx\protect\relax
+      \let\@currsize#1%
+    \fi
+    \fontsize{#4}{#2}\selectfont}
+\def\prm{\not@math@alphabet\rm\mathrm
+         \fontfamily\rmdefault\selectfont}
+\def\psf{\not@math@alphabet\sf\mathsf
+         \fontfamily\sfdefault\selectfont}
+\def\ptt{\not@math@alphabet\tt\relax
+         \fontfamily\ttdefault\selectfont}
+\def\psl{\not@math@alphabet\sf\relax
+         \fontshape\sldefault\selectfont}
+\def\psc{\not@math@alphabet\sc\relax
+         \fontshape\scdefault\selectfont}
+\def\pit{\not@math@alphabet\it\relax
+         \fontshape\itdefault\selectfont}
+\def\pbf{\not@math@alphabet\bf\mathbf
+         \fontseries\bfdefault\selectfont}
+\def\em{\protect\pem}
+\def\pem{\@nomath\em \ifdim \fontdimen\@ne\font >\z@
+                       \normalshape \else \it \fi}
+\def\not@math@alphabet#1#2{%
+   \ifmmode
+     \ifx#2\relax
+       \errhelp{%
+            In NFSS fonts you need to define a new math alphabet^^J%
+            if you want to use a special font in math mode.%
+            }%
+     \else
+       \errhelp{%
+            Please use the math alphabet #2instead of
+            the #1command.%
+            }%
+     \fi
+     \errmessage{Command \noexpand#1not supported in math mode}%
+   \fi}
+\ifx\bffam\@undefined
+  \new@mathgroup\bffam
+  \new@mathgroup\sffam
+\fi
+\new@internalmathalphabet\mathbf\bffam{cmr}{bx}{n}
+\new@internalmathalphabet\mathsf\sffam{cmss}{m}{n}
+ \let\math@bgroup\begingroup
+ \def\math@egroup#1{#1\endgroup}
+ \ifx\lyfam\undefined
+ \new@mathgroup\lyfam
+ \define@mathgroup\mv@normal\lyfam
+       {lasy}{m}{n}
+ \define@mathgroup\mv@bold\lyfam
+       {lasy}{b}{n}
+ \edef\@tempa{\hexnumber@\lyfam}
+ \mathchardef\mho"0\@tempa 30
+ \mathchardef\Join"3\@tempa 31
+ \mathchardef\Box"0\@tempa 32
+ \mathchardef\Diamond"0\@tempa 33
+ \mathchardef\leadsto"3\@tempa 3B
+ \mathchardef\sqsubset"3\@tempa 3C
+ \mathchardef\sqsupset"3\@tempa 3D
+ \mathchardef\lhd"3\@tempa 01
+ \mathchardef\unlhd"3\@tempa 02
+ \mathchardef\rhd"3\@tempa 03
+ \mathchardef\unrhd"3\@tempa 04
+ \fi
+\endinput
+%% 
+%% End of file `newlfont.sty'.

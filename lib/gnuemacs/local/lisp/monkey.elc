@@ -1,0 +1,810 @@
+
+(defvar monkey-be-fast nil "\
+Controls whether files displayed are stated")
+
+(defvar monkey-mode-map nil "\
+Local keymap for monkey-mode buffers.")
+
+(setq monkey-mode-map (make-keymap))
+
+(suppress-keymap monkey-mode-map)
+
+(define-key monkey-mode-map "" (quote monkey-mark-by-regexp))
+
+(define-key monkey-mode-map "+" (quote monkey-mark-by-regexp))
+
+(define-key monkey-mode-map "=" (quote monkey-mark-by-regexp))
+
+(define-key monkey-mode-map "m" (quote monkey-mark-by-regexp))
+
+(define-key monkey-mode-map "" (quote monkey-mark-this))
+
+(define-key monkey-mode-map "Ì" (quote monkey-mark-all))
+
+(define-key monkey-mode-map "´" (quote monkey-mark-all))
+
+(define-key monkey-mode-map "Ω" (quote monkey-mark-all))
+
+(define-key monkey-mode-map "ç" (quote monkey-mark-all))
+
+(define-key monkey-mode-map "+" (quote monkey-mark-this))
+
+(define-key monkey-mode-map "=" (quote monkey-mark-this))
+
+(define-key monkey-mode-map "" (quote monkey-unmark-by-regexp))
+
+(define-key monkey-mode-map "" (quote monkey-unmark-all))
+
+(define-key monkey-mode-map "u" (quote monkey-unmark-by-regexp))
+
+(define-key monkey-mode-map "ı" (quote monkey-unmark-all))
+
+(define-key monkey-mode-map "u" (quote monkey-unmark-this))
+
+(define-key monkey-mode-map "" (quote monkey-unmark-this-back))
+
+(define-key monkey-mode-map "t" (quote monkey-toggle-this))
+
+(define-key monkey-mode-map "t" (quote monkey-toggle-marked-by-regexp))
+
+(define-key monkey-mode-map "" (quote monkey-toggle-marked-by-regexp))
+
+(define-key monkey-mode-map "Ù" (quote monkey-toggleall))
+
+(define-key monkey-mode-map "" (quote monkey-next-line))
+
+(define-key monkey-mode-map "" (quote monkey-previous-line))
+
+(define-key monkey-mode-map " " (quote monkey-next-line))
+
+(define-key monkey-mode-map "n" (quote monkey-next-line))
+
+(define-key monkey-mode-map "p" (quote monkey-previous-line))
+
+(define-key monkey-mode-map "Ó" (quote monkey-next-directory))
+
+(define-key monkey-mode-map "" (quote monkey-previous-directory))
+
+(define-key monkey-mode-map "" (quote monkey-next-same-level))
+
+(define-key monkey-mode-map "" (quote monkey-previous-same-level))
+
+(define-key monkey-mode-map "º" (quote monkey-beginning-of-buffer))
+
+(define-key monkey-mode-map "æ" (quote monkey-end-of-buffer))
+
+(define-key monkey-mode-map "ˆ" (quote monkey-scroll-down))
+
+(define-key monkey-mode-map "" (quote monkey-scroll-up))
+
+(define-key monkey-mode-map "n" (quote monkey-next-same-level))
+
+(define-key monkey-mode-map "p" (quote monkey-previous-same-level))
+
+(define-key monkey-mode-map "" (quote monkey-past-subdirectory))
+
+(define-key monkey-mode-map "" (quote monkey-directory-heading))
+
+(define-key monkey-mode-map "" (quote monkey-mark-subdirectory))
+
+(define-key monkey-mode-map "s" (quote monkey-mark-subdirectory))
+
+(define-key monkey-mode-map "^" (quote monkey-directory-heading))
+
+(define-key monkey-mode-map "c" (quote monkey-copy-by-regexp))
+
+(define-key monkey-mode-map "r" (quote monkey-rename-by-regexp))
+
+(define-key monkey-mode-map "Ë" (quote monkey-unhide-all))
+
+(define-key monkey-mode-map "#" (quote monkey-mark-auto-save-files))
+
+(define-key monkey-mode-map "*" (quote monkey-mark-executables))
+
+(define-key monkey-mode-map "." (quote monkey-mark-dotfiles))
+
+(define-key monkey-mode-map "/" (quote monkey-mark-directories))
+
+(define-key monkey-mode-map "?" (quote monkey-summary))
+
+(define-key monkey-mode-map "@" (quote monkey-mark-links))
+
+(define-key monkey-mode-map "A" (quote monkey-gee))
+
+(define-key monkey-mode-map "^" (quote monkey-parent))
+
+(define-key monkey-mode-map "`" (quote monkey-parent))
+
+(define-key monkey-mode-map "\\" (quote monkey-parent))
+
+(define-key monkey-mode-map "!" (quote monkey-shell-command))
+
+(define-key monkey-mode-map "&" (quote monkey-background))
+
+(define-key monkey-mode-map "C" (quote monkey-copy-marked))
+
+(define-key monkey-mode-map "c" (quote monkey-copy-this))
+
+(define-key monkey-mode-map "D" (quote monkey-delete-marked))
+
+(define-key monkey-mode-map "d" (quote monkey-delete-this))
+
+(define-key monkey-mode-map "E" (quote monkey-edit-marked))
+
+(define-key monkey-mode-map "e" (quote monkey-edit-this))
+
+(define-key monkey-mode-map "F" (quote monkey-edit-marked))
+
+(define-key monkey-mode-map "f" (quote monkey-edit-this))
+
+(define-key monkey-mode-map "g" (quote monkey-gee))
+
+(define-key monkey-mode-map "h" (quote monkey-hide-this))
+
+(define-key monkey-mode-map "H" (quote monkey-hide-marked))
+
+(define-key monkey-mode-map "j" (quote monkey-edit-this-and-trash-this-buffer))
+
+(define-key monkey-mode-map "k" (quote monkey-mark-by-type))
+
+(define-key monkey-mode-map "l" (quote monkey-list-this-long))
+
+(define-key monkey-mode-map "L" (quote monkey-list-long))
+
+(define-key monkey-mode-map "m" (quote monkey-mark-this))
+
+(define-key monkey-mode-map "o" (quote monkey-edit-this-other-window))
+
+(define-key monkey-mode-map "O" (quote monkey-edit-marked-other-window))
+
+(define-key monkey-mode-map "q" (quote monkey-toggle-quietness))
+
+(define-key monkey-mode-map "r" (quote monkey-rename-this))
+
+(define-key monkey-mode-map "R" (quote monkey-rename-marked))
+
+(define-key monkey-mode-map "s" (quote monkey-mung-this-subdirectory))
+
+(define-key monkey-mode-map "S" (quote monkey-mung-marked-subdirectories))
+
+(define-key monkey-mode-map "V" (quote monkey-edit-marked-and-trash-this-buffer))
+
+(define-key monkey-mode-map "v" (quote monkey-edit-this-and-trash-this-buffer))
+
+(define-key monkey-mode-map "w" (quote monkey-copy-this-file-name))
+
+(define-key monkey-mode-map "W" (quote monkey-copy-marked-file-names))
+
+(define-key monkey-mode-map "x" (quote monkey-mark-by-extension))
+
+(define-key monkey-mode-map "~" (quote monkey-mark-backup-files))
+
+(define-key monkey-mode-map "]" (quote monkey-shove))
+
+(put (quote monkey-mode) (quote mode-class) (quote special))
+
+(defun monkey-mode nil "\
+Mode for \"editing\" directory listings.
+In monkey, you are \"editing\" a list of the files in a directory.
+You can move using the usual cursor motion commands.
+Letters no longer insert themselves.
+
+In monkey, you may operate on any number of files at a time.  You do
+this by `marking' those files you are interested in.  If you do not
+mark any files, then the file on the line containing the point is
+considered `marked'.  
+
+Many commands come in pairs, one version that affects the file on the
+line with the point, and one version that affects the marked files.
+In the default bindings, these pairs are bound to the lower and
+uppercase of some character.
+
+The format of lines in a monkey buffer is important.  It consists of
+three fields: <markfield><typefield> <filename>.  The markfield is
+empty for unmarked files, and is a `+' for marked files.  The
+typefield contains a character describing the type of the file: `/'
+for directories, `@' for symbolic links, `*' for executables, `,' for
+character devies, and `$' for block devices. For example, a marked
+directory named `foo' would look like
+
++/ foo
+
+while an unmarked text file named `bar' would look like:
+
+   bar
+
+
+The monkey-mode commands are summarized below.  There are many
+intuitive aliases for the more common commands (for example, `+' is an
+alias for `m' to mark the current file).  These aliases are not
+summarized below.
+
+Basic movement commands:
+n 	move down one line.
+SPACE	move down one line.
+p	move up one line.
+
+Note: with a prefix arg, all movement commands iterate.
+
+
+Basic marking commands:
+
+Note: with a prefix arg, all marking commands become
+unmarking commands, and vice versa.  Also, ESC is a general
+prefix meaning `do this to everything'.
+
+RET	mark this file.
+u	unmark this file.
+DEL	unmark and move backwards.
+t	toggle this mark.
+ESC m	mark everything
+ESC u	unmark everything
+ESC t	toggle all marks
+~	mark all backup files.
+#	mark all check point files.
+.	mark all `dot' files.
+@	mark all symbolic links.
+*       mark all executables.
+/	mark all directories.
+k	mark files by typefield.
+	(e.g. k/ is an alias for /)
+
+
+Basic Operations.
+e	edit this file.
+E	edit marked files.
+v	edit this file and trash this buffer.
+V	edit maked files and trash this buffer.
+o	edit this file in the other window.
+O	edit this file in the other windows
+l	show a long directory listing for the current file.
+L	show a long directory listing for the marked files.
+c	copy (this can take a dir as destination).
+C	copy marked files.
+r	rename.
+R	rename marked files.
+d	delete.
+D	delete named files.
+w	copy the current filename to the kill ring.
+W	copy the marked filenames to the kill ring.
+]	shove the marked filenames into a scratch buffer
+	(especially useful with shell-comman-on-region).
+!	execute a shell command on the marked files.
+&	execute a background command on the marked files.
+
+
+Subdirectory commands:
+s	expand in-situ the current subdirectory.
+S	expand in-situ the marked subdirectories.
+	With a prefix arg, s and S unexpand subdirectories.
+C-cC-s	mark this subdirectory.
+C-uC-cC-s unmark this subdirectory. (remember the rule about marking 
+		commands and prefix args?)
+C-cC-f 	move past this subdirectory.
+C-cC-b	move before this subdirectory.
+C-cC-n	move forward skipping subdirectories.
+C-cC-p	move backward skipping subdirectories.
+ESC n	move to the next directory.
+ESC p 	move to the previous directory.
+C-c^	move to the directory line for this subdir.
+
+Hiding commands:
+h	hide this file.
+H	hide marked files.
+	With a prefix arg, unhide rather than hide.
+ESC h	unhide at this line.
+ESC H	unhide all hidden files.
+
+Regexp commands:
+C-cC-m	mark files matching a regexp.
+C-cu	unmark files matching a regexp.
+C-cc	copy by regexp (see below).
+C-cr	rename by regexp.
+x       mark files matching .*\\.REGEXP.  REGEXP is prompted for.
+        (i.e. x o <RET> marks all object files)
+
+Copying and renaming by regexp is an unusual feature.  It is useful
+for operating on groups of files, when the name changes are regular. 
+For example, suppose that in some directory, I have a groop of files with
+names like m-sun.h, m-ibmrt.h etc., and I wish to move them all to a
+directory called `machines', stripping them of the `m-' affix in the process.
+Then I would 
+1) Mark them using `C-cm m-\\(.*\\) RET'
+2) Rename them using `C-cr machines/\\1 RET'
+
+Pretty cool, huh?
+
+Misc commands:
+q	turn off file stating.  When file stating is off, monkey is very
+        fast, but all type fields show up as '?'.
+g	use this when you find yourself saying `Gee, that can't be right!'
+^	edit the parent of this directory." (byte-code "  àÀâàÃâàÕâàƒâà∆âà∆âàŒ!à∆â	àœ–!à—“!á" [major-mode mode-name mode-line-buffer-identification case-fold-search nil buffer-read-only t selective-display monkey-mode-map markive-display kill-all-local-variables monkey-mode "Monkey" ("Monkey: %17b") use-local-map run-hooks monkey-mode-hook message "Does your minkey have a license?"] 5))
+
+(defun tail (string1 string2) "\
+Strip string1 from string2 if it is present." (byte-code "	GG
+YÖ ƒ	≈O\"É 
+OÇ *á" [n string1 y string2 string= 0] 5))
+
+(defun abs (x) (byte-code "¬WÉ [Ç á" [x t 0] 2))
+
+(defun signum (x) (byte-code "¡WÉ
+ ¬Ç √á" [x 0 -1 1] 2))
+
+(defun delete-directory (file) "\
+This little looser of a function should be in C.
+And should do error checking." (byte-code "¬√¿¿¿	%á" [nil file call-process "rmdir"] 6))
+
+(defun delete-file-properly (file &optional ok-if-directory) "\
+Delete FILE.  If FILE is a nonempty directory, signal an error.  If FILE
+is an empty directory, the course of action depends on the optional parameter
+OK-IF-DIRECTORY.  If nil, an error is raised, if numeric, the user is asked
+for permission to delete it, otherwise, the file is silently deleted." (interactive "fDelete File: 
+p") (byte-code "√àƒ!?É ≈∆\"ÇV ¡ƒ!@=?É  «!ÇV 
+?É, ≈»\"ÇV …!G =?É= ≈À\"ÇV Ã
+!?ÜJ ÕŒœ\"!ÉS –!ÇV ≈—!á" [file t ok-if-directory nil file-attributes error "You don't have access to %s." delete-file "%s is a directory." directory-files 2 "%s is not an empty directory." numberp y-or-n-p format "Delete directory %s? " delete-directory "%s not deleted."] 13))
+
+(defun copy-file-properly (file destination &optional ok-if-already-exists) "\
+Copy FILE to DESTINATION. If DESTINATION is a directory, 
+then copy FILE into DESTINATION." (interactive "fCopy file: 
+fCopy to: 
+p") (byte-code "ƒà≈	!?Ö ≈
+!É ∆
+!«	!PÇ 
+»	#à)á" [real-destination file destination ok-if-already-exists nil file-directory-p file-name-as-directory file-name-nondirectory copy-file] 8))
+
+(defun rename-file-properly (file newname &optional ok-if-already-exists) "\
+Rename FILE as NEWNAME.  If NEWNAME is the name of a directory,
+then move FILE to that directory. See rename-file for more." (interactive "fRename File: 
+FRename to: 
+p") (byte-code "ƒà≈	!É ∆	!«
+!PÇ 	»
+#à)á" [real-destination destination file ok-if-already-exists nil file-directory-p file-name-as-directory file-name-nondirectory rename-file] 7))
+
+(defun eol-point (&optional count) "\
+Return the point at the end of the current line." (byte-code "ä¡!à`)á" [count end-of-line] 2))
+
+(defun bol-point (&optional count) "\
+Return the point at the beginning of the current line." (byte-code "ä¡!à`)á" [count beginning-of-line] 2))
+
+(setq monkey-status-fields-regexp "[ +&]. *")
+
+(setq monkey-filename-regexp (concat monkey-status-fields-regexp "\\(\\([^
+/]\\|\\(/[^
+]\\)\\)*\\)"))
+
+(setq monkey-marked-file-regexp (concat "^\\+. *" "\\(\\([^
+/]\\|\\(/[^
+]\\)\\)*\\)"))
+
+(defvar monkey-always-hide-regexp nil "\
+*Regexp matching those files which should be hidden after a 
+directory is listed in a minkey buffer.")
+
+(defun monkey-filetype nil "\
+Return the file type of the current file.  This assumes there is a
+filename on this line." (byte-code "ä¿ à`Tf)á" [beginning-of-line] 2))
+
+(defun monkey-filename-beginning (&optional important) "\
+Return the point position of the first char of the filename on the 
+current monkeybuffer line.  If the optional parameter IMPORTANT is
+non-nil, then signal an error if there is no filename on this line.
+Otherwise, returns nil if no file is found." (byte-code "äƒ à≈!É ∆«!Ç 	É »…!Ç √)á" [monkey-filename-regexp important t nil beginning-of-line looking-at match-beginning 1 error "There is no file on this line."] 5))
+
+(defun monkey-filename-end (&optional important) "\
+Return the point position of the end of the filename on the 
+current monkeybuffer line.  If the optional parameter IMPORTANT is
+non-nil, then signal an error if there is no filename on this line.
+Otherwise, returns nil if no file is found." (byte-code "äƒ à≈!É ∆«!Ç 	É »…!Ç √)á" [monkey-filename-regexp important t nil beginning-of-line looking-at match-end 1 error "There is no file on this line."] 5))
+
+(defun monkey-filename (&optional important) "\
+Return the filename on the current line.  If the optional parameter
+IMPORTANT is nil, then signal an error. Otherwise, return nil if no
+file is found." (byte-code "äƒ à≈!É ∆«»!…»!\"Ç  	É  À!Ç  √)á" [monkey-filename-regexp important t nil beginning-of-line looking-at buffer-substring match-beginning 1 match-end error "There is no file on this line."] 7))
+
+(defconst monkey-insert-distance 2 "\
+*Number of spaces to indent for each level of subdirectoriness. This can
+be any number greater than 0.")
+
+(defun occurences (char string) "\
+Return the number of occurences of CHAR in STRING." (byte-code "	G≈≈
+WÖ\" 	
+H=Ö Tâà
+TâàÇ à+á" [len string x total char 0] 4))
+
+(defun monkey-insert-filename (name &optional top-level) "\
+Insert a line for NAME in the current buffer.  Name should be a path
+specification relative to the current directory." (byte-code "¡É
+ 
+Ç … À
+!=É Ã
+!Ç 
+\"Ü& ÕÀ
+!=É- ŒÇ6 œ–Õ
+\"\"T— àoÜ@ “cà”‘ÉL ’Çk ÷
+!ÉV ÕÇk ◊
+!É` ÿÇk Ÿ
+!Éj ‘Çk ’\"à⁄€\"à”‘
+\"+á" [buffer-read-only nil name top-level default-directory indent-spaces monkey-insert-distance monkey-be-fast t tail 126 string-to-char expand-file-name 47 1 * occurences end-of-line 10 insert " " 63 file-directory-p file-symlink-p 64 file-readable-p insert-char 32] 15))
+
+(defun monkey-sorted-insert-filename (name &optional no-unhide) "\
+Move to the alphabetically correct place, and insert NAME.
+Optional NO-UNHIDE prevents dealing with hidden files." (byte-code "¡≈∆«
+!=É »
+!Ç 
+\"Ü … àä ÀçbàÃ e=?É0 ÕŒ!Ç8 ebàœcàebà–
+!)àÜD — *á" [buffer-read-only nil name default-directory no-unhide tail 126 string-to-char expand-file-name monkey-temp-unhide FOUND-POS (byte-code "¿¡!á" [monkey-map-file (lambda nil (if (not (string-lessp (monkey-filename) name)) (throw (quote FOUND-POS) (point))))] 2) bol-point forward-line -1 "
+" monkey-insert-filename monkey-un-temp-unhide] 9))
+
+(defun monkey-delete-line nil "\
+Remove the current file line from a monkey buffer." (byte-code "¡√ àoÜ ƒ≈!àmÜ `f
+∆=Ü 
+«=)?Ö) »≈!àÇ àoÖ1 »≈!)á" [buffer-read-only nil char beginning-of-line backward-delete-char 1 10 13 delete-char] 5))
+
+(defun monkey-expanded-p nil "\
+Returns *t* if the current filename is that of an expanded subdir" (byte-code "¡¬¿!f=á" [t 47 monkey-filename-end] 3))
+
+(defun monkey-hide-line nil "\
+Hide the current file line.  If the file is the name of an expanded 
+subdir, then hide the entire subdir." (byte-code "¡ƒ 
+Ö ≈ ä∆ à« àoÜ »…!à cà
+Ö, ÀÃÕŒP!œP\")+á" [buffer-read-only nil expanded name monkey-expanded-p monkey-filename monkey-unmark beginning-of-line backward-delete-char 1 13 monkey-map-matches monkey-hide-line regexp-quote "/" ".*"] 10))
+
+(defun monkey-temp-unhide nil "\
+Unhide all hidden lines temporarily." (byte-code "¡äebà¬√ƒ\"))á" [buffer-read-only nil replace-string " " "
+&"] 3))
+
+(defun monkey-un-temp-unhide nil "\
+c.f. monkey-temp-unhide" (byte-code "¡äebà¬√ƒ\"))á" [buffer-read-only nil replace-string "
+&" " "] 3))
+
+(defun bounded-replace-string (from to start end) (byte-code "äbà∆	
+√#Ö «√≈#àÇ )á" [start from end t to nil search-forward replace-match] 6))
+
+(defun monkey-unhide-line (&optional fail-silently mark-unhidden-lines) "\
+Unhide files hidden on this line." (byte-code "¡≈éä∆ à«»… ¬#Ü Ü  À!à∆ àÉ* ÃÕŒ`… $Ç2 œ`… –—¬%à∆ à—`f=ÖD “”!àÇ6 )))á" [buffer-read-only nil t fail-silently mark-unhidden-lines ((byte-code "¿á" [nil] 1)) beginning-of-line search-forward "" eol-point error "Nothing is hidden here!" bounded-replace-string " " "
++" subst-char-in-region 13 10 delete-char 1] 14))
+
+(defun monkey-list-directory (&optional directory) "\
+Insert a directory listing of the default directory or optionally of DIRECTORY." (byte-code "	Ü 
+	?∆«»	ƒ#\"àÖ … \"*á" [dir directory default-directory top-level nil monkey-always-hide-regexp mapcar (lambda (x) (monkey-insert-filename x top-level)) directory-files monkey-map-matches monkey-hide-line] 6))
+
+(defun monkey-expand-subdirectory nil "\
+Expand in-situ the contents of a subdirectory." (byte-code "≈¡!∆!ƒ«!?Ö »…\"à À
+\"Ü!  Ã
+\"Ö( »Õ\"àŒ bà`fœ=Ö8 »–\"àœcàä—!)+á" [name t base-name buffer-read-only nil monkey-filename file-name-nondirectory file-directory-p error "%s is not a directory." string= "." ".." "Why would you expand `%s'?" monkey-filename-end 47 "%s has already been expanded." monkey-list-directory] 11))
+
+(defun monkey-delete-matching-lines (regexp) "\
+Delete all the lines that match regexp.  This effects 
+hidden as well as visible lines." (byte-code "äebà¬√	ƒR≈\"àebà¬∆	ƒR≈\"àebà¬«»\"àebà¬…≈\")á" [monkey-status-fields-regexp regexp replace-regexp "^" "\\([/
+]\\|$\\)" "" "" "
+
+" "
+" "
+$"] 6))
+
+(defun monkey-unexpand-subdirectory nil "\
+Unexpand in-situ the contents of a subdirectory." (byte-code "≈ Ü ∆«!à»¡!√… P!ÀPÃ bàÕ«!àäŒœ\")à–!+á" [name t buffer-read-only nil subdir-regexp monkey-expanded-p monkey-directory-heading 1 monkey-filename regexp-quote "/" ".*" monkey-filename-end delete-char monkey-map-matches (lambda nil (monkey-unhide-line t)) monkey-delete-matching-lines] 9))
+
+(defun monkey-mark nil "\
+Mark the current file line." (byte-code "√¿!àä¬ƒ à≈∆!à«c))á" [t buffer-read-only nil monkey-filename beginning-of-line delete-char 1 43] 4))
+
+(defun monkey-unmark nil "\
+Unmark the current file line." (byte-code "√¿!àä¬ƒ à≈∆!à«c))á" [t buffer-read-only nil monkey-filename beginning-of-line delete-char 1 " "] 4))
+
+(defun monkey-marked-p nil "\
+True if the current file line is marked." (byte-code "ä¿ à`f¡=)á" [beginning-of-line 43] 3))
+
+(defun monkey-toggle nil "\
+Change the mark status of the current line." (byte-code "¿ É
+ ¡ Ç ¬ á" [monkey-marked-p monkey-unmark monkey-mark] 4))
+
+(defun nice-monkey nil "\
+Make everything look nice." (byte-code "ä¡¬ä√ à`)¿#)Ö ƒ à≈ Ü `bá" [t re-search-backward "" beginning-of-line forward-line monkey-filename-beginning] 5))
+
+(defun monkey-map-file (fun) "\
+Apply FUNCTION to each fileline in the buffer." (byte-code "äebàm?Ö ¬ Ö √¡\"àƒ àÇ )à≈ á" [fun nil monkey-filename apply forward-line nice-monkey] 5))
+
+(defun monkey-map-matches (function regexp) "\
+Apply FUNCTION to each file line matching REGEXP.
+The REGEXP must match the entire file name." (byte-code "äebà∆	«Q¬√#Ö5 »…!à  fÀ=Ö! TâàÖ0 `UÖ0 Ã¬\")àÇ )àÕ á" [monkey-status-fields-regexp regexp nil t end function re-search-forward "\\([
+]\\|$\\)" forward-char -1 monkey-filename-end 47 apply nice-monkey] 7))
+
+(defun monkey-map-type (function typefield) "\
+Apply FUNCTION to each file that has TYPEFIELD in its type field." (byte-code "¿¡!á" [monkey-map-file (lambda nil (and (eq (monkey-filetype) typefield) (apply function nil)))] 2))
+
+(defun monkey-map-marked (function &optional dont-unmark call-on-any-line) "\
+Apply FUNCTION to each file line which is marked.
+Optional DONT-UNMARK if non-nil, means don't unmark marked lines.
+Optional CALL-ON-ANY-LINE means apply this function even if no files are
+marked and there is no mark on the current line." (byte-code "¡äebà«
+¡√#Ö! √âàÜ » à…¡\"àÇ )àÜ8 ?Ö1  √!?Ü8 …¡\"àÀ )á" [were-any nil monkey-marked-file-regexp t dont-unmark function call-on-any-line re-search-forward monkey-unmark apply monkey-filename nice-monkey] 7))
+
+(defun monkey-next-line (&optional prefix) "\
+Move to the next line of a monkey buffer." (interactive "p") (byte-code "¡à¬!à√ á" [prefix nil forward-line nice-monkey] 3))
+
+(defun monkey-previous-line (&optional prefix) "\
+Move to the previous line of a monkey buffer." (interactive "p") (byte-code "¡à¬Ü √[!á" [prefix nil monkey-next-line 1] 2))
+
+(defun monkey-beginning-of-buffer nil "\
+Move to the beginning of a monkey buffer." (interactive) (byte-code "¿àebà¡ á" [nil nice-monkey] 2))
+
+(defun monkey-end-of-buffer nil "\
+Move to the bottom of a monkey buffer." (interactive) (byte-code "¿àdbà¡ á" [nil nice-monkey] 2))
+
+(defun monkey-scroll-up (&optional prefix) "\
+Scroll up nicely in a monkey-buffer" (interactive "p") (byte-code "¬à√Ö 	!àƒ á" [current-prefix-arg prefix nil scroll-up nice-monkey] 3))
+
+(defun monkey-scroll-down (&optional prefix) "\
+Scroll down nicely in a monkey-buffer" (interactive "p") (byte-code "¬à√Ö 	!àƒ á" [current-prefix-arg prefix nil scroll-down nice-monkey] 3))
+
+(defun monkey-next-directory (&optional count) "\
+Move forward to the next directory." (interactive "p") (byte-code "¬à√Ü ƒ!≈Ü ƒ!ä∆VÖ% «»çàSâàÇ à`)b*à… á" [count direction nil abs 1 signum 0 found (byte-code "m?Ö ¬!à√ Ö ƒ≈¡\"àÇ  à∆«!á" [direction nil forward-line monkey-expanded-p throw found error "No more directories."] 6) nice-monkey] 5))
+
+(defun monkey-previous-directory (&optional count) "\
+Move backward to the previous directory." (interactive "p") (byte-code "¡à¬Ü √[!á" [count nil monkey-next-directory 1] 2))
+
+(defun monkey-directory-heading (count) "\
+Move to the line containing the directory name for the current
+subdirectory." (interactive "p") (byte-code "¬à√Ü ƒ!≈VÖ4 ∆« !	Ü »…!àebà À	!ÃP!)àÕ àSâàÇ
+ )àŒ á" [count target-name nil abs 1 0 file-name-directory monkey-filename error "You are not in a subdirectory." re-search-forward regexp-quote "\\(.*\\)?$" beginning-of-line nice-monkey] 10))
+
+(defun monkey-past-subdirectory (count) "\
+Move past one extreme of the current subdirectory. This is of questionable
+worth if
+ the buffer is not sorted alphabetically." (interactive "p") (byte-code "ƒà≈Ü ∆!«Ü ∆!»VÖS … ?Ö!  ∆!àÀ√!ÃP	»VÉ6 Õ
+ƒ√#Ç; Œ
+ƒ√#ÖE ∆∆\\àÇ( àœ	!)àSâàÇ *à– á" [count direction dirname t nil abs 1 signum 0 monkey-expanded-p monkey-directory-heading monkey-filename "/" search-forward search-backward forward-line nice-monkey] 11))
+
+(defun monkey-before-subdirectory (count) "\
+Move before the current subdirectory." (interactive "p") (byte-code "¡à¬[!á" [count nil monkey-past-subdirectory] 2))
+
+(defun monkey-depth nil "\
+Return an integer describing the level of subdirectory nesting.
+This integer is NOT the level of subdirectory nesting, but can be used
+to decide which of two files is nested deeper." (byte-code "¡¿!¬ Zá" [t monkey-filename-beginning bol-point] 4))
+
+(defun monkey-next-same-level (&optional count) "\
+Move to the next line which is at the same depth of subdirectoriness." (interactive "p") (byte-code "√àƒ ≈	Ü
+ ∆!«	Ü ∆!	»VÖ? …
+!àoÜ+ mÜ+ ƒ X?Ö6 …
+!àÇ à	SâàÇ +à  á" [depth count direction nil monkey-depth abs 1 signum 0 forward-line nice-monkey] 9))
+
+(defun monkey-previous-same-level (&optional count) "\
+Move to the previous line which is at the same depth of subdirectoriness." (interactive "p") (byte-code "¡à¬Ü √[!á" [count nil monkey-next-same-level 1] 2))
+
+(defun monkey-action-and-move (function &optional count move-first) "\
+Provide the apply-and-move semantics of the -this functions.
+FUNCTION is the function to apply to each line, COUNT is a repitition count
+(may be nil) and the optional MOVE-FIRST, if non-nil, means move before 
+applying the function." (byte-code "≈	Ü ∆!«	Ü ∆!	»VÖ4 
+Ö …!à ƒ\"à
+?Ö+ …!à	SâàÇ àÀ *á" [direction count move-first function nil signum 1 abs 0 forward-line apply nice-monkey] 8))
+
+(defun monkey-mark-this (&optional count) "\
+Mark and move to the next line." (interactive "p") (byte-code "¡à¬√\"á" [count nil monkey-action-and-move monkey-mark] 3))
+
+(defun monkey-unmark-this (&optional count) "\
+Unmark and move to the next line." (interactive "p") (byte-code "¡à¬√\"á" [count nil monkey-action-and-move monkey-unmark] 3))
+
+(defun monkey-toggle-this (&optional count) "\
+Unmark and move to the next line." (interactive "p") (byte-code "¡à¬√\"á" [count nil monkey-action-and-move monkey-toggle] 3))
+
+(defun monkey-mark-this-back (&optional count) "\
+Mark this line and move backwards one line." (interactive "p") (byte-code "¡à¬√Ü	 ƒ[\"á" [count nil monkey-action-and-move monkey-mark 1] 3))
+
+(defun monkey-unmark-this-back (&optional count) "\
+Unmark this line and move backwards one line." (interactive "p") (byte-code "¡à¬√Ü	 ƒ[\"á" [count nil monkey-action-and-move monkey-unmark 1] 3))
+
+(defun monkey-toggle-this-back (&optional count) "\
+Unmark this line and move backwards one line." (interactive "p") (byte-code "¡à¬√Ü	 ƒ[\"á" [count nil monkey-action-and-move monkey-toggle 1] 3))
+
+(defun monkey-mark-all nil "\
+Mark all files. With a prefix arg, unmarks all files." (interactive) (byte-code "¡à¬É √Ç ƒ!á" [current-prefix-arg nil monkey-map-file monkey-unmark monkey-mark] 2))
+
+(defun monkey-unmark-all nil "\
+Unmark all files. With a prefix arg, marks all files." (interactive) (byte-code "¡à¬É √Ç ƒ!á" [current-prefix-arg nil monkey-map-file monkey-mark monkey-unmark] 2))
+
+(defun monkey-toggleall nil "\
+Exchange the set of marked files with the set of unmarked files." (interactive) (byte-code "¿à¡¬!á" [nil monkey-map-file monkey-toggle] 2))
+
+(defvar monkey-last-mark-regexp nil "\
+The last regexp used to mark files in a monkey buffer.")
+
+(make-variable-buffer-local (quote monkey-last-mark-regexp))
+
+(defun monkey-mark-by-regexp (regexp) "\
+Mark all files matching REGEXP.  Unmarks with a prefix arg." (interactive "sRegexp: ") (byte-code "√àäƒÉ ≈Ç ∆	\"à	â)á" [current-prefix-arg regexp monkey-last-mark-regexp nil monkey-map-matches monkey-unmark monkey-mark] 3))
+
+(defun monkey-unmark-by-regexp (regexp) "\
+Unmark all files matching REGEXP.  Marks with a prefix arg." (interactive "sRegexp: ") (byte-code "√àäƒÉ ≈Ç ∆	\"à	â)á" [current-prefix-arg regexp monkey-last-mark-regexp nil monkey-map-matches monkey-mark monkey-unmark] 3))
+
+(defun monkey-toggle-marked-by-regexp (regexp) "\
+Exchange the set of marked files that match REGEXP with the set of
+unmarked files that match." (interactive "sRegexp: ") (byte-code "¡à¬√\"á" [regexp nil monkey-map-matches monkey-toggle] 3))
+
+(defun monkey-mark-auto-save-files nil "\
+Mark all the autosave files.  Unmarks them with a prefix." (interactive) (byte-code "¿à¡¬!á" [nil monkey-mark-by-regexp "#.*#"] 2))
+
+(defun monkey-mark-backup-files nil "\
+Mark all the backup files.  Unmarks them with a prefix." (interactive) (byte-code "¿à¡¬!á" [nil monkey-mark-by-regexp ".*~"] 2))
+
+(defun monkey-mark-dotfiles nil "\
+Mark all files beginning with a `.'." (interactive) (byte-code "¿à¡¬!á" [nil monkey-mark-by-regexp "\\..*"] 2))
+
+(defun monkey-mark-by-type (type) "\
+Mark all the files of type TYPE.  What a loose." (interactive "cType: ") (byte-code "¬à√É ƒÇ ≈	\"á" [current-prefix-arg type nil monkey-map-type monkey-unmark monkey-mark] 3))
+
+(defun monkey-mark-directories nil "\
+Mark all the directories." (interactive) (byte-code "¿à¡¬!á" [nil monkey-mark-by-type 47] 2))
+
+(defun monkey-mark-links nil "\
+Mark all the symbolic links." (interactive) (byte-code "¿à¡¬!á" [nil monkey-mark-by-type 64] 2))
+
+(defun monkey-mark-executables nil "\
+Mark all the executable files." (interactive) (byte-code "¿à¡¬!á" [nil monkey-mark-by-type 42] 2))
+
+(defun monkey-mark-subdirectory nil "\
+Mark the current subdirectory." (interactive) (byte-code "¬àä√ Ü ƒ≈!à∆ «	É »Ç … ÀP!ÃP\"))á" [dirname current-prefix-arg nil monkey-expanded-p monkey-directory-heading 1 monkey-filename monkey-map-matches monkey-unmark monkey-mark regexp-quote "/" ".+"] 8))
+
+(defun monkey-mark-by-extension (regexp) "\
+Mark all files that end with .REGEXP" (interactive "sRegexp for extension: ") (byte-code "¡à¬√P!á" [regexp nil monkey-mark-by-regexp ".*\\."] 3))
+
+(defun monkey-shove nil "\
+Put the names of the marked file into a scratch buffer." (interactive) (byte-code "¡à¬√!äqàƒ )à≈∆!à«!)á" [list-buffer nil get-buffer-create "*File List*" erase-buffer monkey-map-marked (lambda nil (let ((name (monkey-filename))) (save-excursion (set-buffer list-buffer) (goto-char (point-max)) (insert name "
+")))) switch-to-buffer-other-window] 5))
+
+(defun monkey-mung-marked-subdirectories nil "\
+Expand or collapse marked subdirectories.  Prefix makes a difference as
+to which happens." (interactive) (byte-code "¡àä¬É √Ç ƒ!)à≈ á" [current-prefix-arg nil monkey-map-marked monkey-unexpand-subdirectory monkey-expand-subdirectory nice-monkey] 3))
+
+(defun monkey-mung-this-subdirectory nil "\
+Expand or collapse a subdirectory. Prefix determines which." (interactive) (byte-code "¡àäÉ ¬ Ç √ )àƒ á" [current-prefix-arg nil monkey-unexpand-subdirectory monkey-expand-subdirectory nice-monkey] 4))
+
+(defun monkey-hide-marked nil "\
+Hide all marked files.  With a prefix, unhide near marked lines." (interactive) (byte-code "¡à√É ƒÇ ≈¡¬#á" [current-prefix-arg nil t monkey-map-marked monkey-unhide-line monkey-hide-line] 4))
+
+(defun monkey-hide-this nil "\
+Hide this file.  With a prefix, unhide near this line." (interactive) (byte-code "¡àÉ ¬ Ç √ àƒ á" [current-prefix-arg nil monkey-unhide-line monkey-hide-line monkey-next-line] 4))
+
+(defun monkey-unhide-all nil "\
+Unhide all files." (interactive) (byte-code "¡à¡ä√éƒed≈∆¬%àebà«»…\"àebàg∆UÖ#  À!)))àÃ á" [buffer-read-only nil t ((byte-code "¿á" [nil] 1)) subst-char-in-region 13 10 replace-string "
+
+" "
+" delete-char 1 nice-monkey] 6))
+
+(defun monkey-list-long nil "\
+Show the output of ls -l'ing the marked files." (interactive) (byte-code "¡à¬ê√ƒ¿\"ëá" [t nil "*monkey-ls-output*" monkey-map-marked (lambda nil (call-process "ls" nil "*monkey-ls-output*" t "-ld" (monkey-filename)))] 4))
+
+(defun monkey-list-this-long nil "\
+Show the output of ls -l'ing the marked files." (interactive) (byte-code "¿à¬ãá" [nil t ((byte-code "¬ê√ƒ¿¬¡≈∆ &ëà¬qàebà«»…   \"!á" [nil t "*monkey-short-ls-output*" call-process "ls" "-ld" monkey-filename message buffer-substring bol-point eol-point] 9))] 1))
+
+(defun monkey-confirm-deletions (deletion-list) "\
+Make sure that DELETION-LIST meets with the users approval." (byte-code "G¡UÉ ¬√ƒ@\"!Ç3 ä≈ê≈qàÖ) ∆@«\"àAâàÇ à»≈!à… !ë)á" [deletion-list 1 y-or-n-p format "Delete %s ?" "*Deletions*" insert "
+" display-buffer yes-or-no-p "Delete these files?"] 7))
+
+(defun monkey-delete-marked nil "\
+Delete all the marked files." (interactive) (byte-code "¬à√ãá" [deletion-list t nil ((byte-code "¬√ƒ¡\"à≈!?É ∆«!Ç √»!)á" [deletion-list t nil monkey-map-marked (lambda nil (setq deletion-list (cons (monkey-filename t) deletion-list))) monkey-confirm-deletions message "Nothing Deleted." (lambda nil (delete-file-properly (monkey-filename t) 1) (monkey-delete-line))] 5))] 1))
+
+(defun monkey-delete-this nil "\
+Delete all the current file." (interactive) (byte-code "¬à√ãá" [deletion-list t nil ((byte-code "¬¡!C√!?É ƒ≈!Ç ∆@!à« à»…!)á" [deletion-list t monkey-filename monkey-confirm-deletions message "Nothing Deleted." delete-file-properly monkey-delete-line monkey-next-line 1] 7))] 1))
+
+(defun monkey-copy-file (destination &optional unhidden) "\
+Copy the current file to DESTINATION." (byte-code "√ƒ≈¿!	∆#
+\"á" [t destination unhidden monkey-sorted-insert-filename copy-file-properly monkey-filename 1] 6))
+
+(defun monkey-copy-this (destination) "\
+Copy the current file to DESTINATION." (interactive "FCopy to: ") (byte-code "¡à¬!à√ á" [destination nil monkey-copy-file nice-monkey] 3))
+
+(defun monkey-copy-marked (destination) "\
+Copy the marked files to DESTINATION." (interactive "FCopy to: ") (byte-code "¿à¡ à¬é√ƒ!)á" [nil monkey-temp-unhide ((byte-code "¿ á" [monkey-un-temp-unhide] 2)) monkey-map-marked (lambda nil (monkey-copy-file destination t))] 3))
+
+(defun monkey-rename-file (destination &optional unhidden) "\
+Rename the current file to DESTINATION." (byte-code "ä√ƒ≈¿!	∆#
+\")à« á" [t destination unhidden monkey-sorted-insert-filename rename-file-properly monkey-filename 1 monkey-delete-line] 6))
+
+(defun monkey-rename-this (destination) "\
+Rename the current file to DESTINATION." (interactive "FRename to: ") (byte-code "¡à¬!à√ á" [destination nil monkey-rename-file nice-monkey] 3))
+
+(defun monkey-rename-marked (destination) "\
+Rename the marked files to DESTINATION." (interactive "FRename to: ") (byte-code "¿à¡ à¬é√ƒ!)á" [nil monkey-temp-unhide ((byte-code "¿ á" [monkey-un-temp-unhide] 2)) monkey-map-marked (lambda nil (monkey-rename-file destination t))] 3))
+
+(defun monkey-edit-file nil "\
+If the current file is a directory, create a monkey-buffer for it.
+Otherwise, find-file it, but don't switch to the new buffer.  Someday, this
+should offer to execute executables.  Returns the new buffer, if any." (byte-code "ä¬¡!√!É ƒ≈!!Ç ∆!àp))á" [name t monkey-filename file-directory-p monkey-directory file-name-as-directory find-file] 6))
+
+(defun monkey-edit-marked nil "\
+Edit all the marked files.  Switch to the edit buffer for the first one
+in the list." (interactive) (byte-code "¡à¡¬√!àƒ≈!à∆=Ü «!)á" [destination-buffer nil monkey-map-marked (lambda nil (message "finding %s..." (monkey-filename)) (let ((x (monkey-edit-file))) (setq destination-buffer (if destination-buffer (quote dont-switch) x)))) message "done." dont-switch switch-to-buffer] 4))
+
+(defun monkey-edit-this nil "\
+Edit this file." (interactive) (byte-code "¿à¡¬ !á" [nil switch-to-buffer monkey-edit-file] 3))
+
+(defun monkey-edit-marked-other-window nil "\
+Edit all the marked files.  Switch to the edit buffer for the first
+one in the other window." (interactive) (byte-code "¡à¡¬√!àƒ!)á" [destination-buffer nil monkey-map-marked (lambda nil (message "finding %s..." (monkey-filename)) (let ((x (monkey-edit-file))) (setq destination-buffer (or destination-buffer x)))) switch-to-buffer-other-window] 3))
+
+(defun monkey-edit-this-other-window nil "\
+Edit this file in the other window." (interactive) (byte-code "¿à¡¬ !á" [nil switch-to-buffer-other-window monkey-edit-file] 3))
+
+(defun monkey-edit-marked-and-trash-this-buffer nil "\
+Edit all the marked files and trash this buffer." (interactive) (byte-code "¿àä¡ )à¬p!á" [nil monkey-edit-marked kill-buffer] 3))
+
+(defun monkey-edit-this-and-trash-this-buffer nil "\
+Edit all the marked files and trash this buffer." (interactive) (byte-code "¿àä¡ )à¬p!á" [nil monkey-edit-this kill-buffer] 3))
+
+(defun monkey-copy-by-regexp (copy-by-regexp-target) "\
+Using the regexp used last for monkey-mark-by-regexp, match each marked
+filename, then copy it." (interactive "sCopy to: ") (byte-code "¡à?Ö
+ ¬√!àƒ à≈é∆«!)á" [monkey-last-mark-regexp nil error "You must mark files using a regexp first." monkey-temp-unhide ((byte-code "¿ á" [monkey-un-temp-unhide] 2)) monkey-map-marked (lambda nil (goto-char (monkey-filename-beginning)) (if (not (looking-at monkey-last-mark-regexp)) (error "%s does not match the source regexp." (monkey-filename))) (let ((old-name (monkey-filename)) (buffer-read-only)) (re-search-forward monkey-last-mark-regexp nil nil) (replace-match copy-by-regexp-target nil nil) (let ((new-name (monkey-filename))) (delete-region (monkey-filename-beginning) (monkey-filename-end)) (insert old-name) (monkey-copy-file new-name t))))] 4))
+
+(defun monkey-rename-by-regexp (rename-by-regexp-target) "\
+Using the regexp used last for monkey-mark-by-regexp, match each marked
+filename, then rename it." (interactive "sRename to: ") (byte-code "¡àÜ	 ¬√!àƒ à≈é∆«!)á" [monkey-last-mark-regexp nil error "You must mark files using a regexp first." monkey-temp-unhide ((byte-code "¿ á" [monkey-un-temp-unhide] 2)) monkey-map-marked (lambda nil (goto-char (monkey-filename-beginning)) (if (not (looking-at monkey-last-mark-regexp)) (error "%s does not match the source regexp." (monkey-filename))) (let ((old-name (monkey-filename)) (buffer-read-only nil)) (re-search-forward monkey-last-mark-regexp nil nil) (replace-match rename-by-regexp-target nil nil) (let ((new-name (monkey-filename))) (delete-region (monkey-filename-beginning) (monkey-filename-end)) (insert old-name) (monkey-rename-file new-name t))))] 4))
+
+(defun monkey-gee nil "\
+Empty the buffer, and re-list the directory. Start from 
+scratch." (interactive) (byte-code "¡à¡¬ à√ àeb)àƒ á" [buffer-read-only nil erase-buffer monkey-list-directory nice-monkey] 4))
+
+(defun monkey-parent nil "\
+Edit the directory `..'." (interactive) (byte-code "¿à¡¬!á" [nil monkey-directory ".."] 2))
+
+(defun monkey-summary nil "\
+Give the luser a summary of monkey commands." (interactive) (byte-code "¿à¡¬√!!á" [nil message substitute-command-keys "\\[monkey-mark-this] mark, \\[monkey-unmark-this] unmark, 
+\\[monkey-delete-marked] delete, many many more...M-x describe-mode"] 3))
+
+(defun monkey-directory-noselect (directory) "\
+Make a buffer for DIRECTORY, but don't select it.
+The buffer is returned." (byte-code "«»	!!…!ä
+qà  À=Ö1 ƒâàâàÃ∆!àÕ àebàŒ Ü- `bàœ à
+)*á" [name directory buffer buffer-read-only t default-directory nil file-name-as-directory expand-file-name get-buffer-create buffer-size 0 set-buffer-modified-p monkey-list-directory monkey-filename-beginning monkey-mode] 9))
+
+(defun monkey-directory (directory) "\
+Make a buffer for directory and monkey around with it." (interactive "DDirectory: ") (byte-code "¡à¬√!!á" [directory nil switch-to-buffer monkey-directory-noselect] 3))
+
+(defun minkey (directory) "\
+A nice alias for monkey-directory." (interactive "DDirectory: ") (byte-code "¡à¬!á" [directory nil monkey-directory] 2))
+
+(defvar monkey-state-stack nil "\
+Used for pushing and popping monkey states.")
+
+(defun monkey-file (file) (interactive "FFile: ") (byte-code "¡à¬!É √!Ç ƒ!á" [file nil file-directory-p monkey-directory find-file] 4))
+
+(defun monkey-alternate-file (file) (interactive "FAlternate file: ") (byte-code "¡à¬p!à√!á" [file nil kill-buffer monkey-file] 3))
+
+(defun monkey-file-other-window (file) (interactive "FFile other window: ") (byte-code "√àƒ!?É ≈!Ç ¬∆«!!)á" [file pop-up-windows t nil file-directory-p find-file-other-window pop-to-buffer monkey-directory-noselect] 5))
+
+(defun monkey-toggle-quietness nil "\
+Turn file stating on or off" (interactive) (byte-code "¡à?âÉ ¬√!Ç ¬ƒ!á" [monkey-be-fast nil message "monkey: file stating turned off" "monkey: file stating turned on"] 3))
+
+(defun monkey-copy-this-file-name nil "\
+Copy the current file name into the kill ring" (interactive) (byte-code "¿à¡¬ √ \"á" [nil copy-region-as-kill monkey-filename-beginning monkey-filename-end] 5))
+
+(defun monkey-copy-marked-file-names (&optional flag) "\
+Copy all of the marked file names into the kill ring 
+seperated by a space.  Prefix arg causes filenames to be 
+sperated by a newline." (interactive "P") (byte-code "√àƒ≈!
+É ∆Ç «äqà» )à… !àqàÀed\"*á" [list-buffer sep flag nil get-buffer-create "*Cut File List*" "
+" " " erase-buffer monkey-map-marked (lambda nil (let ((name (monkey-filename))) (save-excursion (set-buffer list-buffer) (goto-char (point-max)) (insert name sep)))) copy-region-as-kill] 6))
+
+(defun monkey-shell-command nil "\
+Prompt for a shell command using the marked filenames as
+a default command string." (interactive) (byte-code "¡à¬ à√``ƒ≈@\"¡$á" [kill-ring nil monkey-copy-marked-file-names shell-command-on-region read-string "Shell command: "] 7))
+
+(defun monkey-background nil "\
+Invoke a background process on the marked files." (interactive) (byte-code "¡àä¬ )à√ƒ≈@\"!á" [kill-ring nil monkey-copy-marked-file-names background read-string "& "] 5))
+
+(defun background (command) (interactive "s& ") (byte-code " àÀ!ÃUÉ Õ!Çà Œœ\"É  –— O!Çà “”‘
+!Ö8 Tâà’PâàÇ$ à÷
+
+◊ÿHÃUÉM ” OÇP ŸP%⁄€‹!#à›ﬁ\"))à
+qàâ)àﬂ à
+ê‡·‚„%ë)à‰âàÂâ	á" [command t job-name job-number process shell-file-name directory default-directory mode-name mode-line-process nil string-to-char 38 switch-to-buffer string-match "^kill &" interrupt-process 5 "&1" 1 process-status "&" start-process "-c" 0 "exec " message "[%d] %d" process-id set-process-sentinel background-sentinel erase-buffer insert "& cd " "
+& " 10 "Background" (": %s")] 17))
+
+(defun background-sentinel (process msg) (byte-code "»…!!?É  ¡\"Ç^ À!Ã>Ö^ pd`ÕéŒœ\"É+ –ÇF Œ—\"É; “”‘OPÇF ’÷◊O!◊‘OPâ)àÿ¡!àWÖV bà
+qàŸ!+á" [process nil obuf omax opoint msg t command buffer-name process-buffer set-process-buffer process-status (signal exit) ((byte-code "√ƒ≈!∆«O	»…!8 À
+\"É 
+Ã«OÇ 
+)$àÕ!qàdbàŒœ	–— “”O‘%á" [process msg command message "[%s] %s %s" process-name 1 nil 2 process-command string-match "^exec" 5 process-buffer insert "
+*** " 32 current-time-string 0 -5 10] 13)) string-match "^finished$" "Done" "^exited" "Exit " 28 -1 upcase 0 1 set-buffer-modified-p delete-process] 11))

@@ -1,0 +1,197 @@
+
+
+
+       XXXXPPPPRRRROOOOOOOOFFFF((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))           XXXXPPPPRRRROOOOOOOOFFFF((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            xproof - troff output simulator
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            xxxxpppprrrrooooooooffff [ ----ssss | ----wwww ] [ ----llll ] [ ----pppp _p_a_g_e ] [ ----VVVV ] [ ----LLLL ] [ file ]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            The _x_p_r_o_o_f utility is a troff output simulator for AT&T
+            Dot-Mapped Display terminals (5620 DMD and 630 MTG).  It
+            reads _t_r_o_f_f output from _f_i_l_e (standard input default) and
+            displays a simulation of the resulting pages on the screen.
+            The amount of text displayed depends on the mode, which can
+            be set from the command line:
+
+            ----ssss   _s_c_a_l_e_d mode displays an entire page of text.  To do so,
+                 it will use appropriately smaller fonts than called for
+                 by _t_r_o_f_f.  This may result in illegible script, but is
+                 possibly useful for getting a general impression of the
+                 layout of a page.  It is the default mode.
+
+            ----wwww   _w_i_n_d_o_w mode displays as much correctly sized text as
+                 the layer can hold.
+
+            By default, _x_p_r_o_o_f sizes the frame for displayed text with
+            proportions for an 8.5x11 inch page with portrait orienta-
+            tion.  The ----llll option causes _x_p_r_o_o_f to size the frame for the
+            same sized page with landscape orientation (must set
+            pagelength before _x_p_r_o_o_f is invoke).
+
+            The ----pppp option causes _x_p_r_o_o_f to begin at the specified _p_a_g_e.
+            The ----VVVV option causes _x_p_r_o_o_f to print a message that identi-
+            fies which version it is.  The ----LLLL option invokes ligature
+            simulation for the _f_f, _f_i, and _f_l ligatures.
+
+            The ----cccc option, available only for the 630 MTG, results in
+            the _x_p_r_o_o_f program being kept (_c_a_c_h_e_d) in the terminal's RAM
+            memory after quitting _x_p_r_o_o_f.  The next invocation of _x_p_r_o_o_f
+            will bring up the program quickly without having to download
+            it.  Use the 630 MTG _u_c_a_c_h_e(_1) program to remove _x_p_r_o_o_f from
+            the terminal's cache.  (Note: It is a fatal error to specify
+            the ----cccc option on a 5620 DMD.)
+
+            Fonts are loaded as required.  If the requested font is not
+            available, the default font is used and the name of the
+            missing font is noted in the file ////ttttmmmmpppp////....mmmmiiiissssssssiiiinnnngggg.
+
+            _X_p_r_o_o_f supports the concept of a "directory search path" for
+            finding fonts.  If the environment variable FFFFOOOONNNNTTTT contains
+            one or more alternate directory paths (separated by colons),
+            these will be searched for requested fonts before the
+            default font directory, $DMD/font.  In addition, if the
+            environment variable TTTTOOOOOOOOLLLLSSSS is set, $TOOLS/lib/xfont will be
+
+
+
+       Page 1                                          (printed 2/10/93)
+
+
+
+
+
+
+       XXXXPPPPRRRROOOOOOOOFFFF((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))           XXXXPPPPRRRROOOOOOOOFFFF((((1111))))
+
+
+
+            appended to FFFFOOOONNNNTTTT. It may be useful to set the this environ-
+            ment variable in the system-wide .profile file. _X_p_r_o_o_f must
+            have access to the ddddeeeeffffoooonnnntttt default font.  A return code of 5
+            indicates that this file could not be found.
+
+            When using _x_p_r_o_o_f on a 5620 DMD, after a document has been
+            displayed, _x_p_r_o_o_f will enter the so-called _p_r_o_o_f_t_e_r_m mode.
+            This is a simple terminal emulator that enables host com-
+            mands and pipelines to be built and executed for subsequent
+            proofing.  The fonts loaded by _x_p_r_o_o_f remain available until
+            the user explicitly exits the program.
+
+            The 630 MTG version of _x_p_r_o_o_f differs from the 5620 version
+            in that the 630 MTG version supports the application caching
+            feature of the newer terminal.  After a document has been
+            displayed, _x_p_r_o_o_f exits, but since it will normally remain
+            in the terminal cache, and the fonts in the terminal's font
+            cache, subsequent start-up is almost instantaneous.  _P_r_o_o_f_t_-
+            _e_r_m is (by default) not supported on 630 MTG terminals.
+
+            After a layer's worth of text is displayed, _x_p_r_o_o_f pauses
+            for a command.  Commands may be entered from either the host
+            or the keyboard or be selected from the button 3 menu.  The
+            following are recognized:
+
+            ccccaaaarrrrrrrriiiiaaaaggggeeee rrrreeeettttuuuurrrrnnnn
+                 displays the next windowful of data, which is possibly
+                 the start of the following page.
+
+            qqqq    enters _p_r_o_o_f_t_e_r_m mode on the 5620 DMD;  exits _x_p_r_o_o_f
+                 and restarts the regular terminal program on the 630
+                 MTG.
+
+            xxxx    exits _x_p_r_o_o_f and restarts the regular terminal program.
+
+            pppp _n  sets the next page to be proofed to _n.
+
+            ssss    sets scaled mode.
+
+            wwww    sets window mode.
+
+            The page number should be a number or $$$$ (indicating the last
+            page).  Missing numbers go to page 1.  Out of range page
+            numbers are handled differently depending on whether input
+            is taken from a file or a pipe.  In the former case, the
+            next windowful of data is displayed.  In the later, xproof
+            exits.  Since piped input cannot be backed up, when input is
+            taken from a pipe, page numbers less than or equal to the
+            current page cause the next windowful of data to be
+            displayed instead of the requested page.  Page numbers less
+            than or equal to the current page do cause the requested
+            page to be displayed when input is taken from a file,
+
+
+
+       Page 2                                          (printed 2/10/93)
+
+
+
+
+
+
+       XXXXPPPPRRRROOOOOOOOFFFF((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))           XXXXPPPPRRRROOOOOOOOFFFF((((1111))))
+
+
+
+            however.
+
+            _x_p_r_o_o_f interprets lines, splines, circles, ellipses, and
+            arcs directly and without regard to the prevailing point
+            size.
+
+       FFFFIIIILLLLEEEESSSS
+            $TOOLS/lib/dmdtools/xproofhost support for _x_p_r_o_o_f
+            $TOOLS/lib/630/xproof.m  terminal support for the 630 MTG
+            $TOOLS/lib/dmd/xproof.m  terminal support for the 5620 DMD
+            $TOOLS/lib/xfont/*       fonts
+            /tmp/.missing            list of referenced but unavailable
+            fonts
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+            To display manual pages in typeset format, use the follow-
+            ing:
+9            (tbl manpage.1 | eqn | troff -man -T300 | xproof -wc) 2> proof.stderr
+9            Note that error messages originating from _t_r_o_f_f, or other
+            programs earlier in the pipeline, can confuse the protocol
+            that _x_p_r_o_o_f uses, possibly resulting in the crash of the
+            terminal.  It is good practice to ensure that the standard
+            error output is always redirected somewhere inoffensive.
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+            troff(1) in the _U_N_I_X _S_y_s_t_e_m _V _D_O_C_U_M_E_N_T_E_R'_S _W_O_R_K_B_E_N_C_H _I_n_t_r_o_-
+            _d_u_c_t_i_o_n _a_n_d _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+            _U_N_I_X _S_y_s_t_e_m _V _D_O_C_U_M_E_N_T_E_R'_S _W_O_R_K_B_E_N_C_H _T_e_x_t _F_o_r_m_a_t_t_e_r_s _R_e_f_e_r_-
+            _e_n_c_e.
+            ucache(1) in the _6_3_0 _M_T_G _S_o_f_t_w_a_r_e _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+
+       BBBBUUUUGGGGSSSS
+            If a non-existant page number is specified, _x_p_r_o_o_f will sim-
+            ply display the next windowful of data.
+
+            There is a maximum number of fonts (currently 50) that can
+            be loaded at once.  Since each (size,typeface) tuple and
+            each special character is a font, this limit can be exceeded
+            in printing highly theoretical papers.
+
+            Characters are usually positioned by words, not individu-
+            ally.  Character sets that differ from _t_r_o_f_f'_s idea of their
+            width will result in somewhat ragged copy.
+
+
+
+
+
+
+
+
+
+
+
+       Page 3                                          (printed 2/10/93)
+
+
+

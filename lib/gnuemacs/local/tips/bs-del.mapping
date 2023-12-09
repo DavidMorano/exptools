@@ -1,0 +1,62 @@
+Subject: Problems with the Backspace / Delete keys in GNU Emacs
+From: Chip Webb (Charles_A_Webb@ATT.COM)
+Date: 11 Nov 89 [and 9/1991 below]
+
+On some terminals, the backspace and the delete keys are placed
+inappropriately for GNU emacs.  Some terminals have DEL in a hard to to
+get location and have made BS easy to hit.  Other terminals put the two
+keys so close together so that they are easily mis-typed.
+
+The problem with BS and DEL when using GNU emacs is that BS (also known
+as Control-H) invokes the online help system.  It is a bit
+inappropriate, if not surprising, to get the help menu when all you were
+trying to do was fix a typo.  Originally, it was intended that the
+commands in emacs be mnemonically sensible, i.e.  C-f for forward
+character C-b for backward character and C-h for help.
+
+The usual solution to the problem is to re-bind C-h to invoke the
+function delete-backward-character and find another key to invoke help.
+Putting the following two lines in your ~/.emacs file will do this.
+Help is then invoked with C-x h instead of C-h.  (C-x h is normally
+bound to the command mark-whole-buffer; these commands undo that
+binding) Of course you can put help-command anywhere you want, this is
+just an example.
+
+;;; Remap the backspace key to delete-backward-char and
+;;; put help in a sensible place. 
+(define-key global-map "\C-h" 'delete-backward-char)
+(define-key global-map "\C-xh" 'help-command)
+
+-----------------
+From: Dan_Jacobson@ATT.COM
+Date: Nov. 1990
+
+Another method, swapping C-h and DEL at the lowest levels (so low that
+99% of GNU Emacs never knows you are actually now hitting the key
+labeled "DEL" for C-h and C-h for DEL) is to simply
+
+(load "term/bobcat")
+
+in your .emacs file.  [This file can be found in
+.../lisp/term/bobcat.el in the GNU Emacs file tree.]  Reading the
+documentation for the "load" command will tell you how to turn off (if
+you want) the message it makes.
+
+Now, if you are also remapping the keyboard with respect to C-s and
+C-q, the above approach will overwrite your C-s/C-q modifications, and
+you would instead want to uncomment the additional DEL/backspace
+swapping lines discussed in the the file about "flow control" in this
+tips directory...
+
+>>>>> hoqax!qaea (Ernie Anglade) said in 9/91:
+
+Ernie> Just a couple of questions:
+
+Ernie> 1) I can't locate $TOOLS/lib/gnuemacs/local/lisp/term/bobcat.el
+Look in                                      ^^^^^dist
+
+Ernie> 2) In the (load ...) command above, you mean to include the full path
+Ernie>    name of that bobcat file, don't you?
+
+Nope, just add that line.  I only mention the path if you want to view
+the contents.  Do C-h f load to see how to turn off loading messages.

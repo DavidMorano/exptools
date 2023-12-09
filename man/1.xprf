@@ -1,0 +1,198 @@
+
+
+
+       XXXXPPPPRRRRFFFF((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXPPPPRRRRFFFF((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            xprf - format and display a troff document
+
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            xxxxpppprrrrffff [[[[ ----BBBB ]]]] [[[[ ----CCCC ]]]] [[[[ ----LLLL ]]]] [[[[ troff_options ]]]] [[[[ filenames ]]]]
+
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            _x_p_r_f is a front-end for the exptool _x_p_r_o_o_f(_1), which is a
+            _t_r_o_f_f(_1) output simulator for 5620/630/730 terminals.  _x_p_r_f
+            performs two basic services: first it formats the named
+            files and then it displays the formatted output using
+            _x_p_r_o_o_f.
+
+            Before formatting the files, _x_p_r_f scans the files and deter-
+            mines what preprocessors (_e_q_n(_1), _g_c_2_p_i_c(_1), _g_r_a_p(_1),
+            _p_i_c(_1), or _t_b_l(_1)) and what macro packages (-_m_m or -_m_a_n) to
+            use.  _x_p_r_f then produces a command string to execute the
+            appropriate commands to format the files.  In addition to
+            the appropriate macro package option, any _t_r_o_f_f options
+            given on the command-line will also be added to the command
+            string.
+
+            After formatting the files, _x_p_r_f creates a new window (using
+            the exptool _a_g_e_n_t(_1)) and executes the _x_p_r_o_o_f command in
+            that window to display the formatted files.  By default, the
+            files are displayed in a window scaled for portrait mode.
+            If the ----LLLL option is given, the files will be displayed in a
+            window scaled for landscape mode.
+
+            _x_p_r_f usually tries to create the largest possible window
+            that it can make on a 630/730 terminal with the appropriate
+            proportions for an 8.5x11 inch page.  This window size pro-
+            duces a fairly readable document, as well as shows the for-
+            matting and layout of the document.  However, if the user
+            prefers a different window size, they can set the
+            XXXXPPPPRRRRFFFF____CCCCOOOOOOOORRRRDDDDSSSS environment variable to the coordinates of their
+            preferred window size.  _x_p_r_f will then create a window with
+            the indicated coordinates.
+
+            When the user exits _x_p_r_o_o_f, _x_p_r_f automatically deletes the
+            xproof window and reactivates the window from which it was
+            invoked.
+
+          OOOOppppttttiiiioooonnnnssss::::
+            The command-line options recognized by _x_p_r_f are as follows:
+
+            ----BBBB   Puts the xproof window in the background (behind other
+                 windows) and leaves the current window active.  This
+                 option is especially useful for complex documents
+                 (e.g., pictures) that will take a while to draw and
+
+
+
+       Page 1                                          (printed 8/14/93)
+
+
+
+
+
+
+       XXXXPPPPRRRRFFFF((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXPPPPRRRRFFFF((((1111))))
+
+
+
+                 when using _x_p_r_f for the first time in a session (since
+                 it will take a while to download _x_p_r_o_o_f and the neces-
+                 sary fonts).
+
+            ----CCCC   Displays the formatted document in the current window
+                 rather than creating a new xproof window.  Note that
+                 the current window will not be deleted when the user
+                 exits _x_p_r_o_o_f.  This option is useful if you have prob-
+                 lems using _a_g_e_n_t to create new windows (such as on a
+                 Sun workstation running an old version of _l_a_y_e_r_s or if
+                 you have already created the maximum number of windows
+                 allowed by _l_a_y_e_r_s).
+
+            ----LLLL   Displays the document in landscape mode.  Note that
+                 this does not rotate the text.  Instead,  it resizes
+                 the window and _x_p_r_o_o_f page frame for a landscape page
+                 and tells _t_r_o_f_f that it has an 8.5 inch page length and
+                 an 11 inch line length.  This option is useful for
+                 displaying pictures and other documents that have been
+                 formatted for a landscape page.
+
+            troff_options
+                 All other options are passed to _t_r_o_f_f.
+
+            filenames
+                 The names of the files to be formatted.  If no
+                 filenames are given, _x_p_r_f will read from standard
+                 input.
+
+            Note that the _x_p_r_f options (----BBBB, ----CCCC, and ----LLLL) must be listed
+            separately.  If they are joined with other options, they
+            will not be recognized.  For example, -BL will not be recog-
+            nized as _x_p_r_f options.
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            Assuming that the file _m_e_m_o+_t_a_b_l_e._m_m contains an MM document
+            with a table in it, the following command will run the _t_b_l
+            preprocessor on the file and then will call _t_r_o_f_f with the
+            -_m_m option to format the file.  Then the file will be
+            displayed in portrait mode.
+
+                 xxxxpppprrrrffff memo+table.mm
+
+            Assuming that the file _l_a_n_d_s_c_a_p_e._p_i_c contains a picture to
+            be shown in landscape mode.  The following command will run
+            the _p_i_c preprocessor on the file and then will call _t_r_o_f_f to
+            format the picture.  The file will then be displayed in a
+            window scaled for landscaped mode.
+
+                 xxxxpppprrrrffff ----LLLL landscape.pic
+
+
+
+
+       Page 2                                          (printed 8/14/93)
+
+
+
+
+
+
+       XXXXPPPPRRRRFFFF((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXPPPPRRRRFFFF((((1111))))
+
+
+
+       NNNNOOOOTTTTEEEESSSS
+            You must be running _l_a_y_e_r_s(_1) to execute this tool.  If you
+            are logged into a Sun workstation, you must have the newer
+            version of _l_a_y_e_r_s that supports _a_g_e_n_t.  If you do not have
+            the newer version of _l_a_y_e_r_s, you should use the ----CCCC _x_p_r_f
+            option.
+
+            Since _x_p_r_f must communicate with the layers session for your
+            terminal to create the xproof window, you cannot execute
+            this tool from a remote login session or while operating as
+            a different user via _s_u(_1).
+
+            The default coordinates for the xproof window are set for a
+            630/730 terminal.  If you use this tool with a 5620 termi-
+            nal, you should set the XXXXPPPPRRRRFFFF____CCCCOOOOOOOORRRRDDDDSSSS environment variable
+            with an appropriate set of window coordinates for that ter-
+            minal.
+
+
+       EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+            XPRF_COORDS         Coordinates to be used when creating the
+                                xproof window.  The default coordinates
+                                are 6 6 1014 787 for landscape mode and
+                                237 10 1018 1018 for portrait mode.
+
+
+       FFFFIIIILLLLEEEESSSS
+            /usr/tmp/xprfin.$$  Fully expanded text of all files to be
+                                formatted.
+
+            /usr/tmp/xprfout.$$ Formatted _t_r_o_f_f output.
+
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+            agent(1), eqn(1), gc2pic(1), grap(1), pic(1), tbl(1),
+            troff(1), xproof(1)
+
+
+       AAAAUUUUTTTTHHHHOOOORRRR////PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+            Dennis A. Vadner
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 3                                          (printed 8/14/93)
+
+
+

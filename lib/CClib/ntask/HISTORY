@@ -1,0 +1,119 @@
+History of this port:			file created 89/09/28
+
+1. Doug Landauer of Sun Microsystems obtained a V2 beta2 release and
+   wrote the sparc code.  There seems to be quite a change in the 80386
+   code, apparently to support the Sun-386.  A file Notes-2.0b2 includes
+   the date April 1988.
+
+2. The author obtained archived source from Jonathan Shapiro, as a result
+   of a request to Judy Ward, mozart!jpw, September 1989.
+
+3. Files *.beta2 are Landauer's modifications to support sparc and sun386.
+   The *.386.beta2 are included here for the benefit of anyone who wants
+   to investigate the differences between sun386 and i386.
+
+4. The author spliced sparc-specific code into the V2.0 sources and patched
+   functions which take different or more arguments, such as 'is_new_child'
+   in swap() and sswap().
+
+5. Landauer's comments are included as is.  The author's additional
+   comments are marked distinctly:
+	lang  original	new		lang  original	new
+	 C     /*	/*		C++    //	///
+	 C      *	**		as     !	!!
+	 C      */	 */
+   This should help in finding bugs in the changes.
+
+6. The following files seem to be changed only due to the evolution from
+   beta2 to official:
+	event.c		fudge.c.68k	obj.c		qhead.c
+	qtail.c		sched.c		sim.c		swap_supp.c
+	timer.c
+
+7. The following files have additions for sparc:
+	hw_stack.c	hw_stack.h	task.c		task.h
+	../mk/makefile
+
+8. There is a 'mk.sparc' in ../mk for convenience.  Its output is directed
+   into out1, out2, etc, where the file 'next' should contain an ascii number.
+   This assumes one uses ksh.
+
+9. The 'cc' or 'as' has munged optimization on other programs in this
+   department.  It turns out that asm() statements were being dropped here,
+   so the makefile does not use CCFLAGS for fudge.c, hw_stack.c, or task.c.
+
+10. The task.h has __TASK_H now to conform to the new standard for avoiding
+    repetition of inclusion; one can easily change back to TASKH.
+
+11. The sources were linked to the corresponding directory on 'blink'.
+    It was necessary to remove swap.s, swap.S, and fudge.c to let the makefile
+    create the proper ones.  Thorough comparisons between the Sun3/60 or
+    Sun3/280 and the Sun4/60 show no problems with dedicated stacks.
+
+12. Shared stacks dumps core.  The code Landauer wrote could not have worked.
+    One problem was that it advanced an address by units for copying
+    words, which violates the SPARC alignment requirement.  I made the
+    obvious fixes to the code, which changed where it dumps core.
+
+		C++ V2.1		90/09/04
+
+13. Begin port to V2.1 on a SPARCengine 1E.  The file mentioned in #8
+    is omitted.  File names *.2.0 come from the V2.0 port.  The 'sparc'
+    stack size is made the same as for 'uts', which is generous.
+    The DUMP_STACK option and its modifications to print() are omitted;
+    I had kept these in 2.0 from Landauer's code.
+    The task.h is modified in /usr/include/CC and in incl/ under the C++
+    installation directory (/usr/local/C++/2.1/sun4 on the SPARCengine).
+
+14. The top-level C++ makefile is altered to permit making libtask.a on
+    the sparc.
+
+15. The makefile in demo/task is modified to avoid core dumps on shared stack.
+    The test, 'make demotask' passes all but the faked 'shared'.
+
+16. I checked the make output; it seems that CCFLAGS needs a -D(SYS), so I
+    added a CCNOOPT variable to the top-level makefile and the libtask
+    makefile.  This allows all files to be compiled with all needed flags.
+    I manually ran the shared-task test in demo/task.  The core dump comes
+    from the 'restore' instruction at the end of task::restore().  The stack
+    pointer seems to be trashed.  90/09/06.
+
+17. Further checking on blink (Sun3/280, SunOS 4.1) showed optimization
+    problems.  This port dumped core, but so did a "libtask.a" made from the
+    distribution.  Much fiddling led to the conclusion that the cc-flag
+    can be "-O2" for most of the files, but optimization must be reduced
+    for the four files
+	fudge.c		hw_stack.c	swap.s		task.c
+    On blink, "-O1" works, but no optimization works on the sparcs.
+    The "lib/task/mk/makefile" now reflects these determinations.
+
+18. Summary of tests: demo/task test run on SPARCengine 1E, SunOS 4.0.3e
+    Test program called 'try' chains tasks together, launched messages
+    typed on terminal, deletes tasks and splices queues.  Run on:
+	SPARCengine 1E		4.0.3e	standalone
+	SPARCstation 1		4.0.3c	standalone
+	SPARCstation 1		4.1	client
+	Sun3/280		4.1	fileserver
+	SUn3/60			4.1	client
+
+19. Consolidated files in single directory on 10/2/90.  The following
+    item was the README in the 'mk' directory.
+
+20. The assembler, probably, seems to remove statements from the delay slot,
+    cf. hw_stack.c code for FP().  Thus, for sparc, the optimization is
+    disabled for fudge.c, hw_stack.c, task.c.  This can be restored in the
+    future.  Disassembly of object code with 'adb':
+
+        no optimization             |           optimization
+    _FP:        ta      0x83        |   _FP:        ta   0x83
+    _FP+4:      nop                 |   _FP+4:      jmp   %o7 + 0x8
+    _FP+8:      jmp     %o7 + 0x8   |   _FP+8:      nop
+    _FP+0xc:    mov     %sp, %o     |
+                                    |
+    _TOP:       jmp     %o7 + 0x8   |   _TOP:       jmp    %o7 + 0x8
+    _TOP+4:     mov     %sp, %o0    |   _TOP+4:     nop
+
+                George R. Tomasevich
+                blink!grt
+                P.S: A new server, wink, a Sun 4/490, will come up and become
+                my boot machine.

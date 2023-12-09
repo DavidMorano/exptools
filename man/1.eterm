@@ -1,0 +1,594 @@
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          eterm - emacsterm terminal program for the SunView window
+          environment
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          eeeetttteeeerrrrmmmm [options] [-c command] [-I init seq] arguments
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _e_t_e_r_m is a terminal  window  for  workstations  running  the
+          SunView  window  environment.  _e_t_e_r_m creates a window on the
+          screen that  behaves  like  a  630  or  5620  layer  running
+          _e_m_a_c_s_t_e_r_m(EXPTOOLS).   _e_t_e_r_m adjusts the environment so that
+          most screen applications will run correctly when run  in  an
+          _e_t_e_r_m  window.   Certain  programs, such as _e_m_a_c_s(EXPTOOLS),
+          _g_m_a_c_s(EXPTOOLS),    _g_n_u_e_m_a_c_s(EXPTOOLS),    _c_s_c_o_p_e(EXPTOOLS),
+          _v_s_h(EXPTOOLS),   and   _v_i_4_v_i_t_e_r_m(EXPTOOLS)  exploit  special
+          terminal capabilities  provided  by  _e_t_e_r_m  to  control  the
+          mouse, scrollbar, and highlighting.  Most of the features of
+          _e_t_e_r_m are the same as those of _e_m_a_c_s_t_e_r_m, and can  be  found
+          in  the  manual  pages  for  that  tool.   This  manual page
+          describes the unique features of _e_t_e_r_m.
+
+        GGGGeeeettttttttiiiinnnngggg SSSSttttaaaarrrrtttteeeedddd
+          If you want to run _e_m_a_c_s and use commands containing  ^S/^Q,
+          you  will  need  your  own $_H_O_M_E/._e_m_a_c_s__i_n_i_t file.  The file
+          contains initialization commands for _e_m_a_c_s and overrides the
+          default  initialization.   If  you already have such a file,
+          make sure it contains the line:
+
+               ^X^Mcontrolify
+
+          (Note: ^X and ^M should be real control characters,  entered
+          with  ^\^X  and  ^\^M under _e_m_a_c_s.)  If you must create this
+          file and wish  to  retain  the  default  initialization  for
+          _e_m_a_c_s, put the above line in the file followed by:
+
+               ^X^I~EMACS/.emacs_init
+
+          (Note that ^I will display as a big blank space, not as ^I.)
+          The  default  initialization  will  run _e_m_a_c_s with the _b_a_s_i_c
+          mouse interface.  You  may  want  to  consider  one  of  the
+          enhanced  interfaces described in the Emacs Menus and Scroll
+          Bar section.
+
+          _e_t_e_r_m converts the current window into an  emacsterm  window
+          and runs a shell or other specified program in it.  When the
+          program terminates, _e_t_e_r_m exits and the previous contents of
+          the window re-appear.  While you can create _e_t_e_r_m windows by
+          simply running _e_t_e_r_m  in  a  _s_h_e_l_l_t_o_o_l  or  _c_m_d_t_o_o_l  window,
+          normally you will want to set up your _S_u_n_V_i_e_w environment to
+          create _e_t_e_r_m windows as part of your  default  configuration
+          and  to  add  options  to  your _S_u_n_V_i_e_w menu to create _e_t_e_r_m
+
+
+
+     Page 1                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          windows.  To create a new window  running  _e_t_e_r_m,  you  must
+          first  create  a  _s_h_e_l_l_t_o_o_l  window of the appropriate size,
+          then run _e_t_e_r_m in it.  In your ._s_u_n_t_o_o_l_s file  (or  whatever
+          file you use to describe your default _S_u_n_V_i_e_w configuration,
+          a line of the form:
+
+               shelltool -Wp 422 64 -Ws 730 550 eterm
+
+          will create an _e_t_e_r_m window of  the  specified  size.   Note
+          that  the  coordinates  given include the size of the window
+          label.  You can use other arguments to the _s_h_e_l_l_t_o_o_l command
+          to  set  the  icon, label, or color of the resulting window.
+          _e_t_e_r_m will inherit these from the _s_h_e_l_l_t_o_o_l window  that  it
+          runs  in.  To create an _e_t_e_r_m window from your _S_u_n_V_i_e_w menu,
+          the menu should contain a line like the following:
+
+               "Eterm Tool"        shelltool eterm
+
+          Note that if you want to run something other than a shell in
+          the  resulting  window,  the  easiest  way  to do this is to
+          create  a  shell  script  that  executes  _e_t_e_r_m   with   the
+          appropriate arguments, and replace _e_t_e_r_m with that script in
+          these lines.
+
+          _e_t_e_r_m windows behave just like _s_h_e_l_l_t_o_o_l or _c_m_d_t_o_o_l in  most
+          ways.   They  will  respond  to  most  of  the  same  escape
+          sequences that _s_h_e_l_l_t_o_o_l and _c_m_d_t_o_o_l use for control of  the
+          window  size,  label,  icon, etc., plus some extra ones that
+          _e_t_e_r_m  uses.    _e_t_e_r_m   will   also   interpret   the   file
+          "$_H_O_M_E/._t_t_y_s_w_r_c"  to  determine  the  key  bindings for most
+          function keys.  See the sections below on cutting pasting to
+          see how to transfer text and use the scrollbar
+
+        CCCCoooommmmmmmmaaaannnndddd LLLLiiiinnnneeee AAAArrrrgggguuuummmmeeeennnnttttssss
+          _e_t_e_r_m takes several command line arguments that control  the
+          display  of  the  window.   Recall that _e_t_e_r_m takes over the
+          window in which it is  invoked,  thus  many  of  the  window
+          attributes  (size, placement, title, etc.) can be controlled
+          by arguments to the  command  used  to  create  the  current
+          window and not to _e_t_e_r_m.
+
+          ----vvvv, ----eeee       These options  force  _e_t_e_r_m  to  bring  up  the
+                       window  as either a _v_i_t_e_r_m (----vvvv) or an _e_m_a_c_s_t_e_r_m
+                       (----eeee)  window.   The  two   behave   essentially
+                       identically  except  for  behaviors which _e_m_a_c_s
+                       and  _v_i  enable  and   disable   automatically,
+                       whichever  type  is used, and these options are
+                       not normally needed.
+          ----cccc _c_o_m_m_a_n_d   Normally, _e_t_e_r_m will run  a  shell  ($$$$SSSSHHHHEEEELLLLLLLL  or
+                       _k_s_h) in the window it creates.  If ----cccc is given,
+                       it specifies an alternate application to run in
+                       the window.
+
+
+
+     Page 2                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          ----IIII _i_n_i_t      If  this  option  is  specified,  the  argument
+                       following  it  is  taken as a text string to be
+                       sent to the application run in  the  window  on
+                       startup.
+          ----mmmm           This argument  effects  how  _e_t_e_r_m  tracks  the
+                       mouse.   Without  ----mmmm, the cursor will appear to
+                       overlay the text, as it  does  with  _e_m_a_c_s_t_e_r_m,
+                       however  movement of the cursor may be somewhat
+                       jerky.  With ----mmmm, movement will be smoother  but
+                       the cursor will look somewhat different and may
+                       be more difficult to pick out of the text.
+          ----CCCC           If present,  this  argument  makes  the  window
+                       become  the  console for the workstation.  Only
+                       one  window  should  be   started   this   way.
+                       Operating  system  and  window  system messages
+                       will be printed in this window.
+          ----ssssbbbb          Display the scrollbar (default).
+          ++++ssssbbbb          Do not display a scrollbar.
+          ----ssssllll _l_i_n_e_s    Sets the approximate number of off-screen lines
+                       of history to be retained.  The setting is only
+                       approximate.  If the lines displayed are short,
+                       more  than  this number of lines will be saved.
+                       If the lines are long,  fewer  will  be  saved.
+                       This     setting    overrides    the    default
+                       _H_i_s_t_o_r_y/_S_i_z_e.
+          ----uuuutttt          Don't write an  entry  in  /etc/utmp  for  this
+                       window.   Normally  eterm  creates a utmp entry
+                       for each window it creates.
+          ++++uuuutttt          Do write an entry in /etc/utmp for this window.
+          ----nnnnooooppppaaaaggggeeee      Do  not  stop  output  after  each  page.   The
+                       default action is to stop output and wait for a
+                       character to be typed after each full  page  of
+                       output with no intervening input.
+          ----nnnnoooobbbblllliiiinnnnkkkk     Do not blink the cursor when the window has the
+                       input focus.  Normally the window cursor of the
+                       window with the input focus (the one  to  which
+                       typed  characters will be sent) will blink when
+                       the window is idle.  If this option is set  the
+                       cursor will not blink.
+
+        IIIInnnniiiittttiiiiaaaalllliiiizzzziiiinnnngggg wwwwiiiitttthhhh SSSSuuuunnnnVVVViiiieeeewwww DDDDeeeeffffaaaauuuullllttttssss
+          Some of the features of eeeetttteeeerrrrmmmm can  be  changed  through  the
+          SunView  defaults  mechanism.   Most  of  these are ordinary
+          SunView  default  settings  that  can  be  edited  with  the
+          _D_e_f_a_u_l_t_s  _E_d_i_t_o_r  without  taking  any  other  action.   The
+          HHHHiiiissssttttoooorrrryyyy////SSSSiiiizzzzeeee  default  setting  is  not  a  normal   SunView
+          setting.   To  change it, you must create your own directory
+          of default settings for  the  editor,  and  add  a  defaults
+          category  for  eeeetttteeeerrrrmmmm and an entry for EEEEtttteeeerrrrmmmm////HHHHiiiissssttttoooorrrryyyy////SSSSiiiizzzzeeee, as
+          described in the  SunView  manual.   The  defaults  settings
+          interpreted by _e_t_e_r_m are:
+
+
+
+
+     Page 3                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          TTTTeeeexxxxtttt////SSSSccccrrrroooollllllllaaaabbbblllleeee     If TTTTrrrruuuueeee, a scrollbar will be displayed
+          SSSSccccrrrroooollllllllbbbbaaaarrrr////VVVVeeeerrrrttttiiiiccccaaaallll____bbbbaaaarrrr____ppppllllaaaacccceeeemmmmeeeennnntttt
+                              The location of the scroll bar (EEEEaaaasssstttt for
+                              right side, and WWWWeeeesssstttt for left side)
+          SSSSccccrrrroooollllllllbbbbaaaarrrr////RRRReeeeppppeeeeaaaatttt____ttttiiiimmmmeeee
+                              The  time  interval   between   repeated
+                              scrolling  when  the  mouse is held down
+                              over the  scrollbar  arrows  (a  smaller
+                              number makes it scroll faster).
+          EEEEtttteeeerrrrmmmm////HHHHiiiissssttttoooorrrryyyy////SSSSiiiizzzzeeee  The number of bytes  of  output  history
+                              retained  (e.g.  how  far  back  you can
+                              scroll by using the scrollbar)
+
+        SSSShhhheeeellllllll MMMMeeeennnnuuuu aaaannnndddd SSSSccccrrrroooollllllll BBBBaaaarrrr
+          _e_t_e_r_m windows can be configured with or without a scrollbar,
+          and  with  the  scroll  bar  left  or  right.  The scrollbar
+          behaves much like _e_m_a_c_s_t_e_r_m's scroll bar.  _e_t_e_r_m  retains  a
+          text  buffer  that  holds  recently  displayed text, and the
+          shaded area the  region  of  the  scrollbar  indicates  what
+          region of _e_t_e_r_m's buffer is currently filled with text.  The
+          solid bar indicates  what  part  of  the  buffered  text  is
+          actually  displayed on the screen.  Depressing button 1 over
+          one of the arrows will cause the  window  to  scroll  up  or
+          down.   (The scroll will repeat as long as you hold down the
+          button).  Clicking button 1 in the bar above  or  below  the
+          highlighted  region  will cause the text to page up or down.
+          Depressing button 1 over the highlighted bar and dragging it
+          up  or  down  will  cause  the text to move to the indicated
+          position.  There are also entries on  the  HHHHiiiissssttttoooorrrryyyy  sub-menu
+          that can be used to control scrolling.
+
+          Clicking button 1 or  2  over  text  display  selects  text.
+          Clicking  twice  will  select  the  word  at the spot of the
+          click, clicking 3 times will select the line,  and  clicking
+          more times selects multiple lines.  You can also sweep out a
+          block of text with the mouse.
+
+          The menu structure  under  the  shell  is  also  similar  to
+          _e_m_a_c_s_t_e_r_m,  and  is  accessed  with  the right button of the
+          mouse.  The menu is organized as a tree, with  menu  entries
+          that  have sub menus showing a right pointing arrow -> after
+          the entry.  Dragging the mouse to  the  right  of  the  menu
+          causes  the  sub-menu  to  appear.   Entries  that  are  not
+          currently available (like re-positioning the scrollbar  when
+          the bar is not enabled) appear in faint text.
+
+          The SSSSeeeennnndddd entry sends the current  _s_e_l_e_c_t_i_o_n  in  any  window
+          (generally  something  you  swept out with the mouse).  Text
+          can be cut and pasted between windows this way.   There  are
+          some variations in how to do this listed below under cut and
+          paste.
+
+
+
+
+     Page 4                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          The HHHHiiiissssttttoooorrrryyyy sub-menu contains functions for manipulating the
+          saved  text.   CCCClllleeeeaaaarrrr  clears  the  screen and the history of
+          saved text, while RRRReeeessssttttoooorrrreeee puts the cursor back at the end of
+          the saved text.  The rest should be self-explanatory.
+
+          The WWWWiiiinnnnddddoooowwww sub-menu contains functions for manipulating  the
+          current window.  The SSSSccccrrrroooollllllllbbbbaaaarrrr, CCCCuuuurrrrssssoooorrrr, and PPPPaaaaggggiiiinnnngggg sub-menus
+          control the placement of the scrollbar, the display  of  the
+          cursor,  and whether or not _e_t_e_r_m will block output when the
+          page is full.  There are 3 PPPPaaaaggggiiiinnnngggg options: SSSSttttoooopppp, which stops
+          and  waits for you to type something when full; CCCClllleeeeaaaarrrr, which
+          also stops, but clears the screen after you type to  release
+          it  rather  than  scrolling  more  text onto the screen; and
+          NNNNoooonnnneeee, which allows text  output  to  continue  indefinitely.
+          The  FFFFrrrraaaammmmeeee menu has entries to control the window, including
+          moving it to the front or back, closing (iconifying) it, and
+          resetting  the  window size to one of 3 standard sizes.  The
+          FFFFoooonnnnttttssss menu contains some standard  font  options.   The  SSSSeeeetttt
+          SSSSiiiizzzzeeee  menu  entry sends a command to the window to reset the
+          environment to track the current window  size.   It  can  be
+          useful  if  the  window  is  logged into another system that
+          cannot directly determine your window size.  Note  that  SSSSeeeetttt
+          SSSSiiiizzzzeeee,  FFFFoooonnnntttt  changes,  and  FFFFrrrraaaammmmeeee  size  changes  all  cause
+          reshaping commands to be sent to the window  and  should  be
+          done  only  when  the  window is running the _s_h_e_l_l or _e_m_a_c_s.
+          All of the menus can  be  customized  as  indicated  in  the
+          SPECIAL FEATURES section.
+
+        EEEEmmmmaaaaccccssss MMMMeeeennnnuuuussss aaaannnndddd SSSSccccrrrroooollllllll BBBBaaaarrrr
+          In _e_m_a_c_s, the scroll bar does not show a grey  region.   The
+          bar  shows  the proportion of the buffer currently displayed
+          on the screen.  Again, clicking or dragging  button  1  over
+          the scrollbar or arrows moves the currently displayed region
+          (and the cursor).
+
+          The behavior of the mouse buttons over text depends  on  the
+          macro package you are using.  There are 3 choices: the _b_a_s_i_c
+          package, _e_t_e_r_m-_t_r_e_e, and _e_t_e_r_m_2.  These are described in the
+          _e_m_a_c_s_t_e_r_m  manual  page.  To load one of the other packages,
+          include       either       ^^^^XXXX^^^^LLLL~~~~EEEEMMMMAAAACCCCSSSS////mmmmaaaaccccrrrroooossss////eeeetttteeeerrrrmmmm2222       or
+          ^^^^XXXX^^^^LLLL~~~~EEEEMMMMAAAACCCCSSSS////mmmmaaaaccccrrrroooossss////aaaauuuuttttooooeeeetttteeeerrrrmmmm   (for   _e_t_e_r_m-_t_r_e_e)   in   your
+          $_H_O_M_E/._e_m_a_c_s__i_n_i_t file after ^^^^XXXX^^^^IIII~~~~EEEEMMMMAAAACCCCSSSS////....eeeemmmmaaaaccccssss____iiiinnnniiiitttt.
+
+        RRRRuuuunnnnnnnniiiinnnngggg RRRReeeemmmmooootttteeee AAAApppppppplllliiiiccccaaaattttiiiioooonnnnssss
+          One very nice benefit of _e_t_e_r_m is that it allows you to  use
+          the  mouse  with  applications run on remote systems via any
+          combination of _c_u, _r_l_o_g_i_n, _d_k, etc.  If you run  the  remote
+          login  command  in  an  _e_t_e_r_m  window  (either with eeeetttteeeerrrrmmmm ----cccc
+          rrrrllllooooggggiiiinnnn or from a shell  running  under  _e_t_e_r_m),  the  remote
+          system can control your window via escape sequences.  To get
+          this setup properly, on the remote system  you  must  invoke
+          the  SSSSeeeetttt SSSSiiiizzzzeeee function from the WWWWiiiinnnnddddoooowwww menu.  Alternatively,
+
+
+
+     Page 5                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          you can include a command that echoes the character sequence
+          eeeessssccccaaaappppeeee----aaaa to the terminal as part of your startup.  This will
+          cause _e_t_e_r_m to send a command sequence to set up the  LLLLIIIINNNNEEEESSSS,
+          CCCCOOOOLLLLUUUUMMMMNNNNSSSS,  TTTTEEEERRRRMMMM,  TTTTEEEERRRRMMMMCCCCAAAAPPPP, and TTTTEEEERRRRMMMMIIIINNNNFFFFOOOO variables.  Note that
+          the remote system should be set up the same  way  that  your
+          home  system is (i.e. $_H_O_M_E/._e_m_a_c_s__i_n_i_t constructed properly
+          and the environment set up as described above).
+
+          When you are logged in remotely, you can use the  mouse/menu
+          features  of  _e_t_e_r_m  just  as you can locally.  You can also
+          resize the window (either from the menu or from  the  window
+          manager  on  your  local system).  When you resize, however,
+          make sure that the remote system is sitting  at  the  shell,
+          otherwise it will get confused about the window size.  If it
+          seems to have the size wrong, return to the shell and invoke
+          the SSSSeeeetttt SSSSiiiizzzzeeee menu entry.
+
+     SSSSPPPPEEEECCCCIIIIAAAALLLL FFFFEEEEAAAATTTTUUUURRRREEEESSSS
+          The features provided by _e_t_e_r_m are  basically  the  same  as
+          those provided by _e_m_a_c_s_t_e_r_m, with these additions.
+
+        WWWWiiiinnnnddddoooowwww CCCCoooonnnnttttrrrroooollll
+          _e_t_e_r_m  implements  escape  sequences  for  controlling   the
+          window.  These allow an application or a menu to reshape the
+          window, iconify it,  or  take  other  actions.   The  escape
+          sequences and the actions are:
+
+          eeeessssccccaaaappppeeee----[[[[2222tttt      Iconify (close)  window.   (Note  that  some
+                          window  managers  do  not  allow programs to
+                          iconify themselves this way).
+          eeeessssccccaaaappppeeee----[[[[4444;;;;yyyy;;;;xxxxtttt  Set window size to _x by _y in pixels.
+          eeeessssccccaaaappppeeee----[[[[5555tttt      Put this window on top  of  any  overlapping
+                          windows.
+          eeeessssccccaaaappppeeee----[[[[6666tttt      Put this window underneath  any  overlapping
+                          windows.
+          eeeessssccccaaaappppeeee----[[[[8888;;;;yyyy;;;;xxxxtttt  Set window size to  _x  by  _y  characters  in
+                          current font.
+
+          The remaining frame  escape  sequences  (documented  in  the
+          _S_u_n_V_i_e_w manual) work as well.
+
+        FFFFoooonnnnttttssss
+          _e_t_e_r_m  allows  you  to  change  the  font  used  to  display
+          characters  using  an  escape  sequence.   The  sequence  is
+          similar to that used with _e_m_a_c_s_t_e_r_m, but not quite the same,
+          and  the actual selection of fonts available depends on your
+          window system and the fonts installed on your machine.  When
+          the  terminal  receives the sequence eeeessssccccaaaappppeeee----&&&&FFFF!!!!ffffoooonnnnttttnnnnaaaammmmeeee!!!!, it
+          will set the font to the named font and  change  the  window
+          size   and   line   spacing   to   match.   If  it  receives
+          eeeessssccccaaaappppeeee----&&&&ffff!!!!ffffoooonnnnttttnnnnaaaammmmeeee!!!!, it will set the font but not reset  the
+          window  size or line spacing.  This could allow one to build
+
+
+
+     Page 6                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          an application that uses multiple fonts, providing that  the
+          character  sizes of the fonts are compatible.  The font name
+          is    the    full    path    of    a    font     description
+          (/_u_s_r/_l_i_b/_f_o_n_t_s/_f_i_x_e_d_w_i_d_t_h_f_o_n_t_s/...).  Using  anything other
+          than fixed width fonts will cause trouble.
+
+        FFFFuuuunnnnccccttttiiiioooonnnn KKKKeeeeyyyyssss
+          The function keys work normally under  SunView  and  can  be
+          programmed via your $_H_O_M_E/._t_t_y_s_w_r_c file.  Note that the LLLLeeeefffftttt
+          keys (LLLL1111----LLLL11110000) have fixed meanings in the newer  releases  of
+          SunView, and in _e_t_e_r_m some of these are pre-programmed to be
+          compatible with those meanings:
+
+          On  a  color  display,  _e_t_e_r_m  allows  you  to  change   the
+          foreground  and  background  colors  with an escape sequence
+          (eeeessssccccaaaappppeeee----xxxx!!!!ffffoooorrrreeeeggggrrrroooouuuunnnndddd!!!!bbbbaaaacccckkkkggggrrrroooouuuunnnndddd!!!!).       _F_o_r_e_g_r_o_u_n_d      and
+          _b_a_c_k_g_r_o_u_n_d  can  be  "_r  _g  _b", where _r, _g and _b are numbers
+          0-255 specifying color intensities for red, green, and blue.
+          They  can  also be color names.  If they are names, you must
+          have the environment variable _C_O_L_O_R_F_I_L_E set to the path of a
+          file  containing color definitions.  The file contains lines
+          defining the red, green and blue  values  (0-255)  for  each
+          color formatted as follows:
+
+               255 255 0      cyan
+
+          Note that the color change impacts the  current  color  map.
+          If  _e_t_e_r_m was run in a window sharing the default color map,
+          all windows will change.  If it was run from a window with a
+          private  color  map  (a window created with ----WWWWffff or ----WWWWbbbb), the
+          change impacts only that window.  Changing  the  global  map
+          can have dramatic (and unwanted) impacts.
+
+        CCCCuuuutttt aaaannnndddd PPPPaaaasssstttteeee
+          You can normally cut  and  paste  between  _e_t_e_r_m  and  other
+          window  oriented  tools.  Sweeping out a region makes it the
+          primary selection, which can be copied and pasted  into  any
+          other  window.   Likewise,  the  SSSSeeeennnndddd  menu  entry sends the
+          current primary selection from SunView application to _e_t_e_r_m.
+          The PPPPaaaasssstttteeee button sends the current contents of the shelf.
+
+        WWWWiiiinnnnddddoooowwww LLLLaaaabbbbeeeellll aaaannnndddd IIIIccccoooonnnn
+          The   escape   code   that   normally   writes   the   label
+          (eeeessssccccaaaappppeeee----LLLL!!!!llllaaaabbbbeeeellll!!!!)  under  _e_m_a_c_s_t_e_r_m  will  change  both  the
+          window and icon labels.  There are  also  escape  codes  for
+          setting  the window and icon labels (eeeessssccccaaaappppeeee----]]]]llll<<<<tttteeeexxxxtttt>>>>eeeessssccccaaaappppeeee----eeee
+          eeeessssccccaaaappppeeee----]]]]LLLL<<<<tttteeeexxxxtttt>>>>eeeessssccccaaaappppeeee----eeee).  There is no way  to  disable  the
+          window label.
+
+          There   is   an   escape   code   for   setting   the   icon
+          (eeeessssccccaaaappppeeee----]]]]IIII<<<<ffffiiiilllleeee>>>>eeeessssccccaaaappppeeee----\\\\).   The  file  name  should  be  an
+          absolute path to a file in the appropriate format.
+
+
+
+     Page 7                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+        MMMMeeeennnnuuuussss
+          Most of these menus may be reprogrammed via the  appropriate
+          escape  sequences.   To  do  so,  first  select  the menu to
+          program by sending "eeeessssccccaaaappppeeee----####cccc",  where  'cccc'  designates  the
+          menu you wish to change.  cccc should be one of the following:
+
+          ssss     SSSShhhheeeellllllll menu
+          eeee     EEEEmmmmaaaaccccssss menu
+          vvvv     VVVViiii menu
+          hhhh     HHHHiiiissssttttoooorrrryyyy menu
+          llll     WWWWiiiinnnnddddoooowwww menu
+          OOOO     FFFFrrrraaaammmmeeee menu
+          ffff     FFFFoooonnnnttttssss menu
+          1111----9999   User programmable menus
+
+          To  program  an  individual  menu  item,  send  the   escape
+          sequence:
+
+               eeeessssccccaaaappppeeee----MMMM[[[[####cccc]]]][[[[nnnn]]]]!!!!llllaaaabbbbeeeellll!!!!vvvvaaaalllluuuueeee!!!!
+
+          Where [####cccc] is an optional menu to attach this  item  to  (if
+          you  send '#' followed by a menu designator, it will show an
+          arrow on the right  of  the  menu  item  and  bring  up  the
+          designated  menu  when  you move onto it.  Just send ####cccc, not
+          the brackets).  [nnnn] is an optional menu item.  It should  be
+          a  single  digit  designating  which item to program (again,
+          don't send the brackets).  If omitted, it programs the  next
+          free  menu item.  If you designate an item, it truncates the
+          menu after that item.  '!!!!' can be any  character  that  does
+          not  appear  in  label or value.  If the value string starts
+          with "########", it is interpreted as if it had been  received  by
+          _e_t_e_r_m  from  your  application,  which  is  how  you program
+          entries that have direct effect on the window.  For example,
+          to add a font to the FFFFoooonnnnttttssss menu:
+
+               echo "_e_s_c_a_p_e-#_f_e_s_c_a_p_e-_M!_a_p_l _f_o_n_t!##_e_s_c_a_p_e-&_F?\
+               /_u_s_r/_l_i_b/_f_o_n_t_s/_f_i_x_e_d_w_i_d_t_h_f_o_n_t_s/_a_p_l._r._1_0?!_e_s_c_a_p_e-#_s"
+
+          To add a FFFFrrrraaaammmmeeee menu item to reshape to 60X132:
+
+               echo "_e_s_c_a_p_e-#_O_e_s_c_a_p_e-_M!_1_3_2_X_6_0!##_e_s_c_a_p_e-[_8;_6_0;_1_3_2!_e_s_c_a_p_e-_O"
+
+     FFFFIIIILLLLEEEESSSS
+          ~EMACS               the _e_m_a_c_s  library  directory  on  your
+                               local system
+          ~EMACS/.emacs_init   default initialization file for _e_m_a_c_s
+          $HOME/.emacs_init    user initialization file for _e_m_a_c_s
+          $HOME/.ttyswrc       keyboard definitions for SunView
+          $HOME/.defaults      defaults definitions for SunView
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _e_m_a_c_s(EXPTOOLS), _e_m_a_c_s_t_e_r_m(EXPTOOLS), _v_i_t_e_r_m(EXPTOOLS)
+
+
+
+     Page 8                                          (printed 9/23/91)
+
+
+
+
+
+
+     EEEETTTTEEEERRRRMMMM((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEETTTTEEEERRRRMMMM((((1111))))
+
+
+
+          _A_n _I_n_t_e_r_a_c_t_i_v_e _S_c_r_e_e_n _E_d_i_t_o_r _f_o_r _U_N_I_X (_I_s_s_u_e _2),  by  Warren
+          Montgomery, 55235-851008-02TM
+          _A _M_o_u_s_e/_M_e_n_u _F_r_o_n_t _E_n_d _f_o_r _S_c_r_e_e_n _O_r_i_e_n_t_e_d _A_p_p_l_i_c_a_t_i_o_n_s,  by
+          Warren Montgomery, September 19, 1988 (somewhat obsolete)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Warren Montgomery (iexist!warren)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 9                                          (printed 9/23/91)
+
+
+

@@ -1,0 +1,330 @@
+
+
+
+     pppprrrrbbbblllloooocccckkkk((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrbbbblllloooocccckkkk((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          prblock - Format input lines vertically in a block.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          pppprrrrbbbblllloooocccckkkk [-abepP] [-d_c] [-D_c] [-F_n] [-h<_p_g__h_e_a_d_e_r>] [-
+               f<_p_g__f_o_o_t_e_r>] [-i<_f_i_l_e>] [-L_n] [-m_n] [-n_c] [-W_n]
+               <_f_i_e_l_d__n_a_m_e_s>...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          For each input line, the pppprrrrbbbblllloooocccckkkk command prints a block
+          structured layout of the fields in the line.  For each field
+          in the line, the field name is printed in the left margin
+          and then the field value is printed.
+
+          pppprrrrbbbblllloooocccckkkk gracefully handles field names and values that wrap
+          onto more than one line.  By default, up to 34 characters
+          are printed for the field name in the left margin; space
+          characters fill up to column 35; and up to 44 bytes of the
+          field value make up the rest of the line.  Continuing field
+          names begin at column 1, while continuing field values begin
+          at column 35.
+
+          If a field is too wide for one line, it is broken according
+          to the following rules:
+
+               1.at the last white-space character that will fit on
+                 the line, if any;
+
+               2.else at the last punctuation or non-alphanumeric
+                 character that will fit on the line, if any;
+
+               3.else at the width of the line.
+
+          If a value is broken across lines, blanks that would appear
+          at the beginning of the next line are not printed.
+
+          By default, two lines of hyphens (``-'') are printed between
+          each record.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----aaaa        Automatically determine how wide the left margin
+                    for field names should be, based on the length of
+                    the longest field name.  The margine is set to
+                    allow a minimum of two spaces between each field
+                    name and its field value.  The space allowed for
+                    field values is also adjusted to fit within the
+                    specified page width.
+
+                    This option overrides the ----mmmm option.
+
+          ----BBBB        Suppress the printing of blank fields.  If a field
+                    value is null, the line - which would consist only
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrbbbblllloooocccckkkk((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrbbbblllloooocccckkkk((((1111))))
+
+
+
+                    of the field name - is not printed.
+
+          ----dddd_c       The character ``_c'' is the field delimiter
+                    character for dividing up each input line.  The
+                    default delimiter is a colon (``:'').
+
+          ----DDDD_c       Double space the output.  Normally, a blank line
+                    is printed between each field value.  However, if
+                    the character ``_c'' is given, a line consisting of
+                    only _c's for the entire page width will be
+                    printed.
+
+          ----eeee        Enumerate the records.  If the ----PPPP option is
+                    specified, then a separate line is printed at the
+                    beginning of each record in the form
+
+                         --- Record <_r_e_c_o_r_d _n_u_m_b_e_r> ---
+
+               If the ----PPPP option is not specified, then the record
+               number is printed on the second of the dashed separator
+               lines.
+
+          ----FFFF_n  The number of fields in each record _m_u_s_t be _n.  The
+               number _n must also be greater than or equal to the
+               number of field names.  If _n is greater than the number
+               of field names, the extra fields in the input are never
+               printed.
+
+          ----ffff<_p_g__f_o_o_t_e_r>
+               The next argument is used as a footer to be printed at
+               the bottom of each page.  The bottom of the page output
+               will consist of two blank lines, followed by the footer
+               line, and followed by two more blank lines.  The page
+               footer may consist of multiple lines, but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page.  For example, if the
+               footer consists of two lines, the user should specify
+               ----LLLL66665555 to get the right number of data lines output for a
+               default page length of 66 lines.  Standard C escape
+               conventions (e.g. ``\n'') are recognized and translated
+               to the corresponding value.  In this case the footer
+               should be quoted to avoid backslash interpretation by
+               the shell.  The footer may also contain a single ``%d''
+               which is expanded to the current page number.  (See the
+               manual page for pppprrrriiiinnnnttttffff(3) for more details.)  This
+               option implies the ----pppp option.
+
+          ----hhhh<_p_g__h_e_a_d_e_r>
+               The next argument is used as a header to be printed at
+               the top of each page.  Four blank lines will be printed
+               at the top of the page, followed by the header line,
+               followed by two blank lines, and the data.  The header
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrbbbblllloooocccckkkk((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrbbbblllloooocccckkkk((((1111))))
+
+
+
+               argument may consist of multiple lines, but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page.  For example, if the
+               header consists of two lines, the user should specify
+               ----LLLL66665555 to get the right number of data lines output for a
+               default page length of 66 lines.  Standard C escape
+               conventions (e.g. ``\n'') are recognized and translated
+               to the corresponding value.  In this case the header
+               should be quoted to avoid backslash interpretation by
+               the shell.  The header may also contain a single ``%d''
+               which is expanded to the current page number.  (See the
+               manual page for pppprrrriiiinnnnttttffff(3) for more details.)  This
+               option implies the ----pppp option.
+
+          ----iiii<_f_i_l_e>
+               The data to be formatted is taken from the given _f_i_l_e.
+               Without this option, the data is taken from standard
+               input.
+
+          ----LLLL_n  The length of a page is set to _n lines.  If no page
+               length is given, the default is 66 lines per page.  The
+               minimum allowable page length is 10.  This option
+               implies the ----pppp option.
+
+          ----mmmm_n  The width of the left field-name margin is set to _n
+               characters.  By default, the left margin, in which the
+               field names are printed, is 35 characters.  This means
+               that up to 34 characters of field name are printed and
+               spaces are used to fill up to column 35.  Field values
+               are printed in columns 36 up to the width of the page
+               (default 79 characters).  The print width for field
+               values is equal to the page width minus the margin
+               width.  Thus, increasing the margin size without
+               increasing the page width will cause the print width
+               for field values to decrease.
+
+               This option is ignored if the ----aaaa option is given.
+
+          ----nnnn_c  This option causes all occurrences of ``_c'' to be
+               translated into a skip to the next line.  Thus, the
+               user can explicitly control where breaks occur in field
+               values even if the value would not fill the line.  The
+               default for _c is tilde (``~'').
+
+               The ----nnnn option takes priority over normal line
+               splitting.  The command will first scan for a newline
+               character.  Failing to find one, it scans backwards
+               trying to find a break character _o_n_l_y if the entire
+               field value will not fit on the current line.  Failing
+               to find a break character, it splits the field value
+               exactly at the width of the line.  The ----nnnn option has an
+               effect even if the field value will fit on the line,
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrbbbblllloooocccckkkk((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrbbbblllloooocccckkkk((((1111))))
+
+
+
+               while normal line splitting takes effect only on
+               multi-line field values.
+
+          ----PPPP   Paginate the output and place each record on a new
+               page.  The dashed separator lines are suppressed.  This
+               option overrides the ----pppp option.
+
+          ----pppp   Paginate the output.  When paginating, records are not
+               printed across pages whenever possible.  The number of
+               lines needed to print a record is calculated before
+               printing begins and if the record will not fit on the
+               current page, printing will start on a new page.  The
+               only time that a record will print across more than one
+               page is if it will not fit on a single page.
+
+          ----WWWW_n  The width of lines is set to _n characters.  By default,
+               the print width is 79 characters per line; the default
+               was chosen so that the output will print nicely on
+               video terminals.  If _n is not given, it defaults to 120
+               characters per line.  The minimum width is 10
+               characters.  This width also controls the width of the
+               separator lines.
+
+               If the page width is less than the left margin for
+               field names, the page width is divided equally between
+               field names and values.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+          There is a limit on the number of columns that can be
+          printed.  Currently, this is 200 on mainframes and 100 on
+          all other machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          To print three fields (a supplier name, number, and
+          location) on each line:
+
+               prblock -W50 -d':' "Supplier Name" "Supplier Number"
+               Location
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+
+
+
+
+     pppprrrrbbbblllloooocccckkkk((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrbbbblllloooocccckkkk((((1111))))
+
+
+
+          Given the input
+
+               Smith:5398:London
+               Jones:769:Nice
+               Blake:245:Paris
+
+          using the above command, the output would be:
+
+               --------------------------------------------------
+               --------------------------------------------------
+
+               Supplier Name                      Smith
+               Supplier Number                    5398
+               Location                           London
+
+               --------------------------------------------------
+               --------------------------------------------------
+
+               Supplier Name                      Jones
+               Supplier Number                    769
+               Location                           Nice
+
+               --------------------------------------------------
+               --------------------------------------------------
+
+               Supplier Name                      Blake
+               Supplier Number                    245
+               Location                           Paris
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          catalog(UNITY), prtable(1), qprintf(1), and retrieve(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 10/8/91)
+
+
+

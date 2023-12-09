@@ -1,0 +1,132 @@
+
+
+
+     RRRREEEEPPPPFFFFIIIILLLLEEEE((((1111))))  UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS UUUUPPPPDDDD1111....1111 PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))   RRRREEEEPPPPFFFFIIIILLLLEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          repfile - EXPTOOLS remote file replacement
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          rrrreeeeppppffffiiiilllleeee  [ ----ccccddddffffvvvvxxxxZZZZ ] [[ ----llll lllliiiinnnnkkkk____ppppaaaatttthhhh ]...] [ ----MMMM mmmmaaaaiiiillllaaaaddddddddrrrr ] \
+                   [ ----PPPP ppppwwwwddddffffiiiilllleeee ] \
+                   ----pppp ppppkkkkggggiiiidddd ----ssss ssssoooouuuurrrrcccceeee ----tttt ttttaaaarrrrggggeeeetttt mmmmaaaacccchhhhiiiinnnneeee----sssseeeelllleeeeccccttttiiiioooonnnn
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _r_e_p_f_i_l_e sends the given ssssoooouuuurrrrcccceeee file to the EXPTOOLS login on
+          the given mmmmaaaacccchhhhiiiinnnneeeessss, where it is installed as ttttaaaarrrrggggeeeetttt.  The
+          ssssoooouuuurrrrcccceeee file may be any pathname, but the ttttaaaarrrrggggeeeetttt must be
+          relative to the EXPTOOLS login directory on the remote
+          machine.  The ppppkkkkggggiiiidddd specifies the package ID that will
+          determine the password to use and the update permissions at
+          each remote site.  The commands to do the networking are
+          performed in the background via _b_a_t_c_h(1) with the results
+          mailed to you.  The options are:
+
+          ----cccc     (nocheck) Disable password checking before sending
+                 the update.
+
+          ----dddd     (debug) Verbose debugging output is produced.  No
+                 network jobs are started, and all commands are echoed
+                 as they run, including those run via _b_a_t_c_h(1).
+
+          ----ffff     (force) The target is removed from the remote machine
+                 before the new version is installed.
+
+          ----llll     (link path) Pathname given is to be linked to the
+                 target on the remote machine.  The same restrictions
+                 apply to each link path that apply to the target path
+                 (see the ----tttt option).  At most 50 link names may be
+                 specified (1024 characters max).
+
+          ----MMMM     (mail address) A mail address (_m_a_c_h_i_n_e!_u_s_e_r) where
+                 all remote messages are to be sent.
+
+          ----pppp     (pkgid) Specifies the package ID to use to determine
+                 update permissions.  The password given by the user
+                 will be encrypted at each remote site and checked
+                 against the encrypted password for this package ID to
+                 provide some measure of security.  Package ID's and
+                 passwords are assigned by the EXPTOOLS
+                 administrators.  The ----cccc option disables the quick
+                 local check for password mismatch.
+
+          ----PPPP     (password file) A file containing the password for
+                 the pkgid can be specified.  The password will be
+                 read from this file rather than the keyboard.
+
+          ----ssss     (source) The source file name, which is assumed to be
+
+
+
+     Page 1                                           (printed 1/3/92)
+
+
+
+
+
+
+     RRRREEEEPPPPFFFFIIIILLLLEEEE((((1111))))  UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS UUUUPPPPDDDD1111....1111 PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))   RRRREEEEPPPPFFFFIIIILLLLEEEE((((1111))))
+
+
+
+                 compressed if it has a ....ZZZZ suffix.  If the source file
+                 is empty, a warning is printed.
+
+          ----tttt     (target) The target path name.  Must be relative to
+                 the EXPTOOLS login directory.  May begin with ./ but
+                 may not contain /../.
+
+          ----vvvv     (verbose) Causes return mail from the remote site to
+                 confirm installation.
+
+          ----xxxx     (execute permission) Make the file executable on the
+                 remote machine.
+
+          ----ZZZZ     (keep compressed) Do not uncompress the source file
+                 before transmitting.
+
+          mmmmaaaacccchhhhiiiinnnneeee----sssseeeelllleeeeccccttttiiiioooonnnn
+                 All non-option arguments are taken to comprise a
+                 query on the machines database.  These arguments are
+                 described more fully in the manual page for
+                 _m_a_c_h_i_n_e_s(1).  There are examples below.
+
+          Update permission is controlled by a password file on the
+          remote machine.  Depending on the ppppkkkkggggiiiidddd used, files may be
+          protected from any updates, updated only if already in
+          existence, or installed whether they exist or not.  The
+          password is not echoed as you type it.  Security checks are
+          performed to avoid pathnames which stray outside the remote
+          login directory.  Any error messages (local and remote) are
+          mailed to you.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          To create a _m_o_r_e news item on all machines:
+               repfile -p toolnews -s news -t lib/toolnews/more -v all
+
+          To update $TOOLS/bin/more with a link called page on ibm
+          machines:
+               repfile -p more -l bin/page -s more.ibm -t bin/more -v -x ibm
+
+          To replace a man page on machines with the _u_n_i_t_y optional
+          tool:
+               repfile -p unity -s 1.unity -t man/1.unity -v unity
+
+     FFFFIIIILLLLEEEESSSS
+          /usr/tmp/$$repfile - temp file to hold password and source
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _m_a_c_h_i_n_e_s(1), _p_k_g_a_u_d_i_t(1), _r_m_a_k_e(1)
+
+
+
+
+
+
+
+     Page 2                                           (printed 1/3/92)
+
+
+

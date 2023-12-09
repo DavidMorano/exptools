@@ -1,0 +1,396 @@
+
+
+
+     CCCCTTTTRRRRAAAACCCCEEEE((((1111))))                 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV                 CCCCTTTTRRRRAAAACCCCEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ctrace - C program debugger
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccttttrrrraaaacccceeee [ options ] [ file ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_t_r_a_c_e allows you to follow the execution of  a  C  program,
+          statement  by statement.  The effect is similar to executing
+          a shell procedure with the ----xxxx option.  _C_t_r_a_c_e  reads  the  C
+          program  in  _f_i_l_e  (or  from  standard  input  if you do not
+          specify _f_i_l_e), inserts statements to print the text of  each
+          executable   statement  and  the  values  of  all  variables
+          referenced or modified, and writes the modified  program  to
+          the standard output.  You must put the output of _c_t_r_a_c_e into
+          a temporary file because the _c_c(1) command  does  not  allow
+          the use of a pipe.  You then compile and execute this file.
+
+          As each statement in the program executes it will be  listed
+          at  the  terminal,  followed  by  the  name and value of any
+          variables referenced or modified in the statement,  followed
+          by any output from the statement.  Loops in the trace output
+          are detected and tracing is stopped until the loop is exited
+          or  a  different  sequence  of statements within the loop is
+          executed.  A warning message is  printed  every  1000  times
+          through  the  loop  to  help you detect infinite loops.  The
+          trace output goes to the standard output so you can  put  it
+          into  a file for examination with an editor or the _b_f_s(1) or
+          _t_a_i_l(1) commands.
+
+          The only _o_p_t_i_o_n_s you will commonly use are:
+
+          ----ffff _f_u_n_c_t_i_o_n_s  Trace only these _f_u_n_c_t_i_o_n_s.
+          ----vvvv _f_u_n_c_t_i_o_n_s  Trace all but these _f_u_n_c_t_i_o_n_s.
+
+          You may want to add to  the  default  formats  for  printing
+          variables.  Long and pointer variables are always printed as
+          signed integers.  Pointers  to  character  arrays  are  also
+          printed  as  strings  if  appropriate.  Char, short, and int
+          variables are  also  printed  as  signed  integers  and,  if
+          appropriate, as characters.  Double variables are printed as
+          floating point numbers  in  scientific  notation.   You  can
+          request  that variables be printed in additional formats, if
+          appropriate, with these _o_p_t_i_o_n_s:
+
+          ----oooo     Octal
+          ----xxxx     Hexadecimal
+          ----uuuu     Unsigned
+          ----eeee     Floating point
+
+          These _o_p_t_i_o_n_s are used only in special circumstances:
+
+
+
+
+     Page 1                                          (printed 9/26/90)
+
+
+
+
+
+
+     CCCCTTTTRRRRAAAACCCCEEEE((((1111))))                 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV                 CCCCTTTTRRRRAAAACCCCEEEE((((1111))))
+
+
+
+          ----llll _n   Check _n consecutively executed statements for looping
+                 trace output, instead of the default of 20.  Use 0 to
+                 get all the trace output from loops.
+          ----ssss     Suppress   redundant   trace   output   from   simple
+                 assignment statements and string copy function calls.
+                 This option can hide a bug caused by  use  of  the  =
+                 operator in place of the == operator.
+          ----tttt _n   Trace  _n  variables  per  statement  instead  of  the
+                 default  of  10  (the  maximum  number  is  20).  The
+                 Diagnostics section explains when to use this option.
+          ----PPPP     Run the C preprocessor on the  input  before  tracing
+                 it.   You  can  also  use  the  ----DDDD,  ----IIII, and ----UUUU _c_c(1)
+                 preprocessor options.
+
+          These _o_p_t_i_o_n_s are used to tailor the run-time trace  package
+          when  the  traced  program  will  run  in  a non-UNIX system
+          environment:
+
+          ----bbbb     Use only basic functions in the trace code, that  is,
+                 those   in  _c_t_y_p_e(3C),  _p_r_i_n_t_f(3S),  and  _s_t_r_i_n_g(3C).
+                 These are usually available even  in  cross-compilers
+                 for  microprocessors.   In particular, this option is
+                 needed  when  the  traced  program  runs   under   an
+                 operating   system  that  does  not  have  _s_i_g_n_a_l(2),
+                 _f_f_l_u_s_h(3S), _l_o_n_g_j_m_p(3C), or _s_e_t_j_m_p(3C).
+          ----pppp '_s' Change the trace print function from the  default  of
+                 'printf('.  For example, 'fprintf(stderr,' would send
+                 the trace to the standard error output.
+          ----rrrr ffff   Use file _f in place of the _r_u_n_t_i_m_e._c  trace  function
+                 package.   This  lets  you  change  the  entire print
+                 function,  instead  of  just  the  name  and  leading
+                 arguments (see the ----pppp option).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          If the file _l_c._c contains this C program:
+
+                1 #include <stdio.h>
+                2 main() /* count lines in input */
+                3 {
+                4   int c, nl;
+                5
+                6   nl = 0;
+                7   while ((c = getchar()) != EOF)
+                8        if (c = '\n')
+                9             ++nl;
+               10   printf("%d\n", nl);
+               11 }
+
+          and you enter these commands and test data:
+
+               cc lc.c
+               a.out
+
+
+
+     Page 2                                          (printed 9/26/90)
+
+
+
+
+
+
+     CCCCTTTTRRRRAAAACCCCEEEE((((1111))))                 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV                 CCCCTTTTRRRRAAAACCCCEEEE((((1111))))
+
+
+
+               1
+               (cntl-d)
+
+          the program will be compiled and executed.   The  output  of
+          the  program  will  be  the  number  2222, which is not correct
+          because there is only one line in the test data.  The  error
+          in this program is common, but subtle.  If you invoke _c_t_r_a_c_e
+          with these commands:
+
+               ctrace lc.c >temp.c
+               cc temp.c
+               a.out
+
+          the output will be:
+
+                2 main()
+                6   nl = 0;
+                    /* nl == 0 */
+                7   while ((c = getchar()) != EOF)
+
+          The program is now waiting for input.  If you enter the same
+          test data as before, the output will be:
+
+                    /* c == 49 or '1' */
+                8        if (c = '\n')
+                         /* c == 10 or '\n' */
+                9             ++nl;
+                              /* nl == 1 */
+                7   while ((c = getchar()) != EOF)
+                    /* c == 10 or '\n' */
+                8        if (c = '\n')
+                         /* c == 10 or '\n' */
+                9             ++nl;
+                              /* nl == 2 */
+                7   while ((c = getchar()) != EOF)
+
+          If you now enter an end of file character (cntl-d) the final
+          output will be:
+
+                    /* c == -1 */
+               10   printf("%d\n", nl);
+                    /* nl == 2 */2
+
+                  /* return */
+
+          Note that the program output printed at the end of the trace
+          line  for  the  nnnnllll  variable.   Also note the rrrreeeettttuuuurrrrnnnn comment
+          added by _c_t_r_a_c_e at the end of the trace output.  This  shows
+          the   implicit  return  at  the  terminating  brace  in  the
+          function.
+
+          The trace output shows that variable cccc is assigned the value
+
+
+
+     Page 3                                          (printed 9/26/90)
+
+
+
+
+
+
+     CCCCTTTTRRRRAAAACCCCEEEE((((1111))))                 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV                 CCCCTTTTRRRRAAAACCCCEEEE((((1111))))
+
+
+
+          '1'  in  line  7, but in line 8 it has the value '\n'.  Once
+          your attention is drawn  to  this  iiiiffff  statement,  you  will
+          probably  realize  that you used the assignment operator (=)
+          in place of the equal operator (==).  You  can  easily  miss
+          this error during code reading.
+
+     EEEEXXXXEEEECCCCUUUUTTTTIIIIOOOONNNN----TTTTIIIIMMMMEEEE TTTTRRRRAAAACCCCEEEE CCCCOOOONNNNTTTTRRRROOOOLLLL
+          The default operation for _c_t_r_a_c_e  is  to  trace  the  entire
+          program  file,  unless you use the ----ffff or ----vvvv options to trace
+          specific functions.  This does not  give  you  statement  by
+          statement  control  of the tracing, nor does it let you turn
+          the tracing off and on when executing the traced program.
+
+          You can do both of these  by  adding  _c_t_r_o_f_f()  and  _c_t_r_o_n()
+          function  calls  to your program to turn the tracing off and
+          on, respectively, at execution time.   Thus,  you  can  code
+          arbitrarily  complex  criteria  for  trace  control  with _i_f
+          statements, and you can even conditionally include this code
+          because  _c_t_r_a_c_e  defines  the  CCCCTTTTRRRRAAAACCCCEEEE preprocessor variable.
+          For example:
+
+               #ifdef CTRACE
+                    if (c == '!' && i > 1000)
+                         ctron();
+               #endif
+
+          You can also call these functions from _s_d_b(1) if you compile
+          with  the  ----gggg option.  For example, to trace all but lines 7
+          to 10 in the main function, enter:
+
+               sdb a.out
+               main:7b ctroff()
+               main:11b ctron()
+               r
+
+          You can also turn the trace off and  on  by  setting  static
+          variable tr_ct_ to 0 and 1, respectively.  This is useful if
+          you are using a debugger that cannot  call  these  functions
+          directly, such as _a_d_b(1).
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          This section contains diagnostic messages from  both  _c_t_r_a_c_e
+          and  _c_c(1), since the traced code often gets some _c_c warning
+          messages.  You can get _c_c error messages in some rare cases,
+          all of which can be avoided.
+
+        CCCCttttrrrraaaacccceeee DDDDiiiiaaaaggggnnnnoooossssttttiiiiccccssss
+          _w_a_r_n_i_n_g: _s_o_m_e _v_a_r_i_a_b_l_e_s _a_r_e _n_o_t _t_r_a_c_e_d _i_n _t_h_i_s _s_t_a_t_e_m_e_n_t
+               Only 10 variables are traced in a statement to  prevent
+               the C compiler "out of tree space; simplify expression"
+               error.  Use the ----tttt option to increase this number.
+
+
+
+
+     Page 4                                          (printed 9/26/90)
+
+
+
+
+
+
+     CCCCTTTTRRRRAAAACCCCEEEE((((1111))))                 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV                 CCCCTTTTRRRRAAAACCCCEEEE((((1111))))
+
+
+
+          _w_a_r_n_i_n_g: _s_t_a_t_e_m_e_n_t _t_o_o _l_o_n_g _t_o _t_r_a_c_e
+               This statement is over 400 characters long.  Make  sure
+               that  you  are  using  tabs  to  indent  your code, not
+               spaces.
+
+          _c_a_n_n_o_t _h_a_n_d_l_e _p_r_e_p_r_o_c_e_s_s_o_r _c_o_d_e, _u_s_e -_P _o_p_t_i_o_n
+               This is usually caused  by  #ifdef/#endif  preprocessor
+               statements  in  the  middle  of  a C statement, or by a
+               semicolon  at  the  end  of  a   #define   preprocessor
+               statement.
+
+          '_i_f ... _e_l_s_e _i_f' _s_e_q_u_e_n_c_e _t_o_o _l_o_n_g
+               Split the sequence by removing an eeeellllsssseeee from the middle.
+
+          _p_o_s_s_i_b_l_e _s_y_n_t_a_x _e_r_r_o_r, _t_r_y -_P _o_p_t_i_o_n
+               Use the ----PPPP option to preprocess the _c_t_r_a_c_e input, along
+               with  any  appropriate  ----DDDD,  ----IIII,  and  ----UUUU  preprocessor
+               options.  If you still get the error message, check the
+               Warnings section below.
+
+        CCCCcccc DDDDiiiiaaaaggggnnnnoooossssttttiiiiccccssss
+          _w_a_r_n_i_n_g: _f_l_o_a_t_i_n_g _p_o_i_n_t _n_o_t _i_m_p_l_e_m_e_n_t_e_d
+          _w_a_r_n_i_n_g: _i_l_l_e_g_a_l _c_o_m_b_i_n_a_t_i_o_n _o_f _p_o_i_n_t_e_r _a_n_d _i_n_t_e_g_e_r
+          _w_a_r_n_i_n_g: _s_i_z_e_o_f _r_e_t_u_r_n_s _0
+          _w_a_r_n_i_n_g: _s_i_z_e_o_f _r_e_t_u_r_n_s _v_a_l_u_e _l_e_s_s _t_h_a_n _o_r _e_q_u_a_l _t_o _z_e_r_o
+          _w_a_r_n_i_n_g: _s_t_a_t_e_m_e_n_t _n_o_t _r_e_a_c_h_e_d
+          _w_a_r_n_i_n_g: __c_t_i_n_t _u_n_u_s_e_d
+          _w_a_r_n_i_n_g: __c_t_s_t_r _u_n_u_s_e_d
+               Ignore these messages.
+
+          _a_d_d_r_e_s_s_a_b_l_e _e_x_p_r_e_s_s_i_o_n _r_e_q_u_i_r_e_d
+          _c_o_m_p_i_l_e_r _t_a_k_e_s _s_i_z_e _o_f _f_u_n_c_t_i_o_n
+               See the _c_t_r_a_c_e "possible syntax error" message above.
+
+          _y_a_c_c _s_t_a_c_k _o_v_e_r_f_l_o_w
+               See the _c_t_r_a_c_e "'if ... else  if'  sequence  too  long"
+               message above.
+
+          _o_u_t _o_f _t_r_e_e _s_p_a_c_e; _s_i_m_p_l_i_f_y _e_x_p_r_e_s_s_i_o_n
+               Use the ----tttt  option  to  reduce  the  number  of  traced
+               variables per statement from the default of 10.  Ignore
+               the "ctrace: too many variables to trace" warnings  you
+               will now get.
+
+          _r_e_d_e_c_l_a_r_a_t_i_o_n _o_f _s_i_g_n_a_l
+               Either correct this declaration of _s_i_g_n_a_l(2), or remove
+               it and #include <signal.h>.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          You will get a _c_t_r_a_c_e syntax error if you omit the semicolon
+          at the end of the last element declaration in a structure or
+          union, just before the right brace (}).  This is optional in
+
+
+
+     Page 5                                          (printed 9/26/90)
+
+
+
+
+
+
+     CCCCTTTTRRRRAAAACCCCEEEE((((1111))))                 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV                 CCCCTTTTRRRRAAAACCCCEEEE((((1111))))
+
+
+
+          some C compilers.
+
+          Defining a function with the same name as a system  function
+          may  cause  a  syntax  error  if  the number of arguments is
+          changed.  Just use a different name.
+
+          _C_t_r_a_c_e assumes that BADMAG is a preprocessor macro, and that
+          EOF and NULL are #defined constants.  Declaring any of these
+          to be variables, e.g. "int EOF;", will cause a syntax error.
+
+     BBBBUUUUGGGGSSSS
+          _C_t_r_a_c_e does not know about the components of aggregates like
+          structures,  unions,  and arrays.  It cannot choose a format
+          to  print  all  the  components  of  an  aggregate  when  an
+          assignment  is  made  to  the  entire aggregate.  _C_t_r_a_c_e may
+          choose to print the address of an aggregate or use the wrong
+          format  (e.g.,  %e for a structure with two integer members)
+          when printing the value of an aggregate.
+
+          Pointer values are always treated as pointers  to  character
+          strings.
+
+          The loop trace output elimination  is  done  separately  for
+          each  file  of  a  multi-file  program.   This can result in
+          functions called from a loop  still  being  traced,  or  the
+          elimination  of  trace  output  from  one function in a file
+          until another in the same file is called.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEE
+          VVVVPPPPAAAATTTTHHHH   Viewpath used to find a file if it  is  not  in  the
+                  current directory structure.
+
+     FFFFIIIILLLLEEEESSSS
+          runtime.c      run-time trace package
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ctc(1),  signal(2),  ctype(3C),   fflush(3S),   longjmp(3C),
+          printf(3S),   setjmp(3C),  string(3C)  in  the  _U_N_I_X  _S_y_s_t_e_m
+          _P_r_o_g_r_a_m_m_e_r _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Joe Steffen
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 9/26/90)
+
+
+

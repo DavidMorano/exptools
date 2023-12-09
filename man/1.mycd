@@ -1,0 +1,330 @@
+
+
+
+         MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))                     EEEEEEXXXXXXPPPPPPTTTTTTOOOOOOOOOOOOLLLLLLSSSSSS                      MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))
+
+
+
+         NNNNNNAAAAAAMMMMMMEEEEEE
+              mycd - 'cd' command with a history for sh, ksh and MSDOS
+
+         SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+              mmmmyyyyccccdddd  [[[[----ffff_h_i_s_t_f_i_l_e]]]]  [[[[----aaaa_a_l_i_a_s_f_i_l_e]]]]  ||||   [[[[----eeee_m_e_n_u_s_i_z]]]]   [[[[----llll   ||||
+              ----mmmm_p_a_t_t_e_r_n  |||| ----_n_u_m |||| ----qqqq |||| ----uuuu_a_l_i_a_s |||| ----xxxx cccclllleeeeaaaannnn |||| ----xxxx aaaalllliiiiaaaassss |||| ---- ||||
+              _p_a_t_h [[[[_p_a_t_h]]]]]]]]
+
+         DDDDDDEEEEEESSSSSSCCCCCCRRRRRRIIIIIIPPPPPPTTTTTTIIIIIIOOOOOONNNNNN
+              _M_y_c_d makes it possible to change  to  different  directories
+              and  then  to  remember all the directories visited.  It can
+              also make use of an aliasing scheme.
+
+              Since the _c_d(1) command must be implemented in  the  current
+              shell (for DOS, see the section below for differences), this
+              command must be used in with a function.  In  order  to  set
+              the function to ccccdddd,,,, an alias must also be used (kkkksssshhhh only, sssshhhh
+              does not have aliases).  The alias and function may be named
+              whatever  you  desire,  but their functions should be set as
+              follows in the environment ($$$$EEEENNNNVVVV) file when using kkkksssshhhh:
+                   case $- in
+                   *i*)
+                        alias cd=__c_d
+                        __c_d()
+                        {
+                             if test "X${1}" = "X-s"
+                             then
+                                  echo "WARNING: History NOT updated!"
+                                  shift
+                                  'cd' $@
+                             else
+                                  'cd' `mycd $@`
+                             fi
+                        }
+                        ;;
+                   esac
+              The cd history tracking will now  take  effect  only  during
+              interactive shells.  If you want it effective in _a_l_l shells,
+              remove the case statement.
+
+              The ----ssss option allows  an  escape  to  using  the  system  ccccdddd
+              command  instead  of  _m_y_c_d.  This  is  an  option _m_y_c_d knows
+              nothing about.  As a user, you may decide not  to  implement
+              this  option, that's up to you.  It is convenient to have an
+              escape mechanism in case something happens to cause _m_y_c_d  to
+              operate  abnormally.   Another  way  to  escape, rather than
+              _u_n_a_l_i_a_sing cd is to type ''''ccccdddd''''  including  the  quotes.   The
+              alias  is now ignored.  You will notice that in the function
+              __c_d, this is how ccccdddd is  executed  without  falling  into  an
+              infinite loop.
+
+              _M_y_c_d returns the path selected to standard output  on  UNIX.
+
+
+
+         Page 1                                          (printed 6/11/92)
+
+
+
+
+
+
+         MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))                     EEEEEEXXXXXXPPPPPPTTTTTTOOOOOOOOOOOOLLLLLLSSSSSS                      MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))
+
+
+
+              All  other  user  interfacing  (input  and  output)  is done
+              directly to the terminal.  Once a directory  is  entered  in
+              the  history  file,  it  will not be entered again.  It will
+              simply be moved to the  new  position  within  the  history.
+              This  way  the  directories that are most often accessed are
+              the easiest to change back to and the least accessed sink to
+              the  bottom  of the history.  It also keeps the history size
+              under reasonable control.
+
+              _M_y_c_d picks up on several exported environment variables.
+
+              HHHHOOOOMMMMEEEE        Specifies the home directory for  the  user  and
+                          must be set and exported.
+
+              CCCCDDDDHHHHIIIISSSSTTTT      Specifies the  directory  to  find  any  default
+                          files  in.   Its  default  value, if not set, is
+                          $$$$HHHHOOOOMMMMEEEE....
+
+              CCCCDDDDHHHHIIIISSSSTTTTFFFFIIIILLLLEEEE  Specifies the history file to use.  The  default
+                          file is $$$$CCCCDDDDHHHHIIIISSSSTTTT////....ccccddddhhhhiiiissssttttoooorrrryyyy....
+
+              CCCCDDDDHHHHIIIISSSSTTTTSSSSIIIIZZZZEEEE  Specifies how many directory changes  to  retain
+                          in  the  history.   The  default  is  111100000000 paths.
+                          There is a minimum number of 11110000 paths.
+
+              CCCCDDDDAAAALLLLIIIIAAAASSSS     Specifies the file  to  use  for  aliases.   The
+                          default file is $$$$CCCCDDDDHHHHIIIISSSSTTTT////....ccccddddaaaalllliiiiaaaassss....
+
+              CCCCDDDDOOOOPPPPTTTTSSSS      Allows  presetting   certain   options   without
+                          entering  them on the command line.  Options are
+                          separated with  a  colon.   For  example,  if  a
+                          person  were  to want to force their menusize to
+                          10 lines and always have the quiet  mode  turned
+                          on, CDOPTS=e10:q or CDOPTS=q:e10.  The supported
+                          options are -f, -a,  -e,  and  -q  (see  below).
+                          Command line options will override these.
+
+              CCCCDDDDPPPPAAAATTTTHHHH      Used the same way that the  _c_d(1)  command  uses
+                          it.
+
+              LLLLIIIINNNNEEEESSSS       Use to override what the terminal definition is.
+
+         OOOOOOPPPPPPTTTTTTIIIIIIOOOOOONNNNNNSSSSSS
+              NNNNoooo ooooppppttttiiiioooonnnnssss  Change to $$$$HHHHOOOOMMMMEEEE and update the history file.
+
+              ----ffff _f_i_l_e     Use _f_i_l_e for the history file.   This  overrides
+                          $$$$CCCCDDDDHHHHIIIISSSSTTTTFFFFIIIILLLLEEEE or any defaults.
+
+              ----aaaa _f_i_l_e     Use _f_i_l_e for the  alias  file.   This  overrides
+                          $$$$CCCCDDDDAAAALLLLIIIIAAAASSSS or any defaults.
+
+              ----eeee _m_e_n_u_s_i_z  Set  the  number  of  entries  in  the  menu  to
+
+
+
+         Page 2                                          (printed 6/11/92)
+
+
+
+
+
+
+         MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))                     EEEEEEXXXXXXPPPPPPTTTTTTOOOOOOOOOOOOLLLLLLSSSSSS                      MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))
+
+
+
+                          _m_e_n_u_s_i_z.  Default  is to use the number of lines
+                          in the terminal screen less 12.  The  number  of
+                          lines   available   for   the  terminal  may  be
+                          overridden by setting the  environment  variable
+                          LLLLIIIINNNNEEEESSSS....
+
+              ----llll          Enter into a menu (list) mode.  This mode  waits
+                          for  a  specific entry to be made.  Usually this
+                          is  the  number  of  the  line  containing   the
+                          directory to change to.  Commands available:
+
+                          _n_u_m_b_e_r   Either change to the  listed  directory
+                                   or proceed to another menu.
+
+                          dddd _n_u_m_b_e_r Delete _n_u_m_b_e_r from  the  history.   The
+                                   history file is updated.
+
+                          aaaa _n_u_m_b_e_r Set an alias.  You are prompted for the
+                                   name  to alias _n_u_m_b_e_r to.  The alias is
+                                   then entered into the alias file.
+
+                          <<<< or qqqq   Exit the menu and remain in the current
+                                   directory.  Hitting the return key will
+                                   also have the same affect.
+
+              ----mmmm _p_a_t_t_e_r_n  Search for a "ls-stype" _p_a_t_t_e_r_n. If a  match  is
+                          successful, the directory change is made and the
+                          history  updated.   Otherwise   a   message   is
+                          displayed and the directory remains unchanged.
+
+              ----_n_u_m        Change back to the _n_u_mth  oldest  directory  and
+                          update the history file.
+
+              ----qqqq          Toggle flag for echoing  of  current  directory.
+                          If  CCCCDDDDOOOOPPPPTTTTSSSS  sets  the ----qqqq to noecho, setting this
+                          flag will turn the echo back on.
+
+              ----uuuu _a_l_i_a_s    Remove (undo) _a_l_i_a_s from the alias file.  To set
+                          the alias, see the ----llll option.
+
+              ----xxxx _c_m_d      Various miscellaneous commands.
+
+                          aaaalllliiiiaaaassss    Show existing aliases.
+
+                          cccclllleeeeaaaannnn    Remove any  entries  from  the  history
+                                   file that can no longer be accessed.
+
+              ::::_a_l_i_a_s      Search through the alias file for _a_l_i_a_s.  If  it
+                          is found, change to that directory.
+
+              ----           Change back to the previous directory and update
+                          the  history file.  If the history file contains
+
+
+
+         Page 3                                          (printed 6/11/92)
+
+
+
+
+
+
+         MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))                     EEEEEEXXXXXXPPPPPPTTTTTTOOOOOOOOOOOOLLLLLLSSSSSS                      MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))
+
+
+
+                          less  than  2  entries,  or  is  unreadable,  an
+                          attempt  is  made  to  get  the variable OOOOLLLLDDDDPPPPWWWWDDDD....
+                          Should this fail, a  - is returned as output and
+                          the history is _n_o_t updated.
+
+              _p_a_t_h        Attempts to change to the  indicated  _p_a_t_h.  The
+                          variable   CCCCDDDDPPPPAAAATTTTHHHH   is   used  to  try  all  the
+                          possibilities.  Should the change fail, and _p_a_t_h
+                          contains  more  than  one  directory,  the  last
+                          directory in _p_a_t_h is removed and the attempt  is
+                          made  again.   This  continues  until  either  a
+                          change is  successful,  or  there  are  no  more
+                          possibilities.  The history file will be updated
+                          should a change succeed.
+
+              _p_a_t_h_1 _p_a_t_h_2 A search is made backwards through  the  history
+                          file  for  a  directory  entry that contains the
+                          pattern _p_a_t_h_1. If a match  is  found,  _p_a_t_h_1  is
+                          replaced with the string _p_a_t_h_2 and an attempt to
+                          change to the resulting directory is  made.   If
+                          the  change is successful, the history file will
+                          be updated.
+
+         FFFFFFIIIIIILLLLLLEEEEEESSSSSS
+              $CDHISTFILE
+
+              $CDHIST/.cdhistory  This file contains only  the  full  path
+                                  names to directories.
+
+              $CDALIAS
+
+              $CDHIST/.cdalias  This file contains the alias name, then  a
+                                tab,  then  the  full  path  name  to  the
+                                directory.  If this format is altered,  it
+                                could  cause  serious errors.  There is no
+                                reason to edit this file as _m_y_c_d  provides
+                                a facility to add and delete aliases.
+
+         DDDDDDOOOOOOSSSSSS DDDDDDiiiiiiffffffffffffeeeeeerrrrrreeeeeennnnnncccccceeeeeessssss
+              There are a number of differences in implementation  between
+              the  UNIX  and DOS versions of _m_y_c_d. Since DOS does not have
+              the same concept of subshells that UNIX does, when a  change
+              directory  is done in a program, the directory on that drive
+              is changed for all other programs also.  Hence, there is  no
+              need to set up the aliasing as mentioned above (though it is
+              nice to alias _m_y_c_d to _c_d using _d_o_s_k_e_y  if  it  is  available
+              (MSDOS 5.0+).
+
+              Default file names have to change because  of  DOS's  naming
+              conventions.   The  default  ....ccccddddhhhhiiiissssttttoooorrrryyyy is now mmmmyyyyccccdddd....hhhhiiiissss.... The
+              default ....ccccddddaaaalllliiiiaaaassss is now mmmmyyyyccccdddd....aaaalllliiii....
+
+
+
+
+         Page 4                                          (printed 6/11/92)
+
+
+
+
+
+
+         MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))                     EEEEEEXXXXXXPPPPPPTTTTTTOOOOOOOOOOOOLLLLLLSSSSSS                      MMMMMMYYYYYYCCCCCCDDDDDD((((((111111))))))
+
+
+
+              Either slashes (unix-style) or backslashes  (dos-style)  may
+              be used for directory separation.
+
+              In addition, the environment variable HHHHOOOOMMMMEEEE does not need  to
+              be set.  By default, _m_y_c_d will use cccc:::://// if HOME is not set.
+
+              The use of terminal attributes  in  the  ----llll  option  is  not
+              currently  supported.   These  were  originally  implemented
+              using low-level curses  routines  which  are  not  available
+              under the PCcurses package I have.
+
+              It is possible to change to a directory  pointed  to  by  an
+              environment  variable.   _m_y_c_d  will  expand  $$$$vvvvaaaarrrr and use it
+              correctly.  This is convenient to people familiar with  UNIX
+              as DOS has no wild card expansion built into its shell.
+
+         WWWWWWAAAAAARRRRRRNNNNNNIIIIIINNNNNNGGGGGGSSSSSS
+              There are some peculiar things that  can  happen  with  this
+              command.   If  multiple  users are on the same login (or you
+              have multiple windows open), multiple updates of the history
+              file will occur which can lead to confusion.
+
+              Another pecular thing  that  can  happen  is  between  login
+              sessions.   Say  you logout of the system while in directory
+              $HOME/junk and then login back in.  Now you enter one of the
+              interactive  interfaces  in  _m_y_c_d.  If you exit _m_y_c_d without
+              choosing a directory, _m_y_c_d thinks  that  the  directory  you
+              were  in  is  $HOME/junk  since  that  is  the  entry in the
+              'current' position in the history file.
+
+              One last thing to beware of is that the  history  file  gets
+              updated  from  whatever shell or sub-shell you are in.  This
+              is not like the normal _c_d as that only uses local  variables
+              (not  exported  to  sub-shells).   So, if you go into a sub-
+              shell from, say _v_i(1), and do some _c_ding  around,  when  you
+              end  _v_i,  the  directory  you  are in and the directory _m_y_c_d
+              thinks you are in may not be the same.
+
+         PPPPPPRRRRRROOOOOOVVVVVVIIIIIIDDDDDDEEEEEERRRRRR
+              David R. Connet iwtng!dcon
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         Page 5                                          (printed 6/11/92)
+
+
+

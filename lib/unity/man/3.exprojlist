@@ -1,0 +1,132 @@
+
+
+
+     eeeexxxxpppprrrroooojjjjlllliiiisssstttt((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               eeeexxxxpppprrrroooojjjjlllliiiisssstttt((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          exprojlist - Expand references to the ``all'' attibute in a
+          projection list.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          iiiinnnntttt
+          eeeexxxxpppprrrroooojjjjlllliiiisssstttt(((( qqqquuuueeeerrrryyyy,,,, ffffrrrriiiieeeennnnddddllllyyyy ))))
+          ssssttttrrrruuuucccctttt uuuuqqqquuuueeeerrrryyyy ****qqqquuuueeeerrrryyyy;;;;
+          iiiinnnntttt ffffrrrriiiieeeennnnddddllllyyyy;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The eeeexxxxpppprrrroooojjjjlllliiiisssstttt() routine is used to expand any references to
+          the special ``all'' attribute within the projection list of
+          a query.  This attribute is replaced by all attributes of a
+          relation in the order they appear in the relation.  In this
+          case, mmmmaaaalllllllloooocccc(3) is used to allocate space for new projection
+          information.  If there are no references to the ``all''
+          attribute, then the projection list is unchanged.
+
+          This routine is normally called by bbbbllllddddqqqquuuueeeerrrryyyy(3) or if the
+          query is compiled, by the query's initialization function.
+          It only need be called explicitly in situations where
+          explicit control is needed, such as when using ____bbbbllllddddqqqquuuueeeerrrryyyy(3)
+          instead.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _q_u_e_r_y
+               A UNITY query previously built using bbbbllllddddqqqquuuueeeerrrryyyy(3) or
+               ccccmmmmppppqqqquuuueeeerrrryyyy(1).  If there are no references to the ``all''
+               attribute in the projection list of the query, the
+               query will remain unchanged.
+
+          _f_r_i_e_n_d_l_y
+               A boolean flag saying whether the user-friendly names
+               for attributes should be used as the printed names for
+               any expanded attributes.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          eeeexxxxpppprrrroooojjjjlllliiiisssstttt() returns true (non-zero) on success and false
+          (zero) on failure.  It is not an error if there are no
+          references to the ``all'' attribute.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Expand the projection list after building a query using
+          ____bbbbllllddddqqqquuuueeeerrrryyyy().
+
+
+
+
+     Page 1                                          (printed 8/30/90)
+
+
+
+
+
+
+     eeeexxxxpppprrrroooojjjjlllliiiisssstttt((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               eeeexxxxpppprrrroooojjjjlllliiiisssstttt((((3333))))
+
+
+
+               query = _bldquery( projlist, projcnt, nodelist, nodecnt, queryexpr, FALSE );
+               if ( query == NULL ) {
+                    pruerror();
+                    /* print error message and return failure */
+               }
+                . . .
+
+               if ( ! exprojlist( query ) ) {
+                    pruerror();
+                    /* print error message and return failure */
+               }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          bldquery(3) and cmpquery(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 8/30/90)
+
+
+

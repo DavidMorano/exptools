@@ -1,0 +1,279 @@
+# kshdb - ksh script debugger
+# last modified 10/10/91.
+# requires use of _debug in ~exptools/lib/kshdb or in user's FPATH.
+# Major limitations:
+#	creates debug-augmented version of script in /usr/tmp.
+#	uses error output channel with 2> /dev/tty and 2> /dev/null.
+#	uses trap ... DEBUG and set -x.
+#	cannot break at all points of a script with conditional execution.
+
+trap "_error \${?} \${LINENO}" ERR
+
+#==================================#
+# Set traps on signals to cleanup. #
+#==================================#
+
+trap "print \"\${PS2}\${0}: Hangup.\"; _cleanup" 1
+trap "print \"\${PS2}\${0}: Interrupt (Delete).\"; _cleanup" 2
+trap "print \"\${PS2}\${0}: Quit.\"; _cleanup" 3
+trap "print \"\${PS2}\${0}: Illegal Instruction.\"; _cleanup" 4
+trap "print \"\${PS2}\${0}: Trace Trap.\"; _cleanup" 5
+trap "print \"\${PS2}\${0}: IOT Instruction.\"; _cleanup" 6
+trap "print \"\${PS2}\${0}: EMT Instruction.\"; _cleanup" 7
+trap "print \"\${PS2}\${0}: Floating Point Exception.\"; _cleanup" 8
+trap "print \"\${PS2}\${0}: Bus Error.\"; _cleanup" 10
+trap "print \"\${PS2}\${0}: System Call Error.\"; _cleanup" 12
+trap "print \"\${PS2}\${0}: Write to a pipe with no reader.\"; _cleanup" 13
+trap "print \"\${PS2}\${0}: Alarm Timeout.\"; _cleanup" 14
+trap "print \"\${PS2}\${0}: Received Kill signal.\"; _cleanup" 15
+
+#=====================#
+# local declarations. #
+#=====================#
+
+typeset save
+typeset choose
+typeset option
+typeset history
+typeset path_to_use
+typeset -i signal
+typeset tmp_debug_file
+typeset path
+typeset -i pathnum=1
+typeset -i num=1
+typeset cmd=${0}
+function _qu
+{
+	typeset -u answer
+
+	while true
+	do
+		read -r "answer?${PS2}${cmd}: ${*}" < /dev/tty
+		case ${answer} in
+		Y*) return 0;;
+		N*) return 2;;
+		*) print "${PS2}${cmd}: Expecting yes or no."
+		esac
+	done
+}
+function _cleanup
+{
+	if [[ -n "${tmp_debug_file}" && -f ${tmp_debug_file} ]]
+	then
+		if _qu "Remove ${tmp_debug_file}? "
+		then
+			rm ${tmp_debug_file}
+		fi
+	fi
+	exit 0;
+}
+function _error
+{
+	print "${PS2}${cmd}: Error status of ${1} from line ${2}."
+	_cleanup
+}
+
+USAGE="${cmd} [ -c ] [ -k ] [ -s ] [ -h ] <script>
+
+	-c  -- choose from script versions in path.
+	-k  -- enable k-shell history for debug input.
+	-s  -- save the debug-augmented script in kshdb.<script>.
+	-h  -- prints this help message."
+
+#====================================#
+# process optional switches, if any. #
+#====================================#
+
+if (( $# == 0 ))
+then
+	print "${PS2}${cmd}: usage=$USAGE"
+	exit 2
+fi
+
+save=false
+choose=false
+history=false
+while getopts :cksh option $*
+do
+	case ${option} in
+	:)
+		print "${PS2}${cmd}: option $OPTARG requires a value."
+		print "${PS2}${cmd}: usage=$USAGE"
+		exit 2;;
+	\?)
+		print "${PS2}${cmd}: unknown option $OPTARG"
+		print "${PS2}${cmd}: usage=$USAGE"
+		exit 2;;
+	c)
+		choose=true
+		;;
+	k)
+		history=true
+		;;
+	s)
+		save=true
+		;;
+	h)
+		print "${PS2}${cmd}: usage=$USAGE"
+		exit 0;;
+	esac
+done
+
+shift OPTIND-1
+
+#==========================================================#
+# determine the appropriate path from the user's argument. #
+#==========================================================#
+
+if ${choose}
+then
+	set -A path $(~exptools/bin/where ${1})
+	pathnum=${#path[*]}
+	if ((pathnum == 0))
+	then
+		print "${PS2}${cmd}: Can't find a path for ${1}."
+		exit 1
+	elif ((pathnum > 1))
+	then
+		num=0
+		while ((num < pathnum))
+		do
+			if _qu "Use ${path[${num}]}? "
+			then
+				break
+			else
+				num=num+1
+			fi
+		done
+	else
+		num=0
+		print "${PS2}${cmd}: only one instance of ${1} found."
+		print "${PS2}${cmd}: ${1}=${path[${num}]}"
+	fi
+	if ((num = pathnum))
+	then
+		print "${PS2}${cmd}: Can't find the right path for ${1}."
+		exit 2
+	else
+		path_to_use=${path[${num}]}
+	fi
+else
+	path_to_use=$(whence ${1})
+fi
+
+#==================================================#
+# build the debug-augmented version of the script. #
+#==================================================#
+
+tmp_debug_file=/usr/tmp/$$.${1}
+if ${history}
+then
+	print "typeset _kshdb_read_options=\"-s\"" >> ${tmp_debug_file}
+fi
+cat >> ${tmp_debug_file} <<!
+for signal in 1 2 3 4 5 6 7 8 10 12 13 14 15
+do
+	trap "_kshdb_signal \${signal}" \${signal}
+done
+alias -x _kshdb_set_debug="
+	trap 'set +x
+		exec 2> /dev/null
+		set -A _kshdb_arg \\\${0} \\"\\\${@}\\"
+		_kshdb_trap \\\${LINENO}
+		if ((_kshdb_STEPS > 0))
+		then
+			exec 2> /dev/tty
+		fi; set -x' DEBUG"
+alias -x _kshdb_set_trap="set +x
+	if [[ \"\\\${_kshdb_xscope}\" != \"\\\${_kshdb_MAIN}\" ]]
+	then
+		_kshdb_stack_push
+	fi
+	_kshdb_xscope=\\\${0}
+	_kshdb_set_scope \\\${_kshdb_xscope}
+	if \\\${_kshdb_xtrace}
+	then
+		_kshdb_xtrace=false
+		_kshdb_print \"...entering \\\${_kshdb_xscope}\"
+		_kshdb_in_loop=true
+	else
+		_kshdb_in_loop=false
+	fi
+	if [[ \"\\\${_kshdb_xscope}\" != \"main\" ]]
+	then
+		_kshdb_set_exit
+	fi
+	_kshdb_set_debug"
+alias -x _kshdb_set_exit="
+	trap '
+		set +x
+		if \\\${_kshdb_quit}
+		then
+			\exit 0
+		elif [[ \\"\\\${_kshdb_xscope}\\" != \\"main\\" ]]
+		then
+			_kshdb_stack_pop
+		fi
+		if \\\${_kshdb_exit}
+		then
+			return 0
+		fi
+		if [[ \\"\\\${_kshdb_xscope}\\" != \\"\\\${_kshdb_MAIN}\\" ]]
+		then
+			_kshdb_set_scope \\\${_kshdb_xscope}
+		fi
+		if \\\${_kshdb_xtrace}
+		then
+			if [[ \\"\\\${_kshdb_xscope}\\" != \\"\\\${_kshdb_MAIN}\\" ]]
+			then
+				_kshdb_print \\"...returning to \\\${_kshdb_xscope}.\\"
+			fi
+			_kshdb_STEPS=_kshdb_STEPS+1
+		else
+			_kshdb_STEPS=_kshdb_STEPS+2
+		fi
+		if [[ \\"\\\${_kshdb_xscope}\\" = \\"main\\" ]]
+		then
+			trap - EXIT
+		else
+			_kshdb_set_exit
+		fi
+		_kshdb_set_debug' EXIT"
+alias -x exit="
+	_kshdb_in_loop=false
+	_kshdb_exit=true
+	print \"DBG: ...executing exit from \\\${_kshdb_NAME}.\"
+	return"
+FPATH=\${FPATH}:\${TOOLS:?}/lib/kshdb
+autoload _debug
+function main { _kshdb_set_trap
+!
+awk '{
+	if ($NF == "{") {\
+		printf "%s _kshdb_set_trap\n", $0 \
+	}\
+	else {\
+		printf "%s\n", $0\
+	}
+}' ${path_to_use} >> ${tmp_debug_file}
+cat >> ${tmp_debug_file} <<!
+}; _debug 0
+!
+
+#==========================================================#
+# make the debug-augmented version executable by the user. #
+# and then execute it.                                     #
+#==========================================================#
+
+chmod u+x ${tmp_debug_file}
+${tmp_debug_file}
+
+#==============================================================#
+# we quit the debug loop.  save the debug script if necessary. #
+#==============================================================#
+
+if ${save}
+then
+	cp ${tmp_debug_file} d.${1}
+fi
+rm -f ${tmp_debug_file}

@@ -1,0 +1,726 @@
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  visdn	- Visual ISDN interface
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  vvvviiiissssddddnnnn	----TTTT aaaaddddmmmm----ttttyyyyppppeeee [ ----AAAA ] [ ----cccc	ccccoooollllssss ] [ ----ffff ffffiiiilllleeee ] \
+		[ ----llll llllooooggggffffiiiilllleeee ] [ ----ssss ssssppppeeeeeeeeddddffffiiiilllleeee ]	[ ----CCCC ] [ ----DDDD ffffllllaaaagggg ] \
+		[ ----nnnn aaaaddddddddrrrreeeessssssss ] [ ----rrrr rrrroooowwwwssss ] [ ----pppp	ppppoooorrrrttttnnnnuuuummmm	] [ ----PPPP ] \
+		[ ----tttt sssseeeettttttttyyyyppppeeee ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _v_i_s_d_n	is a 630/730 terminal mouse-oriented interface to the
+	  AT&T 7506 ISDN telephone.  It	allows the 630/730 terminal to
+	  augment the functionality of the 7506	set with unlimited
+	  speed	calling	lists, programmable function keys, and an
+	  interface to electronic mail on the UNIX host.  _T_h_e _I_S_D_N _s_e_t
+	  _m_u_s_t _h_a_v_e _F_e_a_t_u_r_e _P_a_c_k_a_g_e _3 (_F_P_3) _i_n_s_t_a_l_l_e_d _t_o _u_s_e _t_h_i_s _p_r_o_-
+	  _g_r_a_m.	 See ``OTHER APPLICATIONS'' below for more information
+	  on FP3 applications.
+
+	  FP3 provides a rich API. Part	of this	API is used by _v_i_s_d_n
+	  to decouple the phone's buttons from the ISDN	BRI, that is,
+	  all button presses send messages to the 630/730 where	_v_i_s_d_n
+	  sends	appropriate commands back to the phone to effect a
+	  button press.	 Losing	DTR on the phone's serial port re-
+	  couples the buttons to the BRI.  _i_n_i_t_i_a_l_i_z_e on the _v_i_s_d_n
+	  menu must be used to re-initialize the phone for _v_i_s_d_n to
+	  work.	As a caution: It is possible to	lose serial communica-
+	  tion without losing DTR, in which case the phone does	not
+	  respond to button presses. This can be remedied by running
+	  visdn	successfully (preferable), by physically dropping DTR,
+	  (disconnecting cable,	powering down 730) or by unplugging
+	  and replugging the set on the	BRI (not recommended).
+
+	  The phone's serial port (and the 730's associated port)
+	  should be set	to 9600, space,	Enhanced AT mode, and follow-
+	  ing standard eia signals.  Don't use XON/XOFF	flow control.
+
+	  The options are:
+
+	  ----AAAA	      Turns on the "send AUDIX msg" option.
+
+	  ----cccc ccccoooollllssss     Specify the number of eeeexxxxttttrrrraaaa feature button
+		      columns to add.  This merely pre-expands the
+		      window to	accommodate more buttons; button
+		      specifications will still	cause the window to
+		      size itself automatically.  Up to	6 extra
+		      columns are possible with	the 7506 type, up to 3
+		      extra with the 7507 type,	for a total of 9
+		      columns.
+
+	  ----CCCC	      Cache _v_i_s_d_n in the terminal memory.  Next	time
+		      you won't	have to	wait for it to download.
+
+
+
+     Page 1					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+	  ----DDDD ffffllllaaaagggg     Set debugging options.  Not for the faint	of
+		      heart.
+
+	  ----ffff ffffiiiilllleeee     Specifies	the data file to read button and speed
+		      calling specifications from.  See	the FILE FOR-
+		      MAT section below	for a description of this
+		      file.  Non-absolute pathnames will be treated as
+		      relative to $HOME.  The default file is
+		      $HOME/.visdnrc.
+
+	  ----llll llllooooggggffffiiiilllleeee  All call activity	will be	logged in (appended
+		      to) the given file.  Lines in this file have the
+		      time and date as an integer, a flag, the dialed
+		      number, the calling number, and the caller's
+		      name, all	separated by tab characters.  The flag
+		      is cccc for connections, dddd for disconnects, and uuuu
+		      for unanswered calls.
+
+	  ----nnnn nnnnoooottttiiiiffffyyyy   Specifies	a mail address to mail AUDIX and other
+		      notifications to.
+
+	  ----pppp ppppoooorrrrttttnnnnuuuummmm  Specifies	the port that the 7506 set is con-
+		      nected to.  The default is port 1	(the Aux or
+		      printer port).  Currently, port 0, 1, or 2 are
+		      valid.
+
+	  ----PPPP	      Pops the window to the top when a	call is	being
+		      received.
+
+	  ----rrrr rrrroooowwwwssss     Specifies	the number of extra rows for feature
+		      buttons.	The same comments apply	as for the ----cccc
+		      option above.  Up	to 3 extra rows	may be
+		      requested	for both 7506 and 7507 types, for a
+		      maximum of 14 rows.
+
+	  ----ssss ssssppppeeeeeeeeddddffffiiiilllleeee
+		      The "save	query" button 3	menu item will save a
+		      permanent	copy of	a directory query in this
+		      file.  ssssppppeeeeeeeeddddffffiiiilllleeee may be the same as the ----ffff file,
+		      but does not have	a default value.
+
+	  ----tttt sssseeeettttttttyyyyppppeeee  Specifies	the type of ISDN voice set.
+		      Currently, 7777555500006666 and 7777555500007777 are recognized; any-
+		      thing else yields	a blank	slate to place custom
+		      buttons on.  7777555500006666	is the default type.
+
+	  ----TTTT aaaaddddmmmm----ttttyyyyppppeeee Specifies	the type of ADM	that the set uses.
+		      Currently, pppprrrroooo indicates a ProPhone ADM, and ffffpppp3333
+		      indicates	an ADM II Feature Package 3.  There is
+		      no default; you must specify the ADM type	on the
+		      command line.
+
+
+
+
+     Page 2					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+	  _v_i_s_d_n	starts two terminal processes initially: one to	com-
+	  municate with	the host, and another to serve as the visual
+	  interface to the phone.  Other windows may be	created	and
+	  destroyed as needed, for example, the	help window and	the
+	  call information window.
+
+     PPPPHHHHOOOONNNNEEEE WWWWIIIINNNNDDDDOOOOWWWW
+	  The phone window is where most user interaction occurs.  The
+	  initial layout is determined by the ----tttt option, so it will
+	  resemble a 7506 or 7507 ISDN set.  From there, you can cus-
+	  tomize the layout by adding buttons and speed	calling	lists
+	  (see the startup file	description below).  At	the bottom of
+	  the window is	a bar that allows you to type text and send it
+	  to the phone.	 This is most useful in	Directory Query	mode,
+	  where	what you type is converted to digits when you press
+	  return.
+
+	  Mouse	button 1 is used to ``press'' buttons.	The button
+	  action is effective only after the mouse button is released.
+	  It is	possible to create buttons that	do nothing.
+
+	  Mouse	button 2 handles all the speed calling lists.  You can
+	  create lists in a tree structure until you run out of	termi-
+	  nal memory.  Go nuts.
+
+	  Mouse	button 3 has miscellaneous functionality.  You can set
+	  some options,	redraw the screen, exit	the program, get help,
+	  create the call information window, save directory queries,
+	  and dial people you have looked up with _p_o_s_t(1).  Most of it
+	  is fairly intuitive, but you have to remember	that the
+	  ``save query'' item only becomes available if	a valid	query
+	  result is being displayed, and ``snarf post''	is only	valid
+	  if you have selected a line with something that looks	like a
+	  phone	number.
+
+	  Experimentation is recommended.
+
+     CCCCAAAALLLLLLLL IIIINNNNFFFFOOOORRRRMMMMAAAATTTTIIIIOOOONNNN WWWWIIIINNNNDDDDOOOOWWWW
+	  The call information window is useful	if you have access to
+	  the post database on the host	system.	 It shows information
+	  about	incoming calls,	including the person's login icon if
+	  it is	available.  A ``done'' button exists for your safety
+	  and enjoyment; use it	to remove the window (don't just
+	  delete it).
+
+     HHHHEEEELLLLPPPP WWWWIIIINNNNDDDDOOOOWWWW
+	  Help is available on a button	2 menu for several topics.
+	  The interface	is pretty rudimentary, but hey,	it's better
+	  than nothing!
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  To start _v_i_s_d_n with a	7506 set connected to the printer
+
+
+
+     Page 3					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+	  port,	cache the program in the terminal memory, arrange for
+	  notification of missed calls (and possibly AUDIX messages),
+	  and log all calls in a file, try this:
+
+	       visdn -C	-l $HOME/visdn.log -n $LOGNAME -p 1
+
+	  With a 7507 set connected to,	say, the MMMMaaaaiiiinnnn2222 port, using a
+	  different startup file, and adding 2 extra columns and 2
+	  extra	rows for feature buttons, try this:
+
+	       visdn -C	-t 7507	-p 2 -f	$HOME/visdnrc.7507 -c 2	-r 2
+
+     SSSSTTTTAAAARRRRTTTTUUUUPPPP FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT
+	  Button specifications	and speed calling lists	may be kept in
+	  a file on the	host.  Blank lines and lines starting with a
+	  pound-sign (#) are ignored.  Fields are tab separated
+	  (spaces don't	count).	 Tabs are represented below as <tab>.
+	  Other	lines are assumed to be	in one of the following	for-
+	  mats:
+
+	  areacode=N  Specifies	the local areacode for interpretation
+		      of DDN numbers.
+
+	  exchange=N1[->N2]
+		      Specifies	a local	exchange, which	can optionally
+		      be mapped	to another prefix.  See	the examples
+		      below.
+
+	  escape=escape_code
+		      Specifies	an escape from centrex group code for
+		      outside calls, ie, what to dial to get outside
+		      line.  Escape_code = '*9'	at Indian Hill and '9'
+		      at the Network Software Center.
+
+	  music=alertstring
+		      (FP3 only) Specifies alerting noise, where
+		      alertstring is either a ringing pattern name or
+		      a	character string for defining music.  To
+		      specify a	ringing	pattern	for alerting, use the
+		      string RingPatternxxxx, where xxxx is a	digit between
+		      1	and 7 inclusive.  To specify a tune, see the
+		      STARTUP FILE EXAMPLES section below and the FP3
+		      API Manual.  If no music is specified, the
+		      default is RingPattern1....
+
+	  bbbbuuuuttttttttoooonnnn====RRRR,,,,CCCC<<<<ttttaaaabbbb>>>>nnnnaaaammmmeeee====SSSS
+
+	  button=R,C<tab>name=S<tab>value=V<tab>[bind=F]<tab>[flags...]
+		      Creates a	button at the specified	row and
+		      column.  An existing button at that location is
+		      replaced.	 flags is one or more of
+
+
+
+
+     Page 4					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+		      aaaauuuuttttoooossssaaaavvvveeee
+			   Automatically save Directory	Query results
+			   when	the button is pressed.
+
+		      bbbbooooxxxx  Draw	a box around the button.
+
+		      ddddoooonnnnooootttthhhhiiiinnnngggg
+			   This	button has no action associated	with
+			   it.	Useful for putting labels on the
+			   screen.
+
+		      lllleeeefffftttt This	button takes up	the left half of the
+			   row and column location.
+
+		      rrrriiiigggghhhhtttt
+			   This	button takes up	the right half of the
+			   row and column location.
+
+		      sssshhhhaaaaddddeeee
+			   Draw	the button shaded.
+
+	  button=R,C<tab>delete
+		      Deletes the button at the	specified row and
+		      column.
+
+	  keypad=X,Y  Place the	keypad with upper left corner at loca-
+		      tion (X,Y).  X and Y are pixel offsets from the
+		      upper left corner	of the window.
+
+	  speedlist=S<tab>name=S<tab>value=V
+		      Speed call lists are accessed via	the button 2
+		      menu.  The lists are arranged hierarchically,
+		      and may be arbitrarily nested (see STARTUP FILE
+		      EXAMPLES below).	Selecting a menu item causes
+		      the value	to be treated as a feature button
+		      press.
+
+	  include=file
+		      Inserts the contents of the named	file.  Non-
+		      absolute file names are taken to be relative to
+		      $HOME.  Included files may be nested to ``rea-
+		      sonable''	depths (i.e. watch out for exceeding
+		      standard open file limits.)
+
+	  <tab>	represents the tab character.  Values represented by
+	  C, L,	R, S, and V above may be:
+
+	  CCCC	- an integer representing the column (1-9) of the
+		feature	button.
+
+	  FFFF	- a function to	bind the button	to.  Currently,	the
+		functions that may be bound to buttons mirror the
+
+
+
+     Page 5					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+		button 3 menu selections.  FFFF may have one of the fol-
+		lowing values:
+
+		LLLLooooaaaaddddBBBBuuuuttttttttoooonnnnssss
+		     Causes the	startup	file to	be re-read.
+
+		IIIInnnnffffooooWWWWiiiinnnnddddoooowwww
+		     Causes the	Call Information window	to be
+		     activated.	 Button	3 confirms placement of	the
+		     window if it does not exist.
+
+		HHHHeeeellllppppWWWWiiiinnnnddddoooowwww
+		     Causes the	Help Information window	to be
+		     activated.	 Button	3 confirms placement of	the
+		     window if it does not exist.
+
+		SSSSnnnnaaaarrrrffffPPPPoooosssstttt
+		     If	a _p_o_s_t(1) query	line has been selected in a
+		     windowproc	window,	this action causes the phone
+		     number to be extracted from the line and dialed.
+		     Actually, any line	with a sensible	phone number
+		     embedded in it will work.	Beware that the	first
+		     string that looks like a phone number will	be
+		     snarfed, and sometimes it may be a	department
+		     number.  It is best to select the part of the
+		     line containing the number	you wish to dial to
+		     avoid confusing the parser.
+
+		QQQQuuuuiiiitttt Causes the	r-u-sure confirmation cursor to	become
+		     active.  Button 3 confirms	and terminates _v_i_s_d_n.
+		     Any other button aborts termination.
+
+		RRRReeeeddddrrrraaaawwww
+		     Redraws the phone screen.
+
+		SSSSaaaavvvveeeeQQQQuuuueeeerrrryyyy
+		     If	a Directory Query has been successful, this
+		     button causes the query results in	the display to
+		     be	saved on the ``Query History'' speed calling
+		     list.
+
+	  LLLL	- the number of	the lamp associated with the button.
+		May be 2 hex digits (00-3f), M for message lamp, S for
+		the speaker lamp, U for	the mute lamp, or X for	data
+		lamp.
+
+	  RRRR	- an integer representing the row (1-14) of the
+		feature	button.
+
+	  SSSS	- a string value, with embedded	blanks allowed.
+
+	  VVVV	- a dial string.  Buttons and speed call list items
+
+
+
+     Page 6					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+		must explicitly	ask for	a Call Appearance (CA) in
+		order to initiate dialing.  This is done by inserting
+		a CA in	the dial string.  Normal keypad	digits are
+		valid.	The following characters are treated specially
+		in dialstrings:
+
+		,,,,    (comma) causes a half second pause	before sending
+		     subsequent	digits.
+
+		++++    waits for secondary dialtone before sending sub-
+		     sequent digits.
+
+		>>>>    waits for connection before sending subsequent
+		     digits.
+
+		;;;;    command separator;	waits for acknowledgment from
+		     set before	continuing.
+
+     SSSSTTTTAAAARRRRTTTTUUUUPPPP FFFFIIIILLLLEEEE EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  To specify the 708 areacode and map several local exchanges
+	  for 5-digit dialing:
+
+	       areacode=708
+	       exchange=713->3
+	       exchange=979->9
+
+	  To select personalized ringing pattern 5, use	this:
+
+	       music=RingPattern5
+
+	  To have your set chirp instead of ring, try this:
+
+	       music=L32T120o2dcdcdcdcdcdcdcdcdcdcp1
+
+	  To change the	label on an existing button:
+
+	       button=5,6<tab>name=new name
+
+	  To delete a button at	row 7 column 7:
+
+	       button=7,7<tab>delete
+
+	  To create a button that grabs	a line and dials a number:
+
+	       button=4,5<tab>name=HOME<tab>value=CA*9,5551212<tab>box
+
+	  To add 3 items to a speed call list:
+
+	       speedlist=my group<tab>name=XXX<tab>value=CA93333
+	       speedlist=my group<tab>name=YYY<tab>value=CA93334
+	       speedlist=my group<tab>name=ZZZ<tab>value=CA93335
+
+
+
+
+     Page 7					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+	  A department with 3 groups might have	several	speed call
+	  lists, organized by group:
+
+	       speedlist=my dept/grp1<tab>name=AAA<tab>value=CA93333
+	       speedlist=my dept/grp1<tab>name=BBB<tab>value=CA93334
+	       speedlist=my dept/grp2<tab>name=CCC<tab>value=CA93335
+	       speedlist=my dept/grp3<tab>name=XXX<tab>value=CA93336
+	       speedlist=my dept/grp3<tab>name=YYY<tab>value=CA93337
+	       speedlist=my dept/grp3<tab>name=ZZZ<tab>value=CA93338
+
+	  To create a totally custom layout, run
+
+	       visdn -t	brandx
+
+	  An example ``brandx''	layout might be:
+
+	       button=1,1<tab>name=34976<tab>value=a<tab>box<tab>lamp=01
+	       button=2,1<tab>name=34976<tab>value=b<tab>box<tab>lamp=02
+	       button=3,1<tab>name=34976<tab>value=c<tab>box<tab>lamp=03
+	       button=5,1<tab>name=Speaker<tab>value=SP<tab>box
+	       keypad=150,100
+
+	  Some dialstring examples:
+
+	  An outside number requiring secondary	dialtone:
+
+	       button=4,3<tab>name=HOME<tab>value=CA*9+1234567
+
+	  Dial Audix, wait for answer, pause 1/2 second, and send
+	  login	sequence:
+
+	       button=5,3<tab>name=AUDIX<tab>value=CA36001>,#12345#
+
+	  Dial a hotline number, wait for connect, then	interact with
+	  advanced 800 services:
+
+	       button=6,3<tab>name=HOTLINE<tab>value=CA*9+18001234567>,1,,2
+
+     LLLLOOOOGGGG FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT
+	  The ----llll option	can be used to specify a file to log all calls
+	  in.  Each line in this file has the following	format:
+
+	       time<tab>flag<tab>called-number<tab>calling-
+	  number<tab>calling-name
+
+	  where
+
+	  ttttiiiimmmmeeee		is the numeric representation of the time that
+			the event occurred,
+
+	  ffffllllaaaagggg		indicates what the record type is: cccc for a
+			connected (answered) call, dddd when a call
+
+
+
+     Page 8					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+			disconnects, or	uuuu for an unanswered call,
+
+	  ccccaaaalllllllleeeedddd----nnnnuuuummmmbbbbeeeerrrr	is the display version of the number you
+			dialed,
+
+	  ccccaaaalllllllliiiinnnngggg----nnnnuuuummmmbbbbeeeerrrr
+			is the number (if known) of the	person calling
+			you,
+
+	  ccccaaaalllllllliiiinnnngggg----nnnnaaaammmmeeee	is the displayed name (if known) of the	person
+			calling	you.
+
+	  This information is simply appended to the specified file
+	  indefinitely.	 It remains to be seen what use	can be made of
+	  it.
+
+     FFFFIIIILLLLEEEESSSS
+	  $HOME/.visdnrc - default initialization file
+	  $TOOLS/lib/visdn/visdn.help -	help database
+	  $TOOLS/lib/visdn/visdnrc.750[67] - sample startup files for
+	  7506/7507
+	  $TOOLS/lib/630/visdn.m - downloadable	program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  Stevens, I. C., ``ProPhone User's Manual, Issue 4.0,'' Janu-
+	  ary 25, 1991,	DRAFT.
+
+	  CIC phone number for documentation--800 432 6600.
+
+	  Most useful:
+
+	  "Integrated Services Digital Network Application Programming
+	  Interface Programmer's Reference Manual", 533-705-200.
+
+	  Related information:
+
+	  "ISDN	Asynchronous Data Module Feature Package 3 User's
+	  Manual", 555-021-729.
+
+	  "ISDN	Asynchronous Data Module Feature Package 3 PC Applica-
+	  tions	User's Guide", 555-021-734.
+
+	  "ISDN	7505 Modular Terminal and ISDN 7506 Display Terminal
+	  User's Manual", 555-021-731.
+
+	  "ISDN	7507 Display Terminal User's Manual", 555-021-732.
+
+	  "Technical Reference--AT&T ISDN Basic	Rate Interface Specif-
+	  ication", 801-802-100.
+
+	  "5ESS	Switch--ISDN Basic Rate	Interface Specification",
+	  235-900-321.
+
+
+
+     Page 9					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+	  "5ESS	Switch ISDN Features", 235-190-105.
+
+	  "Audix Reference Manual", 585-300-201.
+
+	  The D-kit enables one	to upgrade a 7506/7507 to FP3. This
+	  D-kit	is a new mother	board with an upgraded processor, more
+	  memory, and the new FP3 firmware.
+
+     OOOORRRRDDDDEEEERRRRIIIINNNNGGGG IIIINNNNFFFFOOOORRRRMMMMAAAATTTTIIIIOOOONNNN
+	  7506	 Black	7506TAD03A-003	106635998
+	  7506	 Misty Cream	7506TAD03A-215	106636004
+	  7507	 Black	7507TAD03A-003	1066636061
+	  7507	 Misty Cream	7507TAD03A-215	106636087
+	  D-Kit	D-182603	106614209
+
+     OOOOTTTTHHHHEEEERRRR FFFFPPPP3333 AAAAPPPPPPPPLLLLIIIICCCCAAAATTTTIIIIOOOONNNNSSSS
+	  The editor of	a newsletter on	the FP3	API is at
+	  api@hocpb.att.com.
+
+	  Other	FP3 applications at this time follow:
+
+	  ExcellTech's ExcellNET, ICLID, and XLDIAL, (605) 665 5811.
+
+	  Provides file	and printer sharing, mail, auto-dialing	voice
+	  and data calls, and a	NETBIOS	interface to FP-3.
+
+	  Groupware Authors' Face to Face, (408) 426 3991.
+
+	  Provides screen sharing with annotating for Windows and
+	  Macintosh users.
+
+	  Link Technology's INFOPartner, (215) 357 3354.
+
+	  Provides hooks to existing applications to use ICLID.
+
+	  ManyLink's ManyLink and Call-Pop, (206) 881 5060.
+
+	  ManyLink provides file and printer sharing, custom API
+	  interface.  Call-Pop searches	a dbaseIV file for a record
+	  associated with ICLID	and displays it.
+
+	  Southern New England Telephone's SIMS, (203) 771 7661.
+
+	  Provides inbound call	management with	data retrieval based
+	  on ICLID, visual alerting, and traffic statistics.
+
+	  Structured Information's ViewMate, (908) 842 9553.
+
+	  Windows application that links existing applications with
+	  ICLID. It can	start applications based on ICLID or execute
+	  options within an application	based on ICLID.
+
+
+
+
+     Page 10					     (printed 10/6/92)
+
+
+
+
+
+
+     VVVVIIIISSSSDDDDNNNN((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      VVVVIIIISSSSDDDDNNNN((((1111))))
+
+
+
+	  AT&T's E911 PSAP, (708) 224 4387.
+
+	  This allows E911 Public Safety Answering Position (PSAP) to
+	  see who is calling and to transfer to	the proper emergency
+	  service. This	is easier to expand than conventional analog
+	  PSAP.
+
+     BBBBUUUUGGGGSSSS
+	  Using	the ';'	character in .visdnrc files to wait for	ack on
+	  commands is not working.
+
+	  Using	the '+'	character in .visdnrc files to wait for	dial
+	  tone is not working.	Sufficient delays with '~' should
+	  work.
+
+	  _s_a_v_e _q_u_e_r_y needs the result from a 5ESS directory query in a
+	  particular format; not all entrys can	be saved.
+
+	  The window connected to the ISDN phone currently isn't
+	  automatically	deleted	on exit; the button 3 exit menu	item
+	  must be used.
+
+	  Deleting any of the individual windows created by _v_i_s_d_n via
+	  means	external to _v_i_s_d_n voids	any warranties about terminal
+	  behavior thereafter.	In other words,	if you use the 630/730
+	  button 3 ``delete'' item on any of these windows, you're on
+	  your own.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  Alan Hastings	Doug Rippe
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Alan Hastings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 11					     (printed 10/6/92)
+
+
+

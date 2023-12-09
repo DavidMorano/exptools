@@ -1,0 +1,726 @@
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            xcip - interactive object-based drawing system based on pic
+            for DMD 5620, MTG 630/730, X-window terminals and Sun works-
+            tations.
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            xxxxcccciiiipppp [----vvvv] [-t dmd|mtg|sun|x] [X-window options]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            Note: _x_c_i_p is the exptools version of the _c_i_p program.  From
+            here on in this man page when you see _c_i_p, read it as _x_c_i_p.
+
+            _C_i_p is an interactive drawing system for AT&T Teletype's DMD
+            5620 and MTG 630/730 bitmap display terminals. It will also
+            work on X-window systems such as Sun workstations running
+            Openwin and 730X terminals.
+
+            Using a set of predefined _p_i_c(1) shapes, the user draws and
+            edits objects to construct pictures on the screen of the
+            terminal. These pictures can be stored in a file and later
+            formatted for output to a typesetter using _p_i_c(1) and
+            _t_r_o_f_f(1).
+
+            If the ----vvvv option is used, the versions of _c_i_p and the host
+            program _j_p_i_c are printed (and the editor is not brought up).
+
+            The _c_i_p shell script trys to load the appropriate version of
+            _c_i_p depending on whether your terminal is a 5620, 630/730 or
+            X-window system.  This can be specified explicitly by using
+            the optional ----tttt parameter.
+
+            For X-window systems, options such as ----rrrrvvvv for reverse video
+            and ----ggggeeeeoooommmmeeeettttrrrryyyy to specify window geometry and placement can
+            be used.  For example, to place the _c_i_p window in upper left
+            hand corner use: ----gggg ++++0000++++0000
+
+            For the 630 MTG, the _c_i_p program is automatically saved
+            (_c_a_c_h_e_d) in the terminal's RAM memory.  The next invocation
+            of _c_i_p will bring up the program quickly without having to
+            download it.  To remove _c_i_p from the terminal's memory
+            without having to power it down use the 630 MTG _u_c_a_c_h_e(_1)
+            program.
+
+       SSSSEEEETTTTUUUUPPPP
+            If you are using a 5620, 630 or 730 terminal, you must have
+            the environment variable DDDDMMMMDDDD set to the appropriate DMD
+            software directory (and exported).  For the DMD 5620 termi-
+            nal, this must be the DMD 2.0 SGS.  (If the old version is
+            used, you will get hundreds of multiply defined messages
+            when _c_i_p is invoked.)  For Computation Center machines this
+            is typically:
+
+
+
+
+       Page 1                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+            DMD=/usr/add-on/dmd2.0   (for DMD 5620)
+
+            DMD=/usr/add-on/630      (for 630 MTG)
+
+            Make certain you have the exptools bin and $(DMD)/bin on
+            your path.
+
+       WWWWIIIINNNNDDDDOOOOWWWWSSSS
+            For 5620, 630 or 730 terminals, create a small window and
+            invoke _c_i_p in it.  (The first _l_a_y_e_r_s window receives system
+            messages and thus is not available for _c_i_p.)  After _c_i_p
+            downloads, a menu will be available on mouse button 3 to
+            open the editor window.
+
+            The _c_i_p editor window consists of five areas.  The topmost
+            area contains 7 buttons, one for each shape available for
+            drawing (i.e., circle, box, ellipse, line, arc, spline and
+            text).  The large middle area is used for drawing and edit-
+            ing pictures. At the bottom are three areas: the leftmost
+            shows information, error messages and file names; the middle
+            area will show a button when editting a macro (click on but-
+            ton to leave macro edit mode); and the rightmost shows the
+            mouse button functions currently available.
+
+       MMMMOOOOUUUUSSSSEEEE
+            The mouse is used for selection of all menu items, selection
+            of shapes, and editing of objects in the picture area.  But-
+            ton one is usually used to select a shape or an object, but-
+            ton two is used to edit a selected object, and button three
+            displays a menu which is applicable to the current state of
+            _c_i_p.
+
+            BBBBuuuuttttttttoooonnnn 1111
+                 Select a shape to draw with by clicking mouse button 1
+                 on the desired shape button in the top area.  The shape
+                 can then be used to draw an object in the picture area
+                 (see Button 2).
+
+                 If mouse button one is pressed while in the picture
+                 area then an enclosing object is selected for editing.
+                 In case of overlapping objects, repeated pressings of
+                 button one will run through the possibilities.  The
+                 object selected is blanked out as long as button one is
+                 pressed. If the object is text, then an edit marker (an
+                 upward pointing triangle) can be placed within the text
+                 by moving the mouse wwwwhhhhiiiilllleeee holding button 1 down.  If
+                 there is no object on the screen or if the mouse cursor
+                 is far enough away from all objects, then clicking but-
+                 ton 1 returns _c_i_p to its original nothing-selected
+                 state.
+
+                 Pressing mouse button one on the _e_d_i_t _d_e_p_t_h button at
+
+
+
+       Page 2                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+                 the bottom of the screen (shown only when editing mac-
+                 ros) exits one level of macro editing.
+
+            BBBBuuuuttttttttoooonnnn 2222
+                 Mouse button two is only active when either an object
+                 or a shape has been selected. If a shape is selected,
+                 button two is used for drawing objects in the picture
+                 area.  If an object is selected, button two is used for
+                 either moving the object or changing its shape, depend-
+                 ing on whether the object was selected (via button one)
+                 near its center or near its edge, respectively.
+
+            BBBBuuuuttttttttoooonnnn 3333
+                 Mouse button three is used to provide a menu of opera-
+                 tions that is either of a general nature or specific to
+                 a selected shape or object.
+
+                 The general menu is brought up by pressing button three
+                 when no object nor shape has been selected and provides
+                 the following operations:
+
+            _G_e_t _f_i_l_e       Read a file (in restricted _p_i_c format),
+                           adding its contents to the screen.  The user
+                           is first prompted for a file path name.  Once
+                           the global file definitions have been read, a
+                           rectangle will appear on the screen showing
+                           the overall size of the file to be read.
+                           Clicking button one brings the picture in
+                           centered in the screen (but aligned to grid
+                           points).  Alternatively, the picture may be
+                           moved to a new location by depressing button
+                           two.
+
+            _P_u_t _f_i_l_e       Writes the screen's contents into a file in
+                           _p_i_c format.  Again, the user is prompted for
+                           a file path name.  If the file already
+                           exists, it is copied to the user's home
+                           directory under the file name: _c_i_p._b_a_c_k_u_p.
+
+            _C_l_e_a_r _s_c_r_e_e_n   Clear screen, removing the diagram from the
+                           editor.  This function asks if you are sure,
+                           requiring a confirming click of button three
+                           or an aborting click of button one or two.
+
+            _R_e_d_r_a_w _s_c_r_e_e_n
+                           Removes any garbage on screen that may result
+                           from interactions with other windows.
+
+            _D_e_f_i_n_e _m_a_c_r_o   A very useful function for grouping objects
+                           into a new entity. Button 2 is used to draw a
+                           box around objects to be included in a
+                           "macro" in the pic terminology.
+
+
+
+       Page 3                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+            _U_n_d_o           Undoes the last operation on an object.  A
+                           second undo immediately following the first
+                           returns the object to its changed state.
+
+            _S_h_o_w _g_r_i_d      Display (or turn off) a grid (via a secondary
+                           menu to the right of the main menu).  The
+                           user can select the distance between grid
+                           points.  The user can set the grid distance
+                           to follow changes in alignment, or the user
+                           can force the grid to a specific size
+                           independent of the alignment setting.  The
+                           range of sizes available in the forced grid
+                           mode starts at 4 by 4 and goes up to 16 by
+                           16.
+
+                           If the user has set the grid to follow the
+                           alignment, the grid will be redrawn when the
+                           user changes the alignment.  If in this mode,
+                           the user chooses an alignment finer than 4 by
+                           4, the grid will be removed because a grid
+                           smaller than 4 by 4 is so small that it is
+                           not useful.  When the alignment is increased
+                           to a larger value of at least 4 by 4 the grid
+                           will be restored.
+
+                           If the user has set the grid to a size
+                           independent of the alignment setting, the
+                           grid will remain on the screen in the size
+                           selected no matter what the alignment is sub-
+                           sequently set to.
+
+            _A_l_i_g_n_m_e_n_t      Whenever objects are drawn or edited, the
+                           coordinates of the objects are forced to be
+                           aligned to an imaginary set of grid points.
+                           The granularity of this imaginary grid is
+                           selected via a secondary menu to the right of
+                           the main menu.  The choices are any number
+                           between 1 and 16.
+
+                           This imaginary grid is independent of the
+                           grid that the user can display using the
+                           "Show Grid" menu item.  The displayed grid
+                           can be set to track alignment changes or to
+                           remain at a fixed value independent of align-
+                           ment changes.  The preceding section on grid
+                           controls explains how the grid operates.
+
+                           The smaller the alignment selected, the more
+                           freedom the user will have in placing
+                           objects.  Using a larger alignment size helps
+                           keep symbols lined up with each other.  The
+                           default alignment size corresponds to an 8 by
+
+
+
+       Page 4                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+                           8 grid.
+
+                           From the point of view of alignment, it is
+                           important to understand that objects always
+                           snap to an imaginary grid based on the
+                           current alignment setting.  Since the
+                           displayed grid setting does not have to match
+                           the alignment setting, drawn objects will
+                           snap to the displayed grid only if the two
+                           settings match.
+
+                           To allow for more flexibility in placing
+                           text, text objects are allowed to be placed
+                           at an alignment value which is about half the
+                           current alignment setting.  So if the align-
+                           ment is set to 8, text objects can be placed
+                           in 4 pixel increments.
+
+                           When a file is read in via the "Get File"
+                           menu command, the objects in that file are
+                           placed at the coordinates specified in the
+                           file without any regard to the current align-
+                           ment settings.  If the file was originally
+                           created with a different alignment setting
+                           than that which is currently in use, the
+                           objects that are loaded in may not line up
+                           properly with the newly drawn objects.
+
+            _I_n_f_o_r_m_a_t_i_o_n    Prints remaining memory available in the DMD
+                           & MTG terminal and the UNIX directory from
+                           which _c_i_p was down-loaded.
+
+            _V_e_r_s_i_o_n        Prints the _c_i_p version.
+
+            _D_i_s_p_l_a_y _S_c_a_l_e  When an object is being drawn or a previously
+                           drawn object is selected and is being edited,
+                           information about that object is displayed in
+                           the message window.  This information
+                           includes the type of object, the pixel coor-
+                           dinates of the interesting parts of the
+                           object, and the height, width, length, diame-
+                           ter, or radius of the object, as appropriate.
+
+                           This secondary menu to the right of the main
+                           menu allows the user to control how the
+                           height, width, length, diameter, or radius
+                           value is displayed.  There are two things
+                           that can be controlled: (1) the numeric part
+                           of the display can be scaled down by a scale
+                           factor, and (2) one of several labels
+                           representing common units of measurement can
+                           be displayed after the number.
+
+
+
+       Page 5                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+                           These two things can be turned on separately
+                           or together.  The scale factor used to scale
+                           the pixel dimensions down can be changed
+                           independently of the label that is displayed.
+
+                           For example, if the user has selected a line
+                           object that happens to be 104 pixels long,
+                           the message window would normally say:
+                                Line: length=104
+                           If the user turns on the scale factor feature
+                           and sets the scale factor to 10, the display
+                           now shows:
+                                Line: length=10.4
+                           The dimension to be printed is divided by the
+                           scale factor before printing.  The number of
+                           digits printed after the decimal point is
+                           determined by the size of the scale factor.
+                           Scale factors between 1 and 10, inclusive,
+                           get one digit after the decimal point.  Scale
+                           factors greater than 10 but less than or
+                           equal to 100 get two digits, and any scale
+                           factor greater than 100 gets three digits.
+
+                           The label part of this facility allows the
+                           user to have one of several possible labels
+                           appended to the number printed.  The choices
+                           are:
+                                inches         (displayed as  " )
+                                feet and inches(displayed as  '  " )
+                                feet           (displayed as  ' )
+                                yards          (displayed as   yd. )
+                                miles          (displayed as   mi. )
+                                millimeters    (displayed as   mm )
+                                meters         (displayed as   m )
+                                kilometers     (displayed as   km )
+
+                           Using the same values from our first example,
+                           if the label was set to miles, the message
+                           window would say:
+                                Line: length=104 mi.
+                           The way that this operates is for the most
+                           part very straightforward.  The only confus-
+                           ing one is "feet and inches".
+
+                           When the option "feet and inches" is chosen,
+                           the units of the dimension are taken to be
+                           inches, but before it is displayed the dimen-
+                           sion value is divided by 12 to find the
+                           number of feet.  The remainer from this divi-
+                           sion is the number of inches.  Using our same
+                           example, 104 inches is eight feet and eight
+                           inches, so the message window now would say:
+
+
+
+       Page 6                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+                                Line: length=8'8"
+                           If a scale factor is set it is applied to the
+                           dimension value before it is divided by
+                           twelve, and the extra decimal points are
+                           displayed with the inches.  So, for the same
+                           example, this time with a scale factor of 5,
+                           we get:
+                                Line: length=1'8.8"
+                           ( Because 104 inches divided by 5 is 20.8
+                           inches.  Divide 20.8 by 12 we get one foot
+                           with a remainder of 8.8 inches.)
+
+                           This feature, feet and inches, can be really
+                           interesting when used with scale factor 1, an
+                           alignment of 1, and a grid forced to 12.  You
+                           can move objects in one inch increments, see
+                           grid lines every foot, and your dimensions
+                           are shown in feet and inches.  You have a
+                           drawing area that is about 58 feet square.
+
+            _C_l_o_s_e _w_i_n_d_o_w   Returns to the layer window initially used
+                           when _c_i_p was downloaded.  The current picture
+                           is saved - re-opening the editor window will
+                           redraw the picture.  The option _Q_u_i_t _e_d_i_t_o_r
+                           is available in the closed window menu to
+                           leave _c_i_p.  WARNING: the _Q_u_i_t _e_d_i_t_o_r option
+                           does nnnnooootttt check if the current diagram has
+                           been written out!
+
+
+                 If the box, line, spline, or text shape is selected,
+                 button three brings up a menu used to set global
+                 defaults.
+
+            _A_r_r_o_w_s         Sets whether lines and splines drawn in the
+                           future will have _N_o _a_r_r_o_w_s or arrows at the
+                           _S_t_a_r_t _e_n_d, _F_i_n_i_s_h _e_n_d or _B_o_t_h _e_n_d_s; via a
+                           secondary menu to the right of the main menu.
+
+            _D_e_n_s_i_t_y        Sets line density of lines and boxes to
+                           either _S_o_l_i_d, _D_a_s_h_e_d, or _D_o_t_t_e_d.
+
+            _P_o_i_n_t _s_i_z_e     Sets point size for text; via a secondary
+                           menu to the right of the main menu.  This
+                           includes all point sizes supported on the DMD
+                           5620 and 630 MTG.  Note, however, that your
+                           particular printer may not support all of
+                           these.
+
+            _F_o_n_t _s_t_y_l_e     Sets style of text. Includes all font styles
+                           supported on the DMD 5620 and 630 MTG.
+                           Again, your particular printer may not
+
+
+
+       Page 7                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+                           support all of these.
+
+            _J_u_s_t_i_f_y        Sets text justification to _L_e_f_t, _C_e_n_t_e_r, or
+                           _R_i_g_h_t.
+
+            _S_p_a_c_i_n_g        Sets spacing between text lines in multi-line
+                           text.
+
+
+                 If an object in the picture area is selected, depress-
+                 ing button three displays a menu allowing reasonable
+                 operations on the selected object.  Common operations
+                 are:
+
+            _D_e_l_e_t_e         Deletes selected object.
+
+            _C_o_p_y           Copies selected object.  Use button 2 to
+                           place the new object.  If the object is a
+                           macro, the copied objects all share the same
+                           macro definition.  That is, if you edit a
+                           macro, all other copies of that macro will be
+                           updated also.
+
+            _R_e_f_l_e_c_t _x      Reflect around the x-axis.
+
+            _R_e_f_l_e_c_t _y      Reflect around the y-axis.
+
+            _A_r_r_o_w          Place an arrow on (or remove an arrow from)
+                           the nearest end of the line or spline
+                           selected.
+
+            _D_e_n_s_i_t_y        Adjust the density of a line or box via a
+                           secondary menu to the right of the main menu.
+
+            _E_d_i_t           Edit components of a selected macro.  Exit
+                           edit mode by selecting the _e_d_i_t _d_e_p_t_h window
+                           in the middle area at the bottom of screen.
+
+            _S_e_p_a_r_a_t_e       Separate a macro into component parts or
+                           multi-line text into separate single lines.
+                           Warning: currently there is no way to combine
+                           separate single lines of text into a single
+                           multi-line text.
+
+       KKKKEEEEYYYYBBBBOOOOAAAARRRRDDDD
+            The keyboard is used to enter and edit text in the picture.
+            The following commands (which are a subset of emacs commands
+            with some extensions) are available:
+            _C_N_T_L-_A         Move to start of line.
+            _C_N_T_L-_B         Move back one character.
+            _C_N_T_L-_C         Capitalize next character.
+            _C_N_T_L-_D         Delete next character.
+
+
+
+       Page 8                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+            _C_N_T_L-_E         End of line.
+            _C_N_T_L-_F         Forward one character.
+            _C_N_T_L-_H         Delete previous character.
+            _C_N_T_L-_K         Kill text after the cursor.
+            _C_N_T_L-_U         Delete all previous text.
+            _C_N_T_L-_W         Delete previous word.
+            _C_N_T_L-_Y         Retrieve last deletion.
+            _R_e_t_u_r_n         Create new line.
+            _E_S_C _b          Move back one word.
+            _E_S_C _d          Delete next word.
+            _E_S_C _C_N_T_L-_H     Delete previous word.
+            _E_S_C _f          Move forward one word.
+            _E_S_C <_n> <_c_m_d>  Repeat "n" times the command "cmd".
+
+            The text mode is left by clicking a mouse button.  Note: The
+            character sequence \(xx will not be printed: instead it will
+            be interpreted by troff (for example, use \(bu for bullets).
+
+            The keyboard is also used to enter and edit file names. In
+            this case, entering an Escape or Return character, or click-
+            ing a mouse button, will leave this text mode.
+
+            The last file name is retained by the editor between opera-
+            tions. This is to facilitate frequent writes to keep the
+            host updated as a new file is being entered.  However, care
+            must be taken to backspace over or delete the original name
+            and enter a new one when it is desired to leave the original
+            file intact.
+
+       PPPPRRRRIIIINNNNTTTTIIIINNNNGGGG DDDDIIIIAAAAGGGGRRRRAAAAMMMMSSSS
+            Diagrams can be printed on any printer that supports
+            _t_r_o_f_f(1).  The shell _c_i_p_r_i_n_t(exptools-1) provides a con-
+            venient command to print cip-generated pic files on either
+            the Xerox, the Imagen or Postscript printer.
+
+            The diagrams can also be included in documents by using the
+            following:
+
+                 .DS CB
+                 .PS < pic-file-name
+                 .DE
+
+            If the diagram has splines, make sure that the character "~"
+            is not redefined. For example, a common line in the front of
+            documents is:
+
+                 .tr ~
+
+            This operation must be canceled before the pic file contain-
+            ing splines by issuing:
+
+                 .tr ~~
+
+
+
+       Page 9                                           (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+            The pic(1) command must be run before the troff(1) command.
+            Look at the ciprint(exptools-1) shell for an example command
+            sequence and parameters.  The _e_x_m_m_x(exptools-1) shell is a
+            convenient command for printing documents containing pic on
+            Xerox.
+
+       FFFFIIIILLLLEEEESSSS
+            bin/xcip            shell script for executing _x_c_i_p
+            lib/dmd/xcip.m      DMD 5620 _x_c_i_p program
+            lib/dmd/xcip.m      630/730 MTG _x_c_i_p program
+            lib/x/xcip          X-window _x_c_i_p program
+            bin/xjpic           program used by _x_c_i_p to parse pic files
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+            _C_i_p _U_s_e_r'_s _M_a_n_u_a_l: _O_n_e _p_i_c_t_u_r_e _i_s _W_o_r_t_h _a _T_h_o_u_s_a_n_d _W_o_r_d_s,
+            Sally A. Browning, TM-82-11276-1.
+            pic(1), troff(1), proof(dmd-1) & ucache(dmd-1).
+
+       WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+            We recommend that DMD 5620 terminals have 1 Meg RAM memory
+            so that there will be sufficient space to hold your pic-
+            tures.  MTG 630/730 need more than the minimum 640K memory.
+            Either add the 512K memory board or a Starlan-10 card with 2
+            or 4 Meg RAM.  For the MTG 730+ terminal, just add 2 or 4 of
+            standard 1 Meg SIMMs.
+
+            On VAXes, do not use a large path name (greater than about
+            50 characters) on put file as it will cause _c_i_p to abort!
+
+            Defining pictures which are too large for the picture frame
+            can have disastrous results when stored and read back.
+
+            _C_i_p relies on the host machine only for file transfers. If
+            the host crashes while you are creating or modifying a pic-
+            ture, there will be no way to save the picture.  FFFFrrrreeeeqqqquuuueeeennnntttt
+            ssssttttoooorrrreeeessss aaaarrrreeee rrrreeeeccccoooommmmmmmmeeeennnnddddeeeedddd....
+
+            The size of your text shown will not necessarily be the same
+            when printed as printers vary.  Moral: leave plenty of room
+            for your text.
+
+            The vertical bar character ("|") in multi-line text strings
+            or in any text string inside a macro can not be read in.
+
+            _C_i_p can not read in an arbitrary pic file since pic has
+            features not supported in the graphical editor.
+
+            There are numerous fixed limits in the host program, _j_p_i_c,
+            used in reading a pic file into _c_i_p. Thus it is quite possi-
+            ble to create and write out a diagram that can not be read
+            back in.  To discover why a file can not be read by _c_i_p do:
+            "jpic _y_o_u_r-_f_i_l_e > temp".  The standard error messages, if
+
+
+
+       Page 10                                          (printed 1/5/94)
+
+
+
+
+
+
+       XXXXCCCCIIIIPPPP((((1111))))             UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              XXXXCCCCIIIIPPPP((((1111))))
+
+
+
+            any, will report where the problem exists.
+
+            Objects are drawn on the screen using XOR mode. This means
+            that two identical objects placed on top of each other will
+            not appear on the screen.  However, the object will be
+            printed.
+
+       UUUUNNNNEEEEXXXXPPPPEEEECCCCTTTTEEEEDDDD BBBBEEEEHHHHAAAAVVVVIIIIOOOORRRR
+            Rectangles drawn with odd (eg. 1, 3, 5, ...) alignment
+            values tend to crawl around the page when the file is writ-
+            ten and later re-read by _c_i_p.  All other object types work
+            well at any alignment value.  Using only even alignment
+            values when drawing rectangles is recommended as a temporary
+            workaround.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 11                                          (printed 1/5/94)
+
+
+

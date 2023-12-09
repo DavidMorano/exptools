@@ -1,0 +1,198 @@
+
+
+
+     FFFFNNNN((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                FFFFNNNN((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          fn - find a node or a subdirectory in a node
+          cn - change to corresponding directory in another node
+          topnode - find the top of a node
+          setvpath - set a VPATH
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ffffnnnn nodepath
+          ccccnnnn [ - | nodename ]
+          ttttooooppppnnnnooooddddeeee [fullpath]
+          sssseeeettttvvvvppppaaaatttthhhh [nodename] ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          These tools work together to make it easy to move around
+          among nodes.  The nodes can be on multiple filesystems, as
+          long as they all have unique names.  NOTE: these tools are
+          all ksh functions; they work only from ksh (ksh88 or later)
+          and you need to have $TOOLS/fbin in your FPATH.
+
+          These tools require two environment variables to be set:
+          FNPATH and DEFVPATH.  These variables should normally be set
+          to be the same for all users of a project by a project
+          administrator.  FNPATH is a colon-separated list of direc-
+          tories in which nodes can reside.  DEFVPATH is the default
+          portion of the viewpath that is added when 'setvpath' is
+          used; this should most likely be a path to the top of the
+          "official" node.
+
+          ffffnnnn temporarily sets the CDPATH to be FNPATH and does a cd.
+          That means you can give it a name of a node or a subdirec-
+          tory in a node (or a complete pathname, although that isn't
+          very interesting).  Wildcards '*' and '?' are expanded
+          intelligently; if there is more than one match then all
+          matching directories are printed and an error is returned.
+          The new directory is always printed; if there was an error
+          then the current directory is printed.
+
+          ccccnnnn does a cd to the corresponding directory in the given
+          node and prints out the new directory.  If no node name is
+          given, it defaults to the last node listed in the VPATH, or,
+          if that's not set, to the last node listed in the DEFVPATH
+          if that is set.  If the given node is "-", it switches to
+          the last node you were in as saved in the OLDNODE variable.
+          Every time ccccnnnn is used, it sets the OLDNODE variable but
+          leaves the OLDPWD variable alone.  ccccnnnn uses ffffnnnn to switch to
+          the new node and ttttooooppppnnnnooooddddeeee to find the top of the current
+          node.
+
+          ttttooooppppnnnnooooddddeeee does a cd to the top of the node of the current
+          working directory, or the top of the fullpath that is passed
+          in as an argument, and prints out the new directory.  The
+          top of a node is defined to be one level below a directory
+
+
+
+     Page 1                                          (printed 10/4/91)
+
+
+
+
+
+
+     FFFFNNNN((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                FFFFNNNN((((1111))))
+
+
+
+          found in FNPATH.  This command is not normally useful for
+          the interactive user, but it is used by cn and setvpath.
+
+          sssseeeettttvvvvppppaaaatttthhhh sets the VPATH environment variable, beginning with
+          the top of the current node, followed by any nodes passed in
+          as arguments (found using fn), followed by the DEFVPATH.
+          The new VPATH is printed to stdout.
+
+          It is also often very handy to use these tools in
+          backquotes; they all print out the new settings to stdout,
+          and if they are used in backquotes the side effect of cd'ing
+          to the new directory or setting the VPATH is ignored in the
+          current shell.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Assuming there are three nodes /u1/proj/ofc, /u2/nodes/dwd,
+          and /u2/nodes/dwd2, all with subdirectories src/cmd:
+
+          $ FNPATH=/u1/proj:/u2/nodes
+          $ DEFVPATH=/u1/proj/ofc
+          $ export FNPATH DEFVPATH
+          $ fn d*2/src/cmd
+          /u2/nodes/dwd2/src/cmd
+          $ cn dwd
+          /u2/nodes/dwd/src/cmd
+          $ cn
+          /u1/proj/ofc/src/cmd
+          $ cd ..
+          $ cn -
+          /u2/nodes/dwd/src
+          $ setvpath dwd2
+          /u2/nodes/dwd:/u2/nodes/dwd2:/u1/proj/ofc
+          $ cn dwd2
+          /u2/nodes/dwd2/src
+          $ fn d*
+          fn: ambiguous d*: /u2/nodes/dwd /u2/nodes/dwd2
+          /u2/nodes/dwd2/src
+          $ vi `fn dwd`/Makefile
+          ( edits /u2/nodes/dwd/Makefile )
+          $ less `cn`/Makefile
+          ( looks at /u1/proj/ofc/src/Makefile )
+          $ topnode
+          /u2/nodes/dwd2
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          FPATH    - must include $TOOLS/fbin to find the commands
+          FNPATH   - list of directories which contain nodes
+          DEFVPATH - default end of the VPATH for 'setvpath'
+          VPATH    - set by setvpath, and default 'cn' node at end
+          OLDNODE    - previous node did a 'cn' from
+
+     AAAAUUUUTTTTHHHHOOOORRRR////PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+
+
+
+     Page 2                                          (printed 10/4/91)
+
+
+
+
+
+
+     FFFFNNNN((((1111))))               UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                FFFFNNNN((((1111))))
+
+
+
+          David W. Dykstra, iexist!dwd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 10/4/91)
+
+
+

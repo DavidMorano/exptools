@@ -1,0 +1,3719 @@
+8.10.00 LargeInts
+
+
+types
+
+   T0: string
+   T1: integer
+   T2: record
+   T3: proc
+   T4: coexpr
+   T5: tvsubs
+   T6: tvtbl
+   T7: null
+   T8: cset
+   T9: real
+   T10: list
+   T11: table
+   T12: file
+   T13: set
+   T14: kywdint
+   T15: kywdsubj
+   T16: kywdpos
+   T17: kywdevent
+   T18: kywdwin
+   T19: kywdstr
+
+$endsect
+
+
+components
+
+   C0: str_var
+   C1: trpd_tbl
+   C2: lst_elem
+   C3: tbl_key
+   C4: tbl_val
+   C5: tbl_dflt
+   C6: set_elem
+
+$endsect
+
+functions
+
+abs	00 1(d)	{1,1} _r_e t 
+"abs(N) - produces the absolute value of N."
+0 
+0 
+if2 cnv1 eci 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c Abs($r0 ) $e  $e 
+if2 cnv1 ei 0 
+lst abstr nil typ T1 
+block _ 0 $c cpbignum(&$m0 , &$mr );
+BlkLoc($rr )->bignumblk.sign = 0;
+$ret rn 0  $e 
+if2 cnv1 cd 0 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret cd 1 $c Abs($r0 ) $e  $e 
+runerr2 102 0 
+$end
+
+acos	0a 1(d)	{1,1} _r_e f 
+"acos(r), x in radians."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+$cgoto $c !($r0  < -1.0 || $r0  > 1.0) $e 0 
+drunerr(205, $r0 );
+$efail 
+$lbl 0 
+errno = 0;
+y = acos($r0 );
+$cgoto $c !(errno == EDOM) $e 1 
+err_msg(205, NULL);
+$efail 
+$lbl 1 
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+any	1e 4(d,d,d,d)	{0,1} fr_e f 
+"any(c,s,i1,i2) - produces i1+1 if i2 is greater than 1 and s[i] is contained in c and poseq(i2,x) is greater than poseq(i1,x), but fails otherwise."
+0 
+2 cnv_i $c C_integer cnv_i; $e cnv_j $c C_integer cnv_j; $e 
+lst lst lst lst lst abstr nil typ T1 
+if2 is T7 1 
+lst block t 0 $c $m1  = k_subject; $e 
+if1 is T7 2 
+block t 0 $c $m4  = k_pos; $e 
+lst if1 ! cnv1 T0 1 
+runerr2 103 1 
+if1 is T7 2 
+block t 0 $c $m4  = 1; $e 
+if1 ! is T7 2 
+if2 cnv2 ci 2 $c $m4  $e 
+block t 0 $c 
+$cgoto $c !(($m4  = cvpos($r4 , StrLen($r1 ))) == CvtFail) $e 0 
+$fail 
+$lbl 0 
+ $e 
+runerr2 101 2 
+if2 is T7 3 
+block t 0 $c $m5  = StrLen($r1 ) + 1; $e 
+if2 cnv2 ci 3 $c $m5  $e 
+block t 0 $c 
+$cgoto $c !(($m5  = cvpos($r5 , StrLen($r1 ))) == CvtFail) $e 1 
+$fail 
+$lbl 1 
+$cgoto $c !($r4  > $r5 ) $e 2 
+${ 
+register C_integer tmp;
+tmp = $r4 ;
+$m4  = $r5 ;
+$m5  = tmp;
+$} 
+$lbl 2 
+ $e 
+runerr2 101 3 
+if1 ! cnv1 tc 0 
+runerr2 104 0 
+call 0 s fr___ t 0 0 4 $c dptr c $e $c &($r0 ) $e $c dptr s $e $c &($r1 ) $e $c C_integer cnv_j $e $c $r5  $e $c C_integer cnv_i $e $c $r4  $e 
+$end
+
+args	0i 1(d)	{1,1} _r_e f 
+"args(p) - produce number of arguments for procedure p."
+0 
+0 
+lst lst if1 ! is T3 0 
+runerr2 106 0 
+abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c ((struct b_proc *)BlkLoc($r0 ))->nparam $e  $e 
+$end
+
+asin	0b 1(d)	{1,1} _r_e f 
+"asin(r), x in radians."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+$cgoto $c !($r0  < -1.0 || $r0  > 1.0) $e 0 
+drunerr(205, $r0 );
+$efail 
+$lbl 0 
+errno = 0;
+y = asin($r0 );
+$cgoto $c !(errno == EDOM) $e 1 
+err_msg(205, NULL);
+$efail 
+$lbl 1 
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+atan	0g 2(d,d)	{1,1} _r_e f 
+"atan(r1,r2) -- r1, r2  in radians; if r2 is present, produces atan2(r1,r2)."
+0 
+0 
+lst lst lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+if1 is T7 1 
+block _ 0 $c 
+$ret cd 1 $c atan($r0 ) $e  $e 
+if1 ! cnv1 cd 1 
+runerr2 102 1 
+block _ 0 $c 
+$ret cd 1 $c atan2($r0 , $r1 ) $e  $e 
+$end
+
+bal	1f 6(d,d,d,d,d,d)	{0,*} f_se f 
+"bal(c1,c2,c3,s,i1,i2) - generates the sequence of integer positions in s up to a character of c1 in s[i1:i2] that is balanced with respect to characters in c2 and c3, but fails if there is no such position."
+0 
+2 cnv_i $c C_integer cnv_i; $e cnv_j $c C_integer cnv_j; $e 
+lst lst lst lst lst lst lst abstr nil typ T1 
+if2 is T7 3 
+lst block t 0 $c $m3  = k_subject; $e 
+if1 is T7 4 
+block t 0 $c $m6  = k_pos; $e 
+lst if1 ! cnv1 T0 3 
+runerr2 103 3 
+if1 is T7 4 
+block t 0 $c $m6  = 1; $e 
+if1 ! is T7 4 
+if2 cnv2 ci 4 $c $m6  $e 
+block t 0 $c 
+$cgoto $c !(($m6  = cvpos($r6 , StrLen($r3 ))) == CvtFail) $e 0 
+$fail 
+$lbl 0 
+ $e 
+runerr2 101 4 
+if2 is T7 5 
+block t 0 $c $m7  = StrLen($r3 ) + 1; $e 
+if2 cnv2 ci 5 $c $m7  $e 
+block t 0 $c 
+$cgoto $c !(($m7  = cvpos($r7 , StrLen($r3 ))) == CvtFail) $e 1 
+$fail 
+$lbl 1 
+$cgoto $c !($r6  > $r7 ) $e 2 
+${ 
+register C_integer tmp;
+tmp = $r6 ;
+$m6  = $r7 ;
+$m7  = tmp;
+$} 
+$lbl 2 
+ $e 
+runerr2 101 5 
+if1 ! def1 tc 0 $c fullcs $e 
+runerr2 104 0 
+if1 ! def1 tc 1 $c lparcs $e 
+runerr2 104 1 
+if1 ! def1 tc 2 $c rparcs $e 
+runerr2 104 2 
+call 0 s f_s__ t 0 0 6 $c dptr c3 $e $c &($r2 ) $e $c dptr c2 $e $c &($r1 ) $e $c dptr c1 $e $c &($r0 ) $e $c dptr s $e $c &($r3 ) $e $c C_integer cnv_j $e $c $r7  $e $c C_integer cnv_i $e $c $m6  $e 
+$end
+
+center	15 3(d,d,d)	{1,1} _r_e f 
+"center(s1,i,s2) - pad s1 on left and right with s2 to length i."
+0 
+0 
+lst lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+if1 ! def1 ts 2 $c blank $e 
+runerr2 103 2 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 3 $c dptr s1 $e $c &($r0 ) $e $c dptr s2 $e $c &($m2 ) $e $c C_integer n $e $c $r1  $e 
+$end
+
+char	0j 1(d)	{1,1} _r_e f 
+"char(i) - produce a string consisting of character i."
+0 
+0 
+lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 1 $c C_integer i $e $c $r0  $e 
+$end
+
+chdir	2d 1(d)	{0,1} fr_e f 
+"chdir(s) - change working directory to s."
+0 
+0 
+lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+abstr nil typ T7 
+block _ 0 $c 
+$cgoto $c !(chdir($r0 ) != 0) $e 0 
+$fail 
+$lbl 0 
+$ret d 1 $c nulldesc $e  $e 
+$end
+
+close	1w 1(d)	{1,1} _r_e f 
+"close(f) - close file f."
+0 
+0 
+lst lst if1 ! is T12 0 
+runerr2 105 0 
+abstr nil ++ typ T12 typ T1 
+call 0 n _r___ t 0 0 1 $c dptr f $e $c &($r0 ) $e 
+$end
+
+collect	0k 2(d,d)	{1,1} fr_e f 
+"collect(i1,i2) - call garbage collector to ensure i2 bytes in region i1. no longer works."
+0 
+0 
+lst lst lst if1 ! def1 ci 0 $c (C_integer)0 $e 
+runerr2 101 0 
+if1 ! def1 ci 1 $c (C_integer)0 $e 
+runerr2 101 1 
+abstr nil typ T7 
+call 0 s fr_e_ t 0 0 2 $c C_integer region $e $c $r0  $e $c C_integer bytes $e $c $r1  $e 
+$end
+
+copy	0l 1(d)	{1,1} _r_e t 
+"copy(x) - make a copy of object x."
+0 
+0 
+lst abstr nil vartyp 0 
+tcase2 0 5 
+1 T2 call 1 s _r_e_ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+1 T13 call 2 s _r_e_ t 0 0 1 $c dptr x $e $c &($m0 ) $e 
+1 T11 call 3 s _r_e_ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+1 T10 block _ 0 $c 
+$cgoto $c !(cplist(&$m0 , &$mr , (word)1, BlkLoc($r0 )->list.size + 1) == Error) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+$ret rn 0  $e 
+8 T4 T3 T12 T9 T1 T8 T0 T7 block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+call 0 n ___e_ f 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+cos	08 1(d)	{1,1} _r_e f 
+"cos(r), x in radians."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+;
+errno = 0;
+y = cos($r0 );
+;
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+cset	01 1(d)	{0,1} fr__ f 
+"cset(x) - produces a value of type cset resulting from the conversion of x, but fails if the conversion is not possible."
+0 
+0 
+if2 cnv1 T8 0 
+lst abstr nil typ T8 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+delay	2e 1(d)	{1,1} fr_e f 
+"delay(i) - delay for i milliseconds."
+0 
+0 
+lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+abstr nil typ T7 
+block _ 0 $c 
+$cgoto $c !(idelay($r0 ) == Failed) $e 0 
+$fail 
+$lbl 0 
+$ret d 1 $c nulldesc $e  $e 
+$end
+
+delete	1k 2(d,d)	{1,1} _r_e f 
+"delete(x1,x2) - delete element x2 from set or table x1 if it is there (always succeeds and returns x1)."
+0 
+0 
+lst abstr nil ** vartyp 0 ++ typ T13 typ T11 
+tcase2 0 2 
+1 T11 call 0 n _r___ t 0 0 2 $c dptr s $e $c &($r0 ) $e $c dptr x $e $c &($m1 ) $e 
+1 T13 call 1 n _r___ t 0 0 2 $c dptr s $e $c &($r0 ) $e $c dptr x $e $c &($m1 ) $e 
+runerr2 122 0 
+$end
+
+detab	16 2(d,dv)	{1,1} _r_e t 
+"detab(s,i,...) - replace tabs with spaces, with stops at columns indicated."
+0 
+0 
+lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 3 $c dptr i $e $c $m1  $e $c int n $e $c $r2  $e $c dptr s $e $c &($r0 ) $e 
+$end
+
+display	0m 2(d,d)	{1,1} _r_e f 
+"display(i,f) - display local variables of i most recent procedure activations, plus global variables. Output to file f (default &errout)."
+0 
+0 
+lst lst lst if1 ! def1 ci 0 $c (C_integer)k_level $e 
+runerr2 101 0 
+if2 is T7 1 
+block t 0 $c $m1 .dword = D_File;
+BlkLoc($r1 ) = (union block *)&k_errout; $e 
+if1 ! is T12 1 
+runerr2 105 1 
+abstr nil typ T7 
+call 0 s _r_e_ t 0 0 2 $c C_integer i $e $c $m0  $e $c dptr f $e $c &($r1 ) $e 
+$end
+
+dtor	0e 1(d)	{1,1} _r_e f 
+"dtor(r) - convert x from degrees to radians."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+;
+errno = 0;
+y = (($r0 ) * 3.14159265358979323846264338327950288419716939937511 / 180);
+;
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+entab	17 2(d,dv)	{1,1} _r_e t 
+"entab(s,i,...) - replace spaces with tabs, with stops at columns indicated."
+0 
+0 
+lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 3 $c dptr s $e $c &($r0 ) $e $c dptr i $e $c $m1  $e $c int n $e $c $r2  $e 
+$end
+
+errorclear	0n 0()	{1,1} _r__ f 
+"errorclear() - clear error condition."
+0 
+0 
+lst abstr nil typ T7 
+call 0 n _r___ t 0 0 0 
+$end
+
+exit	1x 1(d)	{} ___e f 
+"exit(i) - exit process with status i, which defaults to 0."
+0 
+0 
+lst if1 ! def1 ci 0 $c 0 $e 
+runerr1 0 
+block _ 0 $c c_exit((int)$r0 ); $e 
+$end
+
+exp	0c 1(d)	{1,1} _r_e f 
+"exp(r) - e^x."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+;
+errno = 0;
+y = exp($r0 );
+$cgoto $c !(errno == ERANGE) $e 0 
+err_msg(204, NULL);
+$efail 
+$lbl 0 
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+find	1g 4(d,d,d,d)	{0,*} f_se f 
+"find(s1,s2,i1,i2) - generates the sequence of positions in s2 at which s1 occurs as a substring in s2[i1:i2], but fails if there is no such position."
+0 
+2 cnv_i $c C_integer cnv_i; $e cnv_j $c C_integer cnv_j; $e 
+lst lst lst lst lst abstr nil typ T1 
+if2 is T7 1 
+lst block t 0 $c $m1  = k_subject; $e 
+if1 is T7 2 
+block t 0 $c $m4  = k_pos; $e 
+lst if1 ! cnv1 T0 1 
+runerr2 103 1 
+if1 is T7 2 
+block t 0 $c $m4  = 1; $e 
+if1 ! is T7 2 
+if2 cnv2 ci 2 $c $m4  $e 
+block t 0 $c 
+$cgoto $c !(($m4  = cvpos($r4 , StrLen($r1 ))) == CvtFail) $e 0 
+$fail 
+$lbl 0 
+ $e 
+runerr2 101 2 
+if2 is T7 3 
+block t 0 $c $m5  = StrLen($r1 ) + 1; $e 
+if2 cnv2 ci 3 $c $m5  $e 
+block t 0 $c 
+$cgoto $c !(($m5  = cvpos($r5 , StrLen($r1 ))) == CvtFail) $e 1 
+$fail 
+$lbl 1 
+$cgoto $c !($r4  > $r5 ) $e 2 
+${ 
+register C_integer tmp;
+tmp = $r4 ;
+$m4  = $r5 ;
+$m5  = tmp;
+$} 
+$lbl 2 
+ $e 
+runerr2 101 3 
+if1 ! cnv1 T0 0 
+runerr2 103 0 
+call 0 s f_s__ t 0 0 4 $c dptr s2 $e $c &($r1 ) $e $c C_integer cnv_i $e $c $m4  $e $c C_integer cnv_j $e $c $r5  $e $c dptr s1 $e $c &($r0 ) $e 
+$end
+
+flush	2f 1(d)	{1,1} _r_e f 
+"flush(f) - flush file f."
+0 
+0 
+lst lst if1 ! is T12 0 
+runerr2 105 0 
+abstr nil vartyp 0 
+call 0 n _r___ t 0 0 1 $c dptr f $e $c &($r0 ) $e 
+$end
+
+get	1l 1(d)	{0,1} fr_e t 
+"get(x) - get an element from the left end of list x."
+0 
+0 
+lst lst if1 ! is T10 0 
+runerr2 108 0 
+abstr nil store . vartyp 0 C2 
+call 0 s fr___ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+getch	2a 0()	{0,1} fr_e f 
+"getch() - return a character from console."
+0 
+0 
+lst abstr nil typ T0 
+call 0 s fr_e_ t 0 0 0 
+$end
+
+getche	2b 0()	{0,1} fr_e f 
+"getche() -- return a character from console with echo."
+0 
+0 
+lst abstr nil typ T0 
+call 0 s fr_e_ t 0 0 0 
+$end
+
+getenv	1y 1(d)	{0,1} fr_e f 
+"getenv(s) - return contents of environment variable s."
+0 
+0 
+lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+abstr nil typ T0 
+block _ 0 $c 
+${ 
+register char *p; 
+long l;
+$cgoto $c (p = getenv($r0 )) != NULL $e 0 
+$fail 
+$goto 1 
+$lbl 0 
+l = strlen(p);
+$cgoto $c !((p = alcstr(p, l)) == NULL) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret T0 2 $c l $e $c p $e 
+$lbl 1 
+$} 
+ $e 
+$end
+
+iand	0o 2(d,d)	{1,1} _r_e t 
+"iand(i,j) - produce bitwise AND of i and j."
+0 
+0 
+lst lst lst if1 ! cnv1 T1 0 
+runerr2 101 0 
+if1 ! cnv1 T1 1 
+runerr2 101 1 
+abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c (Type($r0 ) == T_Lrgint) || (Type($r1 ) == T_Lrgint) $e 0 
+$ret ci 1 $c IntVal($r0 ) & IntVal($r1 ) $e 
+$goto 1 
+$lbl 0 
+$cgoto $c !(bigand(&$m0 , &$m1 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 ;
+$lbl 1 
+ $e 
+$end
+
+icom	0r 1(d)	{1,1} _r_e t 
+"icom(i) - produce bitwise complement (one's complement) of i."
+0 
+0 
+lst lst if1 ! cnv1 T1 0 
+runerr2 101 0 
+abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c Type($r0 ) == T_Lrgint $e 0 
+$ret ci 1 $c ~IntVal($r0 ) $e 
+$goto 1 
+$lbl 0 
+${ 
+struct descrip td;
+td.dword = D_Integer;
+IntVal(td) = -1;
+$cgoto $c !(bigsub(&td, &$m0 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 
+$} 
+$lbl 1 
+ $e 
+$end
+
+image	0s 1(d)	{1,1} _r_e t 
+"image(x) - return string image of object x."
+0 
+0 
+lst abstr nil typ T0 
+block _ 0 $c 
+${ 
+register int i;
+$cgoto $c !(getimage(&$m0 , &$mr ) == Error) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+$ret rn 0 
+$} 
+ $e 
+$end
+
+insert	1o 3(d,d,d)	{1,1} _r_e f 
+"insert(x1,x2,x3) - insert element x2 into set or table x1 if not already there if x1 is a table, the assigned value for element x2 is x3. (always succeeds and returns x1)."
+0 
+0 
+tcase2 0 2 
+1 T11 lst abstr lst = . vartyp 0 C3 vartyp 1 
+= . vartyp 0 C4 vartyp 2 vartyp 0 
+call 0 s _r_e_ t 0 0 3 $c dptr y $e $c &($r2 ) $e $c dptr x $e $c &($m1 ) $e $c dptr s $e $c &($r0 ) $e 
+1 T13 lst abstr = . vartyp 0 C6 vartyp 1 vartyp 0 
+call 1 s _r_e_ t 0 0 2 $c dptr x $e $c &($m1 ) $e $c dptr s $e $c &($r0 ) $e 
+runerr2 122 0 
+$end
+
+integer	02 1(d)	{0,1} fr__ f 
+"integer(x) - produces a value of type integer resulting from the conversion of x, but fails if the conversion is not possible."
+0 
+0 
+if2 cnv1 T1 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+ior	0p 2(d,d)	{1,1} _r_e t 
+"ior(i,j) - produce bitwise inclusive OR of i and j."
+0 
+0 
+lst lst lst if1 ! cnv1 T1 0 
+runerr2 101 0 
+if1 ! cnv1 T1 1 
+runerr2 101 1 
+abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c (Type($r0 ) == T_Lrgint) || (Type($r1 ) == T_Lrgint) $e 0 
+$ret ci 1 $c IntVal($r0 ) | IntVal($r1 ) $e 
+$goto 1 
+$lbl 0 
+$cgoto $c !(bigor(&$m0 , &$m1 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 ;
+$lbl 1 
+ $e 
+$end
+
+ishift	0t 2(d,d)	{1,1} _r_e t 
+"ishift(i,j) - produce i shifted j bit positions (left if j<0, right if j>0)."
+0 
+0 
+lst lst lst if1 ! cnv1 T1 0 
+runerr2 101 0 
+if1 ! cnv1 T1 1 
+runerr2 101 1 
+abstr nil typ T1 
+call 0 s _r_e_ t 0 0 2 $c dptr i $e $c &($m0 ) $e $c dptr j $e $c &($m1 ) $e 
+$end
+
+ixor	0q 2(d,d)	{1,1} _r_e t 
+"ixor(i,j) - produce bitwise exclusive OR of i and j."
+0 
+0 
+lst lst lst if1 ! cnv1 T1 0 
+runerr2 101 0 
+if1 ! cnv1 T1 1 
+runerr2 101 1 
+abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c (Type($r0 ) == T_Lrgint) || (Type($r1 ) == T_Lrgint) $e 0 
+$ret ci 1 $c IntVal($r0 ) ^ IntVal($r1 ) $e 
+$goto 1 
+$lbl 0 
+$cgoto $c !(bigxor(&$m0 , &$m1 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 ;
+$lbl 1 
+ $e 
+$end
+
+kbhit	2c 0()	{0,1} fr_e f 
+"kbhit() -- Check to see if there is a keyboard character waiting to be read."
+0 
+0 
+lst abstr nil typ T7 
+block _ 0 $c 
+${ 
+int rv;
+keyboard_error = 0;
+rv = kbhit();
+$cgoto $c !(keyboard_error) $e 0 
+err_msg(keyboard_error, NULL);
+$efail 
+$lbl 0 
+$cgoto $c rv $e 1 
+$fail 
+$goto 2 
+$lbl 1 
+$ret d 1 $c nulldesc $e 
+$lbl 2 
+$} 
+ $e 
+$end
+
+key	1n 1(d)	{0,*} f_se f 
+"key(T) - generate successive keys (entry values) from table T."
+0 
+0 
+lst lst if1 ! is T11 0 
+runerr2 124 0 
+abstr nil store . vartyp 0 C3 
+block _ 1 blkptr $c 
+${ 
+ struct hgstate state;
+$t0 .vword.bptr = hgfirst(BlkLoc($r0 ), &state);
+$lbl 0 
+$cgoto $c !($t0 .vword.bptr != 0) $e 2 
+$susp d 1 $c $t0 .vword.bptr->telem.tref $e 
+$lbl 1 
+$t0 .vword.bptr = hgnext(BlkLoc($r0 ), &state, $t0 .vword.bptr);
+$goto 0 
+$lbl 2 
+$fail 
+$} 
+ $e 
+$end
+
+left	18 3(d,d,d)	{1,1} _r_e f 
+"left(s1,i,s2) - pad s1 on right with s2 to length i."
+0 
+0 
+lst lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+if1 ! def1 ts 2 $c blank $e 
+runerr2 103 2 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 3 $c dptr s1 $e $c &($r0 ) $e $c dptr s2 $e $c &($m2 ) $e $c C_integer n $e $c $r1  $e 
+$end
+
+list	1p 2(d,d)	{1,1} _r_e f 
+"list(i,x) - create a list of size i, with initial value x."
+0 
+0 
+lst lst if1 ! def1 ci 0 $c 0L $e 
+runerr2 101 0 
+abstr nil new T10 1 vartyp 1 
+call 0 s _r_e_ t 0 0 2 $c dptr x $e $c &($r1 ) $e $c C_integer n $e $c $r0  $e 
+$end
+
+log	0h 2(d,d)	{1,1} _r_e f 
+"log(r1,r2) - logarithm of r1 to base r2."
+0 
+0 
+lst lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block t 0 $c 
+$cgoto $c !($r0  <= 0.0) $e 0 
+drunerr(205, $r0 );
+$efail 
+$lbl 0 
+ $e 
+if2 is T7 1 
+block _ 0 $c 
+$ret cd 1 $c log($r0 ) $e  $e 
+lst if1 ! cnv1 cd 1 
+runerr2 102 1 
+call 0 s _r_e_ t 0 0 2 $c double x $e $c $m0  $e $c double b $e $c $r1  $e 
+$end
+
+many	1h 4(d,d,d,d)	{0,1} fr_e f 
+"many(c,s,i1,i2) - produces the position in s after the longest initial sequence of characters in c in s[i1:i2] but fails if there is none."
+0 
+2 cnv_i $c C_integer cnv_i; $e cnv_j $c C_integer cnv_j; $e 
+lst lst lst lst lst abstr nil typ T1 
+if2 is T7 1 
+lst block t 0 $c $m1  = k_subject; $e 
+if1 is T7 2 
+block t 0 $c $m4  = k_pos; $e 
+lst if1 ! cnv1 T0 1 
+runerr2 103 1 
+if1 is T7 2 
+block t 0 $c $m4  = 1; $e 
+if1 ! is T7 2 
+if2 cnv2 ci 2 $c $m4  $e 
+block t 0 $c 
+$cgoto $c !(($m4  = cvpos($r4 , StrLen($r1 ))) == CvtFail) $e 0 
+$fail 
+$lbl 0 
+ $e 
+runerr2 101 2 
+if2 is T7 3 
+block t 0 $c $m5  = StrLen($r1 ) + 1; $e 
+if2 cnv2 ci 3 $c $m5  $e 
+block t 0 $c 
+$cgoto $c !(($m5  = cvpos($r5 , StrLen($r1 ))) == CvtFail) $e 1 
+$fail 
+$lbl 1 
+$cgoto $c !($r4  > $r5 ) $e 2 
+${ 
+register C_integer tmp;
+tmp = $r4 ;
+$m4  = $r5 ;
+$m5  = tmp;
+$} 
+$lbl 2 
+ $e 
+runerr2 101 3 
+if1 ! cnv1 tc 0 
+runerr2 104 0 
+call 0 s fr___ t 0 0 4 $c dptr c $e $c &($r0 ) $e $c dptr s $e $c &($r1 ) $e $c C_integer cnv_j $e $c $r5  $e $c C_integer cnv_i $e $c $m4  $e 
+$end
+
+map	19 3(d,d,d)	{1,1} _r_e t 
+"map(s1,s2,s3) - map s1, using s2 and s3."
+0 
+0 
+lst lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! def1 T0 1 $c ucase $e 
+runerr2 103 1 
+if1 ! def1 T0 2 $c lcase $e 
+runerr2 103 2 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 3 $c dptr s1 $e $c &($r0 ) $e $c dptr s3 $e $c &($r2 ) $e $c dptr s2 $e $c &($r1 ) $e 
+$end
+
+match	1i 4(d,d,d,d)	{0,1} fr_e f 
+"match(s1,s2,i1,i2) - produces i1+*s1 if s1==s2[i1+:*s1], but fails otherwise."
+0 
+2 cnv_i $c C_integer cnv_i; $e cnv_j $c C_integer cnv_j; $e 
+lst lst lst lst lst abstr nil typ T1 
+if2 is T7 1 
+lst block t 0 $c $m1  = k_subject; $e 
+if1 is T7 2 
+block t 0 $c $m4  = k_pos; $e 
+lst if1 ! cnv1 T0 1 
+runerr2 103 1 
+if1 is T7 2 
+block t 0 $c $m4  = 1; $e 
+if1 ! is T7 2 
+if2 cnv2 ci 2 $c $m4  $e 
+block t 0 $c 
+$cgoto $c !(($m4  = cvpos($r4 , StrLen($r1 ))) == CvtFail) $e 0 
+$fail 
+$lbl 0 
+ $e 
+runerr2 101 2 
+if2 is T7 3 
+block t 0 $c $m5  = StrLen($r1 ) + 1; $e 
+if2 cnv2 ci 3 $c $m5  $e 
+block t 0 $c 
+$cgoto $c !(($m5  = cvpos($r5 , StrLen($r1 ))) == CvtFail) $e 1 
+$fail 
+$lbl 1 
+$cgoto $c !($r4  > $r5 ) $e 2 
+${ 
+register C_integer tmp;
+tmp = $r4 ;
+$m4  = $r5 ;
+$m5  = tmp;
+$} 
+$lbl 2 
+ $e 
+runerr2 101 3 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+call 0 s fr___ t 0 0 4 $c dptr s2 $e $c &($r1 ) $e $c dptr s1 $e $c &($r0 ) $e $c C_integer cnv_i $e $c $r4  $e $c C_integer cnv_j $e $c $m5  $e 
+$end
+
+member	1q 2(d,d)	{0,1} fr_e f 
+"member(x1,x2) - returns x1 if x2 is a member of set or table x2 but fails otherwise."
+0 
+0 
+tcase2 0 2 
+1 T11 lst abstr nil ** vartyp 1 store . vartyp 0 C3 
+block _ 0 $c 
+${ 
+int res; 
+register uword hn;
+hn = hash(&$m1 );
+memb(BlkLoc($r0 ), &$m1 , hn, &res);
+$cgoto $c res == 1 $e 1 
+$fail 
+$goto 2 
+$lbl 1 
+$ret d 1 $c $r1  $e 
+$lbl 2 
+$} 
+ $e 
+1 T13 lst abstr nil ** vartyp 1 store . vartyp 0 C6 
+block _ 0 $c 
+${ 
+int res; 
+register uword hn;
+hn = hash(&$m1 );
+memb(BlkLoc($r0 ), &$m1 , hn, &res);
+$cgoto $c res == 1 $e 3 
+$fail 
+$goto 4 
+$lbl 3 
+$ret d 1 $c $r1  $e 
+$lbl 4 
+$} 
+ $e 
+runerr2 122 0 
+$end
+
+move	12 1(d)	{0,1+} f_se f 
+"move(i) - move &pos by i, return substring of &subject spanned. Reverses effects if resumed."
+0 
+0 
+lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+abstr nil typ T0 
+call 0 s f_se_ t 0 0 1 $c C_integer i $e $c $m0  $e 
+$end
+
+name	0v 1(u)	{1,1} _r_e t 
+"name(v) - return the name of a variable."
+0 
+0 
+lst lst if1 ! is v 0 
+runerr2 111 0 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 1 $c dptr v $e $c &($m0 ) $e 
+$end
+
+numeric	05 1(d)	{0,1} fr__ f 
+"numeric(x) - produces an integer or real number resulting from the type conversion of x, but fails if the conversion is not possible."
+0 
+0 
+if2 cnv1 ei 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+if2 cnv1 T9 0 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+open	1z 2(d,d)	{0,1} fr_e f 
+"open(fname, spec) - open file fname with specification spec."
+1 desc nil 
+0 
+lst lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+if1 ! def1 ts 1 $c letr $e 
+runerr2 103 1 
+abstr nil typ T12 
+call 0 s fr_e_ t 0 0 3 $c dptr filename $e $c &($m2 ) $e $c dptr fname $e $c &($rd0 ) $e $c dptr spec $e $c &($r1 ) $e 
+$end
+
+ord	0u 1(d)	{1,1} _r_e f 
+"ord(s) - produce integer ordinal (value) of single character."
+0 
+0 
+lst lst if1 ! cnv1 ts 0 
+runerr2 103 0 
+abstr nil typ T1 
+call 0 s _r_e_ t 0 0 1 $c dptr s $e $c &($r0 ) $e 
+$end
+
+pop	1m 1(d)	{0,1} fr_e t 
+"pop(x) - pop an element from the left end of list x."
+0 
+0 
+lst lst if1 ! is T10 0 
+runerr2 108 0 
+abstr nil store . vartyp 0 C2 
+call 0 s fr___ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+pos	13 1(d)	{0,1} fr_e f 
+"pos(i) - test if &pos is at position i in &subject."
+0 
+0 
+lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+abstr nil typ T1 
+call 0 s fr___ t 0 0 1 $c C_integer i $e $c $m0  $e 
+$end
+
+proc	06 2(d,d)	{0,1} fr_e f 
+"proc(x,i) - convert x to a procedure if possible; use i to resolve ambiguous string names."
+0 
+0 
+if2 is T3 0 
+lst abstr nil typ T3 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+if2 cnv1 ts 0 
+lst lst lst if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+block t 0 $c 
+$cgoto $c !($r1  < 0 || $r1  > 3) $e 0 
+irunerr(205, $r1 );
+$efail 
+$lbl 0 
+ $e 
+abstr nil typ T3 
+block _ 0 $c 
+${ 
+struct b_proc *prc;
+$cgoto $c $r1  == 0 $e 1 
+prc = strprc(&$m0 , $r1 );
+$goto 2 
+$lbl 1 
+prc = bi_strprc(&$m0 , 0);
+$lbl 2 
+$cgoto $c prc == NULL $e 3 
+$ret T3 1 $c prc $e 
+$goto 4 
+$lbl 3 
+$fail 
+$lbl 4 
+$} 
+ $e 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+pull	1r 1(d)	{0,1} fr_e t 
+"pull(L) - pull an element from end of list L."
+0 
+0 
+lst lst if1 ! is T10 0 
+runerr2 108 0 
+abstr nil store . vartyp 0 C2 
+call 0 s fr___ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+push	1s 2(d,d)	{1,1} _r_e f 
+"push(L,x) - push x onto beginning of list L."
+0 
+0 
+lst lst if1 ! is T10 0 
+runerr2 108 0 
+abstr = . vartyp 0 C2 vartyp 1 vartyp 0 
+call 0 s _r_e_ t 0 0 2 $c dptr val $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+$end
+
+put	1t 2(d,d)	{1,1} _r_e f 
+"put(L,x) - put x onto end of list L."
+0 
+0 
+lst lst if1 ! is T10 0 
+runerr2 108 0 
+abstr = . vartyp 0 C2 vartyp 1 vartyp 0 
+call 0 s _r_e_ t 0 0 2 $c dptr val $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+$end
+
+read	20 1(d)	{0,1} fr_e f 
+"read(f) - read line on file f."
+0 
+0 
+lst lst if2 is T7 0 
+block t 0 $c $m0 .dword = D_File;
+BlkLoc($r0 ) = (union block *)&k_input; $e 
+if1 ! is T12 0 
+runerr2 105 0 
+abstr nil typ T0 
+call 0 s fr_e_ t 0 0 1 $c dptr f $e $c &($r0 ) $e 
+$end
+
+reads	21 2(d,d)	{0,1} fr_e f 
+"reads(f,i) - read i characters on file f."
+0 
+0 
+lst lst lst if2 is T7 0 
+block t 0 $c $m0 .dword = D_File;
+BlkLoc($r0 ) = (union block *)&k_input; $e 
+if1 ! is T12 0 
+runerr2 105 0 
+if1 ! def1 ci 1 $c 1L $e 
+runerr2 101 1 
+abstr nil typ T0 
+call 0 s fr_e_ t 0 0 2 $c C_integer i $e $c $r1  $e $c dptr f $e $c &($r0 ) $e 
+$end
+
+real	03 1(d)	{0,1} fr__ f 
+"real(x) - produces a value of type real resulting from the conversion of x, but fails if the conversion is not possible."
+0 
+0 
+if2 cnv1 T9 0 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+remove	22 1(d)	{0,1} fr_e f 
+"remove(s) - remove the file named s."
+0 
+0 
+lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+abstr nil typ T7 
+block _ 0 $c 
+$cgoto $c !(unlink($r0 ) != 0) $e 0 
+$fail 
+$lbl 0 
+$ret d 1 $c nulldesc $e  $e 
+$end
+
+rename	23 2(d,d)	{0,1} fr_e f 
+"rename(s1,s2) - rename the file named s1 to have the name s2."
+0 
+0 
+lst lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+if1 ! cnv1 cs 1 
+runerr2 103 1 
+abstr nil typ T7 
+call 0 s fr___ t 0 0 2 $c dptr s2 $e $c &($rd1 ) $e $c dptr s1 $e $c &($rd0 ) $e 
+$end
+
+repl	1a 2(d,d)	{1,1} _r_e t 
+"repl(s,i) - concatenate i copies of string s."
+0 
+0 
+lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! cnv1 ci 1 
+runerr2 101 1 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 2 $c dptr s $e $c &($r0 ) $e $c C_integer n $e $c $m1  $e 
+$end
+
+reverse	1b 1(d)	{1,1} _r_e t 
+"reverse(s) - reverse string s."
+0 
+0 
+lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 1 $c dptr s $e $c &($r0 ) $e 
+$end
+
+right	1c 3(d,d,d)	{1,1} _r_e f 
+"right(s1,i,s2) - pad s1 on left with s2 to length i."
+0 
+0 
+lst lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+if1 ! def1 ts 2 $c blank $e 
+runerr2 103 2 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 3 $c dptr s1 $e $c &($r0 ) $e $c dptr s2 $e $c &($m2 ) $e $c C_integer n $e $c $r1  $e 
+$end
+
+rtod	0f 1(d)	{1,1} _r_e f 
+"rtod(r) - convert x from radians to degrees."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+;
+errno = 0;
+y = (($r0 ) * 180 / 3.14159265358979323846264338327950288419716939937511);
+;
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+runerr	0w 2(d,dv)	{} ___e f 
+"runerr(i,x) - produce runtime error i with value x."
+0 
+0 
+lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+call 0 n ___e_ f 0 0 3 $c dptr x $e $c $r1  $e $c int n $e $c $r2  $e $c C_integer i $e $c $r0  $e 
+$end
+
+seek	24 2(d,d)	{0,1} fr_e f 
+"seek(f,i) - seek to offset i in file f. [[ What about seek error ? ]] "
+0 
+0 
+lst lst lst if1 ! is T12 0 
+runerr2 105 0 
+if1 ! def1 ci 1 $c 1L $e 
+runerr1 0 
+abstr nil typ T12 
+call 0 s fr___ t 0 0 2 $c C_integer o $e $c $r1  $e $c dptr f $e $c &($r0 ) $e 
+$end
+
+seq	0x 2(d,d)	{1,*} __se f 
+"seq(i, j) - generate i, i+j, i+2*j, ... ."
+0 
+0 
+lst lst lst if1 ! def1 ci 0 $c 1 $e 
+runerr2 101 0 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+abstr nil typ T1 
+call 0 s __se_ t 0 0 2 $c C_integer from $e $c $m0  $e $c C_integer by $e $c $r1  $e 
+$end
+
+set	1u 1(d)	{1,1} _r_e f 
+"set(L) - create a set with members in list L.  The members are linked into hash chains which are arranged in increasing order by hash number."
+0 
+0 
+tcase2 0 2 
+1 T10 lst abstr nil new T13 1 store . vartyp 0 C2 
+call 0 s _r_e_ t 0 0 1 $c dptr l $e $c &($r0 ) $e 
+1 T7 lst abstr nil new T13 1 typ e 
+block _ 0 $c 
+${ 
+register union block *ps;
+ps = hmake(T_Set, (word)0, (word)0);
+$cgoto $c !(ps == NULL) $e 1 
+err_msg(0, NULL);
+$efail 
+$lbl 1 
+$ret T13 1 $c ps $e 
+$} 
+ $e 
+runerr2 108 0 
+$end
+
+sin	07 1(d)	{1,1} _r_e f 
+"sin(r), x in radians."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+;
+errno = 0;
+y = sin($r0 );
+;
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+sort	0y 2(d,d)	{1,1} _r_e t 
+"sort(x,i) - sort list, set, or table x by method i (for tables)"
+0 
+0 
+tcase2 0 3 
+1 T11 lst lst abstr nil new T10 1 ++ new T10 1 store ++ . vartyp 0 C3 . vartyp 0 C4 store ++ . vartyp 0 C3 . vartyp 0 C4 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+call 0 s _r_e_ t 0 0 2 $c dptr t $e $c &($r0 ) $e $c C_integer i $e $c $r1  $e 
+1 T13 lst abstr nil new T10 1 store . vartyp 0 C6 
+call 1 s _r_e_ t 0 0 1 $c dptr t $e $c &($r0 ) $e 
+1 T10 lst abstr nil vartyp 0 
+call 2 s _r_e_ t 0 0 1 $c dptr t $e $c &($m0 ) $e 
+runerr2 115 0 
+$end
+
+sortf	0z 2(d,d)	{1,1} _r_e t 
+"sortf(x,i) - sort list or set x on field i of each member"
+0 
+0 
+tcase2 0 2 
+1 T13 lst lst abstr nil new T10 1 store . vartyp 0 C6 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+call 0 s _r_e_ t 0 0 2 $c dptr t $e $c &($r0 ) $e $c C_integer i $e $c $r1  $e 
+1 T10 lst lst abstr nil vartyp 0 
+if1 ! def1 ci 1 $c 1 $e 
+runerr2 101 1 
+call 1 s _r_e_ t 0 0 2 $c dptr t $e $c &($m0 ) $e $c C_integer i $e $c $r1  $e 
+runerr2 125 0 
+$end
+
+sqrt	0d 1(d)	{1,1} _r_e f 
+"sqrt(r) - square root of x."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+$cgoto $c !($r0  < 0) $e 0 
+drunerr(205, $r0 );
+$efail 
+$lbl 0 
+errno = 0;
+y = sqrt($r0 );
+$cgoto $c !(errno == EDOM) $e 1 
+err_msg(205, NULL);
+$efail 
+$lbl 1 
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+stop	27 1(dv)	{} ___e f 
+"stop(a,b,...) - write arguments (starting on error output) and stop."
+0 
+2 f $c FILE *f; $e status $c word status = 
+k_errout.status; $e 
+lst abstr nil typ e 
+lcase 1 
+0 lst block t 0 $c 
+$cgoto $c (k_errout.status & Fs_Write) == 0 $e 0 
+$m2  = k_errout.fd;
+$goto 1 
+$lbl 0 
+err_msg(213, NULL);
+$efail 
+$lbl 1 
+ $e 
+call 0 n ___e_ f 0 0 1 $c FILE *f $e $c $r2  $e 
+lst if1 ! is T12 [ 0 0 
+block t 0 $c 
+$cgoto $c (k_errout.status & Fs_Write) == 0 $e 2 
+$m2  = k_errout.fd;
+$goto 3 
+$lbl 2 
+err_msg(213, NULL);
+$efail 
+$lbl 3 
+ $e 
+call 1 n ___e_ f 0 0 4 $c word status $e $c $m3  $e $c FILE *f $e $c $m2  $e $c dptr x $e $c $r0  $e $c int nargs $e $c $r1  $e 
+$end
+
+string	04 1(d)	{0,1} fr__ f 
+"string(x) - produces a value of type string resulting from the conversion of x, but fails if the conversion is not possible."
+0 
+0 
+if2 cnv1 T0 0 
+lst abstr nil typ T0 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+system	25 1(d)	{1,1} _r_e f 
+"system(s) - execute string s as a system command."
+0 
+0 
+lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+abstr nil typ T1 
+block _ 0 $c 
+${ 
+C_integer i;
+i = ((system($r0 ) >> 8) & 0377);
+$ret ci 1 $c i $e 
+$} 
+ $e 
+$end
+
+tab	14 1(d)	{0,1+} f_se f 
+"tab(i) - set &pos to i, return substring of &subject spanned.Reverses effects if resumed."
+0 
+0 
+lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+abstr nil typ T0 
+call 0 s f_se_ t 0 0 1 $c C_integer i $e $c $m0  $e 
+$end
+
+table	1v 1(d)	{1,1} _r_e f 
+"table(x) - create a table with default value x."
+0 
+0 
+lst abstr nil new T11 3 typ e typ e vartyp 0 
+block _ 0 $c 
+${ 
+union block *bp;
+bp = hmake(T_Table, (word)0, (word)0);
+$cgoto $c !(bp == NULL) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+bp->table.defvalue = $r0 ;
+$ret T11 1 $c bp $e 
+$} 
+ $e 
+$end
+
+tan	09 1(d)	{1,1} _r_e f 
+"tan(r), x in radians."
+0 
+0 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double y;
+;
+errno = 0;
+y = tan($r0 );
+$cgoto $c !(errno == ERANGE) $e 0 
+err_msg(204, NULL);
+$efail 
+$lbl 0 
+$ret cd 1 $c y $e 
+$} 
+ $e 
+$end
+
+trim	1d 2(d,d)	{1,1} _r_e f 
+"trim(s,c) - trim trailing characters in c from s."
+0 
+0 
+lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! def1 tc 1 $c blankcs $e 
+runerr2 104 1 
+abstr nil typ T0 
+call 0 n _r___ t 0 0 2 $c dptr c $e $c &($r1 ) $e $c dptr s $e $c &($r0 ) $e 
+$end
+
+type	10 1(d)	{1,1} _r_e f 
+"type(x) - return type of x as a string."
+0 
+0 
+lst abstr nil typ T0 
+tcase2 0 12 
+1 T4 block _ 0 $c 
+$ret cs 1 $c "co-expression" $e  $e 
+1 T2 block _ 0 $c 
+$ret d 1 $c BlkLoc($r0 )->record.recdesc->proc.recname $e  $e 
+1 T13 block _ 0 $c 
+$ret cs 1 $c "set" $e  $e 
+1 T11 block _ 0 $c 
+$ret cs 1 $c "table" $e  $e 
+1 T10 block _ 0 $c 
+$ret cs 1 $c "list" $e  $e 
+1 T3 block _ 0 $c 
+$ret cs 1 $c "procedure" $e  $e 
+1 T12 block _ 0 $c 
+$ret cs 1 $c "file" $e  $e 
+1 T8 block _ 0 $c 
+$ret cs 1 $c "cset" $e  $e 
+1 T9 block _ 0 $c 
+$ret cs 1 $c "real" $e  $e 
+1 T1 block _ 0 $c 
+$ret cs 1 $c "integer" $e  $e 
+1 T7 block _ 0 $c 
+$ret cs 1 $c "null" $e  $e 
+1 T0 block _ 0 $c 
+$ret cs 1 $c "string" $e  $e 
+block _ 0 $c err_msg(123, &($r0 ));
+$efail 
+ $e 
+$end
+
+upto	1j 4(d,d,d,d)	{0,*} f_se f 
+"upto(c,s,i1,i2) - generates the sequence of integer positions in s up to a character in c in s[i2:i2], but fails if there is no such position."
+0 
+2 cnv_i $c C_integer cnv_i; $e cnv_j $c C_integer cnv_j; $e 
+lst lst lst lst lst abstr nil typ T1 
+if2 is T7 1 
+lst block t 0 $c $m1  = k_subject; $e 
+if1 is T7 2 
+block t 0 $c $m4  = k_pos; $e 
+lst if1 ! cnv1 T0 1 
+runerr2 103 1 
+if1 is T7 2 
+block t 0 $c $m4  = 1; $e 
+if1 ! is T7 2 
+if2 cnv2 ci 2 $c $m4  $e 
+block t 0 $c 
+$cgoto $c !(($m4  = cvpos($r4 , StrLen($r1 ))) == CvtFail) $e 0 
+$fail 
+$lbl 0 
+ $e 
+runerr2 101 2 
+if2 is T7 3 
+block t 0 $c $m5  = StrLen($r1 ) + 1; $e 
+if2 cnv2 ci 3 $c $m5  $e 
+block t 0 $c 
+$cgoto $c !(($m5  = cvpos($r5 , StrLen($r1 ))) == CvtFail) $e 1 
+$fail 
+$lbl 1 
+$cgoto $c !($r4  > $r5 ) $e 2 
+${ 
+register C_integer tmp;
+tmp = $r4 ;
+$m4  = $r5 ;
+$m5  = tmp;
+$} 
+$lbl 2 
+ $e 
+runerr2 101 3 
+if1 ! cnv1 tc 0 
+runerr2 104 0 
+call 0 s f_s__ t 0 0 4 $c dptr c $e $c &($r0 ) $e $c dptr s $e $c &($r1 ) $e $c C_integer cnv_j $e $c $r5  $e $c C_integer cnv_i $e $c $m4  $e 
+$end
+
+variable	11 1(d)	{0,1} fr_e t 
+"variable(s) - find the variable with name s and return a variable descriptor which points to its value."
+0 
+0 
+lst lst if1 ! cnv1 cs 0 
+runerr2 103 0 
+abstr nil typ v 
+call 0 s fr___ t 0 0 1 $c dptr s $e $c &($rd0 ) $e 
+$end
+
+where	26 1(d)	{0,1} fr_e f 
+"where(f) - return current offset position in file f."
+0 
+0 
+lst lst if1 ! is T12 0 
+runerr2 105 0 
+abstr nil typ T1 
+call 0 s fr___ t 0 0 1 $c dptr f $e $c &($r0 ) $e 
+$end
+
+write	28 1(dv)	{1,1} _r_e f 
+"write(a,b,...) - write arguments."
+0 
+2 f $c FILE *f; $e status $c word status = 
+k_output.status; $e 
+lcase 1 
+0 lst lst abstr nil typ T7 
+block t 0 $c 
+$cgoto $c (k_output.status & Fs_Write) == 0 $e 0 
+$m2  = k_output.fd;
+$goto 1 
+$lbl 0 
+err_msg(213, NULL);
+$efail 
+$lbl 1 
+ $e 
+call 0 s _r_e_ t 0 0 1 $c FILE *f $e $c $r2  $e 
+lst lst abstr nil vartyp 0 
+if1 ! is T12 [ 0 0 
+block t 0 $c 
+$cgoto $c (k_output.status & Fs_Write) == 0 $e 2 
+$m2  = k_output.fd;
+$goto 3 
+$lbl 2 
+err_msg(213, NULL);
+$efail 
+$lbl 3 
+ $e 
+call 1 s _r_e_ t 0 0 4 $c word status $e $c $m3  $e $c FILE *f $e $c $m2  $e $c dptr x $e $c $r0  $e $c int nargs $e $c $r1  $e 
+$end
+
+writes	29 1(dv)	{1,1} _r_e f 
+"writes(a,b,...) - write arguments without newline terminator."
+0 
+2 f $c FILE *f; $e status $c word status = 
+k_output.status; $e 
+lcase 1 
+0 lst lst abstr nil typ T7 
+block t 0 $c 
+$cgoto $c (k_output.status & Fs_Write) == 0 $e 0 
+$m2  = k_output.fd;
+$goto 1 
+$lbl 0 
+err_msg(213, NULL);
+$efail 
+$lbl 1 
+ $e 
+call 0 s _r_e_ t 0 0 1 $c FILE *f $e $c $r2  $e 
+lst lst abstr nil vartyp 0 
+if1 ! is T12 [ 0 0 
+block t 0 $c 
+$cgoto $c (k_output.status & Fs_Write) == 0 $e 2 
+$m2  = k_output.fd;
+$goto 3 
+$lbl 2 
+err_msg(213, NULL);
+$efail 
+$lbl 3 
+ $e 
+call 1 s _r_e_ t 0 0 4 $c word status $e $c $m3  $e $c FILE *f $e $c $m2  $e $c dptr x $e $c $r0  $e $c int nargs $e $c $r1  $e 
+$end
+
+$endsect
+
+
+operators
+
+!	bang	0y 1(ud)	{0,*} f_se t 
+"!x - generate successive values from object x."
+1 blkptr * nil 
+4 i $c register C_integer i; $e j $c register C_integer j; $e state $c struct hgstate state; $e ch $c char ch; $e 
+lst if2 && is v 0 is T0 1 
+lst abstr nil new T5 1 vartyp 0 
+block t 0 $c $m3  = 1;
+$lbl 1 
+$cgoto $c !($r3  <= StrLen($r1 )) $e 3 
+$susp T5 3 $c &$m0  $e $c $r3  $e $c (word)1 $e 
+deref(&$m0 , &$m1 );
+$cgoto $c !(!(!(($r1 ).dword & F_Nqual))) $e 4 
+err_msg(103, &($r1 ));
+$efail 
+$lbl 4 
+$lbl 2 
+$m3 ++;
+$goto 1 
+$lbl 3 
+ $e 
+if2 cnv1 ts 1 
+lst abstr nil typ T0 
+block t 0 $c $m3  = 1;
+$lbl 5 
+$cgoto $c !($r3  <= StrLen($r1 )) $e 7 
+$m6  = *(StrLoc($r1 ) + $r3  - 1);
+$susp T0 2 $c 1 $e $c (char *)&allchars[FromAscii($r6 ) & 0xFF] $e 
+$lbl 6 
+$m3 ++;
+$goto 5 
+$lbl 7 
+ $e 
+tcase2 1 5 
+1 T2 lst abstr nil . vartyp 1 f 
+block t 0 $c $m4  = BlkLoc($r1 )->record.recdesc->proc.nfields;
+$m3  = 0;
+$lbl 8 
+$cgoto $c !($r3  < $r4 ) $e 10 
+$susp sv 2 $c &BlkLoc($r1 )->record.fields[$r3 ] $e $c 
+(struct b_record *)BlkLoc($r1 ) $e 
+$lbl 9 
+$m3 ++;
+$goto 8 
+$lbl 10 
+ $e 
+1 T13 lst abstr nil store . vartyp 1 C6 
+block t 0 $c $m2  = hgfirst(BlkLoc($r1 ), &$m5 );
+$lbl 11 
+$cgoto $c !($r2  != 0) $e 13 
+$susp d 1 $c $r2 ->selem.setmem $e 
+$lbl 12 
+$m2  = hgnext(BlkLoc($r1 ), &$m5 , $r2 );
+$goto 11 
+$lbl 13 
+ $e 
+1 T11 lst abstr nil . vartyp 1 C4 
+block t 0 $c $m2  = hgfirst(BlkLoc($r1 ), &$m5 );
+$lbl 14 
+$cgoto $c !($r2  != 0) $e 16 
+$susp sv 2 $c &$r2 ->telem.tval $e $c $r2  $e 
+$lbl 15 
+$m2  = hgnext(BlkLoc($r1 ), &$m5 , $r2 );
+$goto 14 
+$lbl 16 
+ $e 
+1 T12 lst abstr nil typ T0 
+call 0 s f_se_ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+1 T10 lst abstr nil . vartyp 1 C2 
+block t 0 $c $m2  = BlkLoc($r1 )->list.listhead;
+$lbl 17 
+$cgoto $c !($r2  != NULL) $e 19 
+$m3  = 0;
+$lbl 20 
+$cgoto $c !($r3  < $r2 ->lelem.nused) $e 22 
+$m4  = $r2 ->lelem.first + $r3 ;
+$cgoto $c !($r4  >= $r2 ->lelem.nslots) $e 23 
+$m4  -= $r2 ->lelem.nslots;
+$lbl 23 
+$susp sv 2 $c &$r2 ->lelem.lslots[$r4 ] $e $c $r2  $e 
+$lbl 21 
+$m3 ++;
+$goto 20 
+$lbl 22 
+$lbl 18 
+$m2  = $r2 ->lelem.listnext;
+$goto 17 
+$lbl 19 
+ $e 
+runerr2 116 1 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+%	mod	02 2(d,d)	{1,1} _r_e t 
+""
+2 desc nil desc nil 
+1 irslt $c C_integer irslt; $e 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+extern int over_flow;
+$cgoto $c !($r1  == 0) $e 0 
+irunerr(202, $r1 );
+$efail 
+$lbl 0 
+$m4  = $r0  % $r1 ;
+$cgoto $c $r0  < 0 $e 1 
+$cgoto $c !($r4  < 0) $e 2 
+$m4  += (($r1 ) > 0 ? ($r1 ) : -($r1 ));
+$lbl 2 
+$goto 3 
+$lbl 1 
+$cgoto $c !($r4  > 0) $e 4 
+$m4  -= (($r1 ) > 0 ? ($r1 ) : -($r1 ));
+$lbl 4 
+$lbl 3 
+;
+$ret ci 1 $c $r4  $e 
+;
+$} 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(bigmod(&$m0 , &$m1 , &$mr ) == Error) $e 5 
+err_msg(0, NULL);
+$efail 
+$lbl 5 
+$ret rn 0 ; $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+${ 
+double d;
+d = $r0  - $r1  * (int)($r0  / $r1 );
+$cgoto $c $r0  < 0.0 $e 6 
+$cgoto $c !(d < 0.0) $e 7 
+d += (($r1 ) > 0 ? ($r1 ) : -($r1 ));
+$lbl 7 
+$goto 8 
+$lbl 6 
+$cgoto $c !(d > 0.0) $e 9 
+d -= (($r1 ) > 0 ? ($r1 ) : -($r1 ));
+$lbl 9 
+$lbl 8 
+;
+$ret cd 1 $c d $e 
+$} 
+; $e 
+$end
+
+&	conj	19 2(u,u)	{1,1} _r__ f 
+"x & y - produce value of y."
+0 
+0 
+lst abstr nil vartyp 1 
+block _ 0 $c 
+$ret d 1 $c $r1  $e  $e 
+$end
+
+*	size	0t 1(d)	{1,1} _r_e f 
+"*x - return size of string or object x."
+0 
+0 
+lst abstr nil typ T1 
+tcase2 0 7 
+1 T4 block _ 0 $c 
+$ret ci 1 $c BlkLoc($r0 )->coexpr.size $e  $e 
+1 T2 block _ 0 $c 
+$ret ci 1 $c BlkLoc($r0 )->record.recdesc->proc.nfields $e  $e 
+1 T8 block _ 0 $c 
+${ 
+register word i;
+i = BlkLoc($r0 )->cset.size;
+$cgoto $c !(i < 0) $e 0 
+i = cssize(&$m0 );
+$lbl 0 
+$ret ci 1 $c i $e 
+$} 
+ $e 
+1 T13 block _ 0 $c 
+$ret ci 1 $c BlkLoc($r0 )->set.size $e  $e 
+1 T11 block _ 0 $c 
+$ret ci 1 $c BlkLoc($r0 )->table.size $e  $e 
+1 T10 block _ 0 $c 
+$ret ci 1 $c BlkLoc($r0 )->list.size $e  $e 
+1 T0 block _ 0 $c 
+$ret ci 1 $c StrLen($r0 ) $e  $e 
+lst if1 ! cnv1 ts 0 
+runerr2 112 0 
+block _ 0 $c 
+$ret ci 1 $c StrLen($r0 ) $e  $e 
+$end
+
+*	mult	03 2(d,d)	{1,1} _r_e t 
+""
+2 desc nil desc nil 
+1 irslt $c C_integer irslt; $e 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+extern int over_flow;
+$m4  = mul($r0 , $r1 );
+$cgoto $c over_flow $e 0 
+$ret ci 1 $c $r4  $e 
+$goto 1 
+$lbl 0 
+MakeInt($r0 , &$m3 );
+MakeInt($r1 , &$m2 );
+$cgoto $c !(bigmul(&$m3 , &$m2 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 
+$lbl 1 
+;
+$} 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(bigmul(&$m0 , &$m1 , &$mr ) == Error) $e 3 
+err_msg(0, NULL);
+$efail 
+$lbl 3 
+$ret rn 0 ; $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret cd 1 $c ($r0  * $r1 ) $e ; $e 
+$end
+
+**	inter	14 2(d,d)	{1,1} _r_e f 
+"x ** y - intersection of csets x and y or of sets x and y."
+0 
+0 
+if2 && is T13 0 is T13 1 
+lst abstr nil new T13 1 ** store . vartyp 0 C6 store . vartyp 1 C6 
+call 0 s _r_e_ t 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+lst lst lst if1 ! cnv1 tc 0 
+runerr2 120 0 
+if1 ! cnv1 tc 1 
+runerr2 120 1 
+abstr nil typ T8 
+call 1 s _r_e_ t 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+$end
+
++	number	05 1(d)	{1,1} _r_e f 
+"+x - convert x to a number."
+0 
+0 
+if2 cnv1 eci 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c $r0  $e  $e 
+if2 cnv1 ei 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+if2 cnv1 cd 0 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret cd 1 $c $r0  $e  $e 
+runerr2 102 0 
+$end
+
++	plus	06 2(d,d)	{1,1} _r_e t 
+""
+2 desc nil desc nil 
+1 irslt $c C_integer irslt; $e 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+extern int over_flow;
+$m4  = add($r0 , $r1 );
+$cgoto $c over_flow $e 0 
+$ret ci 1 $c $r4  $e 
+$goto 1 
+$lbl 0 
+MakeInt($r0 , &$m3 );
+MakeInt($r1 , &$m2 );
+$cgoto $c !(bigadd(&$m3 , &$m2 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 
+$lbl 1 
+;
+$} 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(bigadd(&$m0 , &$m1 , &$mr ) == Error) $e 3 
+err_msg(0, NULL);
+$efail 
+$lbl 3 
+$ret rn 0 ; $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret cd 1 $c ($r0  + $r1 ) $e ; $e 
+$end
+
+++	union	15 2(d,d)	{1,1} _r_e t 
+"x ++ y - union of csets x and y or of sets x and y."
+0 
+0 
+if2 && is T13 0 is T13 1 
+lst abstr nil new T13 1 ++ store . vartyp 0 C6 store . vartyp 1 C6 
+call 0 s _r_e_ t 0 0 2 $c dptr x $e $c &($m0 ) $e $c dptr y $e $c &($m1 ) $e 
+lst lst lst if1 ! cnv1 tc 0 
+runerr2 120 0 
+if1 ! cnv1 tc 1 
+runerr2 120 1 
+abstr nil typ T8 
+call 1 s _r_e_ t 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+$end
+
+-	neg	04 1(d)	{1,1} _r_e t 
+"-x - negate x."
+0 
+0 
+if2 cnv1 eci 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+C_integer i; 
+extern int over_flow;
+i = neg($r0 );
+$cgoto $c !(over_flow) $e 0 
+${ 
+struct descrip tmp;
+MakeInt($r0 , &tmp);
+$cgoto $c !(bigneg(&tmp, &$mr ) == Error) $e 1 
+err_msg(0, NULL);
+$efail 
+$lbl 1 
+$ret rn 0 
+$} 
+$lbl 0 
+$ret ci 1 $c i $e 
+$} 
+ $e 
+if2 cnv1 ei 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(cpbignum(&$m0 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+BlkLoc($rr )->bignumblk.sign ^= 1;
+$ret rn 0  $e 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+${ 
+double drslt;
+drslt = -$r0 ;
+$ret cd 1 $c drslt $e 
+$} 
+ $e 
+$end
+
+-	minus	01 2(d,d)	{1,1} _r_e t 
+""
+2 desc nil desc nil 
+1 irslt $c C_integer irslt; $e 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+extern int over_flow;
+$m4  = sub($r0 , $r1 );
+$cgoto $c over_flow $e 0 
+$ret ci 1 $c $r4  $e 
+$goto 1 
+$lbl 0 
+MakeInt($r0 , &$m3 );
+MakeInt($r1 , &$m2 );
+$cgoto $c !(bigsub(&$m3 , &$m2 , &$mr ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+$ret rn 0 
+$lbl 1 
+;
+$} 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(bigsub(&$m0 , &$m1 , &$mr ) == Error) $e 3 
+err_msg(0, NULL);
+$efail 
+$lbl 3 
+$ret rn 0 ; $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$ret cd 1 $c ($r0  - $r1 ) $e ; $e 
+$end
+
+--	diff	13 2(d,d)	{1,1} _r_e f 
+"x -- y - difference of csets x and y or of sets x and y."
+0 
+0 
+if2 && is T13 0 is T13 1 
+lst abstr nil vartyp 0 
+call 0 s _r_e_ t 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+lst lst lst if1 ! cnv1 tc 0 
+runerr2 120 0 
+if1 ! cnv1 tc 1 
+runerr2 120 1 
+abstr nil typ T8 
+call 1 s _r_e_ t 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+$end
+
+.	value	18 1(d)	{1,1} _r__ f 
+".x - produce value of x."
+0 
+0 
+lst abstr nil vartyp 0 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+$end
+
+...	to	0w 2(d,d)	{0,*} f_se f 
+"i to j - generate successive values."
+0 
+0 
+lst lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+if1 ! cnv1 ci 1 
+runerr2 101 1 
+abstr nil typ T1 
+block _ 0 $c ;
+$lbl 0 
+$cgoto $c !($r0  <= $r1 ) $e 2 
+$susp ci 1 $c $r0  $e 
+$lbl 1 
+++$m0 ;
+$goto 0 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+...	toby	0v 3(d,d,d)	{0,*} f_se f 
+"i to j by k - generate successive values."
+0 
+0 
+lst lst lst lst if1 ! cnv1 ci 0 
+runerr2 101 0 
+if1 ! cnv1 ci 1 
+runerr2 101 1 
+if1 ! cnv1 ci 2 
+runerr2 101 2 
+abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r2  == 0) $e 0 
+irunerr(211, $r2 );
+$efail 
+$lbl 0 
+$cgoto $c $r2  > 0 $e 1 
+;
+$lbl 2 
+$cgoto $c !($r0  >= $r1 ) $e 4 
+$susp ci 1 $c $r0  $e 
+$lbl 3 
+$m0  += $r2 ;
+$goto 2 
+$lbl 4 
+$goto 5 
+$lbl 1 
+;
+$lbl 6 
+$cgoto $c !($r0  <= $r1 ) $e 8 
+$susp ci 1 $c $r0  $e 
+$lbl 7 
+$m0  += $r2 ;
+$goto 6 
+$lbl 8 
+$lbl 5 
+$fail 
+ $e 
+$end
+
+/	null	17 1(ud)	{0,1} fr__ f 
+"/x - test x for null value."
+0 
+0 
+lst abstr nil vartyp 0 
+if2 is T7 1 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+/	divide	00 2(d,d)	{1,1} _r_e t 
+""
+2 desc nil desc nil 
+1 irslt $c C_integer irslt; $e 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+extern int over_flow;
+$ret ci 1 $c ($r0  / $r1 ) $e ;
+$} 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c bigdiv(&$m0 , &$m1 , &$mr );
+$ret rn 0 ; $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+${ 
+double z;
+$cgoto $c !($r1  == 0.0) $e 0 
+err_msg(204, NULL);
+$efail 
+$lbl 0 
+z = $r0  / $r1 ;
+$cgoto $c !(z >= HUGE || z <= -HUGE) $e 1 
+kill(getpid(), SIGFPE);
+$lbl 1 
+$ret cd 1 $c z $e 
+$} 
+; $e 
+$end
+
+:=	asgn	08 2(u,d)	{0,1} fr_e f 
+"x := y - assign y to x."
+0 
+0 
+lst lst lst if1 ! is v 0 
+runerr2 111 0 
+abstr nil vartyp 0 
+tcase2 0 8 
+1 T19 if1 ! cnv2 T0 1 $c *VarLoc($r0 ) $e 
+runerr2 103 1 
+1 T15 lst if1 ! cnv2 T0 1 $c *VarLoc($r0 ) $e 
+runerr2 103 1 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 0 s f__et f 0 0 2 $c dptr x $e $c &($r0 ) $e $c dptr y $e $c &($r1 ) $e 
+1 T14 if1 ! cnv2 T1 1 $c *VarLoc($r0 ) $e 
+runerr2 101 1 
+1 T18 call 1 n ____t f 0 0 0 
+1 T17 call 2 n ____t f 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+1 T6 lst abstr = . store . vartyp 0 C1 C4 vartyp 1 nil 
+block t 0 $c tvtbl_asgn(&$m0 , (const dptr)&$r1 ); $e 
+1 T5 lst abstr = store . vartyp 0 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m0 , (const dptr)&$r1 ) == Error) $e 1 
+err_msg(0, NULL);
+$efail 
+$lbl 1 
+ $e 
+lst abstr = vartyp 0 vartyp 1 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r0 ) + Offset($r0 )) = $r1 ; $e 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+$end
+
+:=:	swap	0b 2(ud,ud)	{0,1} fr_e f 
+"x :=: y - swap values of x and y."
+2 blkptr * nil blkptr * nil 
+2 adj1 $c word adj1 = 0; $e adj2 $c word adj2 = 0; $e 
+lst lst lst lst lst lst lst lst if1 ! is v 0 
+runerr2 111 0 
+if1 ! is v 2 
+runerr2 111 2 
+abstr nil vartyp 0 
+if1 && is T5 0 is T5 2 
+call 0 n ____t f 0 0 6 $c word (*adj1) $e $c &($m6 ) $e $c word (*adj2) $e $c &($m7 ) $e $c dptr y $e $c &($r2 ) $e $c dptr bp_y $e $c &($md4 ) $e $c dptr x $e $c &($r0 ) $e $c dptr bp_x $e $c &($md5 ) $e 
+tcase2 0 8 
+1 T19 if1 ! cnv2 T0 3 $c *VarLoc($r0 ) $e 
+runerr2 103 3 
+1 T15 lst if1 ! cnv2 T0 3 $c *VarLoc($r0 ) $e 
+runerr2 103 3 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 1 s f__et f 0 0 2 $c dptr x $e $c &($r0 ) $e $c dptr dy $e $c &($r3 ) $e 
+1 T14 if1 ! cnv2 T1 3 $c *VarLoc($r0 ) $e 
+runerr2 101 3 
+1 T18 call 2 n ____t f 0 0 0 
+1 T17 call 3 n ____t f 0 0 2 $c dptr dy $e $c &($r3 ) $e $c dptr x $e $c &($r0 ) $e 
+1 T6 lst abstr = . store . vartyp 0 C1 C4 vartyp 3 nil 
+block t 0 $c tvtbl_asgn(&$m0 , (const dptr)&$r3 ); $e 
+1 T5 lst abstr = store . vartyp 0 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m0 , (const dptr)&$r3 ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+ $e 
+lst abstr = vartyp 0 vartyp 3 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r0 ) + Offset($r0 )) = $r3 ; $e 
+if1 && is T5 0 is T5 2 
+block t 0 $c 
+$cgoto $c !($r7  != 0) $e 3 
+$r4 ->tvsubs.sspos += $r7 ;
+$lbl 3 
+ $e 
+tcase2 2 8 
+1 T19 if1 ! cnv2 T0 1 $c *VarLoc($r2 ) $e 
+runerr2 103 1 
+1 T15 lst if1 ! cnv2 T0 1 $c *VarLoc($r2 ) $e 
+runerr2 103 1 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 4 s f__et f 0 0 2 $c dptr y $e $c &($r2 ) $e $c dptr dx $e $c &($r1 ) $e 
+1 T14 if1 ! cnv2 T1 1 $c *VarLoc($r2 ) $e 
+runerr2 101 1 
+1 T18 call 5 n ____t f 0 0 0 
+1 T17 call 6 n ____t f 0 0 2 $c dptr dx $e $c &($r1 ) $e $c dptr y $e $c &($r2 ) $e 
+1 T6 lst abstr = . store . vartyp 2 C1 C4 vartyp 1 nil 
+block t 0 $c tvtbl_asgn(&$m2 , (const dptr)&$r1 ); $e 
+1 T5 lst abstr = store . vartyp 2 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m2 , (const dptr)&$r1 ) == Error) $e 4 
+err_msg(0, NULL);
+$efail 
+$lbl 4 
+ $e 
+lst abstr = vartyp 2 vartyp 1 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r2 ) + Offset($r2 )) = $r1 ; $e 
+if1 && is T5 0 is T5 2 
+block t 0 $c 
+$cgoto $c !($r6  != 0) $e 5 
+$r5 ->tvsubs.sspos += $r6 ;
+$lbl 5 
+ $e 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+$end
+
+<	numlt	0i 2(d,d)	{0,1} fr_e f 
+"x < y - test if x is numerically less than y."
+0 
+0 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r0  < $r1 ) $e 0 
+$ret ci 1 $c $r1  $e 
+$lbl 0 
+$fail 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !((bigcmp(&$m0 , &$m1 ) < 0)) $e 1 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+$fail 
+ $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  < $r1 ) $e 2 
+$ret cd 1 $c $r1  $e 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+<-	rasgn	09 2(ud,d)	{0,1+} f_se f 
+"x <- y - assign y to x. Reverses assignment if resumed."
+0 
+0 
+lst lst lst lst lst if1 ! is v 0 
+runerr2 111 0 
+abstr nil vartyp 0 
+tcase2 0 8 
+1 T19 if1 ! cnv2 T0 2 $c *VarLoc($r0 ) $e 
+runerr2 103 2 
+1 T15 lst if1 ! cnv2 T0 2 $c *VarLoc($r0 ) $e 
+runerr2 103 2 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 0 s f__et f 0 0 2 $c dptr x $e $c &($r0 ) $e $c dptr y $e $c &($r2 ) $e 
+1 T14 if1 ! cnv2 T1 2 $c *VarLoc($r0 ) $e 
+runerr2 101 2 
+1 T18 call 1 n ____t f 0 0 0 
+1 T17 call 2 n ____t f 0 0 2 $c dptr y $e $c &($r2 ) $e $c dptr x $e $c &($r0 ) $e 
+1 T6 lst abstr = . store . vartyp 0 C1 C4 vartyp 2 nil 
+block t 0 $c tvtbl_asgn(&$m0 , (const dptr)&$r2 ); $e 
+1 T5 lst abstr = store . vartyp 0 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m0 , (const dptr)&$r2 ) == Error) $e 2 
+err_msg(0, NULL);
+$efail 
+$lbl 2 
+ $e 
+lst abstr = vartyp 0 vartyp 2 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r0 ) + Offset($r0 )) = $r2 ; $e 
+block t 0 $c 
+$susp d 1 $c $r0  $e  $e 
+tcase2 0 8 
+1 T19 if1 ! cnv2 T0 1 $c *VarLoc($r0 ) $e 
+runerr2 103 1 
+1 T15 lst if1 ! cnv2 T0 1 $c *VarLoc($r0 ) $e 
+runerr2 103 1 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 3 s f__et f 0 0 2 $c dptr x $e $c &($r0 ) $e $c dptr saved_x $e $c &($r1 ) $e 
+1 T14 if1 ! cnv2 T1 1 $c *VarLoc($r0 ) $e 
+runerr2 101 1 
+1 T18 call 4 n ____t f 0 0 0 
+1 T17 call 5 n ____t f 0 0 2 $c dptr saved_x $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+1 T6 lst abstr = . store . vartyp 0 C1 C4 vartyp 1 nil 
+block t 0 $c tvtbl_asgn(&$m0 , (const dptr)&$r1 ); $e 
+1 T5 lst abstr = store . vartyp 0 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m0 , (const dptr)&$r1 ) == Error) $e 3 
+err_msg(0, NULL);
+$efail 
+$lbl 3 
+ $e 
+lst abstr = vartyp 0 vartyp 1 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r0 ) + Offset($r0 )) = $r1 ; $e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+<->	rswap	0a 2(ud,ud)	{0,1+} f_se f 
+"x <-> y - swap values of x and y. Reverses swap if resumed."
+2 blkptr * nil blkptr * nil 
+2 adj1 $c word adj1 = 0; $e adj2 $c word adj2 = 0; $e 
+lst lst lst lst lst lst lst lst lst lst lst lst lst if1 ! is v 0 
+runerr2 111 0 
+if1 ! is v 2 
+runerr2 111 2 
+abstr nil vartyp 0 
+if1 && is T5 0 is T5 2 
+call 0 n ____t f 0 0 6 $c word (*adj1) $e $c &($m6 ) $e $c word (*adj2) $e $c &($m7 ) $e $c dptr y $e $c &($r2 ) $e $c dptr bp_y $e $c &($md4 ) $e $c dptr x $e $c &($r0 ) $e $c dptr bp_x $e $c &($md5 ) $e 
+tcase2 0 8 
+1 T19 if1 ! cnv2 T0 3 $c *VarLoc($r0 ) $e 
+runerr2 103 3 
+1 T15 lst if1 ! cnv2 T0 3 $c *VarLoc($r0 ) $e 
+runerr2 103 3 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 1 s f__et f 0 0 2 $c dptr x $e $c &($r0 ) $e $c dptr dy $e $c &($r3 ) $e 
+1 T14 if1 ! cnv2 T1 3 $c *VarLoc($r0 ) $e 
+runerr2 101 3 
+1 T18 call 2 n ____t f 0 0 0 
+1 T17 call 3 n ____t f 0 0 2 $c dptr dy $e $c &($r3 ) $e $c dptr x $e $c &($r0 ) $e 
+1 T6 lst abstr = . store . vartyp 0 C1 C4 vartyp 3 nil 
+block t 0 $c tvtbl_asgn(&$m0 , (const dptr)&$r3 ); $e 
+1 T5 lst abstr = store . vartyp 0 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m0 , (const dptr)&$r3 ) == Error) $e 4 
+err_msg(0, NULL);
+$efail 
+$lbl 4 
+ $e 
+lst abstr = vartyp 0 vartyp 3 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r0 ) + Offset($r0 )) = $r3 ; $e 
+if1 && is T5 0 is T5 2 
+block t 0 $c 
+$cgoto $c !($r7  != 0) $e 5 
+$r4 ->tvsubs.sspos += $r7 ;
+$lbl 5 
+ $e 
+tcase2 2 8 
+1 T19 if1 ! cnv2 T0 1 $c *VarLoc($r2 ) $e 
+runerr2 103 1 
+1 T15 lst if1 ! cnv2 T0 1 $c *VarLoc($r2 ) $e 
+runerr2 103 1 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 4 s f__et f 0 0 2 $c dptr y $e $c &($r2 ) $e $c dptr dx $e $c &($r1 ) $e 
+1 T14 if1 ! cnv2 T1 1 $c *VarLoc($r2 ) $e 
+runerr2 101 1 
+1 T18 call 5 n ____t f 0 0 0 
+1 T17 call 6 n ____t f 0 0 2 $c dptr dx $e $c &($r1 ) $e $c dptr y $e $c &($r2 ) $e 
+1 T6 lst abstr = . store . vartyp 2 C1 C4 vartyp 1 nil 
+block t 0 $c tvtbl_asgn(&$m2 , (const dptr)&$r1 ); $e 
+1 T5 lst abstr = store . vartyp 2 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m2 , (const dptr)&$r1 ) == Error) $e 6 
+err_msg(0, NULL);
+$efail 
+$lbl 6 
+ $e 
+lst abstr = vartyp 2 vartyp 1 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r2 ) + Offset($r2 )) = $r1 ; $e 
+if1 && is T5 0 is T5 2 
+block t 0 $c 
+$cgoto $c !($r6  != 0) $e 7 
+$r5 ->tvsubs.sspos += $r6 ;
+$lbl 7 
+ $e 
+block t 0 $c 
+$susp d 1 $c $r0  $e  $e 
+tcase2 0 8 
+1 T19 if1 ! cnv2 T0 1 $c *VarLoc($r0 ) $e 
+runerr2 103 1 
+1 T15 lst if1 ! cnv2 T0 1 $c *VarLoc($r0 ) $e 
+runerr2 103 1 
+block t 0 $c k_pos = 1; $e 
+1 T16 call 7 s f__et f 0 0 2 $c dptr x $e $c &($r0 ) $e $c dptr dx $e $c &($r1 ) $e 
+1 T14 if1 ! cnv2 T1 1 $c *VarLoc($r0 ) $e 
+runerr2 101 1 
+1 T18 call 8 n ____t f 0 0 0 
+1 T17 call 9 n ____t f 0 0 2 $c dptr dx $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+1 T6 lst abstr = . store . vartyp 0 C1 C4 vartyp 1 nil 
+block t 0 $c tvtbl_asgn(&$m0 , (const dptr)&$r1 ); $e 
+1 T5 lst abstr = store . vartyp 0 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m0 , (const dptr)&$r1 ) == Error) $e 8 
+err_msg(0, NULL);
+$efail 
+$lbl 8 
+ $e 
+lst abstr = vartyp 0 vartyp 1 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r0 ) + Offset($r0 )) = $r1 ; $e 
+if1 && is T5 0 is T5 2 
+block t 0 $c 
+$cgoto $c !($r7  != 0) $e 9 
+$r4 ->tvsubs.sspos -= $r7 ;
+$lbl 9 
+ $e 
+tcase2 2 8 
+1 T19 if1 ! cnv2 T0 3 $c *VarLoc($r2 ) $e 
+runerr2 103 3 
+1 T15 lst if1 ! cnv2 T0 3 $c *VarLoc($r2 ) $e 
+runerr2 103 3 
+block t 0 $c k_pos = 1; $e 
+1 T16 call a s f__et f 0 0 2 $c dptr y $e $c &($r2 ) $e $c dptr dy $e $c &($r3 ) $e 
+1 T14 if1 ! cnv2 T1 3 $c *VarLoc($r2 ) $e 
+runerr2 101 3 
+1 T18 call b n ____t f 0 0 0 
+1 T17 call c n ____t f 0 0 2 $c dptr dy $e $c &($r3 ) $e $c dptr y $e $c &($r2 ) $e 
+1 T6 lst abstr = . store . vartyp 2 C1 C4 vartyp 3 nil 
+block t 0 $c tvtbl_asgn(&$m2 , (const dptr)&$r3 ); $e 
+1 T5 lst abstr = store . vartyp 2 C0 typ T0 nil 
+block t 0 $c 
+$cgoto $c !(subs_asgn(&$m2 , (const dptr)&$r3 ) == Error) $e 10 
+err_msg(0, NULL);
+$efail 
+$lbl 10 
+ $e 
+lst abstr = vartyp 2 vartyp 3 nil 
+block t 0 $c *(dptr)((word *)VarLoc($r2 ) + Offset($r2 )) = $r3 ; $e 
+if1 && is T5 0 is T5 2 
+block t 0 $c 
+$cgoto $c !($r6  != 0) $e 11 
+$r5 ->tvsubs.sspos -= $r6 ;
+$lbl 11 
+ $e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+<<	lexlt	0p 2(d,d)	{0,1} fr_e t 
+"x << y - test if x is lexically less than y."
+0 
+1 temp_str $c int temp_str = 0; $e 
+lst lst lst abstr nil typ T0 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+if1 ! is T0 1 
+if2 cnv1 ts 1 
+block t 0 $c $m2  = 1; $e 
+runerr2 103 1 
+call 0 s fr_e_ t 0 0 3 $c int temp_str $e $c $r2  $e $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+<<=	lexle	0o 2(d,d)	{0,1} fr_e t 
+"x <<= y - test if x is lexically less than or equal to y."
+0 
+1 temp_str $c int temp_str = 0; $e 
+lst lst lst abstr nil typ T0 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+if1 ! is T0 1 
+if2 cnv1 ts 1 
+block t 0 $c $m2  = 1; $e 
+runerr2 103 1 
+call 0 s fr_e_ t 0 0 3 $c int temp_str $e $c $r2  $e $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+<=	numle	0h 2(d,d)	{0,1} fr_e f 
+"x <= y - test if x is numerically less than or equal to y."
+0 
+0 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r0  <= $r1 ) $e 0 
+$ret ci 1 $c $r1  $e 
+$lbl 0 
+$fail 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !((bigcmp(&$m0 , &$m1 ) <= 0)) $e 1 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+$fail 
+ $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  <= $r1 ) $e 2 
+$ret cd 1 $c $r1  $e 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+=	tabmat	0u 1(d)	{0,*} f_se f 
+"=x - tab(match(x)).  Reverses effects if resumed."
+0 
+0 
+lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+abstr nil typ T0 
+call 0 s f_se_ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+=	numeq	0e 2(d,d)	{0,1} fr_e f 
+"x = y - test if x is numerically equal to y."
+0 
+0 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r0  == $r1 ) $e 0 
+$ret ci 1 $c $r1  $e 
+$lbl 0 
+$fail 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !((bigcmp(&$m0 , &$m1 ) == 0)) $e 1 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+$fail 
+ $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  == $r1 ) $e 2 
+$ret cd 1 $c $r1  $e 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+==	lexeq	0k 2(d,d)	{0,1} fr_e t 
+"x == y - test if x is lexically equal to y."
+0 
+1 temp_str $c int temp_str = 0; $e 
+lst lst lst abstr nil typ T0 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+if1 ! is T0 1 
+if2 cnv1 ts 1 
+block t 0 $c $m2  = 1; $e 
+runerr2 103 1 
+call 0 s fr_e_ t 0 0 3 $c int temp_str $e $c $r2  $e $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+===	eqv	0q 2(d,d)	{0,1} fr__ f 
+"x === y - test equivalence of x and y."
+0 
+0 
+lst abstr nil vartyp 1 
+block _ 0 $c 
+$cgoto $c equiv(&$m0 , &$m1 ) $e 0 
+$fail 
+$goto 1 
+$lbl 0 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+ $e 
+$end
+
+>	numgt	0g 2(d,d)	{0,1} fr_e f 
+"x > y - test if x is numerically greater than y."
+0 
+0 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r0  > $r1 ) $e 0 
+$ret ci 1 $c $r1  $e 
+$lbl 0 
+$fail 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !((bigcmp(&$m0 , &$m1 ) > 0)) $e 1 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+$fail 
+ $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  > $r1 ) $e 2 
+$ret cd 1 $c $r1  $e 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+>=	numge	0f 2(d,d)	{0,1} fr_e f 
+"x >= y - test if x is numerically greater than or equal to y."
+0 
+0 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r0  >= $r1 ) $e 0 
+$ret ci 1 $c $r1  $e 
+$lbl 0 
+$fail 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !((bigcmp(&$m0 , &$m1 ) >= 0)) $e 1 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+$fail 
+ $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  >= $r1 ) $e 2 
+$ret cd 1 $c $r1  $e 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+>>	lexgt	0n 2(d,d)	{0,1} fr_e t 
+"x >> y - test if x is lexically greater than y."
+0 
+1 temp_str $c int temp_str = 0; $e 
+lst lst lst abstr nil typ T0 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+if1 ! is T0 1 
+if2 cnv1 ts 1 
+block t 0 $c $m2  = 1; $e 
+runerr2 103 1 
+call 0 s fr_e_ t 0 0 3 $c int temp_str $e $c $r2  $e $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+>>=	lexge	0m 2(d,d)	{0,1} fr_e t 
+"x >>= y - test if x is lexically greater than or equal to y."
+0 
+1 temp_str $c int temp_str = 0; $e 
+lst lst lst abstr nil typ T0 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+if1 ! is T0 1 
+if2 cnv1 ts 1 
+block t 0 $c $m2  = 1; $e 
+runerr2 103 1 
+call 0 s fr_e_ t 0 0 3 $c int temp_str $e $c $r2  $e $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+?	random	0z 1(ud)	{0,1} fr_e t 
+"?x - produce a randomly selected element of x."
+0 
+1 v $c C_integer v; $e 
+if2 && is v 0 is T0 1 
+lst abstr nil new T5 1 vartyp 0 
+call 0 s fr___ t 0 0 2 $c dptr x $e $c &($m0 ) $e $c dptr dx $e $c &($r1 ) $e 
+tcase2 1 6 
+1 T2 lst abstr nil . vartyp 1 f 
+call 2 s fr___ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+1 T13 lst abstr nil store . vartyp 1 C6 
+call 3 s fr___ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+1 T11 lst abstr nil . vartyp 1 C4 
+call 4 s fr___ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+1 T10 lst abstr nil . vartyp 1 C2 
+call 5 s fr___ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+1 T8 lst lst if1 ! cnv1 ts 1 
+nil 
+abstr nil typ T0 
+call 6 s fr___ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+1 T0 lst abstr nil typ T0 
+call 7 s fr___ t 0 0 1 $c dptr dx $e $c &($r1 ) $e 
+lst lst if1 ! cnv1 T1 1 
+runerr2 113 1 
+abstr nil ++ typ T1 typ T9 
+call 1 s _r_e_ t 0 0 2 $c C_integer v $e $c $m2  $e $c dptr dx $e $c &($m1 ) $e 
+$end
+
+[...]	llist	0x 1(dv)	{1,1} _r_e f 
+" [x1, x2, ... ] - create an explicitly specified list."
+0 
+0 
+lst abstr nil new T10 1 vartyp 0 
+call 0 s _r_e_ t 0 0 2 $c dptr elems $e $c $r0  $e $c int n $e $c $r1  $e 
+$end
+
+[:]	sect	10 3(ud,d,d)	{0,1} fr_e t 
+"x[i:j] - form a substring or list section of x."
+0 
+1 use_trap $c int use_trap = 0; $e 
+lst lst if1 ! cnv1 ci 2 
+runerr2 101 2 
+if1 ! cnv1 ci 3 
+runerr2 101 3 
+if2 is T10 1 
+lst abstr nil vartyp 1 
+call 0 s fr_e_ t 0 0 3 $c C_integer j $e $c $m3  $e $c dptr dx $e $c &($m1 ) $e $c C_integer i $e $c $m2  $e 
+lst if2 && is v 0 is T0 1 
+lst abstr nil new T5 1 vartyp 0 
+block t 0 $c $m4  = 1; $e 
+if2 cnv1 T0 1 
+abstr nil typ T0 
+runerr2 110 1 
+call 1 s fr___ t 0 0 5 $c dptr x $e $c &($m0 ) $e $c int use_trap $e $c $r4  $e $c C_integer j $e $c $m3  $e $c dptr dx $e $c &($r1 ) $e $c C_integer i $e $c $m2  $e 
+$end
+
+[]	subsc	11 2(ud,d)	{0,1} fr_e f 
+"x[y] - access yth character or element of x."
+0 
+1 use_trap $c int use_trap = 0; $e 
+tcase2 1 3 
+1 T2 lst abstr nil . vartyp 1 f 
+if2 ! cnv1 ci 2 
+call 1 s fr_e_ t 0 0 2 $c dptr dx $e $c &($r1 ) $e $c dptr y $e $c &($m2 ) $e 
+call 2 s fr___ t 0 0 2 $c C_integer y $e $c $r2  $e $c dptr dx $e $c &($r1 ) $e 
+1 T11 lst abstr = . vartyp 1 C3 vartyp 2 ++ . vartyp 1 C4 new T6 1 vartyp 1 
+call 3 s _r_e_ t 0 0 2 $c dptr dx $e $c &($m1 ) $e $c dptr y $e $c &($m2 ) $e 
+1 T10 lst lst abstr nil . vartyp 1 C2 
+if1 ! cnv1 ci 2 
+lst if1 cnv1 T1 2 
+block _ 0 $c 
+$fail 
+ $e 
+runerr2 101 2 
+call 4 s fr___ t 0 0 2 $c C_integer y $e $c $r2  $e $c dptr dx $e $c &($r1 ) $e 
+lst lst if2 && is v 0 is T0 1 
+lst abstr nil new T5 1 vartyp 0 
+block t 0 $c $m3  = 1; $e 
+if2 cnv1 ts 1 
+abstr nil typ T0 
+runerr2 114 1 
+if1 ! cnv1 ci 2 
+lst if1 cnv1 T1 2 
+block _ 0 $c 
+$fail 
+ $e 
+runerr2 101 2 
+call 0 s fr___ t 0 0 4 $c dptr x $e $c &($m0 ) $e $c int use_trap $e $c $r3  $e $c dptr dx $e $c &($r1 ) $e $c C_integer y $e $c $r2  $e 
+$end
+
+\	nonnull	16 1(ud)	{0,1} fr__ f 
+"\\x - test x for nonnull value."
+0 
+0 
+lst abstr nil vartyp 0 
+if2 is T7 1 
+block _ 0 $c 
+$fail 
+ $e 
+block _ 0 $c 
+$ret d 1 $c $r0  $e  $e 
+$end
+
+^	refresh	0s 1(d)	{1,1} _r_e f 
+"^x - create a refreshed copy of a co-expression."
+0 
+0 
+lst lst if1 ! is T4 0 
+runerr2 118 0 
+abstr nil typ T4 
+call 0 s _r_e_ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+^	powr	07 2(d,d)	{1,1} _r_e t 
+"x ^ y - raise x to the y power."
+0 
+0 
+if2 cnv1 ei 1 
+if2 cnv1 ei 0 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+extern int over_flow;
+$cgoto $c !(bigpow(&$m0 , &$m1 , &$mr ) == Error) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+$ret rn 0 
+$} 
+ $e 
+lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !(ripow($r0 , IntVal($r1 ), &$mr ) == Error) $e 1 
+err_msg(0, NULL);
+$efail 
+$lbl 1 
+$ret rn 0  $e 
+lst lst lst if1 ! cnv1 cd 0 
+runerr2 102 0 
+if1 ! cnv1 cd 1 
+runerr2 102 1 
+abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  == 0.0 && $r1  < 0.0) $e 2 
+err_msg(204, NULL);
+$efail 
+$lbl 2 
+$cgoto $c !($r0  < 0.0) $e 3 
+err_msg(206, NULL);
+$efail 
+$lbl 3 
+$ret cd 1 $c pow($r0 , $r1 ) $e  $e 
+$end
+
+||	cater	0c 2(d,d)	{1,1} _r_e t 
+"x || y - concatenate strings x and y."
+0 
+0 
+lst lst lst if1 ! cnv1 T0 0 
+runerr2 103 0 
+if1 ! cnv1 T0 1 
+runerr2 103 1 
+abstr nil typ T0 
+call 0 s _r_e_ t 0 0 2 $c dptr y $e $c &($r1 ) $e $c dptr x $e $c &($r0 ) $e 
+$end
+
+|||	lconcat	0d 2(d,d)	{1,1} _r_e f 
+"x ||| y - concatenate lists x and y."
+0 
+0 
+lst lst lst if1 ! is T10 0 
+runerr2 108 0 
+if1 ! is T10 1 
+runerr2 108 1 
+abstr nil new T10 1 store . ++ vartyp 0 vartyp 1 C2 
+call 0 s _r_e_ t 0 0 2 $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+~	compl	12 1(d)	{1,1} _r_e f 
+"~x - complement cset x."
+0 
+0 
+lst lst if1 ! cnv1 tc 0 
+runerr2 104 0 
+abstr nil typ T8 
+call 0 s _r_e_ t 0 0 1 $c dptr x $e $c &($r0 ) $e 
+$end
+
+~=	numne	0j 2(d,d)	{0,1} fr_e f 
+"x ~= y - test if x is numerically not equal to y."
+0 
+0 
+acase 0 1 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !($r0  != $r1 ) $e 0 
+$ret ci 1 $c $r1  $e 
+$lbl 0 
+$fail 
+ $e 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !((bigcmp(&$m0 , &$m1 ) != 0)) $e 1 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+$fail 
+ $e 
+lst abstr nil typ T9 
+block _ 0 $c 
+$cgoto $c !($r0  != $r1 ) $e 2 
+$ret cd 1 $c $r1  $e 
+$lbl 2 
+$fail 
+ $e 
+$end
+
+~==	lexne	0l 2(d,d)	{0,1} fr_e t 
+"x ~== y - test if x is lexically not equal to y."
+0 
+1 temp_str $c int temp_str = 0; $e 
+lst lst lst abstr nil typ T0 
+if1 ! cnv1 ts 0 
+runerr2 103 0 
+if1 ! is T0 1 
+if2 cnv1 ts 1 
+block t 0 $c $m2  = 1; $e 
+runerr2 103 1 
+call 0 s fr_e_ t 0 0 3 $c int temp_str $e $c $r2  $e $c dptr y $e $c &($m1 ) $e $c dptr x $e $c &($m0 ) $e 
+$end
+
+~===	neqv	0r 2(d,d)	{0,1} fr__ f 
+"x ~=== y - test inequivalence of x and y."
+0 
+0 
+lst abstr nil vartyp 1 
+block _ 0 $c 
+$cgoto $c !equiv(&$m0 , &$m1 ) $e 0 
+$fail 
+$goto 1 
+$lbl 0 
+$ret d 1 $c $r1  $e 
+$lbl 1 
+ $e 
+$end
+
+$endsect
+
+
+keywords
+
+allocated	00 0()	{4,4} _rs_ f 
+"&allocated - the space used in the storage regions: total, static, string, and block"
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$susp ci 1 $c stattotal + strtotal + blktotal $e 
+$susp ci 1 $c stattotal $e 
+$susp ci 1 $c strtotal $e 
+$ret ci 1 $c blktotal $e  $e 
+$end
+
+ascii	1o 0()	{1,1} ____ f 
+"&ascii - a cset consisting of the 128 ascii characters"
+0 
+0 
+const T8 '\000\001\002\003\004\005\006\007\010\011\012\013\014\015\016\017\020\021\022\023\024\025\026\027\030\031\032\033\034\035\036\037\040\041\042\043\044\045\046\047\050\051\052\053\054\055\056\057\060\061\062\063\064\065\066\067\070\071\072\073\074\075\076\077\100\101\102\103\104\105\106\107\110\111\112\113\114\115\116\117\120\121\122\123\124\125\126\127\130\131\132\133\134\135\136\137\140\141\142\143\144\145\146\147\150\151\152\153\154\155\156\157\160\161\162\163\164\165\166\167\170\171\172\173\174\175\176\177' 
+$end
+
+clock	01 0()	{1,1} _r_e f 
+"&clock - a string consisting of the current time of day"
+0 
+0 
+lst abstr nil typ T0 
+block _ 0 $c 
+${ 
+struct cal_time ct; 
+char sbuf[9], *tmp;
+getitime(&ct);
+sprintf(sbuf, "%02d:%02d:%02d", ct.hour, ct.minute, ct.second);
+$cgoto $c !((tmp = alcstr(sbuf, (word)8)) == NULL) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+$ret T0 2 $c 8 $e $c tmp $e 
+$} 
+ $e 
+$end
+
+col	16 0()	{0,0} f___ f 
+"&col - mouse horizontal position in text columns."
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+collections	02 0()	{4,4} _rs_ f 
+"&collections - the number of collections: total, triggered by static requests triggered by string requests, and triggered by block requests"
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$susp ci 1 $c coll_tot $e 
+$susp ci 1 $c coll_stat $e 
+$susp ci 1 $c coll_str $e 
+$ret ci 1 $c coll_blk $e  $e 
+$end
+
+control	1b 0()	{0,0} f___ f 
+"&control - null if control key was down on last X event, else failure"
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+cset	1p 0()	{1,1} ____ f 
+"&cset - a cset consisting of all the 256 characters."
+0 
+0 
+const T8 '\0\1\2\3\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34\35\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70\71\72\73\74\75\76\77\100\101\102\103\104\105\106\107\110\111\112\113\114\115\116\117\120\121\122\123\124\125\126\127\130\131\132\133\134\135\136\137\140\141\142\143\144\145\146\147\150\151\152\153\154\155\156\157\160\161\162\163\164\165\166\167\170\171\172\173\174\175\176\177\200\201\202\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225\226\227\230\231\232\233\234\235\236\237\240\241\242\243\244\245\246\247\250\251\252\253\254\255\256\257\260\261\262\263\264\265\266\267\270\271\272\273\274\275\276\277\300\301\302\303\304\305\306\307\310\311\312\313\314\315\316\317\320\321\322\323\324\325\326\327\330\331\332\333\334\335\336\337\340\341\342\343\344\345\346\347\350\351\352\353\354\355\356\357\360\361\362\363\364\365\366\367\370\371\372\373\374\375\376\377' 
+$end
+
+current	03 0()	{1,1} _r__ f 
+"&current - the currently active co-expression"
+0 
+0 
+lst abstr nil typ T4 
+block _ 0 $c 
+$ret d 1 $c k_current $e  $e 
+$end
+
+date	04 0()	{1,1} _r_e f 
+"&date - the current date"
+0 
+0 
+lst abstr nil typ T0 
+block _ 0 $c 
+${ 
+struct cal_time ct; 
+char sbuf[11], *tmp;
+getitime(&ct);
+sprintf(sbuf, "%04d/%02d/%02d", ct.year, ct.month_no, ct.mday);
+$cgoto $c !((tmp = alcstr(sbuf, (word)10)) == NULL) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+$ret T0 2 $c 10 $e $c tmp $e 
+$} 
+ $e 
+$end
+
+dateline	05 0()	{1,1} _r_e f 
+"&dateline - current date and time"
+0 
+0 
+lst abstr nil typ T0 
+call 0 s _r_e_ t 0 0 0 
+$end
+
+digits	06 0()	{1,1} ____ f 
+"&digits - a cset consisting of the 10 decimal digits"
+0 
+0 
+const T8 '0123456789' 
+$end
+
+e	07 0()	{1,1} ____ f 
+"&e - the base of the natural logarithms"
+0 
+0 
+const T9 2.71828182845904523536028747135266249775724709369996 
+$end
+
+error	08 0()	{1,1} _r__ f 
+"&error - enable/disable error conversion"
+0 
+0 
+lst abstr nil typ T14 
+block _ 0 $c 
+$ret T14 1 $c &kywd_err $e  $e 
+$end
+
+errornumber	09 0()	{0,1} fr__ f 
+"&errornumber - error number of last error converted to failure"
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(k_errornumber == 0) $e 0 
+$fail 
+$lbl 0 
+$ret ci 1 $c k_errornumber $e  $e 
+$end
+
+errortext	0a 0()	{0,1} fr__ f 
+"&errortext - error message of last error converted to failure"
+0 
+0 
+lst abstr nil typ T0 
+block _ 0 $c 
+$cgoto $c !(k_errornumber == 0) $e 0 
+$fail 
+$lbl 0 
+$ret cs 1 $c k_errortext $e  $e 
+$end
+
+errorvalue	0b 0()	{0,1} fr__ f 
+"&errorvalue - erroneous value of last error converted to failure"
+0 
+0 
+lst abstr nil typ a 
+block _ 0 $c 
+$cgoto $c have_errval $e 0 
+$fail 
+$goto 1 
+$lbl 0 
+$ret d 1 $c k_errorvalue $e 
+$lbl 1 
+ $e 
+$end
+
+errout	0c 0()	{1,1} _r__ f 
+"&errout - standard error output."
+0 
+0 
+lst abstr nil typ T12 
+block _ 0 $c 
+$ret T12 1 $c &k_errout $e  $e 
+$end
+
+eventcode	0e 0()	{0,1} _r__ f 
+"&eventcode - event in monitored program"
+0 
+0 
+lst abstr nil typ T17 
+block _ 0 $c 
+$ret T17 1 $c &k_eventcode $e  $e 
+$end
+
+eventsource	0f 0()	{0,1} _r__ f 
+"&eventsource - source of events in monitoring program"
+0 
+0 
+lst abstr nil typ T17 
+block _ 0 $c 
+$ret T17 1 $c &k_eventsource $e  $e 
+$end
+
+eventvalue	0g 0()	{0,1} _r__ f 
+"&eventvalue - value from event in monitored program"
+0 
+0 
+lst abstr nil typ T17 
+block _ 0 $c 
+$ret T17 1 $c &k_eventvalue $e  $e 
+$end
+
+fail	0d 0()	{0,0} f___ f 
+"&fail - just fail"
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+features	0h 0()	{1,*} f_s_ f 
+"&features - generate strings identifying features in this version of Icon"
+0 
+0 
+lst abstr nil typ T0 
+call 0 s f_s__ t 0 0 0 
+$end
+
+file	0i 0()	{1,1} _r_e f 
+"&file - name of the source file for the current execution point"
+0 
+0 
+lst abstr nil typ T0 
+block _ 0 $c 
+$cgoto $c line_info $e 0 
+err_msg(402, NULL);
+$efail 
+$goto 1 
+$lbl 0 
+$ret cs 1 $c file_name $e 
+$lbl 1 
+ $e 
+$end
+
+host	0j 0()	{1,1} _r_e f 
+"&host - a string that identifies the host computer Icon is running on."
+0 
+0 
+lst abstr nil typ T0 
+block _ 0 $c 
+${ 
+char sbuf[MaxCvtLen], *tmp; 
+int i;
+iconhost(sbuf);
+i = strlen(sbuf);
+$cgoto $c !((tmp = alcstr(sbuf, i)) == NULL) $e 0 
+err_msg(0, NULL);
+$efail 
+$lbl 0 
+$ret T0 2 $c i $e $c tmp $e 
+$} 
+ $e 
+$end
+
+input	0k 0()	{1,1} _r__ f 
+"&input - the standard input file"
+0 
+0 
+lst abstr nil typ T12 
+block _ 0 $c 
+$ret T12 1 $c &k_input $e  $e 
+$end
+
+interval	1a 0()	{0,0} f___ f 
+"&interval - milliseconds since previous event."
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+lcase	0l 0()	{1,1} ____ f 
+"&lcase - a cset consisting of the 26 lower case letters"
+0 
+0 
+const T8 'abcdefghijklmnopqrstuvwxyz' 
+$end
+
+ldrag	1k 0()	{1,1} _r__ f 
+"&ldrag - left button drag."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSELEFTDRAG $e  $e 
+$end
+
+letters	0m 0()	{1,1} ____ f 
+"&letters - a cset consisting of the 52 letters"
+0 
+0 
+const T8 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' 
+$end
+
+level	0n 0()	{1,1} _r_e f 
+"&level - level of procedure call."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c !(!debug_info) $e 0 
+err_msg(402, NULL);
+$efail 
+$lbl 0 
+$ret ci 1 $c k_level $e  $e 
+$end
+
+line	0o 0()	{1,1} _r_e f 
+"&line - source line number of current execution point"
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$cgoto $c line_info $e 0 
+err_msg(402, NULL);
+$efail 
+$goto 1 
+$lbl 0 
+$ret ci 1 $c line_num $e 
+$lbl 1 
+ $e 
+$end
+
+lpress	1e 0()	{1,1} _r__ f 
+"&lpress - left button press."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSELEFT $e  $e 
+$end
+
+lrelease	1h 0()	{1,1} _r__ f 
+"&lrelease - left button release."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSELEFTUP $e  $e 
+$end
+
+main	0p 0()	{1,1} _r__ f 
+"&main - the main co-expression."
+0 
+0 
+lst abstr nil typ T4 
+block _ 0 $c 
+$ret d 1 $c k_main $e  $e 
+$end
+
+mdrag	1l 0()	{1,1} _r__ f 
+"&mdrag - middle button drag."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSEMIDDRAG $e  $e 
+$end
+
+meta	1d 0()	{0,0} f___ f 
+"&meta - null if meta key was down on last X event, else failure"
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+mpress	1f 0()	{1,1} _r__ f 
+"&mpress - middle button press."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSEMID $e  $e 
+$end
+
+mrelease	1i 0()	{1,1} _r__ f 
+"&mrelease - middle button release."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSEMIDUP $e  $e 
+$end
+
+null	0q 0()	{1,1} _r__ f 
+"&null - the null value."
+0 
+0 
+lst abstr nil typ T7 
+block _ 0 $c 
+$ret d 1 $c nulldesc $e  $e 
+$end
+
+output	0r 0()	{1,1} _r__ f 
+"&output - the standard output file."
+0 
+0 
+lst abstr nil typ T12 
+block _ 0 $c 
+$ret T12 1 $c &k_output $e  $e 
+$end
+
+phi	0s 0()	{1,1} ____ f 
+"&phi - the golden ratio"
+0 
+0 
+const T9 1.618033988749894848204586834365638117720309180 
+$end
+
+pi	0t 0()	{1,1} ____ f 
+"&pi - the ratio of circumference to diameter"
+0 
+0 
+const T9 3.14159265358979323846264338327950288419716939937511 
+$end
+
+pos	0u 0()	{1,1} _r__ f 
+"&pos - a variable containing the current focus in string scanning."
+0 
+0 
+lst abstr nil typ T16 
+block _ 0 $c 
+$ret T16 1 $c &kywd_pos $e  $e 
+$end
+
+progname	0v 0()	{1,1} _r__ f 
+"&progname - a variable containing the program name."
+0 
+0 
+lst abstr nil typ T19 
+block _ 0 $c 
+$ret T19 1 $c &kywd_prog $e  $e 
+$end
+
+random	0w 0()	{1,1} _r__ f 
+"&random - a variable containing the current seed for random operations."
+0 
+0 
+lst abstr nil typ T14 
+block _ 0 $c 
+$ret T14 1 $c &kywd_ran $e  $e 
+$end
+
+rdrag	1m 0()	{1,1} _r__ f 
+"&rdrag - right button drag."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSERIGHTDRAG $e  $e 
+$end
+
+regions	0x 0()	{3,3} _rs_ f 
+"&regions - generates regions sizes"
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+word allRegions = 0; 
+struct region *rp;
+$susp ci 1 $c 0 $e 
+allRegions = (word)((strend) - (strbase));
+rp = curstring->next;
+$lbl 0 
+$cgoto $c !(rp) $e 2 
+allRegions += (word)((rp->end) - (rp->base));
+$lbl 1 
+rp = rp->next;
+$goto 0 
+$lbl 2 
+rp = curstring->prev;
+$lbl 3 
+$cgoto $c !(rp) $e 5 
+allRegions += (word)((rp->end) - (rp->base));
+$lbl 4 
+rp = rp->prev;
+$goto 3 
+$lbl 5 
+$susp ci 1 $c allRegions $e 
+allRegions = (word)((blkend) - (blkbase));
+rp = curblock->next;
+$lbl 6 
+$cgoto $c !(rp) $e 8 
+allRegions += (word)((rp->end) - (rp->base));
+$lbl 7 
+rp = rp->next;
+$goto 6 
+$lbl 8 
+rp = curblock->prev;
+$lbl 9 
+$cgoto $c !(rp) $e 11 
+allRegions += (word)((rp->end) - (rp->base));
+$lbl 10 
+rp = rp->prev;
+$goto 9 
+$lbl 11 
+$ret ci 1 $c allRegions $e 
+$} 
+ $e 
+$end
+
+resize	1n 0()	{1,1} _r__ f 
+"&resize - window resize."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c RESIZED $e  $e 
+$end
+
+row	17 0()	{0,0} f___ f 
+"&row - mouse vertical position in text rows."
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+rpress	1g 0()	{1,1} _r__ f 
+"&rpress - right button press."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSERIGHT $e  $e 
+$end
+
+rrelease	1j 0()	{1,1} _r__ f 
+"&rrelease - right button release."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c MOUSERIGHTUP $e  $e 
+$end
+
+shift	1c 0()	{0,0} f___ f 
+"&shift - null if shift key was down on last X event, else failure"
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+source	0y 0()	{1,1} _r__ f 
+"&source - the co-expression that invoked the current co-expression."
+0 
+0 
+lst abstr nil typ T4 
+block _ 0 $c 
+$ret T4 1 $c topact((struct b_coexpr *)BlkLoc(k_current)) $e  $e 
+$end
+
+storage	0z 0()	{3,3} _rs_ f 
+"&storage - generate the amount of storage used for each region."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+${ 
+word allRegions = 0; 
+struct region *rp;
+$susp ci 1 $c 0 $e 
+allRegions = (word)((strfree) - (strbase));
+rp = curstring->next;
+$lbl 0 
+$cgoto $c !(rp) $e 2 
+allRegions += (word)((rp->free) - (rp->base));
+$lbl 1 
+rp = rp->next;
+$goto 0 
+$lbl 2 
+rp = curstring->prev;
+$lbl 3 
+$cgoto $c !(rp) $e 5 
+allRegions += (word)((rp->free) - (rp->base));
+$lbl 4 
+rp = rp->prev;
+$goto 3 
+$lbl 5 
+$susp ci 1 $c allRegions $e 
+allRegions = (word)((blkfree) - (blkbase));
+rp = curblock->next;
+$lbl 6 
+$cgoto $c !(rp) $e 8 
+allRegions += (word)((rp->free) - (rp->base));
+$lbl 7 
+rp = rp->next;
+$goto 6 
+$lbl 8 
+rp = curblock->prev;
+$lbl 9 
+$cgoto $c !(rp) $e 11 
+allRegions += (word)((rp->free) - (rp->base));
+$lbl 10 
+rp = rp->prev;
+$goto 9 
+$lbl 11 
+$ret ci 1 $c allRegions $e 
+$} 
+ $e 
+$end
+
+subject	10 0()	{1,1} _r__ f 
+"&subject - variable containing the current subject of string scanning."
+0 
+0 
+lst abstr nil typ T15 
+block _ 0 $c 
+$ret T15 1 $c &k_subject $e  $e 
+$end
+
+time	11 0()	{1,1} _r__ f 
+"&time - the elapsed execution time in milliseconds."
+0 
+0 
+lst abstr nil typ T1 
+block _ 0 $c 
+$ret ci 1 $c millisec() $e  $e 
+$end
+
+trace	12 0()	{1,1} _r__ f 
+"&trace - variable which controls execution tracing."
+0 
+0 
+lst abstr nil typ T14 
+block _ 0 $c 
+$ret T14 1 $c &kywd_trc $e  $e 
+$end
+
+ucase	13 0()	{1,1} ____ f 
+"&ucase - a cset consisting of the 26 uppercase characters."
+0 
+0 
+const T8 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 
+$end
+
+version	14 0()	{1,1} ____ f 
+"&version - a string indentifying this version of Icon."
+0 
+0 
+const T0 "Icon Compiler Version 8.10.1  May 4, 1993" 
+$end
+
+window	15 0()	{0,0} f___ f 
+"&window - variable containing the current graphics rendering context."
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+x	18 0()	{0,0} f___ f 
+"&x - mouse horizontal position."
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+y	19 0()	{0,0} f___ f 
+"&y - mouse vertical position."
+0 
+0 
+lst abstr nil typ e 
+block _ 0 $c 
+$fail 
+ $e 
+$end
+
+$endsect
+
+
+dependencies
+
+cnv.r         cnv.c $end
+data.r        data.c $end
+def.r         def.c $end
+errmsg.r      errmsg.c $end
+fconv.r       f_00.c f_01.c f_02.c f_03.c f_04.c f_05.c f_06.c $end
+fmath.r       f_07.c f_08.c f_09.c f_0a.c f_0b.c f_0c.c f_0d.c f_0e.c f_0f.c 
+              f_0g.c f_0h.c f_0h0.c $end
+fmisc.r       f_0i.c f_0j.c f_0j0.c f_0k.c f_0k0.c f_0l.c f_0l0.c f_0l1.c 
+              f_0l2.c f_0l3.c f_0m.c f_0m0.c f_0n.c f_0n0.c f_0o.c f_0p.c 
+              f_0q.c f_0r.c f_0s.c f_0t.c f_0t0.c f_0u.c f_0u0.c f_0v.c f_0v0.c 
+              f_0w.c f_0w0.c f_0x.c f_0x0.c f_0y.c f_0y0.c f_0y1.c f_0y2.c 
+              f_0z.c f_0z0.c f_0z1.c f_10.c f_11.c f_110.c fmisc.c $end
+fmonitr.r     fmonitr.c $end
+fscan.r       f_12.c f_120.c f_13.c f_130.c f_14.c f_140.c $end
+fstr.r        f_15.c f_150.c f_16.c f_160.c f_17.c f_170.c f_18.c f_180.c 
+              f_19.c f_190.c f_1a.c f_1a0.c f_1b.c f_1b0.c f_1c.c f_1c0.c 
+              f_1d.c f_1d0.c fstr.c $end
+fstranl.r     f_1e.c f_1e0.c f_1f.c f_1f0.c f_1g.c f_1g0.c f_1h.c f_1h0.c 
+              f_1i.c f_1i0.c f_1j.c f_1j0.c $end
+fstruct.r     f_1k.c f_1k0.c f_1k1.c f_1l.c f_1l0.c f_1m.c f_1m0.c f_1n.c 
+              f_1o.c f_1o0.c f_1o1.c f_1p.c f_1p0.c f_1q.c f_1r.c f_1r0.c 
+              f_1s.c f_1s0.c f_1t.c f_1t0.c f_1u.c f_1u0.c f_1v.c fstruct.c $end
+fsys.r        f_1w.c f_1w0.c f_1x.c f_1y.c f_1z.c f_1z0.c f_20.c f_200.c f_21.c 
+              f_210.c f_22.c f_23.c f_230.c f_24.c f_240.c f_25.c f_26.c 
+              f_260.c f_27.c f_270.c f_271.c f_28.c f_280.c f_281.c f_29.c 
+              f_290.c f_291.c f_2a.c f_2a0.c f_2b.c f_2b0.c f_2c.c f_2d.c 
+              f_2e.c f_2f.c f_2f0.c fsys.c $end
+fwindow.r     fwindow.c $end
+fxtra.r       fxtra.c $end
+init.r        init.c $end
+invoke.r      invoke.c $end
+keyword.r     k_050.c k_0h0.c keyword.c $end
+lmisc.r       lmisc.c $end
+oarith.r      o_00.c o_01.c o_02.c o_03.c o_04.c o_05.c o_06.c o_07.c oarith.c 
+            $end
+oasgn.r       o_08.c o_080.c o_081.c o_082.c o_09.c o_090.c o_091.c o_092.c 
+              o_093.c o_094.c o_095.c o_0a.c o_0a0.c o_0a1.c o_0a2.c o_0a3.c 
+              o_0a4.c o_0a5.c o_0a6.c o_0a7.c o_0a8.c o_0a9.c o_0aa.c o_0ab.c 
+              o_0ac.c o_0b.c o_0b0.c o_0b1.c o_0b2.c o_0b3.c o_0b4.c o_0b5.c 
+              o_0b6.c oasgn.c $end
+ocat.r        o_0c.c o_0c0.c o_0d.c o_0d0.c $end
+ocomp.r       o_0e.c o_0f.c o_0g.c o_0h.c o_0i.c o_0j.c o_0k.c o_0k0.c o_0l.c 
+              o_0l0.c o_0m.c o_0m0.c o_0n.c o_0n0.c o_0o.c o_0o0.c o_0p.c 
+              o_0p0.c o_0q.c o_0r.c $end
+omisc.r       o_0s.c o_0s0.c o_0t.c o_0u.c o_0u0.c o_0v.c o_0w.c o_0x.c o_0x0.c 
+            $end
+oref.r        o_0y.c o_0y0.c o_0z.c o_0z0.c o_0z1.c o_0z2.c o_0z3.c o_0z4.c 
+              o_0z5.c o_0z6.c o_0z7.c o_10.c o_100.c o_101.c o_11.c o_110.c 
+              o_111.c o_112.c o_113.c o_114.c $end
+oset.r        o_12.c o_120.c o_13.c o_130.c o_131.c o_14.c o_140.c o_141.c 
+              o_15.c o_150.c o_151.c $end
+ovalue.r      o_16.c o_17.c o_18.c o_19.c $end
+ralc.r        ralc.c $end
+rcoexpr.r     rcoexpr.c $end
+rcomp.r       rcomp.c $end
+rdebug.r      rdebug.c $end
+rgfxsys.r     rgfxsys.c $end
+rlocal.r      rlocal.c $end
+rlrgint.r     rlrgint.c $end
+rmemmgt.r     rmemmgt.c $end
+rmisc.r       rmisc.c $end
+rstruct.r     rstruct.c $end
+rsys.r        rsys.c $end
+rwindow.r     rwindow.c $end
+rwinrsc.r     rwinrsc.c $end
+rwinsys.r     rwinsys.c $end
+
+$endsect

@@ -1,0 +1,528 @@
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          prtable - Format lines read from standard input into a
+          table.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          pppprrrrttttaaaabbbblllleeee [-beNpRtU] [-d_c] [-D_c] [-F_n] [-f<_p_g__f_o_o_t_e_r>] [-
+               h<_p_g__h_e_a_d_e_r>] [-i<_f_i_l_e>] [-L_n] [-n_c] [-o_n]
+               [-W_n] [-c_n_1,_n_2,...]  [-l_n_1,_n_2,...]  [-r_n_1,_n_2,...]
+               -C <_c_o_l_u_m_n__h_e_a_d_i_n_g> |||| <_c_o_l_u_m_n__n_a_m_e_s>...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The pppprrrrttttaaaabbbblllleeee command formats each line of input into a table
+          with headings for each column.  pppprrrrttttaaaabbbblllleeee automatically
+          handles wrapping column headings and field values onto more
+          than one line of a particular column, if it encounters a
+          lengthy value.  Additionally, if the number of fields is
+          sufficiently large so that all columns will not fit in one
+          line, multiple sections of the table are printed.
+
+          The pppprrrrttttaaaabbbblllleeee command leaves two lines at the top of the page
+          and prints a header consisting of a dashed line, the column
+          headings, and then another dashed line.  (This default can
+          be modified by using the ----CCCC, ----hhhh, and ----tttt options discussed
+          below).  If the output is paginated (see the ----pppp option), the
+          page header, if any, and the column headings are printed at
+          the top of each page.  At the bottom of each page four blank
+          lines are printed or a footer is printed (see the ----ffff option
+          for printing a footer).  The last page is filled to capacity
+          with blank lines (i.e., newline characters).
+
+          Command line options allow the user to specify a print width
+          for each column as well as how each value should be
+          positioned within the column.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----bbbb        This option causes _m_u_l_t_i-_l_i_n_e columns to be split
+                    at the last space, punctuation mark, or non-
+                    alphanumeric character that appears on a line for
+                    each column.  Blanks that would appear at the
+                    beginning of the next line are ignored.  If the
+                    row does not have a space or non-alphanumeric
+                    character, the program will split the value at the
+                    column width.  For example, the field value
+                    ``hello, world'' _b_e_i_n_g _p_u_t _i_n _a _9-_c_h_a_r_a_c_t_e_r _c_o_l_u_m_n
+                    _w_i_l_l _b_e _s_p_l_i_t _a_s ``_h_e_l_l_o,'' and ``world'' _u_s_i_n_g
+                    _t_h_i_s _o_p_t_i_o_n.  _I_t _w_o_u_l_d _b_e _s_p_l_i_t _a_s ``_h_e_l_l_o, _w_o''
+                    and ``rld'' _o_t_h_e_r_w_i_s_e.  _I_f _t_h_e _f_i_e_l_d _v_a_l_u_e_s _a_r_e
+                    _n_o_t _m_u_l_t_i-_l_i_n_e, _t_h_i_s _o_p_t_i_o_n _h_a_s _n_o _e_f_f_e_c_t _o_n _t_h_e
+                    _o_u_t_p_u_t.
+
+                    The ----nnnn option (see below) takes priority over the
+                    ----bbbb option.  Thus if both options are given, the
+
+
+
+     Page 1                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+                    program will first scan for a newline character.
+                    Failing to find one, it scans backwards trying to
+                    find a break character _o_n_l_y if the entire field
+                    value will not fit into the column width specified
+                    for the field.  Failing to find a break character,
+                    it splits the field value exactly at the column
+                    width.  The ----nnnn option has an effect even if the
+                    field value will fit on the line, while the ----bbbb
+                    option takes effect only on multi-line field
+                    values.
+
+          ----CCCC <_c_o_l_u_m_n__h_e_a_d_i_n_g>
+                    The next argument is used as the column heading
+                    line to be printed instead of the column names.
+                    The line will be printed immediately before the
+                    table and the normal column name line will not
+                    appear.  The column heading may consist of
+                    multiple lines, but it is the user's
+                    responsibility to account for the right number of
+                    lines appearing on the page.  For example, if the
+                    column heading consists of two lines, the user
+                    should specify ----LLLL66665555 to get the right number of
+                    data lines output for a default page length of 66
+                    lines.  Note that ``\n'' is _n_o_t expanded to a
+                    newline.
+
+                    One caveat of this option is that it only works
+                    properly when the total width of a table is less
+                    than the page width.  Otherwise, the table must be
+                    broken into multiple sections and the same column
+                    header is used for each section.
+
+          ----cccc_n_1,_n_2,...
+          ----llll_n_1,_n_2,...
+          ----rrrr_n_1,_n_2,...
+               Specify the justification and width of columns.  The
+               columns are centered (----cccc), left justified (----llll), or
+               right justified (----rrrr).  The column widths are set to _n_1,
+               _n_2,...  If no numbers are given, one column of width 12
+               is assumed.  There may be any number of occurrances of
+               these arguments on the command line.  If more column
+               names are given than justification arguments, the
+               remaining columns are left-justified of width 12.  Any
+               extra justification arguments are ignored.
+
+          ----DDDD_c  Double space the output.  An extra line is printed
+               between each input record in the output.  An extra line
+               is not printed between output lines belonging to the
+               same input record.  If ``_c'' is given, it is used to
+               print the separator line.  The default is to print
+               spaces except where the column separators appear.
+               Thus, to get separator lines consisting of hyphens, use
+
+
+
+     Page 2                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+               ``-d-''.
+
+          ----dddd_c  The character ``_c'' is the field delimiter character
+               for dividing up each input line.  The default delimiter
+               is ``:'' (colon).
+
+          ----eeee   Enumerate the records.  The record number is printed to
+               the left of the first line of output for each record.
+               The table is also shifted five characters to the right
+               and the table width is decreased by five characters to
+               accommodate the numbers.  Numbering will continue until
+               ``9999'' and then restart at ``1''.  Any column header,
+               footer, or page header line specified with the ----CCCC, ----ffff,
+               or ----hhhh options are _n_o_t shifted to the right; the user
+               may want a header or footer over the record numbers.
+
+          ----FFFF_n  The number of fields in each record _m_u_s_t be _n.  The
+               number _n must also be greater than or equal to the
+               number of column names, if the ----CCCC option is not given.
+               Any extra columns in the input are never printed.
+
+          ----ffff <_p_g__f_o_o_t_e_r>
+               The next argument is used as a footer to be printed at
+               the bottom of each page.  The bottom of the page output
+               will consist of two blank lines, followed by the footer
+               line, and followed by two more blank lines.  The page
+               footer may consist of multiple lines, but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page.  For example, if the
+               page footer consists of two lines, the user should
+               specify ----LLLL66665555 to get the right number of data lines
+               output for a default page length of 66 lines.  Standard
+               C escape conventions (e.g. ``\n'') are recognized and
+               translated to the corresponding value.  In this case
+               the footer should be quoted to avoid backslash
+               interpretation by the shell.  The footer may also
+               contain a single ``%d'' which is expanded to the
+               current page number.  (See the manual page for
+               pppprrrriiiinnnnttttffff(3) for more details.)  This option implies
+               pagination of the output.
+
+          ----hhhh <_p_g__h_e_a_d_e_r>
+               The next argument is used as a header to be printed at
+               the top of each page in addition to the column header
+               line.  Two blank lines will be printed at the top of
+               the page, followed by the header line, two blank lines,
+               and the column headers, and the table.  The header
+               argument may consist of multiple lines, but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page.  For example, if the
+               header consists of two lines, the user should specify
+               ----LLLL66665555 to get the right number of data lines output for a
+
+
+
+     Page 3                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+               default page length of 66 lines.  Standard C escape
+               conventions (e.g. ``\n'') are recognized and translated
+               to the corresponding value.  In this case the header
+               should be quoted to avoid backslash interpretation by
+               the shell.  The header may also contain a single ``%d''
+               which is expanded to the current page number.  (See the
+               manual page for pppprrrriiiinnnnttttffff(3) for more details.)  This
+               option implies pagination of the output.
+
+          ----iiii<_f_i_l_e>
+               The data to be formatted is taken from the given _f_i_l_e.
+               Without this option, the data is taken from standard
+               input.
+
+          ----LLLL_n  The length of a page is set to _n lines.  If no page
+               length is given, the default is 66 lines per page.  The
+               minimum allowable page length is 10.
+
+          ----NNNN   Do _n_o_t paginate the output.  By default, output is
+               normally paginated.  Pagination helps readability,
+               especially when the table is too wide to fit on the
+               screen.  This option turns pagination off, independent
+               of the width of the table.  (See the ----pppp option below.)
+
+               This option is ignored if any of the ----ffff, ----hhhh, or ----LLLL
+               options are also given.
+
+          ----nnnn_c  This option causes all occurrences of ``_c'' to be
+               translated into a skip to the next row within a column.
+               Thus, the user can explicitly control where breaks
+               occur in field values even if the value would not fill
+               the column.  For example, a description field in a data
+               dictionary could be a single field with tildes
+               representing newlines.  When printing the field, the
+               tildes would be translated into newlines to correctly
+               format the description.  Note, however, that all
+               strings between the newline delimiters must be less
+               than or equal to the column width for the formatting to
+               work correctly.  If ``_c'' is not given, the default is
+               tilde (``~''),
+
+               The ----nnnn option takes priority over the ----bbbb option (see
+               above).  Thus if both options are given, the program
+               will first scan for a newline character.  Failing to
+               find one, it scans backwards through the field value
+               trying to find a break character _o_n_l_y if the entire
+               field value will not fit into the column width
+               specified for the field.  Failing to find a break
+               character, it splits the field value exactly at the
+               column width.  The ----nnnn option has an effect even if the
+               field value will fit on the line, while the ----bbbb option
+               takes effect only on multi-line field values.
+
+
+
+     Page 4                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+          ----oooo_n  Each line is shifted to the right by _n character
+               positions.  The default for _n is 0.  The number of
+               characters printed per line is the sum of the page
+               width (see the ----WWWW option below) and the offset.
+
+          ----pppp   Paginate the output.  By default, output is normally
+               paginated; this option is provided to override the ----NNNN
+               option.  Pagination helps readability, especially when
+               the table is too wide to fit on the screen.
+
+               When paginating, records are not printed across pages
+               whenever possible.  The number of lines needed to print
+               a record is calculated before printing begins and if
+               the record will not fit on the current page, printing
+               will start on a new page.  The only time that a record
+               will print across more than one page is if it will not
+               fit on a single page.
+
+          ----RRRR   This option suppresses the printing of repeated field
+               values from record to record when they appear on the
+               left-hand side of the table.  All field values are
+               printed for the first record on each page, however.
+               The input should be sorted in order for this option to
+               be very useful.
+
+               When the double space option (----DDDD) is also given, the
+               redundant field values are separated from the next row
+               by spaces, not the row delimiter given with the ----DDDD
+               option.  This gives a more heirarchical appearance to
+               the table.
+
+          ----ssss_c  Columns in the table are separated by the single
+               character ``_c'' instead of a vertical bar (``|'').  If
+               _c is not given, columns will remain separated by a
+               vertical bar (``|'').
+
+          ----tttt   The five-line identifying header and the five-line
+               trailer normally supplied for each page are not
+               printed.  The command also quits printing after the
+               last section without spacing to the end of the page.
+
+          ----UUUU   Print the output ``un-boxed''.  Instead of printing
+               hyphens (``-'') and vertical bars (``|'') around the
+               table, blanks are printed.
+
+          ----WWWW_n  The width of the output line is set to _n characters.
+               The default width is 79 characters per line; the
+               default was chosen so tables will be printed nicely on
+               video terminals.  If _n is not given, the width defaults
+               to 120 characters per line.  The minimum allowable page
+               width is 10.  The actual number of characters per line
+               is the sum of the width and the offset.  (See the ----oooo
+
+
+
+     Page 5                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+               option above.)
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+          There is a limit on the number of columns.  Currently, this
+          is 200 on mainframes and 100 on all other machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Print /_e_t_c/_p_a_s_s_w_d as a table with enumeration and default
+          column justifications and widths.  The delimiter will be a
+          colon (``:'').
+
+               prtable -eD':' -W65 login passwd uid gid acct home
+               shell
+
+          Some example output for the above command would be:
+
+                    |----------------------------------------------------------------|
+                    |login       |passwd      |uid         |gid         |acct        |
+                    |----------------------------------------------------------------|
+                  1 |root        |WrO2xgZ/9QZI|0           |1           |3784,Admin  |
+                    |            |c           |            |            |            |
+                  2 |sync        |            |20          |1           |3784,Admin  |
+                    |----------------------------------------------------------------|
+
+
+                    |-------------------------|
+                    |home        |shell       |
+                    |-------------------------|
+                  1 |/           |            |
+                  2 |/           |/bin/sync   |
+                    |-------------------------|
+
+          Print /_e_t_c/_p_a_s_s_w_d again, but with different justifications
+          and widths, but no enumeration:
+
+               prtable -d':' -W65 -l8,15 login passwd -r5,5 uid gid   \
+                    -l26,16,12 acct home shell
+
+
+
+
+     Page 6                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+          Some example output for the above command would be:
+
+               |--------------------------------------------------------------|
+               |login   |passwd        |  uid|  gid|acct                      |
+               |--------------------------------------------------------------|
+               |root    |WrO2xgZ/9QZIc |    0|    1|3784,Admin                |
+               |sync    |              |   20|    1|3784,Admin                |
+               |--------------------------------------------------------------|
+
+
+               |----------------------------|
+               |home           |shell       |
+               |----------------------------|
+               |/              |            |
+               |/              |/bin/sync   |
+               |----------------------------|
+
+          Print out two columns with a fancy page heading and column
+          heading.  Paginate the output with 15 lines per page:
+
+               prtable -L15 -l12 -r5 -C "| col. heading |"  \
+                    -h "`date '+%m/%d/%y'`    GENERAL HEADING        Page %d
+               Another line of heading"
+
+          Some example output of the above command might be:
+
+               02/08/82    GENERAL HEADING        Page 1
+               Another line of heading
+
+
+               | col. heading |
+               |--------------|
+               |last    |   11|
+               |root    |    1|
+               |uname   |    1|
+               |5esslmr |  246|
+               |--------------|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                         (printed 10/14/91)
+
+
+
+
+
+
+     pppprrrrttttaaaabbbblllleeee((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  pppprrrrttttaaaabbbblllleeee((((1111))))
+
+
+
+               02/08/82    GENERAL HEADING        Page 2
+               Another line of heading
+
+
+               | col. heading |
+               |--------------|
+               |daemon  |    1|
+               |bin     |    2|
+               |adm     |    4|
+               |--------------|
+
+
+
+
+
+
+          Print out three columns, once normally and once with
+          duplicates removed.  For the normal output, the command
+          would be
+
+               prtable -l6,6,6 a1 a2 a3
+
+          The normal output would be:
+
+               |--------------------------|
+               |a1      |a2      |a3      |
+               |--------------------------|
+               |abc     |def     |ghi     |
+               |abc     |def     |ghj     |
+               |abc     |deg     |ghj     |
+               |abd     |deg     |ghj     |
+               |--------------------------|
+
+          The same information printed with duplicates removed
+
+               prtable -R -l6,6,6 a1 a2 a3
+
+          would be:
+
+               |--------------------------|
+               |a1      |a2      |a3      |
+               |--------------------------|
+               |abc     |def     |ghi     |
+               |        |        |ghj     |
+               |        |deg     |ghj     |
+               |abd     |deg     |ghj     |
+               |--------------------------|
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          prblock(1), qprintf(1), retrieve(1), and uprint(UNITY).
+
+
+
+
+
+     Page 8                                         (printed 10/14/91)
+
+
+

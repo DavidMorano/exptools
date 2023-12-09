@@ -1,0 +1,198 @@
+
+
+
+     sssseeeettttddddiiiiffffffff((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         sssseeeettttddddiiiiffffffff((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          setdiff - find set difference of attributes on two UNITY
+          tables
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _s_e_t_d_i_f_f [-q] [-Itable1] [-Itable2] a1a[,a1b,...] a2a[,a2b,...] \
+           _f_r_o_m table1 table2 [_i_n_t_o table3]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _s_e_t_d_i_f_f command allows the user to build a new table by
+          finding the difference of two sets of attribute values, one
+          from each of two existing tables (table1 and table2).  The
+          set difference of tables table1 and table2 is made up of
+          those records from table1 that will not appear in the output
+          of a _u_j_o_i_n(UNITY) command with the same arguments.  The
+          arguments may be reversed to get those records in table2
+          that will not appear in the output of a _u_j_o_i_n(UNITY) command
+          with the same arguments.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the first input table.  If the -I option is used
+          twice, the second occurrance table name specified in the
+          second occurrance is used to determine an alternate
+          description file to be used in reading the second input
+          table.  Note that this makes the -I option positional.  Even
+          if an alternate description file is not desired for the
+          first table, it must be entered if an alternate description
+          file is desired for the second table.  In this case, the
+          table name entered in the first occurrance of the -I option
+          should be the same as table1.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          If an input table specified is "-", then input is taken from
+          the standard input instead of a table.  The -I option must
+          be used to specify the name of a table from which the
+          description file name can be determined and used.  If the
+          second table specified is "-", then two occurrances of the
+          -I option must appear as described above; the first
+          occurrance applies to the first table and the second
+          occurrance applies to the second table.  Both table names
+          cannot be "-"; one of them must be specified.  The indexes,
+          as described below, cannot be used on a table that is read
+          from the standard input.
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     sssseeeettttddddiiiiffffffff((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         sssseeeettttddddiiiiffffffff((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+          To perform the setdiff operation _e_f_f_i_c_i_e_n_t_l_y, table2 must
+          have an index on the first attribute on which the join is
+          done (a2a).
+
+          The _s_e_t_d_i_f_f command is used when it is important to find out
+          which records from a table will be lost when a _u_j_o_i_n(UNITY)
+          is done with another table.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are in the set difference
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Table S:                        Table SP:
+
+          |-------------------------|     |------------|
+          |snu|sname     |city      |     |snu|pnu| qty|
+          |mbe|          |          |     |mbe|mbe|    |
+          |r  |          |          |     |r  |r  |    |
+          |-------------------------|     |------------|
+          |s1 |smith     |london    |     |s1 |p1 | 300|
+          |s2 |jones     |paris     |     |s1 |p2 | 200|
+          |s3 |blake     |paris     |     |s1 |p3 | 400|
+          |-------------------------|     |s2 |p1 | 100|
+                                          |s2 |p2 | 200|
+                                          |------------|
+
+          $ setdiff snumber snumber from S SP into tmp2
+          setdiff: 1 records difference from S and SP.
+
+          Table tmp2:
+
+          |-------------------------|
+          |snu|sname     |city      |
+          |mbe|          |          |
+          |r  |          |          |
+          |-------------------------|
+          |s3 |blake     |paris     |
+          |-------------------------|
+
+          As another example, suppose I want to alter a field, say
+          field1, of a table, say table1, for only a selected portion
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     sssseeeettttddddiiiiffffffff((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         sssseeeettttddddiiiiffffffff((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          of the table that does not fit into any groupings available
+          using the _w_h_e_r_e clause.  It can be accomplished by putting
+          the keys of those records to be altered into a file, say
+          table2 (as well as creating an appropriate description file
+          with a single field, say key), and executing the following
+          sequence of commands:
+
+          ujoin key key from table1 table2 into tmp
+          alter field1 to "newvalue" in tmp
+          setdiff key key from table1 table2 >> tmp
+          mv tmp table1
+
+          The table table1 has been modified so that all records whose
+          key appears in table2 have the field1 attribute set to
+          "newvalue"; all other records appear the same as before.
+
+          Another use for this command is to compare _a_l_l attributes of
+          two different tables with the same format (e.g., an old and
+          new version of the same table).  The output will be those
+          lines that are different between the tables.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/setdiff.c, zsetdiff.c - the C source program
+          bin/setdiff - the executable program
+          A<table>.<attribute>, B<table>.<attribute> - the index files
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _u_j_o_i_n, _r_e_g_j_o_i_n, _o_u_t_e_r_j_o_i_n, _i_n_d_e_x(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

@@ -1,0 +1,198 @@
+
+
+
+     XXXXJJJJXXXX((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))              XXXXJJJJXXXX((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          xjx - standard I/O interpreter
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          xxxxjjjjxxxx [----VVVVddddffffnnnnppppzzzz ] [ ----ZZZZ n ] file
+          [ command line arguments]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _x_j_x utility is a standard I/O interpreter for AT&T Dot-
+          Mapped Display terminals (5620 DMD and 630 MTG). It down-
+          loads the program in _f_i_l_e to the terminal and runs it there,
+          simulating most of the standard I/O library functions.  This
+          gives application programs downloaded into the terminal the
+          ability to perform operations such as file I/O to files
+          resident on the host computer, using the same interface as
+          programs written for execution on the host computer.
+
+          The xjx utility calls either _x_d_m_d_l_d or _3_2_l_d to do the down-
+          load into the terminal. Therefore, the ----dddd, ----pppp, ----zzzz, ----ffff, ----ZZZZ,
+          and ----nnnn options are available for use with _x_j_x on the 630
+          MTG, and the ----dddd, ----pppp, and ----zzzz options are available for use
+          with _x_j_x on the 5620 DMD.
+
+          The -_V option causes _x_j_x to print a message that identifies
+          which version it is.
+
+          _S_t_d_i_n directed to the host portion of _x_j_x, either through
+          the _x_j_x command line or with the _p_o_p_e_n function, is properly
+          redirected.  Note that input from the keyboard is not
+          translated to _s_t_d_i_n to the host portion of _x_j_x. Rather, pro-
+          grams wishing to read from the keyboard should use
+          _k_b_d_c_h_a_r(3R).
+
+          _S_t_d_o_u_t and _s_t_d_e_r_r, written to by the below library func-
+          tions, will be stored in a buffer during execution.  After
+          the terminal program has been rebooted, _s_t_d_o_u_t and _s_t_d_i_n
+          will be redirected to the terminal.
+
+          Programs intended for use by _x_j_x should include <<<<ddddmmmmdddd....hhhh>>>> and
+          <ddddmmmmddddiiiioooo....hhhh> and call _e_x_i_t(3R) upon termination.  _E_x_i_t()
+          returns control to the shell and causes a reboot of the
+          default terminal emulator.
+
+          What follows is a list of stdio library functions available
+          under _x_j_x. These functions are called from an application
+          downloaded into the terminal by _x_j_x. The _x_j_x library rou-
+          tines in the terminal then translate the call into a message
+          which is sent to the host portion of _x_j_x for processing.
+
+                      getc     getchar   fgets     fflush
+
+
+
+
+
+     Page 1                                           (printed 9/8/92)
+
+
+
+
+
+
+     XXXXJJJJXXXX((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))              XXXXJJJJXXXX((((1111))))
+
+
+
+                      putc     putchar   puts      fputs
+
+                      fopen    freopen   fclose    access
+
+                      popen    pclose    fread     fwrite
+
+                      printf   Printf    fprintf   Fprintf
+
+          The functions ffffpppprrrriiiinnnnttttffff and pppprrrriiiinnnnttttffff are stripped down versions
+          of those functions in UNIX System V.  The uppercase versions
+          (FFFFpppprrrriiiinnnnttttffff and PPPPrrrriiiinnnnttttffff) are identical.  Note, however, that
+          these functions are only available for the 630 MTG.   See
+          printf(3L) for more details.
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/lib/dmdtools/xsysint         host portion of _x_j_x
+          after download is complete
+          $DMD/lib/sysint                     alternate location for
+          host portion after download
+          $HOME/.jxout                        saved standard output
+          $HOME/.jxerr                        saved standard diagnos-
+          tic output
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          dmdld(1) in _e_x_p_t_o_o_l_s.
+          exit(3R), kbdchar(3R), printf(3L) in the _6_3_0 _M_T_G _S_o_f_t_w_a_r_e
+          _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+          access(2), fopen(3S), fread(3S), getc(3S), popen(3S),
+          printf(3S), putc(3S), puts(3S) in the _U_N_I_X _S_y_s_t_e_m _V
+          _P_r_o_g_r_a_m_m_e_r'_s _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          Because keyboard data is not sent to the _s_t_d_i_n of the host
+          component of _x_j_x, applications running under _x_j_x which read
+          from the _s_t_d_i_n will hang if their _s_t_d_i_n is not redirected.
+
+          The _s_t_d_i_n can be redirected either from the command line or
+          by function calls inside the application process running on
+          the terminal.
+
+     BBBBUUUUGGGGSSSS
+          _X_j_x does not work when su'ed to another user.
+
+          _X_j_x does not work in the nonlayers environment.
+
+          _X_j_x does not work with application cached with AAAA____SSSSHHHHAAAARRRREEEEDDDD,
+          AAAA____BBBBSSSSSSSS or AAAA____DDDDAAAATTTTAAAA.  (This bug applies only to the 630 MTG.)
+
+          _S_t_d_e_r_r is buffered. Use fflush (stderr) if this is a prob-
+          lem.
+
+          _g_e_t_c(), _g_e_t_c_h_a_r(), _p_u_t_c(), and _p_u_t_c_h_a_r() are not macros as
+
+
+
+     Page 2                                           (printed 9/8/92)
+
+
+
+
+
+
+     XXXXJJJJXXXX((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))              XXXXJJJJXXXX((((1111))))
+
+
+
+          described in _g_e_t_c(_3_S) and _p_u_t_c(_3_S).
+
+          The _f_o_p_e_n() routine does not support the following modes:
+          r+, w+, a+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                           (printed 9/8/92)
+
+
+

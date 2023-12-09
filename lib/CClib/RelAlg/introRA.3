@@ -1,0 +1,82 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/s.introRA.3"
+.\"
+.PH "'INTRO(3RA)'Relational Algebra C++ Library'INTRO(3RA)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.VL 7 0
+.LI "\fBNAME\fP"
+.sp
+intro - introduction to functions and classes in the relation C++ library
+.LI "\fBSYNOPSIS\fP"
+.sp
+.EX
+\#include <relation.h>
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The Relational Algebra Library (relation) is a set of C++ classes 
+developed at AT&T Santa Barbara Laboratory.  It allows a variety
+of data storage mechanisms, currently including ASCII files, binary
+files and main memory (workspace), to be treated as relations and
+manipulated using relational algebra operations.
+.P
+The class structure of the Relational Algebra library conforms
+closely with standard relational terminology.  A \*(Rl has an \*(In
+that defines its structure and an \*(Ex that defines its current value.
+The \*(In is an ordered list of \*(Ats.  
+The \*(At class provides field names and associates the fields with \*(Dms.
+The \*(Dm defines the set of legal values associated with an atomic
+data item.
+.P
+The \*(Ex is a simple container of \*(Tps.  The \*(Ex can be truncated to
+zero \*(Tps, added to, or walked through.  The \*(Tp is a shareable
+structure containing a record in a relation.  The \*(Tp data can be
+treated as a struct containing a member for each \*(At.
+.P
+All the relational algebra operations are based on the capabilities
+of the \*(Ex underlying the \*(Rl.  For example, the WS_Extension class
+is used to create a WS_Relation, the AF_Extension class is used to
+create an AF_Relation, and the BF_Extension class is used to create a
+BF_Relation.  New Relation types can be added by creating a new
+Extension, in other words a means to add, zero or walk through values
+in the new Relation types.  Relation operations may be extended to provide
+optimization or new features, but it is not necessary to redefine or
+extend Relation operations just to add a new storage mechanism.
+.LI "\fBDEFINITIONS\fP"
+.br
+The Santa Barbara library (sblib) provides typedefs of Float_t and Int_t on
+behalf of the relation library to provide consistent treatment
+of floating point and integer data.  Several of the relation classes
+have additional typedefs for their own use.
+.P
+The relation library also #defines several cpp(1) macros.  The int_domain,
+float_domain and string_domain macros simplify declaration of Domains
+by automatically matching the internal Domain name to the C++ variable
+name.  The attribute macro provides a similar service for Attribute
+declarations.  Many of the relation classes #define additional constants
+or macros.
+.LI "\fBFILES\fP"
+.br
+.DS
+LDIR and INCLUDE are specified during installation.
+
+INCLUDE/relation.h - declarations for the relation classes and functions.
+LDIR/librelation.a - definition for the relation classes and functions.
+.DE
+.LI "\fBDIAGNOSTICS\fP
+.br
+Classes in the relation library use the relerr Error object (see \*(Er).
+Many of the classes are based on functions and classes in the sblib.
+These sblib functions and classes could use several additional Error
+objects (see Intro(3SB)).
+.LI "\fBWARNINGS\fP
+.sp
+The classes in the relation library require linkage to the sblib library
+as well as the system libraries libcurses.a and libPW.a.  Use of libmalloc.a
+is recommended since occasional problems have occurred with the libc.a version
+of malloc.
+.LI "\fBSEE ALSO\fP"
+.sp
+ar(1),CC(1),cc(1),intro(3),intro(3SB)
+.LE

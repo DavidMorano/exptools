@@ -1,0 +1,396 @@
+
+
+
+     llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          lookupattr, lookupprojattr, findattr - Locate information
+          about a particular attribute.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          iiiinnnntttt
+          llllooooooookkkkuuuuppppaaaattttttttrrrr(((( aaaattttttttrrrrnnnnaaaammmmeeee,,,, nnnnooooddddeeeelllliiiisssstttt,,,, nnnnooooddddeeeeccccnnnntttt,,,, aaaattttttttrrrrppppttttrrrr ))))
+          cccchhhhaaaarrrr ****aaaattttttttrrrrnnnnaaaammmmeeee;;;;
+          ssssttttrrrruuuucccctttt qqqqnnnnooooddddeeee ****nnnnooooddddeeeelllliiiisssstttt;;;;
+          iiiinnnntttt nnnnooooddddeeeeccccnnnntttt;;;;
+          ssssttttrrrruuuucccctttt aaaattttttttrrrrrrrreeeeffff ****aaaattttttttrrrrppppttttrrrr;;;;
+
+          iiiinnnntttt
+          llllooooooookkkkuuuupppppppprrrroooojjjjaaaattttttttrrrr(((( aaaattttttttrrrrnnnnaaaammmmeeee,,,, nnnnooooddddeeeelllliiiisssstttt,,,, nnnnooooddddeeeeccccnnnntttt,,,, pppprrrroooojjjjppppttttrrrr,,,, ffffrrrriiiieeeennnnddddllllyyyy ))))
+          cccchhhhaaaarrrr ****aaaattttttttrrrrnnnnaaaammmmeeee;;;;
+          ssssttttrrrruuuucccctttt qqqqnnnnooooddddeeee ****nnnnooooddddeeeelllliiiisssstttt;;;;
+          iiiinnnntttt nnnnooooddddeeeeccccnnnntttt;;;;
+          ssssttttrrrruuuucccctttt qqqqpppprrrroooojjjjeeeeccccttttiiiioooonnnn ****pppprrrroooojjjjppppttttrrrr;;;;
+          iiiinnnntttt ffffrrrriiiieeeennnnddddllllyyyy;;;;
+
+          iiiinnnntttt
+          ffffiiiinnnnddddaaaattttttttrrrr(((( aaaattttttttrrrrlllliiiisssstttt,,,, aaaattttttttrrrrccccnnnntttt,,,, aaaattttttttrrrrnnnnaaaammmmeeee ))))
+          ssssttttrrrruuuucccctttt uuuuaaaattttttttrrrriiiibbbbuuuutttteeee ****aaaattttttttrrrrlllliiiisssstttt;;;;
+          iiiinnnntttt aaaattttttttrrrrccccnnnntttt;;;;
+          cccchhhhaaaarrrr ****aaaattttttttrrrrnnnnaaaammmmeeee;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The llllooooooookkkkuuuuppppaaaattttttttrrrr() routine is used to locate an attribute in a
+          list of query nodes (i.e., relations).  A pointer to an
+          attribute reference (attrref) structure is passed in for
+          storing the query node pointer and the attribute index on
+          successfull look up.  True (non-zero) is returned on
+          success; false (zero) on failure.  This routine is used
+          mainly to look up an attribute reference as part of the
+          where-clause of a query.
+
+          The llllooooooookkkkuuuupppppppprrrroooojjjjaaaattttttttrrrr() routine is used to locate a projected
+          attribute in a list of query nodes (i.e., relations).  A
+          pointer to an attribute projection (qprojection) structure
+          is passed in for storing the query node pointer, the
+          attribute index, the attribute's printed name, and the
+          attribute's print width on successfull look up.  True (non-
+          zero) is returned on success; false (zero) on failure.  This
+          routine is used mainly to look up an attribute reference as
+          part of the projection list of a query.
+
+          If _f_r_i_e_n_d_l_y is true (non-zero) and a friendly name is given
+          in the descriptor information, the attribute's printed name
+          will be the friendly name; otherwise, it will be the
+          attributes official name.
+
+
+
+     Page 1                                          (printed 8/30/90)
+
+
+
+
+
+
+     llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))
+
+
+
+          The ffffiiiinnnnddddaaaattttttttrrrr() routine is a low-level routine used to locate
+          an attribute within a relation's attribute list.  If
+          _a_t_t_r_n_a_m_e is found, ffffiiiinnnnddddaaaattttttttrrrr() returns the index of the
+          attribute in _a_t_t_r_l_i_s_t.  If _a_t_t_r_n_a_m_e is not found, minus one
+          (-1) is returned.  Unlike, the above commands, _a_t_t_r_n_a_m_e must
+          contain only the attribute name, no relation name or print
+          width is allowed.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _a_t_t_r_n_a_m_e
+               The name of an attribute to look up.
+
+               For ffffiiiinnnnddddaaaattttttttrrrr(), this must be just the attribute name.
+
+               For llllooooooookkkkuuuuppppaaaattttttttrrrr() and llllooooooookkkkuuuupppppppprrrroooojjjjaaaattttttttrrrr(), if an attribute
+               is not unique among the given query nodes, it must be
+               prefixed by the file name of the relation it belongs to
+               and a period (e.g., ``passwd.login'') or the relation's
+               positional index (starting at one) in the _n_o_d_e_l_i_s_t, and
+               a period (e.g., ``1.login'').  If an attribute is
+               unique among the query nodes, this syntax is still
+               recognized.
+
+               An optional colon and print width is allowed at the end
+               of each attribute name passed to llllooooooookkkkuuuupppppppprrrroooojjjjaaaattttttttrrrr()
+               (e.g., ``login:12'').  If given, the print width for
+               the attribute will be this number.  If not given, the
+               print width for the attribute will be that contained in
+               the descriptor information.
+
+               A special attribute ``rec#'', is recognized by both
+               lookup routines.  This attribute represents each
+               tuple's positional number within its original relation.
+               If this attribute is recognized, the attribute index in
+               the attribute reference or projection structure will be
+               set to ATTR_RECNUM, as defined in _u_q_u_e_r_y._h.
+
+               In addition to rec#, llllooooooookkkkuuuupppppppprrrroooojjjjaaaattttttttrrrr() recognizes
+               another special attribute, ``all''.  This attribute is
+               a short-hand for all attributes of a relation.  If this
+               attribute is recognized, the attribute index in the
+               projection structure will be set to ATTR_ALL, as
+               defined in _u_q_u_e_r_y._h.
+
+          _n_o_d_e_l_i_s_t
+               The array of query nodes (i.e., relations) used in the
+               query.  A query node is an instance of a relation; the
+               same relation may be referenced multiple times in
+
+
+
+     Page 2                                          (printed 8/30/90)
+
+
+
+
+
+
+     llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))
+
+
+
+               _n_o_d_e_l_i_s_t.  These structures should be initialized by
+               setting the rel element in each qnode structure to
+               point to the corresponding urelation structure obtained
+               from ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3), as in
+
+                    relptr = getrelinfo( relpath[i], NULL, FALSE );
+                    nodelist[i].rel = relptr;
+
+          _n_o_d_e_c_n_t
+               The number of query node structures in the _n_o_d_e_l_i_s_t
+               array.  At most eight relations may be queried at any
+               one time.
+
+          _a_t_t_r_p_t_r
+               A pointer to an attrref structure supplied by the
+               calling routine for storing the pointer to the query
+               node and the attribute index upon successful lookup.
+
+          _p_r_o_j_p_t_r
+               A pointer to an qprojection structure supplied by the
+               calling routine for storing the pointer to the query
+               node, the attribute index, the attribute's printed
+               name, and the attribute's print width upon successful
+               lookup.
+
+          _f_r_i_e_n_d_l_y
+               A boolean flag saying whether the printed name for the
+               attribute should be the attribute's friendly name or
+               the actual name.  If true (non-zero) and there is a
+               friendly name in the descriptor information, the
+               printed name will be the friendly name; otherwise, the
+               printed name will be the attribute's actual name.
+
+          _a_t_t_r_l_i_s_t
+               An array of uattribute structures containing attribute
+               descriptor information for a relation.  The _a_t_t_r_n_a_m_e
+               will be matched against the name in each uattribute
+               _s_t_r_u_c_t_u_r_e.
+
+          _a_t_t_r_c_n_t
+               The number of uattribute structures in _a_t_t_r_l_i_s_t.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          llllooooooookkkkuuuuppppaaaattttttttrrrr() and llllooooooookkkkuuuupppppppprrrroooojjjjaaaattttttttrrrr() both return true (non-
+          zero) on successful look up and false (zero) on failure.
+          The variable uuuueeeerrrrrrrroooorrrr is set to contain the error code.
+
+          ffffiiiinnnnddddaaaattttttttrrrr() returns the appropriate attribute index upon
+          success and minus one (-1) on failure.  The variable uuuueeeerrrrrrrroooorrrr
+          is not set on failure.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+
+
+
+     PPPPaaaaggggeeee 3333                                          ((((pppprrrriiiinnnntttteeeedddd 8888////33330000////99990000))))
+
+
+
+
+
+
+     llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))
+
+
+
+          Look up the login attribute in a list of query nodes (i.e.,
+          relations).
+
+               #include "uquery.h"
+               #include "message.h"
+
+               struct qnode *nodelist;
+               int nodecnt;
+               struct attrref attrinfo;
+                . . .
+               if ( ! lookupattr( "login", nodelist, nodecnt, &attrinfo ) ) {
+                    pruerror( );
+                    prmsg( MSG_ERROR, "cannot locate login attribute in relations" );
+                    /* return failure */
+               }
+
+          Look up the login attribute in a list of relations as a
+          projected attribute.  We want to use the friendly names and
+          have a print width of 12.
+
+               #include "uquery.h"
+               #include "message.h"
+
+               struct qnode *nodelist;
+               int nodecnt;
+               struct qprojection projinfo;
+                . . .
+               if ( ! lookupprojattr( "login:12", nodelist, nodecnt, &projinfo, TRUE ) ) {
+                    pruerror( );
+                    prmsg( MSG_ERROR, "cannot locate login attribute in relations" );
+                    /* return failure */
+               }
+
+          Look up the login attribute in a relation's attributes.
+
+               #include "uquery.h"
+               #include "message.h"
+
+               struct urelation *relptr;
+               int attrindex;
+                . . .
+
+               attrindex = findattr( relptr->attrlist, relptr->attrcnt, "login" );
+               if ( attrindex < 0 ) {
+                    prmsg( MSG_ERROR, "cannot locate login attribute in relation '%s'"
+                         relptr->path );
+                    /* return failure */
+               }
+
+     EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        AAAAttttttttrrrriiiibbbbuuuutttteeee PPPPrrrroooojjjjeeeeccccttttiiiioooonnnn IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn SSSSttttrrrruuuuccccttttuuuurrrreeee
+          While most applications need only reference the attribute
+
+
+
+     Page 4                                          (printed 8/30/90)
+
+
+
+
+
+
+     llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))
+
+
+
+          values for projected attributes, there may occasionally be a
+          need to access the projection information.  The structures
+          to do this, as defined in _u_q_u_e_r_y._h, are shown below:
+
+               struct qnode {
+                    ...
+                    struct urelation *rel;   /* relation info for node */
+                    ...
+               };
+
+               struct qprojection {
+                    struct qnode *rel;  /* node for the attribute */
+                    short attr;         /* attribute number */
+                    short prwidth; /* width attribute shoule be displayed with */
+                    char *prname;  /* attribute name printed for attribute */
+                    short flags;        /* flags about attribute */
+               };
+
+          The qprojection structure gives information about each
+          projected attribute.  It gives the node (i.e., relation) the
+          attribute is from, the index of the attribute in the
+          relation, and print information about the attribute.  (This
+          is used to override the information in the attribute
+          structure itself.)  A query node is an instance of a
+          relation; the same relation may be used multiple times in
+          one query.  Each query node points to the relation it
+          represents, i.e., the urelation structure.  To access
+          relation information about a projected attribute, the
+          following reference will suffice:
+
+               struct qprojection *projptr;
+                . . .
+               projptr->rel->rel->...
+
+          See the
+          ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3)
+          manual page for details on the urelation and
+          uattribute structures.
+
+        AAAAttttttttrrrriiiibbbbuuuutttteeee RRRReeeeffffeeeerrrreeeennnncccceeee SSSSttttrrrruuuuccccttttuuuurrrreeee
+          Attribute reference structures are used almost exclusively
+          internally to the query libraries; however, there may
+          occasionally be a need to use these structures for other
+          puposes.  The structures to do this, as defined in _u_q_u_e_r_y._h,
+          are shown below:
+
+               struct qnode {
+                    ...
+                    struct urelation *rel;   /* relation info for node */
+                    ...
+               };
+
+
+
+
+     Page 5                                          (printed 8/30/90)
+
+
+
+
+
+
+     llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               llllooooooookkkkuuuuppppaaaattttttttrrrr((((3333))))
+
+
+
+               struct attrref {
+                    struct qnode *rel;       /* node for the attribute */
+                    short attr;              /* attribute number */
+               };
+
+          The attrref structure identifies an attribute by giving the
+          query node and the attribute index withing the node's
+          attribute list.  A query node is an instance of a relation;
+          the same relation may be used multiple times in one query.
+          Each query node points to the relation it represents, i.e.,
+          the urelation structure.  To access relation information
+          about an attribute reference, the following code will
+          suffice:
+
+               struct attrref *refptr;
+                . . .
+               refptr->rel->rel->...
+
+          See the ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3) manual page for details on the
+          urelation and uattribute structures.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cmpquery(1), mkquery(3), parsewhere(3), and retrieve(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 8/30/90)
+
+
+

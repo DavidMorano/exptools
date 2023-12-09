@@ -1,0 +1,52 @@
+;  This autoloaded file implements the "i" command of mhe
+(defun 
+    (&mh-inc old-folder
+        (&mh-save-killbuffer)
+        (setq old-folder mh-folder)
+        (if (!= mh-folder "inbox")
+            (save-window-excursion  ffl
+                (setq ffl (get-folder-name "inc into" "inbox" 1))
+                (&mh-read-folder ffl "" t-buffer-filename ffl)
+            )
+        )
+        (temp-use-buffer "scratch")
+        (message "Checking for new mail...") (sit-for 0)
+        (erase-buffer) (set-mark)
+        (save-excursion 
+            (send-to-shell (concat mh-progs "/inc +" mh-folder))
+        )
+        (setq buffer-is-modified 0)
+        (if (looking-at "^Incorporating")
+            (progn 
+                   (end-of-line) (forward-word)
+                   (beginning-of-line) (erase-region)
+                   (beginning-of-file) (set-mark) (end-of-file)
+                   (delete-to-killbuffer)
+                   (setq buffer-is-modified 0)
+                   (pop-to-buffer (concat "+" old-folder))
+                   (switch-to-buffer (concat "+" mh-folder))
+                   (end-of-file)
+                   (error-occured 
+                       (re-search-reverse "^...+")
+                       (search-forward "+")
+                       (delete-previous-character)
+                       (insert-character ' ')
+                   )
+                   (end-of-file) (set-mark)
+                   (yank-from-killbuffer)
+                   (exchange-dot-and-mark)
+                   (setq mh-direction 1)
+                   (setq buffer-is-modified 0)
+            )
+            (progn 
+                   (save-excursion (show-shell-errors))
+                   (end-of-file) (erase-region)
+                   (setq buffer-is-modified 0)
+                   (setq mh-folder old-folder)
+                   (pop-to-buffer (concat "+" mh-folder))
+            )
+        )
+        (&mh-restore-killbuffer)
+    )
+)
+

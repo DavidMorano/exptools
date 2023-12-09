@@ -1,0 +1,330 @@
+
+
+
+     nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          initresult, nexttuple, freeresult - Traverse the result of a
+          query.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          iiiinnnntttt
+          iiiinnnniiiittttrrrreeeessssuuuulllltttt(((( rrrreeeessssuuuulllltttt ))))
+          ssssttttrrrruuuucccctttt qqqqrrrreeeessssuuuulllltttt ****rrrreeeessssuuuulllltttt;;;;
+
+          iiiinnnntttt
+          nnnneeeexxxxttttttttuuuupppplllleeee(((( qqqquuuueeeerrrryyyy,,,, rrrreeeessssuuuulllltttt,,,, aaaattttttttrrrrvvvvaaaallllssss ))))
+          ssssttttrrrruuuucccctttt uuuuqqqquuuueeeerrrryyyy ****qqqquuuueeeerrrryyyy;;;;
+          ssssttttrrrruuuucccctttt qqqqrrrreeeessssuuuulllltttt ****rrrreeeessssuuuulllltttt;;;;
+          cccchhhhaaaarrrr ********aaaattttttttrrrrvvvvaaaallllssss;;;;
+
+          vvvvooooiiiidddd
+          ffffrrrreeeeeeeerrrreeeessssuuuulllltttt(((( rrrreeeessssuuuulllltttt ))))
+          ssssttttrrrruuuucccctttt qqqqrrrreeeessssuuuulllltttt ****rrrreeeessssuuuulllltttt;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The iiiinnnniiiittttrrrreeeessssuuuulllltttt(), nnnneeeexxxxttttttttuuuupppplllleeee(), and ffffrrrreeeeeeeerrrreeeessssuuuulllltttt() routines are
+          used to traverse the result of of a query obtained with the
+          qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3) function.
+
+          The iiiinnnniiiittttrrrreeeessssuuuulllltttt() routine is called once each time the query
+          _r_e_s_u_l_t is to be traversed.  (The _r_e_s_u_l_t may be traversed as
+          many times as needed before ffffrrrreeeeeeeerrrreeeessssuuuulllltttt(3) is called.)  This
+          routine resets all counters and pointers to the first tuple
+          in the query _r_e_s_u_l_t.  A successful initialization returns
+          true (non-zero).  False (zero) is returned whenever there
+          are no tuples in _r_e_s_u_l_t or there is an error.  The uuuueeeerrrrrrrroooorrrr
+          variable will be set on an error.
+
+          The nnnneeeexxxxttttttttuuuupppplllleeee() routine gets the next queried tuple from
+          _r_e_s_u_l_t and places pointers to its attribute values into the
+          _a_t_t_r_v_a_l_s array.  It is up to the application to make sure
+          that _a_t_t_r_v_a_l_s contains enough space to hold all the pointers
+          for the attributes.  The attribute value pointers are valid
+          only until the next call to nnnneeeexxxxttttttttuuuupppplllleeee() or ffffrrrreeeeeeeerrrreeeessssuuuulllltttt().
+          nnnneeeexxxxttttttttuuuupppplllleeee() returns true (non-zero) on success.  It returns
+          false (zero) when there are no more tuples in the result or
+          an error was encountered.  The uuuueeeerrrrrrrroooorrrr variable will be set
+          on an error.
+
+          The ffffrrrreeeeeeeerrrreeeessssuuuulllltttt() routine frees all buffers and closes all
+          relations associated with _r_e_s_u_l_t. It is imperative that
+          ffffrrrreeeeeeeerrrreeeessssuuuulllltttt() is called after a query result has been used as
+          needed.  Even though only a few tuples may be retrieved for
+          a query, the buffer page where each retrieved attribute
+          value is stored cannot be re-used until ffffrrrreeeeeeeerrrreeeessssuuuulllltttt() is
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))
+
+
+
+          called.  This can tie up considerable more space than that
+          used for just the retrieved tuples.  Additionally, certain
+          internal flags are not reset until ffffrrrreeeeeeeerrrreeeessssuuuulllltttt() is called.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _r_e_s_u_l_t
+               A pointer to the data structure holding the result of
+               the given _q_u_e_r_y.  The _r_e_s_u_l_t structure must be
+               allocated by the application (usually as a local
+               variable).  _r_e_s_u_l_t must have been previously set up by
+               qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3).
+
+          _q_u_e_r_y
+               A pointer to the query data structure previously
+               evaluated using qqqquuuueeeerrrryyyyeeeevvvvaaaallll(3).  This parameter is used
+               to get the projection information about the query.
+
+          _a_t_t_r_v_a_l_s
+               An array of character pointers where pointers to
+               individual attribute values will be stored.  The
+               application must make sure at least query->attrcnt
+               pointers are allocated in this array.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          iiiinnnniiiittttrrrreeeessssuuuulllltttt() and nnnneeeexxxxttttttttuuuupppplllleeee() return true (non-zero) on
+          success and false (zero) when there are no more tuples in
+          the query result or on failure.  In the case of failure, the
+          external variable uuuueeeerrrrrrrroooorrrr will contain the error code.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          At most MAXATT attributes can be retrieved.  This is
+          currently defined in _u_r_e_l_a_t_i_o_n._h as 200 from main frames and
+          100 for other machines.  Any attributes over this limit are
+          not retrieved.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Print the attribute values retrieved from a query.  Use a
+          colon (:) as each attribute's delimiter except for the last
+          attribute which should have a new-line delimiter.
+
+               #include "uquery.h"
+
+               register int i;
+               struct uquery *query;
+               struct qresult result;
+               char *attrvals[MAXATT];
+                . . .
+               if ( ! queryeval( query, &result ) ) {
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))
+
+
+
+                    pruerror();
+                    /* Print message and return failure */
+               }
+               if ( ! initresult( &result ) ) {
+                    pruerror();
+                    /* Print message and return failure */
+               }
+               while( nexttuple( query, &result, attrvals ) ) {
+                    for( i = 0; i < query->attrcnt; i++ )
+                         writeattrval( stdout, attrvals[i],
+                              i == query->attrcnt - 1 ? '\n' : ':' );
+               }
+               freeresult( &result );
+
+          Print the attribute values retrieved from a query again.
+          However, this time use each attribute's original delimiter,
+          except for the last attribute which should still have a
+          new-line delimiter.  Fixed width attributes should have no
+          delimiter.
+
+               #include "uquery.h"
+
+               register int i;
+               struct qprojection *projptr;
+               struct uattribute *attrptr;
+               struct uquery *query;
+               struct qresult result;
+               char *attrvals[MAXATT];
+                . . .
+               if ( ! queryeval( query, &result ) ) {
+                    pruerror();
+                    /* Print message and return failure */
+               }
+               if ( ! initresult( &result ) ) {
+                    pruerror();
+                    /* Print message and return failure */
+               }
+               while( nexttuple( query, &result, attrvals ) ) {
+                    /*
+                     * Go thru each projected attribute.  "projptr" points to the
+                     * projection information.  This is used to access the attribute
+                     * information, which contains the delimiter.  If the attribute
+                     * is a fixed width attribute, no delimiter should be printed
+                     * unless it's the last projected attribute.
+                     */
+                    for( i = 0, projptr = query->attrlist; i < query->attrcnt;
+                              i++, projptr++ ) {
+                         attrptr = &projptr->rel->rel->attrs[projptr->attr];
+                         writeattrval( stdout, attrvals[i],
+                              i == query->attrcnt - 1 ? '\n' :
+                              (attrptr->flags & A_ATYPEMASK) == A_FIXEDWIDTH ? '\0' :
+                              attrptr->terminate );
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))
+
+
+
+                    }
+               }
+               freeresult( &result );
+
+          See the ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3) manual page for details on the
+          urelation and uattribute structures.
+
+     EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        PPPPrrrroooojjjjeeeecccctttteeeedddd AAAAttttttttrrrriiiibbbbuuuutttteeee IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn SSSSttttrrrruuuuccccttttuuuurrrreeeessss
+          While most applications need only reference the attribute
+          values of a query result, there may be need to access the
+          projected attribute information.  The structures to do this,
+          as defined in _u_q_u_e_r_y._h, are shown below:
+
+               struct uquery {
+                    ...
+                    short attrcnt;           /* cnt of attr in projection list */
+                    struct qprojection *attrlist; /* attr projection list */
+                    ...
+               };
+
+               struct qnode {
+                    ...
+                    struct urelation *rel;        /* relation info for node */
+                    ...
+               };
+
+               struct qprojection {
+                    struct qnode *rel;  /* node for the attribute */
+                    short attr;         /* attribute number */
+                    short prwidth; /* width attribute shoule be displayed with */
+                    char *prname;  /* attribute name printed for attribute */
+                    short flags;        /* flags about attribute */
+               };
+
+          The qprojection structure gives information about each
+          projected attribute.  It gives the query node (i.e.,
+          relation) the attribute is from, the index of the attribute
+          in the relation, and print information about the attribute.
+          (This is used to override the information in the attribute
+          structure itself.)  A query node is an instance of a
+          relation; the same relation may be used multiple times in
+          one query.  Each query node points to the relation it
+          represents, i.e., the urelation structure.  To access
+          relation information about a projected attribute, the
+          following reference will suffice:
+
+               struct uquery *query;
+                . . .
+               query->attrlist[i].rel->rel->...
+
+          See the ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3) manual page for details on the
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))                NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                nnnneeeexxxxttttttttuuuupppplllleeee((((3333))))
+
+
+
+          urelation and uattribute structures.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cmpquery(1), getrelinfo(3), queryeval(3), retrieve(1), and
+          settplfunc(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 10/8/91)
+
+
+

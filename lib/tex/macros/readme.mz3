@@ -1,0 +1,349 @@
+
+% This file is part of the NFSS (New Font Selection Scheme) package.
+% ------------------------------------------------------------------
+
+\def\filedate{92/08/30}
+
+Copyright (C) 1989-1992 by Frank Mittelbach, Rainer Schoepf.
+All rights reserved.
+
+IMPORTANT NOTICE:
+
+You are not allowed to change this readme file.
+
+For distribution of changed or unchanged versions see readme.mz.
+
+Please do not request updates directly from us.
+
+
+This is a preliminary release of the new font selection scheme and its
+interface to LaTeX 2.09.  Please excuse the terseness of the
+documentation.
+
+
+1) You should get the following files:
+======================================
+
+
+1a) Basic macros for setting up a new format file:
+-------------------------------------------------
+
+basefont.tex    File used during generation of format.  See nfss.tex.
+ 
+fontdef.dc      File containing font/shape definitions for 256 character
+                TeX fonts as well as nonstandard fonts like the AMS
+                symbol fonts, etc.  You need a TeX with a large value
+                for the pool size to use this file.
+               NOTE: this file is an example file. You better use only
+                parts of it copying them to your local fontdef.tex
+                file.
+
+fontdef.max     File containing font/shape definitions for standard TeX
+                fonts as well as nonstandard fonts like 256 character
+                text fonts, the AMS symbol fonts, etc.  You need a TeX
+                with a large value for the pool size to use this file.
+               NOTE: this file is an example file. You better use only
+                parts of it copying them to your local fontdef.tex
+                file.
+
+fontdef.ori     File containing font/shape definitions for the standard 
+                TeX fonts which are needed to set up a LaTeX format 
+                compatible with the old font selection.
+
+lfonts.new      File that should be used instead of the old lfonts.tex
+                to set up a new LaTeX format.  See nfss.tex.
+        
+preload.dc      File that preloads some of the dc fonts.  May be
+                used during initex run.
+
+preload.min     File that preloads the absolute minimum of fonts.  May
+                be used during initex run.
+
+preload.xpt     File that preloads those fonts which are otherwise
+                loaded by LaTeXs \documentstyle command if 10pt size
+                is requested.  If you normally use 11pt or 12pt as a
+                style option you shouldn't use this file but make a
+                similar one.  May be used during initex run.
+               In older distributions this file was named preload.med.
+
+preload.ori     File that preloads more or less the same fonts as the 
+                old lfonts.tex.  May be used during initex run.
+
+
+
+1b) Sub styles for the new font selection scheme: 
+-------------------------------------------------
+
+dcfont.sty	Like newlfont.sty (see below) but sets up everything
+                for using the DC fonts (i.e. the 256 character fonts
+                with the Cork encoding) rather than the CM fonts.
+
+margid.sty      Makes math alphabet identifiers behave like commands 
+                with one argument, i.e. use \cal{A} as syntax.
+
+newlfont.sty    Switches to new font selection if oldlfont is default.
+                See article.
+
+nomargid.sty    Makes math alphabet identifiers behave like font
+                switches, i.e. use {\cal A} as syntax.
+
+oldlfont.sty    Switches to old font selection if newlfont is default.
+                See article.
+
+syntonly.sty    Defines \syntaxonly command which can then be used in
+                the preample to suppress output (TeX will run \approx
+                4 times faster).
+
+tracefnt.sty    Defines \tracingfonts integer. This is used to trace
+                font switches etc.  Setting \tracingfonts to <number>
+                in the preamble means:
+
+              1 Warnings are turned into error messages to show you
+                the exact location of the problem.
+              2 Additionally, loading of external fonts are shown.  
+              3 Additionally, switching of text fonts is traced.  You
+                will see a lot of information if you set \tracingfonts
+                this high.
+
+
+1c) Example files and documentation:
+------------------------------------
+
+array.sty       The extension of the array and tabular environment
+                as described in tugboat 9#3. This file is without
+                documentation and not necessarily up to date. It is
+                provided only to run nfss.tex. If you have a newer
+                version of array.sty use it instead.
+
+concrete.doc    Unfinished style option which should serve as an
+                example of how to use a style file to make new fonts
+                known to the new font selection scheme.  This file is
+                subject to changes!!
+
+euscript.doc	Style option documentation for using the Euler Script 
+                letters drawn by Hermann Zapf in math mode. Also gives a
+                good example on how to add new math alphabets to NFSS.
+
+exscale.doc     Style option documentation for using different math 
+                extension fonts in different sizes.
+
+nfss.bug        This file contains a list of known problems, solved and
+                unsolved. It also serves as a history file for
+                important changes.
+
+nfss.tex        Article published in TUGboat 11#1 about the LaTeX
+                interface to the new font selection scheme. See section
+                 3a on how to print it.                
+        
+                Note that due to a misunderstanding 2 pages of the
+                article are missing in TUGboat 11#1.  Therefore the
+                whole article is reprinted in TUGboat 11#2.
+                Unfortunately this version got a few errors reinserted
+                which had been corrected for the first printing
+                (that's life).
+
+nfssinst.tex    The part of nfss.tex (with some extensions) that
+                describes the generation of a new format. It is
+                processable by the old LaTeX.
+
+nfssprob.tex    User problem reports, during installation and/or use
+                of the NFSS (New Font Selection Scheme). Usually with
+                solutions.
+                We only maintain and distribute this file. If you have
+                a problem (and hopefully a solution to it) and you
+                think this could be of interest to others, please send
+                us your contribution as an update to this file. We
+                then distribute it in the next release.
+
+readme.mz       File that describes distribution restrictions and gives
+                a short overview about other distributions from Mainz.
+
+readme.mz3      This file.
+
+install.mz3     This is the installation script that will produce a few
+                more executable files in this package and some driver
+		files for the documentation.
+
+
+
+
+2) Installing the package:
+==========================
+
+2a) Generation of a new format (see also nfssinst.tex):
+-------------------------------------------------------
+
+  1)   Copy all files to a directory where TeX can find them.
+  2)   Rename the standard lfonts.tex to something like lfonts.old.
+  3)   Start IniTeX using lplain.
+  3.1) Use lfonts.new as a substitute for lfonts.tex
+  3.2) Use fontdef.ori as a substitute for fontdef.tex
+  3.3) Use preload.ori as a substitute for preload.tex
+  3.3) Use oldlfont.sty as a substitute for xxxlfont.sty
+  4)   Say \dump at the end of the run.
+
+This should generate a new format which behaves exactly like the old
+one, except, of course, that styles and files which use internals of the
+old lfonts.tex (like \xiipt or \tenrm) won't work without changes.
+
+
+2b) Installing additional styles and documentation:
+---------------------------------------------------
+
+To produce the executable files please run install.mz3 through LaTeX or
+TeX, i.e., say
+
+   latex install.mz3
+
+or whatever is necessary to run process a file with LaTeX on your
+system.  This will generate all necessary files. If you already have
+older versions of the files, the script will ask whether or not you
+want to overwrite those versions. Note, that the script calls
+docstrip.tex internally which is distributed in the doc package (MZ0).
+
+This script will generate the following files:
+
+concrete.sty    Stripped down version of concrete.doc without comments.
+
+euscript.sty    Style to set up a math alphabet identifier to access the
+                Euler script fonts.
+
+exscale.sty     The style option for accessing different math extension
+                fonts.
+
+scripts.sty	A style option contributed by Wayne Sullivan.
+
+concrete.drv    Driver for the documentation of concrete.
+euscript.drv    Driver for the documentation of euscript.
+exscale.drv     Driver for the documentation of exscale.
+
+
+To produce the documentation files run the corresponding driver files
+through LaTeX.  You are allowed to change the driver files to get a
+special layout, etc.  To get an index and history listing run the idx
+and glo files through the program MAKEINDEX.  MAKEINDEX should be part
+of every LaTeX installation.
+
+Please note that you need to specify a style file for MAKEINDEX:
+
+   gind.ist   for the index file   (result should be named *.ind)
+   gglo.ist   for the history file (result should be named *.gls)
+
+Sample invocation for Unix:
+
+   makeindex -s gind.ist concrete
+   makeindex -s gglo.ist -o concrete.gls concrete.glo
+
+
+3) General documentation about NFSS:
+====================================
+
+3a) Producing the TUGboat article:
+----------------------------------
+
+The article (nfss.tex) was changed to run under standard LaTeX without
+the font selection scheme so that you can look at the documentation
+without having to build a new format file first.  This document will
+tell you more about the font selection scheme and how it can be
+customized to the needs of your installation.
+
+But with the new format (see section 2a) you can process nfss.tex in a
+way that it looks like the original article.  
+
+If you have the concrete fonts you should uncomment the following two
+lines:
+   
+  *  The line in the \documentstyle command where the concrete style is
+     loaded 
+
+  *  The line following directly after the \begin{document}, namely
+
+       % \fontfamily{ccr}\fontsize{10}{13pt}\selectfont
+
+You should also comment out this one 
+
+     \fontfamily{cmss}\fontsize{10}{13pt}\selectfont
+
+The unchanged document will produce the article using Computer Modern
+sans serif fonts.  Please don't change the file in other respects.  If
+you have problems running it, make a copy and change the copy. 
+ 
+Good luck!
+
+3b) Changes not covered in the article nfss.tex:
+------------------------------------------------
+
+The files fam.tex, latinit.tex and setsize.tex have been removed and
+their contents merged directly into lfonts.new.
+
+basefnt.tex was renamed to basefont.tex.
+
+
+
+
+The \fileversion and \filedate lines below are generated so that you can
+easily check differences from your version by using GREP or DIFF etc.
+
+Don't be surprised when some files show several version numbers.  The
+reason is that these files are generated from several source files (with
+the docstrip.tex program), and every source file includes its own
+version and date line. 
+
+        array.sty:       \fileversion{v2.1b}
+        array.sty:       \filedate{92/07/06}
+        basefont.tex:    \fileversion{v1.4d}
+        basefont.tex:    \filedate{92/09/22}
+        concrete.doc:    \fileversion{v1.0h}
+        concrete.doc:    \filedate{92/06/20}
+        dclfont.sty:     \fileversion{v1.4d}
+        dclfont.sty:     \filedate{92/09/22}
+        euscript.doc:    \fileversion{v1.0g}
+        euscript.doc:    \filedate{92/06/20}
+        exscale.doc:     \filename{exscale}
+        exscale.doc:     \fileversion{v1.0c}
+        exscale.doc:     \filedate{92/06/20}
+        fontdef.dc:      \fileversion{v1.1m}
+        fontdef.dc:      \filedate{92/05/11}
+        fontdef.max:     \fileversion{v1.1m}
+        fontdef.max:     \filedate{92/05/11}
+        fontdef.ori:     \fileversion{v1.1m}
+        fontdef.ori:     \filedate{92/05/11}
+        install.mz3:     \filedate{92/09/21}
+        lfonts.new:      \fileversion{v1.3h}
+        lfonts.new:      \filedate{92/09/24}
+        lfonts.new:      \fileversion{v1.0s}
+        lfonts.new:      \filedate{92/09/24}
+        lfonts.new:      \fileversion{v1.1e}
+        lfonts.new:      \filedate{92/08/19}
+        lfonts.new:      \fileversion{v1.1k}
+        lfonts.new:      \filedate{92/09/22}
+        lfonts.new:      \fileversion{v1.2f}
+        lfonts.new:      \filedate{92/09/11}
+        margid.sty:      \fileversion{v1.0c}
+        margid.sty:      \filedate{91/08/19}
+        newlfont.sty:    \fileversion{v1.4d}
+        newlfont.sty:    \filedate{92/09/22}
+        nfss.bug:        \filedate{92/09/20}
+        nfssinst.tex:    \fileversion{v1.0a}
+        nfssinst.tex:    \filedate{91/03/29}
+        nfssprob.tex:    \filedate{91/04/23}
+        nomargid.sty:    \fileversion{v1.0c}
+        nomargid.sty:    \filedate{91/08/19}
+        oldlfont.sty:    \fileversion{v1.3f}
+        oldlfont.sty:    \filedate{92/09/07}
+        preload.dc:      \fileversion{v1.0i}
+        preload.dc:      \filedate{91/12/02}
+        preload.min:     \fileversion{v1.0i}
+        preload.min:     \filedate{91/12/02}
+        preload.ori:     \fileversion{v1.0i}
+        preload.ori:     \filedate{91/12/02}
+        preload.xpt:     \fileversion{v1.0i}
+        preload.xpt:     \filedate{91/12/02}
+        readme.mz:       \filedate{92/07/07}
+        readme.mz3:      \filedate{92/08/30}
+        scripts.doc:     \fileversion{0.02}
+        scripts.doc:     \filedate{91/8/14}
+        syntonly.sty:    \fileversion{v1.0e}
+        syntonly.sty:    \filedate{90/04/05}
+        tracefnt.sty:    \fileversion{v1.0s}
+        tracefnt.sty:    \filedate{92/09/24}

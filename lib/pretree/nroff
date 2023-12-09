@@ -1,0 +1,128 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Extract .so dependencies from an nroff(1) source file
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    nroff  [-F char] [-i file_of_files] [source_files]
+#
+# This program writes to stdout lines of the form:
+#
+#	file1 file2
+#
+#
+##########################################################
+PGM=`basename $0`
+
+FORHELP="\n\n(For more help, read the manual page then contact Bob Parnass)\n"
+USAGE="### error ### ${PGM}\nUSAGE:  `basename $0`  [-p] [-i file_of_files] [-F char]\n\t\t[nroff_source_files] ${FORHELP}"
+
+TMP=/usr/tmp
+JUNKFILE=$TMP/cc$$.c
+CFILE=$TMP/ccb$$
+CSCOPEFILE=$TMP/ccc$$
+PIPEDFILE=$TMP/ccd$$
+FILELIST=$TMP/cce$$
+
+TMPFILES="${CSCOPEFILE} ${JUNKFILE} ${CFILE} ${FILELIST} ${PIPEDFILE}"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+# parse command line arguments 
+set -- `getopt i:F:p $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	IFLAG=
+	FFLAG=
+	SEP=' '
+	PFLAG=
+	FILEOFFILES=
+
+	for i in $*
+	do
+		case $i in
+		-p)
+			# print params (ignore)
+			PFLAG="-p"
+			shift 1;;
+		-i)
+			# file of files
+			IFLAG="-i"
+			FILEOFFILES=$2
+			shift 2;;
+		-F)
+			# change interfield separator character
+			FFLAG="-F"
+			SEP="${2}"
+			shift 2;;
+		'-?')
+			echo ${USAGE} 1>&2
+			exit
+			;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+
+# input file of files was specified
+if [ "$IFLAG" ]
+then
+	# -i argument specified on command line
+	cp "${FILEOFFILES}" "${FILELIST}"
+else
+	if [ $# -eq 0 ]
+	then
+		# assume source file is piped 
+		cat > "${PIPEDFILE}"
+		echo ${PIPEDFILE} > ${FILELIST}
+
+	else
+		# files are specified on command line
+		while [ $# -gt 0 ]
+		do
+			echo "${1}" >> ${FILELIST}
+			shift
+		done
+	fi
+fi
+exec < "${FILELIST}"
+while read INFILE
+do
+	test -r "${INFILE}"
+	if [ $? -ne 0 ]
+	then
+		echo "### error ### ${PGM}: Cannot read file ${INFILE}." 1>&2
+		echo "${USAGE}" 1>&2
+		rm -f ${TMPFILES}
+		exit 1
+	else
+		# cull out lines of interest
+
+		BASE=`basename $INFILE`
+		# for each .so in the nroff file
+		for SO in `grep '^\.so ' $INFILE  \
+			| sed -e 's/.*so //' \
+				-e 's/"//g'`
+		do
+			echo ${BASE}${SEP}`basename ${SO}`
+		done
+
+	fi
+done
+
+rm -f "${TMPFILES}"
+exit 0

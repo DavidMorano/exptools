@@ -1,0 +1,197 @@
+# remote execution interface for exptools
+
+# configurable entities	
+HOMEID=exptools
+: ${TOOLS:=`logdir $HOMEID`}
+UPD_CMD=adm/upd1.1/lib/upd
+pkg_cmd=$TOOLS/adm/upd1.1/lib/package		# packages up the file for upd
+mach_cmd=$TOOLS/adm/upd1.1/bin/machines	# maps types to machine lists
+net_cmd=$TOOLS/adm/upd1.1/lib/netcmd		# figures out networking to machines
+send_cmd=$TOOLS/adm/upd1.1/lib/sendjob	# executes network commands
+PATH=$PATH:$TOOLS/adm/bin
+export PATH
+
+umask 007	# private temp files
+set -u		# no slip-ups allowed
+
+tmpcom=/usr/tmp/$$rexcom	# temp file for commands
+tmpfile=/usr/tmp/$$rex		# temp file for packaged commands
+
+: ${LOGNAME:=`id | sed -n 's/.*uid=[0-9]*(\([^)]*\)).*/\1/p'`}
+mailaddr=`uuname -l`!${LOGNAME:?}
+retval=0				# return code for this script
+cmd=$0
+case "$cmd" in
+*/*)
+	cmd=`basename ${0}`
+	;;
+esac
+
+usage="usage: ${cmd} [-cv]] [-M mailaddr] [-P pwdfile] [-r rextype] [-f shfile] \\
+	[-u userid] -p pkgid machine-selection"
+
+case $# in
+0)
+    cat <<! >&2
+${usage}
+
+Examples:
+	${cmd} -pemacs -Matt!ihxxx!jdoe -f tmpscript emacs
+	${cmd} -p adm -f - 3b2 < script
+	${cmd} -p adm -P pwdfile -r priv -f - all < script
+
+The pkgid given must have remote execution permission on each machine
+selected.  If no shell file is given, commands are read from the stdin
+until EOF.  The password must be given from the terminal or from the -P
+file.  All output is mailed back (-v puts a subject line on the message).
+
+Options:
+	-c override local password check
+	-f shfile contains shell commands to run ('-' == stdin)
+	-M alternate return mail address (default ${mailaddr})
+	-P specifies a file containing the pkgid password
+	-p specifies the package ID for the update (required)
+	-r specifies remote execution type ("priv" or "nonpriv")
+	-u alternate target userid to receive files
+	-v verbose (returns output with a Subject: line)
+!
+    exit
+    ;;
+esac
+
+cmdline="$cmd $*"
+
+# get any options.
+if options=`getopt 'cdf:M:N:p:P:r:u:v' $*`
+then	:
+else
+	echo "$usage" >&2
+	exit 1
+fi
+set -- $options
+
+altuid=
+Debug=
+debug=
+options=
+packargs=
+pkgid=
+pwdfile=
+rextype=shell
+shfile=
+Subject=
+
+while :
+do
+	arg=$1
+	shift
+	case ${arg} in
+	-c)
+		packargs="${packargs} ${arg}"
+		;;
+	-d)
+		set -x
+		Debug="set -x"
+		debug=:
+		;;
+	-f)
+		shfile=$1
+		shift
+		;;
+	-M)
+		mailaddr=${1}
+		shift
+		;;
+	-N)	# obsolete; uucp is the only network now
+		XNETPREF=$1
+		shift
+		export XNETPREF
+		;;
+	-P)
+		pwdfile="${arg} ${1}"
+		shift
+		;;
+	-p)
+		pkgid=$1
+		options="${options} ${arg}${1}"
+		packargs="${packargs} ${arg}${1}"
+		shift
+		;;
+	-r)
+		case $1 in
+		priv)
+			rextype=SHELL
+			;;
+		nonpriv)
+			rextype=shell
+			;;
+		*)
+			echo "unrecognized execution type: $1" >&2
+			exit 1
+			;;
+		esac
+		shift
+		;;
+	-u)
+		altuid=-u$1
+		shift
+		;;
+	-v)
+		Subject="echo \"Subject: rex remote runlog\"; echo"
+		;;
+	--)
+		break
+		;;
+	esac
+done
+
+: ${pkgid:?"must specify -p pkgid"}
+: ${shfile:=-}
+machines="${*:?'missing machine selector list'}"
+
+# Now is the time to arrange for certain temp files to disappear on exit.
+# From this point on, $retval controls the exit code for this command.
+trap "retval=1; exit" 1 2 3 15
+trap "$debug rm -f ${tmpcom} ${tmpfile}; exit \${retval}" 0
+
+echo "(" > $tmpcom
+eval ${Subject:+"echo $Subject"} >> $tmpcom
+cat ${shfile} >> $tmpcom
+echo ") 2>&1 | /bin/mail $mailaddr" >> $tmpcom
+
+# package it up with the password
+if $pkg_cmd -A$rextype $pwdfile $packargs -M$mailaddr $tmpcom > $tmpfile
+then	: package ok
+else
+	echo "${cmd}: error: exit code $? from ${pkg_cmd}" >&2
+	retval=1
+	exit
+fi
+
+rm -f $tmpcom
+trap "exit \$retval" 0
+
+${batch:-batch} <<!!
+    (
+	${Debug}
+	set -u
+	retval=0
+	trap "" 1 2
+	trap "retval=1; exit" 3 15
+	trap 'rm -f ${tmpfile}; exit \$retval' 0
+
+	echo "Subject: rex for ${machines}\n"
+	echo "${cmdline}"
+
+	${mach_cmd} -faddr,type $machines \
+	| ${net_cmd} \
+	| debug=$debug ${send_cmd} -! "$UPD_CMD $altuid -p$pkgid" -M${mailaddr} $tmpfile
+
+	# just to be sure
+	rm -f ${tmpfile}
+
+    ) 2>&1 \
+    | /bin/mail ${LOGNAME}
+!!
+
+trap "exit \$retval" 0
