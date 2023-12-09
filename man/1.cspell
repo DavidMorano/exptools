@@ -1,0 +1,132 @@
+
+
+
+     CCCCSSSSPPPPEEEELLLLLLLL((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSPPPPEEEELLLLLLLL((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          cspell - spell checker for C, C++, stage (metatool), and 4GL
+          comments and strings
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccssssppppeeeellllllll ----VVVV
+          ccccssssppppeeeellllllll ----nnnn[[[[4444]]]] file ...
+          ccccssssppppeeeellllllll ----4444[[[[nnnn]]]] file ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_s_p_e_l_l takes a file that has C, C++, stage (a.k.a. meta-
+          tool), or 4GL comments and strings as input.  It checks the
+          spelling of those words found within comments ('/* ... */'
+          for C and C++ files, '//' for C++ files, '%* ... *%' for
+          stage, and '--' for 4GL) and within double quotes.  (Often,
+          words found within double quotes are printed out by the pro-
+          gram.  This is the reason that _c_s_p_e_l_l is checking those.)
+          Because the 4GL-style comments start with '--', which is a
+          legitimate C construct, _c_s_p_e_l_l must be told explicitly that
+          the file being examined is written in 4GL (by specifying the
+          -4 option).
+
+          _C_s_p_e_l_l takes a list of files as arguments, and the output
+          will indicate which file the misspelled words are from.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          -4   file(s) is (are) written in 4GL language
+          -n   print file and line number(s) in that file where
+               misspelled words can be found
+          -V   print version number
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          ccccssssppppeeeellllllll ffffiiiilllleeee....cccc ffffiiiilllleeee2222....cccc
+               file.c:
+               upto
+               logfile
+
+               file2.c:
+               hlp
+
+          ccccssssppppeeeellllllll ----nnnn ffffiiiilllleeee....cccc ffffiiiilllleeee1111....cccc ffffiiiilllleeee2222....cccc
+               file.c:24:upto
+               file.c:200:upto
+               file.c:38:logfile
+
+               Can not open input file "file1.c"
+
+               file2.c:1:hlp
+
+          ccccssssppppeeeellllllll ----4444nnnn gggguuuuiiii....dddd
+               gui.d:13:ito
+
+
+
+
+     Page 1                                          (printed 9/30/94)
+
+
+
+
+
+
+     CCCCSSSSPPPPEEEELLLLLLLL((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCSSSSPPPPEEEELLLLLLLL((((1111))))
+
+
+
+          ccccssssppppeeeellllllll ----VVVV
+               The version of this tool is displayed.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          With _s_t_a_g_e process description (.pd) and source description
+          (.sd) files, problems can occur with matching up double
+          quotes and C-style comments.  In the following example,
+          _c_s_p_e_l_l will improperly match the double quotes; therefore,
+          the wrong strings will be checked for spelling:
+
+               %if loopcounter == 1 %then
+                    %nl %tab %tab (void)strcpy( __oh_opts,"
+               %else
+                    %nl %tab %tab (void)strcat( __oh_opts,",
+               %end-if
+               %: %(tok(ofhk1(a)))=");
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          spell(1)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Mark Tischler
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 9/30/94)
+
+
+

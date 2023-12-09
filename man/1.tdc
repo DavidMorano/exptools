@@ -1,0 +1,330 @@
+
+
+
+     ttttddddcccc((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		ttttddddcccc((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  tdc -	generate Telephone Reimbursement Program form
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  ttttddddcccc [	----gggg ] [ ----vvvv ] [ ----cccc ccccooooppppiiiieeeessss	] [ ----rrrr ] [ ----ffff nnnnaaaammmmeeee ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _T_d_c is a program that	generates completed Telephone Reim-
+	  bursement Program forms and prints them on a
+	  PostScript(Reg.) printer.  The form generated	is the
+	  _G_N-_9_2-_6_0_0, as	used by	the Atlanta Payroll organization.  If
+	  you are served by a different	payroll	organization, you
+	  should check with them to see	which TDC form that organiza-
+	  tion expects you to use.
+
+	  You will need	to print the form, get it signed, and make
+	  copies for yourself, your supervisor,	and the	payroll
+	  department.  The form	produced by _t_d_c	looks very much	like
+	  the GN-92-600	forms available	in the stockroom.  _T_d_c is a
+	  shell	script that uses _k_s_h(1).
+
+	  Optionally, _t_d_c can save a copy of the data that you enter
+	  in the .tdcrecord file in your $HOME directory.
+
+	  The first time you use _t_d_c you will be prompted for fixed
+	  personal information to appear on every form you fill	out.
+	  This includes
+
+	       your Home Telephone Number,
+	       the last	8 digits of your Universal Card	Number,
+	       your Last Name, First Name, and Middle Initial,
+	       your Social Security Number,
+	       your Organization Number,
+	       your Work Address,
+	       your Office Phone Number,
+	  and
+	       your Weekly/Monthly pay period status.
+
+	  This information is stored in	the file ._G_N_9_2-_6_0_0_v_o_u_c_h	in
+	  your $HOME directory,	so that	when you run _t_d_c again you
+	  need not re-enter this information.  To change it you	can
+	  either edit the ._G_N_9_2-_6_0_0_v_o_u_c_h file or remove	it.  If	you
+	  remove it, then _t_d_c will ask you for the information the
+	  next time you	run the	program.
+
+	  After	this initial information, _t_d_c will prompt you for the
+	  additional information needed	to fill	out each line of the
+	  form.
+
+	  For each month and year for which you	are filling out	the
+	  form,	_t_d_c will ask for
+
+
+
+
+     Page 1					    (printed 11/23/94)
+
+
+
+
+
+
+     ttttddddcccc((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		ttttddddcccc((((1111))))
+
+
+
+	       the billing month,
+	       the billing year,
+	       the AT&T	residence telephone call charges,
+	       the AT&T	Universal Card call charges,
+	       other AT&T telephone charges,
+	  and
+	       voucherable and private business	calls
+	       included	in the above amounts.
+
+	  _T_d_c will calculate the two columns that are derived from the
+	  input	data and tell you what the numbers come	out to,	then
+	  it will go on	to the next billing month.  When you have run
+	  out of room on the form (the GN-92-600 form only has 12
+	  lines	on it) or you have run out of input data and hit
+	  return without entering a billing month, _t_d_c generates the
+	  PostScript code and sends it to the printer.
+
+     PPPPRRRRIIIINNNNTTTTEEEERRRR SSSSEEEELLLLEEEECCCCTTTTIIIIOOOONNNN
+	  The first time you print your	TDC form with _t_d_c, it will ask
+	  you to specify what command to use to	send postscript	data
+	  to your local	printer.  This print command could be a	com-
+	  mand that knows implicitly what printer to use, or it	could
+	  be a command that requires an	argument to specify the	desti-
+	  nation printer.
+
+	  If your printer command requires an argument,	and that argu-
+	  ment is in the form "-d destination",	you can	leave the
+	  argument off the printer command, and	give the printer des-
+	  tination name	in response to the next	prompt,	which asks you
+	  for the name of the printer.
+
+	       Example:
+		   Printer command: prt	-lpost
+		   Printer name:    myprinter
+
+	  If your printer command requires an argument,	but the	argu-
+	  ment is not like "-d destination", specify the argument as
+	  part of the printer command, and enter return	at the printer
+	  name prompt without entering a printer name.
+
+	       Example:
+		   Printer command: lpr	-Pmyprinter
+		   Printer name:
+
+	  If your printer command always goes to the same printer, and
+	  does not require any arguments, leave	the printer name
+	  empty.
+
+	       Example:
+		   Printer command: local_postscript_printer_command
+		   Printer name:
+
+
+
+
+     Page 2					    (printed 11/23/94)
+
+
+
+
+
+
+     ttttddddcccc((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		ttttddddcccc((((1111))))
+
+
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  ----vvvv	  Print	the version of the program and exit.
+
+	  ----gggg	  Show the instructions	on the reverse side of form
+		  GN-92-600.
+
+	  ----cccc	  This option can be used to specify the number	of
+		  copies of the	form to	be printed.  A value of	3
+		  could	be used, for examples, to provide one copy for
+		  yourself and two to submit.
+
+	  ----rrrr	  This option is used to rerun a previously entered
+		  tdc using the	last entry stored in the
+		  $HOME/.tdcrecord file.  Typically this would done
+		  after	editing	the entry to make corrections.	The
+		  implementation of this is fairly crude:  Currently
+		  only the last	entry can be reprinted (there is no
+		  option to select any other entry), and there is no
+		  validation or	other error checking of	the data in
+		  the file.  Only the input data required by the pro-
+		  gram is read from the	file.  The totals will be
+		  recalculated for the printout, but the data file is
+		  not updated, so it is	possible for the two to	be
+		  inconisistent	if the file is not edited correctly.
+
+	  ----ffff	  This option allows you to specify a file name	for
+		  storing personal data.  Typically, this would	be
+		  used when the	user needs to generate forms for
+		  several people.  By default, personal	data is	stored
+		  in $HOME/.GN92-600vouch.  If "-f name" is provided
+		  then the data	will be	stored in $HOME/.GN92-600name.
+
+     UUUUPPPPDDDDAAAATTTTEEEESSSS
+	  _T_d_c is updated each time that	a new version of the GN-92-600
+	  form is issued.  Each	time that _t_d_c has changed, the data
+	  stored in the	$HOME/.GN92-600vouch file has had to change
+	  too.	When you run _t_d_c, it will try to detect	if your
+	  $HOME/.GN92-600vouch file contains data from an older	ver-
+	  sion of _t_d_c, and if this situation is	discovered, it will
+	  try to make the necessary changes, where possible, to	the
+	  old data contained in	the $HOME/.GN92-600vouch file to make
+	  it work with the current version of _t_d_c.
+
+	  If _t_d_c has to	do this, it will warn you with a message
+	  explaining what has happened,	and then the form will be
+	  printed with the converted data.  If the form	does not come
+	  out correctly, then _t_d_c may not have been able to success-
+	  fully	convert	the data, and you should either
+
+	       manually	edit the $HOME/.GN92-600vouch file to make the
+	       necessary corrections,
+	  or
+
+
+
+     Page 3					    (printed 11/23/94)
+
+
+
+
+
+
+     ttttddddcccc((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		ttttddddcccc((((1111))))
+
+
+
+	       remove the $HOME/.GN92600vouch file and rerun _t_d_c to
+	       let it prompt you for the fixed personal	data all over
+	       again.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+	  PAGER
+	       If the ----gggg option	is used	to show	the instructions for
+	       form GN-92-600, the program specified by	the environ-
+	       ment variable PAGER is used to view the instructions.
+	       If the environment variable PAGER is blank or unset,
+	       the ppppgggg command is used to view the instructions.	 If
+	       the ppppgggg command is not found, the	ccccaaaatttt command is used.
+
+	  Copies
+	       If this variable	is found in your environment (or added
+	       to the number of	printed	copies of the form.
+
+     FFFFIIIILLLLEEEESSSS
+	  $HOME/.GN92-600vouch
+			      File containing fixed personal informa-
+			      tion: your name, social security number,
+			      work location, work phone	number,	home
+			      phone number, last eight digits of your
+			      Universal	Card number, etc.
+
+	  $HOME/.tdcrecord    File containing a	history	of telephone
+			      reimbursement submissions.  This is pri-
+			      marily intended for the user's bookkeep-
+			      ing, but by specifying the "-r" option
+			      to tdc, a	new copy of the	last entry can
+			      be printed.
+
+	  GN92-600.ps	      The file that contains the PostScript
+			      code for the reimbursement form.	This
+			      file is stored in	_t_d_c's library direc-
+			      tory, currently $TOOLS/lib/tdc.
+
+	  GN92-600.cat	      The file that contains the instructions
+			      from the reverse side of the stock form.
+			      This file	is stored in _t_d_c's library
+			      directory, currently $TOOLS/lib/tdc.
+
+	  GNupdate.sh	      A	helper program used by _t_d_c to convert
+			      the data from an older version of	the
+			      $HOME/.GN92-600vouch file	to the current
+			      version.	This file is stored in _t_d_c's
+			      library directory, currently
+			      $TOOLS/lib/tdc.
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  phonevouch(exptools)
+
+
+
+     Page 4					    (printed 11/23/94)
+
+
+
+
+
+
+     ttttddddcccc((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		ttttddddcccc((((1111))))
+
+
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  Franco E. Barber, atlas!feb
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Peter	Fales, intgp1!psfales
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5					    (printed 11/23/94)
+
+
+

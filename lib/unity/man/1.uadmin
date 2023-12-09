@@ -1,0 +1,132 @@
+
+
+
+     uuuuaaaaddddmmmmiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuuaaaaddddmmmmiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          uadmin - store a UNITY table under SCCS
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_a_d_m_i_n [-rrel] [-t[name]] [-fflag[flag-val]] [-alogin] \
+                [-m[mrlist]] [-y[comment]] table ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _u_a_d_m_i_n is used to place a UNITY table (table and description
+          file) initially under the Source Code Control System (SCCS).
+          _u_a_d_m_i_n works the same as the SCCS command _a_d_m_i_n(1) with the
+          following exceptions:
+
+          -    _u_a_d_m_i_n is used only to initially place a UNITY table
+               under SCCS control.  Only keyletter arguments that
+               apply to the creation of new SCCS files are permitted
+               (as shown above).  To change the parameters of a table
+               already under SCCS control, the SCCS command _a_d_m_i_n(1)
+               should be used manually on the table and description
+               (Dtable) files.
+
+          -    The -i option is generated automatically, since the
+               command is only used to initially place UNITY tables
+               under SCCS control.  The table will be placed in the
+               SCCS file s.table.s and the description file (Dtable)
+               in s.Dtable.
+
+          -    Only tables can be named.  _u_a_d_m_i_n will not accept a
+               directory name or read from the standard input. A table
+               name of "-" (indicating take the standard input) is not
+               valid.
+
+          -    Before the table is placed under SCCS, the records are
+               sorted by the first attribute (which should be a key
+               attribute).  Sorting the records by the first attribute
+               will reduce the chance that a record will incorrectly
+               appear to be deleted and inserted in subsequent deltas
+               because of a change in its position in the table.  The
+               output is modified to make the table compatible with
+               SCCS.  Tuples in a UNITY table may be up to 4096
+               characters per line in length.  SCCS cannot be used on
+               lines this long.  The sorted records are broken into
+               multiple lines of 500 characters or less.  A carrot (^)
+               is placed at the end of each record.  This will permit
+               the records to be reconstructed when they are unloaded
+               from SCCS.  Input containing the terminating character
+               (^) will be flagged with an error.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          The command
+
+          uadmin -y"creating table" /usr/test/table
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuuaaaaddddmmmmiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuuaaaaddddmmmmiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          will take the files "table" and "Dtable" from the current
+          directory and create the SCCS files /usr/test/s.table.s and
+          /usr/test/s.Dtable.  The table.s file has lines with less
+          than 500 characters and terminated by the UNITY record
+          terminator character.
+
+     FFFFIIIILLLLEEEESSSS
+          _u_a_d_m_i_n may create the same auxiliary files as _a_d_m_i_n(1), plus
+          an additional file which is the modified table.
+
+          For each UNITY table placed under SCCS control, two files
+          (s.table.s and s.Dtable) will be permanently created.
+
+          unity/uadmin.c, zuadmin.c - the C source program
+          bin/uadmin - the executable program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _u_d_e_l_t_a(UNITY), _u_g_e_t(UNITY), _a_d_m_i_n(1), _d_e_l_t_a(1), _g_e_t(1)
+          Source Code Control System User's Guide by L. E. Bonanni and
+          C. A. Salem.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

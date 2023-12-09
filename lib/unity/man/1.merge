@@ -1,0 +1,132 @@
+
+
+
+     mmmmeeeerrrrggggeeee((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           mmmmeeeerrrrggggeeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          merge, unmerge - join/split attribute values for given
+          attribute
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _m_e_r_g_e [-q] [-s<separator>] [-Itable] [-Otable] aname1 _i_n table1 \
+           [_i_n_t_o table2]
+          _u_n_m_e_r_g_e [-q] [-Itable] [-Otable] [-s<separator>] aname1 _i_n table1 \
+           [_i_n_t_o table2]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _m_e_r_g_e will merge several records together to form one record
+          where all attribute values of each record merged are the
+          same except for the attribute on which the merge is being
+          done.  The resulting merged attribute is composed of the
+          values of the merged attribute for each of the records
+          merged separated by a separator character.  The default
+          separator character is comma(,) and may be changed using the
+          -_sc option.  The merged attribute must be a terminator
+          field.  _m_e_r_g_e assumes that the records are in sorted order
+          by all attributes other than the attribute on which the
+          merge is being done (with the first attribute not being
+          merged being the most significant sort key, the second
+          attribute not being merged being the second most significant
+          sort key, etc.).  _m_e_r_g_e prints an error message and the
+          record that is out of order and exits if the records are not
+          in sorted order.
+
+          _u_n_m_e_r_g_e is the reciprocal function of _m_e_r_g_e and breaks a
+          single record into multiple records where each of the new
+          records has the same attribute values for all attributes
+          except the attribute on which the unmerge is being done.
+          That attribute will have the first part of the original
+          value (all characters up to the separator character) on the
+          first output record, etc.
+
+          For either command, if the -I option is used, the table name
+          specified is used to determine an alternate description file
+          to be used in reading the input table.
+
+          For both commands, the output is written to the standard
+          output by default.  If an "into clause" is specified, the
+          output is written into the named table and a corresponding
+          descrition file is created in the current directory.  An
+          error is printed if the output table already exists.  If
+          _o_n_t_o is specified instead of _i_n_t_o, the output is appended to
+          the table if it already exists or the table created and
+          written if it does not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     mmmmeeeerrrrggggeeee((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           mmmmeeeerrrrggggeeee((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are merged (or unmerged).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ display children
+          The table description is:
+          parent    t\t
+          child     t\n
+          The data for the table is:
+          A. Parent        Child 1
+          A. Parent        Child 2
+          A. Parent        Child 3
+          B. Parent        Child 1
+          B. Parent        Child 2
+          $ merge child in children into out
+          merge: 2 records merged from children.
+          $ dis out data
+          The data for the table is:
+          A. Parent        Child 1,Child 2,Child 3
+          B. Parent        Child 1,Child 2
+
+          $ unmerge child in out
+          unmerge: 5 records unmerged.
+          A. Parent        Child 1
+          A. Parent        Child 2
+          A. Parent        Child 3
+          B. Parent        Child 1
+          B. Parent        Child 2
+
+     FFFFIIIILLLLEEEESSSS
+          unity/merge.c, unmerge.c, zmerge.c, zunmerge.c - the C source programs
+          bin/merge, unmerge - the executable programs
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

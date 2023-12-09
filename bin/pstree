@@ -1,0 +1,230 @@
+#!/bin/sh
+#####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1989, 1990, 1991, 1992
+#			AT&T Bell Laboratories
+###############################################################################
+
+# Nuke the baby seals in the rainforests.
+
+#####################################################################
+# pstree - a tool to draw process diagrams
+#
+#	AUTHOR:		Bob Parnass
+#	AT&T Bell Laboratories
+#
+# USAGE:
+#	pstree [-F] [-I] [-P] [-T] [-U] [ ps(1) options ]
+#
+#		See manual page for more information.
+#
+# Modified by:	Dennis Vadner (10/12/89)
+#		added -I, -P, -T, and -U options
+#		also removed pstree's children processes from ps
+#		output and used pstree's name for its command
+#		name
+#
+#		Bob Parnass (4/14/90) -show process ids by default
+#
+#		Dennis Vadner (4/16/90) -added -F option
+#
+#		Bob Parnass (4/23/90) -fixed bug in sed regular expr
+#
+#		Bob Parnass (5/02/90)
+#		eliminated tuples with proc ids spawning the same ids,
+#		like 0 and 0, before calling dt.
+#
+#		Bob Parnass (5/05/90) -omit tilde in output, omit mail
+#		Joe Steffen (5/13/91) -fix to work on sun3 and sparc
+#
+#		Bob Parnass (11/24/91) -collect ps info in a file
+#			rather than a pipeline so that when pstre's
+#			own processes remain hidden when executing
+#			pstree from sh instead of skh
+#
+#		Bob Parnass (03/17/92) -exit gracefully if no
+#			processes found instead of writing USAGE
+#			message
+#
+#		Bob Parnass (06/03/92) -dt changed so made changes
+#			to pstree to compensate: call dt with
+#			different flags.
+#
+#		Dave Dykstra (06/09/94) fix to work on solaris.
+#
+#####################################################################
+
+PSTREE="$0 $*"
+VERSION="Version 2.0"
+
+# temporary files
+TMP=/usr/tmp
+PSOUT0=${TMP}/ps0.$$
+PSOUT=${TMP}/ps1.$$
+PROCID=${TMP}/ps2.$$
+PROCNAME=${TMP}/ps3.$$
+PARENTID=${TMP}/ps4.$$
+ID_TO_NAME=${TMP}/ps5.$$
+TRANSLATE_FILE=${TMP}/ps6.$$
+PSTMP=${TMP}/ps7.$$
+
+TMPFILES="${PSOUT0} ${PSOUT} ${PROCID} ${PROCNAME} ${PARENTID} ${ID_TO_NAME} ${TRANSLATE_FILE} ${PSTMP}"
+
+PGM=`basename ${0}`
+FORHELP="\n\tRead the manual page by typing:\n\n\t\ttoolman ${PGM}\n\n\tthen contact Bob Parnass if you need more help.\n"
+USAGE="USAGE:  ${PGM} [-F] [-I] [-P] [-T] [-U]  [ ps(1) options ]\n${FORHELP}\n${VERSION}"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "Aborted by user." 1>&2; exit 1' 1 2 3 15
+
+ostype()
+{
+    if test -x /usr/bin/sun && /usr/bin/sun
+    then
+	case `uname -r` in
+	    3|4*) echo "sunos";;
+	    *) echo "solaris";;
+	esac
+    else
+	echo "notsun"
+    fi
+}
+
+if [ `ostype` = sunos ]
+then
+	commandstart=72
+	parentidcolumns=20-24
+	procidcolumns=14-18
+	psoptions=-lw
+	SHOW_ID=13-18
+	timecolumns=65-70
+else
+	if [ `ostype` = solaris ]
+	then
+	    commandstart=50
+	else
+	    commandstart=48
+	fi
+	parentidcolumns=16-20
+	procidcolumns=10-14
+	psoptions=-f
+	SHOW_ID=9-14
+	timecolumns=41-46
+fi
+commandstart_1=`expr $commandstart - 1`
+
+# check for pstree options
+# Note that pstree options must appear before all ps(1) options.
+#
+# (too bad we cannot use getopt(1), as it doesn't recognize
+# a parameter like "a b" as a single argument, and ps(1) accepts
+# some parameters in this form)
+
+ALLARGS="$*"
+
+while [ $# -gt 0 ]
+do
+	case $1 in
+	-F)	# show full command information rather than just process name
+		FULL=true;
+		shift;;
+	-I)	# don't show process ids along with names
+		unset SHOW_ID;
+		shift;;
+	-P)	# show ps output along with process diagram
+		SHOW_PS=true;
+		shift;;
+	-T)	# show process time along with names
+		SHOW_TIME=$timecolumns
+		shift;;
+	-U)	# show process owner's user ids along with names
+		if [ `ostype` = sunos ]
+		then	echo -U is not available on SunOS 1>&2
+			exit 1
+		fi
+		SHOW_USER=1-8
+		shift;;
+	'-?')	# show how to use this command
+		echo ${USAGE} 1>&2
+		exit 1;;
+
+	*)	# other options are passed to ps
+		break;;
+	esac
+done
+
+# get ps(1) data, ignoring children, and changing this process's
+# name to pstree's name rather than a shell's name
+
+ps $psoptions $*  > ${PSOUT0}
+grep -v " [0-9][0-9]*  *$$ " ${PSOUT0} \
+	| sed -e "/ $$ /s!\(.\{$commandstart_1\}\).*!\1${PSTREE}!" | tail +2 > ${PSOUT}
+
+#if [ "${LOGNAME}" != "parnass" ]
+#then
+#	# log this instance and send mail to provider
+#	(echo "Subject: ${LOGNAME} exec ${PGM}\n\nexecuted ${PGM};`uname -n`;${LOGNAME};`date`;`pwd`;${ALLARGS}" | mail att!ihlpn!parnass) > /dev/null 2>&1
+#fi
+
+if [ ! -s ${PSOUT} ]
+then
+	exit 0	# no processes running which meet criteria
+
+elif [ -n "${SHOW_PS}" ]
+then
+	echo "     UID   PID  PPID  C    STIME TTY      TIME COMMAND"
+	cat ${PSOUT}
+fi
+
+# extract PROCID
+cut -c$procidcolumns ${PSOUT} > ${PROCID}
+
+# extract COMMAND information
+if [ -z "${FULL}" ]
+then
+	# If full output not requested, just show process name.
+	# In the sed command, the first substitution removes a possible
+	# leading "[".  The second substition removes any arguments from
+	# the command string (note that this will also remove any closing
+	# "]").  Finally, the third substitution removes any path
+	# information from the remaining command name.
+	cut -c$commandstart- ${PSOUT} | sed -e 's/\[ //' -e 's/ .*//' -e 's!.*/!!'
+else
+	# Show all COMMAND information when full output requested.
+	# The sed command removes the spaces between the square brackets
+	# and the command name to make the output more readable.
+	cut -c$commandstart- ${PSOUT} | sed -e 's/\[ /[/' -e 's/ \]/]/'
+fi > ${PROCNAME}
+
+# form process name translation file
+paste -d@ ${PROCID} ${PROCNAME} > ${ID_TO_NAME}
+
+# extract PARENTID
+cut -c$parentidcolumns ${PSOUT} > ${PARENTID}
+
+# extract user requested information
+if [ -n "${SHOW_USER}" -o -n "${SHOW_ID}" -o -n "${SHOW_TIME}" ]
+then
+	cut -c${SHOW_USER},${SHOW_ID},${SHOW_TIME} ${PSOUT} \
+		| sed -e 's/^ */(/' -e 's/  */,/g' -e 's/$/)/' \
+		| paste -d' ' ${ID_TO_NAME} - >${TRANSLATE_FILE}
+else
+	cp ${ID_TO_NAME} ${TRANSLATE_FILE}
+fi
+
+# feed edges to tree drawing tool
+# and look for init process
+
+paste -d@ ${PARENTID} ${PROCID} > ${PSTMP}
+
+# eliminate process ids which call themselves
+awk -F\@ ' \
+	{
+	if ( $1 != $2 ) print $0
+	}' ${PSTMP} \
+	| dt  -i8 -ut -l10 -F@ -x ${TRANSLATE_FILE} \
+	| sed -e 's/   1_/init_/'
+
+# clean up
+rm -f ${TMPFILES}

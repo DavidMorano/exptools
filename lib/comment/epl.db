@@ -1,0 +1,2745 @@
+ah_recrd_preproc;# ah_recrd_preproc ==> determine if
+# recording or nonaudio update can be accepted. if so, insure
+# that all appropriate orders have been...
+ah_sel_rec_submn;# ah_sel_rec_submn ==> determine mas
+# submember with shortest delay before recording can begi
+ah_get_rec_cra;# ah_get_rec_cra ==> obtain cra of recording
+# call from ah memory, ah4mstat.  perform linkcheck and
+# lockout check to see if recording..
+ah_xmit_ck_fail;# ah_xmit_ck_fail ==> determine if recording
+# call should countinue in spite of transmission check failur
+# report receive
+ah_rec_compl;# ah_rec_compl ==> the recording call has
+# successfully completed. ah independent processes should now
+# be invoked to verify.
+ah_upd_fail;# ah_upd_fail ==> the audio update call has been
+# aborted and abort recording order has been sent to mas. ah
+# must further cleanup..
+ah_dpu_chk_masnac;# ah_dpu_chk_masnac ==> at the appropriate
+# point in direct producer recording attempt, check the
+# incoming trunk to see whether it
+ah_sel_mon_submn;# ah_sel_mon_submn ==> if standby can be
+# listened to, determined mas submember and indicate monitor
+# in progres
+ah_mon_compl;# ah_mon_compl ==> standby monitor completed.
+# order to mas hardware has been sent to deallocate playback
+# buffer for monitor chan.
+ph_bound_integ_check;# ph_bound_integ_check ==> periodic
+# scan of phase boundary reports for all maus.  if a mau is
+# missing a phase boundary report, a blm is
+ah_mas_rst_time;# ah_mas_rst_time ==> determine delay time
+# before starting maintenance update so that recordings can
+# complet
+ah_mas_rmv_time;# ah_mas_rmv_time ==> determine length of
+# time mas submember removal request should delay to prevent
+# simplex audio loss and to all
+ah_rmv_mas_submn;# ah_rmv_mas_submn ==> notification that a
+# mas submember has been removed from service. this fact is to
+# noted for later announcemen
+ah_rst_mas_submn;# ah_rst_mas_submn ==> notification that a
+# mas submember has been restored to service. this fact is to
+# be noted for later announcem
+ah_init;# ah_init ==> initialize announcement handling call
+# store memory. called by sint in phases 2, 3, and
+report_tsi_pest_change;# report_tsi_pest_change ==> a tsi
+# port pest change has been made
+ah_rmos_alp;# ah_rmos_alp ==> queue request for sending
+# allocate pchan orders to mas
+ah_rmos_dlp;# ah_rmos_dlp ==> queue request for sending
+# deallocate pchan orders to mas
+ah_rmos_als;# ah_rmos_als ==> queue request for sending
+# allocate sector orders to mas
+ah_rmos_dls;# ah_rmos_dls ==> queue request for sending
+# deallocate sector orders to ma
+ah_rmos_aba;# ah_rmos_aba ==> queue request for sending
+# abort audio orders to mas
+ah_rmos_act;# ah_rmos_act ==> queue request for sending
+# activation orders to mas
+ah_rmos_dac;# ah_rmos_dac ==> queue request for sending
+# deactivation orders to mas
+ah_rmos_dup;# ah_rmos_dup ==> process request for sending
+# duplication orders to mas
+ah_get_sect_used_cnt;# ah_get_sect_used_cnt ==> get count of
+# mas disk sectors used
+ah_abort_mos;# ah_abort_mos ==> abort previously queued
+# request for ah order sending
+ah_upd_mos_dmdb;# ah_upd_mos_dmdb ==> update demand bits for
+# ah mas order sending routines
+ah_mos_memn_to_hca;# ah_mos_memn_to_hca ==> convert mas memn
+# to per memn q headcell addr
+ah_q_unlink;# ah_q_unlink ==> unlink mar from ah link list q
+ah_q_link;# ah_q_link ==> link mar to ah link list q
+seize_mar;# seize_mar ==> this routine will seize an mar
+# from the idle link list. mar is zeroed before returning to
+# clien
+rls_mar;# rls_mar ==> this routine will release a single mar
+# or range of mars placing them back on idle link lis
+get_stby_and_actv_adr;# get_stby_and_actv_adr ==> determine
+# standby information address and active information address
+# in msta
+ah_mar_link_chk;# ah_mar_link_chk ==> check mar queue
+# linkage
+ah_mar_to_mstat;# ah_mar_to_mstat ==> check mar linkage to
+# mstat
+ah_mstat_mar_lnkchk;# ah_mstat_mar_lnkchk ==> check all
+# mstat to mar linkages for an ann version
+ah_mstat_to_mar;# ah_mstat_to_mar ==> check mstat to mar
+# linkage for a specific queue
+ah_bsy_sector_map;# ah_bsy_sector_map ==> examine mstat disk
+# sector data for version and busy bits in sector b/i ma
+ah_restore_idlq;# ah_restore_idlq ==> retsore a partial idle
+# link list
+stby_monitor_request;# stby_monitor_request ==> determine if
+# possible to do standby monitor on this announcement. if so
+# set up for standby monitor
+ah_callback_vss;# ah_callback_vss ==> put a callback request
+# on the vss callback queu
+ah_callback_dir_prod;# ah_callback_dir_prod ==> put a
+# callback equest on the direct producer callback queu
+ah_cancel_callback_request;# ah_cancel_callback_request ==>
+# remove callback request from direct producer or vss callback
+# queue
+ah_vss_report;# ah_vss_report ==> this subroutine processes
+# the result of a previously requested callback to vs
+ah_dpcb_result;# ah_dpcb_result ==> process direct producer
+# callback report
+ah_verif_complete;# ah_verif_complete ==> audio or nonaudio
+# verification complete processing mar mstat output tty report
+# and schedule activatio
+ah_stby_delete;# ah_stby_delete ==> assuming standby audio
+# exists in the standby full state, this routine cancels all
+# processes in progress for
+ah_auds_define_ann;# ah_auds_define_ann ==> audits have
+# cleared a previously existing announcement in the mas
+# hardware and in ah memory and in mas muds.
+ah_rc_define_ann;# ah_rc_define_ann ==> recent change is
+# adding a new announcement definition to translations for
+# this ann. this routine initiates m
+ah_rc_change_ann;# ah_rc_change_ann ==> recent change has
+# changed something for this announcement. this routine will
+# check if scheduling has been af
+ah_rc_delete_check;# ah_rc_delete_check ==> recent change
+# check of ah memory to verify if this announcement can be
+# deleted fro translations at this tim
+ah_rc_delete_ann;# ah_rc_delete_ann ==> recent change is
+# deleting this announcement from translations this routine
+# initiates mas order sending to d
+ah_sched_barge_in_ann_start_time;#
+# ah_sched_barge_in_ann_start_time ==> schedules tart time for
+# a barge-in announcemen
+ah_sched_non_barge_in_ann_start_time;#
+# ah_sched_non_barge_in_ann_start_time ==> schedules tart time
+# for a non barge-in announcemen
+ah_sched_barge_in_ann_stop_time;#
+# ah_sched_barge_in_ann_stop_time ==> schedules stop time for
+# barge in announcement
+ah_sched_non_barge_in_ann_stop_time;#
+# ah_sched_non_barge_in_ann_stop_time ==> schedules stop time
+# for a non barge-in announcement
+ah_build_mapt_shell;# ah_build_mapt_shell ==> builds the
+# portion of a mas announcement phasing table  entry that can
+# be derived from translation
+ah_dlt_pas_sched;# ah_dlt_pas_sched ==> deletes the
+# scheduling of pas activation or deactivation
+ah_post_act_proc;# ah_post_act_proc ==> completes processing
+# of mas announcement related data fter activation orders have
+# been sen
+ah_post_dac_proc;# ah_post_dac_proc ==> completes processing
+# of mas announcement related data fter deactivation orders
+# have been sen
+ah_pas_sched_what;# ah_pas_sched_what ==> determines if
+# either pas start or stop time should be schedule
+ah_pas_resched;# ah_pas_resched ==> remove current
+# announcement scheduling, if any, and termine whether start
+# or stop time should now be sched
+ah_rept_nup_trk_oos;# ah_rept_nup_trk_oos ==> processes a
+# report that a nailed up trunk has been taken out of servic
+ah_rept_tv_ct_chnge;# ah_rept_tv_ct_chnge ==> processes a
+# report of a change in a cut through or televote service that
+# will affect schedulin
+ah_sch_phase_proc;# ah_sch_phase_proc ==> sets up all
+# necessary data for ah scheduling controller post phase
+# processing - all ah scheduling tasks are
+ah_sched_dupl;# ah_sched_dupl ==> initiates the process of
+# taking pas non barge in announcement from simplex to duple
+ah_abort_dupl;# ah_abort_dupl ==> deletes entry from
+# announcement duplication queue
+get_dupl_q_hc_tc_addr;# get_dupl_q_hc_tc_addr ==> derives
+# the duplication queue headcell/tailcell address and the
+# equivalent duplication queue vector state from.
+ah_bipas_nup;# ah_bipas_nup ==> verifies the nailed up
+# status of a barge in announcement trun
+ah_deactv_pas;# ah_deactv_pas ==> deactivates a non barge_in
+# announcement
+ah_get_sect_num;# ah_get_sect_num ==> converts an input
+# sector count to the appropriate sector number stored in
+# active or standby version data of
+ah_compare_dates;# ah_compare_dates ==> compares two dates
+# of the ex1_date format to determine  their relative
+# relationshi
+ah_global_pump;# ah_global_pump ==> phase recovery restoring
+# mstat in core from disk
+ah_global_write_fstr;# ah_global_write_fstr ==> phase
+# recovery normlizing mstat disk data left in a transient
+# state
+ah_write_sac;# ah_write_sac ==> change the status of an
+# activity indicator for an announcement
+ah_read_sac;# ah_read_sac ==> check activity bits to
+# determine a clients ability to update this announcemen
+ah_read_sac_with_addr;# ah_read_sac_with_addr ==> check
+# activity bits to determine a clients ability to update an
+# announcement with input of mstat address in
+ah_write_sac_with_address;# ah_write_sac_with_address ==>
+# change the status of an activity indicator for a
+# announcement with an input of mstat address in ah4core_ad
+ah_mas_muds_rq_server;# ah_mas_muds_rq_server ==> determine
+# update to be performed on muds data
+ah_set_fsw_pend;# ah_set_fsw_pend ==> set all file store
+# write pending bits
+ah_init_dummy_cr;# ah_init_dummy_cr ==> zero dummy cr
+ah_clear_stby_audio_items;# ah_clear_stby_audio_items ==>
+# mark all pertinent items in mstat to indicate standby a udio
+# no longer exists. also request backup of mstat o
+ah_clear_actv_audio_items;# ah_clear_actv_audio_items ==>
+# mark all pertinent items in mstat to indicate active audio
+# no longer exists. also request backup of mstat on
+ah_init_mstat;# ah_init_mstat ==> initialize mstat and muds
+# according to input parameter.
+ah_calc_mstatadr_to_iaid;# ah_calc_mstatadr_to_iaid ==>
+# calculate iaid from mstat address
+ah_linkcheck_mstat_cr;# ah_linkcheck_mstat_cr ==> calculate
+# mstat address for iaid specified. from this m stat entry,
+# get mcra and form cra. check that cr poin
+ah_linkcheck_cr_mstat;# ah_linkcheck_cr_mstat ==> perform
+# linkage checks between cr and its associated m sta
+ah_linkcheck_mstat_tmr;# ah_linkcheck_mstat_tmr ==>
+# calculate mstat address for iaid specified. from this m stat
+# entry, get tmrn and form tmra. check that tmr po
+ah_linkcheck_tmr_mstat;# ah_linkcheck_tmr_mstat ==> perform
+# link check between tmr and mstat
+auds_sico_request;# auds_sico_request ==> request action via
+# sico request block.
+auds_analyze_structure;# auds_analyze_structure ==> analyze
+# data element or structure.
+auds_add_to_audit_list;# auds_add_to_audit_list ==> add
+# structure to audit list.
+auds_find_rollback_point;# auds_find_rollback_point ==>
+# locate rollback point and set stack.
+auds_special_action;# auds_special_action ==> perform
+# supplementary cleanup operations.
+auds_idle_tms_memory;# auds_idle_tms_memory ==> idle
+# hardware tms memory and its busy/idle bit
+auds_busy_grid;# auds_busy_grid ==> busy b-link map
+# subtables for out of service grids. loo p through timeslots
+# proceeds as: n,n+8,n+16,...,n+120
+auds_monitor_sp_dp_worklists;# auds_monitor_sp_dp_worklists
+# ==> determine which dp reception & outpulsing worklists are
+# empt
+auds_initialize_16wd_blocks;# auds_initialize_16wd_blocks
+# ==> set 16 wd blocks to initial value.
+auds_copy_stack;# auds_copy_stack ==> copy stack mechanism
+# to non-protected buffer area.
+auds_run_md;# auds_run_md ==> run a segment of a mutilation
+# detection program.
+auds_init_acb;# auds_init_acb ==> initialize an audit
+# control block (acb
+auds_demand_md_completion_info;#
+# auds_demand_md_completion_info ==> request error analysis
+# info at audit completion.
+auds_seize_disk_buf;# auds_seize_disk_buf ==> seize audit
+# system disk buffer area.
+auds_rel_disk_buf;# auds_rel_disk_buf ==> release control of
+# audit disk buffer.
+auds_report_disk_request;# auds_report_disk_request ==>
+# report successful disk request by md pgm.
+auds_verify_tra;# auds_verify_tra ==> verify trunk register
+# addr.
+auds_demand_md_status;# auds_demand_md_status ==> determine
+# status of demand mutilation detection pgm.
+auds_check_mdn_mode;# auds_check_mdn_mode ==> determine if
+# mdn is in non time shared mode
+auds_check_mdn_activity;# auds_check_mdn_activity ==>
+# determine if mdn is in routine or demand mode
+auds_build_tms_equipage_table;#
+# auds_build_tms_equipage_table ==> build 16 bit by 8 word
+# matrix of tms port equipage. equ ipped means connected to
+# operational sp
+auds_idle_tsm_map_bib;# auds_idle_tsm_map_bib ==> idle bib
+# in network map for spc memory
+auds_find_network_path;# auds_find_network_path ==> return
+# full path information as determined from hardwar e
+auds_abort_md;# auds_abort_md ==> abort an md pgm.
+auds_schedule_segment;# auds_schedule_segment ==> schedule a
+# segment of an audit program if it is not blo cked
+auds_schedule_demand_md;# auds_schedule_demand_md ==> find
+# and start a demand md task.
+auds_find_next_tsgn;# auds_find_next_tsgn ==> find next
+# assigned trunk subgroup
+auds_clear_network_tn;# auds_clear_network_tn ==> abandon
+# all network paths for an assigned tn. this is a secondary
+# entry point to auds_clear_network
+auds_clear_network;# auds_clear_network ==> abandon all
+# network paths for trunk
+auds_phase1;# auds_phase1 ==> run the audit pgms associated
+# with phase 1 initializati on
+auds_process_audslist;# auds_process_audslist ==>
+# immediately process audit correction engineered timing  list
+# during directed phase
+auds_msg_status;# auds_msg_status ==> update mcc audit msg
+# lights & keys status.
+auds_dtcr_tr_linkcheck;# auds_dtcr_tr_linkcheck ==> dtcr
+# linked to tr
+auds_tr_dtcr_linkcheck;# auds_tr_dtcr_linkcheck ==> tr
+# linked to dtcr
+auds_dtcr_cr_linkcheck;# auds_dtcr_cr_linkcheck ==> dtcr
+# linked to cr
+auds_cr_dtcr_linkcheck;# auds_cr_dtcr_linkcheck ==> cr
+# linked to dtcr
+auds_dtcr_tmr_linkcheck;# auds_dtcr_tmr_linkcheck ==> dtcr
+# linked to tmr
+auds_tmr_dtcr_linkcheck;# auds_tmr_dtcr_linkcheck ==> tmr
+# linked to dtcr
+auds_dtcr_tl_linkcheck;# auds_dtcr_tl_linkcheck ==> dtcr
+# linked to tl
+tan_trlkg_tblsrch;# tan_trlkg_tblsrch ==> verifies trs are
+# properly linked, both state codes are  4trtantotan, trs in
+# range, 1 control tr, 1 auxilliary
+auds_mas_frsca;# auds_mas_frsca ==> fr status change audit
+# lockout bit interface with annct handlin
+auds_abort_mas_announcement;# auds_abort_mas_announcement
+# ==> send abort announcement order for a given iaid
+auds_request_demand_md;# auds_request_demand_md ==> request
+# action via sico and set dar directly
+auds_set_acb_abrt_flag;# auds_set_acb_abrt_flag ==> client
+# sets acb abort flag indicating data used by the  audit may
+# be modified so the audit can determine the
+auds_process_quiet_mode_request;#
+# auds_process_quiet_mode_request ==> initiate or terminate
+# quiet mode for the audits passed  to this routin
+auds_manual_audstat;# auds_manual_audstat ==> output
+# op:audstat msg in response to a manual request
+auds_auto_audstat;# auds_auto_audstat ==> output op:audstat
+# msg in response to a automatic reques
+auds_update_mcc_pgm_off_norm;# auds_update_mcc_pgm_off_norm
+# ==> update mcc program control off normal lamp based on aud
+# its inhibited or quieted or if the audit system is in
+auds_abt_mdn_on_phase;# auds_abt_mdn_on_phase ==> abort
+# audtis in progress when a phase is run
+auds_queue_full;# auds_queue_full ==> handles queue full
+# return from audit disk request
+audit_cranx;# audit_cranx ==> validate linkage of cranx to
+# either cr or idle list
+auds_queue_3b_buffer;# auds_queue_3b_buffer ==> queue for
+# use of audit system 3b buffer
+auds_3b_send;# auds_3b_send ==> audit send message to 3b
+# process
+auds_rel_3b_buffer;# auds_rel_3b_buffer ==> audit release
+# control of 3b buffer
+auds_bld_tbn_list;# auds_bld_tbn_list ==> build a list of
+# tb/s given the first tb
+aud_set_man;# aud_set_man ==> put the audit system in manual
+# demand only mode
+scar_hsili;# scar_hsili ==> call scar_hunt, scar_seize,
+# scar_init and scar_link_ic
+scar_hunt;# scar_hunt ==> find scar head cell containing
+# idle scar(s
+scar_seize;# scar_seize ==> using input hci, unlink first
+# scar from idle link list
+scar_init;# scar_init ==> zero all words of the scar
+scar_link_ict;# scar_link_ict ==> establish 2-way linkage
+# between ict and scar
+scar_purge_ict;# scar_purge_ict ==> unlink scar from ict and
+# idle scar
+scar_unlink_ict;# scar_unlink_ict ==> unlink scar from ict
+scar_idle;# scar_idle ==> put scar on idle link list - peg
+# counts
+scar_idle_ll_chk;# scar_idle_ll_chk ==> if scar shows itself
+# to be on an idle link list, verify 2-way links for both its
+# forward and backward pointe
+scar_idle_ll_hc_chk;# scar_idle_ll_hc_chk ==> for headcell
+# identified by input headcell identity (i d = 0 to 63, an
+# headcell index is 0 to 12
+scar_ict_chk;# scar_ict_chk ==> check input scar for linkage
+# (2-way
+ict_scar_chk;# ict_scar_chk ==> see if ict linked to scar
+# and ,if so, verify links
+scar_anal_ict;# scar_anal_ict ==> for analysis audit
+# function - do link check for scar
+ict_anal_scar;# ict_anal_scar ==> for analysis audit
+# function - do ict to scar checks
+scar_init_ill_hc;# scar_init_ill_hc ==> for sint in phases
+# 2,3 and 4, initialize idle link li st headcell for scar idle
+# link list, including zeroin
+scar_sint_chk;# scar_sint_chk ==> investigate scar for sint,
+# phase 2 and 3 only
+scar_trk_sint_check;# scar_trk_sint_check ==> special
+# routine for phase 2 and 3. from trk data deter mine if trk
+# links to scar and all ok. if bad/mutilat
+scar_bill_ctd;# scar_bill_ctd ==> entry from ancicpec for
+# fen recording - call type dete rmined - scar linked -
+# originally dialed number in cr
+scar_bill_purge_icdr_noscar;# scar_bill_purge_icdr_noscar
+# ==> entry from ancicpec or mainfh with intl call purged eit
+# her before ctd or for ogt first trial failures or whe
+scar_bill_purge_setup;# scar_bill_purge_setup ==> entry from
+# ancicpec with call purged during set up stag e after ctd
+scar_bill_purge;# scar_bill_purge ==> external entry from
+# ancicpec or mainfh or internal entr y from
+# scar_bill_purge_setup with call purge
+scar_bill_purge_mrda;# scar_bill_purge_mrda ==> entry from
+# ancicpec or mainfh with call purged and scar already release
+scar_bill_clear_redirect;# scar_bill_clear_redirect ==>
+# entry from ancicpec for a call which is redirected
+scar_bill_outcomplete;# scar_bill_outcomplete ==> entry from
+# ancicpec with outcomplete or pas outcomplete or mas address
+# complet
+scar_bill_ogt_chi;# scar_bill_ogt_chi ==> entry from
+# ancicpec at outcomplete with acd or icdr chi
+scar_bill_dire_complete;# scar_bill_dire_complete ==> entry
+# from ancicpec with digit reception complete on cc itt6
+# circuit. move digits from cr to scar for icd
+scar_bill_atmea_connect;# scar_bill_atmea_connect ==> record
+# icdr atme a connect event
+scar_bill_answer;# scar_bill_answer ==> entry from ancicpec
+# with answer supervision received
+scar_bill_mrda;# scar_bill_mrda ==> minimum recordable
+# duration achieved
+scar_bill_clearback;# scar_bill_clearback ==> entry from
+# ancicpec with clearback - if br4calldurt ind icates call < 2
+# seconds make short recor
+scar_bill_reanswer;# scar_bill_reanswer ==> entry from
+# ancicpec with reanswer
+scar_bill_disconnect;# scar_bill_disconnect ==> entry from
+# ancicpec with clearforward or pas disconnect or mas
+# disconnect or from scarbill purge or clearbac
+scar_bill_disconnect_mrda;# scar_bill_disconnect_mrda ==>
+# entry from ancicpec with clearforward or pas disconnect or
+# mas disconnect or from scarbill purge mrda and sc
+scar_bill_tl_det;# scar_bill_tl_det ==> entry from ancicpec
+# with test line determined
+scar_bill_ictacv;# scar_bill_ictacv ==> store access acv
+# information into the scar
+scar_bill_ogtacv;# scar_bill_ogtacv ==> store egress acv
+# information into the scar
+scar_bill_icdr_oos;# scar_bill_icdr_oos ==> generate an icd
+# record to report change in maintenance  state of
+# international circuit. entry from tmad000
+scar_bill_cla;# scar_bill_cla ==> called by dsddsctl to
+# generate sdn record for service a ssist, send to 3
+scar_bill_assist_ans;# scar_bill_assist_ans ==> called by
+# dsddsctl when in assist state with answer sup ervisio
+scar_pcp_sab;# scar_pcp_sab ==> called by pcpccp to send the
+# sub account billing number and digit count to the 3
+scar_bill_pcp_ocdd;# scar_bill_pcp_ocdd ==> called by pcpccp
+# to send the ocdd information to the 3b
+scar_phas_adj;# scar_phas_adj ==> entry from sint with phase
+# adjustment time for each att ached sca
+scar_phas_adj2;# scar_phas_adj2 ==> entry from sint with
+# phase adjustment time regardless o f whether a scar is
+# linked or no
+scar_phas_adj3;# scar_phas_adj3 ==> entry from billcntl when
+# dma is complete and the phase  adjustment time can be sent
+# to the 3
+scar_bill_palm;# scar_bill_palm ==> entry from dicoctl when
+# off-net overflow occurs
+scar_bill_sid_sent;# scar_bill_sid_sent ==> called by
+# dadcctrl and ccspamh to set sid/ani sent bit  in scar for
+# aci and sadc onl
+scar_bill_dsdc;# scar_bill_dsdc ==> a bil command has been
+# received from the ncp. send bop  and bil data to 3b. all
+# unused bits of input are zero
+scar_bill_tcap_dsdc;# scar_bill_tcap_dsdc ==> tcap dsdc
+# billing data has been received from the ncp.  send to 3
+scar_bill_seta;# scar_bill_seta ==> called by dsd call
+# processing with the calling station identity (an
+scar_bill_setb;# scar_bill_setb ==> called by the the
+# dsddsctl with the billing number, sen d to 3
+scar_bill_seto;# scar_bill_seto ==> called by the dsddsctl
+# to send the originally dialed nu mber to the 3
+scar_bill_setd;# scar_bill_setd ==> called by the dsddsctl
+# with the destination number , se nd to 3
+scar_bill_setc;# scar_bill_setc ==> called by dsddsctl with
+# resource counter id , send to 3
+scar_bill_setac;# scar_bill_setac ==> called by dsddsctl
+# with authorization code and the numb er of authorization
+# digits, send to 3
+scar_bill_sdn;# scar_bill_sdn ==> a bil sdn command has been
+# received from the ncp
+scar_bill_sdn3;# scar_bill_sdn3 ==> a bil sdn 3 command has
+# been received from the ncp
+scar_bill_tcap_sdn;# scar_bill_tcap_sdn ==> tcap sdn billing
+# data has been received from the ncp. s end to 3
+scar_bill_dsd_intl;# scar_bill_dsd_intl ==> called by the
+# dsddsctl to mark the scar international i ndicato
+scar_chrging_upd_bill;# scar_chrging_upd_bill ==> called by
+# tcap dsdc when there is billing data to be up dated.
+# originally used for the variable queuing feat
+scar_store_rn;# scar_store_rn ==> called by dsd to store the
+# routing number (ssc-wxy-npaz
+scar_bill_sdnmeg_sidani;# scar_bill_sdnmeg_sidani ==> called
+# by palevcod when a sid-ani increment msg is rece ive
+scar_bill_fwd;# scar_bill_fwd ==> called by dsddsctl to
+# store nsc information forwarded
+scar_bill_chk_bilsdn;# scar_bill_chk_bilsdn ==> called by
+# palevcod to determine if this acp is the bill ing point when
+# an eri pam is receive
+scar_bill_peg_uui;# scar_bill_peg_uui ==> called by q931 ict
+# and ogt handlers and clearing routin e to increment user to
+# user informatio
+scar_bill_zero_uui;# scar_bill_zero_uui ==> called by
+# repodisp to zero user to user information
+scar_bill_disc_uui;# scar_bill_disc_uui ==> called by q931
+# clearing routine to increment user to us er informatio
+scar_bill_ani_dav_rec;# scar_bill_ani_dav_rec ==> for all
+# dial-a-view calls except those calls when the  caller hangs
+# up and when the call is handled by an at
+scar_bill_ani_dav_cutthru;# scar_bill_ani_dav_cutthru ==>
+# for dial-a-view calls when the call is handled by an a
+# ttendant -- ani not receive
+scar_bill_ani_dav_cancel;# scar_bill_ani_dav_cancel ==>
+# caller hung up during dial-a-view processing-cr is not
+# guarantee
+scar_bill_ani_dav_attend;# scar_bill_ani_dav_attend ==> for
+# attendant handled dial-a-view calls -- ani delivere d and an
+# announcement is playe
+scar_ssp_store_qry_data;# scar_ssp_store_qry_data ==> called
+# by bospqarc to store the query data in the scar.  data
+# stored includes the dialed number and digit co
+scar_ssp_qry_response;# scar_ssp_qry_response ==> called by
+# bospqarc to send the scp query response data  to the 3
+scar_ssp_echo_data;# scar_ssp_echo_data ==> called by
+# bospqarc to send echo data to 3b
+scar_ssp_wink;# scar_ssp_wink ==> called by ancicpec to
+# store the carrier wink time and d ate in the sca
+scar_ssp_at_cutthru;# scar_ssp_at_cutthru ==> called by
+# ancicpec when at returns steady offhook indic ating cut thru
+# for an announcemen
+scar_bill_orig_800;# scar_bill_orig_800 ==> call by ccsdsdiw
+# with the routing digits from the inwat s data bas
+scar_term_info_tcap;# scar_term_info_tcap ==> called by
+# dsdcmess to pass (to the 3b
+scar_term_info_ccis;# scar_term_info_ccis ==> called by
+# dsddsctl to pass (to the 3b
+scar_store_inup_coli;# scar_store_inup_coli ==> called by
+# inup to set the inup coli indicator bit in t he scar
+# whenever coli information ( in inup protocol
+scar_store_q931_coli;# scar_store_q931_coli ==> called by
+# q931 to set the q.931 coli indicator bit in t he scar
+# whenever coli information (in q.931 protocol
+scar_bill_fred;# scar_bill_fred ==> called by dsd call
+# processing to pass to the 3b the following 7 counts: time of
+# day/day of week routing
+scar_bill_ncp_qtime;# scar_bill_ncp_qtime ==> called by dsd
+# call processing to send to the 3b the time on queue (at the
+# nc
+scar_retrieve_bn_info;# scar_retrieve_bn_info ==> output
+# billing number info to be used by routines to obtain ani/bn,
+# ani digit count i/ii/oli value and i/ii
+peg_cbc_counts;# peg_cbc_counts ==> called by cp to peg cbc
+# counts
+peg_sidani_cnt;# peg_sidani_cnt ==> called by cp for aci and
+# sadc sid/ani only
+peg_cpnbn_una;# peg_cpnbn_una ==> called by cp for isdn
+# cpn/bn failed to the term end
+ictacv_chk;# ictacv_chk ==> check if 1/n acv sampling is
+# needed for the ict
+ogtacv_chk;# ogtacv_chk ==> check if 1/n acv sampling is
+# needed for the ogt
+bill_tracer_records;# bill_tracer_records ==> called by
+# trafclct to send the call assembly and servic e tracer
+# events to the 3
+bill_hicap_aggregate_record;# bill_hicap_aggregate_record
+# ==> create an aggregate billing record for hicap dialed num
+# be
+bill_acv_throt;# bill_acv_throt ==> entry from ovld or
+# trafscan to chang the throttling rat
+bill_acv_volex;# bill_acv_volex ==> entry from audit system,
+# - print volume exceed msg, cu t throttle rat
+acv_rchg;# acv_rchg ==> send a rate change event to 3b
+setup_lang_assist_call;# setup_lang_assist_call ==> set up a
+# language assistance call
+process_cb_of_lang_assist_customer;#
+# process_cb_of_lang_assist_customer ==> process clear back
+# received on language assistance cust omer trunk (og
+process_rean_of_lang_assist_customer;#
+# process_rean_of_lang_assist_customer ==> process reanswer
+# received on language assistance custom er trunk (og
+update_one_dife1;# update_one_dife1 ==> updates a dif-e1
+# rate table with new time bases
+det_cgc_and_restore_dife1;# det_cgc_and_restore_dife1 ==>
+# determines the charge class and restores a dif-e1 rate  tabl
+restore_one_dife1;# restore_one_dife1 ==> restore all time
+# bases in dif-e1 rate table
+get_ppm_rate_data;# get_ppm_rate_data ==> obtain the value
+# of the pulse width register (pwr
+ppm_process_answer;# ppm_process_answer ==> begin false
+# answer timing on ppm call
+ppm_process_cb;# ppm_process_cb ==> process a clear back on
+# a ppm call
+ppm_get_cgc;# ppm_get_cgc ==> get the charge class
+# associated with a ppm call
+ppm_get_rate_ptr;# ppm_get_rate_ptr ==> get the rate pointer
+# associated with a ppm call
+ppm_get_timebase;# ppm_get_timebase ==> get the timebase
+# associated with a ppm call
+stop_ppm;# stop_ppm ==> stop sending ppm pulses on the ict -
+# this peripheral or der can be sent without harm whether or
+# not ppm is ac
+ppm_process_reanswer;# ppm_process_reanswer ==> process a
+# reanswer on a ppm call
+ppm_get_dc;# ppm_get_dc ==> get the distance class
+# associated with a ppm call
+ppm_get_dc_cr;# ppm_get_dc_cr ==> get the distance class
+# while cr is associated with the  cal
+start_ppm;# start_ppm ==> determine the ppm rate pointer and
+# send peripheral orde r to dif-e1 to start pp
+ppm_start_dpls;# ppm_start_dpls ==> checks ppm sub state and
+# starts ppm
+ppm_chg_control;# ppm_chg_control ==> determines ppm status
+# and controls the tr annex
+ppm_chg_audit;# ppm_chg_audit ==> verify charging on a
+# ppmtot
+ppm_sint_init;# ppm_sint_init ==> initializes the ppm
+# substate after a phase
+mfcixcvr_send_reply;# mfcixcvr_send_reply ==> mfc icxcvr
+# send logical reply - compelled or pulsed
+mfcixcvr_startup;# mfcixcvr_startup ==> obtain icxcvr, link
+# to cr, connect to ict and wait sign a
+mfcixcvr_release;# mfcixcvr_release ==> abandon and release
+# an icxcvr
+mfcoxcvr_send_sig;# mfcoxcvr_send_sig ==> mfc ogxcvr send
+# logical signal - compelled
+mfcoxcvr_startup;# mfcoxcvr_startup ==> obtain xcvr, link
+# xcvr to cr and connect to ogt
+mfcoxcvr_release;# mfcoxcvr_release ==> abandon and release
+# an ogxcvr
+mfcxcvr_idle;# mfcxcvr_idle ==> idle an mfc xcvr
+final_clr_ict_mfcc_tr;# final_clr_ict_mfcc_tr ==> clear and
+# treat an mfc ict - no cr
+final_clr_ict_mfcc_cr;# final_clr_ict_mfcc_cr ==> clear and
+# treat an mfc ict - with cr
+final_clr_ogt_mfcc_tr;# final_clr_ogt_mfcc_tr ==> clear and
+# treat an mfc ogt - no cr
+final_clr_ogt_mfcc_cr;# final_clr_ogt_mfcc_cr ==> clear and
+# treat an mfc ogt - with cr
+mfc_iclr_receive_cpc;# mfc_iclr_receive_cpc ==> mfc ict
+# clearing receive calling party category signal  - send group
+# b fail signa
+mfc_iclr_conn_annc;# mfc_iclr_conn_annc ==> mfc ict clearing
+# connect to annc or high and wet after  sending ad
+mfc_iclr_complete;# mfc_iclr_complete ==> mfc ict clearing
+# complete - end of backward fail signal - reenter fina
+mfc_iclr_seq_to;# mfc_iclr_seq_to ==> mfc ict clearing
+# compelled sequence timeout of non-fail signal - call final,
+# agai
+mfcilgsu_process_log_sig;# mfcilgsu_process_log_sig ==>
+# process a logical signal received on mfc ict
+mfcilgsu_seq_cmp;# mfcilgsu_seq_cmp ==> process a sequence
+# complete report
+mfcilgsu_process_coll_all_digits;#
+# mfcilgsu_process_coll_all_digits ==> process a
+# collect_all_digits event on mfc ict
+mfcilgsu_process_get_n_dig;# mfcilgsu_process_get_n_dig ==>
+# process a get_n_dig event on mfc ict
+mfcilgsu_process_szr_cmp;# mfcilgsu_process_szr_cmp ==>
+# process a szr_cmp event on mfc ict
+mfcolgsu_send_first_digit;# mfcolgsu_send_first_digit ==>
+# send first digit on mfc ogt
+mfcolgsu_process_log_sig;# mfcolgsu_process_log_sig ==>
+# process a logical signal received on mfc ogt
+mfcolgsu_process_cot;# mfcolgsu_process_cot ==> process cot
+# event from repodisp for mfc ogt
+mfc_direopen;# mfc_direopen ==> check, store, and translate
+# mfc digit
+mfc_reinit_dire;# mfc_reinit_dire ==> reinitialize digit
+# reception for an mfc call which fail ed to cut throug
+mfccls_process_out_cmp;# mfccls_process_out_cmp ==> process
+# an outgoing complete event for mfc ict
+mfccls_process_answer;# mfccls_process_answer ==> process an
+# answer event for mfc ict
+mfccls_process_reanswer;# mfccls_process_reanswer ==>
+# process a reanswer event for mfc ict
+mfccls_process_clearback;# mfccls_process_clearback ==>
+# process a clearback event for mfc ict
+mfccls_setup_cut_thru;# mfccls_setup_cut_thru ==> begin mfc
+# ogt setup actions for cut-through cases
+mfccls_process_cut_thru;# mfccls_process_cut_thru ==>
+# process a cut through event for mfc ogt
+mfccls_setup_non_cut_thru;# mfccls_setup_non_cut_thru ==>
+# begin mfc ogt setup actions for non-cut-through cases
+mfcqadmn_origq_req;# mfcqadmn_origq_req ==> process mfc ict
+# origination queue request
+mfcqadmn_origq_rem;# mfcqadmn_origq_rem ==> remove a trunk
+# register from mfc origination queue
+mfcqadmn_oxcvrq_req;# mfcqadmn_oxcvrq_req ==> process mfc
+# outgoing transceiver queue request
+mfcqadmn_oxcvrq_rem;# mfcqadmn_oxcvrq_rem ==> remove cr from
+# mfc outgoing transceiver queue
+dsdc_waiting_csi;# dsdc_waiting_csi ==> dsdc ctl initializes
+# the cr for a dsdc call still waiti ng calling station
+# identity collectio
+dsdc_chk_csi;# dsdc_chk_csi ==> checks to see if csi is
+# needed
+dsdc_query_type;# dsdc_query_type ==> determines the type of
+# query needed
+dsdc_heres_csi;# dsdc_heres_csi ==> dsdc ctl initializes the
+# cr for a dsdc call with a call ing station identity and
+# sends a dsdc inquir
+dsdc_no_csi;# dsdc_no_csi ==> dsdc ctl initializes the cr
+# for a dsdc call that does n ot require the calling station
+# identity and sends a d
+dsdc_cot;# dsdc_cot ==> dsdc ctl sends a dsdc inquiry
+# delayed until cot on the  ict was receive
+sdn_init_qry;# sdn_init_qry ==> dsdc ctl initializes the cr
+# for an sdn call with a call ing station identity and sends a
+# sdn inquir
+sdn_wb_init_qry;# sdn_wb_init_qry ==> dsdc controller
+# initializes the cr for an sdn call with a calling station
+# identity and sends an sdn wideband
+sdn_ara_init_qry;# sdn_ara_init_qry ==> dsdc ctl sends an
+# automatic remote access query with ze ros used for the
+# dialed number and the inwats-returne
+its_sdn_init_qry;# its_sdn_init_qry ==> dsdc ctl initializes
+# the cr for an its/sdn call with an i and sends an its/sdn
+# imp dial. inquir
+dsdc_init_qry_ani_req;# dsdc_init_qry_ani_req ==> dsdc ctl -
+# checks for ani collected and if ani not coll ected, reports
+# get_sid if ict is ccis
+dsdc_ds_ctrl_event_cr;# dsdc_ds_ctrl_event_cr ==> called by
+# ancicpec for all set up ( have call reg.
+sdn_cot;# sdn_cot ==> entry into sdn_init_qry when cot
+# received
+sdn_wb_cot;# sdn_wb_cot ==> entry into sdn_wb_init_qry when
+# cot received
+sdn_ara_cot;# sdn_ara_cot ==> entry into sdn_ara_init_qry
+# when cot received
+dsdc_nocsi_cot;# dsdc_nocsi_cot ==> entry into dsdc_no_csi
+# when cot received
+dsdc_csi_cot;# dsdc_csi_cot ==> entry into dsdc_heres_csi
+# when cot received
+its_sdn_cot;# its_sdn_cot ==> entry into its_sdn_init_qry
+# when cot received
+send_rdy_msg;# send_rdy_msg ==> sends a dsdc ready message
+send_exception_msg;# send_exception_msg ==> sends a dsdc
+# exception message
+send_term_msg;# send_term_msg ==> dsdc ctl sends a term
+# message to the ncp
+send_nac_msg1;# send_nac_msg1 ==> send a modified dsdc data
+# message
+send_nac_msg2;# send_nac_msg2 ==> send a modified dsdc data
+# message
+process_ans_sup;# process_ans_sup ==> trigger the billing
+# when the ans signal is received
+process_som;# process_som ==> dsdc ctl processes a start of
+# menu report from a dsdc n s
+process_eom;# process_eom ==> dsdc ctl processes a end of
+# menu report from a dsdc nsc
+send_renv_msg;# send_renv_msg ==> dsdc ctl sends a dsdc ds
+# return envelope message to the nc
+dsdc_exc;# dsdc_exc ==> dsdc ctl processing of a non-fatal
+# exception
+dsdc_purge;# dsdc_purge ==> purge dsdc structures, cr, dsdc
+# bureaucracy block, and  nsc interface, for final handlin
+audit_cr_assist_list;# audit_cr_assist_list ==> audit cr
+# assist list for proper linkage
+enter_cr_assist_list;# enter_cr_assist_list ==> search for
+# idle slot, when one found link cr to it and make slot point
+# to cr, take care of idle count in li
+remove_cr_assist_list;# remove_cr_assist_list ==> do 2 way
+# linkage check from cr to assist list. if all ok, unlink
+# these two and handle assist list idle cou
+linkcheck_assist_list_to_cr;# linkcheck_assist_list_to_cr
+# ==> from input assist_list_index, do a 2 way linkage check -
+# call audits if bad link found.
+linkcheck_cr_to_assist_list;# linkcheck_cr_to_assist_list
+# ==> from input cr do a 2 way linkage check - call audits i f
+# bad link found
+cr_assist_list_audlist_anal;# cr_assist_list_audlist_anal
+# ==> for special dpcm use, analyze input cr for link to ass
+# ist_lis
+ret_setov_dig;# ret_setov_dig ==> retrieves digits from
+# setov command stored in scar
+dsdnsc_q_acp_tsg_data;# dsdnsc_q_acp_tsg_data ==> finds out
+# whether or not any dsdc nsc trunks are avail able (idl
+env_to_nsc;# env_to_nsc ==> check if nsc trunk reserved - if
+# not hunt and connect  to ict - send command list, cml,
+# message to nsc ( cml
+nscif_clr;# nscif_clr ==> clear dsdc nsc interface from call
+# (cr
+ncd_send_query;# ncd_send_query ==> controls (determines
+# applicability of
+ncd_build_send_mum;# ncd_build_send_mum ==> build the
+# constant fields of the query message being bu ilt in
+# ci4mumblock and send the ncd mu
+pcpccp_outcomplt;# pcpccp_outcomplt ==> repoevnt calls for
+# outgoing completed event when cr4pcp ccp_act is found set.
+# if 1+sacds or fax s&f features
+pcpccp_su_ans;# pcpccp_su_ans ==> call held in special
+# outgoing state has received answer and repoevnt has found
+# cr4pcpccp_act to be set. pcpc
+pcpccp_cot;# pcpccp_cot ==> called only by repodisp when
+# there is no ogt and cr4pcp ccp_act is found set. pcpccp
+# proceeds with call handl
+pcpccp_purge;# pcpccp_purge ==> mainfh - final cr - calls
+# when cr4pcpccp_act found set. pcpccp clears all facilities
+# it may be using, unless
+pcpccp_fh_rdrct;# pcpccp_fh_rdrct ==> mainfh calls this
+# routine after clearing of ict was cal led. if ict was
+# successfully connected to announcemen
+idb_cache_insert;# idb_cache_insert ==> insert a new 800
+# number into the cache table
+check_trash_time;# check_trash_time ==> determine if it is
+# time to flush the idb cache tbl
+act_deact_idb_cache;# act_deact_idb_cache ==> respond to
+# request to deactivate idb cache table
+disable_exmt_entries;# disable_exmt_entries ==> mark nodes
+# with exemption entries for deletion
+ancicp_cds_crc;# ancicp_cds_crc ==>  perform call denial
+# screening, call recording, and ne twork call denial checks -
+# all based on far end netwo
+ancicp_su_out_compl;# ancicp_su_out_compl ==> perform set up
+# actions (tr-annex
+ancicp_su_pas_out_compl;# ancicp_su_pas_out_compl ==>
+# perform pas out complete actions. if applicable, notify
+# scarbill
+ancicp_end_dgrcpt;# ancicp_end_dgrcpt ==> record end of
+# digit reception for ccitt6. if applicab le, notify scarbill
+ancicp_ads_deliv;# ancicp_ads_deliv ==> record successful
+# delivery of ani. notify scarbill.
+ancicp_record_adc;# ancicp_record_adc ==> record address
+# complete for mas. if applicable, notif y scarbill
+ancicp_record_ans;# ancicp_record_ans ==> record answer for
+# mas. if applicable, notify scarbill
+ancicp_record_disc;# ancicp_record_disc ==> record
+# disconnect for mas. if applicable, notify scar bil
+ancicp_psu_ans;# ancicp_psu_ans ==> post set up answer.
+# check fraud, check dsdc and scar l inkage
+ancicp_psu_cb;# ancicp_psu_cb ==> post set up clearback.
+# check trd or fraud active, if a ppropriate call dsdc and
+# scar clearback routine
+ancicp_psu_rans;# ancicp_psu_rans ==> post set up re-answer.
+# check fraud. check dsdc and sc ar linkage
+ancicp_psu_disc;# ancicp_psu_disc ==> post set up disconnect
+# - check fraud, check dsdc & scar linkage, notify billing of
+# disconnect, and determine
+ancicp_clear_for_redirect;# ancicp_clear_for_redirect ==>
+# perform clear and redirect actions for structures linke d to
+# the ict and ogt. they include tr annex, scar, fr
+ancicp_psu_ssdr;# ancicp_psu_ssdr ==> post set up second
+# start dial received. check for frau d, if active, check
+# fraud states and if appropriate,
+ancicp_psu_pans;# ancicp_psu_pans ==> post set up pas
+# answer. check dsdc and scar linkage.
+ancicp_psu_pdsc;# ancicp_psu_pdsc ==> post set up pas
+# disconnect. check dsdc and scar linkag e. peg division of
+# revenue ict release count
+ancicp_setup_purge;# ancicp_setup_purge ==> perform dsdc
+# checks, remove wack timing, unlinks the sc ar and perform
+# meet-me check
+ancicp_postsetup_purge;# ancicp_postsetup_purge ==> unlink
+# scar linkage, peg division of revenue counts, ze ro tr-annex
+# timer, and process according to tr-annex
+ancicp_trk_mtc_ev;# ancicp_trk_mtc_ev ==> used to do
+# interfacing with scar recording functions f or incoming
+# trunk maintenance test calls
+ancicp_sint_trd_ogt;# ancicp_sint_trd_ogt ==> called during
+# phases 2 and 3 for outgoing trunk in sta ble(call save
+ancicp_ogt_rchk;# ancicp_ogt_rchk ==> using input tsn of an
+# ogt( note - - only call with an  ogt -- will zap tr-annex if
+# called with an ict....
+ancicp_wait_wack;# ancicp_wait_wack ==> called by ogt
+# handlers to put cr into the wait (post- addressin
+ancicp_ogt_ofan;# ancicp_ogt_ofan ==> called by ogt handlers
+# to report off-hook (e&m ogt
+ancicp_ogt_oncb;# ancicp_ogt_oncb ==> called by ogt handlers
+# to report on-hook (e&m ogt
+ancicp_fetch_bcsn;# ancicp_fetch_bcsn ==> get billing call
+# sequence number out of ict tr annex fo r correct use fields.
+# only output bcsn for stable ca
+ancicp_ic_wink;# ancicp_ic_wink ==> report ic wink to
+# billing
+ancicp_at_cut_thru;# ancicp_at_cut_thru ==> notify billing
+# and network management that at returned steady offhook
+# instead of win
+ancicp_ogt_fail;# ancicp_ogt_fail ==> report first trial
+# failure to billing for icdr
+ancicp_setup_purge_pre_ctd;# ancicp_setup_purge_pre_ctd ==>
+# if incoming international, call scarbill for icdr
+final_cr;# final_cr ==> do final handling of call using cr
+# as input. this is u sed by several clearing procedures to
+# re-enter final,
+final_dispense_cr_ict;# final_dispense_cr_ict ==> do common
+# cr_ict clearing and call the ict clearing rou tine via is
+final_dispense_cr_ogt;# final_dispense_cr_ogt ==> do common
+# cr_ogt clearing and call the ogt clearing rou tine via os
+final_dispense_tr_ict;# final_dispense_tr_ict ==> do common
+# tr_ict clearing and call the ict clearing rou tine via is
+final_dispense_tr_ogt;# final_dispense_tr_ogt ==> do common
+# tr_ogt clearing and call the ogt clearing rou tine via os
+final_clear_ogt_ccis_cr;# final_clear_ogt_ccis_cr ==> clear
+# ccis ogt with a cr - ccisfclr
+final_clear_ict_ccis_cr;# final_clear_ict_ccis_cr ==> clear
+# ccis ict with a cr - ccisfclr
+final_clear_ict_ccis_tr;# final_clear_ict_ccis_tr ==> clear
+# ccis ict with a tr - ccisfclr
+final_clear_ogt_ccis_tr;# final_clear_ogt_ccis_tr ==> clear
+# ccis ogt with a tr - ccisfclr
+final_clear_ogt_isup_cr;# final_clear_ogt_isup_cr ==> clear
+# isup ogt with a cr - isupclr
+final_clear_ict_isup_cr;# final_clear_ict_isup_cr ==> clear
+# isup ict with a cr - isupclr
+final_clear_ict_isup_tr;# final_clear_ict_isup_tr ==> clear
+# isup ict with a tr - isupclr
+final_clear_ogt_isup_tr;# final_clear_ogt_isup_tr ==> clear
+# isup ogt with a tr - isupclr
+final_clear_ogt_q931_cr;# final_clear_ogt_q931_cr ==> clear
+# q931 ogt with a cr - q931clr
+final_clear_ict_q931_cr;# final_clear_ict_q931_cr ==> clear
+# q931 ict with a cr - q931clr
+final_clear_ict_q931_tr;# final_clear_ict_q931_tr ==> clear
+# q931 ict with a tr - q931clr
+final_clear_ogt_q931_tr;# final_clear_ogt_q931_tr ==> clear
+# q931 ogt with a tr - q931clr
+final_clr_ict_em_cr;# final_clr_ict_em_cr ==> clear mf, dp (
+# or idts
+final_clr_ict_em_tr;# final_clr_ict_em_tr ==> clear mf, dp
+# (or idts
+final_clr_ogt_em_cr;# final_clr_ogt_em_cr ==> clear mf, dp,
+# nop or dtmfwk ogt with a cr - eamfclrn
+final_clr_ogt_em_tr;# final_clr_ogt_em_tr ==> clear mf, dp,
+# nop or dtmfwk ogt with a tr -eamfclrn
+final_announcement;# final_announcement ==> connect trunk to
+# designated announcement
+final_clear_cr4tsnr;# final_clear_cr4tsnr ==> check svct for
+# ict. release ntwk functions - if any,  including ict loop.
+# idle svct if any
+final_clear_cr4tsnx;# final_clear_cr4tsnx ==> check svct for
+# ogt. release ntwk functions - if any.  idle svct if any
+final_clr_ogt_dpls_cr;# final_clr_ogt_dpls_cr ==> final
+# clearing dpls ogt-cr
+final_clr_ogt_dpls_tr;# final_clr_ogt_dpls_tr ==> final
+# clearing dpls ogt-tr
+final_clr_ict_dpls_cr;# final_clr_ict_dpls_cr ==> final
+# clearing dpls ict-cr
+final_clr_ict_dpls_tr;# final_clr_ict_dpls_tr ==> final
+# clearing dpls ict-tr
+final_clr_ict_tranx;# final_clr_ict_tranx ==> this is used
+# to clear call data from trunk register an nex for the
+# incoming trunk - this procedure calls che
+final_clr_ogt_tranx;# final_clr_ogt_tranx ==> this is used
+# to clear call data from trunk register an nex for the
+# outgoing trunk - at this time all that is
+ccisadjx;# ccisadjx ==> adjust pad level for xcvr
+ccis_back_fail_msg_send;# ccis_back_fail_msg_send ==> send
+# backward failure msg on ccis trunk, the message m aybe
+# nsc,ntc,adi,cof,cfl,blo,cbk,ssb - single/lone si
+ccis_send_fail_tele_mum;# ccis_send_fail_tele_mum ==> format
+# and send backward failure ( on an ict
+ccisdiop;# ccisdiop ==> process conclusion of domestic
+# rmv,rst,cfg and test mes sag
+ccischvf;# ccischvf ==> secondary vfl switch control
+# subroutine
+time_trll_long;# time_trll_long ==> tr link list long
+# timing. 1 to 124 seconds in 1 sec uni ts. accuracy -0 to +1
+# seconds
+ccis_ict_reset;# ccis_ict_reset ==> put ict on wait for clf
+# timing and send reset
+ccis_ict_stable_release;# ccis_ict_stable_release ==> for
+# q.931 or isup ogt handling a backward disconnect ( releas
+ani_alert_vendor;# ani_alert_vendor ==> for ani delivery
+# service provide vendor with ani and di aled digit
+initiate_anid_test;# initiate_anid_test ==> initiate ani
+# delivery test
+dav_call_gapping;# dav_call_gapping ==> determines whether a
+# dial a view call should be process ed based on number of
+# timeouts per minute for this ve
+hicap_10digit_search;# hicap_10digit_search ==> search the
+# ht4fhhwd1 and ht4fhhwd2 hicap digit tables f or a match on
+# the input 10 digit number-number is ass
+hicap_mod_digit_search;# hicap_mod_digit_search ==> search
+# the ht4fhhwd1 and ht4fhhwd2 hicap digit tables f or a match
+# on the input modified 10 digit number-numb
+obtain_hicap_data;# obtain_hicap_data ==> obtain the dialed
+# number, the sic, the the routing numb er and the service typ
+hicap_call_check;# hicap_call_check ==> verify hicap type of
+# call
+final_clear_ogt_inup_cr;# final_clear_ogt_inup_cr ==> clear
+# international isdn user part (inup
+final_clear_ict_inup_cr;# final_clear_ict_inup_cr ==> clear
+# international isdn user part (inup
+final_clear_ict_inup_tr;# final_clear_ict_inup_tr ==> clear
+# international isdn user part (inup
+final_clear_ogt_inup_tr;# final_clear_ogt_inup_tr ==> clear
+# international isdn user part (inup
+inup_idle_memory;# inup_idle_memory ==> idle an inup trunk
+# in memory only
+inup_send_rlc;# inup_send_rlc ==> send an inup rlc message
+# and idle the inup trunk
+inup_ogtscmp;# inup_ogtscmp ==> repo calls - inup trunk
+# selected as ogt
+inupo_cotrec;# inupo_cotrec ==> repo calls - cot reported
+# from ict to ogt
+inupo_su_fot;# inupo_su_fot ==> repo calls - setup fot event
+# for ogt
+inupo_ps_fot;# inupo_ps_fot ==> repo calls - post-setup fot
+# event for ogt
+inup_ogt_remove_timing;# inup_ogt_remove_timing ==> called
+# by repo to perform timing for answer and clearba c
+inupo_blo_su;# inupo_blo_su ==> possibly retry a call when
+# blo received
+inup_test_call;# inup_test_call ==> this subroutine is
+# called by inup_dire for test calls
+inup_outcmp;# inup_outcmp ==> the outcmp event is reported
+# here by repo for an inup i c
+inup_szrcmp;# inup_szrcmp ==> the szrcmp event is reported
+# here by repo for an inup i c
+inup_pas_ocmp;# inup_pas_ocmp ==> the pas_ocmp event is
+# reported here by repo for an inup ic
+inup_pas_ans;# inup_pas_ans ==> the pas_ans event is
+# reported here by repo for an inup  ic
+inup_ra;# inup_ra ==> the reanswer event is reported here by
+# repo for an inup ic
+inup_cb;# inup_cb ==> the clearback event is reported here
+# by repo for an inu p ic
+inup_ans;# inup_ans ==> the answer event is reported here by
+# repo for an inup i c
+inup_cpg;# inup_cpg ==> the post setup call progress event
+# by repo for inupict
+inup_ict_remove_timing;# inup_ict_remove_timing ==> called
+# by repo to perform timing for answer and clearba c
+inup_uui_fail;# inup_uui_fail ==> called by repo for uui
+# rejected event
+inup_send;# inup_send ==> inupsubs - create and send simple
+# inup msgs.
+inup_copy_isup;# inup_copy_isup ==> inupsubs - copy from
+# isup or inup msg to inup msg
+inup_copy_q931;# inup_copy_q931 ==> inupsubs - copy from
+# q.931 msg to inup msg
+inup_send_cot;# inup_send_cot ==> inupsubs - create and send
+# cot message
+inup_send_adc;# inup_send_adc ==> send adc message
+inup_send_ans;# inup_send_ans ==> send ans message
+inup_send_sus_res;# inup_send_sus_res ==> create and send
+# sus or res message
+inup_send_gra;# inup_send_gra ==> create and send gra msg.
+inup_send_group_blk_ublk;# inup_send_group_blk_ublk ==>
+# create and send gbl or gubl message
+inup_send_rel;# inup_send_rel ==> create and send rel and
+# time for rlc
+inup_final_send_rel;# inup_final_send_rel ==> create and
+# send rel during final handling
+inup_get_ipb;# inup_get_ipb ==> inupsubs - copy opt. param
+# from ipb to inup message
+inup_put_ipb;# inup_put_ipb ==> inupsubs - copy opt. param
+# from inup message to ipb
+inup_handle_una_ckt;# inup_handle_una_ckt ==> inupsubs -
+# handle messages received on unassigned circu it
+inup_send_buf_check_tsn;# inup_send_buf_check_tsn ==>
+# inupsubs - set sio field to international isup and send
+# messag
+inup_handle_opt_parms;# inup_handle_opt_parms ==> inupsubs -
+# handle optional parameters received on messa ge
+inup_dire;# inup_dire ==> digit reception routine called by
+# inup incoming trunk h andler to analyze digits in cr for
+# both inbound and t
+final_clear_ogt_itup_cr;# final_clear_ogt_itup_cr ==> clear
+# ccitt no7 international tup (itup
+final_clear_ict_itup_cr;# final_clear_ict_itup_cr ==> clear
+# ccitt no7 international tup (itup
+final_clear_ict_itup_tr;# final_clear_ict_itup_tr ==> clear
+# ccitt no7 international tup (itup
+final_clear_ogt_itup_tr;# final_clear_ogt_itup_tr ==> clear
+# ccitt no7 international tup (itup
+itup_idle_memory;# itup_idle_memory ==> idle an itup trunk
+# in memory only
+itup_send_rlc;# itup_send_rlc ==> send an itup rlc message
+# and idle the itup trunk
+clear_svob;# clear_svob ==> clear all service observing
+# activities from any svob st ate. remove network paths and
+# any active timing, cle
+send_dsmum;# send_dsmum ==> ccis inwats-send direct
+# signaling msg
+update_send_buf_load_ptr_cni;# update_send_buf_load_ptr_cni
+# ==> client calls with msg stored in cni send buf (possibly
+# in send buf overflow are
+cama_mcc_chk;# cama_mcc_chk ==> check cama recording
+# controls for mcc lamp
+final_clear_cama_cr;# final_clear_cama_cr ==> for incoming
+# trunk,ict,(busy to cr
+final_clear_cama_tr;# final_clear_cama_tr ==> clearing
+# actions for cama ict,
+release_idle_acr;# release_idle_acr ==> release and idle the
+# acr
+ccisiwsq;# ccisiwsq ==> for ccis-inwats call send query to
+# data base.
+dire_inwats_reply_xlat;# dire_inwats_reply_xlat ==> for
+# ccsdsdiw move digits from inwats reply from ci4mu mblock
+# into cr and perform a translate all_digit. sig
+dire_cache_xlat;# dire_cache_xlat ==> called by search idb
+# cache in the ccsdsdiw pident when  a hit occurs on the cache
+# table this routine perform
+dire_pas_cut_thru_rexl;# dire_pas_cut_thru_rexl ==> for a
+# customer call to public announcement system (cc pa
+twostage_cot_report;# twostage_cot_report ==> cot received
+# from repodisp
+international_translate_one_stage;#
+# international_translate_one_stage ==> this is used to
+# translate the intl digits received fro m a single stage
+# call. if a pcc is present(operator
+intnl_twostage_invoke;# intnl_twostage_invoke ==> invoke
+# from repodisp
+twostage_final_clearing;# twostage_final_clearing ==> purge
+# report from final handling
+csia_twostage_invoke;# csia_twostage_invoke ==> invoke from
+# repodisp
+ea_twostage_invoke;# ea_twostage_invoke ==> equal access
+# invoke from repodisp
+ccisddwt;# ccisddwt ==> entry to buffer a dedicated word
+# timeout in a domestic  lst
+send_ds_message;# send_ds_message ==> reads the direct
+# signaling dynamic load balancing pool  to determine the next
+# terminal to be used for transmi
+rpt_eamf_cot;# rpt_eamf_cot ==> report cot event to eamfop
+# pident
+q931_dire;# q931_dire ==> assumption is that the ict handler
+# - pident q931ict - h as done the following: loaded digit
+# count cr4dc, load
+q931_ogtscmp;# q931_ogtscmp ==> q.931 trunk has been
+# selected as the ogt
+q931_ogt_cot;# q931_ogt_cot ==> process the cot event from
+# repodisp for q.931 ogt
+q931_spec_ogtsu;# q931_spec_ogtsu ==> special setup event
+# for a q.931 ogt, re-link the cr to the t
+q931_bbcrsrv_cmp;# q931_bbcrsrv_cmp ==> all the paths have
+# been reserved for a bbc call using  q.931 ogt
+q931_sid_ani;# q931_sid_ani ==> palevcod calls this routine
+# to give the q.931 ogt hand ler sid or ani (the csi even
+q931_no_sid_ani;# q931_no_sid_ani ==> palevcod calls this
+# routine to give the q.931 ogt hand ler the csu event as a
+# result of a cs
+q931_info_fwd;# q931_info_fwd ==> palevcod calls this
+# routine to report the information  forward event to the
+# q.931 ogt handle
+q931o_send_fac_fs;# q931o_send_fac_fs ==> invoke from
+# repodisp - send facility message on ogt for ca-tsc reques
+q931o_send_fac_fp;# q931o_send_fac_fp ==> invoke from
+# repodisp - send facility message on ogt for ca-tsc reques
+q931o_send_facrej_fs;# q931o_send_facrej_fs ==> send
+# facility reject on ogt. ca-tsc data was discarded
+q931o_send_facrej_fp;# q931o_send_facrej_fp ==> send
+# facility reject on ogt. ca-tsc data was discarded
+q931o_post;# q931o_post ==> enter q931ogt tr into the post-
+# setup wait for answer or answer stat
+q931_dispose_ogt;# q931_dispose_ogt ==> dispose of a q.931
+# ogt based on the input dispose code , used on retry leg
+q931_idle_memory;# q931_idle_memory ==> idle a q931 trunk in
+# memory only
+norm_q931_send_disc;# norm_q931_send_disc ==> normal
+# clearing sequence. check the isdn pointer block  for user
+# data to include in the disc message, send th
+norm_q931_send_rel;# norm_q931_send_rel ==> normal clearing
+# sequence. send a release message on the trunk, and time for
+# release complete. called only by
+q931_disc_wrel;# q931_disc_wrel ==> send a disconnect
+# message with a cause of unknown and t ime for the release
+# (no bbc checks don
+q931_rel_wrelcom;# q931_rel_wrelcom ==> send a release
+# message without a cause and time for the release complete
+# (no bbc checks don
+q931_relcom_idle;# q931_relcom_idle ==> send a release
+# complete message and idle the trunk (no  bbc checks don
+q931_rest_ack_idle;# q931_rest_ack_idle ==> send a restart
+# acknowledge and idle the trunk (no bbc c hecks don
+q931_idle_chk_bbc_ps;# q931_idle_chk_bbc_ps ==> idles trunk
+# in memory, called in post setup only. chec ks for bbc to
+# idle slaves also
+q931_send_disc;# q931_send_disc ==> send q.931 disconnect
+# message, tr is not altered, trunk is not idled, and no
+# timing is initiate
+q931_send_rel;# q931_send_rel ==> send q.931 release
+# message, tr is not altered, trunk is not idled, and no
+# timing is initiate
+q931_send_relcom;# q931_send_relcom ==> send q.931 release
+# complete message, tr is not altered, trunk is not idled, and
+# no timing is initiate
+q931_send_status;# q931_send_status ==> send q.931 status
+# message, tr is not altered, trunk is  not idled, and no
+# timing is initiate
+q931_send_prog;# q931_send_prog ==> send q.931 progress
+# message, tr is not altered, trunk i s not idled, and no
+# timing is initiate
+q931_uui_disc_scar;# q931_uui_disc_scar ==> calls a scarbill
+# routine to peg a count if the ict or o gt was q931. also
+# counts the number of maud ie
+q931_uui_disc_bcsn;# q931_uui_disc_bcsn ==> calls a scarbill
+# routine to peg a count(for uui
+q931_send_rest;# q931_send_rest ==> send q.931 restart
+# message, tr is not altered, trunk is not idled, and no
+# timing is initiate
+q931_send_rest_ack;# q931_send_rest_ack ==> send q.931
+# restart acknowledge message, tr is not alter ed, trunk is
+# not idled, and no timing is initiate
+q931_send_serv;# q931_send_serv ==> send q.931 service
+# message, tr is not altered, trunk is not idled, and no
+# timing is initiate
+q931_send_serv_ack;# q931_send_serv_ack ==> send q.931
+# service acknowledge message, tr is not alter ed, trunk is
+# not idled, and no timing is initiate
+q931_check_rest;# q931_check_rest ==> check if restart for
+# single valid channel
+q931_check_rest_ack;# q931_check_rest_ack ==> check if
+# restart ack for single valid channel
+q931_send_facrej;# q931_send_facrej ==> send q931 facility
+# reject message
+q931_send_fac_tsc;# q931_send_fac_tsc ==> send facility
+# message for tsc
+q931_tsc_req;# q931_tsc_req ==> send facility message for
+# either ict or ogt. ca-tsc req uest has been mad
+q931_send_facrej_tsc;# q931_send_facrej_tsc ==> send
+# facility reject message for either ict or ogt. ca- tsc data
+# has been discarde
+get_next_facil;# get_next_facil ==> subroutine to search for
+# requested binary facility in n sf i
+load_fac_oct;# load_fac_oct ==> build and load a facility
+# octet
+q931_send_msg_no_tsn;# q931_send_msg_no_tsn ==> send a
+# release complete or status message in response t o another
+# message received with a bad ts
+q931_send_msg;# q931_send_msg ==> general q.931 message
+# sending routine. this routine al ways fills in the header,
+# prot discr, and message typ
+q931s_vfy_tsn;# q931s_vfy_tsn ==> verify the tsn in a q931
+# message
+get_next_ie;# get_next_ie ==> subroutine to search for the
+# variable length ie request e
+get_codeset_7_ie;# get_codeset_7_ie ==> subroutine to search
+# message block for the codeset 7 ie
+get_codeset_ie;# get_codeset_ie ==> subroutine to search
+# message block for codesets 0-6,not codeset
+copy_ipb_to_q931_msg;# copy_ipb_to_q931_msg ==> copy user
+# info -uui- to q931 message block
+q931i_out_cmp;# q931i_out_cmp ==> invoke from repodisp for
+# the out_cmp event
+q931i_szr_cmp;# q931i_szr_cmp ==> invoke from repodisp for
+# the seizure complete event
+q931i_cpg;# q931i_cpg ==> invoke from repo the call progress
+# event
+q931i_wans;# q931i_wans ==> enter q931ict tr into the post-
+# setup wait for answer st at
+q931i_ans;# q931i_ans ==> invoke from repodisp for the
+# answer event
+q931i_rec_adc;# q931i_rec_adc ==> invoke from repodisp for
+# the rec_adc event
+q931i_pas_ocmp;# q931i_pas_ocmp ==> invoke from repodisp for
+# the pas_ocmp event
+q931i_pas_ans;# q931i_pas_ans ==> invoke from repodisp for
+# the pas_ans event
+q931i_send_fac_bs;# q931i_send_fac_bs ==> invoke from
+# repodisp - send facility message on ict for ca-tsc reques
+q931i_send_fac_bp;# q931i_send_fac_bp ==> invoke from
+# repodisp - send facility message on ict for ca-tsc reques
+q931i_send_facrej_bs;# q931i_send_facrej_bs ==> send
+# facility reject on ict. ca-tsc data was discarded
+q931i_send_facrej_bp;# q931i_send_facrej_bp ==> send
+# facility reject on ict. ca-tsc data was discarded
+remove_from_q931_cr_que;# remove_from_q931_cr_que ==> remove
+# the tr from the q931 cr queue and increment rele ase coun
+bbc_ogt_setup;# bbc_ogt_setup ==> init trs of all bbc
+# outgoing slaves
+bbc_setup;# bbc_setup ==> init trs of all bbc incoming
+# slaves
+bbc_net_rsrv;# bbc_net_rsrv ==> reserve network paths for
+# bbc master and slaves
+bbc_ict_to_ss;# bbc_ict_to_ss ==> setup/connect network
+# paths for slave trunks
+bbc_disconnect;# bbc_disconnect ==> abandon all bbc slave
+# network paths
+bbc_final_cr;# bbc_final_cr ==> teardown all bbc slave
+# reserved network paths
+bbc_dispose_slaves;# bbc_dispose_slaves ==> dispose of bbc
+# slaves
+bbc_auds_anal;# bbc_auds_anal ==> audit bbc master and slave
+# trunks
+bbc_ict_slv_check;# bbc_ict_slv_check ==> audit bbc md for
+# ict slave linkages
+bbc_ogt_slv_check;# bbc_ogt_slv_check ==> audit bbc md ogt
+# slave linkages
+ncat_anom_ncatr;# ncat_anom_ncatr ==> report an ncat
+# anomaly, the ncat register is available
+ncat_anom_setup;# ncat_anom_setup ==> report an ncat
+# anomaly, q.931 setup message is availab l
+ncat_anom_vcr;# ncat_anom_vcr ==> report an ncat anomaly,
+# isup vcr message is available
+ncat_idle_raw_block;# ncat_idle_raw_block ==> idle a raw
+# data block by linking it to the idle link l ist and
+# increment the idle coun
+seize_init_nr;# seize_init_nr ==> seize and init an ncat
+# register
+ncat_nr_timing;# ncat_nr_timing ==> place nr on ncat timing
+ncat_lacid_to_tsn;# ncat_lacid_to_tsn ==> xlate lacid into
+# tsn of customers d-channel trunk
+ncat_q931_dire;# ncat_q931_dire ==> digit translations for
+# q931 nca tsc calls
+ncat_dsdc_dire;# ncat_dsdc_dire ==> nca tsc digit
+# translations for ncp returned numbers
+ncat_isup_dire;# ncat_isup_dire ==> digit translations for
+# ccs7 digit reception
+ncat_repo_ctd;# ncat_repo_ctd ==> ncat call type determined
+# event handler
+ncat_repo_outcmp;# ncat_repo_outcmp ==> out completed event
+# handler
+ncat_q931_ogt;# ncat_q931_ogt ==> outgoing q931 ncat
+# handler, build and send a q931 ncat setup messag
+release_ncatr;# release_ncatr ==> release an ncat register
+# from use
+ncat_isup_ogt;# ncat_isup_ogt ==> ncatrepo calls - outgoing
+# isup ncat handler, build and  send an isup ncat vcr messag
+check_safer_route;# check_safer_route ==> determine if this
+# call is a dedicated egress call and  whether there is
+# subscription to safer/adcr. if inte
+clear_retry_flags;# clear_retry_flags ==> clear those items
+# in the cr which are associated with  outgoing trunk retrie
+apply_safer_route;# apply_safer_route ==> for interim
+# safer/adcr, perform digit translations wit h the alternate
+# number and report call type determine
+dtmf_ogt_cot;# dtmf_ogt_cot ==> process the cot event from
+# repodisp for odtmfwk ogt
+dtmf_ogtscmp;# dtmf_ogtscmp ==> dtmf wink start ogt has been
+# selected as the ogt
+dtmf_spec_ogtsu;# dtmf_spec_ogtsu ==> special setup event
+# for a dtmfwk ogt, re-link the cr t o the t
+idts_remove_from_rcvr_que;# idts_remove_from_rcvr_que ==>
+# remove the specified tr from the idts rcvr queue and in
+# crement count
+idts_que_for_dtmf_cr;# idts_que_for_dtmf_cr ==> enter the
+# tsn of the tr onto the idts cr queue and incr ement count
+linkcheck_idts_tr_to_cr_que;# linkcheck_idts_tr_to_cr_que
+# ==> check the linkage to see if the tr is on the idts cr qu
+# eue and if it is, does 2-way chec
+clear_idts_tr_state;# clear_idts_tr_state ==> disconnects
+# and idles the dtmf receiver and removes the tr from the idts
+# cr queue if appropriat
+iwk_remove_from_cr_rcvr_que;# iwk_remove_from_cr_rcvr_que
+# ==> remove the tr from the iwk cr and rcvr queue and increm
+# ent count
+owk_que_for_dtmf_xmtr;# owk_que_for_dtmf_xmtr ==> put the cr
+# on the tr link list queue for a dtmf transm itter and
+# increment count
+owk_remove_from_xmtr_que;# owk_remove_from_xmtr_que ==>
+# remove a cr from the dtmf transmitter queue and increm ent
+# count
+cpsv_dtmf_rcvr_idle;# cpsv_dtmf_rcvr_idle ==> idle a dtmf
+# receiver using 160 msec guard timing, used  for all call
+cpsv_dtmf_xmtr_irlt;# cpsv_dtmf_xmtr_irlt ==> idle a dtmf
+# xmtr with release timing, used in anamolou s legs and by
+# trunk maint
+cpsv_dtmf_xmtr_idle;# cpsv_dtmf_xmtr_idle ==> idle a dtmf
+# xmtr without doing any guard timing, used  by the non-
+# anamolous leg
+dtmf_ict_todp;# dtmf_ict_todp ==> for a dtmf dial tone start
+# trunk, setup for dp if first digit is d
+pbx_prefix_screen;# pbx_prefix_screen ==> perform 3 digit
+# prefix screening
+determine_ded_serv;# determine_ded_serv ==> for special
+# access trunks, i.e. tot is pbx or stc, dete rmine which
+# service the trunk is dedicated to, and po
+determine_rii_service;# determine_rii_service ==> determine
+# the routing information indicator (rii
+determine_q931_service;# determine_q931_service ==>
+# determine the service for a direct egress q.931 trunk, this
+# routine calls determine_rii_service and maps it
+ccisdbs;# ccisdbs ==> entry to process domestic link i.e.
+# terminal signals fo und in lstr buffe
+ccisdgn;# ccisdgn ==> schedule terminal dgn,inhibit cca
+# report,mark active vf l lk
+isclsbnd;# isclsbnd ==> process signaling network management
+# signal on stp band
+isclsbos;# isclsbos ==> receive report of band out of
+# service
+isclsbup;# isclsbup ==> receive report of band in service
+isclsbtm;# isclsbtm ==> receive band timeout report
+isclbman;# isclbman ==> process manual stp band status
+# update
+forward_stp_message;# forward_stp_message ==> forward an stp
+# message to next office
+verify_band_states;# verify_band_states ==> check that band
+# states states are ok
+audit_band_states;# audit_band_states ==> reconstruct stp
+# band states
+ttaadr;# ttaadr ==> entry from dire -- tta-r1 all digits
+# received
+ttathint;# ttathint ==> tta-r1 trunk hunt international ogt
+ttaszogt;# ttaszogt ==> tta-r1 seize an ogt
+ttarehunt;# ttarehunt ==> rehunt ogt and idle previous trunk
+dire_international_origination;#
+# dire_international_origination ==> for twostage or ioc
+# operator calls - convert pcc to tr ue cc and replace in cr,
+# settting up ldig and rtng, t
+dire_invoke_ccitt6;# dire_invoke_ccitt6 ==> invoke digit
+# reception when the ict is ccitt 6
+dire_invoke_ccitt5;# dire_invoke_ccitt5 ==> invoke digit
+# reception when the ict is ccitt 5
+dire_purge_ccitt6;# dire_purge_ccitt6 ==> purge digit
+# reception when ict is ccitt6
+dire_purge_ccitt5;# dire_purge_ccitt5 ==> purge digit
+# reception when ict is ccitt5
+dire_iam_sam;# dire_iam_sam ==> pass iam or sam to digit
+# reception
+dire_ps_ccitt5;# dire_ps_ccitt5 ==> permanent signal
+# timeout, ccitt 5 ict
+dire_pd_ccitt5;# dire_pd_ccitt5 ==> partial dial timeout,
+# ccitt 5 ict
+check_home_hnpa;# check_home_hnpa ==> check whether home npa
+# was received on a terminating ca ll and if so delete i
+dire_xlate_directory_number;# dire_xlate_directory_number
+# ==> find routing-trunk-
+xlate_nm_checks;# xlate_nm_checks ==> translate number
+# received from the ncp  - call repodis p with call type
+# determined event -   to be used fo
+dire_redirect_xlate;# dire_redirect_xlate ==> translate
+# redirected number received - valid only for  rdb, inwats &
+# dsdc call types - upon success repodisp
+dire_twostage_dom81_xlate;# dire_twostage_dom81_xlate ==>
+# for twostage translate digits in domain 81
+rexlate_scp_reply;# rexlate_scp_reply ==> ssp controller
+# queries scp data base. response contain s routing and
+# billing info. fhcodes are returned to
+rexlate_no_scp_transaction;# rexlate_no_scp_transaction ==>
+# call routed on type of service (tos
+mmtc_ct_det;# mmtc_ct_det ==> meet-me call type determined
+mmtc_rehunt;# mmtc_rehunt ==> rehunt a trunk for a
+# conference leg. this subroutine is entered only when the
+# meet-me item in the cr is not
+mmtc_out_cmp;# mmtc_out_cmp ==> out complete recognized for
+# a call
+mmtc_stable_disc;# mmtc_stable_disc ==> stable leg
+# disconnects from meet-me conference. this su broutine is
+# entered only when the tr annex use field
+mmtc_setup_disc;# mmtc_setup_disc ==> transient leg
+# disconnects from meet-me conference. this subroutine is
+# entered only when the meet-me item in
+mmtc_phase_init;# mmtc_phase_init ==> phase run by
+# sint,initialize items in mmtcs table. this routine must be
+# invoked prior to save calls modul
+bbfp_report_upaw;# bbfp_report_upaw ==> an unexpected post
+# address wink has been received. a fr aud call attempted
+# count will be pegged and a mfrcvr
+bbfp_rcvra_purge;# bbfp_rcvra_purge ==> disconnect and idle
+# the mfrcvr as call is being purged  in the receiver attached
+# state
+bbfp_purge_mf_rcvr;# bbfp_purge_mf_rcvr ==> idle monitor
+# table entries, idle mfrcvr, and release th e ict network
+# connection
+bbfp_wrcvr_purge;# bbfp_wrcvr_purge ==> purge of the call
+# while bbfp is still queuing for a mfr cv
+bbfp_upaw_rcvra;# bbfp_upaw_rcvra ==> unexpected post
+# address wink received in the receiver a ttached state. clear
+# the digit count and reset the se
+ntwk_idle_tsi_bimm;# ntwk_idle_tsi_bimm ==> idle the busy
+# idle memory map of the transmitting tsi, will open the
+# network pat
+ntwk_busy_tsi_bimm;# ntwk_busy_tsi_bimm ==> busy the busy
+# idle memory map of the transmitting tsi, will close the
+# network path if previously opene
+ntwk_ict_rcvr_1to2;# ntwk_ict_rcvr_1to2 ==> convert a one-
+# way connection of dtmf rcvr listening to  ict, to a two-way
+# connection
+report_dc_egress;# report_dc_egress ==> checks if
+# terminating switch is billing point, and if s o records dc
+# egress in the scar, else sends dc_egress
+send_dc_egress_indicator_msg;# send_dc_egress_indicator_msg
+# ==> builds and sends a ccis6 direct connect egress selectio
+# n messag
+record_dc_egress;# record_dc_egress ==> record direct
+# connect egress information in the scar
+send_ccs7_dc_egress_indicator_msg;#
+# send_ccs7_dc_egress_indicator_msg ==> builds and sends a
+# ccs7 direct connect egress selection messag
+send_csr_ccs7_info;# send_csr_ccs7_info ==> build and send a
+# calling station request message via cc s7 signalin
+send_csi_ccs7_info;# send_csi_ccs7_info ==> build and send a
+# calling station identification message via ccs7 signalin
+send_csu_ccs7_info;# send_csu_ccs7_info ==> build and send a
+# calling station unavailable message vi a ccs7 signalin
+final_dc;# final_dc ==> checks if direct connect call is
+# waiting for customer i d reply, and if so, stops dedicated
+# word timin
+pass_pal_message_w_tsn;# pass_pal_message_w_tsn ==> pass
+# passalong message to the next ic switch
+pass_pal_message_w_termlab;# pass_pal_message_w_termlab ==>
+# pass passalong message to the next ic switch
+send_any_to_ccs7;# send_any_to_ccs7 ==> send a ccs7 message
+# out received from any signaling typ
+send_ir_pam;# send_ir_pam ==> build and send a information
+# request passalong message  via ccis
+send_if_pam;# send_if_pam ==> build and send a information
+# forward passalong message  via ccis
+send_ir_ccs7_epam;# send_ir_ccs7_epam ==> build and send a
+# embedded information request passalong message via ccs
+send_if_ccs7_epam;# send_if_ccs7_epam ==> build and send a
+# embedded information forward passalong message via ccs
+ccspamh_catsc_su;# ccspamh_catsc_su ==> propogate a catsc
+# fac. req. in setup
+ccspamh_catsc_ps;# ccspamh_catsc_ps ==> propogate a catsc
+# fac. req. in postsetup
+copy_ccis_csi_pam_to_pam_block;#
+# copy_ccis_csi_pam_to_pam_block ==> copy cpn or bn from ccis
+# csi pam in ci4mumblock to stan dard pam data block,
+# pm4_pam_data_bloc
+copy_ccs7_inf_to_pam_block;# copy_ccs7_inf_to_pam_block ==>
+# copy cpn, bn, or both retrieved via ccs7 info message t o
+# standard pam data block, pm4_pam_data_block. <c74ms
+ccs_copy_block;# ccs_copy_block ==> copy one block of memory
+# to another
+send_ea_ssd;# send_ea_ssd ==> send ssd signal on ea incoming
+# call.
+get_cpn_or_bn;# get_cpn_or_bn ==> retrieve station id or
+# billing number and store in pam  data block from billing
+# record and mark sid sen
+send_csr_pam;# send_csr_pam ==> build and send calling
+# station identity request passalo ng messag
+send_csi_pam;# send_csi_pam ==> build and send calling
+# station identity passalong messa g
+send_csu_pam;# send_csu_pam ==> build and send calling
+# station identity unavailable pas salong messag
+isup_dire;# isup_dire ==> this routine validates digits in
+# cr and checks tcms. if call from alternate gateway, call
+# iscsdire. otherwi
+isup_ogtscmp;# isup_ogtscmp ==> repo calls - isup trunk
+# selected as ogt
+isupo_specsu;# isupo_specsu ==> repo calls - special
+# outgoing setup for ogt
+isupo_cotrec;# isupo_cotrec ==> repo calls - cot reported
+# from ict to ogt
+isupo_bbcres;# isupo_bbcres ==> repo calls - tell ogt all
+# bbc trunks are reserved
+isupo_su_clf;# isupo_su_clf ==> repo calls - setup clf event
+# for ogt
+isupo_ps_clf;# isupo_ps_clf ==> repo calls - post-setup clf
+# event for ogt
+isupo_su_fot;# isupo_su_fot ==> repo calls - setup fot event
+# for ogt
+isupo_ps_fot;# isupo_ps_fot ==> repo calls - post-setup fot
+# event for ogt
+isupo_catsc;# isupo_catsc ==> repo calls - tsc requested via
+# far message
+isupo_ssdsent;# isupo_ssdsent ==> repo calls - ssd sent
+# event for ogt
+isupo_rel;# isupo_rel ==> repo calls - release event for ogt
+isupo_resetogt;# isupo_resetogt ==> repo calls - handle
+# resetogt event
+isupo_blo_su;# isupo_blo_su ==> possibly retry a call when
+# blo received
+isupo_not_usbl_ani;# isupo_not_usbl_ani ==> palevcod calls -
+# usable ani not found
+isupo_usbl_ani;# isupo_usbl_ani ==> palevcod calls - usable
+# ani found
+isup_twostg_ovr;# isup_twostg_ovr ==> repo calls - two stage
+# digit reception is done
+isup_send;# isup_send ==> isupsubs - create and send simple
+# isup mesgs.
+isup_copy_isup;# isup_copy_isup ==> isupsubs - copy from
+# isup msg to isup msg
+isup_copy_q931;# isup_copy_q931 ==> isupsubs - copy from
+# q.931 msg to isup msg
+isup_send_frj;# isup_send_frj ==> isupsubs - create and send
+# frj message
+isup_send_cot;# isup_send_cot ==> isupsubs - create and send
+# cot message
+isup_send_ucic;# isup_send_ucic ==> isupsubs - create and
+# send ucic message
+isup_send_rel;# isup_send_rel ==> isupsubs - create and send
+# rel message, time for rlc, a nd handle tranne
+isup_get_ipb;# isup_get_ipb ==> isupsubs - copy opt. param
+# from ipb to isup message
+isup_put_ipb;# isup_put_ipb ==> isupsubs - copy opt. param
+# from isup message to ipb
+isup_tb_reset;# isup_tb_reset ==> isupsubs - send grs from
+# tsn
+isup_send_adc_ans;# isup_send_adc_ans ==> send adc or ans
+# message
+isup_send_sus_res;# isup_send_sus_res ==> send sus or res
+# message
+isup_send_grs_gra;# isup_send_grs_gra ==> send grs or gra
+# message
+isup_send_group_blk_ublk;# isup_send_group_blk_ublk ==> send
+# group blocking/unblocking message or ack
+isup_idle_memory;# isup_idle_memory ==> idle an isup trunk
+# in memory only
+isup_test_call;# isup_test_call ==> this subroutine is
+# called by isup_dire for test calls
+isup_setup_ssd;# isup_setup_ssd ==> the setup stage ssd
+# event is reported here by repo for  an isup ic
+isup_outcmp;# isup_outcmp ==> the outcmp event is reported
+# here by repo for an isup i c
+isupi_catsc;# isupi_catsc ==> repo calls - tsc requested via
+# far message
+isup_szrcmp;# isup_szrcmp ==> the szrcmp event is reported
+# here by repo for an isup i c
+isup_rec_adc;# isup_rec_adc ==> the rec_adc event is
+# reported here by repo for an isup  ic
+isup_pas_ocmp;# isup_pas_ocmp ==> the pas_ocmp event is
+# reported here by repo for an isup ic
+isup_pas_ans;# isup_pas_ans ==> the pas_ans event is
+# reported here by repo for an isup  ic
+isup_mas_ans;# isup_mas_ans ==> the mas_ans event is
+# reported here by repo for an isup  ic
+isup_disconnect;# isup_disconnect ==> this is a general
+# subroutine that can be used by anyone who wants to execute
+# the isup disconnect sequence fo
+isup_ra;# isup_ra ==> the reanswer event is reported here by
+# repo for an isup ic
+isup_cb;# isup_cb ==> the clearback event is reported here
+# by repo for an isu p ic
+isup_ict_clf;# isup_ict_clf ==> this subroutine is called by
+# repo as part of the clear  forward event for an isup ic
+isup_send_ssd;# isup_send_ssd ==> the post setup ssd event
+# and the 2stg_ssd event is repo rted here by repo for an isup
+# ic
+isup_ans;# isup_ans ==> the answer event is reported here by
+# repo for an isup i c
+isup_release;# isup_release ==> the release event is
+# reported here by repo for an isup  ic
+isup_send_rlc;# isup_send_rlc ==> send an isup rlc message
+# and idle the isup trunk includ ing the slave trunks if this
+# is a bbc cal
+isup_check_for_bbc;# isup_check_for_bbc ==> determine
+# whether or not this is a bbc call
+isups_vfy_ccs7_tsn;# isups_vfy_ccs7_tsn ==> verify the tsn
+# in a isup message
+isup_send_exit;# isup_send_exit ==> send exit message for
+# isupogt, isupdire, or isupclr
+isup_exit_evnt;# isup_exit_evnt ==> called by repo to send
+# exit message
+isup_ict_wink;# isup_ict_wink ==> called by repo to send adc
+# for ea isup/mf interworking
+isup_cpg_bs;# isup_cpg_bs ==> this routine is called by
+# repoevent for a cpg received  by the ogt at set up stag
+isup_cpg_ps;# isup_cpg_ps ==> this routine is called by
+# repoevent for a cpg received  by the ogt at post set up stag
+safer_clr_isup;# safer_clr_isup ==> dispose of the outgoing
+# trunk for interim safer/adcr
+isupi_send_pcp_adc;# isupi_send_pcp_adc ==> handle special
+# set-up event by isupict
+isupi_ps_wait_for_answer;# isupi_ps_wait_for_answer ==>
+# handle enter post set-up wait for answer state by isupi c
+isupo_ps_wait_for_answer;# isupo_ps_wait_for_answer ==>
+# handle enter post set-up wait for answer state by isupo g
+isupo_ps_answer;# isupo_ps_answer ==> handle enter post
+# set-up answer state by isupogt
+isup_recode_cause_loc;# isup_recode_cause_loc ==> gets cause
+# parameter from ipb, recodes cause and locati on, and stores
+# results back in ip
+seize_link_cranx;# seize_link_cranx ==> hunt, seize, init
+# and link a cr annex to cr
+unlink_idle_cranx;# unlink_idle_cranx ==> unlink and idle a
+# cr annex from a cr
+idle_cranx;# idle_cranx ==> idle cr annex and increment idle
+# count
+linkcheck_cranx;# linkcheck_cranx ==> check cr annex to cr
+# linkage
+linkcheck_cr_cranx;# linkcheck_cr_cranx ==> check if cr
+# annex is linked and if linkage is valid
+check_cranx_illhc;# check_cranx_illhc ==> check linkage of
+# cr annex idle link list head cell
+init_cranx_illhc;# init_cranx_illhc ==> init cr annex idle
+# link list head cell and count
+anal_cr_cranx;# anal_cr_cranx ==> determine if cr annex is
+# linked to a cr and whether li nkage is valid. used by audits
+# - no checksfail retur
+anal_cranx_cr;# anal_cranx_cr ==> determine if a cr is
+# linked to a cranx and whether the  linkage is valid. used by
+# audits - no checksfail retu
+itupdire;# itupdire ==> digit reception routine called by
+# itup incoming trunk h andler to analyze digits in cr for
+# both inbound and t
+itup_ogtscmp;# itup_ogtscmp ==> repo calls - itup trunk
+# selected as ogt
+itupo_cotrec;# itupo_cotrec ==> repo calls - cot reported
+# from ict to ogt
+itupo_su_clf;# itupo_su_clf ==> repo calls - setup clf event
+# for ogt
+itupo_ps_clf;# itupo_ps_clf ==> repo calls - post-setup clf
+# event for ogt
+itupo_su_fot;# itupo_su_fot ==> repo calls - setup fot event
+# for ogt
+itupo_ps_fot;# itupo_ps_fot ==> repo calls - post-setup fot
+# event for ogt
+itup_ogt_clr_timing;# itup_ogt_clr_timing ==> called by repo
+# to perform timing for answer and clearba c
+itupo_blo_su;# itupo_blo_su ==> possibly retry a call when
+# blo received
+itup_test_call;# itup_test_call ==> this subroutine is
+# called by itup_dire for test calls
+itup_outcmp;# itup_outcmp ==> the outcmp event is reported
+# here by repo for an itup i c
+itup_szrcmp;# itup_szrcmp ==> the szrcmp event is reported
+# here by repo for an itup i c
+itup_pas_ocmp;# itup_pas_ocmp ==> the pas_ocmp event is
+# reported here by repo for an itup ic
+itup_pas_ans;# itup_pas_ans ==> the pas_ans event is
+# reported here by repo for an itup  ic
+itup_disconnect;# itup_disconnect ==> this routine is called
+# to disconnet a pas call
+itup_ra;# itup_ra ==> the reanswer event is reported here by
+# repo for an itup ic
+itup_cb;# itup_cb ==> the clearback event is reported here
+# by repo for an itu p ic
+itup_ict_clf;# itup_ict_clf ==> this subroutine is called by
+# repo as part of the clear  forward event for an itup ic
+itup_ans;# itup_ans ==> the answer event is reported here by
+# repo for an itup i c
+itup_release;# itup_release ==> the release event is
+# reported here by repo for an itup  ic
+itup_ict_clr_timing;# itup_ict_clr_timing ==> called by repo
+# to perform timing for answer and clearba c
+itup_send;# itup_send ==> itupsubs - create and send simple
+# itup msgs.
+itup_send_cot;# itup_send_cot ==> itupsubs - create and send
+# cot message
+itup_send_ubm;# itup_send_ubm ==> create and send ubm
+# message and time for clf
+itup_send_adc_ans;# itup_send_adc_ans ==> send adc or ans
+# message
+itup_send_sus_res;# itup_send_sus_res ==> create and send
+# clb or ran message
+itup_send_gra;# itup_send_gra ==> create and send gra msg.
+itup_send_group_blk_ublk;# itup_send_group_blk_ublk ==>
+# create and send gbl or gubl message
+itup_send_clf;# itup_send_clf ==> create and send clf and
+# time for rlg
+itup_handle_una_ckt;# itup_handle_una_ckt ==> itupsubs -
+# handle messages received on unassigned circu it
+itup_send_buf_check_tsn;# itup_send_buf_check_tsn ==>
+# itupsubs - send message and print it out if required
+cpsu_01x_chi_pre;# cpsu_01x_chi_pre ==> handle 0 or 1 x
+# (and, perhaps, another 1
+fetch_icdr_isdn_gsdn_data;# fetch_icdr_isdn_gsdn_data ==>
+# for intl call detail recording, fetch integrated servi ces
+# digital network and global sdn parameters, if any
+mt_send_twostg_ea_ssd;# mt_send_twostg_ea_ssd ==> for
+# twostgdr collecting equal access ani and address s equences
+# at an access tandem, send the one, for wsno
+mt_send_twostg_paw;# mt_send_twostg_paw ==> for twostgdr
+# collecting equal access ani and address s equences at an
+# access tandem, send the post address w
+dire_move_ii_ani;# dire_move_ii_ani ==> move ii digits from
+# cr4dig1_2 to new cr4ii_oli_digs and move ani digits from
+# cr4dig to cr4bn_dig item
+dire_move_concat_bn;# dire_move_concat_bn ==> move billing
+# number which is currently concatinated ont o the end of the
+# called number in cr4dig to the new b
+dire_chk_cust_term_valid;# dire_chk_cust_term_valid ==>
+# check whether international customer is allowed to dial this
+# domestic numbe
+dire_chk_oper_term_valid;# dire_chk_oper_term_valid ==>
+# check whether international operator is allowed to dial this
+# domestic numbe
+dire_delete_3dig;# dire_delete_3dig ==> this subroutine
+# works for any cr4dc digit count between 3 and 18 inclusive.
+# delete cr4dig1_3 digits in cr,
+dire_delete_2dig;# dire_delete_2dig ==> this subroutine
+# works for any cr4dc digit count between 3 and 18 inclusive.
+# delete cr4dig1_2 digits in cr,
+dire_move_sgd;# dire_move_sgd ==> this subroutine works for
+# any digit cnt 3 thru 18, incl usive. store the last cr digit
+# as the station group d
+dire_pseudo_cc;# dire_pseudo_cc ==> this subroutine works
+# for any cr4dc digit count between 3 and 18, inclusive. set
+# cr4ccid to indicate countr
+dire_prefix_npa;# dire_prefix_npa ==> this subroutine works
+# for any cr4dc digit count between 3 and 15, inclusive. set
+# cr4acnac equal to 4xlac, s
+dire_valid_tbcd_chk;# dire_valid_tbcd_chk ==> this
+# subroutine works for any cr4dc digit count between 3 and 18,
+# inclusive. set cr4end equal to 4crenddial
+dire_dsdc_d1st;# dire_dsdc_d1st ==> this subroutine works
+# for any cr4dc digit count between 2 and 12, inclusive. if
+# first digit is a 1 then lef
+isccuid5;# isccuid5 ==> universal idle of ccitt no5 trunk
+isccuid6;# isccuid6 ==> universal idle of ccitt no6 trunk
+iscctlin;# iscctlin ==> invoke incoming clearing for trunk
+# mtce test line termi natio
+signal_isc_hw;# signal_isc_hw ==> signal to ccitt no5 or
+# ccitt no6 high & wet machines
+invoke_hw5;# invoke_hw5 ==> invoke high & wet processing for
+# a ccitt no5 trunk
+invoke_hw6;# invoke_hw6 ==> invoke high & wet processing for
+# a ccitt no6 trunk
+digit_reception_report;# digit_reception_report ==> report
+# of digit reception event from dire
+iscsdis5_initiate;# iscsdis5_initiate ==> iscsdis5 - digit
+# sending for ccitt no5 - dise 5.. iscc cntl calls this to
+# initiate sending the digits, the m
+calc_pref;# calc_pref ==> calculates the number of prefix
+# digits stored in cr by  trunk hunt, output in range 0-
+isct5icr_poptrkdata;# isct5icr_poptrkdata ==> populate trunk
+# data during the cr initialization
+idle_ccitt5;# idle_ccitt5 ==> idle a ccitt no5 circuit
+# without signals
+spfrdcpt;# spfrdcpt ==> entry to decrement read or write
+# pointer
+spfrcdr;# spfrcdr ==> entry to coder check
+spfrmar;# spfrmar ==> entry to memory access register check
+spfrmdr;# spfrmdr ==> entry to memory data register check
+spfrmxar;# spfrmxar ==> entry to matrix address check
+spfrmxwr;# spfrmxwr ==> entry to matrix work register check
+spfrmxhr;# spfrmxhr ==> entry to matrix hold register check
+spfrstrt;# spfrstrt ==> start an sps online controller and
+# restore pest to pest statu
+spfrstop;# spfrstop ==> stop an sps controllers and pest
+# them,preserve sp-pub r outin
+spfrlpbd;# spfrlpbd ==> dump active contents of an sp s low
+# priority buffer int o client call store, do not disturb
+# buffer content
+spfrdprg;# spfrdprg ==> dump an sp controllers internal regs
+# and memory paramet ers in sp4... cs if z reg. not equal zero
+# and or auxi
+spfrdpmp;# spfrdpmp ==> dump an sp controllers memory
+# parameters in sp4... cs i f z reg. not equal zero and or
+# auxillary cs at addres
+spfrckmp;# spfrckmp ==> check that a sps controllers memory
+# parameters previous ly dumped into sp4... cs 2 word blocks
+# are vali
+spfrinmp;# spfrinmp ==> initialize an sp controllers memory
+# parameters
+spfrrstr;# spfrrstr ==> restore registers dump into sp4...
+# cs blocks by spfrdpr
+spfrsca;# spfrsca ==> set specified controllers clock
+# activity to specified s tat
+spfrscas;# spfrscas ==> set specified controllers clock
+# activity to specified s tate and clear esr1 after .5ms delay
+# for ce to settl
+spfrdca;# spfrdca ==> set specified sps controllers clock
+# activities to speci fied state and syn
+spfrsync;# spfrsync ==> sync an sps cs clocks, both clock
+# activity must be equa l,ro s must equal in1pub
+spfrfca1;# spfrfca1 ==> attempt to set c0s clock failed try
+# to set c1s clock an d sync c
+spfrsmcu;# spfrsmcu ==> set sp matrix cutoffs
+spfrmrte;# spfrmrte ==> set sp controllers ro to active pu
+# bus via pulse points
+spfratst;# spfratst ==> sp access test
+spfrzrss;# spfrzrss ==> time zero start of an sp
+# controller,segmented
+spfrzrst;# spfrzrst ==> time zero start of an sp controller
+# no segmenting
+spfrzemm;# spfrzemm ==> unsegmented zero start of an sp
+# without zeroing memory  or matri
+spfrrst;# spfrrst ==> restore sp controller to service dont
+# segment
+spfrrsts;# spfrrsts ==> restore sp controller to service,
+# segment
+spfrzrrg;# spfrzrrg ==> zero sps operational registers
+spfrimrg;# spfrimrg ==> initialize sp maintenance reg.
+spfrimem;# spfrimem ==> initialize sp memory between and
+# including first and la st word specifie
+spfrzrpt;# spfrzrpt ==> zero specified sp pointer
+spfriusd;# spfriusd ==> initialize an sps universal sds
+# between and including f irst and last point specifie
+spfrimsd;# spfrimsd ==> initialize an sps miscellaneous sds
+# between and includi ng first and last point specifie
+spfrmxin;# spfrmxin ==> inhibit(1
+spfrpprr;# spfrpprr ==> remove(1
+spfrppad;# spfrppad ==> audit pulse point in/out of service
+# status for sp s
+spfrflsh;# spfrflsh ==> start an sp from zero
+spfrunwd;# spfrunwd ==> peripheral order unwinder of level
+# bins er prm prl psc  contain int dat
+spfrwlck;# spfrwlck ==> check if too many eol in sp dp
+# worklists  audits entr
+spfrceol;# spfrceol ==> check if too many eol in sp dp
+# worklists  spfr entry
+spfrgrck;# spfrgrck ==> run all available memory associated
+# register checks
+spfrchek;# spfrchek ==> set the parameters that differ for
+# an sp and sp2 based  on translation
+spfr2dts;# spfr2dts ==> determine the equippage & in
+# service/out of service sta tus of the specified dt port(
+spfr2pst;# spfr2pst ==> determine the routing to a
+# particular dt and the out of service status of both the sp2
+# and dt controller
+spfr2rtr;# spfr2rtr ==> route the dts associated with the
+# specified sp2 in orde r to restore controller x to servic
+spfr2rta;# spfr2rta ==> set sp2 send and receive routing to
+# the specified value
+spfr2dtt;# spfr2dtt ==> translate the specified dt unit type
+# member number to i ts associated sp2 s kcode and port
+# assignment numbe
+spfr2sio;# spfr2sio ==> if the specified unit is a sp2
+# unwind its dt interface sequencers to a good starting stat
+spfr2uio;# spfr2uio ==> unwind the dt interface sequencers
+# of a sp2 to a good s tarting stat
+spfr2lt1;# spfr2lt1 ==> test the receive link for the given
+# sp2 s specified dt  por
+spfr2lt2;# spfr2lt2 ==> test the link fo the specified dt
+# and its associated sp
+spfr2cfg;# spfr2cfg ==> test the specified sp2/dt link and
+# if it passes establi sh that configuration or if the config.
+# is defaulted
+spfr2str;# spfr2str ==> start the sp2 controllers indicated
+# started in software statu
+spfr2stp;# spfr2stp ==> stop the specified sp2
+spfr2rtp;# spfr2rtp ==> route the receive links for the
+# specified port of the s p
+spfr2rsr;# spfr2rsr ==> restore sp2/dt routing to its
+# software statusstate
+spfr2rtd;# spfr2rtd ==> set the specified dts routing flops
+# asspecified in the  spec controller half of its associated
+# sp
+spfr2aud;# spfr2aud ==> audit the sp2/dt routing status if
+# the specified unit i s a sp2. if the unit is a sp1 no audit
+# is performed a
+bbfrbabl;# bbfrbabl ==> entry from pbfr - bbfr will chec for
+# gross babbling or  count bus parity failure
+bbfrsoft;# bbfrsoft ==> calculate software status address
+# for given unit type
+bbfrpuex;# bbfrpuex ==> execute a series of peripheral
+# operations
+bbfrchek;# bbfrchek ==> see if the specified unit has been
+# marked as babbling
+bbfr_dec_count;# bbfr_dec_count ==> times out leaky bucket
+# counts on base level
+bbfrfind;# bbfrfind ==> determine if babbling exists on the
+# pu bus
+bbfrtest;# bbfrtest ==> test periphery for babbling units
+bbfrcnfg;# bbfrcnfg ==> configure the specified unit as
+# requested
+bbfr_clmp;# bbfr_clmp ==> this routine performs the function
+# of setting or resett ing the clamps on the requested unit.
+# if the unit doe
+maintans;# maintans ==> send answer - operate m relay - on
+# mf or dp ict
+camawfas;# camawfas ==> outpulse complete received where ict
+# is cama, this rout ine sets trcode=4trcibttr and check if
+# this call is t
+maintaoc;# maintaoc ==> outpulse complete received where ict
+# is dp or mf non-ca ma,set trcode=4tribttr,tbits=abandon if
+# rfa=no else t
+maintmfd;# maintmfd ==> entry from dire - mf ict - all
+# digits rcvd
+maintdpd;# maintdpd ==> entry from dire - dp ict - all
+# digits rcvd
+maintthi;# maintthi ==> invoke trunk hunt for intl ogt
+ccisdir2;# ccisdir2 ==> entry from intl dire-ccis ict
+ccis2stg;# ccis2stg ==> send ssd signal for twostage
+comdata;# comdata ==> store called and calling number
+calldata;# calldata ==> form call record for a completed
+# call
+cama_clr;# cama_clr ==> the call with ict tsn in y has
+# disconnected, take the c all down, note,the guard_time input
+# denotes guard tim
+maintcrf;# maintcrf ==> this routine will put the ogt on
+# ietl timing to send rf ,sent either as m_lead wink snrf or
+# operated misc sd
+maintclb;# maintclb ==> pass clearback report to ict:release
+# m relay of ict
+maintdsc;# maintdsc ==> this routine is entered by rept.
+# disp. after it has rec eived a clearforward report,this
+# routine removes trun
+cama_record;# cama_record ==> will check if call is longcall
+# or shortcall, if ab is a ctive or inactive. if call is
+# longcall and ab is acti
+maintssd;# maintssd ==> ssd sent for wink start no outpulse
+# calls, sets trcode  and tbit
+maintmfp;# maintmfp ==> initiate outpulsing on an mf
+# outgoing trunk
+glr_reht;# glr_reht ==> perform glare rehunt checks based on
+# previous attempts
+maintotr;# maintotr ==> rehunt ogt and idle previous trunk
+mntdpp;# mntdpp ==> initiate outpulsing on a dp outgoing
+# trunk
+maintnop;# maintnop ==> initiate actions on a no outpulsing
+# trunk to move it to wait for answer stat
+maintwen;# maintwen ==> seize two way operator trunk,then
+# treat like others
+maintrst;# maintrst ==> reset rcvd on ccis ogt
+maintcot;# maintcot ==> cot received for the ict
+maintsds;# maintsds ==> second-start-dial in stable state
+em_timrel_dconn;# em_timrel_dconn ==> put em trunk on timing
+# for called party disconnect
+em_ict_trd;# em_ict_trd ==> put e&m ict on timing for called
+# party disconnect
+false_ans_time;# false_ans_time ==> put trunk on betl for
+# false answer timing
+stop_trd_or_fat;# stop_trd_or_fat ==> remove trunk from
+# false answer timing or from timed rel ease disconnect timin
+seize_dp_cr;# seize_dp_cr ==> seize dp cr, link tr to cr,
+# and store digits, digit cou nt, and pspd coun
+dpls_ipsu_out_compl;# dpls_ipsu_out_compl ==> advance state
+# of call for dpls ict after digit outpulsi ng is complet
+dpls_ipsu_answer;# dpls_ipsu_answer ==> send answer on dpls
+# ict
+dpls_ipsu_reanswer;# dpls_ipsu_reanswer ==> process all
+# reanswer events on a dpls ict
+dpls_ipsu_clearback;# dpls_ipsu_clearback ==> process
+# clearback events for a non-ppm dpls ict
+dpls_ict_idling;# dpls_ict_idling ==> idle a dpls ict
+dpls_ict_remove_timing;# dpls_ict_remove_timing ==> remove
+# timing on a dpls ict
+dpls_ogt_rf;# dpls_ogt_rf ==> initiate ring forward on dpls
+# ogt
+dpls_ogt_remove_time;# dpls_ogt_remove_time ==> remove
+# timing on outgoing trunk
+dpls_ogt_idle;# dpls_ogt_idle ==> idle a dpls ogt
+dpls_ogt_remove_time;# dpls_ogt_remove_time ==> remove
+# timing on dpls ogt
+dplsossc;# dplsossc ==> initiate outpulsing on a dpls trunk
+dplsosco;# dplsosco ==> cot received on a dpls trunk
+dpls_false_answer_timing;# dpls_false_answer_timing ==>
+# start 2 second false answer timing on a dpls trunk
+dpls_trd_timing;# dpls_trd_timing ==> start timed release
+# disconnect timing on a dpls trunk
+seize_dpls_dp_cr;# seize_dpls_dp_cr ==> seize dp cr for
+# dpls, link tr to cr, store digits, digi t count & pspd coun
+terminate_dpls_dpdr;# terminate_dpls_dpdr ==> dpls ict, all
+# digits received, direopen wants dpdr term inate
+early_digit_error;# early_digit_error ==> direopen has
+# detected what may be an early digit error
+iscs_dise6out;# iscs_dise6out ==> provide first 6 outpulsed
+# address digits
+rcvrmode;# rcvrmode ==> idle mf-rcvr which has not received
+# an st
+camacwlm;# camacwlm ==> calculate the no. of calls that
+# there must be for the d ifferent color calls waiting lamps
+# to be li
+camauplg;# camauplg ==> abandon receiver connection and mark
+# a cama operator in the unoccupied stat
+camapidl;# camapidl ==> send disconnect to cop
+camacpid;# camacpid ==> disconnect and idle cop connected to
+# ict
+camaclwt;# camaclwt ==> light the proper call waiting
+# lamps,the number of calls on queue is
+camatsnc;# camatsnc ==> find tsn and tra of 1st cw trunk
+cama_pas_cmp;# cama_pas_cmp ==> cama entry for pas outgoing
+# complete report
+cama_pas_ans;# cama_pas_ans ==> cama entry for pas answer
+# report
+tnfrtsac;# tnfrtsac ==> second access test of tsif. resets
+# port pests and reads es
+tnfrmmrt;# tnfrmmrt ==> retry of autonomous errors which are
+# recorded in both t dnet controller
+tnfrairt;# tnfrairt ==> retry of autonomous errors which are
+# recorded in only o ne tdnet controlle
+tnfrnews;# tnfrnews ==> put new tdnet suspect in rcnt table
+tnfrmats;# tnfrmats ==> switch suspect and mate controllers
+# in rcnt
+tnfridle;# tnfridle ==> this routine idles a time slot in
+# the ttsm and channel  in the bim
+tnfrasrt;# tnfrasrt ==> retry asw error in unit
+tnfresrr;# tnfresrr ==> this routine resets the time slot
+# interchange and the t ime multiplexed switch error source
+# registers accordi
+tnfrtsii;# tnfrtsii ==> this routine initializes the time
+# slot interchange to t he all idle state
+tnfrtiud;# tnfrtiud ==> this routine updates the hardware
+# memories of a given  tsif controller from its mate
+tnfrtmsi;# tnfrtmsi ==> this routine initializes the time
+# multiplexed switch me mories for the given controller
+tnfrtmud;# tnfrtmud ==> this routine updates the hardware
+# memories of a given  tms controller from its mate
+tnfrtmac;# tnfrtmac ==> this routine does an access test on
+# the time multiplexe d switch for the given controller
+tnfrtiac;# tnfrtiac ==> this routine does an access test on
+# the time slot inter change for the given controller
+tnfrtmup;# tnfrtmup ==> this in the non-segmented entry for
+# the tms update rout in
+tnfrtiup;# tnfrtiup ==> this is the non-segmented entry for
+# the tsi update rout in
+tnfrtiit;# tnfrtiit ==> this is the segmented entry for the
+# tsi initialization  routin
+tnfrtmit;# tnfrtmit ==> this is the segmented entry for the
+# tms initialization  routin
+tnfrtrac;# tnfrtrac ==> trace network path from t-tsi to r-
+# tsi
+tnfrtnuw;# tnfrtnuw ==> this routine will retry the failing
+# order to a tms or t sif after a working configuration has
+# been establishe
+tnfrpbuw;# tnfrpbuw ==> this routine will retry the failing
+# order to a tms or t sif after a working configuration has
+# been establishe
+tnfrmapul;# tnfrmapul ==> this routine will do a ma read and
+# return the status in the l registe
+start_flywheel;# start_flywheel ==> set flywheel counter in
+# both cost reduced tsi controlle r
+vcfrinsq;# vcfrinsq ==> initialize vif registers and
+# internal control points
+vcfrupdn;# vcfrupdn ==> non-segmented update of vif status
+# memory
+vcfrupds;# vcfrupds ==> segmented update of status memory
+vcfrdsgn;# vcfrdsgn ==> non-segmented digital signal
+# generator indicator freeze for simplex operatio
+vcfrdsgs;# vcfrdsgs ==> segmented digital signal generator
+# indicator freeze for simplex operatio
+vcfrmvsq;# vcfrmvsq ==> remove voiceband interface
+# controller from service
+vcfrtssq;# vcfrtssq ==> return voiceband interface
+# controller to service simple
+vcfrtdsq;# vcfrtdsq ==> return voiceband interface
+# controller to service duplex
+vcfrmviu;# vcfrmviu ==> remove a viu from service
+vcfrtviu;# vcfrtviu ==> return a viu to service
+vcfratst;# vcfratst ==> test access to a voiceband interface
+# controller
+vcfrisr;# vcfrisr ==> retrieve voiceband interface
+# controller interrupt statu s registe
+vcfrsgdt;# vcfrsgdt ==> freeze signal and distortion alarms
+# during first vif ac cess tes
+vcfrtst2;# vcfrtst2 ==> second access test on vif to test
+# signal and distortion alarm
+vcfrpest;# vcfrpest ==> checks for pests that should be on
+# because of vif condi tion
+vcfrvict;# vcfrvict ==> used by the switch function to
+# access test a vif contro lle
+hdrwnclk;# hdrwnclk ==> intialize and check the network
+# clock
+hdrwrite;# hdrwrite ==> write a group of encoded pulse ponts
+# to the network clo c
+hdrwread;# hdrwread ==> gate either of the two registers to
+# the activepu reply  bu
+hdrwbust;# hdrwbust ==> performs all access testing of the
+# peripheral bus loop  aroun
+hdrwrost;# hdrwrost ==> sets ro in any unit equal to puba,
+# also leaves m bit se t and unit bus clamps rese
+hdwrosab;# hdwrosab ==> sets ro in specified cont equal to
+# puba without unclamp ing cont, leaves m bit set with
+# response in l re
+hdrwrpt;# hdrwrpt ==> this routine will generate the
+# hr4eqrpt table, which wi ll contain all zeros if a btcrn is
+# not equipped in th
+hdrwcnfg;# hdrwcnfg ==> sets up status reg of controllerto
+# be accessed, also ca ll store statu
+hdrwctos;# hdrwctos ==> configure controller to be left
+# outduring access of the mat
+hdrwdpcf;# hdrwdpcf ==> configures a unit in duplex on the
+# bus
+hdrwspcf;# hdrwspcf ==> configures a unit in simplex on the
+# bus
+hdrwlsol;# hdrwlsol ==> configures a mate controller ina
+# listen only mode
+hdwrfunt;# hdwrfunt ==> this routine load the unit type and
+# member number in th e next available slot in the hr4funits
+# table. also th
+hdwrsyst;# hdwrsyst ==> allow post-phase duplex system
+# restoration to be resta rted by setting hdwrsyre obb and
+# resetting first entr
+hdwrsyrt;# hdwrsyrt ==>  handle pufh return to hdwrsyre
+# after a diagnostic com plete
+hdwrdfsu;# hdwrdfsu ==> duplex fail any units receiving
+# clock from a given tsi  m
+hdwrlev1;# hdwrlev1 ==> performs access test on all i/s
+# controllers based upon  present software status, configures
+# units in duplex i
+hdwrlev2;# hdwrlev2 ==> performs access test on all i/s
+# controllers based upon  present software status,attempts to
+# configures units
+hdwrlev3;# hdwrlev3 ==> performs access test on all i/s
+# controllers based upon  present software status,attempts to
+# configures units
+hdwrlev4;# hdwrlev4 ==> performs highest level of hardware
+# recovery, access tes ts & configures peripheral units
+# simplex without rega
+clfratst;# clfratst ==> this routine will perform an access
+# test on one or both controllers, depending on the o/s bit in
+# the call st
+clfrremv;# clfrremv ==> this routine will remove a network
+# clock chain from ser vic
+clfrsync;# clfrsync ==> this routine will restore a network
+# clock chain to serv ic
+scfruwnd;# scfruwnd ==> this routine will unwind a
+# peripheral order for system  cloc
+clfrwrit;# clfrwrit ==> write a group of encoded pulse
+# points to the network cl oc
+clfread;# clfread ==> gate either of two registers tothe
+# active peripheral bu
+clfrncat;# clfrncat ==> access test all 4 network clock
+# chains
+clfrcctr;# clfrcctr ==> this routine will copy a or b
+# counter from i/s system c lock contr and write a and b
+# counters in both control
+ccisboot;# ccisboot ==> bootstrap ccis tac controller and
+# associated terminals
+ccisanac;# ccisanac ==> analyze results of term access to
+# mark term for initial ization
+ccisstup;# ccisstup ==> update status on all ccis tac and
+# and terminals
+ccispump;# ccispump ==> initialize all terminals marked for
+# initialization in c i4tmstreg. terminals that failed to
+# initialize are ma
+ccismlpm;# ccismlpm ==> ccis terminal phase pump up
+ccisrtry;# ccisrtry ==> ccis tac/term order unwinder for pbr
+# arising from bus f ault
+send_ulb;# send_ulb ==> send unequipped label, ulb, signal
+ccis_mum;# ccis_mum ==> read spr and id signals from
+# terminal and store in tmr
+ccispack;# ccispack ==> build mum from standard cin
+ccisunpk;# ccisunpk ==> build standard cin from mum
+ccis_over_check;# ccis_over_check ==> screen ict treatment
+# for overide announcement
+trkqry_wait;# trkqry_wait ==> request to delay or activate
+# trk query
+pbfrfofi;# pbfrfofi ==> perform loop test on the pu
+# bus,identified by item btcb us, to the fofi frame. theabove
+# item is contained in
+pbfrrep;# pbfrrep ==> perform loop test on the pu
+# bus,identified by item btcb us, to the repeater
+# framecontaining the btc identifie
+pbfrleat;# pbfrleat ==> long extended access test
+dp_send_first;# dp_send_first ==> send first dial pulse
+# digit - prefix and delete
+dp_send_rest;# dp_send_rest ==> send subsequent dial pulse
+# digits - prefix and delete
+dp_send_last;# dp_send_last ==> send last digit that was
+# held until cot was received
+ccpas_ict_stable;# ccpas_ict_stable ==> update ccpas ict to
+# stable state
+adg_init_all;# adg_init_all ==> initialize the amb for all
+# adgs
+send_2ndstg_wink;# send_2ndstg_wink ==> send wink for second
+# stage of mf digits
+maintstw;# maintstw ==> send second stage wink for ccis
+maintsos;# maintsos ==> put ogt in special ogt set-up state
+maintepa;# maintepa ==> enter post setup answer state
+maintepw;# maintepw ==> enter post setup wait for answer
+# state
+ntwk_mask_2wconn;# ntwk_mask_2wconn ==> hunt and connect a
+# 2-way-intraswitch only-path with a s ubset of alinks
+# specified by maintms
+ntwk_tr_rsrv;# ntwk_tr_rsrv ==> reserve a network path
+# without a cr
+ntwk_tr_setup;# ntwk_tr_setup ==> setup network path without
+# a cr
+ntwk_tr_erase;# ntwk_tr_erase ==> abandon reserved paths
+# without a cr
+isctisu5;# isctisu5 ==> processes supervisory signals on
+# ccitt no_5 ict during  call setup stag
+isctosu5;# isctosu5 ==> processes supervisory signals on
+# ccitt no_5 ogt during  call setup stag
+isctips5;# isctips5 ==> processes supervisory signals on
+# ccitt no_5 ict during  post_setup stag
+isctops5;# isctops5 ==> processes supervisory signals on
+# ccitt no_5 ogt during  post_setup stag
+iscticl5;# iscticl5 ==> processes supervisory signals on
+# ccitt no_5 ict during  clearing stag
+isctocl5;# isctocl5 ==> processes supervisory signals on
+# ccitt no_5 ogt during  clearing stag
+return_time;# return_time ==> find duration of interrupt
+# until this call and return u pdated ex4clock valu
+calculate_time;# calculate_time ==> find duration of phase
+# or interrupt and update clock
+clock_write;# clock_write ==> write both system clock
+# controllers high portion only
+cciscemn;# cciscemn ==> check error counter for pass or fail
+# condition after pr ove in interval, either emergency or
+# norma
+ccismtrx;# ccismtrx ==> move queued and unacknowledged
+# signal units from failed terminal to backup termina
+ccisfsrs;# ccisfsrs ==> get mate signalling links terminal
+# number
+ccistdwd;# ccistdwd ==> lstr dedicated word timing request
+ccisswrs;# ccisswrs ==> switch transmit traffic to
+# signalling reserve
+ccisswof;# ccisswof ==> turn off transmit function for call
+# processing
+ccisswbk;# ccisswbk ==> return signaling traffic to
+# recovered link
+ccisswon;# ccisswon ==> turn on transmit function for call
+# processing
+ccisrser;# ccisrser ==> reset the leaky bucket counter,
+# lbuckc, the erroneous s ignal counter, errc, and the
+# repeated su counter, rep
+ccisbsrt;# ccisbsrt ==> get band status entry
+ccislkok;# ccislkok ==> change operational link status to
+# lkok
+ccisfmt1;# ccisfmt1 ==> format vfl tfn and cinc to pass to
+# io print
+ccisnbds;# ccisnbds ==> change operational link status to
+# normal
+ccisputs;# ccisputs ==> replace bandstatus entry
+ccislktr;# ccislktr ==> determine if a band of trunks are
+# oos by link security  reques
+ccisbscd;# ccisbscd ==> decrement the band status count
+ccisbsci;# ccisbsci ==> increment the band status count
+ccisbstc;# ccisbstc ==> total counts and signalling loss
+# counts
+ccisrlhe;# ccisrlhe ==> remove specified lstr hopper entry
+ccischgc;# ccischgc ==> change count of tfrs and tfps
+ccisseta;# ccisseta ==> set up activity for ccisexbs
+ccisbszr;# ccisbszr ==> subroutine to zero band status table
+cciscont;# cciscont ==> count table entry positions between
+# limiting bands
+ccismcox;# ccismcox ==> transmit an mco signal
+cciswhip;# cciswhip ==> load lstr work hopper entries
+ccisocof;# ccisocof ==> subroutine to output responses to
+# configure requests
+ccisstat;# ccisstat ==> output subroutine for status message
+ccisormv;# ccisormv ==> subroutine to output responses to
+# remove requests
+ccisorst;# ccisorst ==> subroutine to output responses to
+# restore requests
+ccisotsv;# ccisotsv ==> subroutine to output responses to
+# tsv requests
+ccistlvf;# ccistlvf ==> terminal vfl configuration check
+ccisvfle;# ccisvfle ==> determine vfl equipage and set up
+# info block
+ccisswvf;# ccisswvf ==> major switch vfl control program
+ccisvllp;# ccisvllp ==> loop the standby vfl
+ccisttst;# ccisttst ==> test terminal equippage and format
+# info
+ccisunlp;# ccisunlp ==> unloop a self looped vfl
+ccistkdn;# ccistkdn ==> take down terminal vfl network
+# connection
+ccissvfc;# ccissvfc ==> connect the terminal and vfl
+ccisopm1;# ccisopm1 ==> output messages aborting mco mvt tsv
+ccisopm2;# ccisopm2 ==> output messages aborting mvt tsv
+ccisopm3;# ccisopm3 ==> output messages aborting tsv
+# proceedure
+ccisfint;# ccisfint ==> isolate ccis term for link security
+# on flevel interrupt
+ccisflvl;# ccisflvl ==> isolate terminal from link
+# immediately
+ccisinit;# ccisinit ==> initialize an individual links data
+# structure
+ccislsin;# ccislsin ==> link security phase 2,3,4
+# initialization
+ccisloos;# ccisloos ==> can a signalling link be removed
+# from service
+ccisbtst;# ccisbtst ==> test location of update su band
+# against old hi
+ccisdcon;# ccisdcon ==> remove congestion control
+ccisslkl;# ccisslkl ==> routine to determine slk lamp state
+ccisvfll;# ccisvfll ==> routine to determine vfl lamp state
+ccis_go_to_dkadans;# ccis_go_to_dkadans ==> disk answer
+# routine
+ccisspmp;# ccisspmp ==> ccis routine to initialize data
+# memory
+ccisdtpm;# ccisdtpm ==> ccis routine to pump terminal data
+# memory constants
+ccisfpmp;# ccisfpmp ==> routine to pump terminal on f-level
+# interrupt
+ccispgpm;# ccispgpm ==> routine to load terminal program
+# memory
+cnfg_pu_bus;# cnfg_pu_bus ==> perform specified
+# configuration request on pu bus
+cnfg_pu_notf17;# cnfg_pu_notf17 ==> perform specified
+# configuration request on controller - for all functions
+# except 4puverify (=1
+cnfg_pu_f17;# cnfg_pu_f17 ==> perform specified
+# configuration request on controller - only for function
+# 4puverify (=1
+ccisgrow;# ccisgrow ==> initialize status regs or both
+# contrs of tac in growth
+tsi_type_vifadr;# tsi_type_vifadr ==> determine tsi type
+# given the vif xlat address
+tsi_type_tsiutmn;# tsi_type_tsiutmn ==> determine tsi type
+# given the tsi utmn
+sdgpha;# sdgpha ==> phase entry to update service
+# degradation counters
+pucnsdup;# pucnsdup ==> updates all service degradation
+# counters
+pucnasum;# pucnasum ==> sets an obb entry flag to update the
+# peripheral unit st atus lights at the mc
+service_degrading_po;# service_degrading_po ==> printout all
+# service degrading units
+pucnaudp;# pucnaudp ==> phase entry to run peripheral unit
+# audit - audit will b e run without segment break
+pucnaucd;# pucnaucd ==> entry to run peripheral unit audit -
+# audit will be run  with segment break
+pucnasum;# pucnasum ==> update the mcc peripheral unit
+# status lights - note-  calling program must be a active macp
+# clien
+ext_time_brk;# ext_time_brk ==> performs a pucnauds
+# timebreak called from an external s ubroutin
+aud_nclk_stat;# aud_nclk_stat ==> network clock os
+# status,selects and disconnects are aud ited and correcte
+dtfrtswa;# dtfrtswa ==> routine to perform dt switch
+# function
+pucnaudw;# pucnaudw ==> reset flag indicating dt audit has
+# completed
+pucnaupp;# pucnaupp ==> duplex failure verification at start
+# of phase
+puabtdgn;# puabtdgn ==> peripheral unit abort routine cleans
+# up the unit being  worked on at the time of interrup
+eratcler;# eratcler ==> pest administration routine to
+# master clear all pests f or a given utmn and controller hal
+eratpmac;# eratpmac ==> interface definition to control f
+# level pests from macp
+erattalw;# erattalw ==> tty input request for removing pests
+pest_buffer_overflow;# pest_buffer_overflow ==> sets a flag
+# requesting sp buffer overflow to be pested
+erattinh;# erattinh ==> tty input request for setting pests
+pstntwks;# pstntwks ==> sets tsi or est port pests given a
+# dt,vif or est that i t connects t
+eratkpfx;# eratkpfx ==> restore kcode pest registers
+pstntwkr;# pstntwkr ==> resets tsi or est port pests given a
+# dt,vif or est that it connects t
+erattipi;# erattipi ==> check timing of tsif port pests
+pestlamp;# pestlamp ==> routine that updates the mcc inhibit
+# interrupt light on the control console status sectio
+pestrest;# pestrest ==> routine to restore pests in standby
+# controller accordin g to the state of the active controlle
+pestaudt;# pestaudt ==> copies software status of pest to
+# hardware:for use only by pucnaud
+dtfrrest;# dtfrrest ==> routine to schedule a restoral for
+# the dt given by utmn
+dtfrignr;# dtfrignr ==> dt mn is to be put into ignore state
+dtfrinit;# dtfrinit ==> routine to initialize the dt frame
+dtfrtokd;# dtfrtokd ==> dtfr routine configuration to take
+# tok down and clear c ontrol error summar
+dtfrprot;# dtfrprot ==> dtfr routine to protection switch
+# the dt
+dtfrsysc;# dtfrsysc ==> dtfr routine to select a system
+# clock for the dt
+dtfrlclk;# dtfrlclk ==> dtfr routine to select a line clock
+# for the dt
+dtfrmess;# dtfrmess ==> dtfr routine to select a dt message
+# network
+dtfrcnts;# dtfrcnts ==> dtfr routine to select the control
+# clock via sd points
+dtfrtrem;# dtfrtrem ==> unconditional dtu or controller
+# removal by tty
+dtfreqip;# dtfreqip ==> routine to determine dtuequippage
+dtfrosrq;# dtfrosrq ==> routine to remove dt controller and
+# schedule a diagnost i
+dtfrtrst;# dtfrtrst ==> restoral of dtu or controller by tty
+dtfrigal;# dtfrigal ==> all dts for a given sp mn to be put
+# in ignore state
+dtfrinal;# dtfrinal ==> all dts associated with an sp mn to
+# be initialized
+dtfrtsks;# dtfrtsks ==> schedule a dt diagnostic task
+dtfrremv;# dtfrremv ==> final leg of diagnostic to remove
+dtfrrst;# dtfrrst ==> restore unit that was diagnosed
+dtfrdpir;# dtfrdpir ==> routine to dump internal registers
+# of the digroup termi na
+dtfrdpcr;# dtfrdpcr ==> routine to dump critical registers
+# of the digroup termi na
+dtfrldir;# dtfrldir ==> routine to load internal registers
+# state in the dt
+dtfrinitdt;# dtfrinitdt ==> schedule a dt init
+dtfrboot;# dtfrboot ==> boot all equipped dt frames
+dtfrtask;# dtfrtask ==> routine to schedule task in task
+# tables
+dtfrosxx;# dtfrosxx ==> unconditionally remove a dtu
+dtfrrpmg;# dtfrrpmg ==> digroup terminal digital facility
+# report message reques
+dtfrrqup;# dtfrrqup ==> dt subroutine to update the dt
+# status after tsi configu ratioon
+dtfrrcov;# dtfrrcov ==> routine to do fault recovery when a
+# fault and pmd has b een determine
+dtfrswac;# dtfrswac ==> routine to switch controller
+# activity
+dtfraudt;# dtfraudt ==> routine to audit the dt hardware
+# stat
+dtfrpest;# dtfrpest ==> routine to carry out pesting on
+# digroup terminals
+dtfrpsts;# dtfrpsts ==> dtu channel pest status report -
+# determines subject dt  network channel pest requirement
+dtfrmrsw;# dtfrmrsw ==> determine which dt controller has a
+# good clock
+rcactoff;# rcactoff ==> turn off recent change mcc activity
+# lamp
+ccisrest;# ccisrest ==> initialize a single ccis terminal on
+# base level upon a  request from puc
+alarminit;# alarminit ==> alarm initialization
+oofc_prof;# oofc_prof ==> find office codes pointing at a
+# profile
+so_tty_input_msg;# so_tty_input_msg ==> entry from i/o with
+# signal from ses in so4ttyi
+so_choose_call;# so_choose_call ==> entry after digit
+# translation to choose call to be obse rve
+so_outpulse_complete;# so_outpulse_complete ==> entry after
+# outpulsing is complete to complete service  observing set-u
+so_ict_abandon_tr;# so_ict_abandon_tr ==> entry when ict
+# abandons or a ring forward timeout occur s on an observed
+# call and there is no c
+so_ogt_off_hook;# so_ogt_off_hook ==> entry when ogt off-
+# hook has been detected on an observe d cal
+so_ogt_on_hook;# so_ogt_on_hook ==> entry when ogt on-hook
+# has been detected on an observed cal
+so_final;# so_final ==> entry from final handling when
+# observed call is going t o fina
+so_chk_mon_tab;# so_chk_mon_tab ==> entry to check whether a
+# particular tsn is being monito red by maintenance or service
+# observin
+so_new_rtg_nbr;# so_new_rtg_nbr ==> entry when call on serv
+# obs has new routing digits retr ieved from a data base, etc
+so_nsc_call_connect;# so_nsc_call_connect ==> entry when
+# call on serv obs routes to nsc
+so_nsc_call_disconnect;# so_nsc_call_disconnect ==> entry
+# when call on serv obs disconnects from nsc
+so_rmv_mtr;# so_rmv_mtr ==> entry to remove so ckts from a
+# call being monitored
+hdwresa2;# hdwresa2 ==> second acc test est and config final
+# disposition
+hdwrinfa;# hdwrinfa ==> execute initialization & first acc
+# test , for all est m e
+hdwrsphi;# hdwrsphi ==> this routine will save the utmn and
+# contr with the fail ing data and return address
+hdwrcphi;# hdwrcphi ==> this routine will clear an entry in
+# the save phase info table created by hdwrsphi
+est_pre_init;# est_pre_init ==> pre-initialize subject est
+# controller:makes controller  run on specified tsi clock and
+# makes controller activ
+est_hard_init;# est_hard_init ==> fully initialize subj est
+# controller including psw hard ware,per trunk memory.no
+# segment breaks taken in this
+est_soft_init;# est_soft_init ==> partial initialization of
+# subject est controller, mainl y to restart vector
+# generator.no segment breaks taken
+est_acc_test1;# est_acc_test1 ==> first access test on
+# subject est controller.this subrou tine will take segment
+# breaks if necessary when on ba
+est_acc_test2;# est_acc_test2 ==> second access test on
+# subject est controller.this subro utine will take segment
+# breaks if necessary when on b
+est_cont_active;# est_cont_active ==> make subject
+# controller active.esus listen only to the  active esc for
+# call echo suppression data,test vector
+est_estab_clock;# est_estab_clock ==> make subj esc run on
+# specif tsi clock,each esc can run  on either of assoc tsi
+# clocks.routine pests assoc vif
+est_init_sw;# est_init_sw ==> routine pests assoc tsi port &
+# vif basm,then init psw i f none in prog.for this est.if one
+# in prog,req.is que
+est_switch_verif;# est_switch_verif ==> obb base job to
+# verify a psw or upsw and take down pest s setup for switch.
+# job scheduled by est_init_sw.at m
+est_psw_stat;# est_psw_stat ==> determine from pswip table
+# the esus involved in switch  activity for the given memn.no
+# segment breaks taken i
+est_upd_esc;# est_upd_esc ==> update subject controller from
+# mate.copies internal reg isters and ram tss memory from
+# mate,segment breaks ar
+est_pulse_ec;# est_pulse_ec ==> pulse emergency cutoff via
+# the sp to quarantine escfrom esus and from perif.unit
+# bus.results in setting both
+auds_quiet_ded_tsi;# auds_quiet_ded_tsi ==> request aud 50
+# without error reporting
+est_pulse_ca;# est_pulse_ca ==> pulse clock activity via the
+# sp to switch between which of two tsi clocks the esc runs
+# on.results in togglin
+est_pest_est_net;# est_pest_est_net ==> pest all assoc. tsi
+# ports connected to nonstrapesus,all assoc equipped esus,and
+# basm in assoc. vifs. this ro
+est_pest_esu_net;# est_pest_esu_net ==> used primarily for
+# pesting prior to an est psw.pests vi f basm if esu connects
+# to a vif.no action if esu conn
+est_write_pest;# est_write_pest ==> copy input pest/unpest
+# data into hardware and cleanup e rror source registers.this
+# routine is used primarily
+est_prot_sw;# est_prot_sw ==> bootstrap psw routine,no
+# network pesting,no switch veri fication,no time break
+est_audit_psw;# est_audit_psw ==> audit psw & make software
+# psw status equal to hardware  psw stat
+est_pest_stat;# est_pest_stat ==> determine which esus
+# should be pested,what the spare as signment is,which tsi
+# ports should be pested for est
+esfr_ckup;# esfr_ckup ==> check if est contrs are on a i/s
+# tsi clock
+creg_dump_flev;# creg_dump_flev ==> this routine snaps cregs
+# for specified unit/sunit
+vcnt_raw_data;# vcnt_raw_data ==> vacant code analysis entry
+# from tmad0002
+vcnt_raw_data_ncat;# vcnt_raw_data_ncat ==> vacant code
+# analysis entry for ncat anomalies
+bin_to_bcd;# bin_to_bcd ==> convert binary number to 7 bcd
+# chars
+base_ck_stkmem;# base_ck_stkmem ==> called at base cycle to
+# check that stack memory is in i nitial state
+free_stkmem;# free_stkmem ==> de-allocates scratch stack-
+# memory pointed to.
+get_stkmem;# get_stkmem ==> allocate scratch stack-memory
+# and return pointer to it.
+init_stkmem;# init_stkmem ==> initializes the scratch stack
+# memory.
+roll_bk_stkmem;# roll_bk_stkmem ==> pops the scratch stack
+# memory upto and including the sa fe-point block
+# corresponding to the t stack
+safe_pt_stkmem;# safe_pt_stkmem ==> places a safe-point
+# block on the stack memory, if space is available
+dbtresr;# dbtresr ==> restore data saved over macp segment
+# from dbt
+getonact;# getonact ==> put subj contr on pub that it can
+# respond over (ma resp ons
+crtsi_type;# crtsi_type ==> determine if unit type is either
+# a crtsi or companion  membe
+entry_lvl;# entry_lvl ==> determine level of entry.
+# subroutine checks states of  mi1rpt_levl & hr4rout
+rstescs;# rstescs ==> establish clocks in est & restore any
+# est contr(s
+rmvescs;# rmvescs ==> on base or intr, establish clocks in
+# est and if tsi is  duplx failed remove any i/s contr(
+est_rmv;# est_rmv ==> remove est or esu -
+# cond=2,force=3,lo=26 - j not actu ally used for return
+est_rst;# est_rst ==> restore esc or esu - rst=1,urst=31 - j
+# not actually u sed for return
+est_urst;# est_urst ==> update and restore esu or esc - j
+# not actually used f or return
+x0viadbt;# x0viadbt ==> failure return - j not actually used
+# for returns - lo cal exits in puc
+x2viadbt;# x2viadbt ==> success return - j not actually used
+# for returns - loc al exits in puc
+regsave3;# regsave3 ==> save all registers - except j - in
+# pu4save+21 to +28
+regrest3;# regrest3 ==> restore all registers - except j -
+# from pu4save+21 to + 28 - saved by regsave
+routsend;# routsend ==> set up bus routing (via setuprt
+sendord;# sendord ==> set pubr if both pubs i/s and read
+# specified pu registe r according to op code specified in p
+# registe
+restport;# restport ==> clear tsi port pests if not on boot
+# and pu4busc flag is se
+init_tms;# init_tms ==> comment
+init_tsi;# init_tsi ==> comment
+upd_tsi;# upd_tsi ==> comment
+upd_tms;# upd_tms ==> comment
+boot_tsi;# boot_tsi ==> comment
+boot_tms;# boot_tms ==> comment
+tiupcnfg;# tiupcnfg ==> comment
+tmupcnfg;# tmupcnfg ==> comment
+putonact;# putonact ==> inputs set up
+tmsrestr;# tmsrestr ==> inputs set up
+tirst;# tirst ==> inputs set up
+tmsrmv;# tmsrmv ==> inputs set up
+tirmv;# tirmv ==> inputs set up
+dbtentry;# dbtentry ==> inputs set up
+exit0;# exit0 ==> needed for pucnest to interface with
+# pucn00 exit0 inp uts set u
+seizc;# seizc ==> inputs set up
+seiznoup;# seiznoup ==> inputs set up
+regsave2;# regsave2 ==> save registers - except j - in
+# pu4save+7 to +13 before  going to subroutine
+0rgrest2;# 0rgrest2 ==> restore all registers - including j
+# - from pu4save+7 to +13 - saved by regsave2 - return
+# 0+j(restore
+todconvert;# todconvert ==> convert tod clock to 100ms
+# increments
+cama_make_ldr;# cama_make_ldr ==> make long duration records
+dsdc_make_ldr;# dsdc_make_ldr ==> make long duration records
+send_ama;# send_ama ==> perform ama buffer administration
+restore_contr;# restore_contr ==> restore est controller to
+# active status
+nclk_cnfg;# nclk_cnfg ==> reconfigure nclk according to zap
+# and zs
+ntwk_togg_1wconn;# ntwk_togg_1wconn ==> network toggle one
+# way connection...  change the tru nk being listened to
+# (monitore
+dtca_tr_c_oant;# dtca_tr_c_oant ==> connect specified trunk
+# to specified office tone or ann ouncement. if network is
+# successful it links tr to dt
+audit_print;# audit_print ==> Build an audit output message
+# in a buffer
+audits;# audits ==> Invoke defensive programming control
+# module upon a defensive check failure in a system progra
+bi_bit;# bi_bit ==> Busy or idle a trunk busy-idle bit,
+# adjust counters
+break;# break ==> Test interject source and activity bits
+# and take interject break if necessar
+breakcheck;# breakcheck ==> Test state of interject source
+# and interject activity to determine whether interject break
+# must be take
+ccis_link_sec;# ccis_link_sec ==> Determine status of CCIS
+# signaling termina
+ccis_message;# ccis_message ==> Call the 4 ESS ccis message
+# function defined in the positional paramete
+ccis_message;# ccis_message ==> Send CCIS message on the
+# input trunk
+ccistac;# ccistac ==> Read CCIS terminal access circuit to
+# determine status of terminal buffer
+ccisterm;# ccisterm ==> Send order to the CCIS terminal to
+# load output uffer or unload input buffe
+chkpst;# ckpst ==> Check program sanity timer and compare to
+# threshhold
+clear_cdtsi_tr;# clear_cdtsi_tr ==> ICT connected (1-way) to
+# dedicated TSI. For # final TR common clearing, remove T from
+# BETL (if appropriate), take down NTWK connection unlink and
+# idle DTCR, and for PAS type connection, adjust counter
+convert;# convert ==> Convert one quantity to another where
+# a nonoffice dependent algorithm exists for such a conversio
+cr_dtcr_linkcheck;# cr_dtcr_linkcheck ==> CR linked to DTCR
+digits;# digits ==> Send SP orders concerned with receiving
+# or outpulsing up to four MF digits, or outpulsing a single
+# DP digi
+final;# final ==> Call final handling program to perform
+# data gathering, and release (idle) all facilities associated
+# with a cal
+final_data;# final_data ==> According to a class or
+# description of ailure type (FHCODE), cause one or more Final
+# Handling Treatmen Codes for requested incoming and outgoing
+# trunk signaling types and place appropriate Trunk
+# Maintenance Items in destinatio register
+gcpulse;# gcpulse ==> Generate a GCP order, as well as any
+# necessary instructions for reading the resul
+idle_ppm;# idle_ppm ==> Check the DIF type to see if it is a
+# DIF-E1. If so, send a peripheral order to the DIF-E1 to sto
+# PPM pulsing on the trunk. If not a DIF type, then n macro
+# expansio
+linkcheck;# linkcheck ==> Perform A->B->C linkage checka
+# specified in the positional parameter
+lynk;# lynk ==> Link a TR to a link list
+network;# network ==> Perform the 4 ESS network action
+# specified by the first positional paramete
+poll_sp;# poll_sp ==> Generate order which determines
+# whether any reports exist in SP buffers. Return responses
+queue;# queue ==> Put an entry on any of the 4 ESS queues
+read_buffer;# read_buffer ==> Send order to an SP to read
+# one of our buffers. The oldest entry is sent to the L
+# register
+release;# release ==> Release (idle) specified call store
+# facility
+remove;# remove ==> Remove (abort) entries from any 4 ESS
+# timing list or queu
+retime_cr_ded_word;# retime_cr_ded_word ==> add additional
+# time to in-progress CR dedicated word timing for a
+# particular inde
+return;# return ==> Return program control to either the
+# xecutive control program or the task dispenser
+scan_tone;# scan_tone ==> Read scan point(s)
+scanmatrix;# scanmatrix ==> Read scan point(s)
+sdmatrix;# sdmatrix ==> Send order to SP to read, write, or
+# read and write signal distributor matri
+seize;# seize ==> Seize (allocate) specified call store
+# facility
+sysclock;# sysclock ==> Generate a peripheral order to read
+# the system cloc
+t_bits;# t_bits ==> Perform operations on signal processor T
+# bits corresponding to single trunk or misc poin
+time;# time ==> Put a facility on any of the 4 ESS timing
+# lists
+tmoutpulse;# tmoutpulse ==> Provide seizure and outpulsing
+# function on specified trun
+tms;# tms ==> Send a coded enable order to a timed multiplex
+# switch
+tone_control;# tone_control ==> Perform operations on signal
+# processor T bits # corresponding to a single trunk or mis
+# point on a CCITT No. 5 trunk circui
+translate;# translate ==> Call the specified 4 ESS
+# translation function
+trunk_hunt;# trunk_hunt ==> Hunt for a trunk of specified
+# type
+trunk_idle;# trunk_idle ==> Idle the specified 4 ESS trunk
+trunk_maint;# trunk_maint ==> Call the specified 4 ESS trunk
+# maintenance functio
+tsi;# tsi ==> Send a coded-enables peripheral order to a
+# time-slot interchang
+tsw;# tsw ==> Perform operations on Trunk Status Word in the
+# 1-word per trunk dedicated memory of the DIF-E
+dtmf_rcvr_mode;# dtmf_rcvr_mode ==> generates a write
+# receiver mode orde
+mf_rcvr_mode;# mf_rcvr_mode ==> generates a write receiver
+# mode order
+dtmf_xmtr_outpulse;# dtmf_xmtr_outpule ==> generates an
+# initiate/abandon outpulsing orde
+dtmf_xmtr_continuous;# dtmf_xmtr_continous ==> generates an
+# initiate/abandon continuous digit transmission
+tabtran;# tabtran ==> make indexed transfers into transfer
+# vector tables
+_write_plsx;# _write_plsx ==> performs write operation for
+# conditon plsx only on the trunk status word (tsw) in the 1-
+# word per trunk dedicate
+_write_dpo40s;# _write_dpo40s ==> performs write operation
+# for conditons dpo4060 and # dpo6040 only) on the trunk statu
+# word (tsw) in th
+retime_cr_ded_word ;# retime_cr_ded_word ==> restart in-
+# progress cr dedicated word timing # for a particular index
+# (i.e. tind0 or tind1)

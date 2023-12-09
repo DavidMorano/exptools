@@ -1,0 +1,990 @@
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          hasher - generate hash table functions
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          hhhhaaaasssshhhheeeerrrr [[[[----VVVV]]]] _f_i_l_e
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Hasher takes a  structure  definition,  and  possibly  other
+          information,  from  _f_i_l_e  and  generates C functions to add,
+          delete, or find such structures  in  a  hash  table.  It  is
+          designed to make it relatively painless to write fast search
+          programs.  This  Description  section  gives  a   high-level
+          description  of what it does, while subsequent sections give
+          additional details on how to actually use it.
+
+          Hasher is often useful for building things like:
+
+               Tools to make queries from a huge database
+
+               Tools to count the number of  times  each  of  a  large
+               number of patterns occur in a huge file
+
+               Symbol tables for compilers
+
+          Basically, the user defines a struct for the information  to
+          be searched for and hasher will generate all the subroutines
+          necessary to do the searching. These functions can  then  be
+          called   whenever  needed  in  the  user's  program.  Hasher
+          provides a non-procedural language, in that you just specify
+          _w_h_a_t  you  want  done,  and hasher figures out _h_o_w to do it.
+          The user interface of hasher is modeled along the  lines  of
+          lex and yacc.
+
+          Hasher provides much greater flexibility than  the  standard
+          hsearch(3) function. Specifically:
+
+               hsearch() only handles  a  single  type  of  structure,
+               meaning  that  the user normally has to do considerable
+               typecasting. Hasher will handle virtually any  kind  of
+               structure without user typecasting, as well as handling
+               all  details  of  allocating  and  freeing  space   for
+               strings.   Hsearch() requires that the key be a string,
+               while hasher will also handle numeric keys.
+
+               The  only  user  customization  allowed  by   hsearch()
+               requires  modifying the hsearch() source code, which is
+               often unavailable to the user. Hasher allows  the  user
+               to  patch  into or completely replace any or all of its
+               functions.
+
+               With hsearch(), only one hash table at a  time  may  be
+               active.  Hasher will handle an unlimited number of hash
+
+
+
+     Page 1                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+               tables simultaneously (within memory constraints).
+
+               Hsearch() does not provide any easy way to  "dump"  the
+               contents  of  the table, i.e., get a list of everything
+               in it. Hasher does, making it easy  to  write  programs
+               that  count  up  the number of occurrences of arbitrary
+               strings when the set of valid strings is not  known  in
+               advance.
+
+               Hsearch() does not give a way to delete  an  item  from
+               the hash table. Hasher does.
+
+          The -V option will  print  the  current  version  number  of
+          hasher. This manual page is current as of version 1.1.0.
+
+     IIIINNNNTTTTRRRROOOODDDDUUUUCCCCTTTTIIIIOOOONNNN
+          Let us begin with an example. This can give a flavor of  how
+          hasher  could  be used, and the rest of the manual page will
+          give additional details and examples.
+
+          Suppose we need a program  to  count  how  many  times  each
+          different  word  occurs in a file. A word will be defined as
+          any sequence of  characters  other  than  spaces,  tabs,  or
+          newlines.  We  can  use  a  data  structure  for  each word,
+          containing the word and a count.  We might write pseudo-code
+          as:
+
+
+               while there are lines to read
+                    for each word in the line
+                         if the word hasn't been seen before, add it to the list
+                         increment the count for current word
+               for each word in the list
+                    print the word and its occurrence count
+
+          Normally, we would have to write some routines to add  words
+          to  a  list  and to read them back from the list, but hasher
+          will write these routines for us.  We need only tell  hasher
+          what  kind  of structure to use, by making a file that looks
+          like this:
+
+
+               %%
+               struct Word {
+                    string word;
+                    int count;
+               }
+
+          Running this file through hasher, we will get a complete set
+          of  debugged  functions for maintaining a hash table of Word
+          structures.
+
+
+
+
+     Page 2                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          Implementing the above pseudo-code in C, we have:
+
+
+               #include <stdio.h>
+               #include "Word.h"
+               #define TSIZE 71
+
+               char white[] = " \t\n";
+
+               main()
+               {
+                    char buffer[BUFSIZ];          /* input buffer */
+                    char *p;            /* point to beginning of a word */
+                    char *strtok();               /* separate into words */
+                    struct Word **table;          /* the hash table */
+                    struct Word *data;       /* an item in the hash table */
+                    struct zzWordinfo *info; /* this is a struct type created
+                                         * by hasher to allow the user to
+                                         * sequentially retrieve all items
+                                         * in the hash table. */
+
+                    /* use hasher generated function to initialize hash table */
+                    table = initWord((struct Word *)0,TSIZE);
+
+                    /* read each line of input */
+                    while (fgets(buffer,BUFSIZ,stdin) != NULL) {
+
+                         /* separate the line into words */
+                         for (p = strtok(buffer,white);p!=NULL;p = strtok(0,white)) {
+
+                              /* find in table, adding if not already there */
+                              data = addWord(table,TSIZE,ZZRETAIN,p,0);
+
+                              /* increment the word count for this word */
+                              data->count++;
+                         }
+                    }
+
+                    /* go through all words in the table,
+                     * printing each one with its count */
+                    for (info = strtWord(table,TSIZE);
+                      (data = nextWord(info)) != NULL; ) {
+                         printf("%10s %5d\n",data->word,data->count);
+                    }
+               }
+
+          Compile this C program along with the C program produced  by
+          hasher,  and  we're  done. This example calls four functions
+          created by  hasher-initWord(),  addWord(),  strtWord(),  and
+          nextWord().   initWord()   initializes   the   hash   table.
+          addWord() will add a word to the table if it  isn't  already
+          there.  strtWord()  and  nextWord()  provide a mechanism for
+
+
+
+     Page 3                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          sequentially accessing each word in the  table.  We  needn't
+          worry  about how the table is organized or how the functions
+          work. We can just use them. If we later discover a  need  to
+          change  or  add  fields  to the Word structure, we need only
+          change the hasher discription file and rerun hasher to get a
+          new set of debugged hash table functions tailored to the new
+          structure. The hash table size is limited only by the amount
+          of  available memory, and by using the "string" directive to
+          hasher, it will handle strings of arbitrary length.
+
+     HHHHAAAASSSSHHHHEEEERRRR IIIINNNNPPPPUUUUTTTT FFFFIIIILLLLEEEE FFFFOOOORRRRMMMMAAAATTTT
+          The input _f_i_l_e has a specific format, as follows:
+
+                   /* _o_p_t_i_o_n_a_l _C _s_t_u_f_f */
+              %%%%%%%%
+              %%%%hhhh """"_h_e_a_d_e_r__n_a_m_e""""
+              %%%%cccc """"_C__p_g_m__n_a_m_e""""
+              ssssttttrrrruuuucccctttt _n_a_m_e {{{{
+                   _k_e_y_t_y_p_e         _k_e_y_n_a_m_e;
+                   _e_l_e_m_e_n_t_T_y_p_e     _n_a_m_e_1;
+                   _e_l_e_m_e_n_t_T_y_p_e     _n_a_m_e_2;
+                        .
+                        .
+                        .
+              }}}}
+              mmmmyyyy _F_u_n_c_t_i_o_n_L_i_s_t
+              _h_o_o_k_t_y_p_e {{{{
+                   /* _C _c_o_d_e _g_o_e_s _h_e_r_e */
+              }}}}
+              %%%%
+                   /* _o_p_t_i_o_n_a_l_l_y, _a_n_o_t_h_e_r _s_t_r_u_c_t_u_r_e _d_e_f_i_n_i_t_i_o_n, _e_t_c.
+                    * _l_i_k_e _f_r_o_m _t_h_e %% _a_b_o_v_e */
+              %%%%%%%%
+                   /* _m_o_r_e _C _f_u_n_c_t_i_o_n_s _c_a_n _g_o _h_e_r_e */
+
+
+          The initial '%%%%%%%%' and at  least  one  struct  definition  are
+          required; everything else is optional.
+
+          Anything up to the initial '%%%%%%%%' line is copied  directly  to
+          the  output  .c  file. This can be used for declaring global
+          variables, for a comment to explain what the file  contains,
+          etc. This section may be omitted.
+
+          The line containing only '%%%%%%%%' is mandatory. It tells  hasher
+          to  start  doing its processing. This is consistent with the
+          use of %% in lex and yacc.
+
+          The %%%%hhhh line, if present, tells hasher what file name to  use
+          for  the  header  file  that  it generates. If no %%%%hhhh line is
+          specified, the header file name defaults to the name of  the
+          first struct type with ".h" appended.
+
+
+
+     Page 4                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          The %%%%cccc line, if present, tells hasher what file name to  use
+          for  the  .c  file  that  it  generates.  If  no  %%%%cccc line is
+          specified, the .c file name defaults  to  the  name  of  the
+          first struct type with ".c" appended.
+
+          The structure _n_a_m_e may be any valid C structure identifier.
+
+          The first element of the structure specified is used as  the
+          key  used  for  hashing.  Its  type may be int, char, short,
+          long, or unsigned versions of any of these. It may also be a
+          pointer to any of the above types (or pointer to pointer, or
+          pointer to pointer to pointer.....). A special  type  called
+          "string"  is  also  supported.  This will be translated into
+          "char *", but the "add" function generated  by  hasher  will
+          include  all  necessary  code  to allocate exactly the right
+          amount of storage and make a ccccooooppppyyyy of a string passed to  it,
+          and  the  delete  function generated will free up the string
+          space used.
+
+          Non-key elements of the structure may be of any of the types
+          listed above for the key, and may also be float or double or
+          pointers to structures. Other declarations that looks  right
+          syntactically  are  also  accepted and assumed to be typedef
+          types.  Hasher is intentionally rather lenient  in  what  it
+          accepts.  Be  warned  that  just  because  hasher  accepts a
+          definition is no guarantee that the C compiler will  do  the
+          same.
+
+          The remaining sections of the input file are  all  optional,
+          and  are  frequently  omitted.  They are discussed under the
+          description of "ADVANCED FEATURES" below, since it is  first
+          necessary to understand the functions generated by hasher.
+
+          All variable names generated by hasher start with "zz". This
+          is  intended  to follow the same sort of philosophy as yacc,
+          which starts all of its variables with "yy", to  reduce  the
+          possibility of clashing with user names.
+
+          The hash table must be declared to  be  of  some  particular
+          size, but the number of elements it can hold is limited only
+          by memory space. The larger the  declared  table  size,  the
+          less  the  chance  of  collisions  and  thus  the faster the
+          searching should be.   For  fastest  results  it  should  be
+          slightly  larger than the number of items expected to be put
+          in the table, although performance  should  be  fairly  good
+          even  if  the table size is several times smaller than this.
+          If you use the default hash function, the table size  should
+          be prime.
+
+     FFFFUUUUNNNNCCCCTTTTIIIIOOOONNNNSSSS
+          Hasher generates two output files: a .h file containing  the
+          structure definition and a few other useful definitions, and
+
+
+
+     Page 5                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          a .c file containing the hash functions.
+
+          The following functions are put into the generated .c file:
+               add_n_a_m_e()      /* to add an item to hash table */
+               del_n_a_m_e()      /* to delete an item from hash table */
+               find_n_a_m_e()     /* to locate an item in hash table */
+               hash_n_a_m_e()     /* to translate a key to a  hash  number
+               */
+               mtch_n_a_m_e()     /* to compare key values */
+               init_n_a_m_e()     /* to initialize hash table */
+               strt_n_a_m_e()     /* to start a list of hash  table  items
+               */
+               next_n_a_m_e()     /* to get next item in hash table */
+
+          In the function definitions below, _t_y_p_e would be replaced by
+          whatever   types  are  appropriate  for  the  structure  you
+          defined.  Assuming a defined structure  type  of  _n_a_m_e,  the
+          arguments and return values of the generated functions are:
+
+     AAAADDDDDDDD
+          struct _n_a_m_e *add_n_a_m_e(zztable,zztsize,zzdupact,zzkey,zzpar0,zzpar1,...)
+          struct _n_a_m_e *zztable[];  /* the hash table */
+          int zztsize;        /* number of elements in hash table */
+          int zzdupact;       /* what to do if given a key that is
+                          * already in the table. This may have
+                          * the values:
+                          *   ZZREJECT - if an item with this key
+                          *      already exists, leave it as is
+                          *      and return NULL.
+                          *   ZZRETAIN - if an item with this key
+                          *      already exists, keep that one,
+                          *      and return a pointer to it.
+                          *   ZZREPLACE - if an item with this key
+                          *      already exists, discard it and
+                          *      put this new one in instead.    */
+          _t_y_p_e zzpar0;        /* next item in struct (assuming struct
+                          * has at least 2 members) */
+          _t_y_p_e zzpar1;        /* next item in struct (assuming struct
+                          * has at least 3 members) */
+               .              .
+               .          etc., for as many elements as there are
+
+          It returns a pointer to the structure added, or NULL on error.
+
+     DDDDEEEELLLL
+          int del_n_a_m_e(zztable,zztsize,zzkey)
+          struct _n_a_m_e *zztable[];  /* the hash table */
+          int zztsize;        /* number of elements in hash table */
+          _t_y_p_e zzkey;         /* key of the structure to delete */
+
+          It returns 1 if the delete succeeds, or 0 if it fails.
+
+
+
+
+     Page 6                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+     FFFFIIIINNNNDDDD
+          struct _n_a_m_e *find_n_a_m_e(zztable,zztsize,zzkey)
+          struct _n_a_m_e *zztable[];  /* the hash table */
+          int zztsize;        /* number of elements in hash table */
+          _t_y_p_e zzkey;         /* which structure to find */
+
+          It returns a pointer to the found structure, or NULL  if  it
+          was not found.
+
+     HHHHAAAASSSSHHHH
+          int hash_n_a_m_e(zzkey,zztsize)
+          _t_y_p_e zzkey;         /* what to hash on */
+          int zztsize;        /* number of elements in hash table */
+
+          It returns a  hash  number  between  0  and  (zztsize  -  1)
+          inclusive.
+
+     IIIINNNNIIIITTTT
+          struct _n_a_m_e **init_n_a_m_e(zztable,zztsize)
+          struct _n_a_m_e *zztable[];  /* the hash table */
+          int zztsize;        /* number of elements in hash table */
+
+          If zztable  ==  NULL,  a  table  of  size  zztsize  will  be
+          allocated, otherwise the table pointed to by zztable will be
+          used.  In either case, the  table  is  initialized  and  the
+          starting address of the table is returned, or NULL on error.
+
+     MMMMTTTTCCCCHHHH
+          int mtch_n_a_m_e(zzpar0,zzpar1)
+          _t_y_p_e zzpar0;   /* item being looked for */
+          _t_y_p_e zzpar1;   /* hash table item to compare with key */
+
+          Returns 1 if its arguments match, 0 if they don't.
+
+     SSSSTTTTRRRRTTTT aaaannnndddd NNNNEEEEXXXXTTTT
+          The strt and next functions are used to sequentially  access
+          all  items  in  the hash table. The ssssttttrrrrtttt function intializes
+          some information and returns a pointer to this  information.
+          Each  subsequent  call  to  the nnnneeeexxxxtttt function then returns a
+          pointer to the next item in the table.
+
+          struct zz_n_a_m_einfo *strt_n_a_m_e(zztable,zztsize)
+          struct _n_a_m_e **zztable;   /* the hash table */
+          int zztsize;             /* hash table size */
+
+          Returns a pointer to a structure of type  zz_n_a_m_einfo,  which
+          is then passed to next_n_a_m_e().
+
+          struct _n_a_m_e *next_n_a_m_e(zzinfo)
+          zz_n_a_m_einfo *zzinfo; /* info created by strt_n_a_m_e */
+
+          Each time it is called, next_n_a_m_e() returns a pointer to  the
+
+
+
+     Page 7                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          next  item  in  the  hash table. When it reaches the end, it
+          returns NULL.
+
+          Strt and next are generally used to  do  something  to  each
+          item in the hash table, as in the following code fragment:
+
+          struct zz_n_a_m_einfo  *info;
+          struct _n_a_m_e *data;
+          for(info=strt_n_a_m_e(htable,tsize);(data=next_n_a_m_e(info))!=NULL; )
+               /*something to do to each element */
+
+          Note that the items will not be sorted in any  obvious  way.
+          They  will  be  returned in whatever order they happen to be
+          stored in the hash table.
+
+     AAAADDDDVVVVAAAANNNNCCCCEEEEDDDD FFFFEEEEAAAATTTTUUUURRRREEEESSSS
+          If you as user  want  to  override  some  of  the  generated
+          functions  by  providing  your own, you can do so by listing
+          those functions in the _F_u_n_c_t_i_o_n_L_i_s_t  section  of  the  input
+          file.   The  valid words to include in _F_u_n_c_t_i_o_n_L_i_s_t are aaaadddddddd,
+          ddddeeeellll, ffffiiiinnnndddd, hhhhaaaasssshhhh, iiiinnnniiiitttt, mmmmttttcccchhhh, ssssttttrrrrtttt, and nnnneeeexxxxtttt. For example, if
+          you  want  to  provide  you own hash and mtch functions, you
+          would include the line:
+
+              my hash mtch
+
+          Perhaps a more common use for the "my list" is  to  suppress
+          the  generation  of  unneeded  functions.  Normally,  hasher
+          generates all the functions listed above, but in many cases,
+          only  a  few  of  them  are  needed.  For  example, for many
+          applications, del, strt, and next functions are not  needed.
+          Their generation can be suppressed by including a line:
+
+              my del strt next
+
+          If you just want to patch into the  generated  functions  to
+          make them do something extra that they wouldn't normally do,
+          you can define "hooks". There are  two  possible  hooks  for
+          each  generated  function, one for the top and the other for
+          the bottom. Whatever you put as a top hook will be copied to
+          the   generated   function   between   its   local  variable
+          declarations and the first line of generated code.  You  can
+          add  some  local  variable  definitions  and/or code at this
+          point. The bottom hook will be copied immediately before the
+          return  statement.  Valid  values  for  _h_o_o_k_t_y_p_e are aaaaddddddddttttoooopppp,
+          aaaaddddddddbbbbooootttt, ddddeeeellllttttoooopppp, ddddeeeellllbbbbooootttt, ffffiiiinnnnddddttttoooopppp, ffffiiiinnnnddddbbbbooootttt, hhhhaaaasssshhhhttttoooopppp,  hhhhaaaasssshhhhbbbbooootttt,
+          iiiinnnniiiittttttttoooopppp,   iiiinnnniiiittttbbbbooootttt,  mmmmttttcccchhhhttttoooopppp,  mmmmttttcccchhhhbbbbooootttt.   ssssttttrrrrttttttttoooopppp,  ssssttttrrrrttttbbbbooootttt,
+          nnnneeeexxxxttttttttoooopppp, and nnnneeeexxxxttttbbbbooootttt.  Any subset of these may be  specified
+          in any order.
+
+          If you want to use several different structure types in  the
+          same  program, they can be defined within the same _f_i_l_e. You
+
+
+
+     Page 8                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          just need to put a line containing a single '%%%%' before  each
+          new structure definition section.  Unless you specify new %%%%hhhh
+          and %%%%cccc lines in the new section, the generated code will  be
+          appended to the existing files.
+
+          If you want to include some other C functions  in  the  same
+          _f_i_l_e,  you  can  put  them at the end of the file, separated
+          from the hasher information by a '%%%%%%%%' line. Everything after
+          the  second  '%%%%%%%%', if present, is copied unchanged to the .c
+          file currently being generated.
+
+     UUUUSSSSIIIINNNNGGGG HHHHAAAASSSSHHHHEEEERRRR
+          This section discusses how to invoke  hasher  on  the  input
+          file,  and how to combine the output of hasher with other .c
+          files to produce a final program.
+
+          Running hasher is straightforward: just enter
+              hhhhaaaasssshhhheeeerrrr _f_i_l_e
+          If there are any errors  in  the  input  file,  hasher  will
+          complain.  Once  you  have  corrected all the errors, hasher
+          will produce two output files: a .c file and a .h file.  The
+          file  names  will  be those given by %%%%cccc and %%%%hhhh directives if
+          present, or _n_a_m_e....cccc and _n_a_m_e....hhhh by default. If you have  other
+          .c files which call the hash routines, those .c files should
+          #include  the  _n_a_m_e....hhhh  file.  They   should   also   include
+          declarations  of  any  hash  tables  you intend to use.  The
+          _n_a_m_e....cccc file should be compiled  along  with  your  other  .c
+          files  to  produce  the  final  executable product.  See the
+          EXAMPLES section below for details.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 1111
+          Suppose you have a file called  "doc.list",  which  contains
+          lines with the following fields:
+               document number (a 9-digit number)
+               document type (a one character code)
+               document title (aritrary length string)
+               author name (arbitrary length string)
+               number of pages (integer)
+          with fields separated by tabs, and suppose that you  need  a
+          program  such  that you can enter a list of document numbers
+          and have it give you all the  above  information  for  those
+          documents.
+
+          The first step is  to  define  the  structure  to  hold  the
+          information.  We  will  put  this  in  a  file which we will
+          arbitrarily call "doc.info". The file could  look  something
+          like this:
+
+               %%
+               struct Doc {
+                    long  doc_number;
+                    char  doc_type;
+
+
+
+     Page 9                                          (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+                    string     title;
+                    string     author;
+                    int   page_count;
+               }
+
+               /* won't use the del, strt, or next functions in this program,
+                * so we can suppress their generation to save some space */
+               my del strt next
+
+
+          By using "string" for the title and author, we don't have to
+          worry  about  the details of allocating the proper amount of
+          storage for the variable length strings.
+
+          Now we can generate a complete set  of  search  routines  by
+          entering the command:
+
+               hasher doc.info
+
+          This will create a file called "Doc.h"  and  a  file  called
+          "Doc.c".  Now we are ready to write the rest of our program.
+          Let's call the program source file "doc.c". This file  could
+          contain something like the following:
+
+             /* Doc.h will provide the structure definition and function declarations */
+             #include "Doc.h"
+
+             /* make hash table 199 elements long */
+             #define TSIZE 199
+
+             #include <stdio.h>
+
+             main()
+             {
+                  FILE *file, *fopen();
+                  char *fprintf(), *fgets(), *strtok();
+                  long atol();
+                  int atoi();
+                  char buffer[BUFSIZ];
+                  long number;
+                  char type;
+                  char *title;
+                  char *author;
+                  int page_count;
+                  char field_separators[5];
+                  struct Doc *item;
+                  struct Doc **table; /* the hash table */
+
+                  /* use the hasher generated init function to set up the hashtable.
+                   * By passing it a 0, it will allocate all the necessary space */
+                  if ((table = initDoc( (struct Doc **) 0, TSIZE)) == NULL) {
+                       fprintf(stderr,"couldn't init hash table\n");
+
+
+
+     Page 10                                         (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+                       exit(-1);
+                  }
+
+                  if ((file=fopen("doc.list","r")) == NULL) {
+                       fprintf(stderr,"couldn't open data file\n");
+                       exit(-1);
+                  }
+
+                  field_separators = "\t\n";
+                  /* read in lines from file and put info into hash table */
+                  while (fgets(buffer,BUFSIZ,file) != NULL) {
+                       /* use strtok() to pick out each field value */
+                       strtok(buffer,field_separators);
+                       number = atol(buffer);
+                       type = *strtok(0,field_separators);
+                       title = strtok(0,field_separators);
+                       author = strtok(0,field_separators);
+                       page_count = atoi(strtok(0,field_separators));
+
+                       /* here we call the hasher generated add function */
+                       if (addDoc(table,TSIZE,ZZREJECT,number,type,title,author,
+                            page_count) == NULL)
+                                 fprintf(stderr,"duplicate doc number %ld\n",
+                                      number);
+                  }
+
+                  /* now process user queries */
+                  for (;;) {
+                       /* if reading from terminal, give a prompt */
+                       if (isatty(0))
+                            printf("enter document number: ");
+
+                       if  (fgets(buffer,BUFSIZ,stdin) == NULL)
+                            exit(0);
+
+                       /* use hasher generated find function */
+                       if ((item = findDoc(table,TSIZE,atol(buffer))) != NULL) {
+                            printf("%9ld %c %35s %15s %d\n",item->doc_number,
+                                 item->type,item->title,item->author,
+                                 item->page_count);
+                       }
+                       else
+                            printf("couldn't find %ld\n",atol(buffer));
+                  }
+             }
+
+          To combine the Doc.c program with the functions generated by hasher:
+
+               cc doc.c Doc.c
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 1111....5555
+          Suppose you wanted to keep statistics on how often the
+
+
+
+     Page 11                                         (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+          find_n_a_m_e() function was called. This could be done by
+          defining a global counter (before the %% in doc.info).
+
+               int find_count;
+
+          Then, at the end of "doc.info", add a hook into the find
+          function:
+
+               addtop {
+                    find_count++;
+               }
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 2222
+          Suppose you have a system that each day produces a huge
+          file, which, among other things contains lines of the form:
+              ERROR: _x_x_x_x_x_x_x
+          where _x_x_x_x_x_x_x may be any one of several hundred error
+          messages. Since the system is still under development, the
+          list of valid error messages may change daily. You want a
+          tool that will count the number of occurences of each type
+          of ERROR: message.  Using hasher, this can be done with
+          about two dozen lines of code.
+
+          First we define a structure for hasher:
+              %%
+              struct err {
+                   string message; /* the error message */
+                   int count;     /* how many times it occurred */
+              }
+
+          Running this file through hasher will create "err.h" and "err.c" files.
+
+          Now the main program:
+
+               #include <stdio.h>
+
+               /* include the header file created by hasher */
+               #include "err.h"
+
+               /* pick hash table size */
+               #define HTSIZE 71
+
+               /* define the hash table */
+               struct err **htable;
+
+               main()
+               {
+                    char buffer[BUFSIZ];     /* input buffer */
+                    char *strncmp();    /* to look for "ERROR:" */
+                    struct err *data;   /* pointer into hash table */
+                    struct zzerrinfo *errinfo;    /* to get items for output */
+
+
+
+
+     Page 12                                         (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+                    /* initialize the hash table */
+                    htable = initerr( (struct err *) 0,HTSIZE);
+
+                    /* to make this example simpler, we will just read from
+                     * stdin. Normally, you would probably want to
+                     * get the filename as an argument and read from there */
+                    while (fgets(buffer,BUFSIZ,stdin) != NULL) {
+
+                         /* check if this is an ERROR: line */
+                         if (strncmp(buffer,"ERROR:",6) == 0) {
+
+                              /* If it's an ERROR line, put it in the hash table.
+                               * By using ZZRETAIN and a "count" of 0, if the
+                               * error type had not occurred before, it will be
+                               * put in the table with a count of 0. Otherwise,
+                               * the existing count will be retained. In either
+                               * case, a pointer to the error is returned, and
+                               * its corresponding count value is incremented
+                               * on the next line of code */
+                              data = adderr(htable,HTSIZE,ZZRETAIN,buffer + 7,0);
+                              data->count++;
+                         }
+                    }
+
+                    /* read each error type from the hash table, and
+                     * print the count and error message text */
+                    for ( errinfo = strterr(htable,HTSIZE);
+                         (data = nexterr(errinfo)) != NULL;  ) {
+                              printf("%5d\t%s",data->count,data->message);
+                    }
+               }
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 3333
+          This example doesn't really do  anything  useful,  but  just
+          gives  a  sample  of a very complex hasher file, to show how
+          hasher functionality could be customized by  an  experienced
+          hasher user.
+
+              /* this is a sample of a complex hasher file */
+              #include "goodstuff.h"
+
+              #ifdef DEBUG
+              int debugflag;
+              #endif
+
+              extern void do_something();
+              extern float number_crunch();
+
+              %%
+
+              %h "precious.h"
+              %c "great.c"
+
+
+
+     Page 13                                         (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+              struct idea {
+                   long number;
+                   double *****funny;
+                   struct good *gptr;
+                   unsigned short *item;
+                   FILE *file;
+                   long offset;
+                   struct Tree *tree;
+                   float value1;
+                   float value2;
+              }
+
+              addtop {
+              #ifdef DEBUG
+                   static int counter27 = 0;
+                   static float bcounter = 0.0;
+
+                   if (debugflag && (zzkey == 27L))
+                        counter27++;
+              #endif
+              }
+
+              addbot {
+              #ifdef DEBUG
+                   if (debugflag && (zzpar6 >= zzpar7))
+                        bcounter += zzpar6 + number_crunch(zzpar7);
+              #endif
+              }
+
+              /* Tell hasher that I will provide a private ideahash() function.
+               * (It's below after the second %% line) */
+              my hash
+
+              %
+
+              /* define another struct */
+
+              /* change to different header file. (Use same .c file) */
+              %h "other.h"
+
+              struct pers {
+                   string name;
+                   string address;
+                   char phone[11];
+                   int shoesize;
+                   float income;
+              }
+
+              findbot {
+                   if ((zzpar3 > 500000.00) && (zzpar2 > 12)) {
+                        printf("Well paid, and has big feet!\n");
+                   }
+
+
+
+     Page 14                                         (printed 10/5/90)
+
+
+
+
+
+
+     HHHHAAAASSSSHHHHEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            HHHHAAAASSSSHHHHEEEERRRR((((1111))))
+
+
+
+              }
+
+              /* don't generate persdel() */
+              my del
+
+              %%
+
+              /* private ideahash(). This function doesn't really do anything
+               * pratical. It's just here to demonstrate that you can define your
+               * own hash functions if you want to do something bizzare. */
+
+              int ideahash(value,tsize)
+              long value;
+              int tsize;
+              {
+                   long fix;
+
+                   do_something ( value > 93L ? 93L : value + 7L );
+                   fix = ((value & ~0777) ^ (value & ~077000)) >> 1;
+                   if (fix > 42037L)
+                        fix *= 3L + (long)( (float) value / 5.0 );
+                   return ( (int) (fix % tsize) );
+              }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cc(1), lex(1),  make(1),  yacc(1),  bsearch(3),  hsearch(3),
+          lsearch(3), qsort(3)
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS AAAANNNNDDDD BBBBUUUUGGGGSSSS
+          If the add_n_a_m_e() function  is  called  with  zzdupaction  of
+          ZZREJECT  and  it returns NULL, it will not be clear whether
+          the failure was due to the fact that it was given a key that
+          already  existed in the hash table, or was due to some other
+          problem (e.g., ran out of memory space).  However,  you  can
+          work around this by calling find_n_a_m_e to check if the item is
+          in the table.
+
+          Unmatched braces inside comments  inside  hooks  will  cause
+          hasher to become confused.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          John Krallmann
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 15                                         (printed 10/5/90)
+
+
+

@@ -1,0 +1,371 @@
+#  %Z%  SID: %I%;  module: %M%;  last changed: %G%  %U%
+
+# This routine implements a generic facility to change user environments.
+# Each environment definition is contained in a shell-script file that is
+# to be dotted in by the current shell.  The names of the environments are
+# the names of the shell-script files.  The variable CEPATH identifies the
+# sequence of directories to be searched to find such scripts.
+#
+# When the user is given interactive control in the new environment, the
+# system prompt will be changed by having the name of the environment
+# prefixed to the user's previous prompt.  If the user wants to change
+# this, a special script can be designated with the variable CERC.  If
+# defined and pointing to a file, that file will be invoked just prior
+# to the user's gaining interactive control in the new environment.  The
+# user can then customize the user prompt PS1 -- or handle any other final
+# touch-ups -- within the script.  During this processing the environmental
+# variable ID will be set to the name of the selected environment (if the
+# user wants to use the name in constructing a PS1 prompt of a more
+# suitable design), and OLDPS1 will be set to the user's original PS1.
+#
+# EXAMPLES:
+#	$ ce dev	// Enter the 'dev' environment
+#	$ ce dev test	// Simultaneously enter the 'dev' and 'test' environs
+#			   ('dev' is processed first, then 'test')
+#	$ ce -l		// List all available environments
+#	$ ce -l -d	// List all available environments, splitting
+#			   by CEPATH directories
+#	$ ce -l -c	// List all available environments, displaying
+#			   any *special* comment lines (those beginning
+#			   with '##') found in each
+#	$ ce -p dev	// Print out the commands that would be issued
+#			   if this environment were requested
+
+
+CMD=`basename $0`			# The basic command name
+CMDDIR=`dirname $0`			# The command directory
+
+KSH_SEARCH_PATH="$CMDDIR:$PATH"
+ERRMSG="$CMD: ERROR: not running under ksh -- aborting!"
+
+RC=""
+KSHTEST=""
+DONE=false
+until $DONE; do				# Only the ksh can pass
+    KSHTEST=OK				# an environmental variable
+    DONE=true				# out from an io-redirected
+done </dev/null				# shell structure
+if test "$JUST_TRYING_KSH" = "yes"; then
+    #
+    # This is just a probe of this shell, so indicate in the return code
+    # whether it is a ksh.
+    #
+    if test "$KSHTEST" = "OK"; then
+	RC=0
+    else
+	RC=2
+    fi
+elif test "$KSHTEST" != "OK"; then
+    #
+    # This is the first time through, but we don't have a ksh.
+    # So we will search for one.
+    #
+    echo "Looking for ksh ... \c"
+    DIR_SEARCH_LIST=`echo $KSH_SEARCH_PATH|tr ":" " "`
+    for DIR in $DIR_SEARCH_LIST; do
+	KSH88_SEARCH_LIST="$KSH88_SEARCH_LIST $DIR/ksh88"
+	KSH_SEARCH_LIST="$KSH_SEARCH_LIST $DIR/ksh"
+    done
+    for KSH in $KSH88_SEARCH_LIST $KSH_SEARCH_LIST; do
+	if test -x $KSH; then
+	    if JUST_TRYING_KSH="yes" $KSH $0; then
+		#
+		# Got it, let's use it
+		#
+		echo "got it"
+		if test $# -gt 0; then
+		    $KSH $0 "$@"	# This is for real!
+		else
+		    $KSH $0		# This is for real!
+		fi
+		RC=$?			# Final error code
+		break			# All done, let's go home
+	    fi
+	fi
+    done
+    if test -z "$RC"; then
+	#
+	# Never found a ksh
+	#
+	echo
+	echo "$ERRMSG" >&2
+	RC=2
+    fi
+fi
+
+if test -n "$RC"; then
+    #
+    # No more work to be done -- exit
+    #
+    exit $RC
+fi
+
+#
+# We passed the tests, and are now running ksh.
+# Let's get to work!
+#
+
+alias -x echo="print -"		# Get correct echo command
+
+
+# --------------------------------< not
+
+not() {
+    if $1; then
+	false
+    else
+	true
+    fi
+}
+
+
+# --------------------------------< printlist
+
+printlist () {
+    if test -n "$NAMELIST"; then
+	echo "$NAMELIST" | sort |
+	if $_CE_COMMENTS; then
+	    while read file; do
+		echo "    $file:"
+		TEXT=$(grep "^##" $dir/$file)
+		if test -n "$TEXT"; then
+		    echo "$TEXT" | pr -o6 -t -
+		fi
+	    done
+	else
+	    pr -4 -o5 -t
+	fi
+    fi
+}
+
+
+# --------------------------------< main
+
+_CE_CMD=$(basename $0)
+USAGE="Usage:  $_CE_CMD  [ -l [-d]] [ -cnpqrs ] [ envname ... ]"
+
+if test $# -eq 0; then
+    echo "$USAGE
+
+The flags have the following meanings:
+  -l:	List the available environment setup scripts
+  -d:	Modify -l by showing script directories
+  -c:	Show the '##' comments found in environment setup scripts
+  -p:	Print the given environment setup scripts
+  -q:	Run quietly (don't show normal messages)
+  -r:	Change to CEROOT after setting up a new environment
+  -n:	Do not change to CEROOT after setting up a new environment
+  -s:	Change to same relative directory under CEROOT after setting up
+	new environment
+
+Important environmental variables:
+  CEPATH contains the colon-separated environment search path.
+  CEROOT contains the root directory of the new environment.
+  CEOPTS contains a user's default command-line flags.
+  CERC contains the filename to be invoked just before the user is given
+  control in the new environment.
+"
+    exit 0
+fi
+
+GETOPT=$(getopt nrldcpqsh $CEOPTS "$@")
+if test $? -ne 0; then
+    echo "$USAGE"
+    exit 2
+fi
+
+GETOPT2=""
+echo "$GETOPT" |
+tr -s " " "\012" |
+while read OPT; do
+    GETOPT2="$GETOPT2 '$OPT'"
+done
+
+eval "set -- $GETOPT2"
+
+typeset _CE_CEROOT="$CEROOT"
+
+unset CECMD CEROOT
+
+LIST=false
+SPLIT=false
+_CE_PRINT=false
+_CE_QUIET=false
+_CE_COMMENTS=false
+_CE_CHROOT=true
+_CE_CHSAME=false
+for i in "$@"; do
+    case "$i" in
+    -l)
+	LIST=true
+	shift
+    ;;
+    -r)
+	_CE_CHROOT=true
+	shift
+    ;;
+    -s)
+	_CE_CHSAME=true
+	shift
+    ;;
+    -n)
+	_CE_CHROOT=false
+	shift
+    ;;
+    -d)
+	SPLIT=true
+	LIST=true
+	shift
+    ;;
+    -c)
+	_CE_COMMENTS=true
+	LIST=true
+	SPLIT=true
+	shift
+    ;;
+    -p)
+	_CE_PRINT=true
+	shift
+    ;;
+    -q)
+	_CE_QUIET=true
+	shift
+    ;;
+    --)
+	shift
+	break
+    ;;
+    esac
+done
+
+if not $LIST && test $# -eq 0; then
+    echo "$USAGE"
+    echo "$_CE_CMD: either '-l' or 'envname' must be given"
+    exit 2
+fi
+
+if test -z "$CEPATH"; then		# If no CEPATH defined
+    if test -n "$CHEPATH"; then		# If there is an alternate definition
+	CEPATH=$CHEPATH			# Use it
+    else
+	CEPATH=$HOME/environments	# Use the default
+    fi
+fi
+
+_CE_DIRLIST=$(echo "$CEPATH"|tr ":" " ")
+
+if $_CE_CHSAME; then
+    if test -z "$_CE_CEROOT"; then
+	echo "$_CE_CMD: no CEROOT defined -- aborting!"
+	exit 2
+    fi
+    _CE_TAIL=${PWD#"$_CE_CEROOT"}
+    if test "$PWD" = "$_CE_TAIL"; then
+	echo "$_CE_CMD: current directory not under CEROOT -- aborting!"
+	exit 2
+    fi
+fi
+
+if $LIST; then
+    if test $# -gt 0; then
+	echo "\nThe following environments matching '$@' are available:"
+    else
+	echo "\nThe following environments are available:"
+    fi
+    _CE_SEP=""
+    for dir in $_CE_DIRLIST; do
+	if test ! -d $dir -o ! -r $dir; then
+	    echo "Warning: unable to access directory '$dir'"
+	else
+	    NAMES=$(
+		cd $dir
+		ls $@ 2>/dev/null
+	    )
+	    for NAME in $NAMES; do
+		if test -f $dir/$NAME; then
+		    NAMELIST="$NAMELIST$_CE_SEP$NAME"
+		    _CE_SEP="\n"
+		fi
+	    done
+	    if $SPLIT; then
+		echo "\nDirectory '$dir':"
+		printlist
+		NAMELIST=""
+		_CE_SEP=""
+	    else
+		_CE_SEP="\n"
+	    fi
+	fi
+    done
+    if test -n "$NAMELIST"; then
+	printlist
+    fi
+else
+    ID=""
+    _CE_SEP=""
+    for _CE_NAME; do
+	ID=$ID$_CE_SEP$_CE_NAME
+	_CE_SEP="/"
+	_CE_FOUNDPATH=""
+	for _CE_DIR in $_CE_DIRLIST; do
+	    if test -z "$_CE_FOUNDPATH"  -a  -f $_CE_DIR/$_CE_NAME; then
+		_CE_FOUNDPATH=$_CE_DIR/$_CE_NAME
+	    fi
+	done
+	if test -z "$_CE_FOUNDPATH"; then
+	    echo "$_CE_CMD: unable to find environment '$_CE_NAME' -- aborting!"
+	    exit 2
+	fi
+	if $_CE_PRINT; then
+	    echo "\n--------< Environment '$_CE_NAME'"
+	    cat $_CE_FOUNDPATH
+	else
+	    if not $_CE_QUIET; then
+		echo "> Setting up '$_CE_NAME' environment ..."
+	    fi
+	    if $_CE_COMMENTS; then
+		grep "^##" $_CE_FOUNDPATH
+	    fi
+	    . $_CE_FOUNDPATH $_CE_NAME
+	fi
+    done
+    if not $_CE_PRINT; then
+	if test -z "$CECMD"; then
+	    if test -z "$SHELL"; then
+		CECMD=/bin/sh
+	    else
+		CECMD=$SHELL
+	    fi
+	fi
+	OLDPS1=$PS1
+	PS1="[$ID] $PS1" export PS1
+	if test -n "$CERC"  -a  -r "$CERC"; then
+	    . $CERC
+	fi
+	if $_CE_CHSAME && test -n "$CEROOT"; then
+	    if test ! -d $CEROOT/$_CE_TAIL; then
+		echo "ERROR: $_CE_CMD: Can't find directory $CEROOT$_CE_TAIL -- aborting!"
+		exit 2
+	    elif not $_CE_QUIET; then
+		echo "> Changing to directory '$CEROOT$_CE_TAIL'"
+	    fi
+	    cd $CEROOT/$_CE_TAIL
+	elif $_CE_CHROOT && test -n "$CEROOT"; then
+	    if test ! -d $CEROOT; then
+		echo "ERROR: $_CE_CMD: Can't find directory $CEROOT -- aborting!"
+		exit 2
+	    elif not $_CE_QUIET; then
+		echo "> Changing to directory '$CEROOT'"
+	    fi
+	    cd $CEROOT
+	fi
+	export CEROOT
+	if not $_CE_QUIET; then
+	    echo "> Entering subshell -- type ^D to return:"
+	fi
+	$CECMD
+	if not $_CE_QUIET; then
+	    echo "> Returning from '$ID' environment"
+	fi
+    fi
+fi

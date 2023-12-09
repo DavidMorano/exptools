@@ -1,0 +1,264 @@
+
+
+
+     uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          uenter - enter records into a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_e_n_t_e_r [-q] [-Itable] [-v] [-n[nline]] [-u] [-c] _i_n table
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _u_e_n_t_e_r command provides a crash resistant means for
+          entering records into a UNITY table (the crash resistance is
+          discussed more fully on the Introduction manual page).  The
+          user is prompted for all attribute values.  When entry is
+          complete and the records are ready to be inserted in the
+          table, the _i_n_s_e_r_t command is used so that no other UNITY
+          update command can be used on the table (_a_l_t_e_r, _d_e_l_e_t_e,
+          _i_n_s_e_r_t, and _u_e_d_i_t all use the same locking facility and do
+          not allow concurrent access).
+
+          The prompting sequence may be used from any terminal for any
+          table (i.e., there are no terminal dependencies).  The user
+          is prompted with the name of each attribute in the table.
+          If the "-u" option is specified, then prompts are the
+          "user-friendly" names instead of the attribute names, if
+          they exist in the description file (see _t_a_b_l_e(UNITY).  If
+          the "user-friendly" names do not exist, then the attribute
+          names are used for prompting.  The user can then enter the
+          desired value for each attribute.  Attribute values may
+          extend over multiple lines by entering a backslash ('\') as
+          the last character in the line.  The entry mode is exited by
+          typing a EOF (control-d).
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input (attribute or user-friendly names are
+          taken from the alternate description file as well).
+
+          The entered records are converted to stream packet format
+          and output into a hold file.  In a packet format, the data
+          is structured into field-name/field-value pairs consisting
+          of the name of the attribute and its value separated by a
+          tab (a convenient form for editing).  If the "-u" option is
+          specified, then the "user-friendly" names are printed
+          instead of the attribute names.
+
+          Each packet is preceded by a line of the form
+
+          #####<tab><packet number>
+
+          where <packet number> is the sequence number of the packet;
+          it is used for reference with reguard to the validation
+          described below.  This line is thrown away when converting
+          back to tuples and thus the user may delete it without any
+          problems (i.e., it is only for the user's reference).  Blank
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          lines are also ignored.
+
+          The user is asked if editing of the new input is desired.  A
+          response of 'y' will cause the user to be put into the
+          editor for making any changes using the standard editor
+          commands.  _u_e_n_t_e_r examines the environment variable ED and
+          then EDITOR to determine if an editor other than /bin/ed
+          should be executed; this makes it easy to use other
+          available editors such as _v_i or _e_m_a_c_s ($ED <packet-file-
+          name> is executed).  When changes are complete the user
+          exits the editor in the standard fashion.  At this point,
+          the data will be converted to record format.  If an error
+          occurs in the conversion, the user is notified and asked if
+          the program should re-enter the editor for correction of the
+          problem.  A response of 'y' will cause the user to be put
+          back into the editor for correction.  A response of 'n' will
+          cause the file of edited data in packet format to be saved
+          in a temporary file whose name is given in an error message
+          to the user before program termination.  If the packet to
+          record conversion succeeds, the user is then prompted to
+          choose whether to insert the new records.  A response of 'y'
+          will cause the new records to be inserted into the table
+          using the _i_n_s_e_r_t command.  An information message shows how
+          many records are inserted.  A response of 'n' will leave the
+          original table unchanged.
+
+          A newline and tab are generated in the packet stream output
+          each time a line ends with a backslash (\).  When the
+          packets are converted to records, this newline/tab sequence
+          is converted to a special character call the "newline"
+          character.  The default newline character is tilde ('~').
+          The "newline" character may be changed by using the
+          -n[nline] option.  If -n is specified with no argument, then
+          the newline character is assumed to be null and no newline
+          character is inserted in the conversion to records (i.e.,
+          the newline option is effectively turned off).
+
+          If an input line ends with a vertical bar (|), then the next
+          line of input will be concatenated on to the end of the
+          previous line of input with a space separating the two
+          lines.  Thus, vertical bar is a continuation indicator with
+          no newline character whereas the backslash is a continuation
+          indicator with newline character added.
+
+          To enter a vertical bar or backslash at the end of an input
+          line without having the character interpreted as a
+          continuation line, the user may precede it by a backslash.
+          Two backslashes entered at the end of the line are
+          interpreted as a single backslash, and a backslash and
+          vertical bar entered at the end of a line are interpreted as
+          a vertical bar.  The -c option may be used to turn off all
+          continuation line processing.  A backslash or vertical bar
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          at the end of an input line are treated as normal characters
+          when the -c option is specified.
+
+          The records will normally be validated only to the extent
+          that they do not corrupt the UNITY table.  The validation
+          that is done determines that fixed width attributes are of
+          the proper length, variable length attributes do not contain
+          the terminating character in their value, and no non-
+          printable characters or characters with special meaning
+          (i.e.,'~') are present.  Further validation may be done by
+          specifying the "-v" option on the command line.  This causes
+          the _v_a_l_i_d_a_t_e command to be invoked to validate the updates.
+          Three auxiliary files are needed for validation: the
+          description file, the validation script, and the error
+          message table.  These are described in detail on the
+          _v_a_l_i_d_a_t_e(UNITY) manual page.  These files must exist for the
+          table being edited (i.e., with names D<table>, V<table> and
+          E<table> in either the present working directory, the
+          directory in which the table resides, or in one of the
+          directories specified in the $UNITYDFILES path environment
+          variable) before editing begins.  _v_a_l_i_d_a_t_e writes its error
+          messages to the standard error output.  If an error occurs
+          on any record, then the record number, the error that
+          occurred, and the record in error will be printed.  The user
+          can then re-enter the editor to make the corrections.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are entered.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          uuuueeeennnntttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ ED=ed
+          $ export ED
+          $ uenter in SP
+          Terminate insertion with EOF (ctrl-d)
+
+          New Record
+          snumber:        s3
+          pnumber:        p1
+          qty:    400
+
+          New Record
+          snumber:
+          Enter editor to make changes (y or n) y
+          39
+          1,$p
+          #####   1
+          snumber s3
+          pnumber p1
+          qty     400
+
+          /qty/s/400/200/
+          w
+          60
+          q
+          tuple: 1 records converted
+          Make these changes in SP (y or n) y
+          insert: 1 records inserted in SP.
+
+          This example inserts one record into the SP file.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/uenter.c, zuenter.c - the C source program
+          bin/uenter - the executable program
+          /tmp/???????? - the lockfile
+          tuple$$,Dtuple$$ - tuples to be entered and description file
+          pak$$,Dpak$$ - packet format and description file
+          save$$ - file where entry saved during abort
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _t_u_p_l_e(UNITY), _u_e_d_i_t(UNITY), _i_n_s_e_r_t(UNITY), _e_d(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+

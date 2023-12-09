@@ -1,0 +1,34 @@
+#!/bin/sh
+
+PATH=/usr/5bin:$PATH
+
+#
+# apost - post a message in the [named] agenda file
+#
+
+if [ $# = 1 ]
+then
+	FILE=$1
+elif [ $# -gt 1 ]
+then
+	echo "usage: $0 [agenda_file]" >&2
+	exit 1
+else
+	FILE=$HOME/.agenda
+fi
+
+while true
+do
+	echo "Time:  \c"
+	read time
+	if [ "${time:-x}" = "x" ]
+	then	break
+	fi
+	echo "Day:   \c"
+	read day
+	echo "Month: \c"
+	read month
+	echo "Msg:   \c"
+	mess=`line | sed 's/\\\\/\\\\\\\\/g'`
+	echo "$time\t${day:-*}\t${month:-*}\t$mess" >> $FILE
+done

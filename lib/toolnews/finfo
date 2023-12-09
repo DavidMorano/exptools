@@ -1,0 +1,32 @@
+finfo 1.37A:
+-----------
+%L macro   Fixed.  Now if dir1 contains link link1 to ../link2 &
+           that link2 contains dir2/realfile, then from within dir1
+           finfo %L link1
+           gives            ../dir2/realfile
+           rather than just dir2/realfile
+           If dir1 is /home/woods/dir1, then
+           finfo %L /home/woods/dir1/link1
+           gives    /home/woods/dir2/realfile
+
+%R macro   New: Combination of %L and %F.  Follows the link(s) to
+           find the real file, then finds the full path to that file.
+("Real     From the above example
+  File     cd /home/woods/dir1
+  Name")   finfo '%l\n%L\n%R' link1      gives
+           ../link2 
+           ../dir2/realfile
+           /home/woods/dir2/realfile
+
+Thanks to Grant R. Lee for suggesting these new macros (and their
+corrections).
+
+Use: toolman finfo
+ or: finfo help
+for more information.
+
+finfo is provided by:           /~~~~~~~~~~~~~~~~ ~ ~ ~ ~ ~  ~  ~  ~
+  Warren D. Swan  (WooDS)      Y n ni____ ___#_   ___n___  ________
+  AT&T? Bell Laboratories     -(((((([__]/_____].(_______).\__  __/.
+  Naperville, Illinois        /o-OOOOO~~  oo oo   oo   oo  oo `' oo
+  woods@toontown.att.com    ########################################

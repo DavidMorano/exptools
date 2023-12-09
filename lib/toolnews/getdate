@@ -1,0 +1,88 @@
+
+Some getdate changes:
+
+	1.  getdate now recognizes dates of the form 
+
+			12-feb-1993
+
+	2.  Format shift characters have been added to allow more
+	    control over output capitalization.  For example,
+
+		-f "%<%r %>%A %=%i"
+
+	    will print the time (%r) in all lower case (am/pm), the
+	    weekday name (%A) in all upper case, and the month name (%i)
+	    in mixed case.
+
+	3.  A bug has been fixed that gave the time "now" instead
+	    of the time "23:59:59" when using the -p option with 
+	    a day of the month earlier than today.  Thanks to
+	    Bill McGovern for finding this.
+
+	4.  A bug has been fixed that on some machines caused the
+	    wrong adjustments to be made for standard time and
+	    on other machines fetched the wrong time zone.
+	    Thanks to Andrew Colby for pointing this out.
+
+	5.  The shell parameter $TZ seems to be generally populated
+	    correctly now.  We've removed the hard coded check and
+	    taken out the warning in the man page under the BUGS
+	    section.
+
+	6.  There is a slightly more robust scanning algorithm for
+	    reading datestrings that does not require spaces between
+	    tokens.  getdate will now understand strings such as
+	    "10pm" or "sept20" or "jan4,1993".
+
+	7.  If you have a common date or time format that getdate
+	    does not recognize, let us know so we can put it in
+	    getdate.
+
+
+If you have questions, comments, suggestions, etc., please
+contact one or both of us.
+
+Bryan Davies
+Dave Furchtgott
+
+
+------------------------------------------------------------------------
+Previous news:
+
+A few minor changes to getdate have been made:
+
+	1.  A new option has been installed:  -e for "earliest" date and
+	    time consistent with the rest of the input line.
+	    For example,
+
+		$ getdate -e 2 pm
+                Thu Oct  8 14:00:00 CDT 1992
+
+		$ getdate -e april
+                Thu Apr  1 00:00:00 CST 1993
+
+	2.  A bug has been fixed in the interpretations of phrases
+	    such as "next monday" and "last monday":
+
+		$ getdate  Jan 1 2001 next monday
+                Mon Jan  8 23:59:59 CST 2001
+
+	3.  It is now possible to enter the day of the year:
+
+		$ getdate 45 day of year
+ 		Sun Feb 14 23:59:59 CST 1993
+
+		$ getdate 349 doy
+		Mon Dec 14 23:59:59 CST 1992
+
+	4.  A bug in the calculation of the Julian date has been fixed
+	    (it sometimes caused the Julian day number to be low by 1).
+
+	5.  It is now possible to enter Julian Dates:
+
+		$ getdate julian date 234938292
+
+		$ getdate jd 490294404
+
+A new man page has been installed (dated 10/14/92) reflecting these
+changes.

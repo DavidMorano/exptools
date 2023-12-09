@@ -1,0 +1,66 @@
+
+
+
+     SPLITPATH(1)        UNIX System V (EXPTOOLS)         SPLITPATH(1)
+
+
+
+     NAME
+          splitpath - Print components of a directory path list
+
+     SYNOPSIS
+          splitpath [ -V ] [ _p_a_t_h_l_i_s_t(_n_a_m_e) ] ...
+
+     DESCRIPTION
+          This command prints to standard output the  individual  com-
+          ponents  of  a  colon separated path list, one per line.  An
+          initial colon, ending colon, or two  colons  together  in  a
+          path  list  cause  a  dot (.) to be printed (for the current
+          directory).  No checks are made as to the  validity  of  the
+          components of the path list.
+
+          Each argument is either the name of an environment  variable
+          that  contains  the  path  (_e._g. CDPATH), or the actual path
+          (_e._g. $CDPATH).  The existence of a colon  (:),  slash  (/),
+          dot (.) or dash (-) in the argument distinguishes the latter
+          type of argument from the former.
+
+          If no argument is specified, it uses  the  PATH  environment
+          variable.
+
+          The -V option reports the program  version  number,  and  if
+          there are no other command line arguments, simply exits.
+
+     EXAMPLES
+          # List all commands in my PATH:
+          lf `splitpath`
+
+          # List directories in my CDPATH:
+          splitpath CDPATH
+
+          # List all directories of my PATH and CDPATH:
+          splitpath PATH $CDPATH
+
+     SEE ALSO
+          formpath(1), sh(1)
+
+     DIAGNOSTICS
+          ... _i_s _n_o_t _s_e_t _o_r _e_x_p_o_r_t_e_d - You must export  the  specified
+          path list variable.
+
+     PROVIDED BY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+     Page 1                                          (printed 10/4/93)
+
+
+

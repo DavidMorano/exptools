@@ -1,0 +1,571 @@
+#!/bin/sh
+#ident	"@(#)ctrans:CC	1.7.3.1"
+
+PATH=/bin:/usr/bin:/usr/local/bin
+libertycorner=1
+
+#NOTE: To properly use the CC command you should check the values of the
+#following variables to be sure they are set to the locations of the
+#appropriate translator files on your system.
+#
+#CCROOTDIR set to directory containing cfront c++filt and patch/munch
+#CCLIBDIR set to directory containing the C++ libraries
+#I set to directory containing C++ header files
+
+# L3/cfront is probably a symbolic link to the latest cfront
+CCROOTDIR=${CCROOTDIR-${TOOLS}}
+CCLIBDIR=${CCLIBDIR-${TOOLS}/lib/CC/lib/}
+I=${I-${TOOLS}/lib/CC/include}
+export CCROOTDIR
+
+# NMFIELD is the number of the field which contains the symbol names in the
+# default nm output format.  On Suns and BSD this is 3, on System V it's 1.
+#
+NMFIELD=3
+#NMFIELD=3
+
+#Option passed to cc to tell linker to look for libraries in another
+#directory.  Set it to -L if -Wl,-L doesn't work.
+LOPT=-L
+
+trap 'rm -fr $TEMPDIR; exit' 1 2 3 15
+
+#	main makefile will set PM_FLAG to MUNCH (default) or PATCH
+PM_FLAG=MUNCH
+
+DEMANGLE=${DEMANGLE-1}	# set to 0 to disable linker output demangling
+
+if test "$CCROOTDIR" != "" ;then
+	CCROOTDIR="$CCROOTDIR/"
+fi
+
+if test "$CCLIBDIR" != "" ;then
+	CCLIBDIR="$CCLIBDIR/"
+fi
+
+LIB_ID=${LIB_ID-C}
+LIBRARY=${LIBRARY--l${LIB_ID}}
+AUXLIBS=${AUXLIBS-" g2++ GA Graph Set ++"}
+cfrontC=${cfrontC-${CCROOTDIR}/bin/cfront}
+
+if test "$PM_FLAG" = "PATCH"
+then
+	patchC=${patchC-${CCLIBDIR}patch}
+else
+	munchC=${munchC-${CCLIBDIR}munch}
+	NM=${NM-nm}
+	NMFLAGS=${NMFLAGS-}
+fi
+
+cplusfiltC=${cplusfiltC-${CCLIBDIR}c++filt}
+ccC=${ccC-cc}
+
+# cppC and ptxcppC can get overridden by the -Y switch
+#
+cppC=${cppC-/lib/cpp}
+if [ $libertycorner -eq 1 ]
+then	ptxcppC=${ptxcppC-${CCLIBDIR}ptxcpp}
+	Y0='"$cppC"'
+else	ptxcppC=${ptxcppC-$cppC}
+	Y0=
+fi
+
+if test "$CCLIBDIR" = "/usr/lib"
+then LLIBPATH=""
+else LLIBPATH="$LOPT$CCLIBDIR"
+fi
+
+#sys.fix will set SYS to the designated system
+#it will then be defined for each CC invocation
+SYS=-DBSD
+
+#For Ansi compatibility, c_plusplus => __cplusplus
+#For backward compatibility, retain c_plusplus for 2.0
+CPLUS=-Dc_plusplus=1
+cPLUS=-D__cplusplus=1
+
+TMPDIR=${TMPDIR-"/usr/tmp"}
+TEMPDIR=$TMPDIR/CC.$$
+C= EE=0 FON= XON= O=
+PON= R= SUF= X= Y= DASHR= PLUSI= STRIP=
+Z= E=0 OF= P=
+NOLOAD= NLO=
+AFAIL=0
+OO="a.out"
+ISUF=".c"
+MVLIST=
+APASS=0
+TFILE=
+AUXSUF=
+defmem=D deflist=
+profwarn=0
+
+rm -fr $TEMPDIR
+mkdir $TEMPDIR
+E=$?
+if test $E -ne 0
+then
+     echo "CC: error:can not create temporary directory in $TEMPDIR: stop" 1>&2
+     exit $E
+fi
+for A do
+	case $A in
+	-Yp,*)	cppC=`expr $A : '-Yp,\(.*\)'`/`basename ${cppC}`
+		X="$X $A"
+		if [ $libertycorner -eq 1 ]
+		then	Y0='"$cppC"'
+		else	ptxcppC=$cppC
+		fi
+		;;
+	-YI*)	X="$X $A"
+		;;
+	-Y*)	Z="$Z $A"
+		;;
+	+S)	echo "CC: +S no longer accepted (ignored)" 1>&2
+		;;
+	+V)	echo "CC: +V no longer accepted (ignored)" 1>&2
+		;;
+	+i)	PLUSI=1
+		;;
+	-s)	STRIP=1
+		;;
+	+x)	XON=1
+		;;
+	+*)	O="$O $A"
+		;;
+	-E)	# macro expansion (do not run ptx if present)
+		PON=1
+		if [ $libertycorner -eq 1 ]
+		then	Y="$Y -ptx"
+		fi
+		;;
+	-B)	# macro expansion (run ptx if present)
+		if [ $libertycorner -eq 0 ]
+		then	echo "CC: -B changed to -E" 1>&2
+		fi
+		PON=1
+		;;
+	-F)	FON=1
+		;;
+	-Fc)	FON=1
+		O="$O +L"
+		;;
+	-C)	Y="$Y $A"
+		;;
+	-S*)	NOLOAD=".s"
+		NLO="$A"
+		;;
+	-P)	NOLOAD=".i"
+		NLO="-P"
+		;;
+	-c*)	NOLOAD=".o"
+		NLO="-c"
+		;;
+	-fs)	if [ $libertycorner -eq 1 ]
+		then	# instrument the code with fs.
+			Y="$Y -fs"
+		else	echo "CC: fs(1) not available, ignoring -fs" 1>&2
+		fi
+		;;
+	-I*) 	if test "$A" != "-I" 
+		then
+                  	Y="$Y $A"
+		else
+			ION=1
+                fi
+		;;
+	-T*) 	if test "$A" != "-T" 
+		then
+                  	TFILE=`echo $A | sed 's/^-T//'`
+		else
+			TON=1
+                fi
+		;;
+	-D*)	eval $defmem='"$A"'
+		deflist="$deflist \"\$$defmem\""
+		defmem=${defmem}x
+		;;
+	-U*)	Y="$Y $A"
+		;;
+	-p|-pg)	P="$P $A"
+#
+# The following code checks for the existance of a "profiling" version
+# of the C++ libraries.
+#
+#		AUXSUF="_p"
+#		profwarn=1
+#		if test -r $CCLIBDIR/libC_p.a
+#		then
+#			LIBRARY=-lC_p
+#		else
+#			profwarn=2
+#		fi
+		;;
+	-g)	P="$P $A"
+#
+# The following code checks for the existance of a "debugging" version
+# of the C++ libraries.
+#
+#		# if both -g and -p are specified, use profiling libraries
+#		if test "$AUXSUF" != "_p"
+#		then
+#			AUXSUF="_g"
+#			if test -r $CCLIBDIR/libC_g.a
+#			then
+#				LIBRARY=-lC_g
+#			fi
+#		fi
+		;;
+	-l++)	for i in $AUXLIBS
+		do
+			if test -r $CCLIBDIR/lib$i$AUXSUF.a
+			then
+				Z="$Z -l$i$AUXSUF"
+				X="$X -l$i$AUXSUF"
+			else
+				Z="$Z -l$i"
+				X="$X -l$i"
+			fi
+		done
+		;;
+	-r)	DASHR=1
+		Z="$Z $A"
+		;;
+	-o*)	if test "$A" != "-o" 
+		then
+			OO=`expr $A : '-o\(.*\)'`
+                  	A="-o $OO"
+		else
+			OX=1
+                fi
+		APASS=1
+		OF="$OF $A"
+		Z="$Z $A"
+		;;
+	-.c)	echo "CC: bad suffix option: -.c" 1>&2
+		;;
+	-.*)	SUF=`expr "$A" : '-\(.*\)'`
+		;;
+	*.[Cc]) if	test -f $A
+		then
+
+			case $A in
+				*.c) B=`basename $A .c` ;;
+				*.C) B=`basename $A .C` ;;
+			esac
+
+			if	test $PON
+			then
+				if test $SUF
+				then
+					echo "$ptxcppC $O  $A > $B$SUF:" 1>&2
+					eval '$ptxcppC' $Y0 '$Y' $deflist '$CPLUS' '$cPLUS' '$SYS' '-I$I'  '$A' >'$B$SUF'
+					E=$?
+				else
+					eval '$ptxcppC' $Y0 '$Y' $deflist '$CPLUS' '$cPLUS' '$SYS' '-I$I'  '$A'
+					E=$?
+				fi
+				case $E in
+				0)	;;
+				*)	AFAIL=1; break
+					;;
+				esac
+			elif	test $FON
+			then
+				if test $SUF
+				then
+					echo "$cfrontC $O  $A > $B$SUF:" 1>&2
+					eval '$ptxcppC' $Y0 -C '$Y' $deflist '$CPLUS' '$cPLUS' '$SYS' '-I$I'  '$A' >$TEMPDIR/cpptmp
+					E=$?
+					if test $E -ne 0
+					then
+						echo "CC: cpp failure: $E" 1>&2
+						AFAIL=1; break
+					fi
+					$cfrontC +L +f$A $O <$TEMPDIR/cpptmp >$B$SUF
+					E=$?
+				else	
+					eval '$ptxcppC' $Y0 -C '$Y' $deflist '$CPLUS' '$cPLUS' '$SYS' '-I$I'  '$A' >$TEMPDIR/cpptmp
+					E=$?
+					if test $E -ne 0
+					then
+						echo "CC: cpp failure: $E" 1>&2
+						AFAIL=1; break
+					fi
+					$cfrontC +L +f$A $O <$TEMPDIR/cpptmp 
+					E=$?
+				fi
+				case $E in
+				0)	;;
+				*)	AFAIL=1; break
+					;;
+				esac
+			else
+				echo "CC $O $A:" 1>&2
+				eval '$ptxcppC' $Y0 -C '$Y' $deflist '$CPLUS' '$cPLUS' '$SYS' '-I$I'  '$A' >$TEMPDIR/cpptmp
+				E=$?
+				if test $E -ne 0
+				then
+					echo "CC: cpp failure: $E" 1>&2
+					AFAIL=1; break
+				fi
+				$cfrontC +L +f$A $O <$TEMPDIR/cpptmp >$TEMPDIR/$B$ISUF
+				E=$?
+				R=1
+				C="$C $TEMPDIR/$B$ISUF"
+				case $E in
+				0)	X="$X $B$ISUF"
+					if test "$NOLOAD" != ".c" 
+					then
+						Z="$Z $TEMPDIR/$B.o"
+					fi
+					MVLIST="$MVLIST $B"
+					APASS=1
+					;;
+				127)    echo "Too many compilation errors" 1>&2
+					AFAIL=1
+					;;
+				999)	echo "CC argument error" 1>&2
+					AFAIL=1
+					;;
+				1)	echo "1 error" 1>&2
+					AFAIL=1
+					;;
+				*)	echo "$E errors" 1>&2
+					AFAIL=1
+					;;
+				esac
+			fi
+		else
+			echo "$A not found" 1>&2
+			EE=1
+		fi
+		;;
+	*.i)    if test -f $A
+		then
+
+			if test $PON
+			then
+				echo "CC -E $A incompatible: ignoring $A" 1>&2
+	        	else
+				if test $FON
+				then
+					eval '$ptxcppC' $Y0 -C '$Y' $deflist '$CPLUS' '$cPLUS' '$SYS' '-I$I'  '$A' >$TEMPDIR/cpptmp
+					if test $? -ne 0
+					then
+						echo "CC: cpp failure: $E" 1>&2
+						AFAIL=1; break
+					fi
+					$cfrontC +L +f$A $O <$TEMPDIR/cpptmp 
+					if test $? -ne 0
+					then
+						AFAIL=1
+					fi
+  				else	
+					B=`basename $A .i`
+					echo "CC $O $A:" 1>&2
+					$cfrontC +L +f$A $O < $A > $TEMPDIR/$B$ISUF
+					E=$?
+					R=1
+					C="$C $TEMPDIR/$B$ISUF"
+					case $E in
+					0)	X="$X $B$ISUF"
+						if test "$NOLOAD" != "-c" 
+						then
+							Z="$Z $TEMPDIR/$B.o"
+						fi
+						MVLIST="$MVLIST $B"
+						APASS=1
+						;;
+					*)	AFAIL=1
+						;;
+				esac
+				fi
+			fi
+
+		else
+			echo "$A not found" 1>&2
+			EE=1
+		fi
+		;;
+	*.s)	# add to list to be compiled in $TEMPDIR, set flag to go on
+		B=`basename $A .s`
+		X="$X $B.s"
+		cp $A $TEMPDIR/$B.s
+		APASS=1
+
+		if test "$NOLOAD" != "-c" 
+		then
+			# add object entry to the load list
+			Z="$Z $TEMPDIR/$B.o"
+		fi
+		;;
+	*)	if test $XON
+		then	
+			O="$O +x$A"
+			XON=""
+		elif test $ION
+		then
+			Y="$Y -I$A"
+			ION=""
+		elif test $TON
+		then
+			TFILE=$A
+			TON=""
+		else
+			Z="$Z $A"
+			if test $OX
+			then
+				OO=$A
+				OF="$OF $A"
+				OX=""
+			else
+				X="$X $A"
+			fi
+		fi
+ 		APASS=1 # setting APASS to 1 causes link step to execute
+		;;
+	esac
+done
+
+case $APASS in
+0)	;;
+*)					# generate code
+	if test "$PLUSI"		#leave ..c's lying around
+	then
+        	#remove #line's from the ..c's for sdb
+		for f in $C
+		do
+			sed "/^#/d" $f >$TEMPDIR/temp
+			mv $TEMPDIR/temp $f 2> /dev/null
+		done
+	fi
+	
+	#if one file failed in cpp or cfront then do not create a.out
+	if test $AFAIL -eq 1
+	then
+		if test -z "$NOLOAD"
+		then
+			NOLOAD=".o"
+			NLO="-c"
+                fi
+        fi 
+
+        if test "$NOLOAD"
+        then
+ 		# make sure there are some .c, .s, or .i files in X
+ 		ANY_CS=`expr "$X" : '.*\(\.[CcSsi]\).*'`
+ 		if test "$ANY_CS"
+ 		then
+ 			echo "$ccC $P $NLO $X" 1>&2
+   			# contortions to cope with bug handling path in cc
+   			(cd $TEMPDIR; $ccC $P $NLO $X)		# compile, no load
+ 			EE=$?
+   			if test $EE = 0
+   			then
+ 				# move products back into current directory
+   				mv $TEMPDIR/*$NOLOAD . 2> /dev/null
+   			fi
+ 		fi
+	else
+		case $profwarn in
+		1)	echo 1>&2
+			echo "warning: static finalizers probably not called when profiling." 1>&2
+			echo 1>&2
+			;;
+		2)	echo 1>&2
+			echo "warning: libC_p.a has not been built.  Link errors may result, or [g]mon.out" 1>&2
+			echo "may not be generated." 1>&2
+			echo 1>&2
+			;;
+		*)	;;
+		esac
+		echo "$ccC $P $LLIBPATH $OF $X $LIBRARY" 1>&2
+  		(cd $TEMPDIR; $ccC $P -c $X)			# compile, no load
+		EE=$?
+		case $EE in
+		0) # load
+			$ccC $P $LLIBPATH $Z $LIBRARY >$TEMPDIR/__err 2>&1
+			EE=$?
+			(test $DEMANGLE = 1 &&
+			 $cplusfiltC <$TEMPDIR/__err 2>/dev/null) ||
+			cat $TEMPDIR/__err
+
+			if test $EE = 0  -a "$DASHR" != 1
+			then	#find ctors/dtors
+				CTDTORDER=$TEMPDIR/ctdtorder
+				case $PM_FLAG in
+				PATCH)
+					if test $TFILE
+					then
+						echo "$patchC -T$CTDTORDER $OO" 1>&2
+						ctdts -n $NMFIELD -l -f $TFILE > $CTDTORDER && \
+						$patchC -T$CTDTORDER $OO
+						EE=$?
+cp $CTDTORDER ctdtorder
+						rm $CTDTORDER
+					else
+						$patchC $OO
+						EE=$?
+					fi
+					;;
+				*)
+					CTDT=__ctdt$$
+					TCTDT=${TEMPDIR}/${CTDT}
+					if test $TFILE
+					then
+						echo "$NM $NMFLAGS $OO | inject -$NMFIELD $CTDTORDER | $munchC $P" 1>&2
+						ctdts -n $NMFIELD -i -d -f $TFILE >$CTDTORDER && \
+						$NM $NMFLAGS $OO | tr '|' ' ' | inject -$NMFIELD $CTDTORDER | $munchC > ${TCTDT}.c
+						rm $CTDTORDER
+					else
+						$NM $NMFLAGS $OO | $munchC > ${TCTDT}.c
+					fi
+					$ccC -c ${TCTDT}.c && \
+						$ccC $P $LLIBPATH ${CTDT}.o $Z $LIBRARY
+					EE=$?
+					rm ${CTDT}.o
+					;;
+				esac
+				if test "$STRIP"
+				then
+					strip $OO
+				fi
+			fi
+                        COUNT=0 
+                        for A in $X
+                        do 
+                           COUNT="`expr $COUNT + 1`"
+                        done
+                        if test $COUNT -gt 1
+                        then
+                           mv $TEMPDIR/*.o . 2> /dev/null
+                        fi
+			;;
+		esac
+	fi
+esac
+
+if test "$R"
+then
+   if test "$PLUSI"
+   then
+ 	for A in $MVLIST
+ 	do
+ 		mv $TEMPDIR/$A${ISUF} $A.${ISUF} 2> /dev/null
+ 	done
+   fi
+fi
+
+rm -fr $TEMPDIR
+
+if test $AFAIL -ne 0
+then
+	exit $AFAIL
+fi
+
+case $E in
+0)	exit $EE
+	;;
+*)	exit $E
+esac

@@ -1,0 +1,196 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+####################################################################
+# Find loops, breaks, and continues in C source files
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				October 1990
+#
+# USAGE:	c    source_file
+#
+# OUTPUT:
+#	lines of the form:
+#
+#		line# line#
+#
+# MODIFIED:
+#	Nov 7, 1990 to detect 'goto' and 'return' statements
+####################################################################
+SHOWLOOPLIB=`logdir exptools`/lib/showloop/
+CLOOPLIB=`logdir exptools`/lib/cloop/
+TMP=/usr/tmp
+
+# set temporary files
+TMPF1=$TMP/1cl$$
+TMPF2=$TMP/2cl$$
+TMPCF=$TMP/3cl$$
+CCFILE=$TMP/4cl$$
+LABELS=$TMP/5cl$$
+GOTODEST=$TMP/6cl$$
+
+TMPFILES="$TMPF1 $TMPF2 $TMPCF $CCFILE $LABELS $GOTODEST"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+PGM=`basename $0`
+
+FORHELP="\n\t(Contact Bob Parnass if you require help.)"
+USAGE="USAGE:  ${PGM}  [-m minsize]  [files]\n${FORHELP}"
+FORHELP="\n\t(Read the manual page, then contact Bob Parnass if you need help.)\n"
+
+EXIT_CODE=0
+
+
+# see if a public version of the newform program exists
+test -x /usr/bin/newform
+if [ $? -eq 0 ]
+then
+	# use public version
+	NEWFORM=/usr/bin/newform
+else
+	# use private version
+	NEWFORM=$TOOLS/lib/comment/newform
+fi
+
+# parse command line arguments 
+
+NFILES=$#
+
+if [ $# -eq 0 ]
+then
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	$NEWFORM -i $CFILE > $CCFILE
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: $NEWFORM failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1;
+		> $CCFILE
+	fi
+	
+	
+	${CLOOPLIB}cparser $CCFILE > $TMPF1
+	if [ $? -ne 0 ]
+	then
+
+		echo "Error in ${PGM}: parser failed on file '${CFILE}'." 1>&2
+		> $TMPF1
+		EXIT_CODE=1;
+	fi
+
+	# find 'return' and 'return()' statements
+	awk '\
+		{
+		if( ($2 == "go_op") && ($1 == "return#"))
+			printf "%d %d\n", $3, $3
+		else if (($1 == "return()") && ($2 == "keyop"))
+			printf "%d %d\n", $3, $3
+		}' $TMPF1 
+
+
+	# find 'goto' statements in C source
+	awk '\
+		{
+		if( ($2 == "go_op") && (index($1, "goto") == 1 ))
+			{
+			# first field is in the form:
+			#	gotoDESTINATION#
+			# extract destination
+
+			len = length($1)
+			dest = substr($1, 5, len - 5)
+			# print the destination and line number of goto
+			printf "%s %d\n", dest, $3
+			}
+		}' $TMPF1  \
+		| sort > "${GOTODEST}"
+
+	# find all variables in C source
+	grep  '	var	' $TMPF1 \
+		| cut -f1,3 \
+		| sort > "${LABELS}"
+
+	# NOTE: there may be several variables with the same name
+	# as the labels we want, or even multiple labels in the
+	# same file, but this program isn't smart enough to resolve
+	# duplicates, so it just assumes uniqueness (not too bad
+	# an assumption).
+
+	# cparser writes at least 2 lines out for each goto:
+	#	1) a goto line of type go_op
+	#	2) a destination line of type var
+	# We want to ignore the 2nd type of line and we do
+	# this by skipping all lines which appear to goto themselves
+
+	join -j1 1 -j2 1 -o 1.2 2.2 "${GOTODEST}" "${LABELS}" \
+		| awk '\
+			{
+			if($1 != $2)
+				printf "%d %d\n", $1, $2
+			}'
+	egrep  -v -e '	var	|	con	' $TMPF1 | cut -f1,3 > $TMPF2
+	mv $TMPF2 $TMPF1
+	
+	
+	${CLOOPLIB}cloopfind  $DFLAG $TMPF1 > $TMPF2
+
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		echo "Error in ${PGM}: loop finder failed on file '${CFILE}'." 1>&2
+		> $TMPF2
+		EXIT_CODE=1;
+	fi
+	
+	egrep -v -e 'block|elsepend' $TMPF2 \
+		| awk '\
+			{
+			if(($1 == "while()") || ($1 == "do"))
+				{
+				if($2 != $3)
+					printf "%s %s\n", $3, $2
+				}
+			# else if(($1 == "for()") || ($1 == "if()") || ($1 == "else"))
+			else if($1 == "for()")
+				{
+				if($2 != $3)
+					printf "%s %s\n", $2, $3
+				}
+			}'
+
+	egrep -v -e 'block|elsepend' $TMPF2  > $TMPF1
+	${SHOWLOOPLIB}cbkcont  -l  $TMPF1 $CCFILE
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`expr ${NFILES} - 1`
+
+	# set next C source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}

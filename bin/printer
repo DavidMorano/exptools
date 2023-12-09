@@ -1,0 +1,118 @@
+#---------------------------#
+# ~exptools/bin/printer     #
+#                           #
+# CALLS: ~unison/bin/prtfmt #
+#                           #
+# INTERMEDIATES: $HOME/temp #
+#---------------------------#
+while  [ "`echo $1|cut -c1`" = "-" ]
+do
+   option=`echo $1|cut -c2-`
+   while [ $option ]
+   do
+      opt=`echo $option|cut -c1`
+      case $opt in
+      m|s);;
+      i)status=info;;
+      *)status=error
+        echo "\t\t$opt IS NOT A VALID OPTION">&2;;
+      esac #end case $opt in
+      option=`echo $option|cut -c2-`
+   done #end while [ $option ]
+   shift
+done #end while  [ `echo $1|cut -c1` = "-" ]
+[ $# -eq 0 -a "$status" != info ]&&status=error
+if [ "$status" = error ]
+then
+   echo "\n  Usage: printer version 1.0\n\n  printer [-ims] <file1 [file2 ... fileN]>\n\n  printer eliminates multiple banner pages and suppresses printer action on\n  error conditions such as file not found and empty file. This reduces paper\n  consumption, printer wear and tear, and difficulty of finding multiple print\n  jobs.\n\n  OPTIONS\n  -i provide further information\n  -m files contain eqn, pic, tbl, or memorandum macros\n  -s files contain SDL macros\n"
+else
+   if [ "$status" != info ]
+   then
+      if [ -z "$FORMATTER" ]
+      then
+         PS3="By number select FORMATTER: "
+         select FORMATTER in nroff troff none
+         do
+            [ $FORMATTER ] && break
+         done #end select FORMATTER in nroff troff
+         echo "You can eliminate this step by defining FORMATTER in your .profile.\n"
+      fi #end if [ -z "$FORMATTER" ]
+      if [ -z "$DEVICETYPE" ]
+      then
+         PS3="By number select DEVICETYPE (term copies output to terminal): "
+         select DEVICETYPE in aps hp i10 i300 lp prism x9700 term
+         do
+            [ $DEVICETYPE ] && break
+         done #end select DEVICETYPE in nroff troff
+         echo "You can eliminate this step by defining DEVICETYPE in your .profile.\n"
+      fi #end if [ -z "$DEVICETYPE" ]
+      cat /dev/null > $HOME/temp
+   fi #end if [ "$status" != info ]
+   case $opt in
+     i)
+      echo "\nInformation: printer version 1.0\n\n  printer requires defining and export-ing of DEVICETYPE and FORMATTER\n  variables. Valid values for these variables are provided by typing\n  \"man prtfmt\".">&2
+      echo "\n  CAVEATS\n  1) If your jobs are quite large, your print turnaround will be subject to\n  job size consequences of your local print job's queue schedulers.\n  2) For jobs that contain format macros, printer resets basic formatting\n  defaults between jobs; these inter-job format macro resets may not be\n  robust.">&2
+      echo "\n  The providers will prepare a more robust printer version 2.0 for exptools.\n  version 2.0 will also perform macro syntax checking which will further reduce\n  printing cost. In the interim your trial usage of printer is encouraged.\n\n  Software requests, comments, and suggestions are welcomed.">&2
+      echo "\n  PROVIDERS\n  L. L. ARNHOLD ihlpa!lindy (708)979-3965 45261 IH 6w-211\n  C. V. MOSEBERRY ihlpm!cvm (708)713-4875 55664 IHP 1E-345\n  O1/16/90\n">&2;;
+   s)
+      eval last=\${$#}
+      for file in $*
+      do
+         while [ ! -f $file ]
+         do
+            echo "$file DOES NOT EXIST; PLEASE REENTER (q to quit): \c">&2
+            read file
+            [ "$file" = q -o "$file" = Q ]&&break
+         done #end while [ ! -f $file ]
+         if [ -s $file ]
+         then
+            cat $file>>$HOME/temp
+            [ $file != last ] && echo .bp >> $HOME/temp
+         fi #end if [ -f $file ]
+      done #end for file in $*
+      [ -s $HOME/temp ] && sdlprint $HOME/temp | ~unison/bin/prtfmt -T $DEVICETYPE;;
+   m)
+      eval last=\${$#}
+      for file in $*
+      do
+         while [ ! -f "$file" ]
+         do
+            echo "$file DOES NOT EXIST; PLEASE REENTER (q to quit): \c">&2
+            read file
+            [ "$file" = q -o "$file" = Q ]&&break
+         done #end while [ ! -f $file ]
+         if [ -s $file ]
+         then
+            cat $file>>$HOME/temp
+            [ $file != $last ]&&echo ".R\n.S 10\n.PH\"''%''\"\n.pn 1\n.ll\n.po\n.bp\n.PF\"\"">>$HOME/temp
+         fi #end if [ -s $file ]
+      done #end for file in $*
+      [ -s $HOME/temp ]&&~unison/bin/prtfmt -F "$FORMATTER" -T $DEVICETYPE $HOME/temp;;
+      "")
+      eval last=\${$#}
+      for file in $*
+      do
+         while [ ! -f $file ]
+         do
+            echo "$file DOES NOT EXIST; PLEASE REENTER (q to quit): \c">&2
+            read file
+            [ "$file" = q -o "$file" = Q ]&&break
+         done #end while [ ! -f $file ]
+         if [ -f $file ]
+         then
+            cat $file>>$HOME/temp
+            [ $file != $last ]&&echo  >> $HOME/temp
+         fi #end if [ -f $file ]
+      done #end for file in $*
+      [ -s $HOME/temp ]&&~unison/bin/prtfmt -T $DEVICETYPE $HOME/temp;;
+   esac #end case $opt in
+   [ -f $HOME/temp ]&&rm $HOME/temp
+fi #end if [ "status" != error ]
+echo $LOGNAME `date` | mail ihlpa!lindy
+
+#-----------------------------------------------------------------------#
+# 01/18/90                                                              #
+# PROVIDERS: L. L. ARNHOLD   45261 IH  6W-211 ihlpa!lindy (708)979-3965 #
+#            C. V. MOSEBERRY 55664 IHP 1E-345 ihlpm!cvm (708)713-4875   #
+#-----------------------------------------------------------------------#
+

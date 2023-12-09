@@ -1,0 +1,857 @@
+topics
+	displays (regular displays, tables, equations, figures, titles)
+	fonts
+	footnotes
+	headers (page headers and footers)
+	headings (headings, paragraphs, table of contents)
+	lists
+	references
+	registers
+	strings
+	styles (abstracts, memo types, authors, notations, dates)
+	miscellaneous (right justification, two-column output)
+	models (memo skeletons that can be copied and used)
+displays
+	DS	Static display.
+	DF	Floating display.
+	DE	Display end.
+	Df	Floating-display output control register.
+	De	Floating-display end-processing control register.
+	FG	Figure title.
+	Of	Figure-title style control register.
+	EQ	Equation display start.
+	EN	Equation display end.
+	Eq	Equation-label style control register.
+	EC	Equation caption.
+	TS	Table start.
+	T&	Redefine columns in a table.
+	TE	Table end.
+	TB	Table title.
+footnotes
+	FS	Footnote start.
+	FE	Footnote end.
+	FD	Footnote default format.
+	F	Footnote numbering string.
+headers
+	PH	Page header.
+	OH	Odd-page header.
+	EH	Even-page header.
+	PF	Page footer.
+	OF	Odd-page footer.
+	EF	Even-page footer.
+lists
+	AL	Automatic list.
+	BL	Bullet list.
+	DL	Dash list.
+	ML	Marked list.
+	RL	Reference list.
+	VL	Variable list.
+	LI	List item.
+	LE	List end.
+references
+	RS	Reference start.
+	RF	Reference end.
+	Rf	Reference numbering string.
+	RP	Reference page.
+	Rp	Reference-page title string.
+registers
+	C	Copy type (Original, DRAFT, etc.).
+	Cl	TOC heading level register.
+	De	Floating-display end-processing control register.
+	Df	Floating-display output control register.
+	Ej	Start-of-page heading level register.
+	Hb	Stand-alone heading level register.
+	Hc	Centering heading level register.
+	Hs	Trailing-blank-line heading level register.
+	Ht	Mark-concatenation heading control register.
+	Hu	Unnumbered-heading level register.
+	Pi	Paragraph-indent amount register.
+	Pt	Paragraph-indent control register.
+strings
+	DT	Date string.
+	F	Footnote numbering string.
+	HF	Heading-font control string.
+	Le	Equation-list title string.
+	Lf	Figure-list title string.
+	Lt	Table-list title string.
+	Rf	Reference numbering string.
+	Rp	Reference-page title string.
+styles
+	MT	Memorandum type.
+	TL	Memorandum title.
+	AS	Abstract start.
+	AE	Abstract end.
+	NS	Notation.
+	AU	Author identification.
+	AT	Author title.
+	FC	Formal closing.
+	SG	Signature.
+	ND	New date.
+	DT	Current-date string.
+AL	automatic list
+
+.AL [type] [indent] [1]
+	type	1, A, a, I, or i; if omitted, defaults to 1.
+	indent	Number of chars of indentation for list text.
+	1	List is to be single spaced.
+BL	bullet list
+
+.BL [indent] [1]
+	indent	Number of chars of indentation for list text.
+	1	List is to be single spaced.
+ML	mark list
+
+.ML mark [indent] [1]
+	mark	String to be used to mark list.
+	indent	Number of chars of indentation for list text.
+	1	List is to be single spaced.
+DL	dash list
+
+.DL [indent] [1]
+	indent	Number of chars of indentation for list text.
+	1	List is to be single spaced.
+RL	reference list
+
+.RL [indent] [1]
+	indent	Number of chars of indentation for list text.
+	1	List is to be single spaced.
+VL	variable list
+
+.VL indent [mark-indent] [1]
+	indent		Number of chars of indentation for list text.
+	mark-indent	Number of chars of indentation for mark.
+	1		List is to be single spaced.
+LI	list item
+
+.LI [mark] [1]
+	mark	Mark to be used on list item.
+	1	Given mark is to be used in addition to normal mark.
+LE	list end
+
+.LE [1]
+	1	The list is be followed by a blank line.
+DS	static display
+
+.DS [format] [fill] [rindent]
+	format	""		no indent
+		0 or L		no indent
+		1 or I		indent by standard amount
+		2 or C		center
+		3 or CB		center as a block
+	fill	""		no-fill mode
+		0 or N		no-fill mode
+		1 or F		fill mode
+	rindent		Amount of indentation from right margin.
+DF	floating display
+
+.DF [format] [fill] [rindent]
+	format	""		no indent
+		0 or L		no indent
+		1 or I		indent by standard amount
+		2 or C		center
+		3 or CB		center as a block
+	fill	""		no-fill mode
+		0 or N		no-fill mode
+		1 or F		fill mode
+	rindent		Amount of indentation from right margin.
+DE	end a display
+
+.DE
+Df	floating-display output control register
+
+.nr Df N
+	where N is	0	(default) No special action occurs.
+			1	A page eject will *always* follow the output
+				of each floating display, so only one floating
+				display will appear on a page and no text
+				will follow it.
+De	floating-display end-processing control register
+
+.nr De N
+	where N is
+		0	Floating displays will not be output until end of
+			section or end of document.
+		1	Output the new floating display on the current page,
+			if there is room, otherwise hold it until the end
+			of the document.
+		2	Output exactly one floating display from the queue
+			at the top of a new page or column (when in two-
+			column mode).
+		3	Output one floating display on current page if there
+			is room.  Output exactly one floating display at
+			the top of a new page or column.
+		4	Output as many displays as will fit, starting at the
+			top of a new page or column.  Note that if register
+			'De' is set to 1, each display will be followed by
+			a page eject, causing a new top-of-page to be reached
+			where at least one more display will be output.
+			(This also applies to value 5 below.)
+		5	(Default) Output  new floating display on the current
+			page if there is room.  Output at least one, but as
+			many displays as will fit starting at the top of a
+			new page or column.
+FG	Figure title.
+
+.FG [title] [override] [flag]
+	title		The title of the figure.
+	override	String used to modify the figure number.
+	flag	0	Use "override" as prefix to normal figure number.
+			Use "override" as prefix to normal figure number.
+		1	Use "override" as suffix to normal figure number.
+		2	Use "override" to replace normal figure number.
+Of	Figure-title style control register
+
+.nr Of N
+	where N is	0	Use "Figure N. Title" form.
+			1	Use "Figure N - Title" form.
+EQ	equation display start
+
+.EQ [label]
+	label	The label of the equation to appear at the "vertical center"
+		of the space used.
+EN	equation display end
+
+.EN
+Eq	Equation-label style control register.
+
+.nr Eq N
+	where N is	0	Label is to appear at right margin.
+			1	Label is to appear at left margin.
+EC	equation caption.
+
+.EC [title] [override] [flag]
+	title		The title of the figure.
+	override	String used to modify the figure number.
+	flag	0	Use "override" as prefix to normal figure number.
+			Use "override" as prefix to normal figure number.
+		1	Use "override" as suffix to normal figure number.
+		2	Use "override" to replace normal figure number.
+TS	table start
+
+.TS
+	Begin a table definition to be processed by TBL.  The basic format of
+	information in such a definition is as follows:
+		options ;
+		format .
+		data
+
+	The possible options are as follows:
+		center		Center the table (default is left adjust).
+		expand		Make table as wide as the current line length.
+		box		Enclose the table in a box.
+		allbox		Enclose each item in the table in a box.
+		doublebox	Enclose the table in two boxes.
+		tab(x)		Use x instead of tab to separate data items.
+		linesize(N)	Set lines or rules in N point type.
+		delim(xy)	Recognize x and y as "eqn" delimiters.
+
+	The possible format data are as follows:
+		L or l		A left-adjusted column entry.
+		R or r		A right-adjusted column entry.
+		C or c		A centered column entry.
+		N or n		A numerical column entry, to be aligned with
+				other numerical entries so that the units
+				digits of numbers line up.
+		A or a		An alphabetic subcolumn.  All corresponding
+				entries are aligned on the left and positioned
+				so that the widest is centered within the
+				column.
+		S or s		A spanned heading, i.e., the entry from the
+				previous row continues down through this
+				row.
+		^		A vertically spanned heading, i.e., the entry
+				from the previous row continues down through
+				this row.
+T&	Redefine columns in a table.
+
+.T&
+	This macro is used within a table to redefine its columns.  The
+	organization of information following this macro is as follows:
+		format .
+		data
+
+	Format has the same meaning as explained in the .TS macro.
+TE	table end
+
+.TE
+	This macro ends the table definition.
+TB	table title
+
+.TB [title] [override] [flag]
+	title		The title of the figure.
+	override	String used to modify the figure number.
+	flag	0	Use "override" as prefix to normal figure number.
+	      none	Use "override" as prefix to normal figure number.
+		1	Use "override" as suffix to normal figure number.
+		2	Use "override" to replace normal figure number.
+AS	abstract start
+
+.AS [arg] [indent]
+	arg	0	Abstract will appear on page 1 *and* on cover sheet
+			(if any) of external papers and Technical Memoranda.
+			With Memoranda for File and all other documents
+			(other than external letters) the abstract will appear
+			*only* on page 1, with no cover sheet being made.
+		1	Abstract will appear *only* on cover sheet (if any)
+			of external papers and Technical Memoranda.
+		2	With documents other than external letters, external
+			papers, and Memoranda for File, the abstract will
+			appear *only* on the cover sheet, which will be
+			produced automatically without the need for a .CS
+			macro.
+
+	indent	Amount of indentation from both left and right margins
+		for abstract.
+AE	abstract end
+
+.AE
+MT	memorandum type
+
+.MT [code]
+	code	""	no memorandum type is printed
+		0	no memorandum type is printed
+			MEMORANDUM FOR FILE
+		1	MEMORANDUM FOR FILE
+		2	PROGRAMMER'S NOTES
+		3	ENGINEER'S NOTES
+		4	Released-Paper style
+		5	External-Letter style
+	     "string"	string
+TL	Memorandum title.
+
+.TL [charging-case] [filing-case]
+	The actual title of the memo is entered on the lines following the
+	.TL macro, up to the next encountered macro.  A break request (.br)
+	can be used to break the title up into separate lines, if needed.
+NS	notation
+
+.NS [code]
+	code	""	Copy to
+		0	Copy to
+			Copy to
+		1	Copy (with att.) to
+		2	Copy (without att.) to
+		3	Att.
+		4	Atts.
+		5	Enc.
+		6	Encs.
+		7	Under Separate Cover
+		8	Letter to
+		9	Memorandum to
+	     "string"	Copy (string) to
+AU	author information
+
+.AU name [initials] [loc] [dept] [ext] [room] [arg] [arg] [arg]
+AT	author title
+
+.AT [title1] [title2] ... [title9]
+	titleN	The title lines to appear in the signature block, each
+		on a separate line.
+FC	formal closing
+
+.FC [closing]
+	closing		Closing to be used at the end of a letter.
+			Default is "Yours very truly,".
+SG	signature
+
+.SG [arg] [1]
+	arg	Initials of the typist.  Use "" if no such initials nor
+		leading hyphen is to be displayed.
+	1	Reference data (dept no., etc) is to be put on first author
+		line.  Default is to put this on the last author line.
+ND	Define a new date.
+
+.ND "New Date"
+	This macro allows the user to define a new date, which redefines
+	the contents of the DT string.  This date should be in the form
+	"Month Day, Year".
+RP	reference page
+
+.RP [arg1] [arg2]
+	arg1	0	Reset reference counter (default).
+		1	Do not reset reference counter.
+	arg2	0	Put on separate page (default).
+		1	Do not cause a following .SK .
+		2	Do not cause a preceding .SK .
+		3	No .SK before or after.
+FS	footnote
+
+.FS [label]
+	label	Label to be used to mark the footnote text.
+FE	end footnote
+
+.FE
+FD	footnote format
+
+.FD [arg] [1]
+		   hyphenation adjust text-indent  label-justification
+	arg	0	no	yes	yes		left   (troff default)
+		1	yes	yes	yes		left
+		2	no	no	yes		left
+		3	yes	no	yes		left
+		4	no	yes	no		left
+		5	yes	yes	no		left
+		6	no	no	no		left
+		7	yes	no	no		left
+		8	no	yes	yes		right
+		9	yes	yes	yes		right
+	       10	no	no	yes		right  (nroff default)
+	       11	yes	no	yes		right
+	    If arg null or omitted, the default value is used.
+
+	1	   First-level headings reset automatic footnote numbering.
+Cl	TOC heading level register.
+
+.nr Cl N
+	where N is the lowest heading level to be saved for the table
+	of contents.
+	Default: 2
+C	Copy type
+
+-nCn  (must be set on the command line)
+	where "n" is
+		0	(Default) Original.
+		1	OFFICIAL FILE COPY.
+		2	DATE FILE COPY.
+		3	DRAFT, single spaced, default paragraph style.
+		4	DRAFT, double spaced, 10-space paragraph indent.
+	Default: 2
+Ej	Start-of-page heading level register.
+
+.nr Ej N
+	where N is the lowest heading level that forces the start of a
+	new page.
+	Default: 0
+Hb	Stand-alone heading level register.
+
+.nr Hb N
+	where N is the lowest heading level that is stand alone, i.e., *not*
+	run together with the following text.
+	Default: 2
+Hc	Centering heading level register.
+
+.nr Hc N
+	where N is lowest heading level that is centered.
+	Default: 0
+Hs	Trailing-blank-line heading level register.
+
+.nr Hs N
+	where N is the lowest heading level after which there is a
+	blank line.
+	Default: 2
+Ht	Mark-concatenation heading control register.
+
+.nr Ht N
+	where N is	0	(default) if heading marks are to be
+				concatenated in the heading,
+			1	if only the current level mark is to be
+				displayed in the heading.
+Hu	Unnumbered-heading level register.
+
+.nr Hu N
+	where N is the heading level to be used by unnumbered headings (.HU).
+Pi	Paragraph-indent amount register.
+
+.nr Pi N
+	where N is the paragraph indent in characters (or ens).
+Pt	Paragraph-indent control register.
+
+.nr Pt N
+	where N is
+		0	if paragraphs are *never* indented,
+		1	if paragraphs are *always* indented, or
+		2	(default) if paragraphs are indented *except* after
+			headings, lists, and displays.
+F	Footnote numbering string
+
+\*F
+	This string is used in text wherever an automatically generated
+	footnote number is to be printed, followed immediately by the
+	footnote text between .FS and .FE macros.
+DT	date string
+
+\*(DT
+	Date in the form "Month Day, Year."
+HF	Heading-font control string.
+
+.ds HF 3 3 2 2 2 2 2
+	This string controls the fonts used by each heading level.  The
+	above is the default (levels 1 to 2 bold, 3 to 7 italic), where
+			1 indicates roman (regular)
+			2 indicates italic (underlined), and
+			3 indicates bold (overstruck) font.
+Rf	Reference numbering string.
+
+\*(Rf
+	This string is used in text wherever an automatically-generated
+	reference number is to be printed.  It should be followed immediately
+	by the reference text between .RS and .RF macros.
+RS	Reference start.
+
+.RS [string-name]
+	string-name	The name of a string that is to be assigned the
+			current reference number.  This allows multiple
+			uses of a given reference number in the text.
+RF	Reference end.
+
+.RF
+Rp	Reference-page title string.
+
+.ds Rp "New Title"
+	This string contains the title to be used on the reference page.
+	Default: "REFERENCES".
+Le	Equation-list title string.
+
+.ds Le "New Title"
+	This string contains the title to be used on the table of contents
+	Equations list.
+	Default: "LIST OF EQUATIONS".
+Lf	Figure-list title string.
+
+.ds Lf "New Title"
+	This string contains the title to be used on the table of contents
+	Figures list.
+	Default: "LIST OF FIGURES".
+Lt	Table-list title string.
+
+.ds Lt "New Title"
+	This string contains the title to be used on the table of contents
+	Tables list.
+	Default: "LIST OF TABLES".
+PH	Page header.
+
+.PH [arg]
+	where arg is of the form  "'left-part'center-part'right-part'"  and
+	it defines the three fields of the page header: the left-justified,
+	centered, and right-justified parts.  The single-quote delimiter
+	can be replaced throughout the arg by any other character.
+	Default: "''- \\\\nP - ''"
+EH	Even-page header.
+
+.EH [arg]
+	where arg is a string to appear on the next line after the header
+	on even-numbered pages.
+	Default: blank.
+OH	Odd-page header.
+
+.OH [arg]
+	where arg is a string to appear on the next line after the header
+	on odd-numbered pages.
+	Default: blank.
+PF	Page footer.
+
+.PF [arg]
+	where arg is a string to appear at the bottom of each page.
+	Default: blank.
+EF	Even-page footer.
+
+.EF [arg]
+	where arg is a string to be printed at the bottom of each
+	even-numbered page.
+	Default: blank.
+OF	Odd-page footer.
+
+.OF [arg]
+	where arg is a string to be printed at the bottom of each
+	odd-numbered page.
+	Default: blank.
+miscellaneous
+	SA	Justify the right margin.
+	2C	Two-column output.
+	1C	One-column output.
+fonts
+	I	Italic font.
+	B	Bold font.
+	R	Roman font.
+	IR	Italic/Roman fonts.
+	RI	Roman/Italic fonts.
+	IB	Italic/Bold fonts.
+	BI	Bold/Italic fonts.
+	RB	Roman/Bold fonts.
+	BR	Bold/Roman fonts.
+B	Bold font.
+
+.B [bold-arg] [previous-font-arg] [bold-arg] ...
+	When called without arguments, this macro changes the font to bold
+	until another font-macro is encountered that changes it to something
+	else.
+	When called with arguments (up to 6), the font alternates between
+	the bold and the previous font as it processes each argument,
+	contatenating the arguments together without space between them.
+	This is useful for producing words that are only partly emboldend.
+I	Italic font.
+
+.I [italic-arg] [previous-font-arg] [italic-arg] ...
+	When called without arguments, this macro changes the font to Italic
+	until another font-macro is encountered that changes it to something
+	else.
+	When called with arguments (up to 6), the font alternates between
+	the Italic and the previous font as it processes each argument,
+	contatenating the arguments together without space between them.
+	This is useful for producing words that are only partly Italicized.
+R	Roman font.
+
+.R
+	This macro changes the font to Roman.
+IB	Italic/Bold fonts.
+
+.IB [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]
+	This macro alternates between the Italic and bold fonts as it
+	processes each argument, contatenating the arguments together
+	without space between them.
+	This is useful for producing words that are partially in one font
+	and partially in another.
+BI	Bold/Italic fonts.
+
+.BI [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]
+	This macro alternates between the bold and Italic fonts as it
+	processes each argument, contatenating the arguments together
+	without space between them.
+	This is useful for producing words that are partially in one font
+	and partially in another.
+IR	Italic/Roman fonts.
+
+.IR [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]
+	This macro alternates between the Italic and Roman fonts as it
+	processes each argument, contatenating the arguments together
+	without space between them.
+	This is useful for producing words that are partially in one font
+	and partially in another.
+RI	Roman/Italic fonts.
+
+.RI [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]
+	This macro alternates between the Roman and Italic fonts as it
+	processes each argument, contatenating the arguments together
+	without space between them.
+	This is useful for producing words that are partially in one font
+	and partially in another.
+RB	Roman/Bold fonts.
+
+.RB [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]
+	This macro alternates between the Roman and bold fonts as it
+	processes each argument, contatenating the arguments together
+	without space between them.
+	This is useful for producing words that are partially in one font
+	and partially in another.
+BR	Bold/Roman fonts.
+
+.BR [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]
+	This macro alternates between the bold and Roman fonts as it
+	processes each argument, contatenating the arguments together
+	without space between them.
+	This is useful for producing words that are partially in one font
+	and partially in another.
+SA	Justify the right margin.
+
+.SA [arg]
+	where arg is
+		0	Sets the current and default justification flags
+			to "right justification off."
+		1	Sets the current and default justification flags
+			to "right justification on."
+	      none	Sets the current justification flag to the value
+			found in the default flag.
+2C	Two-column output.
+
+.2C
+	Begin two-column processing.
+1C	One-column output.
+
+.1C
+	Resume one-colume processing.
+headings
+	P	Paragraph.
+	Pt	Paragraph-style control register.
+	Pi	Paragraph-indent amount register.
+	Np	Numbered-paragraph control register.
+	nP	Numbered paragraph.
+	H	Numbered heading.
+	HU	Unnumbered heading.
+	Hu	Unnumbered-heading level register.
+	HF	Heading-font control string.
+	HM	Heading-mark style.
+	TC	Table of contents.
+	Cl	TOC heading level register.
+	Ej	Start-of-page heading level register.
+	Hb	Stand-alone heading level register.
+	Hc	Centering heading level register.
+	Hs	Trailing-blank-line heading level register.
+	Ht	Mark-concatenation heading control register.
+P	Paragraph.
+
+.P [type]
+	where type is
+		0	Force the paragraph to be left justified.
+		1	Force the paragraph to be indented.
+Np	Numbered-paragraph control register.
+
+.nr Np N
+	where N is
+		0	(default) Do not number the individual paragraphs.
+		1	Number the paragraphs within first level headings.
+nP	Numbered paragraph.
+
+.nP
+	Produce an alternate paragraph numbering style.  The paragraphs are
+	numbered within *second*-level headings, and the first *two* lines
+	of the paragraph are indented to better accentuate the numbers.
+H	Numbered heading.
+
+.H level [heading-text] [heading-suffix]
+	level		A number from 1 (highest) to 7 (lowest) indicating
+			the level of the given heading.
+	heading-text	The text to be used in the heading.
+	heading-suffix	The heading suffix which is to be appended to the
+			heading text but which should not appear in the
+			Table of Contents, such as footnote marks.
+HU	Unnumbered heading.
+
+.HU heading-text
+	This macro is similar to .H, except that no heading mark is printed
+	with the heading text.  The level of such headings is controlled by
+	the "Hu" number register.
+HM	Heading-mark style.
+
+.HM [arg1] [arg2] ... [arg7]
+	Each of the 7 arguments controls the printing style of the mark
+	of the corresponding heading level.  The legal values of the
+	arguments are as follows:
+		1	Arabic (default for all levels).
+	      0001	Arabic with enough leading zeros to get the specified
+			number of digits.
+		A	Upper-case alphabetic.
+		a	Lower-case alphabetic.
+		I	Upper-case Roman.
+		i	Lower-case Roman.
+TC	Table of contents.
+
+.TC [slevel] [spacing] [tlevel] [tab] [head1] [head2] [head3] [head4] [head5]
+	slevel	Lowest level of heading to be preceded by blank lines.
+		(Default: 1)
+	spacing	The number of blank lines to precede above headings.
+		(Default: 1)
+	tlevel	Lowest level of heading to have right-justified page numbers.
+		(Default: 2)
+	tab	0	(Default) Dots separate headings & page numbers.
+		1	Spaces separate headings & page numbers.
+	headN	Centered titles preceding the table of contents.
+CS	Cover sheet.
+
+.CS [pages] [other] [total] [figs] [tbls] [refs]
+	This macro generates a cover sheet in either the released paper or
+	Technical Memorandum style.  The automatically-generated numbers
+	for page count, figure count, table count, etc., can be overridden
+	by supplying arguments to this macro.  Such arguments are ignored
+	with the released-paper style.
+models
+	memo	Ordinary, basic memorandum.
+	memo2	Memorandum with footnotes, references, TOC, & appendices.
+memo	Ordinary, basic memorandum.
+	(Write this to a file and run mm on it to see how it works.)
+
+.SA 1
+.nr Pt 0
+.tr ~
+.TL 12003-1641 40288-700
+*** title of memo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.AU "G.V.E. Otto" GVEO IX 55633 1253 1G-307 55633-yymmdd.nnMF
+.AS 2
+*** abstract text
+.AE
+.NS
+*** people to get memo  (delete this section if Abstract is deleted)
+.NE
+.NS "abstract only"
+*** people to get abstract  (delete this section if Abstract is deleted)
+.NE
+.MT "MEMORANDUM FOR FILE"
+.H 1 "INTRODUCTION"
+*** what this memo is about
+.H 1 "*** body section title"
+*** body of memo
+.H 1 "CONCLUSION"
+*** what this memo was about
+.SG ""
+.NS 4
+*** list of attachments
+.NE
+.NS
+*** people to get memo  (delete this section if Abstract is used)
+.NE
+memo2	Memorandum with footnotes, references, TOC, & appendices.
+	(Write this to a file and run mm on it to see how it works.)
+
+.SA 1
+.nr Pt 0
+.tr ~
+.TL 12003-1641 40288-700
+*** title
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.AU "G.V.E. Otto" GVEO IX 55633 1253 1G-307 55633-yymmdd.nnMF
+.AS 2
+*** abstract
+.AE
+.NS
+*** people to get memo  (delete this section if Abstract is deleted)
+.NE
+.NS "abstract only"
+*** people to get abstract  (delete this section if Abstract is deleted)
+.NE
+.MT "MEMORANDUM FOR FILE"
+.H 1 "INTRODUCTION"
+*** what this memo is about
+.H 1 "*** body section title"
+*** body of memo
+.P
+This is an example\*(Rf
+.RS
+This is the first reference.
+.RF
+of how references can be used in a paper and then printed\*F
+.FS
+This is a footnote.
+.FE
+at the end of the paper.
+.H 1 "CONCLUSION"
+*** what this memo was about
+.SG ""
+.NS 4
+*** list of attachments
+.NE
+.NS
+*** people to get memo  (delete this section if Abstract is used)
+.NE
+.*
+.*  Reference page generated here.
+.RP 0 1
+.*
+.*  Set up for appendix processing.
+.nr Hu 1
+.HM A 1 1 1 1 1 1
+.nr H1 0
+.*
+.*  Define the appendix header macro: .aH
+.de aH
+.nr Hc 1
+.if !'\\$3'' .if \\$3 .nr P 0
+.PH "''''"
+.SK
+.HU "APPENDIX \\\\\\\\n(H1: \\$1"
+.ie '\\$2'' .PH "'APPENDIX \\\\\\\\n(H1:'- \\\\\\\\nP -'\\$1'"
+.el         .PH "'APPENDIX \\\\\\\\n(H1:'- \\\\\\\\nP -'\\$2'"
+..
+.*
+.*  Example use of .aH
+.*	First argument is title to appear on main page
+.*	Second argument is short title to appear in heading of all following
+.*		pages.  If omitted, this defaults to the first argument.
+.*	Third argument controls whether the appendix page numbering will
+.*		continue normally or restart at 1.
+.*			0	(Default) Continue normally.
+.*			1	Restart at one.
+.*
+.aH "MAIN TITLE OF TYPICAL ATTACHMENT" "SHORT TITLE" 1
+.*
+.* Table of contents generated here.
+.TC

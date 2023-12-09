@@ -1,0 +1,26 @@
+#ident "@(#) /sable/sdb/ra/sblib/menu/s.menu.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+#define NUM_OPTIONS     24
+#define L_MENU_ITEM     35
+#define HELP_LINES      6
+#define HELP_COLS       60
+
+struct  transition
+        {
+        Boolean_t (*action)(WINDOW *);
+        unsigned char next_state;
+        char menu_item[L_MENU_ITEM];
+        char help_message[HELP_LINES][HELP_COLS];
+        };
+struct menu
+        {
+        char heading[HELP_COLS];
+        struct transition opts[NUM_OPTIONS];
+        };
+
+unsigned short 
+       manage_menus(unsigned short current_state,struct menu state_table[]);
+extern Boolean_t noop(WINDOW *);
+      /* predefined action for specifying a null action for a 
+         particular transition */

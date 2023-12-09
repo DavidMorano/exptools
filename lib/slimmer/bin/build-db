@@ -1,0 +1,222 @@
+#	@(#)slimmer:build-db	1.17
+
+#
+#	This shell goesthrough the steps of
+#	creating a slimmer database
+#
+#       It is invoked by    
+#		build-db [parms] DBpath DBname
+#			-t build (compile) designator table
+#			-d build data (IPF) file
+#			-D Datafile
+#			-f build finger file
+#			-i build inverted files
+#		    -a  all the above
+#
+
+SORT=${SORT:-sort}
+SYSDIR=`logdir exptools`/lib/slimmer
+PATH=${PATH}:${SYSDIR}/bin export PATH
+# Change TMPDIR if have a device with more space than /usr/tmp
+TMPDIR=/usr/tmp
+TMPTERMS=${TMPDIR}/Terms$$
+SORTDIR=/tmp
+MIPARMS=""
+MTPARMS="-o ${TMPTERMS}"
+DATA=""
+GROWTH="0"
+SHARE="N"
+INV=NO
+#  make sure the parms are correct
+if test $# -eq 0
+then
+    echo "THis shell builds a slimmer database."
+    echo "It must be invoked with at least two parameters:"
+    echo "        build-db.sh   DBpath  DBname"
+    echo " where DBpath is the directory name where the database will reside."
+    echo " where DBname is the prefix indicating the name of the database."
+    exit 1
+    fi
+
+while test $# -gt 1
+do
+	case $1 in
+	-i)	INV="YES"; shift ;;
+	-T)	SORTDIR=$2; shift 2;;
+	-T*)	SORTDIR=`echo $1 | cut -c3-`; shift;;
+	-M)	MTPARMS="${MTPARMS} $2"
+		shift 2;;
+	-M*)	x=`echo $1 | cut -c3-`
+		MTPARMS="${MTPARMS} ${x}"
+		shift;;
+	-I)	MIPARMS="${MIPARMS} $2"
+		shift 2;;
+	-I*)	x=`echo $1 | cut -c3-`
+		MIPARMS="${MIPARMS} ${x}"
+		shift;;
+	-g)	GROWTH="$2"; shift 2;;
+	-g*)	GROWTH=`echo $1 | cut -c3-`; shift;;
+	-D)	DATA=$2
+		MIPARMS="${MIPARMS} -i ${DATA}"
+		FING=YES
+		DODATA=YES; shift 2;;
+	-D*)	DATA=`echo $1 | cut -c3-`
+		MIPARMS="${MIPARMS} -i ${DATA}"
+		FING=YES
+		DODATA=YES; shift;;
+	-d)     DODATA=YES; shift;;
+	-t)	DESIG=YES; shift;;
+	-f)	FING=YES; shift;;
+	-a)	DESIG=YES; FING=YES; INV=YES; DODATA=YES; shift;;
+	-*)	echo "Illegal parameter $1"; exit 1;;
+	*)	break;;
+	esac
+done
+
+# better be two parms left
+if test $# -ne 2
+then
+    echo "
+build-db.sh  must be invoked with at least two parameters:
+        build-db.sh   DBpath  DBname
+ where DBpath is the directory name where the database will reside.
+ where DBname is the prefix indicating the name of the database."
+
+    exit 1
+    fi
+DBpath="$1"
+DBname="$2"
+
+# check that DBpath is an existing directory
+if test ! -d ${DBpath}
+then
+    echo "${DBpath} is not a directory??"
+    exit 1
+    fi
+
+
+# check that the data file has stuff in it
+if test ! -z "${DATA}"
+then
+    if test ! -s ${DATA}
+    then
+	echo "The data file ${DATA} has no data??"
+	exit 1
+	fi
+    fi
+
+echo "Start $0: on ${DBpath}/${DBname} at `date`" >> ${DBpath}/build.audit
+
+INVPARMS="-g ${GROWTH}"
+# find out if shared memory used for this Database
+if egrep '^\$\$share' ${DBpath}/${DBname}.desig >/dev/null 2>&1
+then
+    SHARE="Y"
+    INVPARMS="${INVPARMS} -S"
+    if test "${FING}" = "YES"
+    then
+	if test "${DESIG}" != "YES"
+	then
+	    DESIG=YES
+	    echo "Rebuilding desig so new finger for share segment holding" >> ${DBpath}/build.audit
+	    fi
+	# this is to hold the inode number - for the shared segment link
+	mv ${DBpath}/${DBname}.fing ${DBpath}/Old.fing 2>>/dev/null
+	> ${DBpath}/Old.fing
+	fi
+    fi
+
+if test "${DESIG}" = "YES"
+then
+    echo "Makeing designator table"  >> ${DBpath}/build.audit
+    >${DBpath}/${DBname}.tab
+    if desmake ${DBpath}/${DBname}.desig ${DBpath}/${DBname}.fing ${DBpath}/${DBname}.tab ${DBpath}/desmake.report >> ${DBpath}/build.audit 2>&1
+    then :
+    else
+	echo "desmake broke in $0" >>${DBpath}/build.audit
+	exit 1
+	fi
+    fi
+
+if test "${DODATA}" = "YES"
+then
+    echo "Making the ipf from data file ${DATA}"  >> ${DBpath}/build.audit
+    if makeipf ${MIPARMS} ${DBpath} ${DBname} >>${DBpath}/build.audit 2>&1
+    then :
+    else
+	echo "makeipf broke in $0" >> ${DBpath}/build.audit 2>&1
+	exit 1
+	fi
+    fi
+
+# build the finger for the database
+if test "${DODATA}" = "YES" -o "${FING}" = "YES"
+then
+    echo "Making the finger for ${DBname} ipf"  >> ${DBpath}/build.audit
+    newfing ${DBpath}/${DBname}.ipf ${DBpath}/${DBname}.fing >> ${DBpath}/build.audit 2>&1
+    fi
+
+# see if that is all that is wanted
+if test ! "${INV}" = "YES"
+then
+    echo "End $0: on ${DBpath}/${DBname} at `date`" >> ${DBpath}/build.audit
+    if test -x ${DBpath}/build-end
+    then
+	 ${DBpath}/build-end  >> ${DBpath}/build.audit 2>&1
+	 fi
+    exit 0
+    fi
+
+if maketerms ${MTPARMS} ${DBpath} ${DBname} >> ${DBpath}/build.audit 2>&1
+then :
+else
+	echo "maketerms broke in $0" >> ${DBpath}/build.audit 2>&1
+	exit 1
+	fi
+
+# Sort 1st by term (1st field), the key numerically (2nd field)
+if ${SORT} +0 -1 +1n -2 -t -T ${SORTDIR} -o ${TMPTERMS} ${TMPTERMS} >> ${DBpath}/build.audit 2>&1
+then :
+else
+     echo "crash in ${SORT}. Unsorted terms left in ${TMPTERMS}" >> ${DBpath}/build.audit 2>&1
+     exit 1
+     fi
+mv ${TMPTERMS} ${TMPDIR}/${DBname}.sort
+
+if test "${SHARE}" = "Y"
+then
+    # this is to hold the inode number - for the shared segment link
+    mv ${DBpath}/${DBname}.inv ${DBpath}/Old.inv 2>>/dev/null
+    > ${DBpath}/Old.inv
+    fi
+
+# set proximity level for makeinv
+PROX=1
+# find out if shared memory used for this Database
+val=`egrep '^proximity' ${DBpath}/${DBname} 2>&1`
+if test $? -eq 0
+then
+    val=`echo $val | sed "s/^proximity[=: ]*\(.\).*/\1/"`
+    if test "${val}" = "W" -o "${val}" = "w"
+    then
+	PROX="-1"
+    elif test "${val}" = "N" -o "${val}" = "n"
+    then
+	PROX="0"
+	fi
+    fi
+# Lock this step where DB is corrupted
+if makeinv ${INVPARMS} -P ${PROX} -i ${TMPDIR}/${DBname}.sort ${DBpath}/${DBname}.inv ${DBpath}/${DBname}.post  >> ${DBpath}/build.audit 2>&1
+then :
+else
+     echo "crash in makeinv" >> ${DBpath}/build.audit 2>&1
+     exit 1
+     fi
+
+rm -f ${TMPDIR}/${DBname}.sort
+echo "End $0: on ${DBpath}/${DBname} at `date`" >> ${DBpath}/build.audit
+if test -x ${DBpath}/build-end
+then
+     ${DBpath}/build-end  >> ${DBpath}/build.audit 2>&1
+     fi
+exit 0

@@ -1,0 +1,785 @@
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    etermx - emacsterm terminal	program	for the	X Window System
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    eeeetttteeeerrrrmmmmxxxx [options] [-c command] [-I init seq]	arguments
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _e_t_e_r_m_x is a	terminal window	for workstations running  the  X
+	    Window  System.   _e_t_e_r_m_x creates a window on the screen that
+	    behaves   like    a	   630	  or	5620	layer	 running
+	    _e_m_a_c_s_t_e_r_m(EXPTOOLS).  _e_t_e_r_m_x adjusts the environment so that
+	    most screen	applications will run correctly	when run  in  an
+	    _e_t_e_r_m_x  window.   Certain programs,	such as	_e_m_a_c_s(EXPTOOLS),
+	    _g_m_a_c_s(EXPTOOLS),	_g_n_u_e_m_a_c_s(EXPTOOLS),    _c_s_c_o_p_e(EXPTOOLS),
+	    _v_s_h(EXPTOOLS),  and	_v_i_4_v_i_t_e_r_m(EXPTOOLS) exploit special ter-
+	    minal capabilities provided	by _e_t_e_r_m_x to control the  mouse,
+	    scrollbar, and highlighting.  Most of the features of _e_t_e_r_m_x
+	    are	the same as those of _e_m_a_c_s_t_e_r_m,	and can	be found in  the
+	    manual  pages for that tool.  This manual page describes the
+	    unique features of _e_t_e_r_m_x.	SS Getting Started If  you  want
+	    to	run  _e_m_a_c_s  and	 use commands containing ^S/^Q,	you will
+	    need your own $_H_O_M_E/._e_m_a_c_s__i_n_i_t  file.   The  file	contains
+	    initialization  commands for _e_m_a_c_s and overrides the default
+	    initialization.  If	you already have such a	file, make  sure
+	    it contains	the line:
+
+		 ^X^Mcontrolify
+
+	    (Note: ^X and ^M should be real control characters,	 entered
+	    with  ^\^X	and  ^\^M under	_e_m_a_c_s.)	 If you	must create this
+	    file and wish  to  retain  the  default  initialization  for
+	    _e_m_a_c_s, put the above line in the file followed by:
+
+		 ^X^I~EMACS/.emacs_init
+
+	    (Note that ^I will display as a big	blank space, not as ^I.)
+	    The	 default  initialization  will	run _e_m_a_c_s with the _b_a_s_i_c
+	    mouse interface.  You  may	want  to  consider  one	 of  the
+	    enhanced  interfaces described in the Emacs	Menus and Scroll
+	    Bar	section.
+
+	    _e_t_e_r_m_x creates a new window	and runs a shell or other speci-
+	    fied  program in it.  Attributes of	the _e_t_e_r_m_x window can be
+	    controlled through command line arguments or through  the  X
+	    resources  mechanism  as  described	 in subsequent sections.
+	    The	options	and  resources	are  generally	compatible  with
+	    _x_t_e_r_m(1) where _e_t_e_r_m_x provides comparable functionality.
+
+	    _e_t_e_r_m_x is known to run under X11R3,	X11R4, and  OpenWindows.
+	    A  variety	of  window  managers and screen	initializers are
+	    available under X.	The  configuration  files  used	 by  the
+
+
+       ift			  vs 0p
+
+
+       Page 1						(printed 2/4/93)
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    different  window  managers	and setup scripts vary consider-
+	    ably.  The following sections describe  how	 to  add  _e_t_e_r_m_x
+	    windows  to	 the files used	by _x_i_n_i_t(1) and	_t_w_m(1),	and with
+	    _o_p_e_n_w_i_n(1) and _o_l_w_m(1), the	most commonly  used  combination
+	    at my site.	 Others	will be	similar.
+
+	  SSSSeeeettttttttiiiinnnngggg uuuupppp ttttoooo	uuuusssseeee _e_t_e_r_m_x wwwwiiiitttthhhh	_t_w_m
+	    To create an _e_t_e_r_m_x	window as part of  your	 default  confi-
+	    guration,  simply  put  a  line  like  the following in your
+	    $_H_O_M_E/._x_i_n_i_t_r_c file:
+
+		 etermx	=700x400+450+450 &
+
+	    The	numbers	after '='  specify  the	 window	 dimensions  and
+	    position  in  pixels  as  described	below under command line
+	    options.  If you wish to make one of your _e_t_e_r_m_x windows the
+	    console,  on  which	 messages  from	X will appear, give that
+	    _e_t_e_r_m_x the ----CCCC option, and a	suitable title (e.g. CCCCoooonnnnssssoooolllleeee) as
+	    described  below under options.  (Be sure that only	one win-
+	    dow	is designated as the console.)	To add a menu  entry  to
+	    run	 create	 an  _e_t_e_r_m_x  window,  add  the following to your
+	    $_H_O_M_E/._t_w_m_r_c file in one of	the menus:
+
+		 "etermx"	!"etermx &"
+
+	    You	probably want to look at the entry for _x_t_e_r_m and put the
+	    _e_t_e_r_m_x entry next to it.
+
+	  SSSSeeeettttttttiiiinnnngggg uuuupppp ttttoooo	uuuusssseeee _e_t_e_r_m_x wwwwiiiitttthhhh	_o_p_e_n_w_i_n
+	    With _o_p_e_n_w_i_n, the initial applications to be run can be  put
+	    in	either	$_H_O_M_E/._x_i_n_i_t_r_c	or  in $_H_O_M_E/._o_p_e_n_w_i_n-_i_n_i_t.  The
+	    latter is probably preferred.  As with _t_w_m,	 simply	 put  in
+	    lines to create your _e_t_e_r_m_x	windows:
+
+		 etermx	=700x400+450+450 &
+
+	    Again, you can use the ----CCCC option to	make one of the	 windows
+	    be	the console provided you do not	also create another win-
+	    dow	as the console.
+
+	    You	will also want to add options to your  OpenWindows  menu
+	    to	create	_e_t_e_r_m_x windows.	 The menu is described in a file
+	    $_H_O_M_E/._o_p_e_n_w_i_n-_m_e_n_u.  If you don't have  such  a  file,  see
+	    your  local	 documentation on OpenWindows for information on
+	    setting up your own	menus.	The menu file contains a  number
+	    of	menu  definitions, each	one consisting of a list of menu
+	    labels and commands.  You can add an  entry	 for  _e_t_e_r_m_x  by
+	    adding a line like:
+
+		 "Etermx Tool..."	  exec etermx
+
+	    By default,	OpenWindows applications come up with black text
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    on	a  white  background,  while  other X servers and window
+	    managers generally default to white	text on	 a  black  back-
+	    ground.   Use  the	_r_v  option to change the way your _e_t_e_r_m_x
+	    windows display if you like.
+
+	    You	can cut	and  paste  between  _e_t_e_r_m_x  windows  and  other
+	    OpenWindows	 applications,	but it takes some effort because
+	    the	cut/paste interface for	OpenLook and _e_t_e_r_m_x are	not  the
+	    same.   To	move  text  from an OpenLook window to an _e_t_e_r_m_x
+	    window is easy, simply  select  the	 text  to  move	 in  the
+	    OpenWindows	 window,  move to the _e_t_e_r_m_x window, and use the
+	    "send" menu	to paste  it.	To  move  text	from  _e_t_e_r_m_x  to
+	    OpenWindows,  you  must first select it, then copy it to the
+	    clipboard by sending the escape sequence <escape>v2	 to  the
+	    _e_t_e_r_m_x window.  The	text can then be pasted	into an	OpenWin-
+	    dows application.  You can also copy text from the clipboard
+	    to	an  _e_t_e_r_m_x  window  by	sending	 the window the	sequence
+	    <escape>v6.	 If you	use openwindows	frequently, you	may want
+	    to re-program the menus and	function keys for _e_t_e_r_m_x to make
+	    this more natural.	For example, the following commands
+
+		 echo "<escape>M2!To Clipboard!##<escape>v2!"
+		 echo "<escape>M3!From Clipboard!##<escape>v6!"
+
+	    will program two new entries on the	shell menu to copy  text
+	    to	or  from the clipboard for use in copying between _e_t_e_r_m_x
+	    and	OpenWindows applications.
+
+	  CCCCoooommmmmmmmaaaannnndddd LLLLiiiinnnneeee AAAArrrrgggguuuummmmeeeennnnttttssss
+	    _e_t_e_r_m_x takes several command line arguments	that control the
+	    display of the window.
+
+	    ----vvvv,	----eeee	 These options force _e_t_e_r_m_x to bring up	the win-
+			 dow  as either	a _v_i_t_e_r_m (----vvvv) or an _e_m_a_c_s_t_e_r_m (----
+			 eeee) window.  The two behave essentially	 identi-
+			 cally	except	for behaviors which _e_m_a_c_s and _v_i
+			 enable	 and  disable  automatically,  whichever
+			 type  is  used,  and these options are	not nor-
+			 mally needed.
+	    ----cccc _c_o_m_m_a_n_d	 Normally, _e_t_e_r_m_x will run a  shell  ($$$$SSSSHHHHEEEELLLLLLLL  or
+			 _k_s_h) in the window it creates.	 If ----cccc is given,
+			 it specifies an alternate application to run in
+			 the window.
+	    ----IIII _i_n_i_t	 If this option	is specified, the argument  fol-
+			 lowing	 it is taken as	a text string to be sent
+			 to  the  application  run  in	the  window   on
+			 startup.
+	    ----CCCC		 If present,  this  argument  makes  the  window
+			 become	 the  console for the workstation.  Only
+			 one window should be started this way.	 Operat-
+			 ing  system  and window system	messages will be
+			 printed in this window.
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    ----ssssbbbb		 Display the scrollbar (default).
+	    ++++ssssbbbb		 Do not	display	a scrollbar.
+	    ----ssssllll	_l_i_n_e_s	 Sets the approximate number of	off-screen lines
+			 of history to be retained.  The setting is only
+			 approximate.  If the lines displayed are short,
+			 more  than  this number of lines will be saved.
+			 If the	lines are long,	 fewer	will  be  saved.
+			 This	 setting   overrides   the   _h_i_s_t_o_r_y_S_i_z_e
+			 resource.
+	    ----uuuutttt		 Don't write an	entry in /etc/utmp for this win-
+			 dow.	Normally etermx	creates	a utmp entry for
+			 each window it	creates.
+	    ++++uuuutttt		 Do write an entry in /etc/utmp	for this window.
+			 This	option	overrides  the	setting	 of  the
+			 _u_t_m_p_I_n_h_i_b_i_t resource.
+	    ----nnnnooooffffoooorrrrkkkk	 Tells etermx not to create a  new  process  and
+			 shell,	 but  instead  to assume that a	shell is
+			 connected to it's  standard  input  and  output
+			 already,  and	to  simply create the new window
+			 for it.  This option is intended for  interfac-
+			 ing Jg	with special environments.
+	    ----nnnnooooppppaaaaggggeeee	 Do  not  stop	output	after  each  page.   The
+			 default action	is to stop output and wait for a
+			 character to be typed after each full	page  of
+			 output	with no	intervening input.
+	    ----nnnnoooobbbblllliiiinnnnkkkk	 Do not	blink the cursor when the window has the
+			 input focus.  Normally	the window cursor of the
+			 window	with the input focus (the one  to  which
+			 typed	characters will	be sent) will blink when
+			 the window is idle.  If this option is	set  the
+			 cursor	will not blink.
+	    ====_w_i_n_d_o_w_s_p_e_c	 You can give the dimensions of	 the  window  to
+			 create		 in	     the	  format
+			 ====_w_i_d_t_hxxxx_h_e_i_g_h_t++++_x-_c_o_o_r_d_i_n_a_t_e++++_y-_c_o_o_r_d_i_n_a_t_e.    The
+			 coordinates  are in pixels, with the upper left
+			 hand corner of	the  screen  being  0,0.   These
+			 coordinates do	not include the	window label and
+			 border, if any, which are added by  the  window
+			 manager.
+	    ----ffffnnnn	_f_o_n_t	 Specify the default font  for	the  window.   A
+			 complete   font   name	  must	be  given  (e.g.
+			 ----aaaaddddoooobbbbeeee----ccccoooouuuurrrriiiieeeerrrr----bbbboooolllldddd----oooo----nnnnoooorrrrmmmmaaaallll--------11110000----111100000000----77775555----77775555----mmmm----66660000----iiiissssoooo8888888855559999----1111).
+	    ----ffffgggg	_c_o_l_o_r	 Specify the foreground	color  for  the	 window.
+			 This is the color of the characters.  The color
+			 name must be a	name recognized	by X or	an r, g,
+			 b value (r, g,	b being	integers 0-255).
+	    ----mmmmssss	_c_o_l_o_r	 Specify the foreground	color for the mouse cur-
+			 sor.	The color name must be a name recognized
+			 by X or an  r,	 g,  b	value  (r,  g,	b  being
+			 integers 0-255).
+	    ----bbbbdddd	_c_o_l_o_r	 Specify the color  for	 the  border.	This  is
+			 frequently  over-ridden by the	window manager's
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+			 color scheme for window borders.
+	    ----bbbbgggg	_c_o_l_o_r	 Specify the background	color for the window.
+	    ----bbbb _n_u_m_b_e_r	 Specify the width of the inner	border	(between
+			 the text and the window edge) of the window.
+	    ----bbbbssss		 Use "backing store" for this window.  Normally,
+			 _e_t_e_r_m_x	 re-draws any portion of the window that
+			 has been hidden by another window or by  iconi-
+			 fying	the  window  when  it  is exposed again.
+			 With backing store, the contents of the  window
+			 are  retained by the X	server (your terminal or
+			 workstation)  when  it	 is  not   visible   and
+			 automatically	restored  when	it  is	exposed.
+			 Backing store will make the display faster, but
+			 also  consumes	 memory	 in  your workstation or
+			 terminal and may cause	you to run  out	 if  you
+			 have a	lot of windows.
+	    ----bbbbwwww	_n_u_m_b_e_r	 Specify the width of the outer	border (the area
+			 between  _e_t_e_r_m_x  and  the  background.	 This is
+			 frequently over-ridden	by the window  manager's
+			 treatment of the window border.
+	    ----rrrrvvvv		 Reverse the foreground	and background.
+	    ----ttttiiiittttlllleeee _l_a_b_e_l Specify the window title or label.   The  title
+			 will  generally appear	as the window label, and
+			 the label for the icon	of the window.
+	    ----nnnnaaaammmmeeee	 Specify the tool name.	 The name will	be  used
+			 instead  of  _e_t_e_r_m_x for fetching resources (see
+			 below), and will also be used for the label and
+			 icon  name  unless  overridden	 by a subsequent
+			 argument.
+	    ----iiiiccccoooonnnniiiicccc	 Create	the window in  iconic  state.	Normally
+			 new  _e_t_e_r_m_x windows will be created in	the nor-
+			 mal "open" state.
+	    ----ggggeeeeoooommmmeeeettttrrrryyyy _g_e_o_m_e_t_r_y
+			 Specify the geometry of the  window  where  the
+			 following geometry argument is	as above, except
+			 that the window height	and width are  given  in
+			 characters, not pixels.  The window position on
+			 the screen is given in	pixels as above.
+	    ----WWWWPPPP	_x__p_o_s _y__p_o_s
+			 Specify the default position for the  icon  for
+			 the  _e_t_e_r_m_x  window,  provided	 that the window
+			 manager being used  honors  the  request  (most
+			 do).
+	    ----ddddiiiissssppppllllaaaayyyy _d_i_s_p_l_a_y _s_p_e_c
+			 Specify the display on	which the window  is  to
+			 be  created.	This can be used to cause _e_t_e_r_m_x
+			 to create a window on another workstation, pro-
+			 vided	that the workstation on	which the window
+			 is to be created is running the X  server,  and
+			 the workstation on which _e_t_e_r_m_x is run	has been
+			 authorized to access it.  A _d_i_s_p_l_a_y _s_p_e_c is  of
+			 the  form  _w_o_r_k_s_t_a_t_i_o_n:_n_u_m_b_e_r,	 where _n_u_m_b_e_r is
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+			 usually 0  for	 a  workstation	 with  only  one
+			 screen.
+	    ----lllliiii		 Enable	input  logging	for  this  window.   All
+			 input	typed  to  the window is saved in a file
+			 (see section on logging for details).
+	    ----llll		 Enable	output loggin for this window.	All out-
+			 put sent to the window	will be	logged in a file
+			 (see section on logging for details).
+	    ----llllffff	<file_pathname>
+			 Set the output	logging	file path name for  this
+			 session to <file_pathname>.  This overrides the
+			 default name  for  the	 output	 file  log.   If
+			 <file_pathname>  does not begin with '/', it is
+			 interpreted relative to the directory in  which
+			 _e_t_e_r_m_x	is run.
+	    le_pathname> Set the input loggin file path	 name  for  this
+			 session  to  <file_pathname>.	As above, if the
+			 name does not start with '/' it is  interpreted
+			 relative  to  the  directory in which _e_t_e_r_m_x is
+			 run.
+
+	  IIIInnnniiiittttiiiiaaaalllliiiizzzziiiinnnngggg ffffrrrroooommmm XXXX RRRReeeessssoooouuuurrrrcccceeeessss
+	    A second way to control attributes of the window is	 through
+	    the	X resources mechanism.	To do this, create and load an X
+	    resources file (it can be done using  _x_r_d_b(1)  defining  the
+	    appropriate	 resources  below).   Resource	definitions  are
+	    overridden by command line argument	values,	 when  both  are
+	    present.  The definitions should be	of the form:
+
+		 etermx*Resource:    value
+
+	    Here are the supported resources:
+
+	    FFFFoooorrrreeeeggggrrrroooouuuunnnndddd	  Color	for foreground (defaults to black)
+	    BBBBaaaacccckkkkggggrrrroooouuuunnnndddd	  Color	for background (defaults to white)
+	    ppppooooiiiinnnntttteeeerrrrCCCCoooolllloooorrrr  Color	for mouse cursor (defaults to foreground
+			  color)
+	    FFFFoooonnnntttt	  Character font (defaults to _f_i_x_e_d)
+	    hhhhiiiissssttttoooorrrryyyySSSSiiiizzzzeeee	  Size of the  scrollable  history  to	keep  in
+			  bytes
+	    uuuuttttmmmmppppIIIInnnnhhhhiiiibbbbiiiitttt	  Inhibit the creation of an entry in  /etc/utmp
+			  for this session
+	    llllooooggggggggiiiinnnngggg	  Enable logging of output to the window
+	    iiiinnnnppppuuuuttttLLLLooooggggggggiiiinnnngggg  Enable logging of input typed	to the window
+	    llllooooggggFFFFiiiilllleeee	  Set the name of the file to be used  for  log-
+			  ging	 output.   The	resource  overrides  the
+			  default name,	but can	be overridden by command
+			  line arguments
+	    llllooooggggIIIInnnnppppuuuuttttFFFFiiiilllleeee  Set the name of the file to be used  for  log-
+			  ging input.
+
+	  SSSShhhheeeellllllll	MMMMeeeennnnuuuu aaaannnndddd SSSSccccrrrroooollllllll	BBBBaaaarrrr
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    _e_t_e_r_m_x  windows  can  be  configured  with	or   without   a
+	    scrollbar,	and  with  the	scroll	bar  left or right.  The
+	    scrollbar behaves much like	_e_m_a_c_s_t_e_r_m's scroll bar.	  _e_t_e_r_m_x
+	    retains  a	text  buffer that holds	recently displayed text,
+	    and	the shaded area	the region of  the  scrollbar  indicates
+	    what  region  of  _e_t_e_r_m_x's	buffer	is currently filled with
+	    text.  The solid bar indicates what	 part  of  the	buffered
+	    text is actually displayed on the screen.  Depressing button
+	    1 over one of the arrows will cause	the window to scroll  up
+	    or	down.	(The scroll will repeat	as long	as you hold down
+	    the	button).  Clicking button 1 in the bar	above  or  below
+	    the	 highlighted  region  will  cause the text to page up or
+	    down.  Depressing button 1	over  the  highlighted	bar  and
+	    dragging  it  up  or down will cause the text to move to the
+	    indicated position.	 There are also	entries	on  the	 HHHHiiiissssttttoooorrrryyyy
+	    sub-menu that can be used to control scrolling.
+
+	    Clicking button 1 or  2  over  text	 display  selects  text.
+	    Clicking  twice  will  select  the	word  at the spot of the
+	    click, clicking 3 times will select	the line,  and	clicking
+	    more times selects multiple	lines.	You can	also sweep out a
+	    block of text with the mouse.
+
+	    The	menu structure	under  the  shell  is  also  similar  to
+	    _e_m_a_c_s_t_e_r_m,	and  is	 accessed  with	 the right button of the
+	    mouse.  The	menu is	organized as a tree, with  menu	 entries
+	    that  have sub menus showing a right pointing arrow	-> after
+	    the	entry.	Dragging the mouse to  the  right  of  the  menu
+	    causes  the	 sub-menu  to  appear.	 Entries  that	are  not
+	    currently available	(like re-positioning the scrollbar  when
+	    the	bar is not enabled) appear in faint text.
+
+	    The	SSSSeeeennnndddd entry sends the current  _s_e_l_e_c_t_i_o_n	 in  any  window
+	    (generally	something  you	swept out with the mouse).  Text
+	    can	be cut and pasted between windows this way.   There  are
+	    some variations in how to do this listed below under cut and
+	    paste.
+
+	    The	HHHHiiiissssttttoooorrrryyyy	sub-menu contains functions for	manipulating the
+	    saved  text.   CCCClllleeeeaaaarrrr  clears  the  screen and the history of
+	    saved text,	while RRRReeeessssttttoooorrrreeee puts the cursor back at the end of
+	    the	saved text.  The rest should be	self-explanatory.
+
+	    The	WWWWiiiinnnnddddoooowwww sub-menu	contains functions for manipulating  the
+	    current window.  The SSSSccccrrrroooollllllllbbbbaaaarrrr, CCCCuuuurrrrssssoooorrrr, and	PPPPaaaaggggiiiinnnngggg sub-menus
+	    control the	placement of the scrollbar, the	display	 of  the
+	    cursor, and	whether	or not _e_t_e_r_m_x will block output	when the
+	    page is full.  There are 3 PPPPaaaaggggiiiinnnngggg options: SSSSttttoooopppp, which stops
+	    and	 waits for you to type something when full; CCCClllleeeeaaaarrrr, which
+	    also stops,	but clears the screen after you	type to	 release
+	    it	rather	than  scrolling	 more  text onto the screen; and
+	    NNNNoooonnnneeee, which	allows text  output  to	 continue  indefinitely.
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    The	 LLLLooooggggggggiiiinnnngggg  menu has entries to control loggin of	input or
+	    output to a	file.  (See the	section	on Logging for details).
+	    The	 FFFFrrrraaaammmmeeee menu has	entries	to control the window, including
+	    moving it to the front or back, closing (iconifying) it, and
+	    resetting  the  window size	to one of 3 standard sizes.  The
+	    FFFFoooonnnnttttssss menu contains	some standard  font  options.	The  SSSSeeeetttt
+	    SSSSiiiizzzzeeee  menu	entry sends a command to the window to reset the
+	    environment	to track the current window  size.   It	 can  be
+	    useful if the window is logged into	another	system that can-
+	    not	directly determine your	 window	 size.	 Note  that  SSSSeeeetttt
+	    SSSSiiiizzzzeeee, FFFFoooonnnntttt changes,	and FFFFrrrraaaammmmeeee size changes all cause reshap-
+	    ing	commands to be sent to the window  and	should	be  done
+	    only  when the window is running the _s_h_e_l_l or _e_m_a_c_s.  All of
+	    the	menus can be customized	 as  indicated	in  the	 SPECIAL
+	    FEATURES section.
+
+	  EEEEmmmmaaaaccccssss	MMMMeeeennnnuuuussss aaaannnndddd SSSSccccrrrroooollllllll BBBBaaaarrrr
+	    In _e_m_a_c_s, the scroll bar does not show a grey  region.   The
+	    bar	 shows	the proportion of the buffer currently displayed
+	    on the screen.  Again, clicking or dragging	 button	 1  over
+	    the	scrollbar or arrows moves the currently	displayed region
+	    (and the cursor).
+
+	    The	behavior of the	mouse buttons over text	depends	 on  the
+	    macro package you are using.  There	are 3 choices: the _b_a_s_i_c
+	    package, _e_t_e_r_m-_t_r_e_e, and _e_t_e_r_m_2.  These are	described in the
+	    _e_m_a_c_s_t_e_r_m  manual  page.  To load one of the other packages,
+	    include	  either       ^^^^XXXX^^^^LLLL~~~~EEEEMMMMAAAACCCCSSSS////mmmmaaaaccccrrrroooossss////eeeetttteeeerrrrmmmm2222	      or
+	    ^^^^XXXX^^^^LLLL~~~~EEEEMMMMAAAACCCCSSSS////mmmmaaaaccccrrrroooossss////aaaauuuuttttooooeeeetttteeeerrrrmmmm	  (for	 _e_t_e_r_m-_t_r_e_e)   in   your
+	    $_H_O_M_E/._e_m_a_c_s__i_n_i_t file after ^^^^XXXX^^^^IIII~~~~EEEEMMMMAAAACCCCSSSS////....eeeemmmmaaaaccccssss____iiiinnnniiiitttt.
+
+	  RRRRuuuunnnnnnnniiiinnnngggg RRRReeeemmmmooootttteeee AAAApppppppplllliiiiccccaaaattttiiiioooonnnnssss
+	    One	very nice benefit of _e_t_e_r_m_x is that it allows you to use
+	    the	 mouse	with  applications run on remote systems via any
+	    combination	of _c_u, _r_l_o_g_i_n, _d_k, etc.	 If you	run  the  remote
+	    login  command  in	an  _e_t_e_r_m_x window (either with eeeetttteeeerrrrmmmmxxxx ----cccc
+	    rrrrllllooooggggiiiinnnn or from a shell running  under  _e_t_e_r_m_x),  the  remote
+	    system can control your window via escape sequences.  To get
+	    this setup properly, on the	remote system  you  must  invoke
+	    the	 SSSSeeeetttt SSSSiiiizzzzeeee function from	the WWWWiiiinnnnddddoooowwww menu.  Alternatively,
+	    you	can include a command that echoes the character	sequence
+	    eeeessssccccaaaappppeeee----aaaa to	the terminal as	part of	your startup.  This will
+	    cause _e_t_e_r_m_x to send a command sequence to set up the LLLLIIIINNNNEEEESSSS,
+	    CCCCOOOOLLLLUUUUMMMMNNNNSSSS,  TTTTEEEERRRRMMMM,  TTTTEEEERRRRMMMMCCCCAAAAPPPP, and TTTTEEEERRRRMMMMIIIINNNNFFFFOOOO variables.  Note that
+	    the	remote system should be	set up the same	 way  that  your
+	    home  system is (i.e. $_H_O_M_E/._e_m_a_c_s__i_n_i_t constructed	properly
+	    and	the environment	set up as described above).
+
+	    When you are logged	in remotely, you can use the  mouse/menu
+	    features  of  _e_t_e_r_m_x  just as you can locally.  You	can also
+	    resize the window (either from the menu or from  the  window
+	    manager  on	 your  local system).  When you	resize,	however,
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    make sure that the remote system is	sitting	 at  the  shell,
+	    otherwise it will get confused about the window size.  If it
+	    seems to have the size wrong, return to the	shell and invoke
+	    the	SSSSeeeetttt SSSSiiiizzzzeeee menu entry.
+
+       SSSSPPPPEEEECCCCIIIIAAAALLLL FFFFEEEEAAAATTTTUUUURRRREEEESSSS
+	    The	features provided by _e_t_e_r_m_x are	basically  the	same  as
+	    those provided by _e_m_a_c_s_t_e_r_m, with these additions.
+
+	  WWWWiiiinnnnddddoooowwww CCCCoooonnnnttttrrrroooollll
+	    _e_t_e_r_m_x implements escape sequences for controlling the  win-
+	    dow.   These  allow	 an application	or a menu to reshape the
+	    window, iconify it,	 or  take  other  actions.   The  escape
+	    sequences and the actions are:
+
+	    eeeessssccccaaaappppeeee----[[[[2222tttt	    Iconify (close)  window.   (Note  that  some
+			    window  managers  do  not  allow programs to
+			    iconify themselves this way).
+	    eeeessssccccaaaappppeeee----[[[[4444;;;;yyyy;;;;xxxxtttt  Set	window size to _x by _y in pixels.
+	    eeeessssccccaaaappppeeee----[[[[5555tttt	    Put	this window on top  of	any  overlapping
+			    windows.
+	    eeeessssccccaaaappppeeee----[[[[6666tttt	    Put	this window underneath	any  overlapping
+			    windows.
+	    eeeessssccccaaaappppeeee----[[[[8888;;;;yyyy;;;;xxxxtttt  Set	window size to	_x  by  _y  characters  in
+			    current font.
+
+	  FFFFoooonnnnttttssss
+	    _e_t_e_r_m_x allows you to change	the font used to display charac-
+	    ters  using	 an escape sequence.  The sequence is similar to
+	    that used with _e_m_a_c_s_t_e_r_m, but not quite the	 same,	and  the
+	    actual  selection  of fonts	available depends on your window
+	    system and the fonts installed on your  machine.   When  the
+	    terminal  receives the sequence eeeessssccccaaaappppeeee----&&&&FFFF!!!!ffffoooonnnnttttnnnnaaaammmmeeee!!!!, it will
+	    set	the font to the	named font and change  the  window  size
+	    and	   line	   spacing    to    match.    If   it	receives
+	    eeeessssccccaaaappppeeee----&&&&ffff!!!!ffffoooonnnnttttnnnnaaaammmmeeee!!!!, it will set the font but not reset  the
+	    window  size or line spacing.  This	could allow one	to build
+	    an application that	uses multiple fonts, providing that  the
+	    character  sizes of	the fonts are compatible.  The font name
+	    must       be	the	   full	       name	   (e.g.
+	    -_a_d_o_b_e-_c_o_u_r_i_e_r-_b_o_l_d-_o-_n_o_r_m_a_l--_1_0-_1_0_0-_7_5-_7_5-_m-_6_0-_i_s_o_8_8_5_9-_1).
+	    Using anything other than fixed width fonts	will cause trou-
+	    ble.
+
+	  FFFFuuuunnnnccccttttiiiioooonnnn KKKKeeeeyyyyssss
+	    eeeessssccccaaaappppeeee----FFFF!!!!kkkkeeeeyyyy----nnnnaaaammmmeeee!!!!kkkkeeeeyyyy----vvvvaaaalllluuuueeee!!!! programs the key named	by  _k_e_y-
+	    _n_a_m_e  (e.g.	 FFFF7777  or	RRRR11110000) to	send the value _k_e_y-_v_a_l_u_e.  Any X
+	    Keysym name	can be used for	the key	 name.	 Note  that  the
+	    arrow  keys	 on  sun  keyboards must be programmed as "Left,
+	    Right, Up, and Down", and not by their  Function  key  names
+	    (R8, etc).	If _k_e_y-_v_a_l_u_e is	prefixed by two	# characters, it
+	    is treated as if _e_t_e_r_m_x had	received it from the host.
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	  CCCCoooolllloooorrrr
+	    On a color display,	_e_t_e_r_m_x allows you to  change  the  fore-
+	    ground   and  background  colors  with  an	escape	sequence
+	    (eeeessssccccaaaappppeeee----xxxx!!!!ffffoooorrrreeeeggggrrrroooouuuunnnndddd!!!!bbbbaaaacccckkkkggggrrrroooouuuunnnndddd!!!!).	 Generally   the   color
+	    names will be in the /_u_s_r/_l_i_b/_X_1_1/_r_g_b._t_x_t file).  The impact
+	    of	the  change  is	 always	 local	to  the	 _e_t_e_r_m_x	 window.
+	    Currently,	the  colors  assigned  to  the	cursor	are  not
+	    changed.
+
+	  CCCCuuuutttt aaaannnndddd PPPPaaaasssstttteeee
+	    You	can normally cut and paste between _e_t_e_r_m_x and other win-
+	    dow	 oriented  tools.   When you sweep out a region	with the
+	    mouse the selected text becomes the	primary	selection, which
+	    can	be pasted in other windows.  _e_t_e_r_m_x also provides escape
+	    sequences that can be used to control it's interaction  with
+	    the	  SSSSeeeeccccoooonnnnddddaaaarrrryyyy  SSSSeeeelllleeeeccccttttiiiioooonnnn	and  CCCClllliiiippppbbbbooooaaaarrrrdddd.	  eeeessssccccaaaappppeeee----vvvv----1111  or
+	    eeeessssccccaaaappppeeee----vvvv----2222 cause the current selected  area	 to  become  the
+	    sssseeeeccccoooonnnnddddaaaarrrryyyy	sssseeeelllleeeeccccttttiiiioooonnnn   or	 the   cccclllliiiippppbbbbooooaaaarrrrdddd   respectively.
+	    eeeessssccccaaaappppeeee----vvvv----5555 and eeeessssccccaaaappppeeee----vvvv----6666 cause the	sssseeeeccccoooonnnnddddaaaarrrryyyy  sssseeeelllleeeeccccttttiiiioooonnnn  or
+	    the	 cccclllliiiippppbbbbooooaaaarrrrdddd, respectively, to be	sent as	if they	had been
+	    typed in the window.  These	sequences can be programmed onto
+	    menus or CCCCuuuutttt and PPPPaaaasssstttteeee keys	(remember to prefix the	sequence
+	    with ######## so that it will be interpreted as an escape	sequence
+	    and	not sent to the	shell).
+
+	    Note that X	Applications vary considerably in their	 use  of
+	    selections,	 and  not all use compatible conventions in com-
+	    municating.	 Cutting and pasting work  well	 between  _e_t_e_r_m_x
+	    windows.   _e_t_e_r_m_x seems to be compatible with _x_t_e_r_m	and most
+	    other X applications, but it may not work with all	applica-
+	    tions.
+
+	  WWWWiiiinnnnddddoooowwww LLLLaaaabbbbeeeellll aaaannnndddd IIIIccccoooonnnn
+	    The	  escape   code	  that	 normally   writes   the   label
+	    (eeeessssccccaaaappppeeee----LLLL!!!!llllaaaabbbbeeeellll!!!!)  under _e_m_a_c_s_t_e_r_m will change both	the win-
+	    dow	and icon labels.  There	are also escape	codes  for  set-
+	    ting  the  window  and  icon labels	(eeeessssccccaaaappppeeee----]]]]llll<<<<tttteeeexxxxtttt>>>>eeeessssccccaaaappppeeee----eeee
+	    eeeessssccccaaaappppeeee----]]]]LLLL<<<<tttteeeexxxxtttt>>>>eeeessssccccaaaappppeeee----\\\\).  There is	no way	to  disable  the
+	    window label.
+
+	    There   is	 an   escape   code   for   setting   the   icon
+	    (eeeessssccccaaaappppeeee----]]]]IIII<<<<ffffiiiilllleeee>>>>eeeessssccccaaaappppeeee----\\\\).	The file name should be	an abso-
+	    lute path to a file	in the appropriate format.
+
+	    Note that the window manager has ultimate control of what is
+	    displayed  for the window label, icon label, and icon.  Some
+	    window managers do	not  allow  the	 application  to  change
+	    these.   In	particular, OpenWindows	will not change	the icon
+	    display once the window has	been created.
+
+	  LLLLooooggggggggiiiinnnngggg
+	    You	can have _e_t_e_r_m_x	log either  input  you	type  to  it  or
+
+       ift			  vs 0p
+
+
+
+
+
+
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    output  sent  to  the window.  The input and output	logs are
+	    normally created in	the directory from which _e_t_e_r_m_x	was  run
+	    with   names   of  the  form  <_n_a_m_e>._i_n_l_o_g.<_p_r_o_c_e_s_s__i_d>  and
+	    <_n_a_m_e>._o_u_t_l_o_g.<_p_r_o_c_e_s_s__i_d>,	where <_n_a_m_e> is	the name of  the
+	    tool  (normally <_e_t_e_r_m_x) _a_n_d _p_r_o_c_e_s_s__i_d _i_s _t_h_e _p_r_o_c_e_s_s _i_d _o_f
+	    _t_h_e	_t_o_o_l.  _T_h_i_s _a_l_l_o_w_s _y_o_u _t_o _l_o_g  _s_e_v_e_r_a_l	_w_i_n_d_o_w_s	 _a_t  _t_h_e
+	    _s_a_m_e _t_i_m_e.	_T_h_e _d_e_f_a_u_l_t _n_a_m_e _c_a_n _b_e	_c_h_a_n_g_e_d	_v_i_a _c_o_m_m_a_n_d _l_i_n_e
+	    _a_r_g_u_m_e_n_t_s _o_r _r_e_s_o_u_r_c_e_s.  _L_o_g_g_i_n_g _c_a_n _b_e _e_n_a_b_l_e_d _o_r	_d_i_s_a_b_l_e_d
+	    _v_i_a	 _c_o_m_m_a_n_d  _l_i_n_e	_a_r_g_u_m_e_n_t_s,  _r_e_s_o_u_r_c_e_s,	_a _m_e_n_u _e_n_t_r_y, _o_r
+	    _e_s_c_a_p_e _s_e_q_u_e_n_c_e_s _s_e_n_t _t_o _t_h_e _w_i_n_d_o_w.  _T_h_e  _f_o_l_l_o_w_i_n_g  _e_s_c_a_p_e
+	    _s_e_q_u_e_n_c_e_s  _c_o_n_t_r_o_l	_l_o_g_g_i_n_g.   (_N_o_t_e -- _t_h_e_s_e _s_e_q_u_e_n_c_e_s _w_e_r_e
+	    _c_h_o_s_e_n _f_o_r _c_o_m_p_a_t_i_b_i_l_i_t_y _w_i_t_h _x_t_e_r_m	_f_o_r _t_h_e	_c_a_s_e_s _w_h_e_r_e _b_o_t_h
+	    _p_r_o_g_r_a_m_s _o_f_f_e_r _e_q_u_i_v_a_l_e_n_t _f_u_n_c_t_i_o_n_a_l_i_t_y).
+
+	    <escape>[46hStart logging output
+	    <escape>[146hStart logging input
+	    <escape>[46lStop logging output
+	    <escape>[146lStop logging input
+
+	  MMMMeeeennnnuuuussss
+	    Most of these menus	may be reprogrammed via	the  appropriate
+	    escape  sequences.	 To do so, first select	the menu to pro-
+	    gram by sending "eeeessssccccaaaappppeeee----####cccc", where 'cccc' designates  the  menu
+	    you	wish to	change.	 cccc should be one of the	following:
+
+	    ssss	  SSSShhhheeeellllllll	menu
+	    eeee	  EEEEmmmmaaaaccccssss	menu
+	    vvvv	  VVVViiii menu
+	    hhhh	  HHHHiiiissssttttoooorrrryyyy menu
+	    llll	  WWWWiiiinnnnddddoooowwww menu
+	    OOOO	  FFFFrrrraaaammmmeeee	menu
+	    ffff	  FFFFoooonnnnttttssss	menu
+	    oooo	  LLLLooooggggggggiiiinnnngggg menu
+	    pppp	  PPPPaaaaggggiiiinnnngggg menu
+	    1111----9999	  User programmable menus
+
+	    To	program	 an  individual	 menu  item,  send  the	  escape
+	    sequence:
+
+	    eeeessssccccaaaappppeeee----MMMM[[[[####cccc]]]][[[[nnnn]]]]!!!!llllaaaabbbbeeeellll!!!!vvvvaaaalllluuuueeee!!!!
+
+	    Where [####cccc] is an optional menu to attach this  item	 to  (if
+	    you	 send '#' followed by a	menu designator, it will show an
+	    arrow on the right of the menu item	and bring up the  desig-
+	    nated  menu	 when  you  move onto it.  Just	send ####cccc, not the
+	    brackets).	[nnnn] is an optional menu	item.  It  should  be  a
+	    single digit designating which item	to program (again, don't
+	    send the brackets).	 If omitted, it	programs the  next  free
+	    menu  item.	 If you	designate an item, it truncates	the menu
+	    after that item.  '!!!!' can be any  character	 that  does  not
+	    appear  in	label or value.	 If the	value string starts with
+	    "########", it is	interpreted as if it had been received by _e_t_e_r_m_x
+77777777777777777777777777777777777777777777777777777777777
+
+
+       EEEETTTTEEEERRRRMMMMXXXX((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       EEEETTTTEEEERRRRMMMMXXXX((((1111))))
+
+
+
+	    from your application, which is how	you program entries that
+	    have direct	effect on the window.  For  example,  to  add  a
+	    font to the	FFFFoooonnnnttttssss menu:
+
+		 echo "_e_s_c_a_p_e-#_f_e_s_c_a_p_e-_M!_a_p_l _f_o_n_t!##_e_s_c_a_p_e-&_F?\
+		 /_u_s_r/_l_i_b/_f_o_n_t_s/_f_i_x_e_d_w_i_d_t_h_f_o_n_t_s/_a_p_l._r._1_0?!_e_s_c_a_p_e-#_s"
+
+	    To add a FFFFrrrraaaammmmeeee menu	item to	reshape	to 60X132:
+
+		 echo "_e_s_c_a_p_e-#_O_e_s_c_a_p_e-_M!_1_3_2_X_6_0!##_e_s_c_a_p_e-[_8;_6_0;_1_3_2_t!_e_s_c_a_p_e-_O"
+
+       FFFFIIIILLLLEEEESSSS
+	    ~EMACS		 the _e_m_a_c_s  library  directory	on  your
+				 local system
+	    ~EMACS/.emacs_init	 default initialization	file for _e_m_a_c_s
+	    $HOME/.emacs_init	 user initialization file for _e_m_a_c_s
+	    $HOME/.xinitrc	 initialization	for X
+	    $HOME/.twmrc	 menu and color	definitions for	the  _t_w_m
+				 window	manager
+	    $HOME/.openwin-init	 initialization	for OpenWindows
+	    $HOME/.openwin-menu	 menu definition file for OpenWindows
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	    _e_m_a_c_s(EXPTOOLS), _e_m_a_c_s_t_e_r_m(EXPTOOLS), _v_i_t_e_r_m(EXPTOOLS)
+	    _A_n _I_n_t_e_r_a_c_t_i_v_e _S_c_r_e_e_n _E_d_i_t_o_r _f_o_r _U_N_I_X (_I_s_s_u_e _2),  by  Warren
+	    Montgomery,	55235-851008-02TM
+	    _A _M_o_u_s_e/_M_e_n_u _F_r_o_n_t _E_n_d _f_o_r _S_c_r_e_e_n _O_r_i_e_n_t_e_d _A_p_p_l_i_c_a_t_i_o_n_s,  by
+	    Warren Montgomery, September 19, 1988 (somewhat obsolete)
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    Warren Montgomery (iexist!warren)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       ift			  vs 0p
+
+
+
+
+

@@ -1,0 +1,219 @@
+#  @(#)  SID: 1.2;  module: dolabels;  last changed: 10/16/91  15:37:54
+
+#
+#  This routine written by George Otto, Department 52464, 1/15/83
+#               modified on 3/10/83 to improve printing of blank lines
+#		modified on 3/24/83 to allow '-' as a file name
+#		modified on 7/14/83 to handle '-q' option
+#		modified on 1/31/84 to use /dev/tty instead of LOGTTY
+#
+
+CMD=$0
+USAGE="Usage: $CMD  [-n N]  [-w W]  [-l L]  [-c C]  [-q]  file"
+
+#----------------------< Process the option flags
+
+set -- `getopt n:w:l:c:q $*`
+
+if test $? -ne 0 -o $# = 1; then	# on user error, tell user
+    exec 1>&2
+    echo
+    echo "$USAGE"
+    echo
+    echo "Type  \"$CMD help\"  for more information."
+    echo
+    exit 2
+fi
+
+#----------------------< Set up the defaults
+
+LABELCNT=4
+WIDTH=34
+LENGTH=6
+COPIES=1
+QUIET=no
+
+DONE=no
+while test $DONE = no; do	# process each of the flags
+    case $1 in
+    -n)				# number of labels on each line
+	LABELCNT=$2
+	shift; shift
+    ;;
+    -w)				# character count from one label to next
+	WIDTH=$2
+	shift; shift
+    ;;
+    -l)				# line count from one label to next
+	LENGTH=$2
+	shift; shift
+    ;;
+    -c)				# number of copies of each label
+	COPIES=$2
+	shift; shift
+    ;;
+    -q)				# invoke the routine quietly
+	QUIET=yes
+	shift
+    ;;
+    --)				# end of options
+	DONE=yes
+        shift
+    ;;
+    esac
+done
+
+#----------------------< Check that arguments are numeric
+
+for VAR in LABELCNT WIDTH LENGTH COPIES; do
+    eval VALUE='`expr $'$VAR' + 0`'
+    if test $? -eq 0; then
+	eval $VAR=$VALUE
+    else
+	exec 1>&2
+	echo
+	eval echo '"***" Non-numeric argument \"$'$VAR'\" encountered -- aborting!'
+	echo
+	exit 2
+    fi
+done
+
+#----------------------< Check that filename given and good
+
+if test $# -ne 1; then
+    exec 1>&2
+    echo
+    echo "$USAGE"
+    echo
+    exit 2
+elif test "$1" = "-"; then
+    : accept the filename
+elif test "$1" = help; then
+    exec 1>&2
+    echo
+    echo "$USAGE"
+    echo
+    echo "    where N is Number of labels side by side on a line."
+    echo "            DEFAULT: $LABELCNT"
+    echo "          W is the Width of each label (number of characters"
+    echo "            from left side of one label to left side of next"
+    echo "            label)."
+    echo "            DEFAULT: $WIDTH"
+    echo "          L is the Length of each label (number of lines from"
+    echo "            top of one label to top of next label)."
+    echo "            DEFAULT: $LENGTH"
+    echo "          C is the number of Copies to be made."
+    echo "            DEFAULT: $COPIES"
+    echo
+    echo "         -q invokes the routine quitely"
+    echo
+    echo "       file is the name of the file containing the addresses"
+    echo "            to be put on the labels, with '-' indicating"
+    echo "            standard input."
+    echo
+    exit 2
+elif test ! -r $1; then
+    exec 1>&2
+    echo
+    echo "File \"$1\" cannot be read -- aborting!"
+    echo
+    exit 2
+fi
+
+
+#           ************************************************
+#           **  Print out the labels with an AWK routine  **
+#           ************************************************
+
+#----------------------< Give user instructions
+
+if test $QUIET = no; then
+    echo
+    echo "Load $LABELCNT-wide labels, position writing element over first"
+    echo "character position of first label, back up one line, then"
+    echo "hit return"
+    xx=`line </dev/tty`
+fi
+
+#----------------------< Pass arguments to AWK
+
+echo "LabelData\t$LABELCNT\t$LENGTH\t$WIDTH\t$COPIES" >/tmp/$LOGNAME.LblData
+cat /tmp/$LOGNAME.LblData $1 | awk '
+    BEGIN {
+	First = 1
+	KeyStr = ".AD"
+	CurrCol = -1
+	CurrLine = -1
+    }
+
+    {
+	if (First) {	# If first time, read the arguments
+	    First = 0
+	    if ($1 == "LabelData") {	# If password OK, then...
+	        LabelCnt = $2
+		Length = $3
+		Width = $4
+		Copies = $5
+		LineFormat = sprintf("%%-%ds", Width)
+	    } else {			# else abort!
+	        print ""
+		print "*** Input file to $0 has invalid format -- aborting!"
+		print ""
+		exit 2
+	    }
+	} else if ($1 == KeyStr) {	# See if address marker string found
+	    CurrCol = CurrCol + 1		# Say "doing next column"
+	    CurrLine = -1			# Say "doing first line"
+	    if (CurrCol == LabelCnt) {		# If at maximum, then
+						# flush row of labels
+		for (j=0; j<Copies; j=j+1) {
+	            for (k=0; k<Length-1; k=k+1) {
+		        LastCol = 0
+	                for (i=0; i<LabelCnt; i=i+1) {
+			    if (length(Line[i k]) > 0) {
+			        LastCol = i
+			    }
+			}
+	                for (i=0; i<LastCol; i=i+1) {
+		            printf LineFormat, Line[i k]
+		        }
+		        printf "%-1s\n", Line[i k]
+		    }
+		    print ""
+	        }
+	        CurrCol = 0
+	    }
+            for (k=0; k<Length-1; k=k+1) {	# Clear out label data
+	        Line[CurrCol k] = ""
+	    }
+	} else if ($0 !~ /^#/) {	# If not a comment line
+	    CurrLine = CurrLine + 1	# Remember label data
+	    if (CurrLine < Length-1) {
+	        Line[CurrCol CurrLine] = substr($0, 1, Width-2)
+	    }
+	}
+    }
+
+    END {		# At end, flush out remaining labels
+	for (j=0; j<Copies; j=j+1) {
+            for (k=0; k<Length-1; k=k+1) {
+	        LastCol = 0
+                for (i=0; i<=CurrCol; i=i+1) {
+		    if (length(Line[i k]) > 0) {
+		        LastCol = i
+		    }
+		}
+                for (i=0; i<LastCol; i=i+1) {
+	            printf LineFormat, Line[i k]
+	        }
+	        printf "%-1s\n", Line[i k]
+	    }
+	    print ""
+	}
+    }
+'
+
+if test $QUIET = no; then
+    echo "\n\n\n\n\n"
+    xx=`line </dev/tty`
+fi

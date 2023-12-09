@@ -1,0 +1,198 @@
+
+
+
+     uuuupppprrrriiiinnnnttttffff((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         uuuupppprrrriiiinnnnttttffff((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          uprintf - user-formatted print on UNITY tables
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_p_r_i_n_t_f [-q] [-Itable] [-Otable] [-fformat] [-nc] aname \
+           [aname ...] [_r_e_s_u_l_t aname3] _i_n table1 [_i_n_t_o table2] [where clause]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _u_p_r_i_n_t_f command generates a string value based on the
+          combination of one or more specified attributes for each
+          record.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The "-f" option may be used to specify the output format.
+          The output format must immediately follow the -f option on
+          the command line and must be surrounded by quotes if it
+          contains white space or other characters recognized by the
+          shell.  The output format may be anything consisting of
+          string output values (i.e., any combination of characters
+          and %s formats).  For example, -f%-.20s would print results
+          as twenty-character left-justified string values and "-f%s
+          %s" would print the concatenation of two attribute values
+          separated by a space.  The valid formats are discussed in
+          detail on the _p_r_i_n_t_f(3S) manual page but only the "s"
+          conversion character is allowed.  All character constant
+          escape sequences recognized in the C language (newline,
+          horizontal tab, backspace, carriage return, form feed,
+          backslash, single quote, and bit pattern) are recognize as
+          part of the output format (e.g., the strings "\t" and "\n"
+          are recognized as tab and newline characters, respectively).
+          The number of variables to be printed (%s occurrences in the
+          output format) must be less than or equal to the number of
+          attributes specified to be printed; otherwise, the program
+          returns an error.
+
+          If a resultant field (_r_e_s_u_l_t clause) is not specified, only
+          the fields specified as part of the output format are
+          printed (projection is done on the specified fields) and
+          only selected records (based on the _w_h_e_r_e clause) are
+          printed.  The default format is "%s\n" which means that the
+          values of first attribute specified for the command will be
+          printed, one per line.  In this way, the _u_p_r_i_n_t_f command can
+          be used as a simple report generator.  The input table is
+          not updated.  The output is written to the standard output
+          by default.  If an "_i_n_t_o clause" is specified, the output is
+          written into the named table (no description file is
+          created); an error is printed if the table already exists.
+          If _o_n_t_o is specified instead of _i_n_t_o, the output is appended
+          to the file if it already exists or the file is created and
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnnttttffff((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         uuuupppprrrriiiinnnnttttffff((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          written if it does not exist.  The -n_c option causes all
+          occurrences of the specified character _c to be translated
+          into a a newline during printing.  Thus, the user can
+          explicitly control where breaks occur in attribute values.
+          The newline character is not printed.  The default newline
+          indicator character is tilde (~).
+
+          If a resultant field is specified, then the output is a
+          UNITY table with the same fields as the input table.  The
+          resultant field must be an existing terminator field.  The
+          default format is "%s" which means that the result will be
+          the string value of the first attribute specified on the
+          command line.  By default (without an _i_n_t_o clause), the
+          input table is updated.  A temporary file is updated (i.e.,
+          the records satisfying the _w_h_e_r_e clause are altered), the
+          original file is removed, and the temporary file is linked
+          to the original table, thus updating the table.  Only one
+          user may update the table at a time but any number of users
+          may read the table.  The user must have write permission in
+          the directory containing the table, but needs only read
+          permission on the table itself.  The group and user
+          identification, and mode of the table are preserved.  If an
+          "into clause" is specified, the output is written into the
+          named table and a corresponding description file is created;
+          an error is printed if the table or corresponding
+          description file already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the file if it
+          already exists or the file is created and written if it does
+          not exist; the description file is created if it does not
+          exist.  The -n option is ignored if a resultant field is
+          specified.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.
+
+          If the "-q" option is specified, the program does not print
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnnttttffff((((UUUUNNNNIIIITTTTYYYY))))         UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll         uuuupppprrrriiiinnnnttttffff((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          out the number of output records.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ uprint S
+
+          |-------------------------|
+          |snu|sname     |city      |
+          |mbe|          |          |
+          |r  |          |          |
+          |-------------------------|
+          |s1 |smith     |london    |
+          |s2 |jones     |nice      |
+          |s3 |blake     |paris     |
+          |-------------------------|
+
+          $ uprintf -q -f"Supplier %s, supplier number %s, is located in %s.\n" \
+            sname snumber city in S
+
+          Supplier smith, supplier number s1, is located in london.
+          Supplier jones, supplier number s2, is located in nice.
+          Supplier blake, supplier number s3, is located in paris.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/uprintf.c, zuprintf.c - the C source program
+          bin/uprintf - the executable program
+          /tmp/???????? - the lockfile
+          <directory of table>/ctmp?????? - the temporary update file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

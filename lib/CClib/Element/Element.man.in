@@ -1,0 +1,119 @@
+.TH Element 3C++
+.SH NAME
+Element \- object capable of representing objects of different types at different times 
+.SH SYNOPSIS OF Element 
+.Bf
+.nf
+#include "Element.h"
+
+	//macros used to simulate parameterized types
+
+#define Element1declare(A) ...
+#define Element2declare(A,B) ...
+#define Element3declare(A,B,C) ...
+#define Element4declare(A,B,C,D) ...
+#define Element5declare(A,B,C,D,E) ...
+
+\f2Expanding Element2declare(A,B) produces the following text:\f1
+
+.ft CW
+class Element2(A,B) {
+//private members
+public:
+//member functions
+	inline void put(A* a);
+	inline void put(B* b);
+	inline A* get(A*);
+	inline B* get(B*);
+	inline int operator==();
+	};
+.ft P
+
+\f2(the other forms work analogously).\f1
+.fi
+.Be
+.SH DESCRIPTION
+.PP
+An \f4Element\f1 is an object which can, at different times, represent
+objects of different types.  This is desirable when it is known that 
+no two objects will 
+be present at the same time.  One obvious use of an \f4Element\f1 is as
+the type parameter \f4T\f1 for a \f4List(T)\f1: use of an \f4Element\f1
+in this application will create a List of heterogeneous types.
+For instance, it may be desirable to queue message Strings, integer 
+return values, etc.
+.PP
+The \f3Element\f1 classes provide the ability to declare \f4Elements\f1 that 
+will contain pointers to 1, 2, 3, 4, or 5 different object types.  It will be 
+easy to extend this to many more types if that is found to be necessary.
+Typically, the \f4Element1\f1 class would only be generated to create
+a uniform interface in an application using several \f4Element\f1
+classes.
+.PP
+The \f4Elementdeclare\f1 macros expect type names as parameters.  These
+types may be any built-in or user-defined type that has been previously 
+declared.  After the
+appropriate macro invocation, the \f4Element\f1 
+class associated with that macro is available for use.
+.SS "Member Functions"
+.IP "inline void put(X* x);"
+Puts \f4x\f1 into the \f4Element\f1, keeping track of its type.  Type
+\f4X\f1 must be one of the types declared for the \f4Element\f1.
+.IP "inline X* get(X*);"
+If the \f4Element\f1 contains a variable of type \f4X*\f1, \f4get\f1 will
+return it, otherwise it will return 0.
+.IP "inline int operator==();"
+Currently vacuous; included to satisfy a requirement for \f4List\f1,
+a library with which an \f4Element\f1 is likely to be used. 
+.SS "An Example"
+.PP
+The example below illustrates the use of an \f4Element\f1:
+.Bf
+.nf
+#include "Element.h"
+#include <List.h>
+#include <String.h>
+
+
+Element2declare(int,String)
+
+typedef Element2(int,String) Is;
+
+Listdeclare(Is)
+Listimplement(Is)
+
+main() {
+	List(Is) lis;
+	Is element;
+	int i = 3;
+	element.put(&i);
+	lis.put(element);
+	String s = "hello";
+	element.put(&s);
+	lis.put(element);
+	i = 4;
+	element.put(&i);
+	lis.put(element);
+	s = "goodbye";
+	element.put(&s);
+	lis.put(element);
+	lis.reset(0);
+	while (lis.next(element)) {
+		if (element.get((String*)0))
+			cout << *element.get((String*)0) << endl;
+		else if (element.get((int*)0))
+			cout << *element.get((int*)0) << endl;
+		}
+	};	
+.fi
+.Be
+.PP
+with output:
+.Bf
+.nf
+	3
+	hello
+	4
+	goodbye
+.fi
+.Be

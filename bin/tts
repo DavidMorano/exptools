@@ -1,0 +1,40 @@
+#!/bin/sh
+
+VERSION="Version 2.6 91/07/11"
+USAGE="usage: $0 [-A[1-9]] [-x] [-V]"
+OUTDEV="-s" # Default: use built-in speaker
+VOLUME=""
+
+# Option processing:
+
+for i in "${@}"
+do
+	case "${i}" in
+	-V)	echo "${VERSION}"; exit;;
+	-A*)	VOLUME=`echo ${i} | sed 's/^-A//'`;
+		if [ "${VOLUME}" = "" ]
+		then
+			VOLUME=${2}
+		fi;;
+	-x)	OUTDEV="";;
+	[0-9]*)	;;
+	*)	echo "${USAGE}"; exit;;
+	esac
+	shift # Required to make "-A" code work correctly
+done
+VOLUME=`echo ${VOLUME} | awk '{ print int($0) }'`
+if [ ${VOLUME} = 0 ]
+then
+	VOLUME=8 # Default: assumes use of built-in speaker
+fi
+
+if [ "${TOOLS}" = "" ]
+then
+	echo "${0}: TOOLS environment variable is not set or is not exported"
+	exit
+else
+	${TOOLS}/bin/express -U -i - | ${TOOLS}/bin/splay -A${VOLUME} ${OUTDEV}
+fi
+
+
+

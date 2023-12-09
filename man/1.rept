@@ -1,0 +1,462 @@
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  rept - report	generation program
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  rrrreeeepppptttt [[[[ ----aaaa _a_f_i_l_e ]]]] [[[[ ----bbbb _n  ]]]] [[[[	----BBBB ]]]] [[[[ ----dddd ]]]] [[[[----ffff_c ]]]] [[[[ ----FFFF	_n_a_m_e ]]]]
+	  [[[[ ----gggg _p_a_t_t_e_r_n ]]]] [[[[ ----hhhh ]]]]	[[[[ ----llll _n ]]]] [[[[ ----nnnn ]]]]	[[[[ ----oooo _o_p_t_s ]]]] [[[[ ----pppp ]]]] [[[[----ssss
+	  _n,_m... ]]]] [[[[ ----SSSS	]]]] [[[[ ----tttt ]]]] [[[[ ----TTTT ]]]]	[[[[ ----vvvv||||----VVVV	]]]] [[[[ ----xxxx ]]]] [[[[ ----XXXX ]]]]	[[[[ ----zzzz ]]]]
+	  [[[[ _m_a_s_k_f_i_l_e ]]]] _f_i_l_e_s
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  Rept generates a report with specified fields	of specified
+	  widths.  It is intended to provide printouts of databases
+	  created by the companion "dbe" program.  It automatically
+	  generates column headings and	page numbers, and wraps	around
+	  long entries (breaking between words if possible).  It also
+	  tries	hard not to do a page break in the middle of a record.
+
+	  The easiest way to generate a	standard report	is to use the
+	  -d option.  If the -d	option is used,	the title and output
+	  specification	are read from the _m_a_s_k_f_i_l_e.  This requires two
+	  lines	in the _m_a_s_k_f_i_l_e	of the form:
+
+	       ####ttttiiiittttlllleeee _T_h_i_s _i_s _t_h_e _t_i_t_l_e
+	       ####ffffiiiieeeellllddddssss _o_u_t_p_u_t__s_p_e_c_i_f_i_c_a_t_i_o_n
+
+	  If these lines are not present or cannot be parsed, and the
+	  standard input is a terminal,	the user is prompted for the
+	  information.	It first prompts for a title. It then lists
+	  the names of the fields in the records, including an
+	  identifying letter for each field.  It then asks for an
+	  output specification.
+
+	  It is	also possible to specify "named	formats" in the
+	  maskfile. This is done with lines of the form:
+
+	       ####nnnnttttiiiittttlllleeee _n_a_m_e _t_i_t_l_e
+	       ####ffffoooorrrrmmmmaaaatttt _n_a_m_e _o_u_t_p_u_t__s_p_e_c_i_f_i_c_a_t_i_o_n
+
+	  Then by specifying "----FFFF _n_a_m_e" as an argument to rrrreeeepppptttt, the
+	  specified title and output specifications will be used. This
+	  makes	it possible to specify an unlimited number of "canned"
+	  formats in the maskfile for generating a variety of reports
+	  with different -F arguments.
+
+	  The _t_i_t_l_e can	be any arbitrary string	of characters.	The
+	  output specification is made up of a string of field
+	  identification letters (a = the first	field, b = the second
+	  field, c = the third field, etc) and field widths.  If no
+	  width	is specified, the default width	is the width of	the
+	  name of the field.  A	'C' immediately	following the field
+	  identification letter	indicates the field is to be centered.
+	  (Default is to left justify.)	 See the EXAMPLES section
+
+
+
+     Page 1					    (printed 11/14/89)
+
+
+
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+	  below	for more details.  If the specified width is narrower
+	  than the width of the	field name, the	field name will	be
+	  truncated in the heading, but	field values will not be
+	  truncated.
+
+	  If the information is	not being obtained from	the _m_a_s_k_f_i_l_e,
+	  and the standard input is not	a terminal, the	prompts	for
+	  title	and output specification are not given.	 This is
+	  useful for making a shell script for often generated
+	  reports.  See	the EXAMPLES section below.
+
+	  Options are:
+
+	  ----aaaa_a_f_i_l_e
+	       Append the contents of file _a_f_i_l_e to the	end of the
+	       report. This is useful for attaching a glossary or
+	       legend.
+
+	  ----bbbb_n  Do page breaks whenever a new value is found in field
+	       _n.  This	basically produces a separate report for each
+	       different value occurring in the	_nth field.  This
+	       option first sorts all the records on the _nth field.
+	       Then it prints all records with the same	value for that
+	       field as	a report, beginning a new report whenever a
+	       new value is encountered	in the _nth field. For example,
+	       if the second field of your database may	contain	either
+	       "you" or	"me", using "-b2" will cause two reports to be
+	       generated. The first will contain all records for "me,"
+	       and the second will contain all those for "you."
+
+	  ----BBBB   Print a blank line between each record.
+
+	  ----dddd   Use the default title and output	specification as given
+	       by the ####ttttiiiittttlllleeee and ####ffffiiiieeeellllddddssss lines in the _m_a_s_k_f_i_l_e.
+	       Sometimes it would be nice to have different defaults
+	       for output to the terminal than output to the Xerox@
+	       printer.	You can	use:
+
+		    ####ttttffffiiiieeeellllddddssss to	format terminal	output
+		    ####xxxxffffiiiieeeellllddddssss to	format Xerox output
+		    ####ffffiiiieeeellllddddssss will be used if nothing else applies.
+
+	       Any subset of these lines can be	included.  All three
+	       lines could be specified, in which case the ####ffffiiiieeeellllddddssss
+	       line would only be used for output redirected into a
+	       file or pipe.
+
+	  ----ffff_c  Use _c as	the field separation character.	Default	is
+	       tab.
+
+	  ----FFFF_f_o_r_m_a_t__n_a_m_e
+	       Take the	title and/or format from the _m_a_s_k_f_i_l_e, using
+
+
+
+     Page 2					    (printed 11/14/89)
+
+
+
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+	       the ####nnnnttttiiiittttlllleeee and ####ffffoooorrrrmmmmaaaatttt lines matching the _f_o_r_m_a_t__n_a_m_e.
+	       The _f_o_r_m_a_t__n_a_m_e is made up of one or more alphanumeric
+	       characters (underscore and dot are also permissible).
+	       It is possible to specify both -F and -d, in which case
+	       the -F lines will override any -d lines,	but the	-d
+	       will be used for	anything not matched by	-F.
+
+	  ----gggg_p_a_t_t_e_r_n
+	       Make a report that only includes	records	containing
+	       _p_a_t_t_e_r_n.	The database will be passed through "grep
+	       _p_a_t_t_e_r_n"	before formatting.  _S_i_n_c_e _g_r_e_p _t_r_u_n_c_a_t_e_s _l_i_n_e_s
+	       _t_h_a_t _a_r_e	_l_o_n_g_e_r _t_h_a_n _B_U_F_S_I_Z (_w_h_i_c_h _v_a_r_i_e_s _b_y _m_a_c_h_i_n_e
+	       _t_y_p_e _f_r_o_m _5_1_2 _t_o	_4_0_9_6), _v_e_r_y _l_o_n_g _r_e_c_o_r_d_s _m_a_y _b_e
+	       _t_r_u_n_c_a_t_e_d.
+
+	  ----hhhh   Print a horizontal line between each record. The	-B and
+	       -h options are mutually exclusive--if both are
+	       specified, only the last	one will be used.  Using the
+	       -h and -p options together will put each	field into a
+	       box.
+
+	  ----llll_n  Set page	length to _n.  Default is 66. Minimum is	20.
+
+	  ----nnnn   Number each output record. Numbers will start at	1 and
+	       continue	in ascending order throughout the report. The
+	       numbering will take up 5	spaces at the left edge	of the
+	       report, so reports that normally	fit on a page may
+	       become too wide when -n is used.
+
+	  ----oooo_o_p_t_s
+	       Use _o_p_t_s	as arguments to	the standard sort command.
+	       This is useful for sorting in reverse order or folding
+	       upper case to lower case. Since the ordering of options
+	       to the sort command is significant, this	option must be
+	       used with care.	In particular, using the -n option for
+	       sort in conjunction with	the -b or -s options of	rept
+	       may cause unexpected results. If	there are any blanks
+	       in the options to be passed to sort, be sure to enclose
+	       the entire string in quotes. See	examples below.
+
+	  ----pppp   Use pipes ('|') to separate output fields. Default is
+	       space.
+
+	  ----ssss_n,_m...
+	       Sort the	records	on the specified fields	n, m, ... If
+	       you want	to sort	on the whole line, use the -S option.
+
+	  ----SSSS   Sort the	records. This is turned	on automatically by
+	       -b, -o, and -s.
+
+	  ----tttt   Print title on each page. Default is to print on	first
+	       page only.
+
+
+
+     Page 3					    (printed 11/14/89)
+
+
+
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+	  ----TTTT   Print a timestamp on the	upper right hand corner	of the
+	       first page.
+
+	  ----vvvv   Print the current version number	of rept. This manual
+	       page is current as of version 5.06. If the -v option is
+	       not recognized, you have	an ancient version and some
+	       features	listed here will not work. Later versions (if
+	       developed) may contain additional features.
+
+	  ----VVVV   Synonym for -v, print current version number.
+
+	  ----xxxx   Send the	output to the Xerox 9700 printer rather	than
+	       to the standard output.	The appropriate	font size and
+	       orientation is chosen automatically.  Maximum table
+	       width is	158 characters.	This option overrides the -l
+	       option, choosing	its own	optimum	page length.  You may
+	       set the environment variables used by opr (BIN, DEST,
+	       and FORMS) to alter opr options.
+
+	  ----XXXX   Use all the special characters for the Xerox 9700, but
+	       send the	output to standard output instead of directly
+	       to opr.	This can be useful if you want to combine
+	       several files together for printing.
+
+	  ----zzzz   Truncate	fields.	Normally fields	that are too long to
+	       fit in their specified width are	wrapped	around onto
+	       multiple	lines. With the	-z option, only	as many
+	       characters as will fit on one line will be printed.
+
+	  _m_a_s_k_f_i_l_e
+	       _m_a_s_k_f_i_l_e	gives information on the name of the fields.
+	       If no _m_a_s_k_f_i_l_e is given,	the default is to use the _f_i_l_e
+	       given with ".mask" appended, e.g., "rept	junk" would
+	       use "junk.mask" for the _m_a_s_k_f_i_l_e.  If more than one
+	       _f_i_l_e is specified, the _m_a_s_k_f_i_l_e must be specified
+	       explicitly. The same _m_a_s_k_f_i_l_e, title and	output
+	       specification is	used for all files.  See the manual
+	       page for	"dbe" for a complete description of the
+	       _m_a_s_k_f_i_l_e	format.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  For a	fields list such as:
+
+	       a    date
+	       b    number
+	       c    type
+	       d    description
+
+	  the following	output specifications would be typical.
+
+	       a10 b6 c5 d25
+	       (date field 10 wide,number field	6 wide,	type field 5
+
+
+
+     Page 4					    (printed 11/14/89)
+
+
+
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+	       wide, description field 25 wide)
+
+	       cd12
+	       (type field 4 wide [the width of	"type"], description
+	       field 12	wide)
+
+	       cC5bCd50
+	       (type field centered 5 wide, number field centered 6
+	       wide, description field 50 wide.
+
+	  If a certain report is going to be generated often, a	shell
+	  script may be	set up.	For example, to	set up the last	sample
+	  above, using a _f_i_l_e of "mydata" and _m_a_s_k_f_i_l_e "mydata.mask",
+	  the following	shell script should work.
+
+	       rept -t mydata <<-!
+		  This is the title for	the table
+		  cC5bCd50
+	  !
+
+	  Alternately, the -d option can be used if the	following
+	  lines	are added to mydata.mask:
+
+	       #title This is the title	for the	table
+	       #fields cC5bCd50
+
+	  To obtain a report sorted on the second field, with the
+	  title	on each	page, a	timestamp on page 1, blank lines
+	  between records, and vertical	lines between fields:
+
+	       rept -s2	-dtTBp	mydata
+
+	  To print a separate report for each different	value of field
+	  3, sorting within each report	on field 1:
+
+	       rept -b3	-s1 mydata
+
+	  To sort on field 2, then field 1, highest to lowest, with
+	  upper	case folded to lower case:
+
+	       rept -s 2,1 -o "-r -f" mydata
+
+	  To have a default report to fit on an	80 column terminal or
+	  to expand to 130 columns for hard copy, the following
+	  _m_a_s_k_f_i_l_e lines could be used:
+
+	       #tfields	a10b10c10d45
+	       #xfields	a10b10c10d96
+
+	  To have several named	formats:
+
+	       #ntitle formA This is for report	type A
+
+
+
+     Page 5					    (printed 11/14/89)
+
+
+
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+	       #format formA  b5 d50
+	       #
+	       #ntitle formB This is the title for report type B
+	       #format formB a10 d50 c12
+
+	  Then specifying a command line argument of ----FFFF	ffffoooorrrrmmmmAAAA will
+	  give a report	with the second	and fourth fields, while ----FFFF
+	  ffffoooorrrrmmmmBBBB	will give one with the first, fourth, and third
+	  fields.
+
+     FFFFIIIILLLLEEEESSSS
+	  /tmp/rept??????   temporary file for sorting
+	  *.mask	    mask file
+	  s.*		    sccs file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  dbe(1),  get(1), grep(1), opr(1), sort(1).
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+	  A warning is given if	the report is going to a terminal and
+	  will be wider	than the screen, since this will give hard to
+	  read output on a standard terminal.  If run on a windowed
+	  terminal, the	screen width is	taken from $COLUMNS.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS AAAANNNNDDDD BBBBUUUUGGGGSSSS
+	  Records should be a maximum of 2048 characters long.	Under
+	  the -g option, records must be kept shorter than grep's
+	  limit	(which is machine type dependent and may be as short
+	  as 512), or they will	be truncated.
+
+	  A field should not be	specified more than once.  Doing so
+	  will cause strange output. If	records	contain	more fields
+	  than are specified in	the _m_a_s_k_f_i_l_e, extra fields are assumed
+	  to be	part of	the last specified field, potentially causing
+	  strange output. If the -f option is used to specify a	field
+	  separator other than tab, and	the data file contains tabs,
+	  output will be mangled.
+
+	  For command line options, fields can be specified by number
+	  or identifying letter, while for output specifications they
+	  must be specified by identifying letter only.
+
+	  When using the -h and	-p options together, rept tries	to put
+	  everything in	a box, which makes the table one character
+	  wider. If this extra character would cause the table to not
+	  fit on a page, the line along	the left hand edge is omitted.
+	  This is for upward compatibility, so that a table will not
+	  suddenly get a "too wide" error just because you want
+	  everything in	a box.	The -n option will also	make the
+	  output wider.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+
+
+
+     PPPPaaaaggggeeee 6666					    ((((pppprrrriiiinnnntttteeeedddd 11111111////11114444////88889999))))
+
+
+
+
+
+
+     RRRREEEEPPPPTTTT((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       RRRREEEEPPPPTTTT((((1111))))
+
+
+
+	  John Krallmann
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7					    (printed 11/14/89)
+
+
+

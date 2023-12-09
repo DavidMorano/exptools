@@ -1,0 +1,180 @@
+)		Show matching parens
+
+C. Douglas Blewett (MH3-C-319) Version 4.3
+
+This file contains assorted macros to make life more livable while
+working with LISP and C.  The routines attached to ) and } are a
+little smarter than "balance" about showing matches that are off the
+screen.  M-% goes to the matching paren or brace.  If the cursor is
+on a "(" the routine will find the corresponding ")" (or "{" and "}").
+Of course, if the cursor is on a ")" or a "}" the routine will find the
+matching "(" or "{".
+
+At Jeff Langer's suggestion "}" also adjusts the indentation to that
+found on the line containing the matching "{".
+
+The routine attached to ^M (carriage return) indents correctly
+(maintains the level of indentation including spaces and tabs) and
+removes unused white space (usually caused by the indenting routine
+itself).   WARNING: this routine uses "comcol" as a global variable for
+storing the current level of indentation.
+
+ Interface routines
+	M-% - Moves to corresponding () or {} pair (like vi % command)
+	)   - Shows matching "(" (only if it is currently displayed)
+	}   - Shows matching "{" (only if it is currently displayed)
+	^M  - Maintains the exact level of indentation and removes
+		unused whitespace
+
+	)
+	 ¥
+	øOn_screen
+	
+
+}		Show matching braces
+	}
+	 ¥
+	øOn_screen
+	øIndent_get
+	øIndent_get
+	--
+
+¥On_screen
+	|û			Test if it is on the screen
+		û~3=-1
+		ı
+		û 
+			0
+		ı
+	ı
+
+¥Indent_get
+	1				Copy the indentation
+	<
+	^û4~0
+		!û
+			û 
+				+
+			ı
+			û	
+				+
+			ı
+			ûÿ
+				0
+			ı
+		ı
+	ı
+
+¥		Find_Matching parens and braces
+	!û			What are we matching
+		û(
+			1
+			51
+			64
+			<[()]
+		ı
+		û)
+			-1
+			5-1
+			6-4
+			<[()]
+		ı
+		û{
+			1
+			51
+			64
+			<[{}]
+		ı
+		û}
+			-1
+			5-1
+			6-4
+			<[{}]
+		ı
+		ûÿ
+			0
+			<S
+		ı
+	ı
+	^û4~0		Loop until match is found
+		|û
+			û5		Move off the  current item
+				0>	Get a copy of the search string
+				6“	Search in the correct direction
+				!û	What we found
+					û(
+						11~1
+					ı
+					û)
+						11~-1
+					ı
+					û{
+						11~1
+					ı
+					û}
+						11~-1
+					ı
+					ûÿ
+						0
+					ı
+				ı
+			ı
+			û 		Beginning or end of file
+				0
+			ı
+		ı
+	ı
+	-
+
+		Insert a carriage return
+	|û
+		û
+			1	^U is the flag for space or tabs loop
+			60	6 is the flag for line containing chars
+		ı
+		û 
+			0
+			61
+		ı
+	ı
+	50			5 is the flag for space or tabs found
+	^û4~0	Loop while trailing spaces and tabs
+		!û11~64
+			û`		Space
+				51
+			ı
+			ûI	Tab
+				51
+			ı
+			ûJ		Line feed
+				0
+				|ûClear line if it has spaces or tabs
+					û~51
+						
+					ı
+				ı
+			ı
+			ûÿ	Real line - leave it alone
+				0
+				61
+			ı
+		ı
+	ı
+	øIndent_get
+	-				Install the copied chars.
+	0
+	|û
+		û~61		True text line
+		ı
+		û1~3=0		Intervening blank lines
+			<comcol
+			1
+			<	
+			14~8-
+			< 
+			15~8-
+		ı
+	ı
+	<comcol
+	3=				Set comcol
+

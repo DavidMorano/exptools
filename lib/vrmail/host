@@ -1,0 +1,996 @@
+#
+#	VRMail interface for post(1) or mailx(1) usage
+#
+#	vmhost.sh, 1.51 - gregg.g.wonderly@att.com
+#	15:30:49, 11/29/94
+#
+#debug=1	# turn on to disable sending and only see composed message.
+umask 077	# no access to created files allowed initially
+lcktim=40	# maximum time to wait for a lock
+#
+if [ "${VM_MAILCMD:-}" = "" ]; then
+	if [ "`where post`" != "" ]; then
+		VM_MAILCMD="post"
+	else
+		VM_MAILCMD="mailx"
+	fi
+fi
+	
+ghead=$TOOLS/lib/vrmail/gethead
+hdrexp=$TOOLS/lib/vrmail/hdrexp
+#
+vo="`tput smso 2>&1`"
+vf="`tput rmso 2>&1`"
+#
+tmp=/tmp/vma$$
+# The command name
+cmd=$1
+# The message number
+msg=`eval "echo $2"`
+# The dynamic menu string
+a1=$3
+# The real display index
+dispidx=$4
+#
+#	post(1) command strings
+#
+
+#
+str_delete="d $msg
+q"
+
+#
+str_Save="p $msg
+S
+d $msg
+q"
+
+#
+str_save="p $msg
+s
+d $msg
+q"
+
+#
+str_savef="s $msg $a1
+d $msg
+q"
+
+#
+str_writef="w $msg $a1
+x"
+
+#
+str_cSave="S $msg
+x"
+
+#
+str_csave="s $msg
+x"
+
+#
+str_csavef="s $msg $a1
+x"
+
+#
+#  Emacsterm/Viterm will cause a command line to be sent to the host
+#  when a new window is created.  The check below attempts to
+#  guarantee that the command line is read and executed prior to
+#  doing what is desired below.
+#
+if [ "$TERM" = emacsterm -o "$TERM" = viterm ]; then
+	read a
+	eval $a
+fi
+
+DEAD=${DEAD:-$HOME/dead.letter}
+VM_ENV=${VM_ENV:-$HOME/.vmenv}
+VM_SIGNATURE="${VM_SIGNATURE:-$HOME/.signature}"
+#
+#	Now set default values for environment variables.  The user can
+#	do lots of things in $VM_ENV.  umask(1) can be used to control the
+#	permissions on the /tmp files.  Also, the above variables can
+#	be overridden with whatever values are appropriate.  The arguments
+#	are passed in so that an extra command can be implemented without
+#	having to duplicate all of this script.  Also, private versions
+#	of commands in this file can also be done in $VM_ENV.  The user can
+#	then just exit(1) from $VM_ENV and control will not come back to
+#	here.
+#
+if [ -f ${VM_ENV} ]; then
+	. ${VM_ENV} "$cmd" "$msg" "$a1" "$dispidx"
+	ev=$?
+	if [ "$ev" != 0 ]; then
+		echo "$0: Error ($ev) executing ${VM_ENV}: $?"
+	fi
+fi
+
+#  This makes it easy to see what is going on.
+if [ "${VM_DEBUG:-}" != "" ]; then
+	set -x
+fi
+
+#
+str_deltrsh="s $msg ${VM_TRASH}
+d $msg
+q"
+
+#
+#	Set non-set variables to null strings
+#
+EDITOR=${EDITOR:-vi}
+PAGER=${PAGER:-pg}
+MAIL=${MAIL:-/usr/mail/${LOGNAME:-notset}}
+#
+VM_REPLYBODY=${VM_REPLYBODY:-}
+VM_REPLYEDIT=${VM_REPLYEDIT:-}
+#
+VM_FORWBODY=${VM_FORWBODY:-}
+VM_FORWEDIT=${VM_FORWEDIT:-}
+#
+VM_COMPEDIT=${VM_COMPEDIT:-}
+#
+VM_MAILFILE=${VM_MAILFILE:-${MAIL}}
+export MAIL VM_MAILFILE
+VM_PAGER=${VM_PAGER:-${PAGER}}
+VM_TRASH=${VM_TRASH:-}
+VM_OUTBOX=${VM_OUTBOX:-}
+VM_DELDIR=${VM_DELDIR:-}
+#
+
+#
+#	Use a lock to slow things down for multiple deletes.
+#
+lock=$HOME/.vmlock
+touch $HOME/.vmtmp
+i=0
+while [ $i -lt $lcktim ]
+do
+	if ln $HOME/.vmtmp $lock 2>/dev/null
+	then
+		break;
+	else
+		sleep 1
+		i=`expr $i + 1`
+	fi
+done
+
+rm -f $HOME/.vmtmp
+if [ $i -eq $lcktim ]; then
+	echo "$0: Error waiting for lock/unlock"
+	echo "Enter 'y' to abort, <cr> to ignore: \c"
+	if read ans; then
+		case $ans in
+			*Y*|*y*) exit 1;;
+		esac
+	else
+		exit 1
+	fi
+fi
+
+trap "rm -f $lock" 0 1 15
+
+#
+#	Do what the command says...
+#
+case $cmd in
+	checkmail)
+		if [ "${VM_DELDIR}" != "" ]; then
+			rm -f ${VM_DELDIR}/vm_status
+			rm -f ${VM_DELDIR}/vm_save.*
+		fi
+		;;
+	# pass the message to the indicated command as standard input
+	pipe)
+		TMP1=/usr/tmp/vmr$$
+		trap "rm -f $TMP1;exit 1" 1 2 3 15
+		trap "rm -f $TMP1;exit 0" 0
+		echo "p $msg" | $VM_MAILCMD -f ${VM_MAILFILE} -N >$TMP1
+		rm -f $lock
+		cat $TMP1 | eval $a1
+		;;
+
+	# Edit the message and then append it to the current mail file
+	edit)
+		echo s $msg $tmp | $VM_MAILCMD -N
+		echo "\n`tput smso`Mailbox locked until editing completed`tput rmso`"
+		sleep 2
+		if [ $? -eq 0 ]; then
+			${EDITOR} $tmp
+			if [ $? -eq 0 ]; then
+				echo s 1 ${VM_MAILFILE} | $VM_MAILCMD -N -f $tmp
+				if [ $? -eq 0 ]; then
+					exit 0
+				fi
+			fi
+		fi
+		exit 1
+		;;
+
+	# Write the mail message into a file.
+	writef)
+		echo "$str_writef" | $VM_MAILCMD -N  -f ${VM_MAILFILE}
+		;;
+
+	# Copy Save the mail message into a mail file using 'S'.
+	cSave)
+		echo "$str_cSave" | $VM_MAILCMD -N  -f ${VM_MAILFILE}
+		;;
+
+	# Save the mail message into a mail file using 'S'.
+	Save)
+		echo "$str_Save" | $VM_MAILCMD -N -n -f ${VM_MAILFILE}
+		;;
+
+	# Copy Save the mail message into mbox using 's'.
+	csave)
+		echo "$str_csave" | $VM_MAILCMD -N -f ${VM_MAILFILE}
+		;;
+
+	# Save the mail message into mbox using 's'.
+	save)
+		echo "$str_save" | $VM_MAILCMD -N -f ${VM_MAILFILE}
+		;;
+
+	# Copy Save the mail message into a mail file as specified.
+	csavef)
+		echo "$str_csavef" | $VM_MAILCMD -N -f ${VM_MAILFILE}
+		;;
+
+	# Save the mail message into a mail file as specified.
+	savef)
+		echo "$str_savef" | $VM_MAILCMD -N -f ${VM_MAILFILE}
+		;;
+
+	# Show the message using the requested pager.
+	show | bttn1 )
+		umask 77
+		TMP1=/usr/tmp/vmr$$
+		trap "rm -f $TMP1;exit 1" 1 3 15
+		trap "rm -f $TMP1;exit 0" 0
+		trap "" 2
+		echo "p $msg" | $VM_MAILCMD -f ${VM_MAILFILE} -N >$TMP1
+		rm -f $lock
+		(
+			echo "Showing message $msg in ${VM_MAILFILE}"
+			cat $TMP1
+		) | ${VM_PAGER}
+		trap - 2
+		;;
+	
+	undelete)
+		if [ "$VM_DELDIR" != "" ]; then
+			if [ -f ${VM_DELDIR}/vm_status ]; then
+				num=`sed '1d;s/  */ /' <${VM_DELDIR}/vm_status | \
+						grep "^$dispidx" | \
+						cut -d' ' -f2`
+				echo "s * ${VM_MAILFILE}\nx" |\
+					$VM_MAILCMD -N -f ${VM_DELDIR}/vm_save.$num
+			fi
+		fi
+		;;
+
+	# Delete the message from the current mail file.
+	delete|bttn3)
+		if [ "$VM_DELDIR" != "" ]; then
+			if [ ! -f ${VM_DELDIR}/vm_status ]; then
+				echo '1' > ${VM_DELDIR}/vm_status
+			fi
+
+			num=`head -1 ${VM_DELDIR}/vm_status`
+			(
+				echo `expr $num + 1`
+				sed '1d' <${VM_DELDIR}/vm_status
+				echo "$dispidx $num"
+			) >/tmp/vm_map$$
+			mv /tmp/vm_map$$ ${VM_DELDIR}/vm_status
+			echo "s $msg ${VM_DELDIR}/vm_save.$num\nx" | \
+						 ${VM_MAILCMD} -N -f ${VM_MAILFILE}
+		fi
+
+		if [ "$VM_TRASH" != "" ]; then
+
+			#
+			#	If VM_TRASH is a directory, then all messages go there
+			#	as invidual files which can be expired with find(1)
+			#
+			if [ -d ${VM_TRASH} ]; then
+				date=`date "+%m%d%y"`
+				# Quick way to get the next sequence number
+				if [ -f ${VM_TRASH}/$date.seq ]; then
+					n=`cat ${VM_TRASH}/$date.seq`
+				else
+					n=1
+				fi
+				# Increment number until file does not exist
+				while [ -f ${VM_TRASH}/$date.$n ]
+				do
+					n=`expr $n + 1`
+				done
+				echo `expr $n + 1` >$VM_TRASH/$date.seq
+
+				# Change str_deltrsh and use save command below
+str_deltrsh="s $msg ${VM_TRASH}/$date.$n
+d $msg
+q"
+			fi
+
+			# Do save and delete in one shot so that there is no effect
+			# caused by the setting of keepsave.  If save deletes it,
+			# delete will effectively be a NOOP.
+
+			echo "$str_deltrsh" | $VM_MAILCMD -n -N -f ${VM_MAILFILE}
+		else
+			# No VM_TRASH, so delete it.
+			echo "$str_delete" | $VM_MAILCMD -n -N -f ${VM_MAILFILE}
+		fi
+		;;
+
+	#  Reply to the mail message.
+	repl|Repl)
+		TMP=/tmp/porep$$
+		TMP1=/tmp/porepa$$
+		TMP2=/tmp/porepb$$
+		TMP3=/tmp/porepc$$
+		CCTMP=/tmp/porepd$$
+		TOTMP=/tmp/porepe$$
+		HCCTMP=/tmp/porepf$$
+		HTOTMP=/tmp/porepg$$
+		>$TMP2
+		trap "rm -f ${TMP} ${TMP1} ${TMP2} ${TMP3} ${CCTMP} ${TOTMP}; trap 0; exit 1" 0 1 2 3 15
+
+		# extract a copy of the message
+		echo "s $msg $TMP\nx" | $VM_MAILCMD -N -f ${VM_MAILFILE} >/dev/null 2>&1 || exit 1
+		rm -f $lock
+
+		sed '/^$/,$d' <$TMP >$TMP1
+
+		# Get the message line (should be the first)
+		MESSAGE=$msg
+
+		DATE="`$ghead -f date $TMP1`"
+		if [ "$DATE" = "" ]; then
+			DATE="`grep '^From ' $TMP1 | \
+					head -1 | sed 's/^From [^ ]* //;s/ ..:.* /, /'`"
+		fi
+
+		FROM="`$ghead -f from $TMP1|\
+			sed 's/\"[^\"]*[^\\]*\"//g;s/[ 	]*([^)]*[^\\]*)[ 	]*//g;s/[^,]*<//g;s/>//g;s/[ 	][ 	]*//g'`"
+		if [ "$FROM" = "" ]; then
+			FROM="`grep '^From ' $TMP1 | head -1 | sed 's/^From //;s/ .*//'`"
+		fi
+
+		HOST="`grep '^From ' $TMP1 | grep 'remote from' | \
+										head -1 | sed 's/^.*remote from //'`"
+
+		if [ "$HOST" != "" ]; then
+			FROM="$HOST!$FROM"
+		fi
+
+		SIMPLEFROM=`echo $FROM | sed 's/.*!\([^!]*![^!]*\)/\1/'`
+
+		SUBJECT="`$ghead -f subject $TMP1`"
+		if [ "$SUBJECT" = "" ]; then
+			SUBJECT="`grep '^Subject: ' $TMP1 | head -1 | \
+							sed 's/^Subject: *//' | sed 's/^[rR][eE]: *//'`"
+		fi
+
+		(
+			echo "To: $FROM" 
+			if [ "`basename ${VM_MAILCMD}`" = "post" ]; then
+				echo "From: `uname -n`!`id | sed 's/ .*$//;s/.*(//;s/)//'` (`unset POSTQUAL;eval ${VM_MAILCMD} -y`)"
+			fi
+			if [ "$cmd" = Repl ]; then
+				tos=`$ghead -f to $TMP1 | \
+					sed 's/\"[^\"]*[^\\]*\"//g;s/[ 	]*([^)\\]*)//g;s/<//g;s/>//g'`
+				ccs=`$ghead -f cc $TMP1 | \
+					sed 's/\"[^\"]*[^\\]*\"//g;s/[ 	]*([^)\\]*)//g;s/<//g;s/>//g'`
+				echo "Cc: \c"
+				if [ "$ccs" != "" ]; then
+					echo "$tos" | sed '1,$s/[^,]$/&,/;2,$s/^[^ 	]/    &/;s/[ 	]*,/,/;s/[ 	]*$//'
+					echo "$ccs" | sed '1,$s/^[^ 	]/    &/;s/[ 	]*,/,/;s/[ 	]*$//'
+				else
+					echo "$tos" | sed '2,$s/^[^ 	]/    &/;s/[ 	]*,/,/;s/[ 	]*$//'
+				fi
+			fi | tee $TMP3	
+			echo "Subject: Re: `echo \"$SUBJECT\" | \
+										sed 's/^[ 	]*[Rr][Ee]:[ 	]*//'`"
+			if [ "$VM_FACELINE" != "" ]; then
+				if [ -r "$VM_FACELINE" ]; then
+					cat ${VM_FACELINE}
+				else
+					echo "Can't read face line file: $VM_FACELINE" >&2
+				fi
+			fi
+			echo ""
+		) >>$TMP2
+
+		col=`tput cols`
+		col=`expr $col - 50`
+		echo "Replying to..."
+
+		echo "$MESSAGE|$DATE|$SIMPLEFROM|$SUBJECT" | \
+		awk -F'|' '{ printf "%-4d %16.16s  %-25.25s '"$vo"'%-.'$col's'"$vf"'\n", $1, $2, $3, $4 ; }'
+
+		# Make SIGINT do nothing.
+		trap - 2
+		trap "" 2
+
+		while :
+		do
+			RESPONSE="xxx"
+			while [ "$RESPONSE" != "" ]; do
+
+				# If no commands left, prompt.
+				if [ "${VM_REPLYEDIT:-}" = "" ]; then
+					echo "\nWhat now? \c"
+					if read RESPONSE; then
+						if [ "$RESPONSE" = "" ]; then
+							RESPONSE="xxx"
+						fi
+					else
+						# Done at EOF
+						break
+					fi
+				else
+
+					# If there are commands, do the next one
+					RESPONSE=`echo ${VM_REPLYEDIT} | cut -f1 -d,`
+					VM_REPLYEDIT=`echo ${VM_REPLYEDIT} | cut -f2- -d,`
+					if [ "${VM_REPLYEDIT}" = "${RESPONSE}" ]; then
+						VM_REPLYEDIT=""
+					fi
+				fi
+
+				# Do the requested command.
+
+				case $RESPONSE in
+					,)	;;
+					o)
+						(
+							echo "From ${LOGNAME} `date`"
+							cat $TMP
+							echo
+						) >$TMP3
+						echo "s 1 ${VM_OUTBOX}" | $VM_MAILCMD -N -f $TMP3 >/dev/null 2>&1
+						echo "Copy saved in outbox..."
+						VM_OUTBOX=""
+						;;
+
+					l|list)
+						${VM_PAGER} $TMP2
+						;;
+
+					d|dis*)
+						${VM_PAGER} $TMP
+						;;
+
+					R)
+						(
+							echo "Default-options: /receipt"
+							cat $TMP2
+						) > $TMP1
+						mv $TMP1 $TMP2
+						echo "Return Receipt requested..."
+						;;
+
+					x|q|exit|quit)
+						echo "Replying aborted..."
+						trap "" 2
+						cat $TMP2 >>$DEAD
+						echo "Message saved in $DEAD..."
+						exit 1
+						;;
+
+					b|body)
+						sed '1,/^$/d' <$TMP | sed '1,$s/^..*$/'"${VM_REPLYBODY}"'&/' >> $TMP2
+						echo "Body annotated..."
+						;;
+
+					v|vi|e|edit|ed|emacs)
+						$EDITOR $TMP2
+						;;
+
+					f|file)
+						cat $TMP >> $TMP2
+						echo "Body appended..."
+						;;
+
+					.|s|se*)
+						VM_REPLYEDIT=""
+						RESPONSE=""
+						;;
+
+					*)
+						echo "x - abort (or q)               b - annotate body"
+						echo "v - edit (or e)                f - include file"
+						echo "h - this message               o - save in outbox"
+						echo "l - list response              s - send message"
+						echo "d - display original           R - return receipt"
+						;;
+				esac
+			done
+			trap - 2
+			trap 'rm -f ${TMP} ${TMP2}; trap 0; exit 1' 0 1 2 3 15
+
+			echo
+
+			if [ "${VM_OUTBOX}" != "" ]; then
+				(
+					echo "From ${LOGNAME} `date`"
+					cat $TMP2
+					echo
+				) >$TMP3
+				echo "s 1 ${VM_OUTBOX}" | $VM_MAILCMD -N -f $TMP3 >/dev/null 2>&1
+				echo "Copy saved in outbox..."
+			fi
+
+			if [ -f "${VM_SIGNATURE}" ]; then
+				echo "" >>$TMP2
+				cat "${VM_SIGNATURE}" >>$TMP2
+			fi
+
+			#post Get just the header in $TMP
+
+			sed '/^$/,$d' <$TMP2 >$TMP
+
+			# Now pick out the receipients.
+
+			torcpt="`$ghead -f to -l $TMP | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/[ 	]*([^)\\]*)[ 	]*//g;s/<//g;s/>//g'`"
+			ccrcpt="`$ghead -f cc -l $TMP | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/[ 	]*([^)\\]*[ 	]*)//g;s/<//g;s/>//g'`"
+
+			RCPT="$torcpt $ccrcpt"
+			if [ "`basename ${VM_MAILCMD}`" = "post" ]; then
+				RCPT=
+				>$CCTMP
+				>$TOTMP
+				>$HCCTMP
+				>$HTOTMP
+				(unset POSTQUAL;eval ${VM_MAILCMD} -y $torcpt) | (read x; while read j
+				do
+					echo "$j" | sed 's/ ([^)]*)[ 	]*,[ 	]*$//;s/,//' >> $TOTMP
+					echo "$j" | sed 's/,[ 	]*$//g' >> $HTOTMP
+				done)
+
+				(unset POSTQUAL;eval ${VM_MAILCMD} -y $ccrcpt) | (read x; while read j
+				do
+					echo "$j" | sed 's/ ([^)]*)[ 	]*,[ 	]*$//;s/,//' >> $CCTMP
+					echo "$j" | sed 's/,[ 	]*$//g' >> $HCCTMP
+				done)
+				RCPT=`cat $CCTMP $TOTMP | sort -u`
+				$hdrexp -cTo -l$HTOTMP -i$TMP2 -o$TMP1
+				if [ "$ccrcpt" != "" ]; then
+					$hdrexp -cCc -l$HCCTMP -i$TMP1 -o$TMP2
+				else
+					mv $TMP1 $TMP2
+				fi
+			fi
+
+			
+			CMD="/bin/mail $RCPT < $TMP2"
+			echo $CMD
+			sleep 2
+			if [ "$debug" = 1 ]; then
+				cat $TMP2
+			else
+				eval $CMD
+			fi
+			if [ "$?" = 0 ]; then break; fi
+		done
+		exit 0
+		;;
+
+	# Do the forward command
+	forw)
+		TMP=/tmp/pofor$$
+		TMP1=/tmp/pofor1$$
+		TMP2=/tmp/pofor2$$
+		TMP3=/tmp/pofor3$$
+		BODY=/tmp/pofor4$$
+		CCTMP=/tmp/poford$$
+		TOTMP=/tmp/pofore$$
+		HCCTMP=/tmp/porepf$$
+		HTOTMP=/tmp/porepg$$
+		trap "rm -f ${TMP} ${TMP1} ${TMP2} ${TMP3} ${BODY} ${CCTMP} ${TOTMP}; trap 0; exit 1" 0 1 2 3 15
+		>$TMP2
+
+		echo "s $msg $TMP\nx" | $VM_MAILCMD -N -f ${VM_MAILFILE} >/dev/null 2>&1 || exit 1
+		rm -f $lock
+
+		sed '1,/^$/d' $TMP >$BODY
+		sed '/^$/,$d' $TMP >$TMP1
+
+		MESSAGE=$msg
+
+		DATE="`$ghead -f date $TMP1`"
+		if [ "$DATE" = "" ]; then
+			DATE="`grep '^From ' $TMP1 | \
+					head -1 | sed 's/^From [^ ]* //;s/ ..:.* /, /'`"
+		fi
+
+		FROM="`$ghead -f from $TMP1 | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/([^)]*[^\\]*)//g;s/<//g;s/>//g;s/[ 	][ 	]*//g'`"
+		if [ "$FROM" = "" ]; then
+			FROM="`grep '^From ' $TMP1 | head -1 | sed 's/^From //;s/ .*//'`"
+		fi
+
+		HOST="`grep '^From ' $TMP1 | grep 'remote from' | \
+										head -1 | sed 's/^.*remote from //'`"
+
+		if [ "$HOST" != "" ]; then
+			FROM="$HOST!$FROM"
+		fi
+
+		SIMPLEFROM=`echo $FROM | sed 's/.*!\([^!]*![^!]*\)/\1/'`
+
+		SUBJECT="`$ghead -f subject $TMP1`"
+		if [ "$SUBJECT" = "" ]; then
+			SUBJECT="`grep '^Subject: ' $TMP1 | head -1 | \
+							sed 's/^Subject: *//' | sed 's/^[rR][eE]: *//'`"
+		fi
+		BSUBJECT=$SUBJECT
+		if [ "$SUBJECT" = "" ]; then
+			BSUBJECT="<<`sed '/^[ 	]*$/d' $BODY | tr '\12' ' '`"
+		fi
+
+		col=`tput cols`
+		col=`expr $col - 50`
+		echo "Forwarding message..."
+
+		echo "$MESSAGE|$DATE|$SIMPLEFROM|$BSUBJECT" | \
+		awk -F'|' '{ printf "%-4d %16.16s  %-25.25s '"$vo"'%-.'$col's'"$vf"'\n", $1, $2, $3, $4 ; }'
+
+
+		#  Create the message body...
+		(
+			echo "To: "
+			if [ "`basename ${VM_MAILCMD}`" = "post" ]; then
+				echo "From: `uname -n`!`id | sed 's/ .*$//;s/.*(//;s/)//'` (`unset POSTQUAL;eval ${VM_MAILCMD} -y`)"
+			fi
+			echo "Subject: Forwarded: $SUBJECT"
+			if [ "$VM_FACELINE" != "" ]; then
+				if [ -r "$VM_FACELINE" ]; then
+					cat ${VM_FACELINE}
+				else
+					echo "Can't read face line file: $VM_FACELINE" >&2
+				fi
+			fi
+			echo ""
+			echo "-----  Forwarded Message  -----"
+			echo ""
+			sed '1,$s/^From />From /' $TMP | sed '1,$s/^./'"${VM_FORWBODY}"'&/'
+			echo ""
+			echo "-----  End of Forwarded Message  -----"
+			if [ -f "${VM_SIGNATURE}" ]; then
+				echo ""
+				cat "${VM_SIGNATURE}"
+			fi
+		) >> $TMP2
+
+		trap - 2
+		trap "" 2
+
+		while :
+		do
+			RESPONSE="xxx"
+			while [ "$RESPONSE" != "" ]; do
+				if [ "${VM_FORWEDIT}" = "" ]; then
+					echo "\nWhat now? \c"
+					if read RESPONSE; then
+						if [ "$RESPONSE" = "" ]; then
+							RESPONSE="xxx"
+						fi
+					else
+						# Done at EOF
+						break
+					fi
+				else
+					RESPONSE=`echo ${VM_FORWEDIT} | cut -f1 -d,`
+					VM_FORWEDIT=`echo ${VM_FORWEDIT} | cut -f2- -d,`
+					if [ "${VM_FORWEDIT}" = "${RESPONSE}" ]; then
+						VM_FORWEDIT=""
+					fi
+				fi
+
+				case $RESPONSE in
+					,)	;;
+					o)
+						if [ "${VM_OUTBOX}" = "" ]; then
+							echo "VM_OUTBOX not set (already did o command?)"
+						else
+							(
+								echo "From ${LOGNAME} `date`"
+								cat $TMP2
+								echo
+							) >$TMP3
+							echo s 1 ${VM_OUTBOX} | $VM_MAILCMD -N -f $TMP3 >/dev/null 2>&1
+							echo "Copy saved in outbox..."
+							VM_OUTBOX=""
+						fi
+						;;
+
+					l|list)
+						${VM_PAGER} $TMP2
+						;;
+
+					x|q|quit|exit)
+						echo "Forward aborted..."
+						trap "" 2
+						cat $TMP2 >>$DEAD
+						echo "Message saved in $DEAD..."
+						exit 1
+						;;
+
+					v|vi|e|edit|ed|emacs)
+						$EDITOR $TMP2
+						;;
+
+					R)
+						(
+							echo "Default-options: /receipt"
+							cat $TMP2
+						) > $TMP
+						mv $TMP $TMP2
+						echo "Return Receipt requested..."
+						;;
+
+					.|s|se*)
+						VM_FORWEDIT=""
+						RESPONSE=""
+						;;
+
+					*)
+						echo "x - abort (or q)               o - save in outbox"
+						echo "v - edit (or e)                s - send message"
+						echo "h - this message               R - return receipt"
+						echo "l - list response"
+							;;
+				esac
+			done
+			trap - 2
+			trap 'rm -f ${TMP} ${TMP2}; trap 0; exit 1' 0 1 2 3 15
+
+			echo
+
+			if [ "${VM_OUTBOX}" != "" ]; then
+				(
+					echo "From ${LOGNAME} `date`"
+					cat $TMP2
+					echo
+				) >$TMP3
+				echo "s 1 ${VM_OUTBOX}" | $VM_MAILCMD -N -f $TMP3 >/dev/null 2>&1
+				echo "Copy saved in outbox..."
+			fi
+
+			# Get the To: information back (might have been edited)
+			torcpt="`$ghead -f to -l $TMP2 | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/([^)]*[^\\]*)//g;s/<//g;s/>//g'`"
+			ccrcpt="$rcpt `$ghead -f cc -l $TMP2 | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/([^)]*[^\\]*)//g;s/<//g;s/>//g'`"
+
+			RCPT="$torcpt $ccrcpt"
+			if [ "`basename ${VM_MAILCMD}`" = "post" ]; then
+				RCPT=
+				>$HCCTMP
+				>$HTOTMP
+				>$CCTMP
+				>$TOTMP
+
+				(unset POSTQUAL;eval ${VM_MAILCMD} -y $torcpt )| (read x; while read j
+				do
+					echo "$j" | sed 's/ ([^)]*)[ 	]*,[ 	]*$//;s/,//' >> $TOTMP
+					echo "$j" | sed 's/,[ 	]*$//g' >> $HTOTMP
+				done)
+
+				(unset POSTQUAL;eval ${VM_MAILCMD} -y $ccrcpt )| (read x; while read j
+				do
+					echo "$j" | sed 's/ ([^)]*)[ 	]*,[ 	]*$//;s/,//' >> $CCTMP
+					echo "$j" | sed 's/,[ 	]*$//g' >> $HCCTMP
+				done)
+
+				RCPT=`cat $CCTMP $TOTMP | sort -u`
+				$hdrexp -cTo -l$HTOTMP -i$TMP2 -o$TMP1
+				if [ "$ccrcpt" != "" ]; then
+					$hdrexp -cCc -l$HCCTMP -i$TMP1 -o$TMP2
+				else
+					mv $TMP1 $TMP2
+				fi
+			fi
+
+			CMD="/bin/mail $RCPT < $TMP2"
+			echo $CMD
+			sleep 2
+			if [ "$debug" = 1 ]; then
+				cat $TMP2
+			else
+				eval $CMD
+			fi
+			if [ "$?" = 0 ]; then break; fi
+		done
+		;;
+
+
+	# Do the compose command
+	comp)
+		TMP=/tmp/comp$$
+		TMP1=/tmp/compa$$
+		TMP2=/tmp/compb$$
+		TMP3=/tmp/compc$$
+		CCTMP=/tmp/compd$$
+		TOTMP=/tmp/compe$$
+		HCCTMP=/tmp/porepf$$
+		HTOTMP=/tmp/porepg$$
+		trap "rm -f ${TMP} ${TMP1} ${TMP2} ${TMP3} ${CCTMP} ${TOTMP}; trap 0; exit 1" 0 1 2 3 15
+		>$TMP2
+
+		echo "Composing new mail message..."
+		echo
+		(
+			echo "To: "
+			if [ "`basename ${VM_MAILCMD}`" = "post" ]; then
+				echo "From: `uname -n`!`id | sed 's/ .*$//;s/.*(//;s/)//'` (`unset POSTQUAL;eval ${VM_MAILCMD} -y`)"
+			fi
+			if [ "$VM_FACELINE" != "" ]; then
+				if [ -r "$VM_FACELINE" ]; then
+					cat ${VM_FACELINE}
+				else
+					echo "Can't read face line file: $VM_FACELINE" >&2
+				fi
+			fi
+			echo "Subject: "
+			echo ""
+			if [ -f "${VM_SIGNATURE}" ]; then
+				echo ""
+				cat "${VM_SIGNATURE}"
+			fi
+		) >$TMP
+
+		# Ignore SIGINT
+		trap - 2
+		trap "" 2
+
+		while :
+		do
+			RESPONSE="xxx"
+			while [ "$RESPONSE" != "" ]; do
+				if [ "${VM_COMPEDIT}" = "" ]; then
+					echo "\nWhat now? \c"
+					if read RESPONSE; then
+						if [ "$RESPONSE" = "" ]; then
+							RESPONSE="xxx"
+						fi
+					else
+						# Done at EOF
+						break
+					fi
+				else
+					RESPONSE=`echo ${VM_COMPEDIT} | cut -f1 -d,`
+					VM_COMPEDIT=`echo ${VM_COMPEDIT} | cut -f2- -d,`
+					if [ "${VM_COMPEDIT}" = "${RESPONSE}" ]; then
+						VM_COMPEDIT=""
+					fi
+				fi
+
+				case $RESPONSE in
+					,)	;;
+					o)
+						if [ "${VM_OUTBOX}" = "" ]; then
+							echo "VM_OUTBOX not set (already did o command?)"
+						else
+							(
+								echo "From ${LOGNAME} `date`"
+								cat $TMP
+								echo
+							) >$TMP3
+							echo "s 1 ${VM_OUTBOX}" | $VM_MAILCMD -N -f $TMP3 >/dev/null 2>&1
+							echo "Copy saved in outbox..."
+							VM_OUTBOX=""
+						fi
+						;;
+
+					l|list)
+						${VM_PAGER} $TMP
+						;;
+
+					x|q|quit|exit)
+						echo "Composition aborted..."
+						trap "" 2
+						cat $TMP >>$DEAD
+						echo "Message saved in $DEAD..."
+						exit 1
+						;;
+
+					v|vi|e|edit|ed|emacs)
+						$EDITOR $TMP
+						;;
+
+					R)
+						(
+							echo "Default-options: /receipt"
+							cat $TMP
+						) > $TMP2
+						mv $TMP2 $TMP
+						echo "Return Receipt requested..."
+						;;
+
+					.|s|se*)
+						VM_COMPEDIT=""
+						RESPONSE=""
+						;;
+
+					*)
+						echo "x - abort (or q)               o - save in outbox"
+						echo "v - edit (or e)                s - send message"
+						echo "h - this message               R - return receipt"
+						echo "l - list response"
+							;;
+				esac
+			done
+			trap - 2
+			trap "rm -f ${TMP} ${TMP1} ${TMP2} ${TMP3} ${CCTMP} ${TOTMP}; trap 0; exit 1" 0 1 2 3 15
+
+			echo
+
+			if [ "${VM_OUTBOX}" != "" ]; then
+				(
+					echo "From ${LOGNAME} `date`"
+					cat $TMP
+					echo
+				) >$TMP3
+				echo "s 1 ${VM_OUTBOX}" | $VM_MAILCMD -N -f $TMP3 >/dev/null 2>&1
+				echo "Copy saved in outbox..."
+				VM_OUTBOX=""
+			fi
+
+			# Get the To: information back (might have been edited)
+			torcpt="`$ghead -f to -l $TMP | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/([^)]*[^\\]*)//g;s/<//g;s/>//g'`"
+			ccrcpt="$rcpt `$ghead -f cc -l $TMP | \
+				sed 's/\"[^\"]*[^\\]*\"//g;s/([^)]*[^\\]*)//g;s/<//g;s/>//g'`"
+
+			RCPT="$torcpt $ccrcpt"
+			if [ "`basename ${VM_MAILCMD}`" = "post" ]; then
+				RCPT=
+				>$HCCTMP
+				>$HTOTMP
+				>$CCTMP
+				>$TOTMP
+				(unset POSTQUAL;eval ${VM_MAILCMD} -y $torcpt) | (read x; while read j
+				do
+					echo "$j" | sed 's/ ([^)]*),[ 	]*$//;s/,//g' >> $TOTMP
+					echo "$j" | sed 's/,[ 	]*$//' >> $HTOTMP
+				done)
+
+				(unset POSTQUAL;eval ${VM_MAILCMD} -y $ccrcpt) | (read x; while read j
+				do
+					echo "$j" | sed 's/ ([^)]*),[ 	]*$//;s/,//g' >> $CCTMP
+					echo "$j" | sed 's/,[ 	]*$//' >> $HCCTMP
+				done)
+				RCPT=`cat $CCTMP $TOTMP | sort -u`
+				$hdrexp -cTo -l$HTOTMP -i$TMP -o$TMP1
+				if [ -s $CCTMP ]; then
+					$hdrexp -cCc -l$HCCTMP -i$TMP1 -o$TMP
+				else
+					mv $TMP1 $TMP
+				fi
+			fi
+
+			CMD="/bin/mail $RCPT < $TMP"
+			echo $CMD
+			if [ "$debug" = 1 ]; then
+				cat $TMP
+			else
+				sleep 2
+				eval $CMD
+			fi
+			if [ "$?" = 0 ]; then break; fi
+		done
+		;;
+
+	post) $VM_MAILCMD -f ${VM_MAILFILE};;
+	shell) ${SHELL:-/bin/sh};;
+	*) exit 1;
+esac
+exit

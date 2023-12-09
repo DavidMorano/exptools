@@ -1,0 +1,61 @@
+cWild carding routine - return in kill buffer
+
+C. Douglas Blewett (DR30L19) Version 4
+
+This file contains assorted wild carding routines.  "Wild" wild cards
+the string found in the kill stack and returns its result in the
+kill stack.  The interface routines (those called directly by the
+user) prompt for a string containing wild carding characters.
+
+Modified to preserve the sanity of .exec.  Saves the point, mark,
+and extent of .exec.
+
+ Interface routines
+	^Xc change directory
+	^Xr read file
+	^Xf find file
+
+	0>				Get the string
+	<
+	|û				Conditional
+		û&			Check for Null string
+			-<
+		ı				Null Check End
+		û 				Default
+			0<Wait
+			0				Print "Wait"
+			B%<.exec
+								Move to .exec
+			60=71=		Current pos.
+			80=91=	Save the mark
+			¾				Meta Moon
+			50=				Save the eoB
+			exec /bin/ls -d -
+			<usilent
+							Run the command
+			5ç¤5ç<usilent
+							Reset usilent
+			5ç ¾--
+			6ç7 8ç9	Reset point
+			%				Move back
+		ı				Default End
+	ı				Conditional End
+
+c			Wild carded change directory
+	<Change Directory (to) ?
+	øWild
+			Change directories
+	0<
+
+f			Wild carded find file
+	<Find File (File Name) ?
+	øWild
+			Find file
+	0<
+
+r			Wild carded read file
+	<Read File (File Name) ?
+	øWild
+			Read file
+	0<
+

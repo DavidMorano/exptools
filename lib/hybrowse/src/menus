@@ -1,0 +1,73 @@
+#====================== FILE ===============================
+ %System		%interface to files and operating system%
+ %System:Redraw		%redraw garbled screen%^L
+ %System:Write		%append formatted text to a file%
+ %System:Write:Section	%append current section to a file%w
+ %System:Write:Children	%append section and subsections to a file%W
+ %System:Pipe		%pipe formatted text to a shell command%
+ %System:Pipe:Section	%pipe section into a shell command%w!
+ %System:Pipe:Children	%pipe section and subsections into a command%W!
+ %System:Cmd		%run one shell command%!
+ %System:Shell		%escape to a temporary subshell%!^J
+ %System:Quit		%exit from hybrowse%Q
+
+#====================== SEARCH ===============================
+ %Find			%search for a text string%
+ %Find:Section		%search this section for a string%
+ %Find:Section:Prompt	%prompt for search string%/
+e%Find:Section:Again	%search for same string as last time%S
+v%Find:Section:Again	%search for same string as last time%n
+ %Find:Document		%search entire file for a string%
+ %Find:Document:Prompt	%prompt for search string; create index%i
+ %Find:Document:Again	%display previously-created index%I
+
+#====================== MOVE ===============================
+ %Move			%move relative to current location%
+ %Move:Up		%move toward beginning of the document%
+ %Move:Down		%move toward end of the document%
+ %Move:Left		%move toward left side of page%<
+ %Move:Right		%move toward right side of page%>
+
+#================= MOVE UP ======================
+v%Move:Up:Line		%move up one line%k
+v%Move:Up:Half		%move up a half screen%u
+ %Move:Up:sCreen	%move to previous screen%^H
+v%Move:Up:Top		%move to beginning of section%g
+e%Move:Up:Top		%move to beginning of section%^[<
+ %Move:Up:Section	%move to previous section%[
+ %Move:Up:siblinG	%move to prior section at current level%{
+ %Move:Up:Parent	%move to parent of the current section%\^
+
+#================= MOVE UP ======================
+ %Move:Down:Line	%move down one line%^J
+v%Move:Down:Half	%move down a half screen%d
+ %Move:Down:sCreen	%move down one screen%\040
+v%Move:Down:Bottom	%move to end of section%G
+e%Move:Down:Bottom	%move to end of section%^[>
+ %Move:Down:Section	%move to next section%]
+ %Move:Down:siblinG	%skip past subsections of this section%}
+
+#====================== JUMP ===============================
+ %Jump			%jump to location not relative to current location%
+ %Jump:Number		%jump to reference number%0^h
+ %Jump:Return		%return from last jump%r
+ %Jump:Flip		%exchange current and top of return stack%''
+ %Jump:Mark		%set or jump to bookmark%
+ %Jump:Mark:Set		%set bookmark at current location%m
+ %Jump:Mark:Goto	%jump to bookmark%'
+ %Jump:Prompt		%prompt for document and/or section name%@
+
+#====================== DOCUMENT ===============================
+ %Document		%jump to a standard document or section%
+ %Document:Toc		%Table of Contents for this document%t
+ %Document:Catalog	%list of all documents%c
+ %Document:Tutorial	%hybrowse tutorial document%@Tutorial^J
+ %Document:Help		%hybrowse help document%?
+ %Document:Prompt	%prompt for document and/or section name%@
+
+#====================== HELP ===============================
+ %Help			%get help on hybrowse commands%
+ %Help:List		%go to Table of Contents of the Help document%?^H
+ %Help:Summary		%go to summary of major hybrowse commands%?
+ %Help:Tutorial		%go to hybrowse tutorial%@Tutorial^J
+ %Help:Menus		%show help screen for menu-mode keys%^I?\177

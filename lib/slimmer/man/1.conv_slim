@@ -1,0 +1,132 @@
+
+
+
+     ccccoooonnnnvvvv____sssslllliiiimmmm((((1111))))  UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr aaaaddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr))))  ccccoooonnnnvvvv____sssslllliiiimmmm((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          conv_slim - convert byte layout of slimmer DB (and do
+          garbage collection)
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccoooonnnnvvvv____sssslllliiiimmmm [[[[ooooppppttttiiiioooonnnnaaaallll ppppaaaarrrraaaammmmeeeetttteeeerrrrssss]]]] DDDDBBBBPPPPAAAATTTTHHHH DDDDBBBBNNNNAAAAMMMMEEEE
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The ccccoooonnnnvvvv____sssslllliiiimmmm command processes the files of a slimmer
+          database, creating a new version of the database.  It was
+          initially written to convert slimmer databases between
+          machine characteristics (e.g. byte order, BUFSIZ), but has
+          proved very efficient as a garbage collector.
+
+          The parameters determine what aspects of the database get
+          handled:
+
+               ----tttt   Transpose the byte order for machnies with
+                    alternate configurations.  THis is primarily used
+                    going for either DEC machines or PCs to most other
+                    systems.
+
+               ----vvvv   Make the command verbose about what is going on.
+
+               ----SSSS <<<<nnnnuuuummmmbbbbeeeerrrr>>>>
+                    This indicates a record key to start the rewrite
+                    of the database with.  Note that skipped records
+                    are missing from the new database.
+
+               ----RRRR <<<<bbbboooooooolllleeeeaaaannnn>>>>
+                    This indicates which records to use in database
+                    copy.  Only records that match the Boolean are
+                    used (like in the _b_a_t_c_h_s_r_c_h command).  Note that
+                    skipped records are missing from the new database.
+
+               ----BBBB <<<<nnnnuuuummmmbbbbeeeerrrr>>>>
+                    This gives the blocksize to use in the new
+                    database files.  For efficiency, this should match
+                    the BUFSIZ parameter of the system the database
+                    will be used on.
+
+               ----IIII <<<<IIIIPPPPFFFFnnnnaaaammmmeeee>>>>
+                    Name of the IPF file being written.  This should
+                    definitely be different than the one at
+                    DBPATH/DBNAME.ipf.  ----FFFF <<<<FFFFIIIINNNNGGGGEEEERRRRnnnnaaaammmmeeee>>>> Name of the
+                    FINGER file being written.  This should definitely
+                    be different than the one at DBPATH/DBNAME.fing.
+
+     EEEEXXXXIIIITTTT VVVVAAAALLLLUUUUEEEE
+          The function exits with a positive value under a number of
+          error conditions.  In each case it prints an error message
+          describing the problem.  Two error conditions in particular
+
+
+
+     Page 1                                          (printed 8/17/90)
+
+
+
+
+
+
+     ccccoooonnnnvvvv____sssslllliiiimmmm((((1111))))  UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr aaaaddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr))))  ccccoooonnnnvvvv____sssslllliiiimmmm((((1111))))
+
+
+
+          are worth noting: it notices and exits if a write fails,
+          usually due to a storage device running out of space.  It
+          also notices if the finger file changes while it is
+          executing.
+
+     MMMMIIIISSSSSSSSIIIINNNNGGGG FFFFEEEEAAAATTTTUUUURRRREEEE
+          Presently it does not do anything with the inverted files.
+          This is a major lack, presently handled by doing a separate
+                                  build-db -i
+          which is not always an acceptable alternative.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          build-db
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 8/17/90)
+
+
+

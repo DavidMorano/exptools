@@ -1,0 +1,18 @@
+#ident "@(#) /sable/sdb/ra/rel/extension/s.bf_ext.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+typedef enum { READONLY, READWRITE } Fileperm;
+class BF_Extension : public Extension
+   {
+include(bf_ext.pd)
+public:
+   BF_Extension(const char *file,Fileperm perm=READWRITE);
+   ~BF_Extension();
+   unsigned cardinality();
+   Boolean_t startwalk();
+   Tuple * walk();
+   Boolean_t operator=(Tuple *t);
+   Boolean_t endwalk();
+   Boolean_t truncate();
+   Boolean_t operator+=(Tuple *t);
+   };

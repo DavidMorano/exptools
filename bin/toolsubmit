@@ -1,0 +1,228 @@
+#!/bin/sh
+
+# Submit a new tool to exptools.
+
+if test -z "${TOOLS:-}"
+then
+	echo "You must set and export the TOOLS variable to use $0" >&2
+	exit 1
+fi
+
+tmp=/tmp/toolsa$$
+admin=att!exptools
+name=`basename $0`
+flcnt=0
+testing=no
+ask=no
+trap "rm -f $tmp;exit" 0 1 2 3 15
+
+usage()
+{
+	exec  1>&2
+	echo "usage: $name [-ahst] [-l file] [-m file[,file...]] [-n file]"
+	echo "  -a\t\task for all file names"
+	echo "  -h\t\tshow help and exit"
+	echo "  -l files\tpackage list file"
+	echo "  -m files\tmanual page file(s)"
+	echo "  -n files\tnews file"
+	echo "  -s\t\tdo not show help"
+	echo "  -t\t\ttest mode, do not send any mail"
+	exit 1
+}
+
+manfiles=`/bin/ls [1-9].* 2>/dev/null || /bin/ls *.[1-9] 2>/dev/null`
+lsfile=`/bin/ls *.ls 2>/dev/null`
+newsfile=`/bin/ls *.news 2>/dev/null`
+if [ "$newsfile" = "" -a "$lsfile" != "" ]; then
+	newsfile=`/bin/ls \`basename $lsfile .ls\`.news 2>/dev/null`
+fi
+help=yes
+
+set -- `getopt "ahl:m:n:st" $*`
+if [ $? -ne 0 ]; then
+	usage
+fi
+while [ $# -gt 0 ]
+do	case "$1" in
+	-a)	manfiles=; lsfile=; newsfile=; shift;;
+	-h)	help=only; shift;;
+	-l)	lsfile=$2; shift 2;;
+	-m)	manfiles=`echo $2 | tr ',' ' '`; shift 2;;
+	-n)	newsfile=$2; shift 2;;
+	-s)	help=no; shift;;
+	-t)	testing=yes; shift;;
+	--)	shift; break;;
+	esac
+done
+if [ $# -gt 0 ]; then
+	echo "$name: \"$*\" Bad argument" 1>&2
+	usage
+fi
+
+# pg is not in the default PATH on Suns, and may not be in the user's PATH
+# on mips
+if test -n "$PAGER"
+then	pager=$PAGER
+elif test -x /usr/bin/pg
+then	pager=/usr/bin/pg
+elif test -x /usr/5bin/pg
+then	pager=/usr/5bin/pg
+else	pager=cat
+fi
+if [ "$help" = only ]; then
+	$pager $TOOLS/lib/toolsubmit/newprovider
+	exit
+fi
+if [ "$help" = yes ]; then
+	$pager $TOOLS/lib/toolsubmit/newprovider
+	echo
+	echo "Continue (n/y)? \c"
+	read x
+	if [ "$x" = "" -o \( "$x" != "y" -a "$x" != "yes" \) ]; then
+		exit
+	fi
+fi
+
+manfiles=`/bin/ls $manfiles`
+while [ $flcnt -eq 0 ]
+do
+	nmanfiles=`echo $manfiles | sed 's/ /, /g'`
+	echo "Using $nmanfiles for manual page source(s), okay (y/n)? \c"
+	read resp
+	if [ "$resp" = n -o "$resp" = N ]; then
+		echo "Enter name of file(s) containing manual page"
+		read manfiles
+		manfiles="`/bin/ls $manfiles`"
+	else
+		flcnt=1
+	fi
+done
+
+
+#
+#	Process file listing file
+#
+lsfile="`/bin/ls $lsfile`"
+while [ $flcnt -le 1 ]
+do
+	lsfile=`echo $lsfile | sed 's/ /, /g'`
+	echo "Using $lsfile for file list(s), okay (y/n)? \c"
+	read resp
+	if [ "$resp" = n -o "$resp" = N ]; then
+		echo "Enter name of file(s) containing file lists"
+		read lsfile
+		lsfile="`/bin/ls $lsfile`"
+	else
+		flcnt=`expr $flcnt + 1`
+	fi
+done
+
+#
+#	Process toolnews item file
+#
+newsfile="`/bin/ls $newsfile`"
+while [ $flcnt -le 2 ]
+do
+	newsfile=`echo $newsfile | sed 's/ /, /g'`
+	echo "Using $newsfile for toolnews information, okay (y/n)? \c"
+	read resp
+	if [ "$resp" = n -o "$resp" = N ]; then
+		echo "Enter name of file(s) containing the toolnews info"
+		read newsfile
+		newsfile="`/bin/ls $newsfile`"
+	else
+		flcnt=`expr $flcnt + 1`
+	fi
+done
+
+if [ "$flcnt" -ne 3 ]; then
+	echo "$name: required file(s) missing, submission aborted"
+	exit 1
+fi
+
+echo
+echo "Does this package contain any C or C++ programs (n/y)? \c"
+read cprogram
+
+echo
+echo "What is your support level number for this tool package (1-6)? \c"
+read support
+
+echo
+echo "Do you have any additional comments to add (n/y)? \c"
+echo >$tmp
+if read resp; then 
+	if [ "$resp" = "y" -o "$resp" = "Y" ]; then
+		echo "Enter your comments here..." >$tmp
+		( trap : 2 3 15; ${EDITOR:-vi} $tmp; trap "" 2 3 15 )
+	fi
+fi
+
+echo "Ready to submit (y/n)? \c"
+if read resp; then
+	if [ "$resp" = "n" -o "$resp" = "N" ]; then
+		echo "$name: submission aborted"
+		exit 1
+	fi
+else
+	echo "<EOF>"
+	exit 1
+fi
+
+(
+pkgs="`for j in $manfiles;do echo \`basename $j\`; done | sed 's/^[1-5]\.//' |
+sed 's/\.[1-5]$//' | tr '
+' ' '`"
+echo "Subject: NEW EXPTOOLS SUBMISSION: $pkgs"
+echo "
+Dear exptools administrator:
+
+This package contains the information for a proposed new package containing
+
+	$pkgs
+
+Please review this information and if you have objections or comments
+about this tool, direct them to att!exptools.  Lack of any comment
+is considered a yes vote for including this package in exptools.
+"
+echo "================= PROVIDER COMMENTS ========================"
+cat $tmp
+rm -f $tmp
+echo "=====================  TOOLNEWS  ==========================="
+for j in $newsfile
+do
+	echo "-> $j"
+	cat $j
+done
+echo "======================  MAN PAGES  ========================"
+for j in $manfiles
+do
+	dir=`dirname $j`
+	f=`basename $j`
+	echo "-> $f"
+	if expr $f : '[1-9]\.' >/dev/null
+	then	col -b <$j
+	else	nroff -man $j | col -b
+	fi
+	if [ "$?" -ne 0 ]; then
+		echo "$name: error collecting manual page $j" >&2
+		exit 1
+	fi
+done
+echo "================= PACKAGE INFORMATION ======================"
+echo
+echo "C/C++ programs: $cprogram"
+echo "Support level: $support"
+echo
+echo "=======================  FILES  ============================"
+for j in $lsfile
+do
+	echo "-> $j"
+	cat $j
+done
+echo "============================================================"
+) | if [ "$testing" = no ]; then
+	/bin/mail $admin
+else
+	$pager
+fi

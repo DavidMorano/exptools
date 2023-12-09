@@ -1,0 +1,109 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/node/s.node.3"
+.\"
+.PH "'NODE(3SB)'SBLIB C++ Library'NODE(3SB)'"
+.PF "'10/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910004'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910004'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Node - common file and directory manipulations
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <sblib.h>
+
+.SO node.dd
+.EE
+.P
+.LI "\fBDESCRIPTION\fR"
+.br
+The \*(No class provides a set of common manipulations that can be performed
+on files and directories.
+.P
+\fINode::Node()\fP accepts a pointer to a character string as the name of
+a file or directory.  If the name does not exist or is not accessible,
+\fINode::Node()\fP will generate an error message (see stat(2)) and mark the
+object as unsuccessfully constructed.  If the name is accessible, the
+object will be marked as successfully constructed.  See \fINode::valid()\fP
+for checking the success or failure of construction.
+.P
+All Node member functions will return FALSE if the object is not successfully
+constructed.  They do not generate an error in this situation.  Additionally,
+if a member function is successful, that means that the operation was
+successfully performed on all the files and directories which are contained
+in the Node.
+.P
+\fINode::chown()\fP accepts user and group ids, which are used to change
+the owner and group of the Node.  If the Node is a file, then the change is
+made to the file.  If the Node is a directory, then the directory and
+all the files and directories under it are changed.
+\fINode::chown()\fP returns TRUE if it is
+successful, otherwise it generates an error (see chown(2)) and returns FALSE.
+.P
+\fINode::copy()\fP accepts a pointer to a character string as the name of
+a Node (destination) to which this Node (source) is to be copied.
+If the source and destination Nodes are not both files or both directories,
+copy() will return FALSE.
+If the destination Node already exists, it is overwritten.
+If the source Node is a file, then
+it will be copied to the new name.  If the source Node is a directory, then
+the directory tree under it will be created under the new name
+and all of the files in source directory tree will be copied over to
+the new directory tree.  \fINode::copy()\fP returns TRUE if it is
+successful, otherwise it generates an error and returns FALSE.
+.P
+\fINode::link()\fP accepts a pointer to a character string as the name of
+a Node (destination) to which this Node (source) is to be linked.
+If the source and destination Nodes are not both files or both directories,
+link() will return FALSE.
+If the destination Node already exists, it is removed,
+and a link to the source Node is established.
+If the source Node is a file, then
+it will be linked to the new name.  If the source Node is a directory, then
+the directory tree under it will be created under the new name
+and all of the files in the source Node directory tree will be linked over to
+the new directory tree.  \fINode::link()\fP returns TRUE if it is successful,
+otherwise it generates an error (see link(2) and mkdir(2)) and returns FALSE.
+.P
+\fINode::remove()\fP removes this Node and marks it as invalid.
+\fINode::remove()\fP returns TRUE if it is successful, otherwise it 
+generates an error (see unlink(2) and rmdir(2)) and returns FALSE.
+.P
+\fINode::sameType()\fP checks the type of this Node against the type
+of the argument.  If both have the same file type, sameType()
+returns TRUE, otherwise it returns FALSE.
+.P
+\fINode::status()\fP copies this Node's stat structure into the stat
+structure passed as an argument.
+If \fINode::status()\fP is successful it returns TRUE, otherwise
+it returns FALSE.
+.P
+\fINode::valid()\fP
+returns TRUE if the Node is valid, otherwise it returns FALSE.
+It should be called by the application after a Node
+construction to determine if the Node was successfully constructed.
+.P
+\fINode::walk()\fP invokes the WALKFUNC (through ftw(3C))  for this Node, and
+all of its files and directories.  Currently, there must be 5 file descriptors
+available when walk() is invoked.  If there are not 5 file descriptors,
+ftw(3C) may fail.
+\fINode::walk()\fP returns TRUE if the Node is exhausted (ftw(3C) returns 0),
+otherwise it returns FALSE (ftw(3C) returns non-zero).
+.LI "\fBDIAGNOSTICS\fP"
+.br
+.VL 10 0
+.LI "errno"
+The \*(No operations can fail due to the failure of underlying system
+calls or stdio calls.  In that case they will call syserr.error() with an
+appropriate message and may abort.
+.LE    \" end VL of DIAGNOSTICS
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO nodeE.ex 
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+\fBintro(3SB)\fR,ftw(3C),chown(2),link(2),mkdir(2),rmdir(2),stat(2),unlink(2)

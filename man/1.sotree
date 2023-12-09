@@ -1,0 +1,132 @@
+
+
+
+     SSSSOOOOTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            SSSSOOOOTTTTRRRREEEEEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          sotree - displays troff .so inclusion hierarchy
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          sotree file
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ssssoooottttrrrreeeeeeee searches a troff file for ._s_o commands and creates a
+          tree diagram of the inclusion hierarchy.  It will detect
+          inclusion cycles and flag the names of included files that
+          it could not find.
+
+          There is only one command line parameter, the name of the
+          first file in the hierarchy.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          If the driver file "_d_o_c_u_m_e_n_t" contains
+
+               .\" Work plan document file arranger
+               .\" These comments list the contents of each file
+               .\" text           \" Includes all the text sections
+               .\" references     \" Document references
+               .\" appendices     \" Includes all appendices.
+               .\" tbl_of_content \" Table of contents
+               .so text/text
+               .so text/references
+               .so appendices/appendices
+               .so text/tbl_of_content
+
+          runing "_s_o_t_r_e_e _d_o_c_u_m_e_n_t" produces
+
+               document
+                  |text/text
+                  |   |text/sec_01
+                  |   |text/sec_02 <<could not read>>
+                  |   |text/sec_03
+                  |   |   |status/status
+                  |   |   |   |text/sec_03 <<inclusion cycle detected>>
+                  |   |   |   |status/wi_status_01
+                  |   |text/sec_04
+                  |   |   |pictures/aqo_org.pic
+                  |   |   |text/wi_categories
+                  |text/references
+                  |appendices/appendices
+                  |   |appendices/glossary
+                  |   |appendices/work_items
+                  |   |   |work_items/wi_list
+                  |   |   |   |status/wi_status_01
+                  |   |   |work_items/wi_descripts
+                  |   |   |   |work_items/MB0/MB0
+                  |   |   |   |   |work_items/MB0/mb_apply
+                  |text/tbl_of_content
+
+
+
+     Page 1                                          (printed 9/19/90)
+
+
+
+
+
+
+     SSSSOOOOTTTTRRRREEEEEEEE((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            SSSSOOOOTTTTRRRREEEEEEEE((((1111))))
+
+
+
+          Where two problems were introduced to demonstrate the output
+          when a file is missing and an inclusion cycle is present.
+          For this example "_t_e_x_t/_s_e_c__0_2" was moved out of view and a
+          ".so text/sec_03" line was placed into the file
+          "_s_t_a_t_u_s/_s_t_a_t_u_s" to create a cycle.  Note the file
+          "_s_t_a_t_u_s/_w_i__s_t_a_t_u_s__0_1" appears in two places but not in a way
+          that would create an inclusion cycle and hence no message
+          was generated.
+
+     FFFFIIIILLLLEEEESSSS
+          Uses nawk(1), in exptools on most machines.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          nawk(1), troff(1)
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          The exptool, nawk(1), must be in the user's PATH.
+
+          The tool is designed to be used in a simple manner and many
+          obvious extensions have not been added.
+
+     BBBBUUUUGGGGSSSS
+          Those in nawk that might effect this tool.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          George E. Policello
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 9/19/90)
+
+
+

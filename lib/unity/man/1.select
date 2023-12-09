@@ -1,0 +1,198 @@
+
+
+
+     uuuusssseeeelllleeeecccctttt,,,,sssseeeelllleeeecccctttt((((UUUUNNNNIIIITTTTYYYY))))  UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll  uuuusssseeeelllleeeecccctttt,,,,sssseeeelllleeeecccctttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          uselect, select - do selection and projection on a UNITY
+          table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_s_e_l_e_c_t [-q] [-Itable] [-Otable] [aname[as aname2]...] _f_r_o_m table1 \
+           [_i_n_t_o table2] [where clause]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _u_s_e_l_e_c_t builds a new table from a subset of an existing
+          table by projection and selection on an individual table.
+          If attributes are specified on the command line (before the
+          "_f_r_o_m"), then only these fields will be contained in the new
+          table in the order specified (i.e., a projection is done on
+          these fields).  Otherwise, all fields will appear in the
+          output table in the order of the original table.  The
+          optional "_a_s" feature allows the user to rename attributes
+          during the process (i.e., uselect aname1 as aname2 ...  will
+          rename the "aname1" attribute "aname2" in the description
+          file for the new table).  Finally, the _w_h_e_r_e clause selects
+          only a subset of the records based on some condition on the
+          values of certain attributes in the the table.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuusssseeeelllleeeecccctttt,,,,sssseeeelllleeeecccctttt((((UUUUNNNNIIIITTTTYYYY))))  UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll  uuuusssseeeelllleeeecccctttt,,,,sssseeeelllleeeecccctttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          The processing time of the _u_s_e_l_e_c_t command can be decreased
+          using an index created by _i_n_d_e_x.  If an index exists for the
+          _f_i_r_s_t attribute appearing in the where clause and an 'or'
+          operator does not appear at the same logical level as that
+          attribute or above, then the index provides direct access to
+          the table and thus speeds up the selection process.
+          However, an index cannot be used if the input is from the
+          standard input.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are selected.
+
+          The _u_s_e_l_e_c_t command may also be referenced by _s_e_l_e_c_t (these
+          commands are linked for upward compatibility).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following examples, based on the description file listed
+          for the /etc/passwd file on the _t_a_b_l_e(UNITY) manual page,
+          show some of the features of the _u_s_e_l_e_c_t command.
+
+          Ex. 1:  uselect -Ipasswd from - where gid leq 11 </etc/passwd
+
+          This will print out at the terminal, all records in the
+          passwd file that have a group identification number of 11.
+
+          Ex. 2:  uselect from /etc/passwd into group11 where gid leq 11
+
+          This will select the same records as in example 1, but the
+          results will be written into the group11 table (and the
+          description file Dgroup11 will also be created as a
+          duplicate of the Dpasswd description file).
+
+          Ex. 3:  uselect login uid gid from /etc/passwd \
+                     where home req "^/r1"
+
+          This command will print out the login names, and user and
+          group identification numbers for all entries in the
+          /etc/passwd file that have "/r1" as the beginning part of
+          their login directory (a regular expression equality is done
+          on the entire "home" attribute looking for those values that
+          begin with the string "/r1").
+
+          Ex. 4:  uselect login as programmer uid from /etc/passwd into tmp
+
+          This command will select all records in the /etc/passwd file
+          and for each record will output the login and user id.  The
+          login attribute will be renamed programmer in the
+          description file for tmp.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/uselect.c, zuselect.c - the C source program
+          bin/uselect, select - the executable programs (linked)
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuusssseeeelllleeeecccctttt,,,,sssseeeelllleeeecccctttt((((UUUUNNNNIIIITTTTYYYY))))  UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll  uuuusssseeeelllleeeecccctttt,,,,sssseeeelllleeeecccctttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          A<table>.<attribute>, B<table>.<attribute> - the index files
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _i_n_d_e_x(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

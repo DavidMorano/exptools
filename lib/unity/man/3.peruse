@@ -1,0 +1,462 @@
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          peruse - Step through tuples in a UNITY relation and
+          optionally change them.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****
+          iiiinnnniiiitttt____ppppeeeerrrruuuusssseeee(((( rrrreeeellllppppttttrrrr,,,, mmmmooooddddeeee ))))
+          ssssttttrrrruuuucccctttt uuuurrrreeeellllaaaattttiiiioooonnnn ****rrrreeeellllppppttttrrrr;;;;
+          cccchhhhaaaarrrr ****mmmmooooddddeeee;;;;
+
+          iiiinnnntttt
+          ppppeeeerrrruuuusssseeee(((( ppppeeeerrrrppppttttrrrr,,,, aaaattttttttrrrrvvvvaaaallllssss ))))
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****ppppeeeerrrrppppttttrrrr;;;;
+          cccchhhhaaaarrrr ********aaaattttttttrrrrvvvvaaaallllssss;;;;
+
+          iiiinnnntttt
+          ppppeeeerrrruuuusssseeee____ttttuuuupppplllleeee(((( ppppeeeerrrrppppttttrrrr,,,, ttttppppllllppppttttrrrr ))))
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****ppppeeeerrrrppppttttrrrr;;;;
+          ssssttttrrrruuuucccctttt uuuuttttuuuupppplllleeee ****ttttppppllllppppttttrrrr;;;;
+
+          iiiinnnntttt
+          ssssaaaavvvveeeettttuuuupppplllleeee(((( ppppeeeerrrrppppttttrrrr,,,, aaaattttttttrrrrvvvvaaaallllssss ))))
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****ppppeeeerrrrppppttttrrrr;;;;
+          cccchhhhaaaarrrr ********aaaattttttttrrrrvvvvaaaallllssss;;;;
+
+          iiiinnnntttt
+          eeeennnndddd____ppppeeeerrrruuuusssseeee(((( ppppeeeerrrrppppttttrrrr,,,, ccccoooommmmmmmmiiiitttt ))))
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****ppppeeeerrrrppppttttrrrr;;;;
+          iiiinnnntttt ccccoooommmmmmmmiiiitttt;;;;
+
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuussssiiiinnnnffffoooo ****
+          ppppeeeerrrruuuusssseeee____lllloooocccckkkk(((( rrrreeeellllppppttttrrrr ))))
+          ssssttttrrrruuuucccctttt uuuurrrreeeellllaaaattttiiiioooonnnn ****rrrreeeellllppppttttrrrr;;;;
+
+          iiiinnnntttt
+          ssssttttaaaarrrrtttt____ssssaaaavvvveeee(((( ppppeeeerrrrppppttttrrrr ))))
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****ppppeeeerrrrppppttttrrrr;;;;
+
+          iiiinnnntttt
+          ssssttttoooopppp____ssssaaaavvvveeee(((( ppppeeeerrrrppppttttrrrr,,,, kkkkeeeeeeeepppp____rrrreeeemmmmaaaaiiiinnnn ))))
+          ssssttttrrrruuuucccctttt uuuuppppeeeerrrruuuusssseeeeiiiinnnnffffoooo ****ppppeeeerrrrppppttttrrrr;;;;
+          iiiinnnntttt kkkkeeeeeeeepppp____rrrreeeemmmmaaaaiiiinnnn;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This set of routines is used to step through the tuples of a
+          relation one by one.  The perusal may be done for reading
+          only, or with updates.
+
+          iiiinnnniiiitttt____ppppeeeerrrruuuusssseeee() is used to initialize a peruse operation for
+          the given relation.  It returns a pointer to the peruse
+
+
+
+     Page 1                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+          information that must be used in the calls to all other
+          peruse routines.
+
+          ppppeeeerrrruuuusssseeee() reads a tuple from the relation and places pointers
+          to each attribute value in the array provided.  This routine
+          is used when only the attribute values are needed while
+          doing the perusal.
+
+          ppppeeeerrrruuuusssseeee____ttttuuuupppplllleeee() also reads a tuple from the relation and
+          places the seek location (tplptr->lseek), the tuple number
+          (tplptr->tuplenum), the tuple size (tplptr->tplsize), tuple
+          syntax error information (see the EXAMPLE section), and
+          pointers to each attribute value (tplptr->tplval) in the
+          tuple structure whose pointer is passed in.  This routine is
+          normally used only when information other than the attribute
+          values is needed while doing the perusal.
+
+          Calls to ppppeeeerrrruuuusssseeee() and ppppeeeerrrruuuusssseeee____ttttuuuupppplllleeee() may be freely
+          intermixed as needed.
+
+          When a perusal is in write mode, the ssssaaaavvvveeeettttuuuupppplllleeee() routine is
+          used to write the attribute values back out to the relation
+          after possible alterations.  If a tuple is not saved, it is
+          deleted.
+
+          The ppppeeeerrrruuuusssseeee____lllloooocccckkkk(), ssssttttaaaarrrrtttt____ssssaaaavvvveeee(), and ssssttttoooopppp____ssssaaaavvvveeee() routines
+          are for finer control over update perusals.  ppppeeeerrrruuuusssseeee____lllloooocccckkkk()
+          opens a relation for a write-mode perusal, by locking the
+          relation; however, no files are opened.  ssssttttaaaarrrrtttt____ssssaaaavvvveeee() is
+          used immediately before ppppeeeerrrruuuusssseeee() or ppppeeeerrrruuuusssseeee____ttttuuuupppplllleeee() are first
+          called to open the original and updated files.  iiiinnnniiiitttt____ppppeeeerrrruuuusssseeee
+          in write mode is roughly equivalent to a call to
+          ppppeeeerrrruuuusssseeee____lllloooocccckkkk() and ssssttttaaaarrrrtttt____ssssaaaavvvveeee().  The ssssttttoooopppp____ssssaaaavvvveeee() routine
+          closes all files associated with the update and writes all
+          changes to disk, but does not commit the changes.
+
+          After all tuples are perused, eeeennnndddd____ppppeeeerrrruuuusssseeee() is used to either
+          commit or abort the perusal.  It is smart enough to know
+          what still needs to be done to commit the perusal, depending
+          on whether on whether iiiinnnniiiitttt____ppppeeeerrrruuuusssseeee() or ppppeeeerrrruuuusssseeee____lllloooocccckkkk() was
+          used.  If this routine is called with _p_e_r_p_t_r equal to NULL,
+          then all pending perusals are either aborted or committed
+          according to the _c_o_m_m_i_t flag.  This can be used in signal
+          handlers to clean up on terminating signals.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _r_e_l_p_t_r
+               A pointer to the relation information for the perused
+
+
+
+     Page 2                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+               relation.  The relation must exist and be readable.
+               The directory where the relation exists must be
+               writeable by the effective user-id or group-id of the
+               process if the perusal is in write mode.
+
+          _m_o_d_e The perusal mode.  If _m_o_d_e starts with ``w'', the
+               perusal is in write mode; otherwise, it is for reading
+               only.
+
+          _p_e_r_p_t_r
+               The pointer to a perusal structure previously obtained
+               from iiiinnnniiiitttt____ppppeeeerrrruuuusssseeee().
+
+               If a NULL value is passed for this parameter to
+               eeeennnndddd____ppppeeeerrrruuuusssseeee(), all pending perusals will either be
+               committed or aborted according to the _c_o_m_m_i_t flag.
+
+          _a_t_t_r_v_a_l_s
+               One tuple's attribute values.  When passed to ppppeeeerrrruuuusssseeee(),
+               pointers to the next tuple's attribute values are
+               placed in this array.  When passed to ssssaaaavvvveeeettttuuuupppplllleeee(), the
+               attribute values in the array are written out to the
+               relation.
+
+          _t_p_l_p_t_r
+               A pointer to a tuple structure which will be filled in
+               with the seek location, tuple number, and attribute
+               values of the tuple.
+
+               Note:  Tuple structures do not normally have an
+               attribute value array associated with them.  It is
+               essential that tplptr->tplval be set to point to a
+               character pointer arry large enough for all the
+               attributes of the tuple.  (See the EXAMPLE section
+               below.)
+
+          _c_o_m_m_i_t
+               A boolean flag indicating whether to commit the
+               previous perusals (non-zero) or abort the changes
+               (zero).
+
+          _k_e_e_p__r_e_m_a_i_n
+               A boolean flag saying whether to keep any un-read
+               tuples.  This flag only makes a difference if
+               ssssttttoooopppp____ssssaaaavvvveeee() is called before ppppeeeerrrruuuusssseeee() has detected
+               end-of-file.  If this parameter is true (non-zero), the
+               un-read tuples are saved in the updated relation
+               unchanged.  If false (zero), the un-read tuples are
+               deleted from the updated relation.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          iiiinnnniiiitttt____ppppeeeerrrruuuusssseeee() and ppppeeeerrrruuuusssseeee____lllloooocccckkkk() return a pointer to a
+
+
+
+     Page 3                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+          perusal structure on success or NULL on failure.
+
+          All other functions return true (non-zero) on success and
+          false (zero) on failure.
+
+          If any of these routines fail, the external variable uuuueeeerrrrrrrroooorrrr
+          contains the error code.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          The maximum number of relations open for perusal
+          concurrently is twenty.  Furthermore, the number of
+          concurrent perusals is limited  by the number of open files
+          allowed, usually twenty.  Write mode perusals require two
+          open files, while read mode perusals require one open file.
+          If ppppeeeerrrruuuusssseeee____lllloooocccckkkk(), ssssttttaaaarrrrtttt____ssssaaaavvvveeee() and ssssttttoooopppp____ssssaaaavvvveeee() are used, the
+          number of concurrently open files will be minimized.
+
+          Each relation can have at most MAXATT (currently defined as
+          100 in _u_r_e_l_a_t_i_o_n._h) attributes.
+
+          It is imperative that the application provide a signal
+          handler to call eeeennnndddd____ppppeeeerrrruuuusssseeee() on terminating signals.
+          Otherwise, relations will not be unlocked when the process
+          exits.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Modify a _p_a_s_s_w_d file for a given login to a given set of new
+          values.  Handle signals, also.
+
+               #include "uquery.h"
+               #include <signal.h>
+
+               catch_sig( sig )
+               int sig;
+               {
+                    signal( sig, SIG_IGN );       /* ignore any subsequent signals */
+                    end_peruse( NULL, FALSE );    /* abort all pending perusals */
+                    /* print message about aborted perusals */
+                    exit( 2 );
+               }
+                . . .
+
+               char *attrvals[MAXATT], *newvals[MAXATT], **tmpval;
+               struct urelation *relptr;
+               struct unperuseinfo *perptr;
+               struct utuple tpl;
+
+               signal( SIGINT, catch_sig );
+               signal( SIGTERM, catch_sig );
+               signal( SIGQUIT, catch_sig );
+               signal( SIGHUP, catch_sig );
+
+
+
+
+     Page 4                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+               /*
+                * Initialize the relation for perusal in write mode.
+                */
+               perptr = init_peruse( relptr, "w" );
+               if ( perptr == NULL ) {
+                    pruerror();
+                    /* print message and return failure */
+               }
+               tpl.tplval = attrvals;
+               while( peruse_tuple( perptr, &tpl ) ) {
+                    /*
+                     * Check if the tuple had any syntax errors.  If there are any
+                     * errors, (tpl.flags & TPL_ERRORMSK) will be non-zero and
+                     * tpl.badattr will be set to the number of the first attribute
+                     * that had an error.  If there are multiple errors in tpl.flags,
+                     * which error applies to which attribute is unknown.  The routine
+                     * prtplerror() can be used to print a message describing the
+                     * error(s).  If there are no errors, this routine does nothing.
+                     *
+                     * If there are errors in the tuple, all attributes that weren't
+                     * read will be set the an empty string (i.e., ""), so there is
+                     * no need to provide special handling for the attribute values
+                     * in this case.
+                     */
+                    if ( (tpl.flags & TPL_ERRORMSK) != 0 ) {
+                         /* print message, but continue anyway */
+                         prtplerror( relptr, &tpl );
+                    }
+
+                    /*
+                     * We assume here that the login is field 0.  Normally,
+                     * we should really use findattr() (See lookupattr(3).) to
+                     * know which attributes to compare.
+                     */
+                    if ( strcmp( attrvals[0], newvals[0] )  /* found the login */
+                         tmpval = newvals;        /* save the new values */
+                    else
+                         tmpval = attrvals;       /* no match - same tuple */
+
+                    if ( ! savetuple( perptr, tmpval ) ) {  /* save the tuple */
+                         pruerror( );
+                         /* print message */
+                         end_peruse( perptr, FALSE );
+                         /* return failure */
+                    }
+               }
+               if ( ! end_peruse( perptr, TRUE ) ) {        /* commit the changes */
+                    pruerror( );
+                    /* print message and return failure */
+               }
+
+          Modify a list of relations, but use the ppppeeeerrrruuuusssseeee____lllloooocccckkkk(),
+
+
+
+     Page 5                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+          ssssttttaaaarrrrtttt____ssssaaaavvvveeee() and ssssttttoooopppp____ssssaaaavvvveeee() routines so we don't run out of
+          file descriptors.  (We don't show the signal handler this
+          time for brevity.)
+
+               #include "uquery.h"
+
+               struct urelation **rellist;        /* list of modified relations */
+               struct unperuseinfo **perlist;          /* perusal pointers for rellist */
+               int relcnt;                   /* number of relations */
+               int i;
+               char *attrvals[MAXATT];
+
+               /*
+                * Initialize each relation for perusal in write mode.
+                */
+               for( i = 0; i < relcnt; i++ ) {
+                    perlist[i] = peruse_lock( rellist[i] );
+                    if ( perlist[i] == NULL ) {
+                         pruerror();
+                         /* print message */
+                         while( i-- > 0 )    /* abort previous inits */
+                              end_peruse( perlist[i], FALSE );
+                         /* return failure */
+                    }
+               }
+               /*
+                * Go through each relation and make changes.
+                */
+               for( i = 0; i < relcnt; i++ ) {
+                    /*
+                     * Start saving tuples for the relation.  This will open
+                     * the necessary files.
+                     */
+                    if ( ! start_save( perlist[i] ) ) {
+                         pruerror();
+                         /* print message */
+                         for( i = 0; i < relcnt; i++ ) /* abort all perusals */
+                              end_peruse( perlist[i], FALSE );
+                         /* return failure */
+                    }
+                    while( peruse( perlist, attrvals ) ) {
+                         /*
+                          * Decide how the tuple should be modified or if it
+                          * should be deleted.  If it should be deleted, the
+                          * call to savetuple() should be skipped.
+                          */
+                         . . .
+                         if ( ! savetuple( perlist, attrvals ) ) { /* save the tuple */
+                              pruerror( );
+                              /* print message */
+                              for( i = 0; i < relcnt; i++ ) /* abort all perusals */
+                                   end_peruse( perlist[i], FALSE );
+
+
+
+     Page 6                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppeeeerrrruuuusssseeee((((3333))))                   NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                   ppppeeeerrrruuuusssseeee((((3333))))
+
+
+
+                              /* return failure */
+                         }
+                    }
+                    /*
+                     * Finished saving tuples.  This next call will close all files
+                     * and write the changes, but not commit them.
+                     */
+                    if ( ! stop_save( perlist[i], TRUE ) ) {
+                         pruerror();
+                         /* print message */
+                         for( i = 0; i < relcnt; i++ ) /* abort all perusals */
+                              end_peruse( perlist[i], FALSE );
+                         /* return failure */
+                    }
+               }
+               /*
+                * Now commit all the changes.
+                */
+               for( i = 0; i < relcnt; i++ ) {
+                    if ( ! end_peruse( perlist[i], TRUE ) ) { /* commit the changes */
+                         /*
+                          * This should never happen.  If it does the data is
+                          * now inconsistent.
+                          */
+                         pruerror( );
+                         /* print message and return failure */
+                    }
+               }
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cmpquery(1), do_insert(3), lookupattr(3), nalter(1), and
+          uerror(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 8/30/90)
+
+
+

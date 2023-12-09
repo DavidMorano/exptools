@@ -1,0 +1,3853 @@
+\&
+.nr N 2
+.ce 100
+.sp .5i
+\fH\s20THE\fR
+.sp .58i
+\f(HB\s38F\^I\^T\fR
+.sp .4i
+\fH\s20PROGRAMMING LANGUAGE\fR
+.sp .6i
+\f(HB\s38PRIMER\fR
+.ce 0
+.sp 2i
+.ce
+\fH\s20Lloyd H. Nakatani\s14  \v'-0.2m'\(bu\v'.2m'  \&\s20Laurence W. Ruedisueli\fR
+.BS
+.ce
+\fH\s12AT\s10&\s12T Bell Laboratories  \(bu  Murray Hill, New Jersey\fR
+.BE
+.ps 10
+.nr P 0
+.bp
+\&
+.BS
+.BE
+.sp 3i
+.in 1i
+.nf
+F\s-1IT\s+1 is AT&T proprietary.  Use pursuant to Company instructions.
+
+
+Copyright \(co 1991 by AT&T Bell Laboratories, Incorporated.
+.sp .5
+All rights reserved.
+.fi
+.in 0
+\".................................................. Begin computer block
+.de bC
+.br
+.nf
+.ft CW
+.ps -1
+.vs -1
+.ne 1i
+.sp .3v
+..
+\".................................................. End computer block
+.de eC
+.sp .3v
+.fi
+.ft R
+.ps +1
+.vs +1
+.br
+..
+\".................................................. Set tab spacing
+.de sT
+.ta .25i .5i .75i 1i 1.25i 1.5i 1.75i 2i 2.25i 2.5i 2.75i 3i
+..
+\".................................................. Chapter heading
+.de cH
+.ft H
+.ps 20
+.vs 25
+\\$1\n
+.ps 10
+.vs 12
+.sp 2
+.ft R
+.sT
+.tc  
+..
+\".................................................. Section heading
+.de SQ
+.sp 2
+.ne 1.5i
+.ft HB
+.ps +2
+\\l'6i'
+.sp .3v
+\\$1 \\$2
+.ft R
+.ps -2
+.sp
+..
+\".................................................. Subsection heading
+.de sH
+.sp 2
+.ne 1i
+.ft HB
+\\$1 \\$2
+.ft R
+.sp
+..
+\".................................................. Global parameters
+.sT
+.nr Ls 0
+.nr P 1
+.af P i
+.PH "::::" 
+.bp
+.BS
+.tl ;\fHF\s-1IT\s+1 PRIMER\fR;March 1, 1992;\fHF\s-1IT\s+1 PRIMER\fR;
+.BE
+\fH\s20PREFACE\s0\fP
+.nr P 2
+.af P i
+.sp .5i
+\l'6i'
+.sp
+F\s-1IT\s+1 is a new, general-purpose, interpreted
+programming language as powerful as C and C++,
+yet as easy to use as Awk and shell.
+With F\s-1IT\s+1's power, you can
+.nr Ls 0
+.BL 4
+.LI
+solve problems that are beyond the easy reach of Awk or shell
+.LI
+shrink big C programs into small F\s-1IT\s+1 programs 1/10 to 1/30 as large
+.LI
+do with one tool what now takes many (Awk, shell, grep, etc.)
+.LI
+be confident that your problem won't outgrow the language
+.LE
+Programming is faster and easier with F\s-1IT\s+1 because
+.nr Ls 0
+.BL 4
+.LI
+a program is defined one step at a time with instant feedback
+.LI
+the resulting program is likely to work the first time
+.LI
+and bugs are quickly found with F\s-1IT\s+1's interactive debugger
+.LE
+This Primer covers the basics of F\s-1IT\s+1
+and how to use F\s-1IT\s+1's interpreter/debugger.
+It assumes that you already know how to program,
+and that you're familiar with regular expressions.
+Familiarity with U\s-1NIX\s+1\(rg
+.FS \(rg
+U\s-1NIX\s+1 is a registered trademark of U\s-1NIX\s+1 System Laboratories,
+Inc. in the U.S.A. and other countries.
+.FE
+is helpful but not essential.
+The Primer ends with an extended example,
+and with answers to the challenges.
+.ne .5i
+.P
+You should have F\s-1IT\s+1 on hand
+to use as you go through the Primer.
+F\s-1IT\s+1 is available on any system
+that subscribes to \&\f(CWexptools\fP.
+Your system administrator
+or someone in your organization
+might be able to tell you whether F\s-1IT\s+1 is on your system,
+and where it is.
+If F\s-1IT\s+1 is not available,
+request a copy from \f(CWresearch!fit\fP
+or \f(CWfit@research.att.com\fP.
+When you get the F\s-1IT\s+1 software,
+it's best installed in a public place
+to avoid duplication and
+to make the language widely available.
+A complete tutorial/reference manual is also available
+from \f(CWresearch!fit\fP.
+.ne .5i
+.P
+We thank Clark Woodworth, Mike Kamlet, John Helfman, Pat Hawley and Dave Kristol
+for their careful review and comments pointing out gaps to fill,
+materials to rearrange,
+mistakes to correct,
+and obscurities to clarify.
+All readers of the Primer are beneficiaries of their effort.
+.bp
+.ta 6iR
+\fH\s20CONTENTS\s0\fP
+.nr P 5
+.PH ":\fHCONTENTS\fP:- \\\\nP -:\fHCONTENTS\fP:"
+.sp .5i
+\l'6i'
+.sp
+.nf
+.sp .2i
+\f(HB\s121  Getting Started	1\s0\fP
+.sp .05i
+\fH\s101.1  Exiting the Interpreter   1\s0\fP
+\fH\s101.2  Use F\s-1IT\s+1 as a Calculator   1\s0\fP
+\fH\s101.3  \f(CB\s+1Set\s-1\fP Sets the Value of a Variable   1\s0\fP
+\fH\s101.4  A Variable Name Starts with a Lower-case Letter   2\s0\fP
+\fH\s101.5  A Function Name Starts with a Capital Letter   2\s0\fP
+\fH\s101.6  Use Parentheses for Grouping   2\s0\fP
+\fH\s101.7  Escape to Shell and Return to F\s-1IT\s+1   3\s0\fP
+.sp .2i
+\f(HB\s122  Numbers	3\s0\fP
+.sp .05i
+\fH\s102.1  Whole Numbers   3\s0\fP
+\fH\s102.2  Decimal Numbers   3\s0\fP
+\fH\s102.3  Numbers are Automatically Coerced   4\s0\fP
+\fH\s102.4  Converting Numbers   4\s0\fP
+\fH\s102.5  Comparing Numbers   5\s0\fP
+\fH\s102.6  Infix Arithmetic Operators   5\s0\fP
+\fH\s102.7  Prefix Arithmetic Operators   6\s0\fP
+\fH\s102.8  \f(CB\s+1Thru\s-1\fP Enumeration   8\s0\fP
+.sp .2i
+\f(HB\s123  Arrays	9\s0\fP
+.sp .05i
+\fH\s103.1  Making a Literal Array   9\s0\fP
+\fH\s103.2  Indexing an Array   9\s0\fP
+\fH\s103.3  Enumerating the Elements of an Array   10\s0\fP
+\fH\s103.4  Appending Elements to an Array   10\s0\fP
+\fH\s103.5  Setting Multiple Elements of an Array   10\s0\fP
+\fH\s103.6  Processing Arrays with Prefix Operators   10\s0\fP
+\fH\s103.7  Multidimensional Arrays   11\s0\fP
+.sp .2i
+\f(HB\s124  Iterators for Array Processing	12\s0\fP
+.sp .05i
+\fH\s104.1  Function Reference and Dereference   12\s0\fP
+\fH\s104.2  The \f(CB\s+1DoEach\s-1\fP Iterator   12\s0\fP
+\fH\s104.3  The \f(CB\s+1Select\s-1\fP Iterator   14\s0\fP
+.sp .2i
+\f(HB\s125  Functions	14\s0\fP
+.sp .05i
+\fH\s105.1  Syntax   15\s0\fP
+\fH\s105.2  Module Files and Program Development   15\s0\fP
+\fH\s105.3  Scope of Variables and Constants   16\s0\fP
+\fH\s105.4  \f(CB\s+1Constant\s-1\fP Declarations   16\s0\fP
+\fH\s105.5  Indentation Denotes Predication   17\s0\fP
+\fH\s105.6  The \f(CB\s+1Either\s-1\fP Conditional Expression   17\s0\fP
+\fH\s105.7  The \f(CB\s+1ForEach\s-1\fP Loop   17\s0\fP
+\fH\s105.8  The \f(CB\s+1While\s-1\fP Loop   18\s0\fP
+\fH\s105.9  Recursion   18\s0\fP
+.sp .2i
+\f(HB\s126  Sequences	18\s0\fP
+.sp .05i
+\fH\s106.1  Making a Literal Sequence   19\s0\fP
+\fH\s106.2  Indexing a Character of a Sequence   19\s0\fP
+\fH\s106.3  Manipulating Subsequences of a Sequence   20\s0\fP
+\fH\s106.4  Appending a Sequence to Another Sequence   20\s0\fP
+\fH\s106.5  Comparing Sequences   20\s0\fP
+\fH\s106.6  A Variable has a Status Attribute   21\s0\fP
+\fH\s106.7  Regular Expressions   22\s0\fP
+\fH\s106.8  Changing Subsequences   22\s0\fP
+\fH\s106.9  Deleting Subsequences   23\s0\fP
+\fH\s106.10  Cutting Apart a Sequence by Removing Matching Subsequences   23\s0\fP
+\fH\s106.11  Extracting Matching Subsequences   24\s0\fP
+\fH\s106.12  Match Predicate   25\s0\fP
+.sp .2i
+\f(HB\s127  Fancy Text Formatting	25\s0\fP
+.sp .05i
+\fH\s107.1  Putting Text Inside a Frame   25\s0\fP
+.sp .2i
+\f(HB\s128  Input and Output	26\s0\fP
+.sp .05i
+\fH\s108.1  Reading from the Standard Input   26\s0\fP
+\fH\s108.2  Printing to the Standard Output   26\s0\fP
+\fH\s108.3  Reading a File   27\s0\fP
+\fH\s108.4  Writing a File   27\s0\fP
+.sp .2i
+\f(HB\s129  Records	28\s0\fP
+.sp .05i
+\fH\s109.1  Making a Record   28\s0\fP
+\fH\s109.2  Indexing a Record   28\s0\fP
+\fH\s109.3  Appending Fields to a Record   28\s0\fP
+\fH\s109.4  Looping with a Record   29\s0\fP
+.sp .2i
+\f(HB\s1210  Debugging	29\s0\fP
+.sp .05i
+\fH\s1010.1  The Trace Shows the Execution Path to the Error   30\s0\fP
+\fH\s1010.2  List the Names of the Variables of a Function   30\s0\fP
+\fH\s1010.3  Display the Value of a Variable   30\s0\fP
+\fH\s1010.4  Examine Different Levels of the Trace   30\s0\fP
+.sp .2i
+\f(HB\s1211  Working with U\s-1NIX\s+1	31\s0\fP
+.sp .05i
+\fH\s1011.1  Making a F\s-1IT\s+1 Program into a U\s-1NIX\s+1 Command   31\s0\fP
+\fH\s1011.2  Running a U\s-1NIX\s+1 Command Inside a F\s-1IT\s+1 Program   31\s0\fP
+\fH\s1011.3  Getting the Value of a Shell Variable   32\s0\fP
+.sp .2i
+\f(HB\s1212  What Next?	32\s0\fP
+.sp .05i
+.sp .2i
+\f(HB\s1213  An Extended Example for Study	33\s0\fP
+.sp .05i
+.sp .2i
+\f(HB\s1214  Answers to Challenges	34\s0\fP
+.sp .05i
+.sp .2i
+\f(HB\s12INDEX        39\s0\fP
+.sp .05i
+.fi
+.PH "::::"
+.bp
+\".................................................. Global parameters
+.sT
+.nr Ls 0
+.nr P 1
+.af P 1
+.BS
+.tl ;\fHF\s-1IT\s+1 PRIMER\fR;March 1, 1992;\fHF\s-1IT\s+1 PRIMER\fR;
+.BE
+.cH "\fH\s14THE \s22F\s20IT \s14PROGRAMMING LANGUAGE\s20 PRIMER\s10\fR"
+.PH ":\fH\(sc1\fP:- \\\\nP -:\fH\(sc1\fP:"
+.SQ "1" "Getting Started"
+.ne .5i
+.P
+To invoke F\s-1IT\s+1 for interactive use,
+type the U\s-1NIX\s+1 command \&\f(CWfit\fP.
+If \&\f(CWfit\fP can't be found
+but you know that it's installed
+on your machine,
+your \&\f(CWPATH\fP variable
+probably isn't set correctly.
+If \&\f(CWfit\fP is in the directory
+.bC
+	/usr/exptools/bin
+.eC
+then your \&\f(CWPATH\fP should mention
+that directory.
+.ne .5i
+.P
+When the \&\f(CW>\fP prompt appears,
+you can type any one-line F\s-1IT\s+1 statement.
+When you hit \&\f(CWRETURN\fP at the end of the statement,
+the F\s-1IT\s+1 interpreter evaluates the statement immediately,
+and displays the results of the evaluation.
+.PH ":\fH\(sc1.1\fP:- \\\\nP -:\fH\(sc1.1\fP:"
+.sH "1.1" "Exiting the Interpreter"
+.ne .5i
+.P
+When you are done with F\s-1IT\s+1,
+type \&\f(CWExit\fP and \&\f(CWRETURN\fP to exit the interpreter
+and return to the U\s-1NIX\s+1 shell.
+The capital \&\f(CWE\fP in \&\f(CWExit\fP is required
+because the name of a F\s-1IT\s+1 function
+must begin with a capital letter.
+.PH ":\fH\(sc1.2\fP:- \\\\nP -:\fH\(sc1.2\fP:"
+.sH "1.2" "Use F\s-1IT\s+1 as a Calculator"
+.ne .5i
+.P
+To begin,
+you can use F\s-1IT\s+1 like a fancy calculator:
+.bC
+	> 2 + 3
+	5
+	> 2*3
+	6
+	> 4/2
+	2.0
+	> 221.45 + 45.23
+	266.68
+.eC
+.PH ":\fH\(sc1.3\fP:- \\\\nP -:\fH\(sc1.3\fP:"
+.sH "1.3" "\&\f(CB\s+1Set\s-1\fP Sets the Value of a Variable"
+.ne .5i
+.P
+The \&\f(CWSet\fP function
+creates a variable and sets its value:
+.bC
+	> Set income 221.45 + 45.23 + 103.10 + 67.85
+	>
+.eC
+In this example,
+\&\f(CWincome\fP is the \fItarget variable\fP whose value is set,
+and the value of the expression after \&\f(CWincome\fP
+is the \fIsource value\fP.
+The value doesn't automatically display when you use \&\f(CWSet\fP.
+However,
+typing the variable name displays its value:
+.bC
+	> income
+	437.63
+.eC
+Variables can be used in further computations:
+.bC
+	> Set expenses 34.50 + 132.56
+	> Set profit income - expenses
+	> profit
+	270.57
+.eC
+.PH ":\fH\(sc1.4\fP:- \\\\nP -:\fH\(sc1.4\fP:"
+.sH "1.4" "A Variable Name Starts with a Lower-case Letter"
+.ne .5i
+.P
+A variable name must start with a lower-case letter,
+and include only letters, numbers and underscore.
+A name may be as long as you wish.
+Some examples are
+.bC
+	name
+	table5
+	file_name
+	profit_or_loss
+.eC
+By convention,
+variable names don't use any capital letters,
+and a name composed of two or more words
+uses underscore to separate the words.
+.PH ":\fH\(sc1.5\fP:- \\\\nP -:\fH\(sc1.5\fP:"
+.sH "1.5" "A Function Name Starts with a Capital Letter"
+.ne .5i
+.P
+Function names like \&\f(CWSet\fP
+must start with a capital letter,
+and include only letters, numbers and underscore.
+A name may be as long as you wish.
+Some examples are
+.bC
+	Log
+	Print
+	IsFile
+.eC
+By convention,
+each word of a function name
+begins with a capital letter,
+and uses lower-case letters for the rest of the word.
+Although legal,
+underscore is not used by convention as a word separator
+in function names.
+.PH ":\fH\(sc1.6\fP:- \\\\nP -:\fH\(sc1.6\fP:"
+.sH "1.6" "Use Parentheses for Grouping"
+.ne .5i
+.P
+Parentheses are used to group parts of a statement
+to ensure its proper interpretation.
+For example,
+multiplication has higher precedence than addition,
+so you must use parentheses if you want this
+.bC
+	> 2*(3 + 1)
+	8
+.eC
+instead of this
+.bC
+	> 2*3 + 1
+	7
+.eC
+.ne .5i
+.P
+Arithmetic operations have higher precedence
+than function application,
+so the \&\f(CWAbs\fP absolute value function
+gets \&\f(CW-3 + 1\fP as its argument in the
+following expression:
+.bC
+	> Abs -3 + 1
+	2
+.eC
+If \&\f(CWAbs\fP should get only \&\f(CW-3\fP as its argument,
+parentheses are necessary:
+.bC
+	> (Abs -3) + 1
+	4
+.eC
+.PH ":\fH\(sc1.7\fP:- \\\\nP -:\fH\(sc1.7\fP:"
+.sH "1.7" "Escape to Shell and Return to F\s-1IT\s+1"
+.ne .5i
+.P
+The \&\f(CWShell\fP function let's you escape
+from the interpreter to the U\s-1NIX\s+1 shell.
+When you're done with the shell,
+\&\f(CWcontrol-D\fP returns you to the interpreter
+with everything as you left it.
+You might find \&\f(CWShell\fP handy,
+for instance,
+if email arrives
+while working with F\s-1IT\s+1.
+Then you can escape to the shell,
+read your email,
+and return to your F\s-1IT\s+1 session.
+.PH ":\fH\(sc2\fP:- \\\\nP -:\fH\(sc2\fP:"
+.SQ "2" "Numbers"
+.ne .5i
+.P
+F\s-1IT\s+1's way with numbers is unusual
+in two respects.
+First,
+a number may be either
+in numerical form (\fIn\(hynum\fP for short)
+such as \&\f(CW23\fP,
+or in textual form (\fIt-num\fP)
+such as \&\f(CW"23"\fP.
+The two forms are interchangeable
+in most situations.
+Second,
+arithmetic operations
+are specified with either
+\fIinfix notation\fP
+such as \&\f(CW2 + 3\fP,
+or \fIprefix notation\fP
+such as \&\f(CWAdd 2 3\fP.
+The two notations are always interchangeable.
+.PH ":\fH\(sc2.1\fP:- \\\\nP -:\fH\(sc2.1\fP:"
+.sH "2.1" "Whole Numbers"
+.ne .5i
+.P
+A \fIwhole number\fP is a 32-bit integer.
+A literal whole number value
+in any \fIbase\fP from 2 through 36
+may be specified by appending the number
+with \&\f(CW:\fP and its base number.
+For example,
+15 in base 10 may be specified as
+.bC
+	> 1111:2
+	15
+	> 17:8
+	15
+	> f:16
+	15
+.eC
+in binary, octal and hexadecimal respectively.
+.ne .5i
+.P
+\fBChallenge 1\fP: Add the binary numbers \&\f(CW11\fP and \&\f(CW101\fP.
+.PH ":\fH\(sc2.2\fP:- \\\\nP -:\fH\(sc2.2\fP:"
+.sH "2.2" "Decimal Numbers"
+.ne .5i
+.P
+A \fIdecimal number\fP is a double-precision, floating point number.
+A literal decimal number value is in base 10,
+and may be specified using either conventional or exponential notation:
+.bC
+	> 3.14
+	3.14
+	> +.314e1
+	3.14
+	> -314e-2
+	-3.14
+.eC
+.PH ":\fH\(sc2.3\fP:- \\\\nP -:\fH\(sc2.3\fP:"
+.sH "2.3" "Numbers are Automatically Coerced"
+.ne .5i
+.P
+When a t-num is used where an n-num is expected,
+the t-num is \fIcoerced\fP (i.e., automatically converted) to an n-num.
+The arithmetic operators,
+for example,
+coerce t-nums to n-nums:
+.bC
+	> "2" + "3"
+	5
+.eC
+Conversely,
+when an n-num is used where a t-num is expected,
+the n-num is coerced to a t-num.
+For example,
+the \&\f(CWSplice\fP function for splicing together text
+coerces n-nums to t-nums:
+.bC
+	> Splice 2 "+" 3 "=" 2+3
+	"2+3=5"
+.eC
+Text such as \&\f(CW"="\fP enclosed in double quotes
+is a literal \fIsequence\fP.
+.ne .5i
+.P
+\&\f(CWSplice\fP is an example of a \fIvariadic\fP function
+that takes an indefinite number of arguments.
+Users can define functions that are variadic.
+.PH ":\fH\(sc2.4\fP:- \\\\nP -:\fH\(sc2.4\fP:"
+.sH "2.4" "Converting Numbers"
+.ne .5i
+.P
+A decimal is converted to a whole by
+.bC
+	> Whole "2.56"
+	2
+.eC
+and a whole to a decimal by
+.bC
+	> Decimal "2"
+	2.0
+.eC
+By default,
+\&\f(CWWhole\fP truncates a decimal number.
+The number can be rounded instead by
+.bC
+	> Whole |"round"| "2.56"
+	3
+.eC
+The word \&\f(CW"round"\fP
+enclosed within vertical bars
+is an example of an \fIoption\fP
+that tells the \&\f(CWWhole\fP function
+to round instead of truncating.
+Users can define functions that take options.
+.ne .5i
+.P
+An n-num can be converted explicitly to a t-num:
+.bC
+	> Set x 2.3456
+	> Text x
+	"2.3456"
+	> x                   # Text does not have a side effect on x
+	2.3456
+	> Text |"prec" 2| x   # Precision of 2 decimal places, with rounding
+	"2.35"
+	> Text |"exp"| x      # Exponential representation
+	"2.3456e+00"
+	> Text |"base" 2| 5   # Binary representation
+	"101"
+.eC
+A comment begins with \&\f(CW#\fP and ends at the end-of-line.
+The options for \&\f(CWText\fP show
+that an option can be a name only,
+or comprise both a name and value.
+.ne .5i
+.P
+\fBChallenge 2\fP: Display the sum of binary numbers \&\f(CW11\fP and \&\f(CW101\fP
+as a binary number suffixed with the base \&\f(CW:2\fP.
+.PH ":\fH\(sc2.5\fP:- \\\\nP -:\fH\(sc2.5\fP:"
+.sH "2.5" "Comparing Numbers"
+.ne .5i
+.P
+Numbers are compared using the following \fIrelational predicate\fP functions:
+.bC
+	> Eq 3 3   # Equal
+	true
+	> NE 3 3   # Not Equal
+	false
+	> GE 3 3   # Greater-than-or-Equal
+	true
+	> GT 3 3   # Greater-Than
+	false
+	> LE 3 3   # Less-than-or-Equal
+	true
+	> LT 3 3   # Less-Than
+	false
+.eC
+These functions return the
+\fIboolean\fP value \&\f(CWtrue\fP or \&\f(CWfalse\fP.
+.ne .5i
+.P
+All of these functions are variadic,
+so many numbers can be compared at once:
+.bC
+	> Eq 3 3 3 3 3 3 3 4
+	false
+	> GT 6 5 4 3 2 1
+	true
+	> Set x 300
+	> LE 0 x 1024   # Is x in the range 0-1024?
+	true
+.eC
+All of these functions coerce t-nums to n-nums:
+.bC
+	> Eq "3" 3
+	true
+.eC
+Whole and decimal numbers with the same numeric value
+are equal:
+.bC
+	> Eq 3 3.0
+	true
+.eC
+.PH ":\fH\(sc2.6\fP:- \\\\nP -:\fH\(sc2.6\fP:"
+.sH "2.6" "Infix Arithmetic Operators"
+.ne .5i
+.P
+The infix arithmetic operators are
+.bC
+	> 3**2    # Raise to power; decimal result
+	9.0
+	> 3*2     # Multiplication
+	6
+	> 3/2     # Division; decimal result
+	1.5
+	> 3 + 2   # Addition
+	5
+	> 3 - 2   # Subtraction
+	1
+.eC
+The precedence of the operators from high to low is:
+\&\f(CW**\fP; \&\f(CW*\fP and \&\f(CW/\fP; \&\f(CW+\fP and \&\f(CW-\fP.
+.ne .5i
+.P
+An important caution applies to the use of infix operators.
+Spaces or lack of spaces matter
+critically in the interpretation of infix operators.
+An infix operator should either have spaces on both sides:
+.bC
+	x + y
+	x - y
+	x * y
+	x / y
+	x ** y
+.eC
+or no space on either side:
+.bC
+	x+y
+	x-y
+	x*y
+	x/y
+	x**y
+.eC
+If a space precedes an operator and none follows, then the
+interpretation changes significantly for +, - and *:
+.bC
+	x +y   # Illegal number +y
+	x +3   # Two values: x and +3
+	x -y   # Two values: x and minus y (- is unary minus operator)
+	x *y   # Two values: x and the value returned by *y
+.eC
+The notation \&\f(CW*y\fP means that the function
+referenced by \&\f(CWy\fP is executed (see Section 4.1).
+There is no ambiguity for / and **,
+but it's best to use them like the other infix operators
+for consistency.
+.ne .5i
+.P
+Addition, subtraction and multiplication
+are done with whole numbers and yield a whole number result
+if all the numbers of an expression are whole.
+But if any number is decimal,
+the operations are done with decimal numbers,
+coercing wholes to decimals as necessary;
+the result is a decimal number.
+Division and exponentiation
+are always done with decimal numbers,
+coercing wholes to decimals as necessary;
+the result is a decimal number.
+A whole number quotient is obtained with
+.bC
+	> Whole 3/2
+	1
+.eC
+or
+.bC
+	> Whole |"round"| 3/2
+	2
+.eC
+.PH ":\fH\(sc2.7\fP:- \\\\nP -:\fH\(sc2.7\fP:"
+.sH "2.7" "Prefix Arithmetic Operators"
+.ne .5i
+.P
+Corresponding to each of the infix arithmetic operators
+is a function counterpart using prefix notation:
+.bC
+	> Pow 3 2     # Power function
+	9.0
+	> Mult 3 2    # Multiplication
+	6
+	> Div 3 2     # Division
+	1.5
+	> Add 3 2     # Addition
+	5
+	> Sub 3 2     # Subtraction
+	1
+.eC
+Any arithmetic expression using infix operators
+can be translated into an equivalent expression
+using prefix operators.
+For example,
+.bC
+	2*(3 + 1)
+.eC
+is
+.bC
+	Mult 2 Add 3 1
+.eC
+in prefix notation.
+The prefix notation using functions is often more convenient.
+For example,
+.bC
+	> Add 221.45 45.23 103.10 67.85
+	437.63
+.eC
+is more convenient and less error-prone than
+.bC
+	> 221.45 + 45.23 + 103.10 + 67.85
+	437.63
+.eC
+We'll see shortly the advantage of prefix notation
+for processing arrays of numbers.
+.ne .5i
+.P
+Other convenient arithmetic functions are
+.bC
+	> Max 3 500 2 1       # Maximum value
+	500
+	> Min 300 200 5 100   # Minimum value
+	5
+	> Inc 2               # Increment by 1
+	3
+	> Inc 2 10            # Increment by 10
+	12
+	> Dec 2               # Decrement by 1
+	1
+	> Dec 2 10            # Decrement by 10
+	-8
+.eC
+.ne .5i
+.P
+\&\f(CWInc\fP and \&\f(CWDec\fP differ from \&\f(CWAdd\fP and \&\f(CWSub\fP,
+respectively,
+by their ability to have a side effect on the
+argument passed as a shared variable.
+A \fIshared\fP variable is one that shares a value
+in common with another variable,
+and is created by prepending the \&\f(CW&\fP character,
+called a \fIshare qualifier\fP,
+to the variable name.
+For example,
+.bC
+	> Set x 1
+	> Set y &x   # y shares a value in common with x
+	> x y        # Display both
+	1 1
+	> Set y 2
+	> x y        # Both are changed
+	2 2
+	> Set x 3
+	> x y        # Sharing is symmetric
+	3 3
+.eC
+When a variable is passed normally to \&\f(CWInc\fP,
+its value is not changed:
+.bC
+	> Set u 1
+	> Inc u
+	2
+	> u
+	1
+.eC
+But when the variable is shared with \&\f(CWInc\fP,
+its value is changed:
+.bC
+	> Inc &u
+	2
+	> u
+	2
+.eC
+A shared variable passed as an argument
+enables the calling and called
+function to share the variable in common.
+.ne .5i
+.P
+A function such as \&\f(CWInc\fP has the \fIpotential\fP
+to change the value of its argument as a side effect,
+but the potential is realized only
+when a variable is shared with the function.
+Hence,
+the function user
+\(em not the function author \(em
+has the final say on side effects.
+Users can define functions with side effects.
+.ne .5i
+.P
+\&\f(CWInc\fP and \&\f(CWDec\fP treat an unbound variable
+as \&\f(CW0\fP:
+.bC
+	> w        # An unbound variable has value nil
+	nil
+	> Inc &w
+	1
+	> w        # w is coerced to a whole as a side effect
+	1
+.eC
+This behavior makes \&\f(CWInc\fP and \&\f(CWDec\fP
+convenient for manipulating
+counters and indices.
+.ne .5i
+.P
+\fBChallenge 3\fP: Temperature in Fahrenheit is converted
+to centigrade by the equation
+.bC
+	c = 5(f - 32)/9
+.eC
+Write the equation in F\s-1IT\s+1 using prefix notation.
+.ne .5i
+.P
+.PH ":\fH\(sc2.8\fP:- \\\\nP -:\fH\(sc2.8\fP:"
+.sH "2.8" "\&\f(CB\s+1Thru\s-1\fP Enumeration"
+.ne .5i
+.P
+An \fIenumeration\fP is simply a listing of values.
+For example,
+the arguments in
+.bC
+	> Add 1 2 3
+	6
+.eC
+is an enumeration of numbers.
+An enumeration consisting
+of an ascending or descending series of whole numbers
+is generated by the \&\f(CWThru\fP function:
+.bC
+	> Thru 1 10             # Ascending series (default)
+	1 2 3 4 5 6 7 8 9 10
+	> Thru 1 10 2           # Increment by 2
+	1 3 5 7 9
+	> Thru |"-"| 10 1       # Descending series
+	10 9 8 7 6 5 4 3 2 1
+.eC
+Such number series are called \&\f(CWThru\fP enumerations.
+We'll see shortly how they
+simplify the indexing of arrays
+and sequences.
+If the arguments of \&\f(CWThru\fP are inappropriate,
+no series is generated
+and the enumeration is said to be \fIvoid\fP:
+.bC
+	> Thru 1 0
+	>
+.eC
+It's easy to compute a factorial using \&\f(CWThru\fP:
+.bC
+	> Mult 1 2 3
+	6
+	> Mult Thru 1 3
+	6
+	> Mult Thru 1 10
+	3628800
+.eC
+.ne .5i
+.P
+\fBChallenge 4\fP: Make the factorial computation work
+for any positive whole number \&\f(CWn\fP,
+including \&\f(CWn = 0\fP.
+.PH ":\fH\(sc3\fP:- \\\\nP -:\fH\(sc3\fP:"
+.SQ "3" "Arrays"
+.ne .5i
+.P
+Arrays are \fIdynamic\fP.
+That is,
+their size or their elements don't have to be declared,
+and they grow or shrink on demand.
+Arrays may be \fIheterogeneous\fP.
+That is,
+an array may contain elements
+of different types.
+.PH ":\fH\(sc3.1\fP:- \\\\nP -:\fH\(sc3.1\fP:"
+.sH "3.1" "Making a Literal Array"
+.ne .5i
+.P
+A literal array is made by
+enclosing its elements inside braces:
+.bC
+	> Set a {10 20 30}
+	> a
+	{10 20 30}
+.eC
+.ne .5i
+.P
+The \fIsize\fP of an array is the count of its top-level elements,
+and is obtained by prepending
+the \&\f(CW$\fP \fIsize qualifier\fP
+to the array name:
+.bC
+	> $a
+	3
+.eC
+.ne .5i
+.P
+An array may contain elements of any type,
+including another array:
+.bC
+	> {1 23.12 "January" {500 20} "34"}
+	{1 23.12 "January" {500 20} "34"}
+.eC
+.ne .5i
+.P
+\fBChallenge 5\fP: Make an array of the even
+numbers from \&\f(CW0\fP through \&\f(CW20\fP.
+.PH ":\fH\(sc3.2\fP:- \\\\nP -:\fH\(sc3.2\fP:"
+.sH "3.2" "Indexing an Array"
+.ne .5i
+.P
+A number enclosed in square brackets
+indexes an element of an array.
+The index of the first element is \&\f(CW1\fP:
+.bC
+	> a[1]
+	10
+.eC
+The last element is indexed by
+.bC
+	> a[$]
+	30
+.eC
+where \&\f(CW$\fP is the \fIsize index\fP.
+The next-to-last element is indexed by
+.bC
+	> a[$-1]
+	20
+.eC
+When the index is out-of-range,
+the result is void:
+.bC
+	> IsVoid a[5]
+	true
+	> a[5]
+	>
+.eC
+.PH ":\fH\(sc3.3\fP:- \\\\nP -:\fH\(sc3.3\fP:"
+.sH "3.3" "Enumerating the Elements of an Array"
+.ne .5i
+.P
+Multiple elements are enumerated with multiple indices:
+.bC
+	> a[1 $]
+	10 30
+.eC
+All the elements are enumerated by
+.bC
+	> a[Thru 1 $]
+	10 20 30
+.eC
+This happens so often in practice
+that \&\f(CW[]\fP is a shorthand for
+enumerating all the elements:
+.bC
+	> a[]
+	10 20 30
+.eC
+.PH ":\fH\(sc3.4\fP:- \\\\nP -:\fH\(sc3.4\fP:"
+.sH "3.4" "Appending Elements to an Array"
+.ne .5i
+.P
+One or more elements are appended
+to an array by
+.bC
+	> Set a[$+] 40 50
+	> a
+	{10 20 30 40 50}
+.eC
+The \&\f(CW$+\fP is called the \fIappend operator\fP.
+.PH ":\fH\(sc3.5\fP:- \\\\nP -:\fH\(sc3.5\fP:"
+.sH "3.5" "Setting Multiple Elements of an Array"
+.ne .5i
+.P
+Multiple elements of an array
+can be set at the same time.
+A simple example is
+.bC
+	> Set b[1 2 3] 10 20 30
+	> b
+	{10 20 30}
+.eC
+If there are more targets to set than there are sources given,
+the sources are recycled:
+.bC
+	> Set b[2 4] 400
+	> b
+	{10 400 30 400}
+.eC
+Recycling is a general behavior that
+is often used to initialize an array:
+.bC
+	> Set b[] 0
+	> b
+	{0 0 0 0}
+.eC
+.PH ":\fH\(sc3.6\fP:- \\\\nP -:\fH\(sc3.6\fP:"
+.sH "3.6" "Processing Arrays with Prefix Operators"
+.ne .5i
+.P
+Enumerations make it convenient to process an array,
+as the following examples illustrate:
+.bC
+	> Set x {Thru 10 50 10}
+	> x
+	{10 20 30 40 50}
+	> x[]
+	10 20 30 40 50
+	> Add x[]                  # Sum elements
+	150
+	> (Add x[])/$x             # Average of elements
+	30.0
+	> Max x[]                  # Maximum element
+	50
+	> LT x[]                   # Are elements in ascending order?
+	true
+	> Permute x                # Scramble order of elements
+	{20 30 10 50 40}
+	> LT (Permute x)[]         # Elements are no longer in ascending order
+	false
+	> Splice |", "| x[]        # Splice together numbers separated by ", "
+	"10, 20, 30, 40, 50"
+	> {x[Thru 2 $]}            # Tail of array (without first element)
+	{20 30 40 50}
+	> {x[Thru 2 $] x[1]}       # Rotate array
+	{20 30 40 50 10}
+.eC
+Note that enumerations are convenient for array processing.
+.ne .5i
+.P
+\fBChallenge 6\fP: Reverse an array.
+.PH ":\fH\(sc3.7\fP:- \\\\nP -:\fH\(sc3.7\fP:"
+.sH "3.7" "Multidimensional Arrays"
+.ne .5i
+.P
+Multidimensional arrays are represented as nested arrays
+and need not be rectangular.
+For example,
+a two-dimensional array or matrix is defined by
+.bC
+	> Set m {{1 2 3} {10 20 30}}
+.eC
+The top-level elements are the rows of the matrix:
+.bC
+	> m[1]
+	{1 2 3}
+	> m[$]
+	{10 20 30}
+.eC
+Cascaded indices index the bottom-level elements or cells:
+.bC
+	> m[1][1]
+	1
+	> m[$][$]
+	30
+.eC
+.ne .5i
+.P
+The first row is enumerated by
+.bC
+	> m[1][]
+	1 2 3
+.eC
+and the first column by
+.bC
+	> m[][1]
+	1 10
+.eC
+The first row sum is
+.bC
+	> Add m[1][]
+	6
+.eC
+the first column sum is
+.bC
+	> Add m[][1]
+	11
+.eC
+and the grand sum of all the elements is
+.bC
+	> Add m[][]
+	66
+.eC
+.ne .5i
+.P
+\&\f(CWTranspose\fP transposes a matrix:
+.bC
+	> Transpose m
+	{{1 10} {2 20} {3 30}}
+.eC
+.ne .5i
+.P
+\fBChallenge 7\fP: Add a third row,
+\&\f(CW{100 200 300}\fP,
+to array \&\f(CWm\fP.
+.PH ":\fH\(sc4\fP:- \\\\nP -:\fH\(sc4\fP:"
+.SQ "4" "Iterators for Array Processing"
+.ne .5i
+.P
+An iterator processes
+an array without an explicit loop.
+Programming with iterators instead of loops
+is more efficient,
+and usually results in
+simpler and shorter programs.
+In general,
+iterators can be used when every
+element of an array is processed
+in the same way.
+.PH ":\fH\(sc4.1\fP:- \\\\nP -:\fH\(sc4.1\fP:"
+.sH "4.1" "Function Reference and Dereference"
+.ne .5i
+.P
+Iterators take a \fIfunction reference\fP as an argument.
+A function reference value is denoted
+by the \&\f(CW\'\fP character,
+called a \fIfunction reference qualifier\fP,
+prepended to a function name:
+.bC
+	> Set f \'Add
+.eC
+The \&\f(CW*\fP character,
+called a \fIfunction dereference qualifier\fP,
+prepended to a variable whose value
+is a function reference executes
+the referenced function:
+.bC
+	> *f 2 3
+	5
+.eC
+.PH ":\fH\(sc4.2\fP:- \\\\nP -:\fH\(sc4.2\fP:"
+.sH "4.2" "The \&\f(CB\s+1DoEach\s-1\fP Iterator"
+.ne .5i
+.P
+The \&\f(CWDoEach\fP iterator processes
+each element of an array with a function.
+Given the array
+.bC
+	> Set x {Thru 1 5}
+	> x
+	{1 2 3 4 5}
+.eC
+each element is incremented by
+.bC
+	> DoEach \'Inc x
+	{2 3 4 5 6}
+.eC
+negated by
+.bC
+	> DoEach \'Neg x
+	{-1 -2 -3 -4 -5}
+.eC
+and converted to a binary t-num by
+.bC
+	> DoEach \'Text |"base" 2| x
+	{"1" "10" "11" "100" "101"}
+.eC
+The size qualifier can be used
+to get the size of each element:
+.bC
+	> DoEach \'$ { {1 2} {3 4 5}}
+	{2 3}
+.eC
+.ne .5i
+.P
+An argument that is not an array
+is treated as a constant of the iteration.
+For example,
+.bC
+	> DoEach \'Mult x 5
+	{5 10 15 20 25}
+.eC
+multiplies each element by \&\f(CW5\fP,
+and
+.bC
+	> DoEach \'Splice "(" x ")"
+	{"(1)" "(2)" "(3)" "(4)" "(5)"}
+.eC
+encloses each element in parentheses.
+.ne .5i
+.P
+If several arguments are arrays,
+\&\f(CWDoEach\fP cycles through the elements
+of each one in synchrony.
+For example,
+.bC
+	> DoEach \'Mult x x
+	{1 4 9 16 25}
+.eC
+squares each element.
+.ne .5i
+.P
+With \&\f(CWDoEach\fP,
+a lot of computing can be done
+with a single statement.
+The following example shows how
+\&\f(CWDoEach\fP is used to compute
+the distance between two points.
+Given two vectors
+.bC
+	> Set u {2 3 4}
+	> Set v {1 1 1}
+.eC
+the difference between the vectors is computed by
+.bC
+	> Set diff DoEach \'Sub u v
+	> diff
+	{1 2 3}
+.eC
+Each element of \&\f(CWdiff\fP is squared by
+.bC
+	> Set squared_diff DoEach \'Pow diff 2
+	> squared_diff
+	{1.0 4.0 9.0}
+.eC
+The squared differences are summed,
+and the square root of the sum taken by
+.bC
+	>  Sqrt Add squared_diff[]
+	3.74165738677394
+.eC
+Combining all of these steps,
+the distance between the points represented
+by the vectors is computed by the one-liner
+.bC
+	> Sqrt Add (DoEach \'Pow (DoEach \'Sub u v) 2)[]
+	3.74165738677394
+.eC
+This example is illustrative of a
+general feature of F\s-1IT\s+1:
+an expression used to compute the value
+of a variable can replace the variable
+itself in another expression.
+.ne .5i
+.P
+\fBChallenge 8\fP: Generate the lower-case alphabet
+\&\f(CW"abcdefghijklmnopqrstuvwxyz"\fP.
+Use the \&\f(CWAscii\fP and \&\f(CWChar\fP functions shown below:
+.bC
+	> Ascii "a"    # Ascii code for "a"
+	97
+	> Char 97      # Character with ascii code 97
+	"a"
+.eC
+.PH ":\fH\(sc4.3\fP:- \\\\nP -:\fH\(sc4.3\fP:"
+.sH "4.3" "The \&\f(CB\s+1Select\s-1\fP Iterator"
+.ne .5i
+.P
+The \&\f(CWSelect\fP iterator selects elements
+of an array for which a predicate is true.
+For example,
+given the following array
+.bC
+	> Set p Permute {Thru 10 100 10}
+	> p
+	{30 80 70 90 100 40 60 20 50 10}
+.eC
+the elements greater than \&\f(CW50\fP
+are selected by
+.bC
+	> Select \'GT p 50
+	{80 70 90 100 60}
+.eC
+and the indices of those elements
+are selected by
+.bC
+	> Select |"index"| \'GT p 50
+	{2 3 4 5 7}
+.eC
+The array returned by \&\f(CWSelect\fP
+is enumerated by
+.bC
+	> (Select |"index"| \'GT p 50)[]
+	2 3 4 5 7
+.eC
+The enumeration is used as multiple
+indices in the following example to set
+all the elements of \&\f(CWp\fP that
+are greater than \&\f(CW50\fP to \&\f(CW0\fP:
+.bC
+	> Set p[ (Select |"index"| \'GT p 50)[] ] 0
+	> p
+	{30 0 0 0 0 40 0 20 50 10}
+.eC
+.ne .5i
+.P
+If several arguments are arrays,
+\&\f(CWSelect\fP returns an array whose elements
+are arrays containing the selected elements of each array.
+For example,
+if the heights of ten rectangles are
+.bC
+	> Set height Permute width
+	> height
+	{2 6 9 10 4 5 1 8 3 7}
+.eC
+and their widths are
+.bC
+	> Set width Permute {Thru 1 10}
+	> width
+	{3 7 9 10 6 8 1 4 2 5}
+.eC
+then the dimensions of the rectangles
+that are taller than wide are selected by
+.bC
+	> Select \'GT height width
+	{{8 4} {3 2} {7 5}}
+.eC
+.ne .5i
+.P
+\fBChallenge 9\fP: Select the dimensions of the rectangles with an area greater
+than \&\f(CW50\fP for the rectangles whose dimensions are given by
+\&\f(CW{{5 9} {8 10} {2 5} {6 3} {9 7} {6 7}}\fP.
+Hint: Use \&\f(CWTranspose\fP.
+.PH ":\fH\(sc5\fP:- \\\\nP -:\fH\(sc5\fP:"
+.SQ "5" "Functions"
+.ne .5i
+.P
+A F\s-1IT\s+1 program is usually composed
+of many short functions.
+Functions have a simple syntax,
+yet are flexible in their
+ability to define data as well as procedures.
+Functions almost always return a value or values
+(a function may be multi-valued)
+to encourage a functional programming style.
+.PH ":\fH\(sc5.1\fP:- \\\\nP -:\fH\(sc5.1\fP:"
+.sH "5.1" "Syntax"
+.ne .5i
+.P
+The syntax of a function definition is
+illustrated by the \&\f(CWMeridiem\fP function below
+which returns \&\f(CWmidnight\fP,
+\&\f(CWam\fP, \&\f(CWnoon\fP or \&\f(CWpm\fP
+depending on the time on a 24-hour clock:
+.bC
+	# Meridiem of time on 24-hour clock
+	Meridiem hour minute second
+		Constant noon 3600*12
+		Constant midnight 3600*24
+		Set seconds 3600*hour + 60*minute + second
+		Eq seconds 0
+			Return "midnight"
+		Else LT seconds noon
+			Return "am"
+		Else Eq seconds noon
+			Return "noon"
+		Else LT seconds midnight
+			Return "pm"
+		Else
+			Return "midnight"
+.eC
+The \fIfunction name\fP begins at the left margin;
+the \fIfunction arguments\fP follow the name on the same line.
+The \fIfunction body\fP is indented by one tab
+(indenting with spaces is illegal)
+from the left margin.
+\fIDeclarations\fP such as
+.bC
+	Constant noon 3600*12
+.eC
+and
+.bC
+	Local line_number
+.eC
+must be at the top of the body.
+The end of a function is signaled by
+anything other than a comment
+that begins at the left margin.
+Blank lines are ignored.
+.ne .5i
+.P
+\fILine continuation\fP is signaled by \&\f(CW\e\fP.
+The continuation line can be indented
+freely for appearance and readability sake
+using tabs and spaces.
+.ne .5i
+.P
+The value of the function is the value
+of the arguments of \&\f(CWReturn\fP.
+A function is \fImulti-valued\fP
+if more than one value is returned.
+.PH ":\fH\(sc5.2\fP:- \\\\nP -:\fH\(sc5.2\fP:"
+.sH "5.2" "Module Files and Program Development"
+.ne .5i
+.P
+Single lines can be typed directly
+into F\s-1IT\s+1 and executed,
+but a function consisting of multiple lines
+is defined in a \fImodule file\fP.
+A module file may contain
+the definitions of many functions,
+and a large program may comprise
+multiple module files.
+Section 11 describes how the
+module files can be compiled,
+loaded and linked to create
+an executable object file
+that can be run as a U\s-1NIX\s+1 command.
+.ne .5i
+.P
+A function is most conveniently typed with
+a standard text editor such
+as \fIvi\fP or \fIemacs\fP,
+and then written to a module file.
+If the \&\f(CWMeridiem\fP function above
+is defined in module file \&\f(CWmeridiem.t\fP,
+F\s-1IT\s+1 is evoked and the function compiled and loaded
+with the command
+.bC
+	$ fit meridiem.t
+.eC
+F\s-1IT\s+1 module files end with a \&\f(CW.t\fP suffix by convention.
+The function is tested by
+.bC
+	> Meridiem 12 0 0
+	"noon"
+.eC
+The function can be re-loaded during
+an interpreter session with
+.bC
+	> Load "meridiem.t"
+	true
+.eC
+.ne .5i
+.P
+On a multi-window workstation,
+it's most convenient to run
+a text editor in one window
+to type, modify and examine function definitions,
+and F\s-1IT\s+1 in another window
+to load, execute and debug the functions.
+On a terminal without multiple windows,
+the \&\f(CWShell\fP function may be used to escape
+temporarily to the shell to edit module files.
+This preserves any test data you may have.
+Upon return to the interpreter with \&\f(CWcontrol-D\fP,
+the revised modules may be reloaded with \&\f(CWLoad\fP.
+.PH ":\fH\(sc5.3\fP:- \\\\nP -:\fH\(sc5.3\fP:"
+.sH "5.3" "Scope of Variables and Constants"
+.ne .5i
+.P
+A variable is \fIprivate\fP in scope by default,
+but it may be declared \fIlocal\fP or \fIglobal\fP in scope.
+In this toy example,
+.bC
+	One
+		Local b
+		Global c
+		Set a 1
+.eC
+private variable \&\f(CWa\fP is visible only to function \&\f(CWOne\fP.
+Local variable \&\f(CWb\fP is visible to \&\f(CWOne\fP
+and any other function declaring \&\f(CWb\fP
+in the same module file.
+Global variable \&\f(CWc\fP is visible to
+any function declaring \&\f(CWc\fP
+in the entire program.
+.ne .5i
+.P
+Variables may be initialized.
+For example,
+.bC
+	Permanent Set angle 0
+	Local Set month_days {31 28 31 30 31 30 31 31 30 31 30 31}
+	Global Set output ""
+.eC
+initializes private variable \&\f(CWangle\fP
+local variable \&\f(CWmonth_days\fP,
+and global variable \&\f(CWoutput\fP.
+\&\f(CWPermanent\fP declares that \&\f(CWe\fP is permanent
+and doesn't disappear when the function returns.
+A variable may be initialized in only one function.
+.PH ":\fH\(sc5.4\fP:- \\\\nP -:\fH\(sc5.4\fP:"
+.sH "5.4" "\&\f(CB\s+1Constant\s-1\fP Declarations"
+.ne .5i
+.P
+A \&\f(CWConstant\fP declaration defines and initializes
+an immutable variable whose value cannot be changed.
+For example,
+.bC
+	Constant alphabet Splice (DoEach \'Char {Thru (Ascii "a") (Ascii "z")})[]
+	Local Constant pi Acos -1   # pi = arc cosine of -1
+	Global Constant max_size 80
+.eC
+define and initialize private, local and global constants.
+The declaration has the same syntax and semantics as assignment
+except that \&\f(CWConstant\fP takes the place of \&\f(CWSet\fP,
+and only literals and previously bound variables
+\(em perhaps created by an earlier \&\f(CWConstant\fP declaration \(em
+may be used to compute the value.
+Initialization is done at load-time,
+so the value of a constant may not depend
+on any function arguments,
+which are not bound until run-time.
+.PH ":\fH\(sc5.5\fP:- \\\\nP -:\fH\(sc5.5\fP:"
+.sH "5.5" "Indentation Denotes Predication"
+.ne .5i
+.P
+F\s-1IT\s+1 has no explicit \&\f(CWif\fP statement.
+The indentation of a body under a statement
+suffices to indicate that the statement
+is a predicate as in
+.bC
+	Eq seconds 0
+		Return "midnight"
+.eC
+Again,
+indentation must be with tabs,
+not with spaces.
+If the predicate is true,
+then its body is executed;
+otherwise its body is skipped.
+.ne .5i
+.P
+A predicate may be followed
+optionally by one or more
+conditional \&\f(CWElse\fP such as
+.bC
+	Else LT seconds noon
+.eC
+and optionally by at most
+one unconditional \&\f(CWElse\fP.
+.PH ":\fH\(sc5.6\fP:- \\\\nP -:\fH\(sc5.6\fP:"
+.sH "5.6" "The \&\f(CB\s+1Either\s-1\fP Conditional Expression"
+.ne .5i
+.P
+As a shorthand for constructs like
+.bC
+	GT weight 50
+		Set shipping "freight"
+	Else
+		Set shipping "mail"
+.eC
+there is the conditional expression
+.bC
+	Set shipping Either (GT weight 50) "freight" "mail"
+.eC
+\&\f(CWEither\fP returns the value of either
+its second or third argument depending
+on whether its first argument
+is true or false.
+.PH ":\fH\(sc5.7\fP:- \\\\nP -:\fH\(sc5.7\fP:"
+.sH "5.7" "The \&\f(CB\s+1ForEach\s-1\fP Loop"
+.ne .5i
+.P
+The \&\f(CWForEach\fP loop cycles through the top-level
+elements of a \fIcollection\fP,
+and sets the \fIloop variable\fP to each element
+of the collection in turn over the loop cycles.
+The collection may be
+either an array or a \&\f(CWThru\fP-enumeration.
+The body of the loop is indented
+under the \&\f(CWForEach\fP.
+In the \&\f(CWRowSum\fP function below,
+which computes and returns the row sums of a table,
+\&\f(CWrow\fP is the loop variable,
+and the two-dimensional array \&\f(CWtable\fP is the collection:
+.bC
+	RowSum table
+		ForEach row table
+			Set row_sum[$+] Add row[]
+		Return row_sum
+.eC
+The same function can be written
+with a \&\f(CWThru\fP-enumeration of index values
+as the collection:
+.bC
+	RowSum table
+		ForEach k Thru 1 $table
+			Set row_sum[$+] Add table[k][]
+		Return row_sum
+.eC
+.PH ":\fH\(sc5.8\fP:- \\\\nP -:\fH\(sc5.8\fP:"
+.sH "5.8" "The \&\f(CB\s+1While\s-1\fP Loop"
+.ne .5i
+.P
+The \&\f(CWWhile\fP loop cycles through its indented body
+while its predicate argument is \&\f(CWtrue\fP.
+The \&\f(CWAlphaNumeral\fP function below converts a whole number
+into a letter number suitable for numbering items in an outline.
+In its definition,
+\&\f(CWs<$+>\fP appends the source sequence
+to the end of target sequence \&\f(CWs\fP (see section 6.4),
+the modulus or remainder function \&\f(CWMod\fP
+computes the remainder of a division
+.bC
+	> Mod 7 5
+	2
+.eC
+and \&\f(CWReverse\fP reverses a sequence
+.bC
+	> Reverse "abc"
+	"cba"
+.eC
+The definition is
+.bC
+	AlphaNumeral number
+		Constant a Ascii "a"
+		Set n number
+		While GT n 0
+			Set s<$+> Char a+Mod (Dec &n) 26
+			Set n Whole n/26
+		Return Reverse s
+.eC
+The function in \&\f(CWalphanum.t\fP is loaded
+and tested as follows:
+.bC
+	$ fit alphanum.t
+	> AlphaNumeral 1
+	"a"
+	> AlphaNumeral 26
+	"z"
+	> AlphaNumeral 27
+	"aa"
+.eC
+.PH ":\fH\(sc5.9\fP:- \\\\nP -:\fH\(sc5.9\fP:"
+.sH "5.9" "Recursion"
+.ne .5i
+.P
+A function may be recursive.
+For example,
+a recursive function for computing
+the factorial is
+.bC
+	Factorial n
+		Eq n 0
+			Return 1
+		Else
+			Return n * Factorial n-1
+.eC
+.PH ":\fH\(sc6\fP:- \\\\nP -:\fH\(sc6\fP:"
+.SQ "6" "Sequences"
+.ne .5i
+.P
+Textual data are called \fIsequences\fP in F\s-1IT\s+1.
+High-level functions using regular expressions
+enable a F\s-1IT\s+1 program to manipulate text with ease.
+.PH ":\fH\(sc6.1\fP:- \\\\nP -:\fH\(sc6.1\fP:"
+.sH "6.1" "Making a Literal Sequence"
+.ne .5i
+.P
+A literal sequence is
+text enclosed in double quotes:
+.bC
+	> Set s "Fits"
+	> s
+	"Fits"
+.eC
+.ne .5i
+.P
+The \&\f(CW$\fP size qualifier prepended
+to a sequence is its size in characters:
+.bC
+	> $s
+	4
+.eC
+The sequence is shortened by reducing its size:
+.bC
+	> Set $s $s-1    # Shorten by one character
+	> s
+	"Fit"
+.eC
+The case of letters of a sequence is changed by
+.bC
+	> Set t "abc XYZ 123 .,?"
+	> LowerCase t
+	"abc xyz 123 .,?"
+	> UpperCase t
+	"ABC XYZ 123 .,?"
+.eC
+.ne .5i
+.P
+A double quote in the text must be
+escaped with \&\f(CW\e\fP:
+.bC
+	> Set greeting "\e"Fit\e" is not an acronym"
+	> greeting
+	"\e"Fit\e" is not an acronym"
+.eC
+The \fInewline\fP character is \&\f(CW"\en"\fP,
+and the \fItab\fP character is \&\f(CW"\et"\fP.
+.PH ":\fH\(sc6.2\fP:- \\\\nP -:\fH\(sc6.2\fP:"
+.sH "6.2" "Indexing a Character of a Sequence"
+.ne .5i
+.P
+A number enclosed in angle brackets indexes
+a character of a sequence:
+.bC
+	> Set u "The quick brown fox"
+	> u<1>
+	"T"
+.eC
+The last character is indexed with
+the \&\f(CW$\fP size index:
+.bC
+	> u<$>
+	"x"
+.eC
+When the index is out-of-range,
+the result is the \fInull sequence\fP \&\f(CW""\fP:
+.bC
+	> u<0>
+	""
+	> IsNull u<0>
+	true
+.eC
+.PH ":\fH\(sc6.3\fP:- \\\\nP -:\fH\(sc6.3\fP:"
+.sH "6.3" "Manipulating Subsequences of a Sequence"
+.ne .5i
+.P
+A \&\f(CWThru\fP-enumeration used as an index
+extracts a subsequence of a sequence:
+.bC
+	> u<Thru 1 4>
+	"The "
+.eC
+Only a \&\f(CWThru\fP-enumeration may be used
+to index a subsequence longer than one character.
+This is to enforce the requirement that
+the characters of a subsequence
+be contiguous in the sequence.
+.ne .5i
+.P
+When the \&\f(CWThru\fP-enumeration is void,
+the result is the null sequence:
+.bC
+	> u<Thru 1 0>
+	""
+.eC
+.ne .5i
+.P
+A subsequence can be set
+.bC
+	> Set t<Thru 1 3> "ab"      # Source is recycled
+	> t
+	"aba"
+.eC
+and extended
+.bC
+	> Set t<Thru 4 6> "12345"   # Source is truncated
+	> t
+	"abc123
+.eC
+The source sequence is recycled if it's shorter
+than the target sequence,
+and truncated if it's longer.
+.PH ":\fH\(sc6.4\fP:- \\\\nP -:\fH\(sc6.4\fP:"
+.sH "6.4" "Appending a Sequence to Another Sequence"
+.ne .5i
+.P
+A sequence is appended to another sequence by
+using the \&\f(CW$+\fP \fIappend operator\fP as an index:
+.bC
+	> u
+	"The quick brown fox"
+	> Set u<$+> " jumped over the lazy dog."
+	> u
+	"The quick brown fox jumped over the lazy dog."
+.eC
+.PH ":\fH\(sc6.5\fP:- \\\\nP -:\fH\(sc6.5\fP:"
+.sH "6.5" "Comparing Sequences"
+.ne .5i
+.P
+Sequences are compared with \&\f(CWSame\fP:
+.bC
+	> Same "a" "a" "a"
+	0
+.eC
+If the sequences are the same,
+\&\f(CWSame\fP returns \&\f(CW0\fP.
+If they differ,
+\&\f(CWSame\fP returns a negative or positive non-zero number
+depending on whether the first sequence
+precedes or follows the second in ascii sort order:
+.bC
+	> Same "a" "z"
+	-25
+	> Same "d" "a"
+	3
+.eC
+.ne .5i
+.P
+More generally,
+\&\f(CWSame\fP compares values of any type:
+.bC
+	> Same {1 2 3} {1 2 3}
+	0
+	> Same \'Add \'Sub
+	1
+.eC
+Unlike \&\f(CWEq\fP,
+\&\f(CWSame\fP doesn't coerce t-nums to n-nums:
+.bC
+	> Same 3 3
+	0
+	> Same 3 "3"
+	-1
+.eC
+See \&\f(CWSame\fP in the reference manual
+for additional examples and
+explanations of how the value returned
+depends on the things compared.
+.PH ":\fH\(sc6.6\fP:- \\\\nP -:\fH\(sc6.6\fP:"
+.sH "6.6" "A Variable has a Status Attribute"
+.ne .5i
+.P
+\&\f(CWSame\fP returns a number
+instead of \&\f(CWtrue\fP or \&\f(CWfalse\fP.
+So do we have to test the value
+of the number to determine
+whether two things are the same?
+No,
+because the number has a \fIstatus attribute\fP
+that is either \&\f(CWtrue\fP or \&\f(CWfalse\fP.
+The status of a number is independent of its value.
+The \&\f(CW?\fP \fIstatus qualifier\fP
+prepended to a variable gets its status:
+.bC
+	> ?Same "a" "a"
+	true
+	> ?Same "a" "b"
+	false
+.eC
+When a function such as \&\f(CWSame\fP is used as a predicate,
+F\s-1IT\s+1 looks only at the status of the value
+returned by the function
+to determine whether the predicate is true;
+the value itself is ignored.
+Hence,
+\&\f(CWSame\fP can be used as a predicate in the usual way:
+.bC
+	. . .
+	Same s t
+		. . .   # Sequences are the same
+	Else
+		. . .   # Sequences are different
+.eC
+.ne .5i
+.P
+More generally,
+every variable has a status attribute.
+The status of \&\f(CWnil\fP is \&\f(CWfalse\fP by default:
+.bC
+	> ?nil
+	false
+.eC
+Whenever a variable is bound to a literal value other than \&\f(CWnil\fP
+or \&\f(CWfalse\fP,
+its status is \&\f(CWtrue\fP by default:
+.bC
+	> Set s "abc"
+	> s ?s         # Display both value and status
+	"abc" true
+.eC
+The status may be set to \&\f(CWfalse\fP:
+.bC
+	> Set ?s false
+	> s ?s
+	"abc" false
+.eC
+.ne .5i
+.P
+The status enables
+a function to return
+both a value and a flag
+in a single variable.
+The flag represented by the status may signal 
+that there's something special about the value.
+For example,
+the status of the value
+returned by the \&\f(CWMod\fP modulus function
+is \&\f(CWtrue\fP only if the value is \&\f(CW0\fP:
+.bC
+	> Set rem Mod 4 2
+	> rem ?rem
+	0 true
+	> Set rem Mod 3 2
+	> rem ?rem
+	1 false
+.eC
+Hence,
+\&\f(CWMod\fP can be used to define a predicate function
+that tests whether \&\f(CWnum\fP is an even number:
+.bC
+	IsEven num
+		Return ?Mod num 2
+.eC
+.PH ":\fH\(sc6.7\fP:- \\\\nP -:\fH\(sc6.7\fP:"
+.sH "6.7" "Regular Expressions"
+.ne .5i
+.P
+Regular expressions are used extensively
+for matching text patterns in sequences.
+The syntax and semantics of regular expressions
+are as in Awk with the following differences.
+.ne .5i
+.P
+First,
+a metacharacter to be taken verbatim
+is quoted with a preceding \&\f(CW~\fP instead of \&\f(CW\e\fP.
+For example,
+the metacharacters \&\f(CW$\fP and \&\f(CW.\fP
+are quoted in
+.bC
+	"~$[0-9]+~.[0-9]+"
+.eC
+in order to match a monetary value in dollars.
+\&\f(CW~\fP is used only to quote metacharacters
+in regular expressions.
+The \&\f(CW\e\fP is used to quote a special character
+(\&\f(CW"\fP for example) in sequences generally,
+even one representing a regular expression.
+.ne .5i
+.P
+Second,
+the \&\f(CW^\fP metacharacter anchors,
+as usual,
+a regular expression to the beginning of the entire sequence.
+The \&\f(CW^\fP does not anchor a regular expression
+to the beginning of every line of a sequence.
+\&\f(CW^\fP only anchors a regular expression;
+it can't be used alone to
+match the beginning of a sequence.
+.ne .5i
+.P
+And third,
+the \&\f(CW$\fP metacharacter anchors
+a regular expression to the end of the entire sequence.
+The \&\f(CW$\fP does not anchor a regular expression
+to the end of every line of a sequence.
+\&\f(CW$\fP only anchors a regular expression;
+it can't be used alone to
+match the end of a sequence.
+.PH ":\fH\(sc6.8\fP:- \\\\nP -:\fH\(sc6.8\fP:"
+.sH "6.8" "Changing Subsequences"
+.ne .5i
+.P
+\&\f(CWChange\fP changes subsequences matching
+a regular expression.
+For example,
+leading blanks are changed to a single tab by
+.bC
+	> Change "^ +" "\et" "   Blank spaces to tab indentation"
+	"\etBlank spaces to tab indentation"
+.eC
+Given a number option,
+say \&\f(CW|1|\fP,
+\&\f(CWChange\fP changes only the first occurrence
+of the matching subsequence:
+.bC
+	> Set saying "A penny saved is a penny earned."
+	> Change |1| "penny" "dollar" saying
+	"A dollar saved is a penny earned."
+.eC
+\&\f(CWChange\fP also takes a function reference
+to compute the change:
+.bC
+	> Change "penny" \'UpperCase saying
+	"A PENNY saved is a PENNY earned."
+.eC
+.ne .5i
+.P
+The beginning of a sequence
+is changed by
+.bC
+	> Set u "pqr"
+	> Set u Splice "abc " u
+	> u
+	"abc pqr"
+.eC
+and the end of a sequence by appending
+.bC
+	> Set u<$+> " xyz"
+	> u
+	"abc pqr xyz"
+.eC
+.PH ":\fH\(sc6.9\fP:- \\\\nP -:\fH\(sc6.9\fP:"
+.sH "6.9" "Deleting Subsequences"
+.ne .5i
+.P
+\&\f(CWDelete\fP deletes subsequences
+matching a regular expression.
+\&\f(CWDelete\fP is defined using \&\f(CWChange\fP:
+.bC
+	Delete re &s
+		Return Change (Options)[] re "" &s
+.eC
+The idiom, \&\f(CW(Options)[]\fP, passes any option
+given to \&\f(CWDelete\fP on to \&\f(CWChange\fP.
+The parentheses are necessary
+because \&\f(CW(Options)[]\fP,
+which takes no argument,
+is a special case of \&\f(CW(Foo x)[]\fP.
+The \&\f(CW&s\fP means that if argument \&\f(CWs\fP
+is shared with \&\f(CWDelete\fP,
+its value will be changed
+as a side effect of the function.
+For example:
+.bC
+	> Set refrain "fa la la la la la"
+	> Delete |2| "la " &refrain        # Deletes first two occurrences
+	"fa la la la"
+	> refrain        # Changed as a side effect
+	"fa la la la"
+.eC
+.ne .5i
+.P
+\fBChallenge 10\fP: Write a function to show that
+"A man, a plan, a canal, Panama!"
+is a palindrome.
+Hint: To make the function body a one-liner,
+you may use \&\f(CWSet\fP to save a computed value
+for re-use later in the same expression,
+as in
+.bC
+	> (Set diff x-y)*diff
+.eC
+.PH ":\fH\(sc6.10\fP:- \\\\nP -:\fH\(sc6.10\fP:"
+.sH "6.10" "Cutting Apart a Sequence by Removing Matching Subsequences"
+.ne .5i
+.P
+\&\f(CWCut\fP cuts apart a sequence
+by removing the subsequences matching
+a regular expression.
+For example,
+a multi-line sequence is
+cut apart into lines by
+.bC
+	> Set s "first\ensecond\enthird\en"
+	> Cut "\en" s
+	{"first" "second" "third" ""}
+.eC
+If the sequence ends with a match,
+\&\f(CWCut\fP returns a null sequence
+for the last element.
+The \&\f(CWLines\fP function uses \&\f(CWCut\fP
+to cut a sequence into lines:
+.bC
+	Lines s
+		IsNull s
+			Return {}
+		Else Same s<$> "\en"
+			Return Cut "\en" s<Thru 1 $-1>
+		Else
+			Return Cut "\en" s
+.eC
+When the same sequence is cut into lines
+.bC
+	> Lines "first\ensecond\enthird\en"
+	{"first" "second" "third"}
+.eC
+the spurious null sequence is no longer present.
+.ne .5i
+.P
+\&\f(CWCut\fP also cuts a sequence into
+regularly sized subsequences
+given a number instead of a regular expression:
+.bC
+	> Cut 3 "abcdefgh"
+	{"abc" "def" "gh"}
+.eC
+This capability of \&\f(CWCut\fP is used by
+\&\f(CWNumComma\fP to put commas into a number:
+.bC
+	> NumComma 1234567
+	"1,234,567"
+.eC
+The definition of \&\f(CWNumComma\fP is
+.bC
+	NumComma n
+		Return Reverse Splice |","| (Cut 3 Reverse Text n)[]
+.eC
+The function reverses the order of the digits
+.bC
+	> Reverse Text 1234567
+	"7654321"
+.eC
+then cuts the reversed number into triplets
+.bC
+	> Cut 3 "7654321"
+	{"765" "432" "1"}
+.eC
+then splices the triplets together with a comma between each one
+.bC
+	> Splice |","| {"765" "432" "1"}[]
+	"765,432,1"
+.eC
+and finally reverses the digits back to their original order
+.bC
+	> Reverse "765,432,1"
+	"1,234,567"
+.eC
+Note that \&\f(CWNumComma\fP,
+as defined,
+works only for positive whole numbers.
+.ne .5i
+.P
+\fBChallenge 11\fP: Define the \&\f(CWEntab\fP function
+to replace runs of blank spaces in
+.bC
+	"one     two     three four      five\en"
+.eC
+with tabs.
+The result should be
+.bC
+	"one\ettwo\etthree four\etfive\en"
+.eC
+The original and processed sequences
+should print identically on the screen
+with tab settings at every 8th column.
+Use \&\f(CWPrint\fP to print the sequences.
+.PH ":\fH\(sc6.11\fP:- \\\\nP -:\fH\(sc6.11\fP:"
+.sH "6.11" "Extracting Matching Subsequences"
+.ne .5i
+.P
+\&\f(CWFind\fP extracts from a sequence
+all the subsequences matching a regular expression.
+.bC
+	> Find "[0-9]+" "987/555-1234"
+	{"987" "555" "1234"}
+.eC
+The regular expression \&\f(CW"[0-9]+"\fP
+matches one or more adjacent digits in any order.
+\&\f(CWFind\fP is used to define the \&\f(CWWords\fP function,
+which extracts all the words of a sequence:
+.bC
+	> Words "The cost is $3.14."
+	{"The" "cost" "is" "$3.14."}
+.eC
+The definition of \&\f(CWWords\fP
+.bC
+	Words s
+		Return Find "[^ \et\en]+" s
+.eC
+shows that a `word' is a subsequence
+not containing a blank space, tab or newline.
+The regular expression \&\f(CW"[^ \et\en]+"\fP
+matches any subsequence \fInot\fP containing
+a blank, tab or newline because
+the \&\f(CW^\fP in this context
+denotes the complementary character set.
+.ne .5i
+.P
+\fBChallenge 12\fP: Given the sequence,
+.bC
+	"1 2 3\en4 5 6\en7 8 9\en"
+.eC
+write a function to get the table
+.bC
+	{{"1" "2" "3"}
+	 {"4" "5" "6"}
+	 {"7" "8" "9"}}
+.eC
+from the sequence.
+.PH ":\fH\(sc6.12\fP:- \\\\nP -:\fH\(sc6.12\fP:"
+.sH "6.12" "Match Predicate"
+.ne .5i
+.P
+\&\f(CWMatch\fP searches for a subsequence
+matching a regular expression in a sequence,
+If a match is found,
+the first matching subsequence is returned
+with status \&\f(CWtrue\fP:
+.bC
+	> Set found Match "[0-9]+" "123 789"
+	> found ?found
+	"123" true
+.eC
+When there is no match,
+\&\f(CWMatch\fP returns the null sequence
+with status \&\f(CWfalse\fP:
+.bC
+	> Set found Match "[0-9]+" "abc xyz"
+	> found ?found
+	"" false
+.eC
+The status makes \&\f(CWMatch\fP useful as
+a regular expression match predicate.
+.ne .5i
+.P
+\fBChallenge 13\fP: Given a command name
+abbreviated by truncation,
+write a function to expand
+the abbreviation into the full command name.
+The possible commands are
+\&\f(CWadd\fP, \&\f(CWremove\fP, \&\f(CWread\fP and \&\f(CWwrite\fP.
+The function should behave as follows:
+.bC
+	> CmdName "rem"
+	"remove"
+.eC
+.PH ":\fH\(sc7\fP:- \\\\nP -:\fH\(sc7\fP:"
+.SQ "7" "Fancy Text Formatting"
+.ne .5i
+.P
+In addition to the \&\f(CWText\fP function we saw earlier,
+\&\f(CWFrame\fP is used to format text for reports
+and other output.
+No format specification sublanguage
+is required for text formatting.
+.PH ":\fH\(sc7.1\fP:- \\\\nP -:\fH\(sc7.1\fP:"
+.sH "7.1" "Putting Text Inside a Frame"
+.ne .5i
+.P
+\&\f(CWFrame\fP either left-, center- or right-justifies
+a sequence in a field of a given size:
+.bC
+	> Set s "abc"
+	> Frame |"L"| 7 s    # Left-justify
+	"abc    "
+	> Frame |"C"| 7 s    # Center-justify
+	"  abc  "
+	> Frame |"R"| 7 s    # Right-justify
+	"    abc"
+	> Frame 7 s          # Default is right-justification
+	"    abc"
+.eC
+A background sequence
+may be given in place of the field width:
+.bC
+	> Set topic Frame |"L"| ".........................." "Introduction"
+	> topic
+	"Introduction.............."
+	> Frame topic 5
+	"Introduction.............5"
+.eC
+.ne .5i
+.P
+\fBChallenge 14\fP:
+Format the time in hours, minutes and seconds on a 24-hour clock.
+A sample result is \&\f(CW"03:15:26"\fP.
+.PH ":\fH\(sc8\fP:- \\\\nP -:\fH\(sc8\fP:"
+.SQ "8" "Input and Output"
+.ne .5i
+.P
+What you've already learned about
+working with sequences
+is almost all you need to know
+to do simple input and output (i/o).
+In fact,
+you'll discover that a function
+that processes a sequence will
+also read from a file or input from the keyboard.
+.PH ":\fH\(sc8.1\fP:- \\\\nP -:\fH\(sc8.1\fP:"
+.sH "8.1" "Reading from the Standard Input"
+.ne .5i
+.P
+Input from the standard input
+\(em the keyboard input by default \(em
+is available
+as the value of the \&\f(CWstdin\fP built-in \fIsystem sequence\fP.
+In this example,
+the file \&\f(CWgreeting\fP is redirected to the standard input:
+.bC
+	$ cat greeting
+	Hello
+	$ fit < greeting
+	> stdin
+	"Hello\en"
+.eC
+A function definition that uses \&\f(CWstdin\fP
+must include the declaration
+.bC
+	Global stdin
+.eC
+at the beginning of its body.
+.ne .5i
+.P
+.PH ":\fH\(sc8.2\fP:- \\\\nP -:\fH\(sc8.2\fP:"
+.sH "8.2" "Printing to the Standard Output"
+.ne .5i
+.P
+Appending to the \&\f(CWstdout\fP built-in system sequence
+outputs to the standard output,
+which goes to the terminal screen by default:
+.bC
+	> Set stdout<$+> "Goodbye\en"
+	Goodbye
+.eC
+A function definition that uses \&\f(CWstdout\fP
+must include the declaration
+.bC
+	Global stdout
+.eC
+at the beginning of its body.
+.ne .5i
+.P
+The \&\f(CWPrint\fP function splices together
+sequences and prints them to the screen:
+.bC
+	> Print |"\en"| "one" "two" "three" ""
+	one
+	two
+	three
+.eC
+Its definition is
+.bC
+	Print arg[]
+		Global stdout
+		Set stdout<$+> Splice (Options)[] arg[]
+.eC
+The \&\f(CW[]\fP appended to argument \&\f(CWarg\fP
+makes the function variadic.
+Within the function,
+\&\f(CWarg\fP is an array whose
+elements are the arguments
+passed to the function.
+.PH ":\fH\(sc8.3\fP:- \\\\nP -:\fH\(sc8.3\fP:"
+.sH "8.3" "Reading a File"
+.ne .5i
+.P
+A file named \&\f(CWgreeting\fP is read by
+.bC
+	> Set f File "greeting"
+	> f
+	"Hello\en"
+.eC
+The \fIfile sequence\fP, \&\f(CWf\fP,
+can be treated like any other sequence:
+.bC
+	> f<1>
+	"H"
+	> $f
+	6
+.eC
+.PH ":\fH\(sc8.4\fP:- \\\\nP -:\fH\(sc8.4\fP:"
+.sH "8.4" "Writing a File"
+.ne .5i
+.P
+The file \&\f(CWfarewell\fP is opened for writing
+and associated with a sequence by
+.bC
+	> Set out File |"w"| "farewell"
+.eC
+Sequences appended to \&\f(CWout\fP
+are written to the file:
+.bC
+	> Set out<$+> "Goodbye\en"
+	> Exit
+	$ cat farewell
+	Goodbye
+	$
+.eC
+.ne .5i
+.P
+\fBChallenge 15\fP:
+Write a program that takes the names
+of input and output files as arguments,
+numbers the lines of the input file,
+and writes the numbered lines
+to the output file.
+.PH ":\fH\(sc9\fP:- \\\\nP -:\fH\(sc9\fP:"
+.SQ "9" "Records"
+.ne .5i
+.P
+A record is an array indexed by sequences
+called \fIkeys\fP.
+Records are handy for maintaining
+the connection between key terms
+and the data associated with those terms.
+.PH ":\fH\(sc9.1\fP:- \\\\nP -:\fH\(sc9.1\fP:"
+.sH "9.1" "Making a Record"
+.ne .5i
+.P
+A \fIfield\fP of the \&\f(CWlunch\fP record
+keyed by \&\f(CW"appetizer"\fPis created
+and its value set by
+.bC
+	> Set lunch["appetizer"] "Fruit cup"
+	> lunch
+	{
+	  appetizer  "Fruit cup"
+	}
+.eC
+In a record display,
+the key is not enclosed in quotes
+to distinguish it from a sequence field value.
+Multiple elements can be set at the same time:
+.bC
+	> Set lunch["appetizer" "entree" "dessert"] "Fruit cup" "Prime rib" "Sundae"
+	> lunch
+	{
+	  appetizer  "Fruit cup"
+	  entree     "Prime rib"
+	  dessert    "Sundae"
+	}
+.eC
+.ne .5i
+.P
+The keys of \&\f(CWlunch\fP are obtained by
+.bC
+	> Keys lunch
+	{"appetizer" "entree" "dessert"}
+.eC
+.PH ":\fH\(sc9.2\fP:- \\\\nP -:\fH\(sc9.2\fP:"
+.sH "9.2" "Indexing a Record"
+.ne .5i
+.P
+A field of a record is indexed either with a key
+.bC
+	> lunch["entree"]
+	"Prime rib"
+.eC
+or with an \fIordinal\fP,
+which is a whole number corresponding
+to the position of the field in the record:
+.bC
+	> lunch[2]
+	"Prime rib"
+.eC
+.PH ":\fH\(sc9.3\fP:- \\\\nP -:\fH\(sc9.3\fP:"
+.sH "9.3" "Appending Fields to a Record"
+.ne .5i
+.P
+When a field with a new key is set,
+the field is appended to the record:
+.bC
+	> Set lunch["after-dinner drink"] "Cream sherry"
+	> lunch
+	{
+	  appetizer           "Fruit cup"
+	  entree              "Prime rib"
+	  dessert             "Sundae"
+	  after-dinner drink  "Cream sherry"
+	}
+.eC
+The order in which the fields are set
+is preserved in the record.
+.PH ":\fH\(sc9.4\fP:- \\\\nP -:\fH\(sc9.4\fP:"
+.sH "9.4" "Looping with a Record"
+.ne .5i
+.P
+The following function loops through
+the keys of a record and uses
+each key as an index:
+.bC
+	PrintMeal meal
+		ForEach course Keys meal
+			Print course ": " meal[course] "\en"
+.eC
+If the function is in file \&\f(CWprintmeal.t\fP,
+the function is loaded and tested by
+.bC
+	> Load "printmeal.t"
+	true
+	> PrintMeal lunch
+	appetizer: Fruit cup
+	entree: Prime rib
+	dessert: Sundae
+	after-dinner drink: Cream sherry
+	>
+.eC
+.ne .5i
+.P
+\fBChallenge 16\fP: Write a program that counts how often
+each word occurs in: "Ask not what your country can
+do for you.  Ask instead what you can do for your country."
+The program should print the result.
+.PH ":\fH\(sc10\fP:- \\\\nP -:\fH\(sc10\fP:"
+.SQ "10" "Debugging"
+.ne .5i
+.P
+When a program fails,
+F\s-1IT\s+1's debugger shows how the program got to the error
+and what happened along the way.
+.ne .5i
+.P
+To illustrate debugging,
+the following two functions
+are defined in file \&\f(CWbuggy.t\fP:
+.bC
+	One
+		Set greeting "Hello"
+		Two greeting
+	Two text
+		Print texxt "\en"
+.eC
+\&\f(CWTwo\fP contains a bug:
+\&\f(CWtext\fP is misspelled when
+passed to \&\f(CWPrint\fP.
+.ne .5i
+.P
+F\s-1IT\s+1 starts and loads \&\f(CWbuggy.t\fP.
+When \&\f(CWOne\fP is executed,
+the program halts: 
+.bC
+	$ fit buggy.t
+	> One
+	Error at line 3 of "/home/abc/fit/lib/fit.lib:./print.t"
+	Splice: Expected text argument
+	>>
+.eC
+The double \&\f(CW>>\fP prompt indicates that
+two instances of the interpreter are running:
+the first is halted at the error;
+the second is triggered by the error
+and is running for use as a debugger.
+An instance is exited and a prompt removed
+with \&\f(CWcontrol-D\fP.
+When there is only one \&\f(CW>\fP,
+\&\f(CWcontrol-D\fP terminates the session.
+\&\f(CWSplice\fP is complaining about a bad argument,
+but neither \&\f(CWOne\fP nor \&\f(CWTwo\fP calls \&\f(CWSplice\fP.
+So who called \&\f(CWSplice\fP?
+The answer is found in the trace shown next.
+.PH ":\fH\(sc10.1\fP:- \\\\nP -:\fH\(sc10.1\fP:"
+.sH "10.1" "The Trace Shows the Execution Path to the Error"
+.ne .5i
+.P
+A \fItrace\fP showing the execution path to
+the error is displayed by \&\f(CWT\fP (for \&\f(CWT\fPrace):
+.bC
+	>> T
+	* 3     Print, line 3 of "/home/abc/fit/lib/fit.lib:./print.t"
+	  2     Two, line 5 of "./buggy.t"
+	  1     One, line 3 of "./buggy.t"
+.eC
+Only functions written in F\s-1IT\s+1 appear in the trace;
+\&\f(CWSplice\fP doesn't appear because it's written in C.
+The trace lists the functions called
+in reverse order.
+The first trace line says that the program
+is stopped at line 3 of \&\f(CWPrint\fP,
+which was loaded from file \&\f(CW/home/abc/fit/lib/fit.lib\fP,
+and is defined in file \&\f(CWprint.t\fP.
+In the definition of \&\f(CWPrint\fP we saw in Section 8.2,
+\&\f(CWSplice\fP is called in line 3.
+The \&\f(CW*\fP indicates that the debugger
+is focused on level 3,
+and that corresponding function,
+namely \&\f(CWPrint\fP,
+can be examined with the techniques shown below.
+.PH ":\fH\(sc10.2\fP:- \\\\nP -:\fH\(sc10.2\fP:"
+.sH "10.2" "List the Names of the Variables of a Function"
+.ne .5i
+.P
+A roster of the variables
+in the focal function
+is displayed by \&\f(CWV\fP (for \&\f(CWV\fPariable):
+.bC
+	>> V
+	Print
+	 arg[] .... Argument
+	 stdout ... Global
+.eC
+The term `variables' also covers
+arguments and constants.
+\&\f(CWV\fP names the focal function \&\f(CWPrint\fP
+and displays its variadic argument \&\f(CWarg[]\fP
+and global variable \&\f(CWstdout\fP.
+.PH ":\fH\(sc10.3\fP:- \\\\nP -:\fH\(sc10.3\fP:"
+.sH "10.3" "Display the Value of a Variable"
+.ne .5i
+.P
+The value of a variable is displayed
+in the usual way by simply typing its name:
+.bC
+	>> arg
+	{nil "\en"}
+.eC
+According to the display,
+\&\f(CWPrint\fP got \&\f(CWnil\fP
+instead of the value of \&\f(CWtext\fP
+for its first argument.
+Why did \&\f(CWPrint\fP get \&\f(CWnil\fP?
+.PH ":\fH\(sc10.4\fP:- \\\\nP -:\fH\(sc10.4\fP:"
+.sH "10.4" "Examine Different Levels of the Trace"
+.ne .5i
+.P
+To examine the variables passed to \&\f(CWPrint\fP,
+the examination level is changed to level 2
+in the trace by
+.bC
+	>> E 2
+.eC
+The variables of \&\f(CWTwo\fP are listed by
+.bC
+	>> V
+	Two
+	 text .... Argument
+	 texxt
+.eC
+\&\f(CWtext\fP has the expected value
+.bC
+	>> text
+	"Hello"
+.eC
+but the value of the spurious variable named \&\f(CWtexxt\fP
+is \&\f(CWnil\fP:
+.bC
+	>> texxt
+	nil
+.eC
+Since \&\f(CWtexxt\fP is the actual variable passed to \&\f(CWPrint\fP
+in the definition of \&\f(CWTwo\fP,
+the misspelling is the bug.
+Such bugs are the price to pay occasionally
+for the benefits of dynamic typing (no variable declarations).
+Fortunately, the bugs are easy to find.
+.PH ":\fH\(sc11\fP:- \\\\nP -:\fH\(sc11\fP:"
+.SQ "11" "Working with U\s-1NIX\s+1"
+.ne .5i
+.P
+A F\s-1IT\s+1 program can be run
+as a U\s-1NIX\s+1 command,
+and U\s-1NIX\s+1 commands can be run
+from within a F\s-1IT\s+1 program.
+.PH ":\fH\(sc11.1\fP:- \\\\nP -:\fH\(sc11.1\fP:"
+.sH "11.1" "Making a F\s-1IT\s+1 Program into a U\s-1NIX\s+1 Command"
+.ne .5i
+.P
+Given the following function
+.bC
+	Main name
+		Print "Hello, " name ".  Welcome to Fit.\en"
+.eC
+in file \&\f(CWwelcome.t\fP,
+the program is made into a U\s-1NIX\s+1 command by
+.bC
+	$ fit welcome.t -o welcome
+.eC
+This compiles the program,
+and outputs the compiled version
+to file \&\f(CWwelcome\fP.
+Now \&\f(CWwelcome\fP can be used as
+a command taking a name as its argument:
+.bC
+	$ welcome John
+	Hello, John.  Welcome to Fit.
+	$
+.eC
+A program to run as a command
+must have a function named \&\f(CWMain\fP
+as its top level.
+.ne .5i
+.P
+A program defined over multiple module
+files is compiled and made into a U\s-1NIX\s+1 command by
+.bC
+	$ fit main.t analyze.t io.t models.t -o amod
+.eC
+.PH ":\fH\(sc11.2\fP:- \\\\nP -:\fH\(sc11.2\fP:"
+.sH "11.2" "Running a U\s-1NIX\s+1 Command Inside a F\s-1IT\s+1 Program"
+.ne .5i
+.P
+The \&\f(CWSystem\fP function runs a U\s-1NIX\s+1 command
+from inside a F\s-1IT\s+1 program.
+The first argument of \&\f(CWSystem\fP
+is the command to run.
+Whatever the command
+sends to the standard output
+is received back into the F\s-1IT\s+1 program
+as a sequence.
+The sequence is the value
+of the \&\f(CWSystem\fP function.
+For example,
+.bC
+	> System "date"
+	"Wed Jul 17 11:43:05 EDT 1991\en"
+.eC
+\&\f(CWSystem\fP takes as an optional second argument
+a sequence to send to the standard input of the command.
+The sequence must be formatted
+like the contents of a file.
+For example,
+the array of words
+.bC
+	> Set words {"one" "two" "htree"}
+.eC
+is formatted like a file
+with one word per line by
+.bC
+	> Set word_file Splice |"\en"| words[] ""
+.eC
+and input to the \&\f(CWspell\fP command by
+.bC
+	> System "spell" word_file
+	"htree\en"
+	>
+.eC
+For the \&\f(CWspell\fP command,
+the value of \&\f(CWSystem\fP is a sequence
+containing the misspelled words.
+.PH ":\fH\(sc11.3\fP:- \\\\nP -:\fH\(sc11.3\fP:"
+.sH "11.3" "Getting the Value of a Shell Variable"
+.ne .5i
+.P
+The following program gets the value
+of the \&\f(CWPATH\fP environment variable,
+and prints its components in a more readable format:
+.bC
+	Main
+		Global environment
+		Print |"\en"| (Cut ":" environment["PATH"])[] ""
+.eC
+The \&\f(CWenvironment\fP system variable,
+which must be declared global,
+is a record whose keys are the names
+of the variables in the environment.
+If the program is in \&\f(CWpath.t\fP,
+a command named \&\f(CWpath\fP is made by
+.bC
+	$ fit path.t -o path
+.eC
+and run by
+.bC
+	$ path
+	.
+	/usr/xyz/bin
+	/usr/local/bin
+	/bin
+	/usr/bin
+	$
+.eC
+.PH ":\fH\(sc12\fP:- \\\\nP -:\fH\(sc12\fP:"
+.SQ "12" "What Next?"
+.ne .5i
+.P
+You've come a long way
+and now know much about F\s-1IT\s+1.
+To put this knowledge to use,
+you might try the challenges at the end of this section
+and write simple programs of your choosing.
+To see how larger programs are written and organized,
+you might study the extended example in the next section.
+.ne .5i
+.P
+You've learned a lot,
+but you've really just skimmed
+the surface of F\s-1IT\s+1.
+F\s-1IT\s+1 is both large and deep.
+Many topics were not mentioned here.
+There are,
+for example,
+functions for dealing with time and date,
+a full set of math and bit operators,
+programmable exception handling,
+functional programming,
+object-oriented programming,
+programming with multiple processes
+communicating via pipes,
+and much more.
+Even for the topics mentioned here,
+there is still more to know.
+For example,
+many of the functions
+take other options,
+functions can be defined to
+have side effects and take options,
+and there are many variations in
+the use of the seemingly simple \&\f(CWSet\fP.
+.ne .5i
+.P
+You can get a copy of the
+tutorial/reference manual for F\s-1IT\s+1
+from \&\f(CWresearch!fit\fP.
+The tutorial covers many more
+capabilities of the language
+than is covered here,
+and in greater depth.
+If you want to learn about object-oriented
+programming with F\s-1IT\s+1,
+for example,
+there is a chapter on the topic
+in the tutorial.
+The reference manual explains
+every feature of F\s-1IT\s+1 in detail.
+Its alphabetical organization
+enables you to learn the language piecemeal as needed.
+The topical index at the end of the manual
+identifies those parts of F\s-1IT\s+1 relevant to your interest.
+.ne .5i
+.P
+\fBChallenge 17\fP: Write a function which takes
+an array of text numbers (t-nums) and prints them in a column
+with their decimal points vertically aligned.
+A sample output is
+.bC
+	  3
+	123.456
+	  4.5
+	  0.678
+.eC
+.ne .5i
+.P
+\fBChallenge 18\fP: Write a program to print a histogram
+showing the distribution of word lengths in a document.
+.ne .5i
+.P
+\fBChallenge 19\fP: Write a program to convert a
+Roman number to an Arabic number.
+.ne .5i
+.P
+\fBChallenge 20\fP: Write a program to generate form letters
+like the following sample:
+.bC
+	Dear Mr. S. Smith:
+	Thank you for your contribution of $300 to the Scholarhip Fund.
+	                            Wisdom College
+.eC
+The template
+.bC
+	Dear <name>:
+	Thank you for your contribution of $<amount> to the <fund> Fund.
+	                            Wisdom College
+.eC
+for the form letter contains slots that are filled with information
+from the following database of contributors:
+.bC
+	Mr. S. Smith; 300; Scholarship
+	Mrs. J. Jones; 2000; Building
+.eC
+.PH ":\fH\(sc13\fP:- \\\\nP -:\fH\(sc13\fP:"
+.SQ "13" "An Extended Example for Study"
+.ne .5i
+.P
+The \&\f(CWbridge\fP command is an example
+of a F\s-1IT\s+1 program composed of several functions.
+The command deals and prints four bridge hands:
+.bC
+	$ bridge
+					 North
+				  S: A 9 7 4 3
+				  H:
+				  D: A K 5 4
+				  C: K J 10 4
+	   West                         East
+	S: K 6                       S: 10 8 5
+	H: 4 2                       H: A K 10 9
+	D: J 10 9 6                  D: Q 8 3 2
+	C: Q 7 6 5 3                 C: A 2
+					 South
+				  S: Q J 2
+				  H: Q J 8 7 6 5 3
+				  D: 7
+				  C: 9 8
+.eC
+This problem is due to Griswold, Poage & Polonsky
+(\fIThe SNOLBOL4 Programming Language, 2nd ed.\fP,
+Prentice-Hall, New Jersey, 1971, p. 206)
+who gave a solution in Snobol.
+An Awk solution is given in Aho, Kernighan & Weinberger
+(\fIThe Awk Programming Language\fP, Addison-Wesley, New York, 1988, p. 198).
+A F\s-1IT\s+1 solution is given below
+to serve as an object for study.
+There are no comments in the program,
+and no explanation is given here.
+The challenge is to use the
+interpreter as a study aid
+to understand how the program works.
+.bC
+	Main
+		DisplayHands DealHands
+.ne .5i
+.P
+	DealHands
+		Local Constant suits { "S" "H" "D" "C" }
+		Constant suit[Thru 1 52] suits[]
+		Constant value[Thru 1 52] Thru 1 13
+		Constant deck Transpose {(Sort suit) value}
+		Set shuffled_deck Permute deck
+		Set hands["North"] HandPicture "North" shuffled_deck[Thru 1 13]
+		Set hands["West"] HandPicture "West" shuffled_deck[Thru 14 26]
+		Set hands["East"] HandPicture "East" shuffled_deck[Thru 27 39]
+		Set hands["South"] HandPicture "South" shuffled_deck[Thru 40 52]
+		Return hands
+.ne .5i
+.P
+	HandPicture position cards[]
+		Local suits
+		Constant face { "2" "3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A" }
+		Set hand[suits[]] {}
+		ForEach card cards
+			Set hand[card[1]][$+] card[2]
+		Set pic[$+] Splice "   " position
+		ForEach suit suits
+			Set pic[$+] Splice suit ": " \\
+			                   Splice |" "| face[ (Reverse Sort hand[suit])[] ]
+		Return pic
+.ne .5i
+.P
+	DisplayHands hands
+		Constant blank_line<Thru 1 80> " "
+		Constant col 15
+		Constant pt["North" "West" "East" "South"] {col 0} {1 5} {2*col 5} {col 10}
+		Set page[Thru 1 15] blank_line
+		ForEach position Keys hands
+			Set (column row) pt[position][]
+			ForEach line hands[position]
+				Set left_side page[Inc &row]<Thru 1 column-1>
+				Set right_side Frame |"L"| page[row]<Thru column $> line
+				Set page[row] Splice left_side right_side
+		Print |"\en"| (DoEach \'Delete " +$" page)[] ""
+.eC
+.PH ":\fH\(sc14\fP:- \\\\nP -:\fH\(sc14\fP:"
+.SQ "14" "Answers to Challenges"
+.ne .5i
+.P
+\fBChallenge 1\fP: Add the binary numbers \&\f(CW11\fP and \&\f(CW101\fP.
+.bC
+	> 11:2 + 101:2
+	8
+.eC
+.ne .5i
+.P
+\fBChallenge 2\fP: Display the sum of binary numbers \&\f(CW11\fP and \&\f(CW101\fP
+as a binary number suffixed with the base \&\f(CW:2\fP.
+.bC
+	> Splice (Text |"base" 2| 11:2 + 101:2) ":2"
+	"1000:2"
+.eC
+.ne .5i
+.P
+\fBChallenge 3\fP: Temperature in Fahrenheit is converted
+to centigrade by the equation
+.bC
+	c = 5(f - 32)/9
+.eC
+Write the equation in F\s-1IT\s+1 using prefix notation.
+.bC
+	Set c Div (Mult 5 Sub f 32) 9
+.eC
+.ne .5i
+.P
+\fBChallenge 4\fP: Make the factorial computation work for any positive
+whole number \&\f(CWn\fP,
+including \&\f(CWn = 0\fP.
+.bC
+	> Set n 0
+	> Mult 1 Thru 1 n
+	1
+.eC
+.ne .5i
+.P
+\fBChallenge 5\fP: Make an array of the even
+numbers from \&\f(CW0\fP through \&\f(CW20\fP.
+.bC
+	> {Thru 0 20 2}
+	{0 2 4 6 8 10 12 14 16 18 20}
+.eC
+.ne .5i
+.P
+\fBChallenge 6\fP: Reverse an array.
+.bC
+	> Set a {1 2 3 4 5}
+	> {a[Thru |"-"| $ 1]}
+	{5 4 3 2 1}
+.eC
+.ne .5i
+.P
+\fBChallenge 7\fP: Add a third row,
+\&\f(CW{100 200 300}\fP,
+to array \&\f(CWm\fP.
+.bC
+	> Set m[$+] {100 200 300}
+	> m
+	{{1 2 3} {10 20 30} {100 200 300}}
+.eC
+.ne .5i
+.P
+\fBChallenge 8\fP: Generate the lower-case alphabet
+\&\f(CW"abcdefghijklmnopqrstuvwxyz"\fP.
+.bC
+	> Splice (DoEach \'Char {Thru (Ascii "a") (Ascii "z")})[]
+	"abcdefghijklmnopqrstuvwxyz"
+.eC
+.ne .5i
+.P
+\fBChallenge 9\fP: Select the rectangles with an area greater
+than \&\f(CW50\fP for the rectangles whose dimensions are given by
+\&\f(CW{{5 9} {8 10} {2 5} {6 3} {9 7} {6 7}}\fP.
+.bC
+	> Set dim {{5 9} {8 10} {2 5} {6 3} {9 7} {6 7}}
+	> dim[ (Select |"index"| \'GT (DoEach \'Mult (Transpose dim)[]) 50)[] ]
+	{8 10} {9 7}
+.eC
+.ne .5i
+.P
+\fBChallenge 10\fP: Write a function to show that
+"A man, a plan, a canal, Panama!"
+is a palindrome.
+.bC
+	Palindrome s
+		Return ?Same (Set t Delete "[ ,;:.?!\'-]" LowerCase s) Reverse t
+.ne .5i
+.P
+	> Palindrome "A man, a plan, a canal, Panama!"
+	true
+	> Palindrome "A man, a plan, a canal, Suez!"
+	false
+.eC
+.ne .5i
+.P
+\fBChallenge 11\fP: Define the \&\f(CWEntab\fP function
+to replace runs of blank spaces in
+.bC
+	"one     two     three four      five"
+.eC
+with tabs.
+The result should be
+.bC
+	"one\ettwo\etthree four\etfive"
+.eC
+The original and processed sequences
+should print identically on the screen
+with tab settings at every 8th column.
+.bC
+	Entab ln
+		Return Splice (DoEach \'Change "  +$" "\et" Cut 8 ln)[]
+.ne .5i
+.P
+	> Set s "one     two     three four      five\en"
+	> Set t Entab s
+	> t
+	"one\ettwo\etthree four\etfive\en"
+	> Print s t
+	one     two     three four      five
+	one     two     three four      five
+.eC
+.ne .5i
+.P
+\fBChallenge 12\fP: Given the sequence,
+.bC
+	"1 2 3\en4 5 6\en7 8 9\en"
+.eC
+write a function to get the table
+.bC
+	{{"1" "2" "3"}
+	 {"4" "5" "6"}
+	 {"7" "8" "9"}}
+.eC
+from the sequence.
+.bC
+	Table s
+		Return DoEach \'Words Lines s
+.ne .5i
+.P
+	> Table "1 2 3\en4 5 6\en7 8 9\en"
+	{{"1" "2" "3"} {"4" "5" "6"} {"7" "8" "9"}}
+.eC
+.ne .5i
+.P
+\fBChallenge 13\fP: Given a command
+abbreviated by truncation,
+write a function to complete
+the abbreviation into the full command name.
+The possible commands are
+\&\f(CWadd\fP, \&\f(CWremove\fP, \&\f(CWread\fP and \&\f(CWwrite\fP.
+.bC
+	CmdName c
+		Constant cn "_add_remove_read_write"
+		Return Either (IsNull c) nil Delete "^_" Match (Splice "_" c "[^_]*") cn
+.ne .5i
+.P
+	> CmdName "rem"
+	"remove"
+	> CmdName "rite"
+	""
+.eC
+.ne .5i
+.P
+\fBChallenge 14\fP:
+Format the time in hours, minutes and seconds on a 24-hour clock.
+A sample result is \&\f(CW"03:15:26"\fP.
+.bC
+	FmtTime h m s
+		Return Splice |":"| (Frame "00" h) (Frame "00" m) (Frame "00" s)
+.ne .5i
+.P
+	> FmtTime 3 15 26
+	"03:15:26"
+.eC
+.ne .5i
+.P
+\fBChallenge 15\fP:
+Write a program that takes the names
+of input and output files,
+numbers the lines of the input file,
+and writes the numbered lines
+to the output file.
+.bC
+	NumLines in out
+		Set numbered File |"w"| out
+		ForEach line Lines File in
+			Set numbered<$+> Splice (Frame 3 Inc &k) " " line "\en"
+.ne .5i
+.P
+	> NumLines "numlines.t" "numbered"
+	> Print File "numbered"
+	  1 NumLines in out
+	  2     Set numbered File |"w"| out
+	  3     ForEach line Lines File in
+	  4             Set numbered<$+> Splice (Frame 3 Inc &k) " " line "\en"
+	>
+.eC
+.ne .5i
+.P
+\fBChallenge 16\fP: Write a program that counts how often
+each word occurs in: "Ask not what your country can
+do for you.  Ask instead what you can do for your country."
+The program should print the result.
+.bC
+	WordFrequency text
+		ForEach word Find "[a-zA-Z]+" text
+			Inc &count[word]
+		ForEach word Sort Keys count
+			Print word " " count[word] "\en"
+.ne .5i
+.P
+	> WordFrequency jfk
+	Ask 2
+	can 2
+	country 2
+	do 2
+	for 2
+	instead 1
+	not 1
+	what 2
+	you 2
+	your 2
+	>
+.eC
+.ne .5i
+.P
+
+\fBChallenge 17\fP: Write a function which takes
+an array of text numbers (t-nums) and prints them in a column
+with their decimal points vertically aligned.
+.bC
+	Align data
+		Set num DoEach \'Find "^([+-]?[0-9]*)|(~.[0-9]+)$" data
+		Set left Max 0 (DoEach \'$ {num[][1]})[]
+		ForEach parts num
+			Print (Frame left parts[1]) parts[2] "\en"
+.eC
+Note that the \&\f(CW$\fP size qualifier is
+prepended with \&\f(CW\'\fP and used like
+a function reference with \&\f(CWDoEach\fP
+to get the lengths of the sequences
+in an array.
+.ne .5i
+.P
+\fBChallenge 18\fP: Write a program to print a histogram
+showing the distribution of word lengths in a document.
+.bC
+	Main file
+		Constant width 65
+		Constant stars<Thru 1 width> "*"
+.ne .5i
+.P
+		ForEach word Find "[a-zA-Z\'-]+" File file
+			Inc &count[$word]
+		Set count[ (Select |"index"| \'IsNil count)[] ] 0
+.ne .5i
+.P
+		Set scale width/Max count[]
+		ForEach cnt count length
+			Set bar stars<Thru 1 scale*cnt>
+			Print (Frame 2 length) " - " (Frame 5 count[length]) ": " bar "\en"
+.ne .5i
+.P
+		Print "Total: " (Add count[]) "\en"
+.eC
+When a \&\f(CW-\fP is the first or last character in a character set
+(characters enclosed in square brackets) of a regular expression,
+it's taken verbatim.
+Hence,
+the \&\f(CW-\fP doesn't have to be quoted with \&\f(CW~\fP.
+.ne .5i
+.P
+\fBChallenge 19\fP: Write a program to convert a
+Roman number to an Arabic number.
+.bC
+	Arabic roman
+		Constant units["" "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX"] Thru 0 9
+		Constant tens["" "X" "XX" "XXX" "XL" "L" "LX" "LXX" "LXXX" "XC"] units[]
+		Constant hundreds["" "C" "CC" "CCC" "CD" "D" "DC" "DCC" "DCCC" "CM"] units[]
+		Constant thousands["" "M" "MM" "MMM"] units[]
+		Constant place { units tens hundreds thousands }
+		Constant re { (Splice "(" (Splice |"|"| (Keys units)[Thru 2 $]) ")$") \\
+		              (Splice "(" (Splice |"|"| (Keys tens)[Thru 2 $]) ")$") \\
+		              (Splice "(" (Splice |"|"| (Keys hundreds)[Thru 2 $]) ")$") \\
+		              (Splice "(" (Splice |"|"| (Keys thousands)[Thru 2 $]) ")$") }
+.ne .5i
+.P
+		Set r roman
+		Do
+			Set digit Match re[Inc &k] r
+			Set arabic<$+> place[k][digit]
+			Set $r $r-$digit
+		While GT $r 0
+		Return Reverse arabic
+.eC
+.ne .5i
+.P
+\fBChallenge 20\fP: Write a program to generate form letters.
+.bC
+	Main letter database
+		Set form Cut "[<>]" File letter
+		ForEach line Lines File database
+			Set data["name" "amount" "fund"] (Cut " *; *" line)[]
+			Print form[1]
+			ForEach k Thru 2 $form 2
+				Print data[ form[k] ] form[k+1]
+.eC
+.PH "::::" 
+.bp
+\".................................................. Title
+.de aT
+.ft H
+.ps 12
+.vs 25
+\\s20INDEX
+.ps 10
+.vs 12
+.sp 2
+\\l'6i'
+.ft R
+..
+.aT
+.sp 1.5
+This is a variation of a KWIC (Key Word In Context) index.
+Each line consists of a page reference followed by a subject entry.
+Each entry is a phrase containing a keyword in boldface.
+The entries are alphabetized by the keywords.
+To find references to the append operator \f(CB$+\fP,
+say, either look for \f(CB$+\fP operator symbol
+at the beginning of the index where
+the special symbols are listed,
+or look for the keyword \fBappend\fP and its variants.
+.nr P 39
+.PH ":\fH INDEX\fP:\fR- \\\\nP -\fP:\fH INDEX\fP:"
+.nf
+.sp 1.5
+.de iP
+.nr hW \w'\\$1'
+.ti -\\n(hWu+.3i
+\\$1\ \ 
+..
+.2C
+.ps -1
+.vs -1
+.in .5i
+.ad l
+.iP "10"
+\&\f(CB\s+1$+\s-1\fP append operator
+.iP "9"
+\&\f(CB\s+1$\s-1\fP size index
+.iP "9"
+\&\f(CB\s+1$\s-1\fP size qualifier
+.iP "7"
+\&\f(CB\s+1&\s-1\fP share qualifier
+.iP "12"
+\&\f(CB\s+1\'\s-1\fP function reference qualifier
+.iP "12"
+\&\f(CB\s+1*\s-1\fP function dereference qualifier
+.iP "21"
+\&\f(CB\s+1?\s-1\fP status qualifier
+.iP "15"
+\&\f(CB\s+1\e\s-1\fP line continuation
+.iP "34"
+\fB\s+1Answers\s-1\fP to Challenges
+.iP "10"
+\&\f(CW$+\fP \fB\s+1append\s-1\fP operator
+.iP "20"
+\fB\s+1Appending\s-1\fP a Sequence to Another Sequence
+.iP "10"
+\fB\s+1Appending\s-1\fP Elements to an Array
+.iP "28"
+\fB\s+1Appending\s-1\fP Fields to a Record
+.iP "15"
+function \fB\s+1argument\s-1\fP
+.iP "27"
+variadic \fB\s+1argument\s-1\fP
+.iP "5"
+Infix \fB\s+1Arithmetic\s-1\fP Operators
+.iP "6"
+Prefix \fB\s+1Arithmetic\s-1\fP Operators
+.iP "10"
+Appending Elements to an \fB\s+1Array\s-1\fP
+.iP "9"
+dynamic \fB\s+1array\s-1\fP
+.iP "10"
+Enumerating the Elements of an \fB\s+1Array\s-1\fP
+.iP "9"
+heterogeneous \fB\s+1array\s-1\fP
+.iP "9"
+Indexing an \fB\s+1Array\s-1\fP
+.iP "9"
+Making a Literal \fB\s+1Array\s-1\fP
+.iP "10"
+Setting Multiple Elements of an \fB\s+1Array\s-1\fP
+.iP "12"
+Iterators for \fB\s+1Array\s-1\fP Processing
+.iP "9"
+\fB\s+1array\s-1\fP size
+.iP "9"
+\fB\s+1Arrays\s-1\fP
+.iP "11"
+Multidimensional \fB\s+1Arrays\s-1\fP
+.iP "10"
+Processing \fB\s+1Arrays\s-1\fP with Prefix Operators
+.iP "21"
+A Variable has a Status \fB\s+1Attribute\s-1\fP
+.iP "4"
+Numbers are \fB\s+1Automatically\s-1\fP Coerced
+.iP "3"
+number \fB\s+1base\s-1\fP
+.iP "15"
+function \fB\s+1body\s-1\fP
+.iP "5"
+\fB\s+1boolean\s-1\fP
+.iP "1"
+Use F\s-1IT\s+1 as a \fB\s+1Calculator\s-1\fP
+.iP "2"
+A Function Name Starts with a \fB\s+1Capital\s-1\fP Letter
+.iP "34"
+Answers to \fB\s+1Challenges\s-1\fP
+.iP "22"
+\fB\s+1Changing\s-1\fP Subsequences
+.iP "19"
+Indexing a \fB\s+1Character\s-1\fP of a Sequence
+.iP "4"
+Numbers are Automatically \fB\s+1Coerced\s-1\fP
+.iP "4"
+\fB\s+1coercion\s-1\fP
+.iP "17"
+\fB\s+1collection\s-1\fP
+.iP "1"
+F\s-1IT\s+1 \fB\s+1command\s-1\fP
+.iP "31"
+Making a F\s-1IT\s+1 Program into a U\s-1NIX\s+1 \fB\s+1Command\s-1\fP
+.iP "31"
+Running a U\s-1NIX\s+1 \fB\s+1Command\s-1\fP Inside a F\s-1IT\s+1 Program
+.iP "5"
+\fB\s+1comment\s-1\fP
+.iP "5"
+\fB\s+1Comparing\s-1\fP Numbers
+.iP "20"
+\fB\s+1Comparing\s-1\fP Sequences
+.iP "17"
+The \&\f(CWEither\fP \fB\s+1Conditional\s-1\fP Expression
+.iP "16"
+\&\f(CB\s+1Constant\s-1\fP Declarations
+.iP "16"
+Scope of Variables and \fB\s+1Constants\s-1\fP
+.iP "15"
+\&\f(CW\e\fP line \fB\s+1continuation\s-1\fP
+.iP "4"
+\fB\s+1Converting\s-1\fP Numbers
+.iP "23"
+\fB\s+1Cutting\s-1\fP Apart a Sequence by Removing Matching Subsequences
+.iP "29"
+\fB\s+1Debugging\s-1\fP
+.iP "3"
+\fB\s+1Decimal\s-1\fP Numbers
+.iP "15"
+\fB\s+1declaration\s-1\fP
+.iP "16"
+\&\f(CWConstant\fP \fB\s+1Declarations\s-1\fP
+.iP "23"
+\fB\s+1Deleting\s-1\fP Subsequences
+.iP "12"
+Function Reference and \fB\s+1Dereference\s-1\fP
+.iP "12"
+\&\f(CW*\fP function \fB\s+1dereference\s-1\fP qualifier
+.iP "15"
+Module Files and Program \fB\s+1Development\s-1\fP
+.iP "30"
+\fB\s+1Display\s-1\fP the Value of a Variable
+.iP "12"
+The \&\f(CB\s+1DoEach\s-1\fP Iterator
+.iP "9"
+\fB\s+1dynamic\s-1\fP array
+.iP "17"
+The \&\f(CB\s+1Either\s-1\fP Conditional Expression
+.iP "10"
+Enumerating the \fB\s+1Elements\s-1\fP of an Array
+.iP "10"
+Setting Multiple \fB\s+1Elements\s-1\fP of an Array
+.iP "10"
+Appending \fB\s+1Elements\s-1\fP to an Array
+.iP "10"
+\fB\s+1Enumerating\s-1\fP the Elements of an Array
+.iP "8"
+\fB\s+1enumeration\s-1\fP
+.iP "8"
+\&\f(CWThru\fP \fB\s+1Enumeration\s-1\fP
+.iP "30"
+The Trace Shows the Execution Path to the \fB\s+1Error\s-1\fP
+.iP "3"
+\fB\s+1Escape\s-1\fP to Shell and Return to F\s-1IT\s+1
+.iP "30"
+\fB\s+1Examine\s-1\fP Different Levels of the Trace
+.iP "33"
+An Extended \fB\s+1Example\s-1\fP for Study
+.iP "30"
+The Trace Shows the \fB\s+1Execution\s-1\fP Path to the Error
+.iP "1"
+\fB\s+1Exiting\s-1\fP the Interpreter
+.iP "17"
+The \&\f(CWEither\fP Conditional \fB\s+1Expression\s-1\fP
+.iP "22"
+Regular \fB\s+1Expressions\s-1\fP
+.iP "33"
+An \fB\s+1Extended\s-1\fP Example for Study
+.iP "24"
+\fB\s+1Extracting\s-1\fP Matching Subsequences
+.iP "5"
+\&\f(CB\s+1false\s-1\fP
+.iP "28"
+\fB\s+1field\s-1\fP
+.iP "28"
+Appending \fB\s+1Fields\s-1\fP to a Record
+.iP "27"
+Reading a \fB\s+1File\s-1\fP
+.iP "27"
+Writing a \fB\s+1File\s-1\fP
+.iP "27"
+\fB\s+1file\s-1\fP sequence
+.iP "15"
+Module \fB\s+1Files\s-1\fP and Program Development
+.iP "17"
+The \&\f(CB\s+1ForEach\s-1\fP Loop
+.iP "25"
+Fancy Text \fB\s+1Formatting\s-1\fP
+.iP "25"
+Putting Text Inside a \fB\s+1Frame\s-1\fP
+.iP "30"
+List the Names of the Variables of a \fB\s+1Function\s-1\fP
+.iP "4"
+variadic \fB\s+1function\s-1\fP
+.iP "15"
+\fB\s+1function\s-1\fP argument
+.iP "15"
+\fB\s+1function\s-1\fP body
+.iP "12"
+\&\f(CW*\fP \fB\s+1function\s-1\fP dereference qualifier
+.iP "15"
+\fB\s+1function\s-1\fP name
+.iP "2"
+A \fB\s+1Function\s-1\fP Name Starts with a Capital Letter
+.iP "12"
+\fB\s+1Function\s-1\fP Reference and Dereference
+.iP "12"
+\&\f(CW\'\fP \fB\s+1function\s-1\fP reference qualifier
+.iP "14"
+\fB\s+1Functions\s-1\fP
+.iP "16"
+\fB\s+1global\s-1\fP
+.iP "2"
+Use Parentheses for \fB\s+1Grouping\s-1\fP
+.iP "9"
+\fB\s+1heterogeneous\s-1\fP array
+.iP "17"
+\fB\s+1Indentation\s-1\fP Denotes Predication
+.iP "9"
+\&\f(CW$\fP size \fB\s+1index\s-1\fP
+.iP "19"
+\fB\s+1Indexing\s-1\fP a Character of a Sequence
+.iP "28"
+\fB\s+1Indexing\s-1\fP a Record
+.iP "9"
+\fB\s+1Indexing\s-1\fP an Array
+.iP "5"
+\fB\s+1Infix\s-1\fP Arithmetic Operators
+.iP "3"
+\fB\s+1infix\s-1\fP notation
+.iP "26"
+Reading from the Standard \fB\s+1Input\s-1\fP
+.iP "26"
+\fB\s+1Input\s-1\fP and Output
+.iP "1"
+Exiting the \fB\s+1Interpreter\s-1\fP
+.iP "12"
+The \&\f(CWDoEach\fP \fB\s+1Iterator\s-1\fP
+.iP "14"
+The \&\f(CWSelect\fP \fB\s+1Iterator\s-1\fP
+.iP "12"
+\fB\s+1Iterators\s-1\fP for Array Processing
+.iP "27"
+\fB\s+1key\s-1\fP
+.iP "2"
+A Function Name Starts with a Capital \fB\s+1Letter\s-1\fP
+.iP "2"
+A Variable Name Starts with a Lower-case \fB\s+1Letter\s-1\fP
+.iP "30"
+Examine Different \fB\s+1Levels\s-1\fP of the Trace
+.iP "15"
+\&\f(CW\e\fP \fB\s+1line\s-1\fP continuation
+.iP "30"
+\fB\s+1List\s-1\fP the Names of the Variables of a Function
+.iP "9"
+Making a \fB\s+1Literal\s-1\fP Array
+.iP "19"
+Making a \fB\s+1Literal\s-1\fP Sequence
+.iP "16"
+\fB\s+1local\s-1\fP
+.iP "17"
+The \&\f(CWForEach\fP \fB\s+1Loop\s-1\fP
+.iP "18"
+The \&\f(CWWhile\fP \fB\s+1Loop\s-1\fP
+.iP "17"
+\fB\s+1loop\s-1\fP variable
+.iP "29"
+\fB\s+1Looping\s-1\fP with a Record
+.iP "2"
+A Variable Name Starts with a \fB\s+1Lower-case\s-1\fP Letter
+.iP "20"
+\fB\s+1Manipulating\s-1\fP Subsequences of a Sequence
+.iP "25"
+\fB\s+1Match\s-1\fP Predicate
+.iP "23"
+Cutting Apart a Sequence by Removing \fB\s+1Matching\s-1\fP Subsequences
+.iP "24"
+Extracting \fB\s+1Matching\s-1\fP Subsequences
+.iP "22"
+\fB\s+1metacharacter\s-1\fP
+.iP "15"
+\fB\s+1Module\s-1\fP Files and Program Development
+.iP "15"
+\fB\s+1multi-valued\s-1\fP
+.iP "11"
+\fB\s+1Multidimensional\s-1\fP Arrays
+.iP "10"
+Setting \fB\s+1Multiple\s-1\fP Elements of an Array
+.iP "3"
+\fB\s+1n-num\s-1\fP
+.iP "15"
+function \fB\s+1name\s-1\fP
+.iP "2"
+A Function \fB\s+1Name\s-1\fP Starts with a Capital Letter
+.iP "2"
+A Variable \fB\s+1Name\s-1\fP Starts with a Lower-case Letter
+.iP "30"
+List the \fB\s+1Names\s-1\fP of the Variables of a Function
+.iP "21"
+\&\f(CB\s+1nil\s-1\fP status
+.iP "8"
+\&\f(CB\s+1nil\s-1\fP value
+.iP "3"
+infix \fB\s+1notation\s-1\fP
+.iP "3"
+prefix \fB\s+1notation\s-1\fP
+.iP "19"
+\fB\s+1null\s-1\fP sequence
+.iP "3"
+\fB\s+1number\s-1\fP base
+.iP "3"
+\fB\s+1Numbers\s-1\fP
+.iP "5"
+Comparing \fB\s+1Numbers\s-1\fP
+.iP "4"
+Converting \fB\s+1Numbers\s-1\fP
+.iP "3"
+Decimal \fB\s+1Numbers\s-1\fP
+.iP "3"
+Whole \fB\s+1Numbers\s-1\fP
+.iP "4"
+\fB\s+1Numbers\s-1\fP are Automatically Coerced
+.iP "10"
+\&\f(CW$+\fP append \fB\s+1operator\s-1\fP
+.iP "5"
+\fB\s+1operator\s-1\fP precedence
+.iP "5"
+Infix Arithmetic \fB\s+1Operators\s-1\fP
+.iP "6"
+Prefix Arithmetic \fB\s+1Operators\s-1\fP
+.iP "10"
+Processing Arrays with Prefix \fB\s+1Operators\s-1\fP
+.iP "4"
+\fB\s+1option\s-1\fP
+.iP "28"
+\fB\s+1ordinal\s-1\fP
+.iP "26"
+Input and \fB\s+1Output\s-1\fP
+.iP "26"
+Printing to the Standard \fB\s+1Output\s-1\fP
+.iP "2"
+Use \fB\s+1Parentheses\s-1\fP for Grouping
+.iP "30"
+The Trace Shows the Execution \fB\s+1Path\s-1\fP to the Error
+.iP "5"
+operator \fB\s+1precedence\s-1\fP
+.iP "25"
+Match \fB\s+1Predicate\s-1\fP
+.iP "5"
+relational \fB\s+1predicate\s-1\fP
+.iP "17"
+Indentation Denotes \fB\s+1Predication\s-1\fP
+.iP "6"
+\fB\s+1Prefix\s-1\fP Arithmetic Operators
+.iP "3"
+\fB\s+1prefix\s-1\fP notation
+.iP "10"
+Processing Arrays with \fB\s+1Prefix\s-1\fP Operators
+.iP "26"
+\fB\s+1Printing\s-1\fP to the Standard Output
+.iP "16"
+\fB\s+1private\s-1\fP
+.iP "12"
+Iterators for Array \fB\s+1Processing\s-1\fP
+.iP "10"
+\fB\s+1Processing\s-1\fP Arrays with Prefix Operators
+.iP "31"
+Running a U\s-1NIX\s+1 Command Inside a F\s-1IT\s+1 \fB\s+1Program\s-1\fP
+.iP "15"
+Module Files and \fB\s+1Program\s-1\fP Development
+.iP "31"
+Making a F\s-1IT\s+1 \fB\s+1Program\s-1\fP into a U\s-1NIX\s+1 Command
+.iP "9"
+\&\f(CW$\fP size \fB\s+1qualifier\s-1\fP
+.iP "7"
+\&\f(CW&\fP share \fB\s+1qualifier\s-1\fP
+.iP "12"
+\&\f(CW\'\fP function reference \fB\s+1qualifier\s-1\fP
+.iP "12"
+\&\f(CW*\fP function dereference \fB\s+1qualifier\s-1\fP
+.iP "21"
+\&\f(CW?\fP status \fB\s+1qualifier\s-1\fP
+.iP "27"
+\fB\s+1Reading\s-1\fP a File
+.iP "26"
+\fB\s+1Reading\s-1\fP from the Standard Input
+.iP "28"
+Appending Fields to a \fB\s+1Record\s-1\fP
+.iP "28"
+Indexing a \fB\s+1Record\s-1\fP
+.iP "29"
+Looping with a \fB\s+1Record\s-1\fP
+.iP "28"
+Making a \fB\s+1Record\s-1\fP
+.iP "28"
+\fB\s+1Records\s-1\fP
+.iP "18"
+\fB\s+1Recursion\s-1\fP
+.iP "12"
+Function \fB\s+1Reference\s-1\fP and Dereference
+.iP "12"
+\&\f(CW\'\fP function \fB\s+1reference\s-1\fP qualifier
+.iP "22"
+\fB\s+1Regular\s-1\fP Expressions
+.iP "5"
+\fB\s+1relational\s-1\fP predicate
+.iP "23"
+Cutting Apart a Sequence by \fB\s+1Removing\s-1\fP Matching Subsequences
+.iP "3"
+Escape to Shell and \fB\s+1Return\s-1\fP to F\s-1IT\s+1
+.iP "31"
+\fB\s+1Running\s-1\fP a U\s-1NIX\s+1 Command Inside a F\s-1IT\s+1 Program
+.iP "16"
+\fB\s+1Scope\s-1\fP of Variables and Constants
+.iP "14"
+The \&\f(CB\s+1Select\s-1\fP Iterator
+.iP "4"
+\fB\s+1sequence\s-1\fP
+.iP "20"
+Appending a Sequence to Another \fB\s+1Sequence\s-1\fP
+.iP "27"
+file \fB\s+1sequence\s-1\fP
+.iP "19"
+Indexing a Character of a \fB\s+1Sequence\s-1\fP
+.iP "19"
+Making a Literal \fB\s+1Sequence\s-1\fP
+.iP "20"
+Manipulating Subsequences of a \fB\s+1Sequence\s-1\fP
+.iP "19"
+null \fB\s+1sequence\s-1\fP
+.iP "26"
+system \fB\s+1sequence\s-1\fP
+.iP "23"
+Cutting Apart a \fB\s+1Sequence\s-1\fP by Removing Matching Subsequences
+.iP "19"
+\fB\s+1sequence\s-1\fP size
+.iP "20"
+Appending a \fB\s+1Sequence\s-1\fP to Another Sequence
+.iP "18"
+\fB\s+1Sequences\s-1\fP
+.iP "20"
+Comparing \fB\s+1Sequences\s-1\fP
+.iP "1"
+\&\f(CB\s+1Set\s-1\fP Sets the Value of a Variable
+.iP "1"
+\&\f(CWSet\fP \fB\s+1Sets\s-1\fP the Value of a Variable
+.iP "7"
+\&\f(CW&\fP \fB\s+1share\s-1\fP qualifier
+.iP "7"
+\fB\s+1shared\s-1\fP variable
+.iP "3"
+Escape to \fB\s+1Shell\s-1\fP and Return to F\s-1IT\s+1
+.iP "32"
+Getting the Value of a \fB\s+1Shell\s-1\fP Variable
+.iP "7"
+\fB\s+1side\s-1\fP effect
+.iP "9"
+array \fB\s+1size\s-1\fP
+.iP "19"
+sequence \fB\s+1size\s-1\fP
+.iP "9"
+\&\f(CW$\fP \fB\s+1size\s-1\fP index
+.iP "9"
+\&\f(CW$\fP \fB\s+1size\s-1\fP qualifier
+.iP "1"
+\fB\s+1source\s-1\fP
+.iP "26"
+Reading from the \fB\s+1Standard\s-1\fP Input
+.iP "26"
+Printing to the \fB\s+1Standard\s-1\fP Output
+.iP "1"
+Getting \fB\s+1Started\s-1\fP
+.iP "21"
+\&\f(CWnil\fP \fB\s+1status\s-1\fP
+.iP "21"
+A Variable has a \fB\s+1Status\s-1\fP Attribute
+.iP "21"
+\&\f(CW?\fP \fB\s+1status\s-1\fP qualifier
+.iP "26"
+\&\f(CB\s+1stdin\s-1\fP
+.iP "26"
+\&\f(CB\s+1stdout\s-1\fP
+.iP "22"
+Changing \fB\s+1Subsequences\s-1\fP
+.iP "23"
+Cutting Apart a Sequence by Removing Matching \fB\s+1Subsequences\s-1\fP
+.iP "23"
+Deleting \fB\s+1Subsequences\s-1\fP
+.iP "24"
+Extracting Matching \fB\s+1Subsequences\s-1\fP
+.iP "20"
+Manipulating \fB\s+1Subsequences\s-1\fP of a Sequence
+.iP "15"
+\fB\s+1Syntax\s-1\fP
+.iP "26"
+\fB\s+1system\s-1\fP sequence
+.iP "3"
+\fB\s+1t-num\s-1\fP
+.iP "1"
+\fB\s+1target\s-1\fP
+.iP "25"
+Fancy \fB\s+1Text\s-1\fP Formatting
+.iP "25"
+Putting \fB\s+1Text\s-1\fP Inside a Frame
+.iP "8"
+\&\f(CB\s+1Thru\s-1\fP Enumeration
+.iP "30"
+\fB\s+1trace\s-1\fP
+.iP "30"
+Examine Different Levels of the \fB\s+1Trace\s-1\fP
+.iP "30"
+The \fB\s+1Trace\s-1\fP Shows the Execution Path to the Error
+.iP "5"
+\&\f(CB\s+1true\s-1\fP
+.iP "31"
+Working with \fB\s+1U\s-1NIX\s+1\s-1\fP
+.iP "31"
+Making a F\s-1IT\s+1 Program into a \fB\s+1U\s-1NIX\s+1\s-1\fP Command
+.iP "31"
+Running a \fB\s+1U\s-1NIX\s+1\s-1\fP Command Inside a F\s-1IT\s+1 Program
+.iP "8"
+\&\f(CWnil\fP \fB\s+1value\s-1\fP
+.iP "32"
+Getting the \fB\s+1Value\s-1\fP of a Shell Variable
+.iP "30"
+Display the \fB\s+1Value\s-1\fP of a Variable
+.iP "1"
+\&\f(CWSet\fP Sets the \fB\s+1Value\s-1\fP of a Variable
+.iP "30"
+Display the Value of a \fB\s+1Variable\s-1\fP
+.iP "32"
+Getting the Value of a Shell \fB\s+1Variable\s-1\fP
+.iP "17"
+loop \fB\s+1variable\s-1\fP
+.iP "1"
+\&\f(CWSet\fP Sets the Value of a \fB\s+1Variable\s-1\fP
+.iP "7"
+shared \fB\s+1variable\s-1\fP
+.iP "21"
+A \fB\s+1Variable\s-1\fP has a Status Attribute
+.iP "2"
+A \fB\s+1Variable\s-1\fP Name Starts with a Lower-case Letter
+.iP "16"
+Scope of \fB\s+1Variables\s-1\fP and Constants
+.iP "30"
+List the Names of the \fB\s+1Variables\s-1\fP of a Function
+.iP "27"
+\fB\s+1variadic\s-1\fP argument
+.iP "4"
+\fB\s+1variadic\s-1\fP function
+.iP "8"
+\fB\s+1void\s-1\fP
+.iP "3"
+\fB\s+1Whole\s-1\fP Numbers
+.iP "27"
+\fB\s+1Writing\s-1\fP a File

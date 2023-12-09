@@ -1,0 +1,924 @@
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            hybrowse - hypertext browser for online documents
+
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            hhhhyyyybbbbrrrroooowwwwsssseeee [----bbbbggggkkkkqqqqrrrr] [----aaaa _m_a_c_d_e_f_s] [----cccc _c_a_t_a_l_o_g] \\\\
+                     [----dddd _d_o_c_u_m_e_n_t] [----mmmm _f_i_l_e[[[[::::_f_i_l_e]]]]............]]]]  \\\\
+                     [----nnnn _l_i_n_e] [----pppp _p_a_t_h] [----ssss _s_e_c_t_i_o_n] [----tttt _t_i_t_l_e_s] \\\\
+                     [----uuuu _u_n_b_u_f] [----vvvv _m_e_n_u] [_d_o_c_u_m_e_n_t]
+
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            hhhhyyyybbbbrrrroooowwwwsssseeee is a user interface for displaying online
+            documentation such as reference manuals, tutorials, and
+            help systems.  Most online documents are prepared using
+            nnnnrrrrooooffffffff and the mmmmmmmm macros, but any ASCII file can be
+            browsed.
+
+            hhhhyyyybbbbrrrroooowwwwsssseeee provides commands for:
+
+               - listing available documents ("card catalog"),
+
+               - moving sequentially through a document,
+
+               - displaying a document's section headings
+                 ("Table of Contents"),
+
+               - jumping from the Table of Contents directly to any
+                 selected section,
+
+               - jumping to related documents using hypertext links
+                 ("references"),
+
+               - remembering locations so they can be returned to
+                 ("bookmarks"),
+
+               - retracing a path through a series of documents
+                 ("return stack").
+
+            The overhead of learning to use hhhhyyyybbbbrrrroooowwwwsssseeee is
+            sufficiently low that most users do not need to read
+            this manual page:
+
+               - The command syntax is similar to a small subset of
+                 vvvviiii or eeeemmmmaaaaccccssss.  The interface changes depending on
+                 your EEEEDDDDIIIITTTTOOOORRRR variable.
+
+
+
+
+       Page 1                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+               - An online tutorial walks new users through the
+                 basic commands.
+
+               - A hierarchical help system provides detailed
+                 documentation on all the commands.
+
+               - A menu line walks users through commands even if
+                 they do not know the command names.
+
+               - Users who have downloaded vvvviiiitttteeeerrrrmmmm or eeeemmmmaaaaccccsssstttteeeerrrrmmmm can
+                 use the mouse to execute commands.  The mouse
+                 interface is available on SUN workstations if
+                 hybrowse is run in an eeeetttteeeerrrrmmmmxxxx window.
+
+            An online Administrator's Guide tells how to create a
+            browsing system based on hhhhyyyybbbbrrrroooowwwwsssseeee.  In a typical
+            application, the person providing the documents would:
+
+              1.  Format the documents using nnnnrrrrooooffffffff and a special
+                  version of the mmmmmmmm macros.  The macros adjust the
+                  document's appearance for more effective online
+                  browsing and mark section headings and references
+                  so hhhhyyyybbbbrrrroooowwwwsssseeee can find them.
+
+              2.  Write a short document called a Catalog.  The
+                  Catalog is the starting point for users to find
+                  information; it describes the documents and gives
+                  their filenames.
+
+              3.  Create a short shell script to call hhhhyyyybbbbrrrroooowwwwsssseeee with
+                  application-specific parameters, such as the list
+                  of directories where the documents are stored
+                  (see the PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS section below).
+
+            This manual page describes the basics of hhhhyyyybbbbrrrroooowwwwsssseeee;
+            complete documentation is available by calling hhhhyyyybbbbrrrroooowwwwsssseeee
+            without any parameters and walking through the
+            tutorial.  The tutorial and help screens will direct
+            you to an online Administrators' Guide that tells how
+            to format documents for browsing.
+
+
+       PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+
+            ----aaaa _m_a_c_d_e_f_s causes hhhhyyyybbbbrrrroooowwwwsssseeee to read definitions of
+                      application-specific macros from the _m_a_c_d_e_f_s
+                      file.  The macros can be run from hhhhyyyybbbbrrrroooowwwwsssseeee by
+                      typing "aaaa" followed by a single-character
+                      macro name.
+
+
+
+
+
+       Page 2                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                      Macros can contain arbitrary hhhhyyyybbbbrrrroooowwwwsssseeee
+                      commands.  They are typically used to invoke
+                      shell scripts (e.g., to print a ttttrrrrooooffffffffed
+                      version of the currently-displayed document)
+                      or to jump to named documents and sections
+                      (e.g., to browse a glossary or news file).
+
+                      The hhhhyyyybbbbrrrroooowwwwsssseeee command "aaaa????" displays the
+                      _m_a_c_d_e_f_s file, which should contain "help"
+                      information on the macros.  See the online
+                      administrator's guide for information on the
+                      macro file format.
+
+            ----bbbb        causes hhhhyyyybbbbrrrroooowwwwsssseeee to use "flashing" instead of
+                      ringing the terminal's bell on errors.
+
+            ----kkkk        prevents hhhhyyyybbbbrrrroooowwwwsssseeee from displaying a one-line
+                      key-summary on the bottom of the screen.
+                      Using this flag will increase the size of the
+                      displayed text by one line, but may confuse
+                      beginning users.
+
+            ----cccc _c_a_t_a_l_o_g gives the name of the Catalog file (the file
+                      displayed by the "cccc" command).  If the ----cccc
+                      flag isn't specified, the name "Catalog" will
+                      be used.  The Catalog will be found down the
+                      path set with the ----pppp flag, so a full pathname
+                      usually isn't necessary.
+
+            ----dddd _d_o_c_u_m_e_n_t gives the filename of the document that
+                      hhhhyyyybbbbrrrroooowwwwsssseeee should display first.  If this is
+                      the last parameter on the command line, the
+                      "----dddd" is optional.
+
+                      The default document is TTTTuuuuttttoooorrrriiiiaaaallll, which is a
+                      safe choice since some users of the
+                      application might not know how to use
+                      hhhhyyyybbbbrrrroooowwwwsssseeee.
+
+            ----mmmm _f_i_l_e[::::_f_i_l_e]... defines menus that are accessible by
+                      pressing the TAB key.  One or more colon-
+                      separated _f_i_l_es can be specified.
+
+                      hhhhyyyybbbbrrrroooowwwwsssseeee has default menus that are suitable
+                      for simple applications.  Normally, this flag
+                      would replace the standard menus.  However,
+                      you can include the standard menus in custom
+                      menus: a null _f_i_l_e name (represented by a
+                      leading, trailing, or consecutive colon)
+                      represents the default menus.  Menu items are
+                      displayed in the order in which they are
+
+
+
+       Page 3                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                      defined in the files, so the position of your
+                      menu items depends on where you put your _f_i_l_e
+                      relative to other files.  For example:
+
+                           ----mmmm mmmmyyyyffffiiiilllleeee       #### rrrreeeeppppllllaaaacccceeee ssssttttaaaannnnddddaaaarrrrdddd mmmmeeeennnnuuuu iiiitttteeeemmmmssss
+                           ----mmmm ::::mmmmyyyyffffiiiilllleeee      #### nnnneeeewwww iiiitttteeeemmmmssss aaaafffftttteeeerrrr ssssttttaaaannnnddddaaaarrrrdddd iiiitttteeeemmmmssss
+                           ----mmmm mmmmyyyyffffiiiilllleeee::::      #### nnnneeeewwww iiiitttteeeemmmmssss bbbbeeeeffffoooorrrreeee ssssttttaaaannnnddddaaaarrrrdddd iiiitttteeeemmmmssss
+                           ----mmmm ////ddddeeeevvvv////nnnnuuuullllllll    #### ssssuuuupppppppprrrreeeessssssss aaaallllllll mmmmeeeennnnuuuu iiiitttteeeemmmmssss
+
+                      Each line of the menu _f_i_l_es should contain
+                      the following fields separated by "%"
+                      characters:
+
+                      flag    indicates whether the menu line is
+                              applicable when EEEEDDDDIIIITTTTOOOORRRR is set to vvvviiii,
+                              eeeemmmmaaaaccccssss, or in both cases.  The flag
+                              value is a single character: "v" for
+                              vi and "e" for emacs.  If the flag is
+                              null, the line will apply for both
+                              editors.
+
+                      path    is a colon-separated list of menu
+                              items whose meaning is defined by the
+                              line.  The path must begin with a
+                              top-level menu item.  Each menu item
+                              can contain up to 8 characters.  You
+                              can include an upper-case letter in
+                              the name to allow users to select the
+                              item by pressing that character.
+
+                      help    provides a short help message that
+                              will be displayed when the item is
+                              highlighted.  hhhhyyyybbbbrrrroooowwwwsssseeee will append
+                              "..." to the help message for non-
+                              terminal items and "kkkkeeeeyyyy====_v_a_l_u_e" for
+                              most terminal items.
+
+                      macro   is the set of characters that will be
+                              executed when the item is selected.
+                              The macro value can contain escape
+                              sequences to represent non-printing
+                              characters; see the
+                              AAAAddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr''''ssss GGGGuuuuiiiiddddeeee (available
+                              online from the default hhhhyyyybbbbrrrroooowwwwsssseeee
+                              CCCCaaaattttaaaalllloooogggg) for details.
+
+                              If the macro value is the empty
+                              string, the item is assumed to have
+                              submenus instead of running a
+                              command; submenu items should be
+                              defined later in the file.  Submenu
+
+
+
+       Page 4                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                              items have _p_a_t_h names that begin with
+                              the _p_a_t_h of the higher-level item.
+
+                      To improve readability, whitespace can be
+                      used around the "%" characters; it will be
+                      ignored.
+
+                      Lines beginning with the "#" character are
+                      treated as comments.
+
+                      If this flag is not present, hhhhyyyybbbbrrrroooowwwwsssseeee uses
+                      the default menus.  If a _f_i_l_e doesn't exist
+                      or contains invalid lines, hhhhyyyybbbbrrrroooowwwwsssseeee silently
+                      ignores the errors.
+
+                      Look at the default menu file for examples;
+                      the FFFFIIIILLLLEEEESSSS section below gives its path.
+
+            ----nnnn _l_i_n_e   gives the line number (relative to the start
+                      of the section) for the initial display.  The
+                      default is line 1.
+
+            ----pppp _p_a_t_h   is a colon-separated list of directories that
+                      hhhhyyyybbbbrrrroooowwwwsssseeee should search for documents.
+
+                      If ----pppp is not given, the path will be taken
+                      from the shell variable HHHHYYYYPPPPAAAATTTTHHHH.  If HHHHYYYYPPPPAAAATTTTHHHH is
+                      null or not set, the directory "." will be
+                      used.
+
+                      A directory with the hhhhyyyybbbbrrrroooowwwwsssseeee tutorial,
+                      administrator's guide, and help screens is
+                      automatically appended to the path.
+
+            ----qqqq        causes hhhhyyyybbbbrrrroooowwwwsssseeee to require that the "qqqq"
+                      (quit) command be capitalized.  This is
+                      intended for applications where an accidental
+                      exit would be inconvenient.
+
+            ----rrrr        disables the hhhhyyyybbbbrrrroooowwwwsssseeee commands that escape to
+                      the shell or write to files.  This is useful
+                      for applications that run on public logins
+                      where users are not allowed to use a normal
+                      shell.
+
+                      The restricted commands can be run from
+                      macros (see the ----aaaa flag) regardless of this
+                      flag.  This allows an application to provide,
+                      for example, a macro for generating hardcopy
+                      output without giving users access to an
+                      interactive shell.  Applications that run on
+
+
+
+       Page 5                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                      restricted logins should be careful to supply
+                      only macros that satisfy their security
+                      requirements.
+
+            ----ssss _s_e_c_t_i_o_n gives the name of the section that should be
+                      displayed first after entering hhhhyyyybbbbrrrroooowwwwsssseeee.  It
+                      must be quoted if it contains characters
+                      special to the shell (e.g., blanks).
+
+                      The default section is the first section in
+                      the document.
+
+            ----tttt _t_i_t_l_e_s gives the name of a file of document titles
+                      to be displayed on the top line of the
+                      screen.  Each line in the file should
+                      contain:
+
+                         - a document name,
+                         - a blank or tab,
+                         - the document's title (descriptive text
+                           containing any printable characters).
+
+                      Lines beginning with the "#" character are
+                      treated as comments.
+
+                      If this flag is not present, hhhhyyyybbbbrrrroooowwwwsssseeee just
+                      displays the document's filename.  If the
+                      title file doesn't exist or contains invalid
+                      lines, hhhhyyyybbbbrrrroooowwwwsssseeee silently ignores the errors.
+
+            ----uuuu _u_n_b_u_f  disables buffering of the file whose document
+                      name is _u_n_b_u_f.
+
+                      To improve response time when jumping between
+                      files, hhhhyyyybbbbrrrroooowwwwsssseeee normally buffers several of
+                      the most-recently-viewed documents in memory.
+                      This flag makes it possible to always show
+                      the current version of documents that change
+                      during the browsing session.
+
+                         - The regular expression should be of the
+                           format described in rrrreeeeggggccccmmmmpppp((((3333)))).
+                         - Invalid regular expressions are silently
+                           ignored.
+                         - The value must match the entire document
+                           name, from the first to the last
+                           character.
+                         - Matching is done before prepending the
+                           document path (----pppp) directory.
+                         - The specified document is unbuffered
+                           when you transfer to another document;
+
+
+
+       Page 6                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                           jumps within the document will not cause
+                           the file to be re-read.
+
+                      HHHHyyyybbbbrrrroooowwwwsssseeee does not support regular expressions
+                      on BSD-based systems (e.g., SUN
+                      workstations).  On those machines, the -_u_n_b_u_f
+                      value must be a string that exactly matches
+                      the document to be unbuffered.
+
+            ----vvvv _m_e_n_u   supplies a file of definitions for the menu
+                      on mouse button 2.  It is used only if the
+                      terminal interface is vvvviiiitttteeeerrrrmmmm, eeeemmmmaaaacccctttteeeerrrrmmmm, or
+                      eeeetttteeeerrrrmmmmxxxx.
+
+                         - Lines in the file are of the form
+                           "_n_a_m_e====_v_a_l_u_e".
+
+                         - The _v_a_l_u_e can contain escape sequences
+                           to represent non-printing characters;
+                           see the AAAAddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr''''ssss GGGGuuuuiiiiddddeeee (available
+                           online from the default hhhhyyyybbbbrrrroooowwwwsssseeee
+                           CCCCaaaattttaaaalllloooogggg) for details.
+
+                         - Lines starting with "#" are ignored.
+
+                         - Whitespace is ignored at the beginning
+                           of lines and around the equals sign.
+
+                         - Any errors reading the file or parsing
+                           lines are silently ignored.
+
+            _d_o_c_u_m_e_n_t  gives the name of the document (i.e., file)
+                      that hhhhyyyybbbbrrrroooowwwwsssseeee should display first.  Giving
+                      the document name at the end of the command
+                      line is equivalent to giving it with the ----dddd
+                      flag.
+
+
+       SSSSCCCCRRRREEEEEEEENNNN LLLLAAAAYYYYOOOOUUUUTTTT
+            The screen is divided into the following regions:
+
+               - The top line shows the document file name.
+
+               - The next few lines show section headers.  Since
+                 sections can be nested, there can be several such
+                 lines.
+
+               - Most of the screen shows the document's text.
+
+               - The third line from the bottom of the screen is
+                 used for menus.  It is blank until you press the
+
+
+
+       Page 7                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                 TAB key.
+
+               - The second line from the bottom displays prompts,
+                 error messages, and page numbers.
+
+               - The bottom line lists the most important commands
+                 and their key bindings.  It changes when hhhhyyyybbbbrrrroooowwwwsssseeee
+                 goes into various input modes.  If the ----kkkk flag is
+                 present on the command line, this line will not be
+                 displayed and the menu and prompt lines will be
+                 shifted down.
+
+               - If the terminal is running vvvviiiitttteeeerrrrmmmm, eeeemmmmaaaaccccsssstttteeeerrrrmmmm, or
+                 eeeetttteeeerrrrmmmmxxxx, a scrollbar will be displayed at the right
+                 edge of the window.
+
+
+       CCCCOOOOMMMMMMMMAAAANNNNDDDDSSSS
+            hhhhyyyybbbbrrrroooowwwwsssseeee commands are based on emacs and vi commands.
+            Since there is little overlap between the keys used by
+            the editors, hhhhyyyybbbbrrrroooowwwwsssseeee generally provides the
+            intersection of their commands.  In the few cases where
+            vi and emacs commands conflict, the EDITOR environment
+            variable determines which binding hhhhyyyybbbbrrrroooowwwwsssseeee will use.
+
+       AAAAcccccccceeeessssssssiiiinnnngggg SSSSttttaaaannnnddddaaaarrrrdddd DDDDooooccccuuuummmmeeeennnnttttssss
+
+            t         go to the Table of Contents of the current
+                      document
+
+            c         go to the Catalog, which lists all documents
+
+            h or ?    go to the Help document, which lists the
+                      hhhhyyyybbbbrrrroooowwwwsssseeee commands
+
+       SSSSccccrrrroooolllllllliiiinnnngggg
+
+            SPACE     page forward (section forward if already at
+                      the end of a section)
+
+            BACKSPACE page backward (section backward if already at
+                      the beginning of a section)
+
+            >         Horizontal scroll to display more data from
+                      the end of the line.
+
+            <         Horizontal scroll to display more data from
+                      the beginning of the line.
+
+            arrow     if your terminal has arrow keys, they can be
+                      used for horizontal scrolling and line-by-
+
+
+
+       Page 8                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                      line scrolling.
+
+       JJJJuuuummmmppppiiiinnnngggg
+
+            _n_u_m_b_e_r    go to reference with the specified number.
+
+                         - Most documents display the available
+                           references in the format [number].
+                         - You must terminate the reference number
+                           with a newline so hhhhyyyybbbbrrrroooowwwwsssseeee will know
+                           when you have entered the last digit.
+
+            r         return from previous jump.  Return addresses
+                      are kept on a stack, so this command can be
+                      repeated.
+
+            ''        exchange current position and top of return
+                      stack
+
+            mmmm_l_e_t_t_e_r   set a mark so you can easily jump back to
+                      current display.  The _l_e_t_t_e_r becomes the name
+                      of the mark; use it with the "'" command to
+                      return to the marked location.
+
+            ''''_l_e_t_t_e_r   go to the mark identified by the letter.
+
+            @@@@_d_o_c^^^^_s_e_c_t_i_o_n go to the named section of the named
+                      document.
+
+                         - The starting location will be saved on
+                           the return stack.
+                         - _d_o_c defaults to the current document.
+                         - _s_e_c_t_i_o_n defaults to the first section in
+                           _d_o_c.
+                         - If a section name is given, the "^^^^" must
+                           be entered literally.
+                         - The command must be terminated by a
+                           newline.
+
+            ]         go to next section
+
+            [         go to previous section
+
+            }         go to next section, skipping subsections
+
+            {         go to previous section, skipping subsections
+
+            ^         go to parent section
+
+
+
+
+
+
+       Page 9                              (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+       SSSSeeeeaaaarrrrcccchhhhiiiinnnngggg
+
+            //// _s_t_r_i_n_g  search for string (lower-case also matches
+                      upper case; whitespace matches any string of
+                      whitespace)
+
+            iiii _s_t_r_i_n_g  search entire current document for the
+                      string; create a new temporary document
+                      showing the matches
+
+            I         go to the index document created by previous
+                      "i" commands
+
+       SSSSyyyysssstttteeeemmmm IIIInnnntttteeeerrrrffffaaaacccceeee
+
+            !!!!         escape to the shell:
+
+                         - hhhhyyyybbbbrrrroooowwwwsssseeee prompts for the command line.
+                         - The command line defaults to the shell.
+                         - hhhhyyyybbbbrrrroooowwwwsssseeee creates environment variables
+                           to pass information to the command.  See
+                           the ENVIRONMENT section for a list of
+                           the variables.
+                         - If the first character of the escaped
+                           command is another "!", hhhhyyyybbbbrrrroooowwwwsssseeee will
+                           remove the extra "!" and skip the "Press
+                           any key to continue" prompt.  This
+                           useful mainly in macros.
+
+            wwww _f_i_l_e    write the current section to a file.
+
+                         - hhhhyyyybbbbrrrroooowwwwsssseeee prompts for the file name.
+                         - Shell metacharacters are in the file
+                           name are expanded.
+                         - A "file name" starting with "!" or "|"
+                           is treated as a pipeline; the output is
+                           written to the specified command.  This
+                           can be used, for example, to send the
+                           section to a printer.
+
+            WWWW _f_i_l_e    write the current section and its subsections
+                      to a file.  The file name is interpreted as
+                      in the wwww command.
+
+       MMMMiiiisssscccceeeellllllllaaaannnneeeeoooouuuussss
+
+            qqqq         quit from hhhhyyyybbbbrrrroooowwwwsssseeee.
+
+            TTTTAAAABBBB       enter menu mode.  This mode allows you to
+                      select commands without knowing their key
+                      bindings.  After entering menu mode, you can
+
+
+
+       Page 10                             (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+                      press "????" for instructions on how to use the
+                      menu.
+
+            aaaa _c_h_a_r    run an application-specific command; see the
+                      "----aaaa" flag for details.  The command "a?"
+                      shows what application-specific commands are
+                      available.
+
+
+
+       EEEEMMMMAAAACCCCSSSS eeeemmmmuuuullllaaaattttiiiioooonnnn
+
+            ^G             cancel mode
+
+            M-<            beginning of section
+
+            M->            end of section
+
+            n or ^N        next line ("n" works only if $$$$EEEEDDDDIIIITTTTOOOORRRR
+                           ends in "macs")
+
+            p or ^P        previous line
+
+            M-n or M-^N    forward half page
+
+            M-p or M-^P    backward half page
+
+            v or ^V        next page
+
+            M-v or M-^V    previous page
+
+            ^X^X           exchange current position and top of
+                           return stack
+
+            ^X^F           read document; prompts for document file
+                           name
+
+
+
+       VVVVIIII eeeemmmmuuuullllaaaattttiiiioooonnnn
+
+            ESC            cancel mode (works only if $$$$EEEEDDDDIIIITTTTOOOORRRR does
+                           not end in "macs")
+
+            g              beginning of section
+
+            G              end of section
+
+            j or ^J        next line
+
+
+
+
+
+       Page 11                             (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+            k or ^K        previous line
+
+            d or ^D        forward half page (down)
+
+            u or ^U        backward half page (up)
+
+            f or ^F        next page (forward)
+
+            b or ^B        previous page (backward)
+
+            :r             read document; prompts for document file
+                           name
+
+
+
+       vvvviiiitttteeeerrrrmmmm////eeeemmmmaaaaccccsssstttteeeerrrrmmmm////eeeetttteeeerrrrmmmmxxxx mmmmoooouuuusssseeee
+            If the terminal is running vvvviiiitttteeeerrrrmmmm, eeeemmmmaaaaccccsssstttteeeerrrrmmmm, or
+            eeeetttteeeerrrrmmmmxxxx, mouse button one can be clicked on the
+            following regions:
+
+            file name       go to Table of Contents
+            section name    go to the section
+            column 1        horizontal scroll left
+            last column     horizontal scroll right
+            text            go to nearest reference on the line
+            key line        execute the command
+            menu item       execute the menu item
+            scroll bar      move through the current section
+
+            A menu on mouse button two provides a menu of the
+            most-used commands.
+
+
+       EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+            hhhhyyyybbbbrrrroooowwwwsssseeee uses these variables if they are set:
+
+            HHHHYYYYPPPPAAAATTTTHHHH    directory path (used only if ----pppp is not given)
+            EEEEDDDDIIIITTTTOOOORRRR    alters the hhhhyyyybbbbrrrroooowwwwsssseeee command syntax
+            SSSSHHHHEEEELLLLLLLL     used for shell escapes
+            VVVVPPPPAAAATTTTHHHH     used to locate document files down the
+                      viewpath (only used on 370-based machines)
+
+
+            hhhhyyyybbbbrrrroooowwwwsssseeee sets these variables during shell escapes:
+
+            HHHHYYYYDDDDOOOOCCCC     the name of the current document (does not
+                      include _p_a_t_h directories)
+            HHHHYYYYDDDDOOOOCCCCPPPP    the name of the current document (includes
+                      _p_a_t_h directories)
+            HHHHYYYYSSSSEEEECCCCTTTT    the name of the current section
+            HHHHYYYYLLLLIIIINNNNEEEE    the current line number
+
+
+
+       Page 12                             (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+            These shell variables allow application-level shell
+            scripts to determine which document hhhhyyyybbbbrrrroooowwwwsssseeee is
+            displaying.  This could be used, for example, to
+            implement a script that would print a ttttrrrrooooffffffffed hardcopy
+            listing of whatever document is currently displayed on
+            the screen (the script would probably be called by a
+            macro, which might be called "ap" for "application-
+            print").
+
+
+       EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+            1 if an error is detected
+            0 otherwise
+
+
+       RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+
+              1.  The terminal window must be at least 15 lines by
+                  70 characters.
+              2.  There are no commands for editing documents.
+              3.  For best results, documents should be specially
+                  formatted.
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            To run the hhhhyyyybbbbrrrroooowwwwsssseeee tutorial:
+
+                 hhhhyyyybbbbrrrroooowwwwsssseeee
+
+
+            To page through a file:
+
+                 hhhhyyyybbbbrrrroooowwwwsssseeee mmmmyyyyffffiiiilllleeee
+
+
+            To format and browse through a document whose source is
+            in ddddoooocccc....mmmmmmmm:
+
+                 nnnnrrrrooooffffffff ----mmmmmmmm ----TTTTllllpppp \\\\
+                      $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////hhhhyyyybbbbrrrroooowwwwsssseeee////ssssrrrrcccc////mmmmmmmm....mmmmaaaaccccrrrroooossss \\\\
+                      ddddoooocccc....mmmmmmmm ||||
+                      ccccoooollll ----xxxx >>>>mmmmyyyyddddoooocccc
+                 hhhhyyyybbbbrrrroooowwwwsssseeee  mmmmyyyyddddoooocccc
+
+
+
+       FFFFIIIILLLLEEEESSSS
+
+            The directory $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////hhhhyyyybbbbrrrroooowwwwsssseeee////ddddooooccccssss contains the
+            tutorial, help screens, and administrators' guide.
+            hhhhyyyybbbbrrrroooowwwwsssseeee automatically this directory to the document
+
+
+
+       Page 13                             (printed 2/11/93)
+
+
+
+
+
+
+
+
+       HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))              ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))              HHHHYYYYBBBBRRRROOOOWWWWSSSSEEEE((((1111))))
+
+
+            path.
+
+            The file $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////hhhhyyyybbbbrrrroooowwwwsssseeee////ssssrrrrcccc////mmmmmmmm....mmmmaaaaccccrrrroooossss redefines
+            some of the mmmmmmmm macros so their output will be more
+            useful for online access.  See comments in the file and
+            in the administrators' guide for details.
+
+            The file $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////hhhhyyyybbbbrrrroooowwwwsssseeee////ssssrrrrcccc////mmmmeeeennnnuuuussss defines the
+            default TAB key menus.  It is the default file for the
+            ----mmmm flag.
+
+            The file $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////hhhhyyyybbbbrrrroooowwwwsssseeee////ssssrrrrcccc////AAAAddddmmmmiiiinnnn....mmmmmmmm contains the
+            source of the Hybrowse Adminstrators' Guide.  It is
+            provided for those people who prefer to print a paper
+            copy.
+
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+            Lyle Stanfield
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 14                             (printed 2/11/93)
+
+
+
+

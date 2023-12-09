@@ -1,0 +1,57 @@
+#ident "@(#) /sable/sdb/ra/sblib/monitor/s.monitor.ims"
+/* Copyright (c) 1990,1991 AT&T - All Rights Reserved */
+
+/*                             MONITOR()
+** The MONITOR macro spawns a child process, which calls the function named by
+** FUNC.  The parent process waits for the child process to exit.
+**
+** OUTCOMES:
+**    1. when the child exits with a value of 0
+**          the parent sets errno to 0 and returns
+**    2. when the child exits due to a SIGTERM signal
+**          the parent sets errno to 0 and returns
+**    3. when the child exits due to a SIGKILL signal
+**          the parent sets errno to 0 and returns
+**    4. when the child exits for any other reason
+**          the parent respawns the child.
+**    5. when the child survives less than 5 seconds 5 consecutive respawns,
+**          the parent sets errno to child's exit status and returns.
+**    6. when the spawn fails,
+**          the parent leaves errno with the value set by fork(2) and returns.
+*/
+#define MONITOR(FUNC)\
+   {\
+   extern int errno;\
+   int CHILDPID,PID;\
+   static time_t LAST_SPAWN;\
+   int QUICK_EXITS=0;\
+   int RC=1;\
+   time_t CURTIME;\
+   while ( RC )\
+      {\
+      LAST_SPAWN = time((long *)0);\
+      switch(CHILDPID=fork())\
+         {\
+      FORKERR: RC=0; continue;\
+      CHILD: FUNC(); exit(0);\
+      PARENT: break;\
+         }\
+      do { errno = 0; PID = wait(&RC); }\
+      while ( PID != CHILDPID  );\
+      if ( RC < 256 )\
+         RC = RC & ~0200; /* strip off core flag if present */\
+      if ( (RC==SIGTERM) || (RC==SIGKILL) )\
+         errno = RC = 0; /* caught SIGKILL or SIGTERM is an ok exit */\
+      CURTIME = time((long *)0);\
+      if ( (CURTIME-LAST_SPAWN) < 5 )\
+         QUICK_EXITS++;\
+      else QUICK_EXITS = 0;\
+      if ( QUICK_EXITS > 5 )\
+         {\
+         if ( RC <= NSIG )\
+            errno = RC;\
+         else errno = RC >> 8;\
+         RC=0;\
+         }\
+      }\
+   }

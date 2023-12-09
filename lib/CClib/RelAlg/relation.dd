@@ -1,0 +1,57 @@
+#ident "@(#) /sable/sdb/ra/rel/relation/s.relation.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+typedef enum { RVALUE, LVALUE } Usage;
+class Relation
+   {
+include(relation.pd)
+protected:
+   Intension &intension;
+   Extension &extension;
+   virtual Boolean_t evaluate(Tuple *,const Predicate &);
+   Predicate *walk_predicate;
+   Usage usage;
+   virtual void destroy_rvalue();
+public:
+   Relation(Intension &i,Extension *e = new WS_Extension);
+   Relation(Attribute &a,Extension *e = new WS_Extension);
+   virtual ~Relation();
+   virtual int degree();
+   virtual int cardinality();
+   virtual Boolean_t constrain(Tuple *);
+   virtual Relation &constrain();
+   virtual void startwalk();
+   virtual void startwalk(Predicate &);
+   virtual Tuple * const walk();
+   virtual Boolean_t walk(IntensionValue &);
+   virtual void endwalk();
+   virtual Boolean_t operator=(Tuple *);
+   virtual Boolean_t truncate();
+   virtual Boolean_t operator+=(Tuple *);
+   virtual Boolean_t operator=(Relation &);
+   virtual Boolean_t operator+=(Relation &);
+   virtual Boolean_t operator-=(Relation &);
+   virtual Boolean_t operator==(Relation &);
+   virtual Boolean_t operator!=(Relation &);
+   virtual Boolean_t operator<(Relation &);
+   virtual Boolean_t operator<=(Relation &);
+   virtual Boolean_t operator>(Relation &);
+   virtual Boolean_t operator>=(Relation &);
+   virtual Relation & operator[](Intension &);
+   virtual Relation & operator[](Attribute &);
+   virtual Relation & operator[](Predicate &);
+   virtual Relation & operator%(Predicate &);
+   virtual Relation & operator&(Relation &);
+   virtual Relation & operator^(Relation &);
+   virtual Relation & operator*(Intension &);
+   virtual Relation & operator-(Relation &);
+   virtual Relation & operator+(Relation &);
+
+   virtual char *string(const char *tupleSeparator = "\n",
+                        const char *attrSeparator = "\t",
+                        const char *heading = (char *)0);
+
+   virtual Boolean_t appendString(const char *str,
+                                  const char *tupleSeparator = "\n",
+                                  char attrSeparator = '\t');
+   };

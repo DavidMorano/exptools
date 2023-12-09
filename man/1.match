@@ -1,0 +1,132 @@
+
+
+
+     MMMMAAAATTTTCCCCHHHH((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      MMMMAAAATTTTCCCCHHHH((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  match	- Match	a string against regular expressions
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  mmmmaaaattttcccchhhh	_s_t_r_i_n_g _r_e_g_e_x_p [	oooorrrr _r_e_g_e_x_p ] ...	[ ----nnnn ] [ _v_a_r_n_a_m_e ] ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  This command determines whether a given _s_t_r_i_n_g  matches  one
+	  or   more  regular  expressions  (_r_e_g_e_x_ps).	These  regular
+	  expressions are  described  in  regcmp(3X).	Single	quotes
+	  should  be  used  around  each  _r_e_g_e_x_p, except double	quotes
+	  should be used where an environment variable is used to sup-
+	  ply some or all of the _r_e_g_e_x_p, of course.
+
+	  The first _r_e_g_e_x_p that	matches	the  _s_t_r_i_n_g  causes  _m_a_t_c_h  to
+	  exit with a true (0) exit code.  If none of the _r_e_g_e_x_p regu-
+	  lar expressions match	the _s_t_r_i_n_g, _m_a_t_c_h exits	with  a	 false
+	  (1) exit code.
+
+	  _m_a_t_c_h	also outputs a shell assignment	for  each  _v_a_r_n_a_m_e  to
+	  assign  matched  sub-expressions to the specified variables.
+	  The $$$$0000 sub-expression	is assigned to the first _v_a_r_n_a_m_e,  the
+	  $$$$1111  sub-expression  to  the  second _v_a_r_n_a_m_e, and so on.  For
+	  example:
+
+	  match	"abc def ghi" '([^ ]*)$1 *([^ ]*)$0 ([^	]*)$2' First Second Third
+	  results in:
+	  First='def'
+	  Second='abc'
+	  Third='ghi'
+
+
+	  If there's a $$$$_n sub-expression but not an 1+_nth _v_a_r_n_a_m_e, the
+	  returned  sub-expression  is	ignored.  If there's a _v_a_r_n_a_m_e
+	  without a corresponding $$$$_n sub-expression,  the  _v_a_r_n_a_m_e  is
+	  given	a null value.
+
+	  The purpose of these assignments is to use _m_a_t_c_h in the fol-
+	  lowing way:
+
+	  eval `match _s_t_r_i_n_g _r_e_g_e_x_p [ or _r_e_g_e_x_p	] ... _v_a_r_n_a_m_e ...`
+
+
+	OOOOppppttttiiiioooonnnnssss::::
+	  ----nnnn  tells _m_a_t_c_h to indicate which regular expression matched
+	      by printing:
+
+	      MATCHED=_n_u_m_b_e_r
+
+
+			    _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+		   Use pursuant	to Company Instructions.
+
+
+
+     Page 1					      (printed 3/6/96)
+
+
+
+
+
+
+     MMMMAAAATTTTCCCCHHHH((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      MMMMAAAATTTTCCCCHHHH((((1111))))
+
+
+
+	      where _n_u_m_b_e_r is 1	if the first _r_e_g_e_x_p matched, or	 2  if
+	      the second, etc.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+	  0   One  of  the  _r_e_g_e_x_p  regular  expressions  matched  the
+	      _s_t_r_i_n_g.
+	  1   None of the _r_e_g_e_x_p expressions matched the _s_t_r_i_n_g.
+	  2   Too many regular expressions,  or	 one  of  the  regular
+	      expressions was ill-formed [see regcmp(3X)].
+	  -1  Usage errors.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  regcmp(3X), ed(1), sh(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  Warren D. Swan
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEEDDDD BBBBYYYY
+	  Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			    _A_T_&_T _- _P_R_O_P_R_I_E_T_A_R_Y
+		   Use pursuant	to Company Instructions.
+
+
+
+     Page 2					      (printed 3/6/96)
+
+
+

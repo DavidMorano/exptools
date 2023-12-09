@@ -1,0 +1,396 @@
+
+
+
+     RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          rdxquery - query radix decisions in one or more documents
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          rrrrddddxxxxqqqquuuueeeerrrryyyy [_o_p_t(_s)] [_f_l_d_n_a_m_e(_s)] from _d_o_c_n_a_m_e(_s) [where _s_e_l_e_c_t]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Radix Query provides a general mechanism for extracting
+          information from any file or set of files that use Radix.
+          Radix is a system of commands, similar to and compatible
+          with nroff/troff commands, for the purpose of separating and
+          enumerating blocks of text.  A typical use of Radix is for
+          enumerating requirements or design decisions in nroff/troff
+          documents.
+
+          When Radix commands are used to enumerate a block of text,
+          that has the effect of _s_e_p_a_r_a_t_i_n_g the text from the sur-
+          rounding text, _t_a_g_g_i_n_g the text with a unique tag for iden-
+          tification, and _a_s_s_o_c_i_a_t_i_n_g additional information with that
+          block of text.  The additional information can include user
+          specified keywords, author identification, reference lists,
+          an abstract, a modification reason explaining the last
+          change, etc.  In effect, each Radix decision in a document
+          is a database record that can be referenced, queried,
+          extracted and manipulated.
+
+          This tool provides access to Radix decisions through a com-
+          mand line that is similar to the UNITY uselect(1) command.
+          All information in a Radix decision or associated with it
+          has been assigned a field name.  A user can specify what
+          files to search, which Radix decisions to select from those
+          files, and what fields to extract from each selected deci-
+          sion.
+
+          FFFFIIIIEEEELLLLDDDD NNNNAAAAMMMMEEEESSSS
+
+          The complete list of field names can be found in the SYNTAX
+          section below.  The same names are used in both the list of
+          field names which are to be extracted, and in the selection
+          clause which examines the contents of fields to determine
+          which Radix decisions are to be selected.  Each field and
+          subfield occurring in a Radix decision is accessible.  For
+          example, iiiidddd will access the complete decision identifier,
+          iiiidddd....ddddoooocccc will access the document name portion of the identif-
+          ier, kkkkeeeeyyyywwwwoooorrrrddddssss will access the list of keywords, and
+          tttteeeexxxxtttt....ddddeeeeffffiiiinnnniiiittttiiiioooonnnn will access the complete text, including
+          newlines, of the text encapsulated by the Radix decision.
+
+          The name rrrraaaaddddiiiixxxxddddeeeecccciiiissssiiiioooonnnn will access the entire Radix decision
+          from the first command through the last.  Decisions are
+          always queried and presented in normalized form: the effect
+          of all preceding global commands is applied to the target
+
+
+
+     Page 1                                           (printed 1/3/95)
+
+
+
+
+
+
+     RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))
+
+
+
+          decision and all internal commands are put in standard Radix
+          command order.  Thus an extracted decision is a self-
+          contained unit that can be manipulated and printed out of
+          context (and should print exactly as in its original con-
+          text).  Similarly, any decision field queried or presented
+          is the result of any relevant global commands combined with
+          the relevant local commands.
+
+          For user convenience, field names used in the command line
+          may be any unambiguous abbreviation of the full field name.
+          For example aaaauuuutttthhhh, aaaatttthhhhrrrr, aaaauuuu, and other abbreviations all
+          refer to the aaaauuuutttthhhhoooorrrrssss field.  The tool will report any abbre-
+          viation used that cannot be unambiguously interpreted so
+          that the user can make another selection.
+
+          SSSSOOOOUUUURRRRCCCCEEEE DDDDOOOOCCCCUUUUMMMMEEEENNNNTTTTSSSS
+
+          The query accepts a list of UNIX file names and "-" for
+          stdin as the source for the query.  Any number or combina-
+          tion of these may be listed.  The query assumes that the
+          input is an nroff/troff document though this is not neces-
+          sary.  Any input source in which the Radix commands are
+          identifiable should work.  When an nroff/troff ignore (.ig)
+          block or macro define (.de) block is encountered, the infor-
+          mation contained therein is ignored and not subject to the
+          query.  When a source-in (.so) command is encountered then
+          the listed file is read at that point unless this feature is
+          disabled with the -e option.  Any source-in files found to
+          be not readable will be ignored after issuing a warning.
+
+          RRRRAAAADDDDIIIIXXXX SSSSEEEELLLLEEEECCCCTTTTIIIIOOOONNNN
+
+          If no select clause is given on the command line then the
+          query will select all Radix decisions found in the input
+          files.  By using a select clause the number of Radix deci-
+          sions selected may be reduced to the subset of interest to
+          the user.  A select clause is a means by which one or more
+          fields of each decision are compared to user specified
+          values.  Comparisons may be done for exact matches or regu-
+          lar expression matches.  Groups of comparisons may be com-
+          bined into arbitrarily complex conditions using aaaannnndddd, oooorrrr, and
+          parentheses to create the expression.
+
+          The field comparators are a subset of those available
+          through UNITY uselect (the comparators that were omitted
+          were not useful for this tool).  Two types of comparators
+          are available: lexical and regular expression.  The lexical
+          comparators, lllleeeeqqqq and llllnnnneeee, require an exact match, from
+          beginning to end, between the compared fields.  This is
+          likely to be useful only for those cases where the user
+          knows exactly what the target field looks like.  The regular
+          expression comparators, rrrreeeeqqqq and rrrrnnnneeee, match substrings in the
+
+
+
+     Page 2                                           (printed 1/3/95)
+
+
+
+
+
+
+     RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))
+
+
+
+          target field and are not case sensitive (eg. a lowercase
+          pattern will still match an uppercase target).  Any regular
+          expression acceptable to egrep(1) may be used.  Most queries
+          should use the regular expression comparators.
+
+          Note that in Radix, decisions that have appeared in a
+          released document are often not physically deleted from the
+          document when they are no longer needed.  Instead they are
+          marked deleted by placing a 'd' or 'D' in the deletion
+          field, but otherwise left intact.  The default query will
+          select all decisions including those that have been marked
+          as deleted.  The id for a deleted decision is appended with
+          a '*' character (eg. "R-FSD123-50V2*") for easy identifica-
+          tion.  To exclude deleted decisions from the query the
+          select_clause must include a phrase such as "del rne ."
+          which means "deletion field does not match any character".
+
+          RRRREEEEPPPPOOOORRRRTTTT OOOOUUUUTTTTPPPPUUUUTTTT
+
+          If no field names are given on the command line for output
+          then the query output will default to the Radix id for all
+          selected decisions.  If specific field names are requested
+          for output then they are presented instead of the default.
+          If more than one field name is requested then they are
+          presented separated by the output field separator.  The out-
+          put field separator may be set with the -s option and
+          defaults to the '|' character.  The output is generally
+          suitable for viewing directly, for use in a UNITY database
+          or TBL table, or for any other type of line oriented post
+          processing.  The output is sent to stdout.
+
+          Note that certain output fields can be expected to contain
+          the newline character and thus should not be combined with
+          other fields on output without using the -n option to map
+          the newline character to something else.  These fields are
+          rrrraaaaddddiiiixxxxddddeeeecccciiiissssiiiioooonnnn which returns the entire Radix decision, tttteeeexxxxtttt,
+          tttteeeexxxxtttt....ddddeeeeffffiiiinnnniiiittttiiiioooonnnn, and tttteeeexxxxtttt....eeeexxxxppppllllaaaannnnaaaattttoooorrrryyyy.  These fields may
+          also be very long in which case the -l option may be used to
+          truncate them to some desired maximum value.
+
+          Normally, each selected Radix decision will result in the
+          output of one record containing all the requested fields.
+          Two options are available to change this.  The -u option
+          restricts the output to unique records and will suppress any
+          record to be output that has already been output in the
+          current query.  The -i option will split lists in output
+          fields and may thus result in more than one record being
+          output for a selected decision.  The following fields nor-
+          mally contain lists: kkkkeeeeyyyywwwwoooorrrrddddssss, aaaauuuutttthhhhoooorrrrssss, cccclllluuuusssstttteeeerrrrssss, and rrrreeeeffffeeeerrrr----
+          eeeennnncccceeeessss along with all of its subfields.  If one of these
+          fields is requested for output and the -i option is used
+          then there will be a separate output record for each list
+
+
+
+     Page 3                                           (printed 1/3/95)
+
+
+
+
+
+
+     RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))
+
+
+
+          item.
+
+          EEEERRRRRRRROOOORRRR HHHHAAAANNNNDDDDLLLLIIIINNNNGGGG
+
+          The query will do the best it can in extracting information
+          even with errors in the input files.  The query will never
+          quit due to input radix command errors, but it will quit
+          with a message on read errors or other system errors.  If
+          the user is unsure about the quality of the input files then
+          the warning option -w should be used to be warned about any
+          Radix structural errors in the input.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          The following options are recognized:
+
+          ----VVVV   Print version number and exit
+
+          ----HHHH |||| ----hhhh |||| ----????
+               Give help message and exit
+
+          ----eeee   Do not expand .so commands in input
+
+          ----ssss sssseeeepppp
+               Separator "sep" for multiple fields - default "|"
+
+          ----uuuu   Unique output - duplicate outputs are suppressed
+
+          ----iiii   Itemize lists in output - lists are split into multiple
+               records
+
+          ----llll lllliiiimmmmiiiitttt
+               Truncate any output field exceeding length limit
+
+          ----nnnn ssssttttrrrr
+               Replace all newlines with "str" in output fields
+
+          ----wwww   Warn about structural RADIX problems in the input
+
+     SSSSYYYYNNNNTTTTAAAAXXXX
+          The complete command syntax is presented below in yacc-like
+          format.  Terms in _i_t_a_l_i_c_s are terms that are defined else-
+          where in this syntax specification.  Terms in bbbboooolllldddd are key-
+          words that should be used as is, except that _f_l_d_n_a_m_es may be
+          abbreviated.  Terms within square brackets "[]" are optional
+          and may be omitted entirely.  Terms ending in "(_s)" may
+          occur one or more times separated by white space.  The "|"
+          indicates "or".  All text starting with the "#" on each line
+          is meant as a comment.
+
+          rrrrddddxxxxqqqquuuueeeerrrryyyy [_o_p_t(_s)] [_f_l_d_n_a_m_e(_s)] ffffrrrroooommmm _d_o_c_n_a_m_e(_s) [wwwwhhhheeeerrrreeee _s_e_l_e_c_t]
+
+
+
+
+
+     Page 4                                           (printed 1/3/95)
+
+
+
+
+
+
+     RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))
+
+
+
+
+          _d_o_c_n_a_m_e   =    ----                   # stdin
+                    |    FILE_NAME           # any UNIX file name
+
+           _s_e_l_e_c_t   =    _f_l_d_n_a_m_e lllleeeeqqqq TEXT    # lexical text equal
+                    |    _f_l_d_n_a_m_e llllnnnneeee TEXT    # lexical text not equal
+                    |    _f_l_d_n_a_m_e rrrreeeeqqqq REGEX   # reg expression equal
+                    |    _f_l_d_n_a_m_e rrrrnnnneeee REGEX   # reg expression not equal
+                    |    _s_e_l_e_c_t aaaannnndddd _s_e_l_e_c_t   # logical AND of clauses
+                    |    _s_e_l_e_c_t oooorrrr _s_e_l_e_c_t    # logical OR of clauses
+                    |    \\\\(((( _s_e_l_e_c_t \\\\))))        # parenthesized grouping
+
+          _f_l_d_n_a_m_e   =    rrrraaaaddddiiiixxxxddddeeeecccciiiissssiiiioooonnnn       # the full decision (.dS thru .dE)
+                    |    iiiidddd                  # full id (eg. "R-FSD123-50V2")
+                    |    iiiidddd....pppprrrreeeeffffiiiixxxx           # id subfield (eg. "R")
+                    |    iiiidddd....ddddoooocccc              # id subfield (eg. "FSD123")
+                    |    iiiidddd....llllaaaabbbbeeeellll            # id subfield (eg. "50")
+                    |    iiiidddd....vvvveeeerrrrssssiiiioooonnnn          # id subfield (eg. "2")
+                    |    ddddeeeelllleeeetttteeeedddd             # deletion indicator
+                    |    rrrreeeeffffeeeerrrreeeennnncccceeeessss          # text from all reference fields
+                    |    rrrreeeeffff....llllaaaabbbbeeeellll           # reference subfield
+                    |    rrrreeeeffff....ddddooooccccuuuummmmeeeennnnttttiiiidddd      # reference subfield
+                    |    rrrreeeeffff....cccchhhhaaaarrrraaaacccctttteeeerrrrssss      # reference subfield
+                    |    rrrreeeeffff....ssssttttrrrriiiinnnngggg          # same as ref.characters
+                    |    rrrreeeeffff....ttttyyyyppppeeee            # reference subfield
+                    |    kkkkeeeeyyyywwwwoooorrrrddddssss            # from gK, dK commands
+                    |    aaaauuuutttthhhhoooorrrrssss             # from gI, dI commands
+                    |    ccccoooonnnnttttaaaaccccttttssss            # same as author
+                    |    cccclllluuuusssstttteeeerrrrssss            # from gC, dC commands
+                    |    aaaabbbbssssttttrrrraaaacccctttt            # from dA command
+                    |    rrrreeeeaaaassssoooonnnn              # from dM command
+                    |    wwwweeeeiiiigggghhhhtttt              # from gW, dW commands
+                    |    tttteeeexxxxtttt                # all text, def. and explan.
+                    |    tttteeeexxxxtttt....ddddeeeeffffiiiinnnniiiittttiiiioooonnnn     # definition text only
+                    |    tttteeeexxxxtttt....eeeexxxxppppllllaaaannnnaaaattttoooorrrryyyy    # explanatory text only
+                    |    ddddeeeessssccccrrrriiiippppttttiiiioooonnnn         # abstract if present else text.def
+                    |    ffffiiiilllleeee                # current file name
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Print all radix decision ids from local file doc.mm
+
+               rrrrddddxxxxqqqquuuueeeerrrryyyy iiiidddd ffffrrrroooommmm ddddoooocccc....mmmmmmmm
+               rrrrddddxxxxqqqquuuueeeerrrryyyy iiiidddd ffffrrrroooommmm ddddoooocccc....mmmmmmmm wwwwhhhheeeerrrreeee ddddeeeellll rrrrnnnneeee .... #### eeeexxxxcccclllluuuuddddeeee ddddeeeecccciiiissssiiiioooonnnnssss mmmmaaaarrrrkkkkeeeedddd ddddeeeelllleeeetttteeeedddd
+
+          Print unique list of authors from local file doc.mm
+
+               rrrrddddxxxxqqqquuuueeeerrrryyyy ----uuuu aaaauuuutttthhhhoooorrrr ffffrrrroooommmm ddddoooocccc....mmmmmmmm
+               rrrrddddxxxxqqqquuuueeeerrrryyyy ----uuuu aaaauuuutttthhhh ffffrrrroooommmm ddddoooocccc....mmmmmmmm  #### ssssaaaammmmeeee rrrreeeessssuuuulllltttt,,,, ttttrrrruuuunnnnccccaaaatttteeeedddd ffffiiiieeeelllldddd nnnnaaaammmmeeee
+               rrrrddddxxxxqqqquuuueeeerrrryyyy ----uuuu aaaatttthhhhrrrr ffffrrrroooommmm ddddoooocccc....mmmmmmmm  #### ssssaaaammmmeeee rrrreeeessssuuuulllltttt,,,, aaaabbbbbbbbrrrreeeevvvviiiiaaaatttteeeedddd ffffiiiieeeelllldddd nnnnaaaammmmeeee
+
+          Print all full radix decisions from all local *.mm files
+          where any keyword or text matches "echo"
+
+
+
+     Page 5                                           (printed 1/3/95)
+
+
+
+
+
+
+     RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))         UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))          RRRRDDDDXXXXQQQQUUUUEEEERRRRYYYY((((1111))))
+
+
+
+               rrrrddddxxxxqqqquuuueeeerrrryyyy ddddeeeecccciiiissssiiiioooonnnn ffffrrrroooommmm ****....mmmmmmmm wwwwhhhheeeerrrreeee kkkkeeeeyyyywwwwoooorrrrdddd rrrreeeeqqqq eeeecccchhhhoooo oooorrrr tttteeeexxxxtttt rrrreeeeqqqq eeeecccchhhhoooo
+
+          Print list of radix ids and authors that use explanatory
+          text sections in the document read through stdin.
+
+               rrrrddddxxxxqqqquuuueeeerrrryyyy iiiidddd aaaauuuutttthhhhoooorrrr ffffrrrroooommmm ---- wwwwhhhheeeerrrreeee tttteeeexxxxtttt....eeeexxxxppppllll rrrreeeeqqqq ....
+
+          Print all radix decisions from any local *.mm files that
+          have a "i4392" in the keywords field and also have an "R2"
+          or "MFC" (caps not significant) anywhere in the radix deci-
+          sion.
+
+               rrrrddddxxxxqqqquuuueeeerrrryyyy rrrraaaaddddiiiixxxxddddeeeecccciiiissssiiiioooonnnn ffffrrrroooommmm ****....mmmmmmmm wwwwhhhheeeerrrreeee kkkkeeeeyyyy rrrreeeeqqqq iiii4444333399992222 aaaannnndddd
+                    \\\\(((( ddddeeeecccciiiissssiiiioooonnnn rrrreeeeqqqq rrrr2222 oooorrrr ddddeeeecccciiiissssiiiioooonnnn rrrreeeeqqqq mmmmffffcccc \\\\))))
+
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          It is not possible to match individual list elements (for
+          example, individual keywords from the keyword list) by using
+          the lllleeeeqqqq or llllnnnneeee comparator, instead rrrreeeeqqqq or rrrrnnnneeee should be used
+          on the entire string.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          radix(1), rdxtag(1)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          John A. Chaves
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                           (printed 1/3/95)
+
+
+

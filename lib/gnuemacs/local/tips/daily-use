@@ -1,0 +1,283 @@
+Subject: How do the cool folks use GNU Emacs in daily life?
+From: Dan_Jacobson@ATT.COM, (& Scott Thompson, Chip Webb)
+Date: 8/1991
+
+Whilst we are of course not worthy of the "cool guy" or "whiz" title,
+there are certain things we would do to make GNU Emacs, pleasant -- or
+at least tolerable -- for daily use:
+
+First, the name "gnuemacs" is too long -- who wants to type in all
+eight bloody characters every time they edit a file?  (We chose that
+name for good reasons though, one of which was that "emacs" was
+already taken in exptools by Warren Montgomery's Emacs.)  Use an alias
+in your shell: I like saying "emacs" instead of "gnuemacs", so e.g.,
+if I were using ksh I would have "alias emacs=gnuemacs" in the
+interactive portion of the file pointed to by ksh's "ENV" variable.
+
+"Geez", you say, "GNU Emacs takes so <BEEP>ing long to start up!  I'm
+switching to that other leading brand editor!"  Woah... not so fast,
+partner.  Those seconds you wait are seconds of *power*.  It takes so
+long because it is high technology.  I just timed starting it up and
+the best case was one second, perhaps you need a CPU upgrade :-)
+(=just kidding.)  But us semi-cool types don't go around invoking it
+30 times a day like one of your run-of-the-mill editors, nope.  Just
+one invocation lasts a whole login session.  (And if you were using
+Oliver Lauman's (net@tub.bitnet) "screen" program (for BSD UNIX) you
+could have the same session across logouts, home terminal then office
+terminal... weeks, months, but I digress... )
+
+Just edit all your files in that one invocation, it's got multiple
+buffers and windows.  Mail can be read and sent inside it, as Scott
+Thompson has added "vm", in addition to its standard mail features.
+Netnews can also be read inside it (if your system supports it yet).
+Use "info" (C-h i) for more info.  In need of a shell? ...  well
+Control-z will give you a subshell on systems that don't support job
+control, and will suspend emacs on systems that do.  (Warren
+Montgomery's Emacs users note that this behavior of C-z is radically
+different from what you are used to.)  There is also a "shell" command
+that gives you a shell window.  You can take advantage of
+emacsclient/server found in the GNU Emacs "etc" directory.  etc.  etc.
+
+"^P=up, ^N=down... Ugh!": just configure GNU Emacs to use your arrow
+keys... and all the rest of the funny keys on your terminal while
+you're at it... but I won't get into that discussion here, but see the
+files in $TOOLS/lib/gnuemacs/*/lisp/term .  By the way, I customized
+my .emacs file to have the system name in the buffer name line.
+
+Scott has also added ispell, allowing interactive spell checking in
+the editor, you being prompted for a replacement from a list of
+choices.
+
+
+------------------
+You>	Groovy.  I bet there is a lot of `netnews' about GNU Emacs.
+
+Certainly.  Scan the newsgroups lists for "gnu" and "emacs" and
+"editors".  In several of these newsgroups you'll see posted monthly,
+a list of frequently asked questions ("FAQ") about emacses, and their
+answers.  I was thinking about putting the FAQ list in this tips
+directory, but [2/1991] we are promised expanded netnews storage
+capacity soon, so I'm passing on the idea.  By version 18.57, the FAQ
+is now in the ..../etc directory in offical FSF version!
+
+You>	Yeah, but what's `netnews'?
+
+Better contact one of your friendly exptools gnuemacs providers quick
+to find out what you're missing!
+
+You>	Err, it would be keen if you put the FAQ in the tips directory.
+
+Naww... then we would have to update it every month, and use the disk
+space of having a separate copy on most exptool machines.  Just read
+it in netnews.
+-----------------
+
+
+With the massive on-line help facilities GNU Emacs is sure to be a
+great time saver in training people in need of an editor.  Its ample
+(optionally numbered!) backup file copy scheme and auto-saving makes
+it very hard to accidentally destroy one's precious programs while
+editing.
+
+[What? Somebody said GNU Emacs is just too good to install on their
+machine, and they want to have you make do with one of those "other
+leading brand" editors, or giving you the "hrmph, we only use what's
+on the official tape" line?  Well just remove theirs instead, install
+GNU Emacs, and inform them that GNU Emacs can probably emulate
+whatever they were using anyway.  That'll teach 'em :-) :-)
+
+Don't you hate those silly editor wars: "Your editor is like driving a
+school bus to work."  "No, it's like a Mack truck, and yours is like a
+little red children's wagon, and furthermore, your editor's author
+said that if he knew how many people would end up using his editor, he
+would have never have wrote it."  Anyway, GNU Emacs is the editor
+robust enough to edit itself (it can edit "binary" files.)]
+
+Lastly, you can feel good about learning GNU Emacs as an personal
+investment because you can take it with you wherever you go (i.e.,
+lay-off-proof) as there are no licensing worries, and plenty of fellow
+users.
+
+[9/1990: adding these advertisements here that used to be in the
+toolnews page.]
+
+There is no way to describe here all the features available in GNU
+Emacs.  As its source code is freely available many people have
+contributed modes and packages that run on it which have eventually
+been accepted into the official distribution.  A few that come to mind
+are its modes for emulating other editors (vi, VMS's EDT, Gosling's
+Emacs (gmacs), even our very own Warren Montgomery's Emacs).  It has
+X-windows, netnews reading and mail support, an on-board psychologist,
+numbered backup files, "directory editor", shell windows, compilation
+in one window - go to error line in another -- no fancy terminal
+needed, a tree structured documentation browsing system ...
+
+GNU Emacs is the most popular version of emacs (see USENET newsgroups
+comp.emacs, gnu.emacs, comp.editors, etc.) worldwide.  It is a
+standard outside AT&T.  Its availability here should increase the
+productivity of many entering and current employees.
+
+---------------
+
+more info:
+
+> Like, wow, how do I make ksh act as gnuemacsy as possible?
+in .profile: EDITOR=gnuemacs; export EDITOR
+in your ksh $ENV file: set -o emacs #wish he had "set -o gnuemacs"...
+#actually waiting for full key-re-bind-ability... you know, ksh's ESC
+ESC == gnuemacs' TAB...
+
+[In fresher ksh's, you can get the arrow keys to work on most
+terminals.  See "alias __".... in the ksh man page.]
+
+> But don't those GNU types have their own shell, the Bourne Again
+> Shell (bash)?
+Yeah.  See netnews group gnu.bash.*
+
+-----
+
+>What's this Warren Montgomery's Emacs emulation mode you guys talk
+>about?
+
+it's in local/lisp/wm-emacs.el* in the gnuemacs file tree.
+
+------
+From: Dan Jacobson
+Newsgroups: att.lang.c++,att.emacs
+Subject: Re: Request for C++ beautifying aids [now gnuemacs ad]
+
+>>>>> On Fri, 4 Jan 91 21:39:42 GMT, mel@cbnewsh.att.com (mel.haas) said:
+
+Mel> GNU emacs has a mode for properly indenting C++ code defined in a file
+Mel> "c++-mode.el".  This file is supposed to be in the standard place (in
+Mel> the 'lisp' directory along with other .el and .elc files) on the
+Mel> Exptools machines.
+
+[Whaddayamean "supposed to be"... sheesh :-) ]  Yes.  In exptools gnuemacs
+it's on the load-path, with our local stuff.  The readable .el's can
+be found on the cbnews machines... do "man gnuemacs" there for more
+info.
+
+Mel> To use the GNU emacs C++ indenting, you have to load 'c++-mode.el' and
+Mel> then get it into action on your C++ files.  I put the following into
+Mel> my '~/.emacs' file, and use ESC-c to go into the C++ mode (it doesn't
+Mel> do anything until you change the file, so don't be fooled):
+Mel>   (load "c++-mode.el")
+Mel>   (global-set-key "\M-c" 'c++-mode)
+
+Err, that's a rather brutish force method there Mel,
+
+Let's do it the [tested once] right way.  In .emacs put:
+
+(autoload 'c++-mode "c++-mode" "Major mode for editing C++ code." t)
+(setq auto-mode-alist
+      (append '(("\\.c\\+\\+$"  . c++-mode)
+		("\\.C$"        . c++-mode))
+	      auto-mode-alist))
+
+Newsgroups: att.lang.c++,att.emacs
+From: Dan_Jacobson@ATT.COM
+Date: Sun, 6 Jan 91 03:53:18 GMT
+
+In e-mail, Mel raises a pertinent point:
+
+mel> Our C++ files end in .h and .c
+mel> right along with our C files, so ESC-c isn't a bad solution after all
+mel> - at least it isn't for me.
+
+try putting
+-*-c++-*-
+in a comment at the top of the c++ source files then, in addition to
+the autoload line in your .emacs file.  Seems like a good solution
+unless you only edit c++ all year long---in that case I would alter
+the auto-mode-alist...
+
+=======
+3/1991
+
+D> Also I remember you talking about a feature to allow "pop-up" emacs
+D> invocations to change the file in the emacs window, instead of
+D> invoking a new gnuemacs.
+D> 	Dave T. Miller   ihlpy!dtm   x95483
+
+(server-start) in emacs
+then ~exptools/lib/gnuemacs/dist/etc/emacsclient file
+also can say EDITOR=~exptools/lib/gnuemacs/dist/etc/emacsclient; export EDITOR
+-Dan J.
+
+---------------------
+Thu Apr  4 14:39:42 CST 1991
+
+Check out Bill Carpenter's feedmail.el[c] mail sending replacement
+functions.  The source is on the cbnews machine with the rest of the
+...local/lisp. -Dan J.
+
+----------------------
+Newsgroups: att.exptools,att.emacs
+From: Dan_Jacobson@ATT.COM
+Subject: Instructions for accessing 5ESS netnews with gnuemacs' GNUS
+Date: Wed, 15 May 1991 02:08:41 GMT
+
+[For those with access to 5ESS netnews (on certain mainframes)]
+
+"In every specially marked box of exptools' gnuemacs there is the GNUS
+netnews reader."  Actually, we put GNUS in every copy of our exptools
+gnuemacs.  While this fact means lots of state of the art threaded
+netnews reading excitement once widespread NNTP (Network News
+Transport Protocol) service is achieved at Bell Labs, there is nothing
+holding back 5ESS news users from using it as an alternative interface
+rather than "5rn".  (One can also use GNUS on the cbnews machines, but
+NNTP + faster processor is where GNUS really sparkles.)
+
+To learn more about GNUS, do "toolman gnuemacs" (or "man gnuemacs"
+on the cbnews machines.)  Later, after you have read all the tips
+files and printed out a GNUS manual, you can use this code below in
+your .emacs file to access 5ESS netnews.  These are the findings of
+ihlpc!walli (Gene V Walli).  I have no access to 5ESS news.
+
+(setq nnspool-inews-program "~5enews/lib/netnews/inews")
+(setq nnspool-spool-directory "~5enews/lib/netnews/articles")
+(setq nnspool-active-file "~5enews/lib/netnews/active")
+(setq nnspool-history-file "~5enews/lib/netnews/history")
+(setq gnus-default-distribution "5ess")
+
+With the above declarations, you can both read and post news.
+
+[For the time being (until we make it the default on all
+architectures) people should also use Bill Carpenter's feedmail
+package (see the tips directory for where to read the lisp source) to
+insure that mail replies from GNUS get processed right.]
+
+==============
+From Dan J. 7/1991
+W> I've looked through the man pages and other documentation
+W> for gnuemacs that comes with EXPTOOLS but can't find instructions
+W> to get gnuemacs to use feedmail.elc since we no longer have sendmail.
+W> What is the magic incantation that needs to be put in .emacs?
+
+W> 					Thanks
+W> 					Wendy Grohol
+
+Though we are supposed to make it the default (maybe Chip has
+already), and we do encourage you to look at the .el (instead of .elc)
+file on the cbnews machines (do man gnuemacs there to mind the tips
+directory) [a drag, yes], minimally try:
+
+;;; Put the following lines somewhere in
+;;; your ~/.emacs stuff:
+;;;
+;;;        (setq send-mail-function 'feedmail-send-it)
+;;;        (autoload 'feedmail-send-it "feedmail")
+
+though looking thru the feedmail.el will show you many more features
+to enjoy.
+
+-----------
+From gnu.announce 8/91:
+
+   * GNUish MS-DOS project
+
+     Contact `info-gnu-msdos-request@sun.soe.clarkson.edu' for
+     information on ports of GNU programs to MS-DOS and related mailing
+     lists.  More information is in `/pub/gnu/MicrosPorts/MSDOS',
+     obtainable via anonymous `ftp' on `prep.ai.mit.edu'.

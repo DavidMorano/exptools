@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+#	COPYRIGHT (c) 1987 AT&T
+#	  ALL RIGHTS RESERVED
+#
+iflag=""
+if [ "$1" = "-i" ]
+then
+	iflag="-i"
+	shift
+fi
+
+sed "s/:/ /" $* | spell $iflag | sort | comm -23 - $HOME/lib/wwb/spelldict

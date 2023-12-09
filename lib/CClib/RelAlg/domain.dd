@@ -1,0 +1,43 @@
+#ident "@(#) /sable/sdb/ra/rel/domain/s.domain.dd"
+/* Copyright (c) 1989,1990,1991 AT&T - All Rights Reserved */
+
+enum dtype { INT='i', FLOAT='f', STRING='s' };
+typedef enum dtype Dtype;
+typedef size_t Dlength;
+typedef struct sized_string { size_t length; char *string; } Sized_string;
+
+class Domain
+   {
+include(domain.pd)
+public:
+   Domain(const char *const n,const Dtype t,const Dlength l);
+   ~Domain();
+
+   Boolean_t constrain(const char *string, Boolean_t print=TRUE) const;
+   Boolean_t constrain(const Int_t number, Boolean_t print=TRUE) const;
+   Boolean_t constrain(const Float_t real, Boolean_t print=TRUE) const;
+   char * constraint_string() const;
+   Constraint & operator==(const Int_t number);
+   Constraint & operator!=(const Int_t number);
+   Constraint & operator<=(const Int_t number);
+   Constraint & operator>=(const Int_t number);
+   Constraint & operator<(const Int_t number);
+   Constraint & operator>(const Int_t number);
+   Constraint & operator==(const Float_t real);
+   Constraint & operator!=(const Float_t real);
+   Constraint & operator<=(const Float_t real);
+   Constraint & operator>=(const Float_t real);
+   Constraint & operator<(const Float_t real);
+   Constraint & operator>(const Float_t real);
+   Constraint & operator==(const char *string);
+   Constraint & operator!=(const char *string);
+   Constraint & operator<=(const char *string);
+   Constraint & operator>=(const char *string);
+   Constraint & operator<(const char *string);
+   Constraint & operator>(const char *string);
+   Constraint & operator==(const Pattern &pattern);
+   Constraint & operator!=(const Pattern &pattern);
+   };
+#define int_domain(NAME) Domain NAME("NAME",INT,sizeof(Int_t))
+#define float_domain(NAME) Domain NAME("NAME",FLOAT,sizeof(Float_t))
+#define string_domain(NAME,LENGTH) Domain NAME("NAME",STRING,LENGTH)

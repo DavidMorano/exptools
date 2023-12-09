@@ -1,0 +1,330 @@
+
+
+
+     ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          descriptor - File containing attribute information for a
+          UNITY relation.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _a_t_t_r_n_a_m_e    [tttt_d_e_l_i_m|wwww_n_u_m_b_e_r    [llll|rrrr|cccc_n_u_m_b_e_r    [_f_r_i_e_n_d_l_y__n_a_m_e]]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The descriptor file lists the attributes within a
+          corresponding UNITY relation, along with how the attribute
+          is recognized (by a terminating character or a fixed width),
+          the justification and print width, and a user-friendly name
+          describing the attribute.  One attribute's information is
+          listed per line.  The order the attributes appear in the
+          descriptor file is the order they must appear in the UNITY
+          relation.
+
+          There are some significant differences between the
+          requirements on New UNITY descriptor files and previous
+          UNITY descriptor files.  The New UNITY implementation will
+          work with any previous version descriptor file, but not vice
+          versa.
+
+          A descriptor file is always named D_r_e_l_n_a_m_e, where _r_e_l_n_a_m_e is
+          the file name of the UNITY relation it describes.  The
+          routine ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3) is used to look up and read the
+          descriptor information for relation.
+
+          In the New UNITY implementation, the descriptor file for a
+          relation is located by looking in the directories listed in
+          the UNITYDFILES environment variable.  If this variable is
+          not set or the descriptor file is not located there, the
+          current directory is searched.  Failing this, the directory
+          where the relation is located is searched.  Finally, the
+          data table itself is searched for the description.  (More on
+          this below.)  This method of searching gives applications
+          exact control over where descriptor files will be located.
+
+          In previous UNITY implementations, the current directory was
+          searched first for the descriptor file, followed by the
+          relation's directory.  Finally, UNITYDFILES was used.
+          Additionally, some commands only allowed one directory in
+          this variable, while others did not use UNITYDFILES at all.
+
+          In the New UNITY implementation, all information in the
+          descriptor file is optional except the attribute name itself
+          (for obvious reasons).  Each piece of information is
+          separated from the next by a single tab.  Spaces on either
+          side of the tab are ignored for backward compatability with
+          previous UNITY implementations.  Additionally, in previous
+          UNITY implementations, the termination or width information
+          is required, not optional.
+
+
+
+     Page 1                                         (printed 10/28/91)
+
+
+
+
+
+
+     ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))
+
+
+
+          A table description can be place directly in the data
+          itself.  The first line of the table must be exactly
+          ``%description''.  After this line comes the table
+          description as it would appear in a description file,
+          including comments.  A line containing only
+          ``%enddescription'' signals the end of the description and
+          the start of the data.
+
+          The data table is the lowest priority for locating the
+          description, so this description can still be over-ridden.
+          If it is overridden any description in the data file is
+          ignored and not treated as data.  _N_o_t_e, _h_o_w_e_v_e_r, _t_h_a_t _n_o_r_m_a_l
+          _U_N_I_T_Y _c_o_m_m_a_n_d_s _w_i_l_l _n_o_t _i_g_n_o_r_e _t_h_e _d_e_s_c_r_i_p_t_i_o_n, _b_u_t _w_i_l_l
+          _t_r_e_a_t _i_t _l_i_k_e _d_a_t_a.
+
+     FFFFIIIILLLLEEEE CCCCOOOONNNNTTTTEEEENNNNTTTTSSSS
+          Each part of an attribute description is explained below.
+          The New UNITY requirements are listed first, followed by any
+          differences with previous versions:
+
+          _a_t_t_r_n_a_m_e
+               The name of the attribute.  The name must start with an
+               alphabetic character or an underscore (``_''), followed
+               by alphanumeric characters or underscore.  The name may
+               be up to 15 characters long.
+
+               In previous UNITY implementations, the attribute name
+               could only be 14 characters long and could not contain
+               underscores.
+
+          tttt_d_e_l_i_m|wwww_n_u_m_b_e_r
+               The termination character (delimitor) or width of the
+               attribute.  If the character is ``t'', the attribute is
+               a terminated (i.e., delimited) attribute.  The
+               attribute value continues until the _d_e_l_i_m character is
+               seen in the relation.  However, if a new-line is seen
+               in the input before _d_e_l_i_m, the current record is
+               ignored and the record parsing starts over after the
+               new-line.
+
+               There are several special strings allowed as
+               delimiters:
+
+               \\\\nnnn  The delimiter is a new-line character.
+
+               \\\\tttt  The delimiter is a tab.
+
+               \\\\_c  The character _c is the delimiter.  However, _c must
+                   not be a backslash.  Backslash is not allowed as a
+                   delimiter because it makes record parsing
+                   ambiguous.
+
+
+
+
+     Page 2                                         (printed 10/28/91)
+
+
+
+
+
+
+     ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))
+
+
+
+               If the last attribute in a relation has a delimiter,
+               the delimiter must be a new-line, i.e., the termination
+               code must be ``t\n''.
+
+               If a backslash is encounterd in a terminated attribute
+               value, followed by the attribute delimiter, the
+               delimiter is taken as part of the attribute value and
+               the backslash is removed.  This allows the attribute
+               delimiter to be embedded in the attribute value.
+
+               If the character is ``w'', the attribute is a fixed
+               width string.  Exactly _n_u_m_b_e_r characters are read from
+               the relation to form this attribute's value.  However,
+               the attribute value must not cross a new-line.  No
+               escaping of characters is supported.
+
+               If no termination code is given for an attribute (i.e.,
+               the line ends directly after the attribute name), the
+               attribute is assumed to be terminated by a colon (:)
+               delimiter.  Previous UNITY implementation require the
+               termination code to be present.
+
+          llll|rrrr|cccc_n_u_m_b_e_r
+               The justification and print width of the attribute.
+               This information tells formatting programs such as
+               pppprrrrttttaaaabbbblllleeee(1) and uuuupppprrrriiiinnnntttt(UNITY) how to justify the
+               attribute's values within a column and to allow _n_u_m_b_e_r
+               characters in each column.  The recognized
+               justification codes are:
+
+               cccc   Center the attribute value in the column.
+
+               llll   Left justify the attribute value in the column.
+
+               rrrr   Right justify the attribute value in the column.
+
+               If _n_u_m_b_e_r is zero, the attribute will no be projected
+               by rrrreeeettttrrrriiiieeeevvvveeee(1) and ffffmmmmkkkkqqqquuuueeeerrrryyyy(3) unless the attribute is
+               explicitly named or the ``all'' attribute is given.
+               This is used for hiding attributes that are reserved
+               for future use.  This feature is not provided at all in
+               previous UNITY implementations.
+
+               If no justification code is present, the attribute
+               value will be left justified in a 12-character column.
+
+          _f_r_i_e_n_d_l_y__n_a_m_e
+               The user-friendly name of an attribute.  Because of the
+               limited length of attribute names, they are often
+               abbreviations of the real content of an attribute.  The
+               _f_r_i_e_n_d_l_y__n_a_m_e is a more verbose name that can be used
+               in formatting the relation to make the attribute's
+
+
+
+     Page 3                                         (printed 10/28/91)
+
+
+
+
+
+
+     ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))
+
+
+
+               content more clear.  The _f_r_i_e_n_d_l_y__n_a_m_e contains all
+               characters up to a new-line.  It may contain any type
+               or number of characters.  If no friendly name is
+               present the attribute name itself is used when labeling
+               the attribute.
+
+          Any line in the description starting with a pound sign (#)
+          as the first character will be treated as a comment and
+          ignored.  This is consistent with normal UNITY commands.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+               A colon-separated list of directories to search for
+               relation descriptor files.  If this is not specified,
+               or if a needed file is not found in one of the
+               directories, the current directory is searched.  If
+               that fails, the directory where the associated relation
+               is located (based on the relation path) is searched.
+
+               Some previous UNITY implementations only accept one
+               directory in this variable.  Also, they use it only
+               after looking in the current directory and in the
+               relation's directory.  Some UNITY commands do not use
+               this variable at all.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          There is a limit on the number of attributes each table can
+          have.  Currently, this is 200 on mainframes and 100 on all
+          other machines.
+
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Below is the descriptor file for the /_e_t_c/_p_a_s_s_w_d file.
+          Notice that a new-line delimiter is always given on the last
+          attribute (unless it is a fixed width attribute).
+
+               #
+               # Unity description file for /etc/passwd
+               #
+               login     t:   8l   Login Name
+               passwd    t:   14l  Password
+               uid  t:   5r   User-Id
+               gid  t:   5r   Group-Id
+               dept t-   5l   Department
+               name t(   20l  User's Name
+               acct t)   4l   Account Number
+               bin  t:   5l   Output Bin
+               home t:   15l  Home Directory
+
+
+
+     Page 4                                         (printed 10/28/91)
+
+
+
+
+
+
+     ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ddddeeeessssccccrrrriiiippppttttoooorrrr((((4444))))
+
+
+
+               shell     t\n  12l  Login Shell
+
+     FFFFIIIILLLLEEEESSSS
+          DDDD<_r_e_l_n_a_m_e>
+               - Descriptor file for relations named <_r_e_l_n_a_m_e>.  It
+               lists the relation's attributes, their delimiting-
+               character or width, printing information, and user-
+               friendly names.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          getrelinfo(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                         (printed 10/28/91)
+
+
+

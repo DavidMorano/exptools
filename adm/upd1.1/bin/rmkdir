@@ -1,0 +1,154 @@
+# remote mkdir for exptools
+
+HOMEID=exptools
+: ${TOOLS:=`logdir $HOMEID`}
+
+umask 007	# private temp files
+set -u		# no slip-ups allowed
+
+: ${LOGNAME:=`id | sed -n 's/.*uid=[0-9]*(\([^)]*\)).*/\1/p'`}
+mailaddr=`uuname -l`!${LOGNAME:?}
+retval=0				# return code for this script
+cmd=$0
+case $cmd in
+*/*)
+	cmd=`basename $cmd`
+	;;
+esac
+
+usage="usage: $cmd [-v] [-M mailaddr] [-P pwdfile] [-p pkgid] [ -u userid ] \\
+	-d directory machine-selection"
+
+case $# in
+0)
+	cat <<! >&2
+$usage
+
+Examples:
+	$cmd -p god -d lib/emacs/newdir1 -d lib/emacs/newdir2 emacs
+	$cmd -p god -d lib/ctrace all
+
+Creates the given directories on the selected machines.  The pkgid given
+must have privileged remote execution permission on each machine selected.
+
+Options:
+	-c override local password check
+	-d directory
+	-m specifies octal mode for target
+	-M alternate return mail address (default ${mailaddr})
+	-P specifies a file containing the pkgid password
+	-p specifies the package ID for the update (required)
+	-u alternate target userid to receive files
+	-v mail back verbose output
+!
+	exit 1
+	;;
+esac
+
+tmpdir=/usr/tmp/$$rmkdir
+tmppkg=/usr/tmp/$$rpkg
+
+if options=`getopt "cd:M:N:P:p:u:v" $*`
+then	:
+else
+	echo "$usage" >&2
+	exit 1
+fi
+set -- $options
+
+debug=
+dirs=
+options=
+pkgid=
+
+while :
+do
+	arg=$1
+	shift
+	case $arg in
+	-c|-v)
+		options="$options $arg"
+		;;
+	-d)
+		case $1 in
+		/* | ../* | */../*)
+			echo "$cmd: illegal directory name: $1" >&2
+			retval=1
+			exit
+			;;
+		esac
+		dirs="$dirs $1"
+		shift
+		;;
+	-M)
+		mailaddr=$1
+		shift
+		;;
+	-N)	# obsolete; uucp is the only network now
+		XNETPREF=$1
+		shift
+		export XNETPREF
+		;;
+	-P|-u)
+		options="$options ${arg} ${1}"
+		shift
+		;;
+	-p)
+		pkgid=$1
+		options="$options ${arg} ${1}"
+		shift
+		;;
+	--)
+		break
+		;;
+	esac
+done
+
+: ${pkgid:?"must specify pkgid (-p)"}
+: ${dirs:?"must specify dir (-d)"}
+
+machines=${*:?"no machines specified"}
+
+# Now is the time to arrange for certain temp files to disappear on exit.
+# From this point on, $retval controls the exit code for this command.
+trap "retval=1; exit" 1 2 3 15
+trap "cd; $debug rm -rf $tmpdir $tmppkg; exit \$retval" 0
+
+makedir()
+{
+	x=`echo $1 | tr '/' ' '`
+	base=
+	for i in $x
+	do
+		if [ ! -d $base$i ]
+		then
+			if mkdir $base$i && chmod 775 $base$i
+			then	:
+			else
+				retval=4
+				exit
+			fi
+		fi
+		base=$base$i/
+	done
+}
+
+owd=${PWD:-`pwd`}
+
+if mkdir $tmpdir && cd $tmpdir && chmod 775 .
+then
+	for dir in $dirs
+	do
+		makedir $dir
+	done
+
+	find . -print \
+	| cpio -oc > $tmppkg
+
+	cd $owd
+
+	$debug sendcpio $options -f $tmppkg -M $mailaddr $machines
+else
+	echo "$cmd: cannot make temp directory" >&2
+	retval=3
+fi

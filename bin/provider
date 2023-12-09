@@ -1,0 +1,224 @@
+#!/bin/sh
+
+# providers - print provider info
+
+# $TOOLS may not be set correctly until the user reads the introductory news.
+if test -n "$TOOLS" -a -d $TOOLS/lib/toolnews
+then	:
+else	echo 'The TOOLS environment variable must be set to the exptools home directory' >&2
+	echo 'and exported; see the following introduction to exptools.' >&2
+	sleep 2
+	${PAGER:-cat} `logdir exptools`/lib/toolnews/Intro >&2
+	exit 1
+fi
+
+args="$*"
+PATH=/usr/5bin:$PATH	# use System V commands on Suns and Alliants
+export PATH
+
+: ${ADMLIBDIR:=${TOOLS}/adm/lib}
+: ${PKGPATH:=${TOOLS}/adm/upd1.1/bin/pkgpath}
+: ${PRPKG:=${TOOLS}/adm/upd1.1/bin/prpkg}
+: ${PROVTAB:=$ADMLIBDIR/provtab}
+: ${PKGTAB:=$ADMLIBDIR/pkgtab}
+
+tmpprov=/usr/tmp/$$prov
+tmppkg=/usr/tmp/$$pkg
+tmplist="$tmpprov $tmppkg"
+
+trap "retval=1; exit" 1 2 3 15
+trap "rm -f $tmplist; exit \$retval" 0
+
+# print supported machine types and full product names
+pr_types()
+{
+	cat <<!
+
+			EXPTOOLS MACHINE TYPES
+
+TYPE	VENDER MODELS
+3b2	AT&T 3B2 (all models except MIPS), 3B5, 3B15, 3B4000
+3b20	AT&T 3B20
+hppa	Hewlett-Packard Precision Architecture RISC models
+i386	AT&T 6386, Starserver E & S; NCR 3445 & 3450; PC clones running SVR3
+i486	Intel 386/486 running SVR4
+ibm	Amdahl and IBM models running Amdahl's UTS
+mips	MIPS, AT&T System 7000 R3 & 7040 (Pyramid), and Starserver FT (Tandem)
+pyr	AT&T System 7000 R2 (Pyramid 90x)
+sgi	Silicon Graphics, running IRIX 5.3
+solaris	Sun 4 and SPARCstation, running Solaris 2.*
+sparc	Sun 4 and SPARCstation, Solbourne and other SPARC machines
+vax	DEC VAX
+
+!
+}
+
+# print administrator info
+pr_admins()
+{
+	echo	# \n doesn't work on some BSD-based types
+	echo "			EXPTOOLS ADMINISTRATORS"
+	echo
+	echo "LOCATION (CODE(S)) [TYPES]                   NAME               ADDRESS"
+	awk 'BEGIN { FS = ":"; }
+	{
+		if ($2 == "adm")
+			printf "%-44s %-18s %s\n", $9, $6, $8;
+	}' $tmppkg \
+	| sort -u
+	echo
+}
+
+# print info for a class of packages
+pr_packages()
+{
+	echo
+	echo "			$2 PACKAGES"
+	echo
+	echo "PACKAGE:$1::SUPPORT LEVEL AND MACHINE TYPES::NAME::ADDRESS" \
+	| awk 'BEGIN { FS = ":" }
+	{
+		if ($2 == type)
+			printf "%-11s %-18s %-18s %s %s\n", $1, $6, $8, $4, $3;
+	}' type=$1 - $tmppkg
+	echo
+}
+
+# print info for a list of packages
+pr_pkg()
+{
+	t="$*"
+	for j in $t
+	do
+		grep "^$j:" $tmppkg
+	done \
+	| awk 'BEGIN { FS = ":" }
+	{
+		if ($2 != "adm")
+			printf "%-11s %-3s %-18s %-18s %s %s\n", $1, $2, $6, $8, $4, $3;
+	}'
+}
+
+# print the support level descriptions
+pr_support_levels()
+{
+	cat <<!
+
+SUPPORT LEVELS (Higher levels include lower levels)
+
+6	Provider makes major enhancements.
+5	Provider makes minor enhancements.
+4	Provider fixes bugs.
+3	Provider ports tool to new machine types.
+2	Provider reports bugs to author or supporting organization or will
+	send source to the bug finder, and installs any bug fixes received.
+1	Provider answers questions and suggests how to work around bugs.
+0	Unsupported because there is no provider, the provider doesn't
+	reply to electronic mail, or doesn't have time to do anything.
+!
+}
+
+# merge pkg and provider table
+awk 'BEGIN { FS = ":"; }
+     {
+		n = split($5, pkgs, ",");
+		while (n > 0)
+		{
+			if ($2 != "")
+				printf "%s:%s %s:%s:%s:%s\n", pkgs[n--], $2, $1, $3, $4, $6;
+			else
+				printf "%s:%s:%s:%s:%s\n", pkgs[n--], $1, $3, $4, $6;
+		}
+      }' $PROVTAB \
+| sort -u -o $tmpprov
+join -t: $PKGTAB $tmpprov > $tmppkg
+
+case "$args" in
+'')
+	pr_types
+	pr_admins
+	pr_packages opt OPTIONAL
+	pr_packages std STANDARD
+	pr_support_levels
+	;;
+*)
+	for keyword in $args
+	do
+		case "$keyword" in
+		adm|admin*)
+			pr_admins
+			;;
+		all)
+			pr_packages opt OPTIONAL
+			pr_packages std STANDARD
+			pr_support_levels
+			;;
+		opt|optional)
+			pr_packages opt OPTIONAL
+			pr_support_levels
+			;;
+		std|standard)
+			pr_packages std STANDARD
+			pr_support_levels
+			;;
+		support)
+			pr_support_levels
+			;;
+		types)
+			pr_types
+			;;
+		3b2|3b20|hppa|i386|i486|ibm|mips|pyr|sgi|solaris|sparc|vax)
+			pkgs=`sed -n	-e "/[:,]$keyword[:,]/s/:.*//p" \
+					-e "/:all:/s/:.*//p" $tmppkg \
+				| sort -u | egrep -v "^(adm|god)$"`
+			pr_pkg $pkgs
+			pr_support_levels
+			;;
+		*)
+			if [ -x $PRPKG ]
+			then
+				pkgs=`$PRPKG $keyword 2>/dev/null \
+					| sed 's/:.*//' \
+					| sort -u`
+			else
+				echo "warning: prpkg command not found -- attempting to find package called $keyword" >&2
+				pkgs=$keyword
+			fi
+			case "$pkgs" in
+			'')
+				case $keyword in
+				$TOOLS/*)
+					x=`expr $keyword : "$TOOLS/\(.*\)"`
+					;;
+				*/*)
+					x=$keyword
+					;;
+				*)
+					x="bin/$keyword\nfbin/$keyword"
+					;;
+				esac
+				if [ -x $PKGPATH ]
+				then
+				    pkgs=`echo $x \
+					| $PKGPATH -am 2>/dev/null \
+					| sed -e 's/:.*//' -e '/adm/d' -e '/god/d' \
+					| uniq`
+				else
+				    echo "warning: pkgpath command not found -- \c" >&2
+				    pkgs=
+				fi
+				;;
+			esac
+			case "$pkgs" in
+			'')
+				echo "$keyword not found" >&2
+				;;
+			*)
+				pr_pkg $pkgs
+				;;
+			esac
+			;;
+		esac
+	done
+	;;
+esac

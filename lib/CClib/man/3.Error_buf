@@ -1,0 +1,198 @@
+
+
+
+     EEEERRRRRRRROOOORRRR____BBBBUUUUFFFF((((3333CCCC++++++++))))               CCCCCCCClllliiiibbbb               EEEERRRRRRRROOOORRRR____BBBBUUUUFFFF((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Error_buf - provides a place for classes to buffer their
+          error messages
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"EEEErrrrrrrroooorrrr____bbbbuuuuffff....hhhh""""
+
+          eeeennnnuuuummmm ssssttttaaaatttteeeessss ==== {{{{ ____SSSSUUUUCCCCCCCCEEEESSSSSSSS,,,, ____FFFFAAAAIIIILLLL }}}};;;;
+
+          ccccllllaaaassssssss EEEErrrrrrrroooorrrr____bbbbuuuuffff {{{{
+          ppppuuuubbbblllliiiicccc::::
+               vvvvooooiiiidddd sssseeeettttbbbbuuuuffff((((iiiinnnntttt,,,, cccchhhhaaaarrrr**** ............))));;;;
+               vvvvooooiiiidddd sssseeeettttbbbbuuuuffff((((cccchhhhaaaarrrr**** ............))));;;;
+               vvvvooooiiiidddd aaaaddddddddbbbbuuuuffff((((cccchhhhaaaarrrr**** ............))));;;;
+               cccchhhhaaaarrrr**** bbbbuuuuffffvvvvaaaalllluuuueeee(((())));;;;
+               ffffrrrriiiieeeennnndddd oooossssttttrrrreeeeaaaammmm&&&& ooooppppeeeerrrraaaattttoooorrrr<<<<<<<<((((oooossssttttrrrreeeeaaaammmm&&&&,,,, EEEErrrrrrrroooorrrr____bbbbuuuuffff&&&&))));;;;
+               ssssttttaaaatttteeeessss ssssttttaaaatttteeee;;;;
+          }}}}
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The Error_buf class is typically used as a base class of a
+          class that needs a facility for buffering its error
+          messages. This allows the part of the program that uses the
+          class to control if and where error messages are to be
+          logged.
+
+          The sssseeeettttbbbbuuuuffff((((iiiinnnntttt ssssiiiizzzzeeee,,,, cccchhhhaaaarrrr**** ffffoooorrrrmmmmaaaatttt ............)))) function creates a
+          single error buffer of user-specified size ssssiiiizzzzeeee and stores
+          the error message in it.  The error message is specified by
+          the format string ffffoooorrrrmmmmaaaatttt, as in the style of _p_r_i_n_t_f.  The
+          sssseeeettttbbbbuuuuffff((((cccchhhhaaaarrrr**** ffffoooorrrrmmmmaaaatttt ............)))) function is similar except the
+          error buffer size is set to 512 bytes.
+
+          The aaaaddddddddbbbbuuuuffff function appends an error message to the buffer,
+          preserving any previous message that was already in it.
+
+          The bbbbuuuuffffvvvvaaaalllluuuueeee function returns a char* pointer to the error
+          buffer.
+
+          The ostream operator << writes the contents of the error
+          buffer, prefaced with the string "errorbuf = ", to the
+          output stream. It is useful for debugging and perhaps
+          formatting.
+
+          The ssssttttaaaatttteeee variable should be set to ____FFFFAAAAIIIILLLL if an error occurs
+          and something is put in the buffer. The user of the class
+          should check ssssttttaaaatttteeee to see if something went wrong.  The
+          ssssttttaaaatttteeee variable is particularly useful in constructors
+          because return values are not available to return status.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following is an example of how Error_buf might be used
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     EEEERRRRRRRROOOORRRR____BBBBUUUUFFFF((((3333CCCC++++++++))))               CCCCCCCClllliiiibbbb               EEEERRRRRRRROOOORRRR____BBBBUUUUFFFF((((3333CCCC++++++++))))
+
+
+
+          in a program:
+
+               main()
+               {
+                    Error_buf x;
+                    x.setbuf("Error string using default buffer size - errno %d",
+                         errno);
+                    x.setbuf(100, "Specify size = 100, above string overwritten");
+                    x.addbuf("\nAppend this %s to buffer", "message");
+                    cout << "Buffer value = " << x.bufvalue() << "\n";
+                    cout << x;     // prints out data members of x, labeled
+               }
+
+          or used as a base class (its main purpose in life)
+
+               class foo : public Error_buf {
+                    int x;
+               public:
+                    foo(int y);
+               }
+
+               foo::foo(int y)
+               {
+                    state = _SUCCESS;
+                    if (y > MAXY) {
+                         state = _FAIL;
+                         setbuf("Class foo constructor - y = %d too big", y);
+                         return;
+                    }
+                    x = y;
+               }
+
+          A user of foo should check state after a constructor is
+          called.
+               usr_prog()
+               {
+                    foo f(20);
+                    if (f.state == _FAIL) {
+                         logerr("f failed in usr_prog: %s0,f.bufvalue());
+                    }
+               }
+
+
+     FFFFIIIILLLLEEEESSSS
+          Error_buf.h
+
+          Error_buf.c
+
+     NNNNOOOOTTTTEEEESSSS
+          It may be better style to make Error_buf a class member as
+          opposed to a base class.
+
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     EEEERRRRRRRROOOORRRR____BBBBUUUUFFFF((((3333CCCC++++++++))))               CCCCCCCClllliiiibbbb               EEEERRRRRRRROOOORRRR____BBBBUUUUFFFF((((3333CCCC++++++++))))
+
+
+
+     BBBBUUUUGGGGSSSS
+          There is only one buffer.  Messages have to be appended to
+          the buffer if there is more than one error.  Perhaps there
+          should be a separate buffer for warnings.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          It is _n_o_t the user's responsibility to deallocate the
+          buffer.  The destructor does that.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          It is the user's responsibility to allocate a large enough
+          buffer.  Error_buf does not check for buffer overflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+

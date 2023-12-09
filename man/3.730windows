@@ -1,0 +1,264 @@
+
+
+
+       777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    730windows - Programable windows management	for 730	termi-
+	    nals
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    #include <730windows.h>
+	    dmdcc -I$TOOLS/lib/730windows.h
+
+	    bool has730wins();
+
+	    void set730wins( p,	onoff, bmp );
+		Proc *p;
+		int onoff;
+		Bitmap *bmp;
+
+	    bool chk730wins();
+
+	    void tile730wins( p	);
+		Proc *p;
+
+	    void untile730wins(	p );
+		Proc *p;
+
+	    void popout730wins(	p );
+		Proc *p;
+
+	    void drawtile730wins( p, likep );
+		Proc *p, *likep;
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    The	730windows(1) program provides these functions as add-on
+	    functionality to the 730 ROM routines.  The	interface is
+	    described in 777733330000wwwwiiiinnnnddddoooowwwwssss....hhhh in such away as to be independent
+	    of ROM versions currently available	for the	630 and	730 ter-
+	    minals.  Thus the applications programmer is free to include
+	    these calls	without	explicit calls to _v_e_r_s_i_o_n(_3) to	make
+	    sure that only a 730 is executing this code.
+
+
+	    _h_a_s_7_3_0_w_i_n_s
+		 This macro returns 0 if the _7_3_0_w_i_n_d_o_w_s(_1) program is
+		 not operational in the	terminal.  It returns 1	if
+		 _7_3_0_w_i_n_d_o_w_s(_1) is operational.	This routine is	typi-
+		 cally used to decide whether a	specific action	needs to
+		 be performed regarding	tiling.	 A typical usage of this
+		 routine would be
+
+		 if( has730wins() )
+		 {
+		     labelon();
+		     set730wins( P, 1, &tilemap	);
+		 }
+
+
+
+       Page 1					       (printed	1/12/93)
+
+
+
+
+
+
+       777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))
+
+
+
+	    _c_h_k_7_3_0_w_i_n_s
+		 This macro should be called using the following conven-
+		 tion.
+
+		     request( MOUSE|whatever_else );
+		     while( 1 )
+		     {
+			 wait( MOUSE|whatever_else );
+			 if( own() & MOUSE )
+			 {
+			     /*	If 730windows processing done,
+			      *	ignore the mouse
+			      */
+			     if( chk730wins() )
+				 continue;
+			 }
+		     }
+
+
+
+	    _s_e_t_7_3_0_w_i_n_s
+		 This macro results in a call to the routine provided by
+		 _7_3_0_w_i_n_d_o_w_s(_1) which enables the fancy gadgetry	on the
+		 layer's label bar.  This macro	should always be pro-
+		 ceeded	by a call to _l_a_b_e_l_o_n(_3).  The first parameter is
+		 usually PPPP to indicate the current process.  The second
+		 parameter is 1	to turn	it on, and 0 to	turn it	off.
+		 The 3rd parameter is a	pointer	to a 48x48 bit image for
+		 the layer's tile.  If a NULL pointer is passed, the
+		 default tile will be used.  This macro	causes
+		 TILEMAP(p) to have the	value of the bitmap passed.
+
+
+	    _d_r_a_w_t_i_l_e_7_3_0_w_i_n_s
+		 This macro results in a call to the routine provided by
+		 _7_3_0_w_i_n_d_o_w_s(_1) which redraws the tile image of the first
+		 process using the second process's host information.
+		 Typically, both processes are PPPP to indicate the current
+		 process.
+
+
+	    _t_i_l_e_7_3_0_w_i_n_s
+		 This macro results in a call to the routine provided by
+		 _7_3_0_w_i_n_d_o_w_s(_1) to reduce a layer to a tile.  The process
+		 associated with the layer will	receive	a RESHAPE event,
+		 and IIIISSSSTTTTIIIILLLLEEEEDDDD((((PPPP))))	will be	true.  This indicator should be
+		 used by the application to eliminate or at least con-
+		 trol writing to the layer so as to not	destroy	the tile
+		 imagery.
+
+
+	    _u_n_t_i_l_e_7_3_0_w_i_n_s
+		 This macro results in a call to the routine provided by
+
+
+       Page 2					       (printed	1/12/93)
+
+
+
+
+
+
+       777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))
+
+
+
+		 _7_3_0_w_i_n_d_o_w_s(_1) which opens a tiled layer back up into
+		 its previous shape.  The process will receive a RESHAPE
+		 event,	and IIIISSSSTTTTIIIILLLLEEEEDDDD((((PPPP)))) will be false.
+
+
+	    _p_o_p_o_u_t_7_3_0_w_i_n_s
+		 This macro results in a call to the routine provided by
+		 _7_3_0_w_i_n_d_o_w_s(_1) which will provide a ghost of the layers
+		 tile and untile the layer to allow it to be chosen by
+		 the user if desired.  This is typically used by appli-
+		 cations which respond to asynchronous requests	and
+		 might choose to pop themselves	out, as	a user request
+		 option.  A process which is "popped out" will see the
+		 same transition that it sees for normal untiling.  The
+		 difference is that the	ghosted	layers process might
+		 choose	to "retile" the	popped out layer depending on
+		 what the user does with the mouse (see	_7_3_0_w_i_n_d_o_w_s(_1)).
+
+
+       UUUUSSSSEEEEFFFFUUUULLLL MMMMAAAACCCCRRRROOOOSSSS
+	    The	following macros are defined in	777733330000wwwwiiiinnnnddddoooowwwwssss....hhhh and are
+	    available for use as described here.  Any other use	is not
+	    guaranteed to continue to work.
+
+
+	    tiledrect( Proc * )
+		 This macro can	be used	in the following ways
+
+		     if( WASTILED( p ) )
+			 r = tiledrect(	p );
+
+		     tiledrect(	p ) = r;
+		     /*	Say tile rectangle has been established	*/
+		     SETWASTILED( p );
+
+
+
+	    untiledrect( Proc *	)
+		 This macro provides access to the rectangle which
+		 describes the layer when it is	untiled.  This value can
+		 be used in the	following ways
+
+		     if( WASTILED( p ) )
+			 r = untiledrect( p );
+		     untiledrect( p ) =	r;
+
+
+
+	    ISTILED(p)
+		 This macro determines if the indicated	process	is
+		 currently tiled or not.  It returns non-zero if the
+		 layer is tiled, and 0 if it is	not.
+
+
+
+       Page 3					       (printed	1/12/93)
+
+
+
+
+
+
+       777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   777733330000WWWWIIIINNNNDDDDOOOOWWWWSSSS((((3333))))
+
+
+
+	    WASTILED(p)
+		 This macro determines if the indicated	process	has ever
+		 been tiled.  It returns non-zero if the layer has ever
+		 been tiled, and 0 if it is not.  It does not in any way
+		 convey	what the value of "ISTILED(p)" might be.
+
+
+	    TILEMAP(p)
+		 This macro provides access to the tile	bitmap set by a
+		 previous call to _s_e_t_7_3_0_w_i_n_s, or allows	a new value to
+		 be set.
+
+		     b = TILEMAP( p );
+
+		     TILEMAP( p	) = b;
+
+
+       FFFFIIIILLLLEEEESSSS
+	    $TOOLS/lib/730windows/730windows.h
+
+       CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	    This stuff should be part of the ROM, alas it is not.  The
+	    interface may change in the	future.
+
+	    _7_3_0_W_i_n_d_o_w_s(_1) uses the Sys[-1] vector table	entry to provide
+	    the	interface to the above functionality.
+
+	    The	has730wins() macro explicitly says that	730v1 and later
+	    ROMS are supported.	 If a future ROM version is not	compati-
+	    ble	with _7_3_0_w_i_n_d_o_w_s(_1), this interface may not work
+	    correctly.
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    _7_3_0_W_i_n_d_o_w_s is provided by Gregg Wonderly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 4					       (printed	1/12/93)
+
+
+

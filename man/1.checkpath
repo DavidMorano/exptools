@@ -1,0 +1,198 @@
+
+
+
+     CCCCHHHHEEEECCCCKKKKPPPPAAAATTTTHHHH((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         CCCCHHHHEEEECCCCKKKKPPPPAAAATTTTHHHH((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          checkpath - Check a directory path list for redundant or
+          unsearchable directories
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          cccchhhheeeecccckkkkppppaaaatttthhhh [----kkkkllllrrrrSSSSssssVVVVvvvv] [----KKKK _d_i_r(_s)]... [----PPPP _d_i_r(_s)]...
+          [_p_a_t_h_l_i_s_t(_n_a_m_e)]...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _c_h_e_c_k_p_a_t_h looks through the directories of the  pathlist(s),
+          in the order they are specified.  Each of the directories is
+          normalized similarly  to  normfile(1)  and  compressed.   It
+          prints  out the resulting directory path list with redundant
+          or unsearchable directories omitted, as well  as  any  other
+          directories  explicitly  indicated to be removed (using ----PPPP).
+          If no path lists are specified, it uses PPPPAAAATTTTHHHH.  Thus,  it  is
+          useful as follows:
+
+          path=`checkpath`
+          PATH=${path:-$PATH}    # _W_o_n'_t _c_l_e_a_r _P_A_T_H _i_f _s_o_m_e_t_h_i_n_g _w_e_n_t _w_r_o_n_g
+
+          Redundant  directories  are  silently  omitted.    Normally,
+          directories that are the same but have different names (from
+          symbolic links) are considered redundant.
+
+          Unsearchable  directories  specified  as  full  path   names
+          (beginning with ////) are omitted.  Omitted unsearchable direc-
+          tories cause a diagnostic message, unless the ----ssss  option  is
+          used.
+
+          The user may specify something other than the default  PATH.
+          To  do  so,  you may use either the name of a directory path
+          list, or an actual directory path list.  For example:  These
+          two lines do the same thing:
+
+          CDPATH=`checkpath CDPATH`
+          CDPATH=`checkpath $CDPATH`
+
+          The user may construct a larger path  list  out  of  smaller
+          path lists or directories, as in these equivalent lines:
+
+          LPATH=`checkpath PATH CDPATH`
+          LPATH=`checkpath PATH $CDPATH`
+          LPATH=`checkpath $PATH $CDPATH`
+          LPATH=`checkpath $PATH:$CDPATH`
+
+          The arguments are concatenated with a separating colon.   If
+          no argument is specified, PATH is used.  If a directory path
+          list's name is used, it must be exported.  The  presence  of
+          dot  (.),  colon (:), slash (/), or dash (-) cause _c_h_e_c_k_p_a_t_h
+          to determine that the argument is an actual  directory  path
+          list, instead of the name of a directory path list.
+
+
+
+     Page 1                                           (printed 2/9/96)
+
+
+
+
+
+
+     CCCCHHHHEEEECCCCKKKKPPPPAAAATTTTHHHH((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         CCCCHHHHEEEECCCCKKKKPPPPAAAATTTTHHHH((((1111))))
+
+
+
+        OOOOppppttttiiiioooonnnnssss
+          ----kkkk          causes it to keep all unsearchable  directories,
+                      only eliminating redundant directories.
+
+          ----KKKK_d_i_r(_s)    causes it to  keep  the  specified  directories,
+                      even  if unsearchable, or symbolically redundant
+                      (different  name  from  other  directories,  but
+                      linked  to  another  directory in the pathlist).
+                      More than one directory can  be  specified  with
+                      each  ----KKKK  option  by giving it a colon-separated
+                      list.  In this case it can't be the name  of  an
+                      environment  variable,  it  must  be  the actual
+                      directory list.
+
+          ----PPPP_d_i_r(_s)    causes it to  purge  the  specified  directories
+                      from  the  list.  More than one directory can be
+                      specified with each ----PPPP option  by  giving  it  a
+                      colon-separated  list.  In this case it can't be
+                      the name of an environment variable, it must  be
+                      the actual directory list.
+
+          ----llll          The default is to eliminate the latter redundant
+                      directories, but the ----llll option causes it to keep
+                      the last of the redundant directories  and  omit
+                      the former redundant directories.  Thus,
+
+                      checkpath dir1:dir2:dir1:dir3
+
+                      would result in ddddiiiirrrr1111::::ddddiiiirrrr2222::::ddddiiiirrrr3333, whereas
+
+                      checkpath -l dir1:dir2:dir1:dir3
+
+                      would result in ddddiiiirrrr2222::::ddddiiiirrrr1111::::ddddiiiirrrr3333.
+
+          ----rrrr          causes  unsearchable  directories  specified  by
+                      relative path names (such as bin, ../lib/bin, .,
+                      etc.) to be omitted also.
+
+          ----SSSS          Does not remove redundant directories that  have
+                      different names (from symbolic links).
+
+          ----ssss          Causes it to silently remove unsearchable direc-
+                      tories,  and not warn about directories repeated
+                      in the ----KKKK and ----PPPP options.
+
+          ----VVVV          reports the program version number, and if there
+                      are  no  other  command  line  arguments, simply
+                      exits.
+
+          ----vvvv          is similar,  but  reports  the  program  version
+                      numbers of all programs in the checkpath Experi-
+                      mental Tools package.
+
+
+
+     Page 2                                           (printed 2/9/96)
+
+
+
+
+
+
+     CCCCHHHHEEEECCCCKKKKPPPPAAAATTTTHHHH((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))         CCCCHHHHEEEECCCCKKKKPPPPAAAATTTTHHHH((((1111))))
+
+
+
+          If a directory is listed in both a ----KKKK and a ----PPPP  option,  the
+          ----KKKK  option  wins  and the directory is kept in the resulting
+          list.  Normally this causes a warning message unless the  ----ssss
+          option is used.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          Normally 0, unless it  is  used  incorrectly,  or  the  PATH
+          environment variable is not readable, both causing a -1 exit
+          code.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          # Remove all /usr/add-on/DMD* directories from PATH while cleaning:
+          Remove=`ls -d /usr/add-on/DMD*/ | formpath`
+          Path=`checkpath -P "$Remove"`
+          PATH=${Path:-$PATH}
+          unset Remove Path
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          formpath(1),   normfile(1),   purgepath(1),   searchpath(1),
+          splitpath(1), where(1)
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          _O_u_t _o_f _m_e_m_o_r_y!
+          If the directory path list gets too unwieldy (unlikely).
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          As with all pathlist-changing commands, you should  use  the
+          form:
+
+          path=`command ...`
+          REALPATH=${path:-$REALPATH}
+
+          (rather than RRRREEEEAAAALLLLPPPPAAAATTTTHHHH====````ccccoooommmmmmmmaaaannnndddd ............````) so that the  real  path
+          list  does  not get cleared if something goes wrong with the
+          command.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEEDDDD BBBBYYYY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                           (printed 2/9/96)
+
+
+

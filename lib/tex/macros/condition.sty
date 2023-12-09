@@ -1,0 +1,14 @@
+\def\newconditional#1{
+\@namedef{conditional#1}{}
+\expandafter\gdef\csname conditional#1off\endcsname
+   {\@namedef{conditional#1}{\@@conditional\@conditional}}
+\@namedef{endconditional#1}{}
+}
+
+\begingroup\catcode `|=0 \catcode `[=1 \catcode`]=2 
+\catcode `\{=12 \catcode`\}=12 \catcode`\\=12 
+|long|gdef|@conditional#1\end{conditional#2}[|end[conditional#2]]
+|endgroup
+
+\def\@@conditional{\let\do\@makeother\dospecials}
+

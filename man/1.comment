@@ -1,0 +1,330 @@
+
+
+
+     CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          comment -- add comments to source files
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccoooommmmmmmmeeeennnntttt [-l language] [-f aux_comment_file] [-p path] [-hr]
+          [source_files]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _c_o_m_m_e_n_t finds function, subroutine, macro, and system calls
+          in source files and inserts English language comment lines.
+          The commented source is written to standard output.
+
+          Comment lines can be inserted before each call, or placed in
+          header blocks at the start of the file and before each func-
+          tion.
+
+          By combining both documentation and source, _c_o_m_m_e_n_t makes
+          unfamiliar programs and document source files easier to read
+          and understand.
+
+          _c_o_m_m_e_n_t maintains files of common subroutine names and com-
+          mentary for each type of language.  To exploit _c_o_m_m_e_n_t to
+          the fullest extent possible, users can specify an additional
+          comment file on the command line to replace or augment
+          _c_o_m_m_e_n_t'_s internal comment file.
+
+          _c_o_m_m_e_n_t provides language processors for C, shell, EPL, and
+          _t_r_o_f_f/_n_r_o_f_f source code.  Users can specify their own
+          language processor for other languages.
+
+          With no input source files specified, _c_o_m_m_e_n_t reads a pro-
+          gram from standard input.
+
+
+          ----hhhh        Write a comment header describing the file, as
+                    well as comment headers for each function. (Imple-
+                    mented only for C programs currently.)
+
+                    Only the first comment line for each functional
+                    entry in the comment database will be used, i.e.,
+                    long comments will be truncated.  If -h is not
+                    specified, comment lines are inserted directly
+                    before the corresponding source lines.
+
+
+          ----llll_l_a_n_g_u_a_g_e
+                    Describes the type of source file.  Language
+                    analyzers are provided for languages: c, epl,
+                    shell, troff and nroff.  If another language is
+                    specified, the user must use the -p option and
+                    provide another language analyzer.
+
+
+
+     Page 1                                           (printed 8/5/92)
+
+
+
+
+
+
+     CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))
+
+
+
+                    If -l is not specified on the command line, c is
+                    the default language.
+
+                    For EPL/SWAP source files, _c_o_m_m_e_n_t looks through
+                    the source first, collecting subroutine descrip-
+                    tions and using them for comments as well as the
+                    comments in any auxiliary comment file specified
+                    on the command line.  Line numbers in EPL/SWAP
+                    source files are ignored.
+
+
+                    The troff and nroff processing is identical.  For
+                    troff and nroff source files, _c_o_m_m_e_n_t searches for
+                    lines starting with a period and matches the next
+                    one or two characters to a name in a database of
+                    nroff, troff, mm, and man macros.
+
+
+          ----ffff_a_u_x__c_o_m_m_e_n_t__f_i_l_e
+                    Look in _a_u_x__c_o_m_m_e_n_t__f_i_l_e in addition to the inter-
+                    nal comment file for function (subroutine, macro,
+                    or command) descriptions.  For C files, entries
+                    must be of the form:
+
+                    function_name;/* commentary line 1
+                    commentary line 2
+                         ...
+                    commentary line N */
+
+                    For EPL/SWAP files, lines must be of the form:
+
+                    subroutine_or_macro_name;# commentary line 1
+                    # commentary line 2
+                         ...
+                    # commentary line N
+
+                    Comments may span less than 98 lines and must not
+                    contain semicolons.
+
+
+          ----pppp_p_a_t_h    Use the language analyzer whose pathname is speci-
+                    fied by _p_a_t_h. Otherwise, use the default language
+                    processor based on the language specified by the
+                    -l argument.
+
+
+          ----rrrr        Replace the internal comment files.  If -r is
+                    specified, then the user must also specify an aux-
+                    iliary comment file using the -f option.  The com-
+                    bination of the -r and -f options has the effect
+                    of replacing the internal comment database with a
+                    user specified comment file.
+
+
+
+     Page 2                                           (printed 8/5/92)
+
+
+
+
+
+
+     CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE::::
+          Given the C source file:
+
+          int chop_file(file, n)
+          char *file;
+          int n;
+          {
+               int code, p;
+               char buf[513];
+
+               p = getpid();
+               (void)sprintf(buf, "head -%d %s > tmp%d", n, file, p);
+               code = system(buf);
+               return(code);
+          }
+
+
+          Then
+                               comment -lc file.c
+
+          using its internal file of C comments, writes this on stan-
+          dard output:
+
+
+          int chop_file(file, n)
+          char *file;
+          int n;
+          {
+                  int code, p;
+                  char buf[513];
+
+
+                  /* getpid ==> get process ID */
+                  p = getpid();
+
+                  /* sprintf ==> place formatted output into buffer */
+                  (void)sprintf(buf, "head -%d %s > tmp%d", n, file, p);
+
+                  /* system ==> issue a shell command */
+                  code = system(buf);
+                  return(code);
+          }
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE::::
+          An example of an auxiliary comment file for a C program is:
+
+          errprint;/* print an error message on standard error */
+          init;/* clear counters and
+          set buffers to nulls */
+          wrapup;/* flush buffers
+          and remove all temporary files */
+
+
+
+     Page 3                                           (printed 8/5/92)
+
+
+
+
+
+
+     CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE::::
+          An example of a comment file for an EPL/SWAP program is:
+
+          determine_callcode;# determine the callcode
+          send_cmc_event;# send_cmc_event sends the cmc data
+          # of billing number, tsgn, and carrier connect data to 3b
+          store_outcmp_purgesu_data;# store data common to outcmp
+          # and purge
+
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          All error messages are written to standard error and are
+          intended to be self-explanatory.
+
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          Tabs in source files and comment files will be converted to
+          spaces.
+
+          In EPL programs, DFN_SUB_ statements which span multiple
+          lines may be truncated.
+
+          Extremely long lines may be truncated or worse due to the
+          limitations of standard UNIX programs like _j_o_i_n(_1) and
+          _g_r_e_p(_1).
+
+          Shell, C, and EPL/SWAP programs with syntax errors may cause
+          _c_o_m_m_e_n_t to produce incorrect results.  _c_o_m_m_e_n_t does not exe-
+          cute _c_p_p, the C preprocessor, so conditional compilation
+          directives will be ignored.
+
+          _c_o_m_m_e_n_t does not recognize shell commands on lines which end
+          "here documents," and may comment on words which it thinks
+          are commands but which may never be executed.
+
+          When using the -h option for C programs, comment headers
+          will be placed in between lines if function declarations
+          span multiple lines.  Labels are incorrectly listed as glo-
+          bal variables.
+
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/lib/comment/c.db - database of C function comments
+
+          $TOOLS/lib/comment/shell.db - database of shell command com-
+          ments
+
+          $TOOLS/lib/comment/epl.db - database of SWAP subroutine com-
+          ments
+
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+
+
+
+     Page 4                                           (printed 8/5/92)
+
+
+
+
+
+
+     CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           CCCCOOOOMMMMMMMMEEEENNNNTTTT((((1111))))
+
+
+
+          The _c_o_m_m_e_n_t tool was written by Bob Parnass.
+
+
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cscope, ccalls, ncsl
+
+          _c_o_m_m_e_n_t - _A _P_r_o_g_r_a_m _W_h_i_c_h _C_o_m_m_e_n_t_s _o_n _O_t_h_e_r _P_r_o_g_r_a_m_s, by R.
+          S. Parnass, AT&T Bell Laboratories Technical Memorandum
+          55813-901105-01TM.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                           (printed 8/5/92)
+
+
+

@@ -1,0 +1,462 @@
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ffffttttrrrraaaacccceeee - C++ class for function trace
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          #_i_n_c_l_u_d_e "_t_r__h_d_r._h"
+
+          class ftrace
+          {
+          public:
+              ftrace (char* fname, char* t1=NULL, int v1=0, char* t2=NULL, int v2=0);
+              ftrace (char* fname, char* t1, char* v1, char* t2=NULL, int v2=0);
+              ftrace (char* fname, char* t1, int v1, char* t2, int v2);
+              ftrace (char* fname, char* t1, int v1, char* t2, int v2);
+
+              ~ftrace ();
+
+              write (int type, __LOC__, char* t1=NULL, int v1=0, char* t2=NULL, int v2=0);
+              write (int type, __LOC__, char* t1, char* v1, char* t2=NULL, int v2=0);
+              write (int type, __LOC__, char* t1, int v1, char* t2, char *v2);
+              write (int type, __LOC__, char* t1, char* v1, char* t2, char* v2);
+          }
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ffffttttrrrraaaacccceeee is a class specialized for tracing (debugging) use
+          within a function (member function or regular function). An
+          instance of ffffttttrrrraaaacccceeee (and exactly one instance) should be
+          included for each function whose execution information is to
+          be traced.
+
+          IIIIMMMMPPPPOOOORRRRTTTTAAAANNNNTTTT NNNNOOOOTTTTEEEE: An instance of class ppppttttrrrraaaacccceeee must be used for
+          the _m_a_i_n routine of a program if Trace facility will be used
+          at all. Without an instance of class ppppttttrrrraaaacccceeee in _m_a_i_n,
+          instances of ffffttttrrrraaaacccceeee will be useless. See the manual page for
+          ppppttttrrrraaaacccceeee for more information.
+
+          The _c_o_n_s_t_r_u_c_t_o_r_s are used to inform Trace facility the name
+          of the function being traced. The rest of arguments in the
+          constructors are used to pass to the Trace facility
+          additional information about the function. They will be sent
+          to output files if so requested but do not have any meaning
+          to the Trace facility. Their uses are at discretion of the
+          programmer.
+
+          Implied in the constructors is the trace type TIME (see
+          below).
+
+          The wwwwrrrriiiitttteeee member functions are used to send whatever
+          information in which the programmer is interested to the
+          Trace output. The only arguments that have special meaning
+          to the Trace facility is:
+
+          _t_y_p_e is an OR combination of
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+               TIME    (clock time (in 100th of sec))
+               HIGH  (high level of detail)
+               MED  (medium level of detail)
+               LOW  (low level of detail)
+              or
+               ANY     (TIME|HIGH|MEDIUM|LOW)
+
+          TTTTIIIIMMMMEEEE will give the UNIX clock time at the point of the
+          member function's execution. The intended use of TTTTIIIIMMMMEEEE is to
+          measure the execution time between two program points
+          determined by the member function wwwwrrrriiiitttteeee calls with this type
+          specified. By default, the _c_o_n_s_t_r_u_c_t_o_r_s (and the destructor)
+          imply wwwwrrrriiiitttteeee calls with _t_y_p_e being TTTTIIIIMMMMEEEE (see the _E_X_A_M_P_L_E
+          section below).
+
+          The remained types are intended to provide the selectivity
+          of trace information when the Trace facility is used.
+
+          ________LLLLOOOOCCCC________ is a macro which is defined as
+              #define __LOC__   __FILE__, __LINE__
+
+          It must be used exactly as specified to provide source
+          file's name and line number where the member function wwwwrrrriiiitttteeee
+          is called.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          For an imaginary program called _D_U_I:
+
+          In _m_a_i_n._c:
+
+              int check ();
+              main (int argc, char *argv[]) {
+               _p_t_r_a_c_e _t_r_a_c_e (_a_r_g_v[_0], "_a_r_g_c = ", _a_r_g_c);
+               .
+               _t_r_a_c_e._w_r_i_t_e (_H_I_G_H, "_c_a_l_l _c_h_e_c_k");
+               int ret = check ();
+               .
+              }
+
+          In _c_h_e_c_k._c:
+
+              int
+              check ()
+              {
+               _f_t_r_a_c_e _t_r_a_c_e ("_c_h_e_c_k");
+               junk junkie;
+               int ret;
+               _t_r_a_c_e._w_r_i_t_e (_H_I_G_H, ___L_O_C__, "_c_a_l_l _j_u_n_k_i_e._t_e_s_t");
+               ret = junkie.test ();
+               _t_r_a_c_e._w_r_i_t_e (_M_E_D, ___L_O_C__, "_r_e_t = ", _r_e_t);
+               .
+               .
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+               return (ret);
+              }
+
+          In _j_u_n_k._c:
+
+              junk::junk ()
+              {
+               _f_t_r_a_c_e _t_r_a_c_e ("_j_u_n_k::_j_u_n_k", "_c_o_n_s_t_r_u_c_t_e_d");
+               .
+               .
+              }
+
+              junk::~junk ()
+              {
+               _f_t_r_a_c_e _t_r_a_c_e ("_j_u_n_k::~_j_u_n_k", "_d_e_s_t_r_u_c_t_e_d");
+               .
+               .
+              }
+
+              int
+              junk::test ()
+              {
+               _f_t_r_a_c_e _t_r_a_c_e ("_j_u_n_k::_t_e_s_t");
+               _t_r_a_c_e._w_r_i_t_e (_L_O_W, ___L_O_C__, "_d_o _n_o_t_h_i_n_g");
+               return (0);
+              }
+
+          Suppose that this program is compiled and run without
+          errors. While this program is running, through the  program
+          ppppttttrrrraaaacccceeee (see manual page for more information) a user can
+          specify trace types for the program. Suppose the user chose
+          _A_L_L, the output will look like:
+
+              Program: DUI    R3CMS Program Trace   (date: xx/xx/xx)
+
+              main (BEGIN): argc = 1 [12345]
+              main (main.c - 14): call check (H)
+                  check (BEGIN) [12347]
+                      junk::junk (BEGIN): constructed [12349]
+                      junk::junk (END) [12352]
+                  check (check.c - 11): call junkie.test (H)
+                      junk::test (BEGIN) [12357]
+                      junk::test (junk.c - 20): do nothing (L)
+                      junk::test (END) [12358]
+                  check (check.c - 13): ret = 0 (M)
+                      junk::~junk (BEGIN): destructed [12360]
+                      junk::~junk (END) [12361]
+                  check (END) [12360]
+              main (END) [12577]
+
+          In each line, the first field is the name of the routine
+          within the program. The second field (in parentheses) is the
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+          location of the information relative to the source files.
+          After the second field is things that the programmer wanted
+          to print out. The number in the square brackets is the UNIX
+          clock time. The last field (in parentheses) which appears
+          only in lines without BBBBEEEEGGGGIIIINNNN or EEEENNNNDDDD is the trace type: H is
+          HIGH, M is MED, and L is LOW. This field is useful for using
+          with UNIX tool _g_r_e_p to extract subset of information from
+          such output. In any trace type selection, the lines with
+          BBBBEEEEGGGGIIIINNNN or EEEENNNNDDDD are always printed.
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+              ptrace(3), tracer(1)
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          Potentially too many trace calls imbedded in a program will
+          have some negative impact on its execution speed. Similarly,
+          too much trace output will overload both the trace user and
+          machine. So organize your trace objects and use the trace
+          types efficiently.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ppppttttrrrraaaacccceeee - program trace initializer
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          #_i_n_c_l_u_d_e "_t_r__h_d_r._h"
+
+          class ptrace
+          {
+          public:
+              ptrace (char* pname, char* t1=NULL, int v1=0, char* t2=NULL, int v2=0);
+              ptrace (char* pname, char* t1, char* v1, char* t2=NULL, int v2=0);
+              ptrace (char* pname, char* t1, int v1, char* t2, int v2);
+              ptrace (char* pname, char* t1, int v1, char* t2, int v2);
+
+              ~ptrace ();
+
+              write (int type, __LOC__, char* t1=NULL, int v1=0, char* t2=NULL, int v2=0);
+              write (int type, __LOC__, char* t1, char* v1, char* t2=NULL, int v2=0);
+              write (int type, __LOC__, char* t1, int v1, char* t2, char *v2);
+              write (int type, __LOC__, char* t1, char* v1, char* t2, char* v2);
+          }
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ppppttttrrrraaaacccceeee is a class specialized for initializing the tracing
+          (debugging) for a program (process).  An instance of class
+          ppppttttrrrraaaacccceeee must be declared in the _m_a_i_n routine of a program if
+          Trace facility will be used at all. Within the _m_a_i_n routine,
+          this instance of ppppttttrrrraaaacccceeee is sufficient for all tracing needs.
+          For other routines outside the scope of _m_a_i_n, instances of
+          ffffttttrrrraaaacccceeee class must be used instead. See the manual page for
+          ffffttttrrrraaaacccceeee for more information.
+
+          The _c_o_n_s_t_r_u_c_t_o_r_s are used to inform the Trace facility the
+          name of the _p_r_o_g_r_a_m being traced. The rest of arguments in
+          the constructors are used to pass to the Trace facility
+          additional information about the _m_a_i_n routine. They will be
+          sent to output files if so requested but do not have any
+          meaning to the Trace facility. Their uses are at discretion
+          of the programmer.
+
+          Implied in the constructors is the trace type TIME (see
+          below).
+
+          The wwwwrrrriiiitttteeee member functions are used to send whatever
+          information in which the programmer is interested to the
+          Trace output. The only arguments that have special meaning
+          to the Trace facility is:
+
+          _t_y_p_e is an OR combination of
+               TIME    (clock time (in 100th of sec))
+               HIGH  (high level of detail)
+               MED  (medium level of detail)
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+               LOW  (low level of detail)
+              or
+               ANY     (TIME|HIGH|MEDIUM|LOW)
+
+          TTTTIIIIMMMMEEEE will give the UNIX clock time at the point of the
+          member function's execution. The intended use of TTTTIIIIMMMMEEEE is to
+          measure the execution time between two program points
+          determined by the member function wwwwrrrriiiitttteeee calls with this type
+          specified. By default, the _c_o_n_s_t_r_u_c_t_o_r_s (and the destructor)
+          imply wwwwrrrriiiitttteeee calls with _t_y_p_e being TTTTIIIIMMMMEEEE (see _E_X_A_M_P_L_E section
+          of the manual page for ffffttttrrrraaaacccceeee).
+
+          The remained types are intended to provide the selectivity
+          of trace information when the Trace facility is used.
+
+          ________LLLLOOOOCCCC________ is a macro which is defined as
+              #define __LOC__   __FILE__, __LINE__
+
+          It must be used exactly as specified to provide source
+          file's name and line number where the member function wwwwrrrriiiitttteeee
+          is called.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          See the _E_X_A_M_P_L_E section in the manual pages for ffffttttrrrraaaacccceeee.
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+              ftrace(3), tracer(1)
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          The ppppttttrrrraaaacccceeee is used primarily to pass the program's name to
+          the Trace facility so the name can be used as a criterion
+          for trace mode (on/off) change. Therefore, the first
+          argument to the ppppttttrrrraaaacccceeee has a special significance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     ttttrrrraaaacccceeee((((3333CCCC++++++++))))                   CCCCCCCClllliiiibbbb                   ttttrrrraaaacccceeee((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ttttrrrraaaacccceeeerrrr - R3CMS program trace controller
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+              tracer
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ttttrrrraaaacccceeeerrrr is an executable file that can be invoked in UNIX
+          Shell.  It provides access to the Trace facility used in
+          R3CMS programs.  With this prgram, the user can turn on,
+          change or turn off a trace.  when being invoked to turn on a
+          trace, ttttrrrraaaacccceeeerrrr will prompt for the following information: The
+          name of the target program.  Whether the program is
+          currently running or not. If it is, ttttrrrraaaacccceeeerrrr will also prompt
+          for UNIX PID.  The trace types Names of subroutines where
+          trace will be activated and inactivated.  The output files'
+          name (in the current directory). The actual output files
+          will be formed by appending letter 1 or 2 to the name. The
+          two files will be come the circular buffer for the trace
+          output. When one file is filled up to the UNIX _u_l_i_m_i_t, the
+          other will be truncated for use.
+
+          For changing a trace's trace types, ttttrrrraaaacccceeeerrrr will prompt the
+          same information as above except output files' name. The
+          output files' name cannot be changed for the same trace.
+
+          For turning off a trace, ttttrrrraaaacccceeeerrrr will prompt for the
+          following information: The name of the target program.
+          Whether the program has been run or not. If it has, ttttrrrraaaacccceeeerrrr
+          will also prompt for UNIX PID.
+
+     NNNNOOOOTTTTEEEE
+          When you start the trace for a process that do not yet come
+          into existence, the first process of the same name that does
+          will be the target. Once the trace activator (specified
+          through ttttrrrraaaacccceeeerrrr as described above) activates a trace, it
+          will be removed when the activated process terminates. When
+          it is not used within 24 hours, it is also removed.
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+              ptrace(3), ftrace(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+

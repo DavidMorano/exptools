@@ -1,0 +1,99 @@
+#ident "@(#) /sable/sdb/ra/sblib/error/s.error.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved          */
+
+typedef struct error_message
+   {
+   char *tag;
+   long error_class;
+   int severity;
+   char *text;
+   char *action;
+   }          Error_message;
+
+/*                          ERROR CLASS constants                  */
+const long MM_HARD = 1;
+const long MM_SOFT = 2;
+const long MM_FIRM = 4;
+const long MM_RECOVER = 8;
+const long MM_NRECOV = 16;
+const long MM_APPL = 32;
+const long MM_UTIL = 64;
+const long MM_OPSYS = 128;
+
+/*                           SEVERITY constants                     */
+const int MM_NOSEV = 1;
+const int MM_HALT = 2;
+const int MM_ERROR = 4;
+const int MM_WARNING = 8;
+const int MM_INFO = 16;
+
+extern char *command;         /* set this to argv[0] in main() */
+
+class Error
+   {
+   include(error.pd)
+public:
+   Error(const Error_message *const errlist,const unsigned nerrs);
+   ~Error();
+   Boolean_t error(const unsigned errnum,
+                   const char *file,
+                   const unsigned line,
+                   const char *suffix=(char *)0);
+   static Boolean_t errFile(const char * err_file);
+   static void identifier(const char *errId=(char *) 0);
+   static void mailTo(const char *addressees);
+   int errno;
+   static Error *lasterr;
+   };
+
+/*   system errors corresponding to intro(2), plus some additional ones.  */
+const int NO_FREE_STORE=88;     /* non system call error in syserr */
+const int UNEXPECTED_ERROR=89;  /* non system call error in syserr */
+const int NULL_POINTER=90;      /* non system call error in syserr */
+const int TRACE=91;             /* non system call error in syserr */
+const int NULL_STRING=92;       /* non system call error in syserr */
+extern Error syserr;            /* Standard system errors */
+
+/*    Macros for checking function call arguments.                         */
+#define NPcheck(ARG) \
+    { if (!ARG) \
+         syserr.error(NULL_POINTER,__FILE__,__LINE__,form("ARG")); \
+    }
+#define NScheck(ARG) \
+    { if (strlen(ARG) == 0) \
+         syserr.error(NULL_STRING,__FILE__,__LINE__,form("ARG")); \
+    }
+#define NPNScheck(ARG) { NPcheck(ARG) NScheck(ARG) }
+
+/*    Macros for checking function call return codes.                      */
+#define SYSreturn { syserr.error(::errno,__FILE__,__LINE__); FALSEreturn };
+#define Fc(EXPR)\
+    { if ((EXPR) == FALSE)\
+         {\
+         syserr.error(TRACE,__FILE__,__LINE__,\
+                      "This is where the previous error was called from.");\
+         FALSEreturn\
+         }\
+    }
+#define Sc(EXPR,VAL) { if ((EXPR) == (VAL)) SYSreturn }
+#define So(EXPR,VAL) { if ((EXPR) != (VAL)) SYSreturn }
+
+/*    General purpose tracing macros.                                      */
+extern long TRACELEVEL;
+extern char *TRACEFILE;
+
+const int fileNameLen = 32;
+#ifndef NOTRACE
+#define TraceStmt(LVL,STMT)\
+   { char baseFileName[fileNameLen]; \
+     if ( TRACELEVEL && (LVL<=TRACELEVEL)\
+     && (!strcmp(TRACEFILE,"all") \
+         || !strcmp(TRACEFILE,basename(__FILE__,baseFileName))) ) \
+      STMT; \
+   }
+#else
+#define TraceStmt(LVL,STMT) {}
+#endif
+
+#define Trace(LVL,STR)\
+   TraceStmt(LVL,syserr.error(TRACE,__FILE__,__LINE__,STR))

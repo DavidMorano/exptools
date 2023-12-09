@@ -1,0 +1,99 @@
+: use /bin/sh
+_virtex=${TOOLS:?}/lib/tex/bin/virtex
+_texinputs=$TOOLS/lib/tex/macros
+case $0 in
+	tex|*/tex)
+		_arg_limit=2
+		_format=${2-plain}
+		;;
+	latex|*/latex)
+		_arg_limit=1
+		_format=lplain
+		;;
+	latex209|*/latex209)
+		_arg_limit=1
+		_format=lplain
+		;;
+	latex2e|*/latex2e)
+		_arg_limit=1
+		_format=latex
+		_texinputs=$TOOLS/lib/tex/macros/latex:$TOOLS/lib/tex/macros
+		;;
+	slitex|*/slitex)
+		_arg_limit=1
+		_format=splain
+		;;
+	nfss|*/nfss)
+		_arg_limit=1
+		_format=nfss
+		;;
+	*)
+		echo $0: internal error in script. Contact the providers. 1>&2
+		exit 11
+esac
+
+test $# -gt $_arg_limit &&
+{
+	cat <<EOF 1>&2
+$0: Too many arguments!
+Usage: tex input_file.[tex] [format_file[.fmt]]
+or latex input_file[.tex] or slitex input_file[.tex]
+EOF
+
+	exit 1
+}
+
+#append default paths
+TEXFONTS=${TEXFONTS:+$TEXFONTS:}.:$TOOLS/lib/tex/fonts #yes, adding "."
+TEXFORMATS=${TEXFORMATS:+$TEXFORMATS:}.:$TOOLS/lib/tex
+_localdir=/usr/local/TeX/macros
+if [ -d $_localdir ]
+then
+	TEXINPUTS=${TEXINPUTS:+$TEXINPUTS:}.:$_localdir:$_texinputs
+else
+	TEXINPUTS=${TEXINPUTS:+$TEXINPUTS:}.:$_texinputs
+fi
+TEXPOOL=${TEXPOOL:+$TEXPOOL:}.:$TOOLS/lib/tex		#but no initex...
+: ${TEXEDIT:="${EDITOR:-${VISUAL:-vi}} +%d %s"} #vi: let's be "standard"
+export TEXFONTS TEXFORMATS TEXINPUTS TEXPOOL TEXEDIT
+
+exec $_virtex \&$_format $1
+
+#Revamped by Dan_Jacobson@ATT.COM. 7/1990.  Now the user doesn't have
+#to worry about the paths---we append them to the rear of her/his
+#paths.  This should be fine for 99.9% of users... others could call
+#virtex manually without using this script.  Note: here I use "<<-"
+#and e.g., "${X:-Y}" (not just "${X-Y}") ...not compatible with some
+#older /bin/sh's.  [We now return you the the original script as
+#distributed.  It refers to many things and files that the average
+#user need not be aware of or will not be able to find in the exptools
+#distribution. End of Dan's comments.]
+
+# This script provides an alternative to preloading TeX.  See the
+# README.WEB-to-C file for the tradeoffs that come by doing things
+# this way.  There is a short delay before TeX (LaTeX/SliTeX) gets
+# working, but there is a greater flexibility, and a tremendous
+# saving in disk space.  Only one compilation of initex and virtex
+# needs to be stored, and it is much smaller than any preloaded image,
+# or even than the preloaded file that results from using fmtdump.
+# When TeX is invoked as tex, a private format_file (such as a 
+# combination of lplain, amstex and pictex) can be loaded in place
+# of one of the standards (be sure that the TEXFORMATS environment 
+# is correct if you try this).  
+# 
+# At the University of Washington we use only the TeX with the
+# BIGTEX.PATCH applied, so a format file of this size is easily
+# accommodated (approximately 725 Kbytes).  Preloaded using undump, TeX
+# with this format file would take up nearly 3 Megabytes of disk.  Even
+# after using fmtdump, it would be quite large, and you would still have
+# the virtex and *.fmt files as additional storage overhead.
+# 
+# To set this script up, copy it into a directory named in your
+# path environment, and rename it tex.  Then link it (hard links
+# are fine in this case) to latex and slitex, and insure that it
+# is executable.
+# 
+# You invoke latex and slitex as usual, with a single input file
+# argument (or no argument at all).  You can invoke tex with zero,
+# one or two arguments.  If the second argument is present, it is 
+# assumed to be a *.fmt file in your TEXFORMATS path.

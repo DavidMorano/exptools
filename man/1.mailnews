@@ -1,0 +1,330 @@
+
+
+
+     MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  mailnews - Mail news items as	individual mail	messages
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  mmmmaaaaiiiillllnnnneeeewwwwssss [----aaaabbbbBBBBnnnnddddDDDDqqqqRRRRssssSSSSxxxxVVVV] [[----ffff	_t_s_t_a_m_p_f_i_l_e] _d_i_r_e_c_t_o_r_y]...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  This command finds all news items  and  mails	 them  to  the
+	  user,	 each as a separate mail item.	It is meant to be used
+	  on simple system news	 directories,  such  as	 ////uuuussssrrrr////nnnneeeewwwwssss  or
+	  $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ttttoooooooollllnnnneeeewwwwssss,	or single-level	project	bulletin board
+	  directories (as in $$$$PPPPRRRROOOOJJJJDDDDIIIIRRRR////bbbbbbbb or what-have-you).
+
+	  DDDDoooo nnnnooootttt uuuusssseeee _m_a_i_l_n_e_w_s oooonnnn ssssttttrrrruuuuccccttttuuuurrrreeeedddd nnnneeeewwwwssss  ddddiiiirrrreeeeccccttttoooorrrriiiieeeessss  oooorrrr  aaaannnnyyyy
+	  ddddiiiirrrreeeeccccttttoooorrrriiiieeeessss  iiiinnnn  wwwwhhhhiiiicccchhhh  mmmmaaaannnnyyyy,,,,	mmmmaaaannnnyyyy bbbbaaaacccckkkk nnnneeeewwwwssss iiiitttteeeemmmmssss aaaarrrreeee kkkkeeeepppptttt.
+	  Failure to comply with this may bring	system	administrators
+	  down	on  your  head.	 It has	happened before.  Don't	let it
+	  happen to you.  See the CAVEAT 1, below.
+
+	  In the absence of options, this  command  simply  scans  the
+	  _d_i_r_e_c_t_o_r_y(s)	for  new files or files	that have been changed
+	  since	the last time a	 time-stamp  file  has	been  modified
+	  (presumably  by the previous use of _m_a_i_l_n_e_w_s).  If no	_d_i_r_e_c_-
+	  _t_o_r_y is specified, it	 uses  the  value  from	 the  NNNNEEEEWWWWSSSSPPPPAAAATTTTHHHH
+	  environment  variable, which may be set to a colon-separated
+	  list of news directories.  If	NNNNEEEEWWWWSSSSPPPPAAAATTTTHHHH isn't set, it acts as
+	  though  it  were set to ----ssss::::////uuuussssrrrr////nnnneeeewwwwssss,	which says to scan the
+	  /usr/news directory, if there	is one,	otherwise  don't  com-
+	  plain	(----ssss option).  (See the section on NNNNEEEEWWWWSSSSPPPPAAAATTTTHHHH, below.)
+
+	  By default, the time-stamp file is kept in the $$$$HHHHOOOOMMMMEEEE	direc-
+	  tory	and  is	named ...._d_i_r_n_a_m_e____ttttiiiimmmmeeee, where _d_i_r_n_a_m_e is the base
+	  portion of the _d_i_r_e_c_t_o_r_y (all	 directory  prefixes  stripped
+	  off).	 Thus, the /usr/news directory files are compared with
+	  $$$$HHHHOOOOMMMMEEEE////....nnnneeeewwwwssss____ttttiiiimmmmeeee by default.
+
+	  If a project keeps a bulletin	board (bbbbbbbb) directory in	 their
+	  main directory (say $PROJDIR), then using the	command
+
+	      mailnews $PROJDIR/bb
+
+	  causes it to scan  the  $PROJDIR/bb  directory  looking  for
+	  files	 that  have changed since $HOME/.bb_time was modified,
+	  presumably by	the previous use of _m_a_i_l_n_e_w_s.  Files that can-
+	  not  be read are reported in a separate mail message,	unless
+	  the ----qqqq option	is given.  They	have no	 effect	 on  the  exit
+	  code.
+
+	  The ----ffff option	may be used to specify the name	of a different
+	  time-stamp  file (to avoid collisions, for example), for the
+	  next specified _d_i_r_e_c_t_o_r_y.   However,	any  command  line  ----ffff
+	  option  is  ignored  and  a warning message is printed if no
+
+
+
+     Page 1					      (printed 3/6/96)
+
+
+
+
+
+
+     MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))
+
+
+
+	  _d_i_r_e_c_t_o_r_y is specified on the	command	line.  See the section
+	  on OOOOppppttttiiiioooonnnnssss, below.
+
+	  By default, files whose names	begin with a dot are  ignored,
+	  unless  the  ----dddd  option  is  used.  The ----DDDD option causes the
+	  default behavior of  ignoring	 dot  files.   Both  of	 these
+	  options,  like  the ----ffff option, may be	intermixed with	_d_i_r_e_c_-
+	  _t_o_r_y arguments.
+
+	  Each file newer than the time-stamp file is  directed	 to  a
+	  separate _m_a_i_l(1) message with	a preceding Subject: line that
+	  identifies the name of the file, and the _d_i_r_e_c_t_o_r_y  name  of
+	  the  file.  It also adds a Posted: heading that includes the
+	  date and time	that the file was last modified, in  the  form
+	  yyyy/mm/dd hh:mm:ss, and It adds a
+	     From: (News from _o_w_n_e_r)
+	  line before the Subject: line	so that	the message looks like
+	  it  came  from a user	named  NNNNeeeewwwwssss ffffrrrroooommmm _o_w_n_e_r,	where _o_w_n_e_r is
+	  the login that owns the news file (probably  whoever	posted
+	  the  news  item).  These heading lines are especially	useful
+	  for identifying messages in _m_a_i_l_x or _p_o_s_t.
+
+	  The files are	mailed in the order that they were last	 modi-
+	  fied,	from oldest to newest.	Users of the vanilla _m_a_i_l com-
+	  mand may wish	to  use	 its  ----rrrr  option  to  force  first-in,
+	  first-out  order  when  reading these	messages.  Better yet,
+	  use _m_a_i_l_x or _p_o_s_t if your system has them.
+
+	EEEExxxxcccceeeeppppttttiiiioooonnnn LLLLiiiisssstttt
+	  You can have _m_a_i_l_n_e_w_s	exclude	pesky repeat news  item	 files
+	  that	you don't care about.  To do so, place each name, or a
+	  file name pattern that matches the name, 1 per  line,	 in  a
+	  file	named  ....ddddoooonnnnttttmmmmaaaaiiiillll  in  your  HOME  directory, or	in the
+	  directory specified by the DDDDOOOOTTTTDDDDIIIIRRRR environment	 variable  (if
+	  you choose to	set it and export it).
+
+	  Also,	a name or filename pattern that	begins with <<<< means to
+	  exclude  items from the user whose login name	follows	the <<<<.
+	  For example, <<<<wwwwooooooooddddssss would cause _m_a_i_l_n_e_w_s to ignore  my  news
+	  items	 (bad idea).  In the case where	an article was submit-
+	  ted by someone no longer listed in  /etc/passwd,  the	 login
+	  "name"  is  given as #### followed by the user ID number	(as in
+	  ####55555555666600000000).
+
+	  This _e_x_c_e_p_t_i_o_n _l_i_s_t file must	not be larger than  4K	(4096)
+	  bytes.   Note	 that  ???? and **** match slashes (////) and a leading
+	  dot (....) in these exception list patterns, unlike  when  used
+	  with the shell.
+
+	  Patterns in the exception list are compared twice or	thrice
+	  for each news	item file.  A file is ignored if its base name
+	  matches an exception list  pattern,  or  if  its  full  name
+
+
+
+     Page 2					      (printed 3/6/96)
+
+
+
+
+
+
+     MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))
+
+
+
+	  matches an exception list pattern, or	if the user who	posted
+	  the article (<<<<_u_s_e_r_i_d)	matches	an exception list pattern.  If
+	  you  use  _m_a_i_l_n_e_w_s to	scan multiple information directories,
+	  you can make sure  it	 only  skips  unwanted	items  from  a
+	  specific directory without skipping files with the same base
+	  name in the other directories.
+
+	OOOOppppttttiiiioooonnnnssss
+	  ----aaaa  mails All	news items regardless of the modification time
+	      on  the time-stamp file(s).  (If ----xxxx isn't	specified, the
+	      news item	files are still	matched	against	the  exception
+	      list patterns, if	present.)
+
+	  ----nnnn  No touch.	 This option disables the normal  touching  of
+	      each  time-stamp	file.  Without this option, each time-
+	      stamp file's modification	time is	set to	the  modifica-
+	      tion  time  of  the  newest  file	 just  mailed from the
+	      corresponding directory.
+
+	  ----qqqq  Causes it	to be quiet about files	that are not  readable
+	      in the news directories.
+
+	  ----ssss  Causes it	to be silent about news	directories  that  are
+	      not  available.	This  applies  to all following	direc-
+	      tories, and may be intermixed with _d_i_r_e_c_t_o_r_y arguments.
+
+	  ----SSSS  Turns off	----ssss and causes it to complain  about  _d_i_r_e_c_t_o_r_y
+	      arguments	 that  represent unavailable directories.  It,
+	      too, may be intermixed with _d_i_r_e_c_t_o_r_y arguments.
+
+	  ----xxxx  Ignore the exception list	file.  All files  (newer  than
+	      the  time-stamp  file,  if  ----aaaa isn't used) are mailed in
+	      each of the scanned directories.
+
+	  ----dddd  Don't ignore dot files (except those  in	the  exception
+	      list  file,  if used).  May be intermixed	with _d_i_r_e_c_t_o_r_y
+	      arguments.
+
+	  ----DDDD  Default action of	ignoring dot files.  It	always ignores
+	      .	 and  .. (or any subdirectories, for that matter) any-
+	      way.  May	be intermixed with _d_i_r_e_c_t_o_r_y arguments.
+
+	  ----bbbb  Only the base name of the	directory where	each news item
+	      was  found  is given in the Subject: line.  This applies
+	      to all following directories, and	may be intermixed with
+	      _d_i_r_e_c_t_o_r_y	arguments.
+
+	  ----BBBB  This option turns	off the	----bbbb option for following	direc-
+	      tories.	It  is	the default, and it may	also be	inter-
+	      mixed with _d_i_r_e_c_t_o_r_y arguments.
+
+	  ----ffff  Causes a different time-stamp file,  _t_s_t_a_m_p_f_i_l_e,	to  be
+
+
+
+     Page 3					      (printed 3/6/96)
+
+
+
+
+
+
+     MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))
+
+
+
+	      used  for	 the  immediately  following  directory.  This
+	      option  may  be  intermixed  with	 _d_i_r_e_c_t_o_r_y  arguments.
+	      Spaces  between  the  ----ffff	and  the  _t_s_t_a_m_p_f_i_l_e  name are
+	      optional.	 If the	_t_s_t_a_m_p_f_i_l_e name	doesn't	start  with  a
+	      slash  (////),  it  is  assumed to be relative to the $HOME
+	      directory.  In versions of UNIX before System V  Release
+	      4,  please  keep	the  base name of the _t_s_t_a_m_p_f_i_l_e to 12
+	      characters or less.
+
+	  ----RRRR  This is a	special	purpose	option that causes the	mailed
+	      "news"  files to be removed from the news	directories if
+	      they are successfully mailed.
+
+	  ----VVVV  Prints the version number	of the program.	 If  no	 other
+	      command line arguments are given,	it exits without doing
+	      anything else.
+
+	  Use of the ----aaaa	option _d_o_e_s _n_o_t	automatically turn on  the  ----nnnn
+	  option.   Nor	 does use of the ----xxxx option cause the ----dddd	option
+	  action.
+
+	NNNNEEEEWWWWSSSSPPPPAAAATTTTHHHH
+	  As mentioned before, the NNNNEEEEWWWWSSSSPPPPAAAATTTTHHHH environment	 variable  may
+	  be  set to a colon-separated list of directories to scan for
+	  news item files.  The	options	that can be interspersed  with
+	  _d_i_r_e_c_t_o_r_y names on the command line (----bbbb, ----BBBB, ----dddd, ----DDDD, ----ffff, ----ssss,
+	  and ----SSSS) may also be interspersed in the NNNNEEEEWWWWSSSSPPPPAAAATTTTHHHH environment
+	  variable,  separated	from  surrounding context by the usual
+	  colon, as in:
+	      NEWSPATH=/usr/news:-f.projnews:-d:$PROJDIR/news
+
+	  In this case,	options	may  _n_o_t  be  combined	(----ddddbbbb).	 White
+	  space	 is  only  allowed  between  the ----ffff and	the time-stamp
+	  file.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+	  -1 = Usage error, HOME or LOGNAME not	 set,  popen  to  mail
+	  failed or other fatal	error.
+	  0 = Everything went OK.
+	  1 = None of the directories had any new files.
+	  2 = One of the directories couldn't be scanned (read).
+	  3 = Combination of 1 + 2.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  # Mail system	news:
+	  mailnews
+
+	  # Mail system	news, exptools news, and FOCUS news:
+	  NEWSPATH="-b:/usr/news:$TOOLS/lib/toolnews:-B:-f.focusnewstime:/prime/news"
+	  export NEWSPATH
+	  mailnews
+
+
+
+
+     Page 4					      (printed 3/6/96)
+
+
+
+
+
+
+     MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   MMMMAAAAIIIILLLLNNNNEEEEWWWWSSSS((((1111))))
+
+
+
+	  # Mail news and read it, if any new news items:
+	  mailnews && {	sleep 3; post; }
+
+     FFFFIIIILLLLEEEESSSS
+	  $$$$HHHHOOOOMMMMEEEE////...._d_i_r_n_a_m_e____ttttiiiimmmmeeee -	Default	 time  stamp  file  for	 given
+	  _d_i_r_e_c_t_o_r_y.
+	  $$$${{{{DDDDOOOOTTTTDDDDIIIIRRRR::::----$$$$HHHHOOOOMMMMEEEE}}}}////....ddddoooonnnnttttmmmmaaaaiiiillll - List of patterns	of  news  item
+	  file	names  or posters that don't get mailed	(the exception
+	  list).
+	  $$$${{{{DDDDOOOOTTTTDDDDIIIIRRRR::::----$$$$HHHHOOOOMMMMEEEE}}}}////....####_d_i_r_n_a_m_e - Keeps  a	 list  of  files  that
+	  _m_a_i_l_n_e_w_s  complained	about  not reading, so that it doesn't
+	  complain its head off	when used in a crontab entry.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  news(1), mail(1), mailx(1), post(1)
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	  1.  Due to past abuses of _m_a_i_l_n_e_w_s, in which	a  few	people
+	      made  a  lot of people suffer, _m_a_i_l_n_e_w_s gives up sending
+	      files after having sent 30 files or 30,000 bytes,	which-
+	      ever  comes  first.  If you didn't abuse _m_a_i_l_n_e_w_s	and it
+	      reached these limits, please note	that skipped files can
+	      be  sent	on  the	 next  use  of _m_a_i_l_n_e_w_s.  They are not
+	      "lost."
+
+	  2.  The time-stamp file does _n_o_t indicate that you have read
+	      all news items up	to the time _m_a_i_l_n_e_w_s was invoked.  Nor
+	      does it mean that	 you  have  read  all  news  items  up
+	      through the latest posted.  Instead, the time-stamp file
+	      indicates	that you have read all news items  up  to  the
+	      latest item _t_h_a_t _y_o_u _c_a_r_e_d _t_o _r_e_a_d (non-excepted).
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEEDDDD BBBBYYYY
+	  Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5					      (printed 3/6/96)
+
+
+

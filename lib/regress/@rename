@@ -1,0 +1,30 @@
+#  @(#)  SID: 1.3;  module: @rename;  last changed: 3/17/91  11:40:39
+
+USAGE="USAGE:  $0  oldcase newcase"
+DIR="$stdin $stdout $g_stdout $stderr $g_stderr $stats $g_stats $results"
+
+if test -z "$MODULES"; then
+    @error@ 1
+elif test $# -ne 2; then
+    @error@ 2
+    echo "$USAGE"
+else
+    for MODULE in $MODULES; do
+	if test $MODCNT -gt 1; then
+	    echo "\n"
+	    echo "#########################"
+	    echo "# Module: $_module"
+	    echo "#########################"
+	fi >&2
+	cd $REGRESSDIR/$MODULE
+	if test ! -r cases/$1; then
+	    @error@ 7 $MODULE/cases/$1
+	else
+	    for DIR in $DIRLIST; do
+		if test -f $DIR/$1 -o -d $DIR/$1; then
+		    mv $DIR/$1 $DIR/$2
+		fi
+	    done
+	fi
+    done
+fi

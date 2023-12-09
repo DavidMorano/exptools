@@ -1,0 +1,264 @@
+
+
+
+TTS(1)                    User Commands                    TTS(1)
+
+
+
+NNNNAAAAMMMMEEEE
+     tts - AT&T text-to-speech synthesis system
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+     ttttttttssss [ ----VVVV ] [ ----AAAA [_1-_9] ] [ ----xxxx ]
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+     ttttttttssss runs an AT&T-developed text-to-speech  synthesis  system
+     as  an  interactive process: anything sent to standard input
+     will be spoken through the synthesizer.  Related implementa-
+     tions of this same software are being used in fielded appli-
+     cations, including the AT&T Conversant(R)  System,  and  the
+     AT&T  AI-Net(R)  System.   The  ttttttttssss  script  actually  pipes
+     together two other programs:  eeeexxxxpppprrrreeeessssssss is  the  program  that
+     actually   translates  the  input  text  into  a  series  of
+     phonemes, and ssssppppllllaaaayyyy  is  the  program  that  translates  the
+     phoneme stream into sound waves.  Both eeeexxxxpppprrrreeeessssssss and ssssppppllllaaaayyyy can
+     be used separately with other  applications,  and  are  more
+     fully described in the reference manual shown below.
+
+AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+     ----AAAA [_1-_9]          Sets  the  output  volume  level  to   the
+                       appropriate  value  given as its argument.
+                       1 corresponds to  minimum  volume,  and  9
+                       corresponds  to  maximum  volume.  If this
+                       option is not specified, then  the  output
+                       volume  is  automatically  set to level 8,
+                       which should be adequate for most built-in
+                       speakers   on  most  SPARCstations.   (For
+                       external  speakers  attached  through  the
+                       SPARCstation external audio jack, the pro-
+                       vider recommends a volume level  of  5  or
+                       lower, depending on the characteristics of
+                       the attached stereo equipment.)
+
+     ----xxxx                Forces output through  the  SPARCstation's
+                       external  audio  jack, rather than through
+                       the built-in speaker.  If this  option  is
+                       not  specified,  then the built-in speaker
+                       is used.
+
+     ----VVVV                This is the (exptools) standard  "version"
+                       option:  it  displays  what version of the
+                       software  you  are  using,  and  does  NOT
+                       activate the synthesizer.
+
+EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+     The following examples illustrate how to  use  the  optional
+     arguments:
+
+          $$$$ ccccaaaatttt ////uuuussssrrrr////ssssppppoooooooollll////mmmmaaaaiiiillll////oooollllaaaaffff |||| ttttttttssss
+
+
+
+
+Sun Microsystems      Last change: EXPTOOLS                     1
+
+
+
+
+
+
+TTS(1)                    User Commands                    TTS(1)
+
+
+
+     In this first example, "olaf"'s electronic mailbox is  being
+     sent to the speech synthesizer, which will therefore attempt
+     to read all of "olaf"'s mail aloud.  Since no  options  have
+     been specified, the output volume level is set to 8, and the
+     built-in speaker is used.
+
+          $$$$ ttttttttssss
+          HHHHeeeelllllllloooo....  HHHHoooowwww aaaarrrreeee yyyyoooouuuu????
+          CCCCaaaannnn yyyyoooouuuu uuuunnnnddddeeeerrrrssssttttaaaannnndddd wwwwhhhhaaaatttt IIII aaaammmm ssssaaaayyyyiiiinnnngggg????
+          TTTThhhheeee qqqquuuuiiiicccckkkk bbbbrrrroooowwwwnnnn ffffooooxxxx jjjjuuuummmmppppeeeedddd oooovvvveeeerrrr tttthhhheeee llllaaaazzzzyyyy ddddoooogggg....
+          IIII ccccaaaannnn ttttaaaallllkkkk!!!!
+          DDDDrrrr.... AAAAllllffffrrrreeeeddddoooo DDDDoooommmmiiiinnnngggguuuueeeezzzz iiiissss aaaatttt 444411115555 HHHHiiiigggghhhhllllaaaannnndddd SSSSiiiieeeerrrrrrrraaaa CCCCtttt....
+          IIII lllliiiivvvveeee aaaatttt SSSSiiiimmmmmmmmoooonnnnssss SSSStttt.... aaaannnndddd RRRRoooooooosssseeeevvvveeeelllltttt DDDDrrrr.... iiiinnnn NNNNoooorrrrtttthhhhbbbbrrrrooooooookkkk IIIILLLL....
+          MMMMyyyy tttteeeelllleeeepppphhhhoooonnnneeee nnnnuuuummmmbbbbeeeerrrr iiiissss ((((777700008888)))) 777711113333----5555333377773333....
+          <<<<CCCCoooonnnnttttrrrroooollll----DDDD>>>>
+          $$$$
+
+     In this second example, the synthesizer  is  being  used  in
+     interactive mode.  Whatever the user types in is echoed back
+     to them as speech (in this  example,  through  the  built-in
+     speaker).   The user returns to the shell by terminating the
+     input stream (i.e., by typing Control-D).
+
+          $$$$ ttttttttssss ----xxxx ----AAAA5555 <<<< $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ttttttttssss////SSSSaaaammmmpppplllleeeeTTTTeeeexxxxtttt
+
+     This third example uses the external audio jack,  on  volume
+     level setting 5, to read aloud the contents of the specified
+     file through an external stereo speaker (if any) attached to
+     the SPARCstation.
+
+     The beauty of this software is that is extremely robust, and
+     does an excellent job (at least 99% of the time) in handling
+     the pronounciation of ordinary English language text:  since
+     it was designed for telephony applications, it is especially
+     superior in its handling of proper names, telephone numbers,
+     and  common  abbreviations.   However,  there  are sometimes
+     situations where the user may want  to  assert  more  direct
+     control  over  how the synthesizer translates its input text
+     into speech.  Therefore,  you  are  strongly  encouraged  to
+     study the sample input file SampleText.  Besides examples of
+     how the synthesizer handles  normal  text,  this  file  also
+     shows  examples  of  some  of  the more advanced programming
+     techniques discussed in the reference manual.   These  tech-
+     niques include user-defined dictionaries, user-defined acro-
+     nyms, and manual intonation and inflection control.
+
+FFFFIIIILLLLEEEESSSS
+     $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ttttttttssss////SSSSaaaammmmpppplllleeeeTTTTeeeexxxxtttt
+     $$$$TTTTOOOOOOOOLLLLSSSS////bbbbiiiinnnn////eeeexxxxpppprrrreeeessssssss
+     $$$$TTTTOOOOOOOOLLLLSSSS////bbbbiiiinnnn////ssssppppllllaaaayyyy
+     $$$$TTTTOOOOOOOOLLLLSSSS////bbbbiiiinnnn////ttttttttssss
+
+
+
+
+Sun Microsystems      Last change: EXPTOOLS                     2
+
+
+
+
+
+
+TTS(1)                    User Commands                    TTS(1)
+
+
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     55555555444433330000----999911110000777711111111----00001111IIIIMMMM,,,, PPPP.... JJJJ.... PPPPaaaavvvvlllloooovvvvcccciiiikkkk,,,, FFFFRRRREEEENNNNDDDD RRRReeeeffffeeeerrrreeeennnncccceeee  MMMMaaaannnnuuuuaaaallll,,,,
+     IIIIssssssssuuuueeee 3333....
+
+     The above referenced IM is THE primary reference  manual  on
+     the  text-to-speech  synthesizer,  and it is strongly recom-
+     mended  for  anybody  who  wants  to  go  beyond  using  the
+     "default" behavior provided by the synthesizer.
+
+     aaaauuuuddddiiiioooo(4).
+
+BBBBUUUUGGGGSSSS
+     This version of the software has a small  but  annoying  bug
+     associated  with  very specific types of acronyms.  Specifi-
+     cally, all acronyms ending  with  the  letter  "A"  will  be
+     mispronounced.   If, for example, one inputs a sentence like
+     this:
+
+          DDDDiiiissssnnnneeeeyyyy iiiissss bbbbuuuuyyyyiiiinnnngggg AAAABBBBCCCC,,,, nnnnooootttt NNNNBBBBCCCC oooorrrr CCCCBBBBSSSS....
+
+     everything works as one would expect.  However, in this sen-
+     tence:
+
+          AAAATTTTAAAA,,,, aaaa nnnneeeewwww aaaaiiiirrrrlllliiiinnnneeee iiiinnnn tttthhhheeee pppprrrriiiicccceeee wwwwaaaarrrrssss,,,, uuuusssseeeessss tttthhhheeee aaaaccccrrrroooonnnnyyyymmmm AAAATTTTAAAA....
+
+     both of the "ATA" acronyms are pronounced as "A-T-T."   This
+     problem  can  of  course be worked around by putting special
+     entries into the acronym dictionary, but it shouldn't  exist
+     at all.
+
+     The current version being distributed has  only  one  (male)
+     voice.   The reference manual refers to multiple voices, but
+     the multiple voice capability is not yet  available  in  the
+     exptools  SPARC  version of this software.  This discrepancy
+     may or may not be corrected in future releases,  subject  to
+     the restrictions outlined below.
+
+DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+     If the synthesizer is given an "escape  sequence"  (i.e.,  a
+     programming  instruction,  NOT  just  English language text)
+     that is syntactically incorrect, it will treat it as English
+     language  text  rather  than  as  a programming instruction,
+     i.e., it will SPEAK (NOT print) the  contents  of  the  mis-
+     typed "escape sequence."  If the "escape sequence" is parse-
+     able by the synthesizer, it will  process  it  silently  and
+     without comment (so to speak).
+
+     All other  diagnostics  (usually  technical  warnings  about
+     linguistic difficulties encountered in processing a particu-
+     lar phrase or sentence) are dumped to standard error.
+
+
+
+
+
+Sun Microsystems      Last change: EXPTOOLS                     3
+
+
+
+
+
+
+TTS(1)                    User Commands                    TTS(1)
+
+
+
+WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+     This software always interprets the end of a line  of  input
+     to  mean  "end  of sentence," regardless of what punctuation
+     might or not be present at the end of the line!   Therefore,
+     if  one wants to read unrestricted, lengthy text through the
+     synthesizer, one should use (or build) an  appropriate  text
+     filter to get around this limitation.
+
+     This software has no way to determine whether or  not  there
+     really  is  a  speaker on the other end of its transmission.
+     If you are sending output to the external  audio  jack,  and
+     there is no speaker or audio cable hooked up to it (which is
+     the default case on most SPARCstations!), then you will sim-
+     ply  get baffling silence until you realize what the problem
+     is.
+
+     For volume settings, decimal numbers are accepted,  but  all
+     figures  after  the decimal point are ignored.  Furthermore,
+     any number outside the range 1-9 is interpreted to be volume
+     level 9!
+
+AAAAUUUUTTTTHHHHOOOORRRR
+     This AT&T text-to-speech synthesizer was developed by a geo-
+     graphically  and  organizationally diverse team of Bell Labs
+     personnel, from both research and product development.   For
+     a  complete and accurate listing of who has contributed what
+     to the research and development  of  this  software,  please
+     contact the provider.
+
+     Research-oriented questions on this software  (NOT  requests
+     for  bug fixes) may be addressed directly to J. E. Rowley at
+     Murray Hill.  The provider will also route any bug  reports,
+     requests,  and  other  ideas related to this software to the
+     Murray Hill and Indian Hill  supporters  of  the  "official"
+     version of this software.  However, please remember that the
+     SPARC version of this software, as provided under  exptools,
+     is  in  effect a research tool: therefore, no guarantees can
+     be made regarding the timeliness or even the feasibility  of
+     satisfying a specific user request.
+
+PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+     The provider of this exptools version is O. I. Henjum.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sun Microsystems      Last change: EXPTOOLS                     4
+
+
+

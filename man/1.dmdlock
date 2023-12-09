@@ -1,0 +1,132 @@
+
+
+
+     DDDDMMMMDDDDLLLLOOOOCCCCKKKK((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDMMMMDDDDLLLLOOOOCCCCKKKK((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          dmdlock - Lock a terminal running layers
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          dmdlock [ -p ]
+          dmdlock [ [ -A | -a ] <timeout> ] [ -b ] [ -c ] [ -L | -l ]
+          [ -u ] [ password ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _D_m_d_l_o_c_k allows you to lock a terminal running layers so that
+          the terminal can be left unattended but logged on.  To
+          unlock the terminal, you must correctly enter a password.  A
+          menu on button 3 allows you to choose between a login pass-
+          word or a newly typed password, and to choose between mouse
+          or keyboard based triggering.
+
+          If no password is specified by the parameter list, _d_m_d_l_o_c_k
+          will prompt for one after it has downloaded.  The password
+          will not be displayed as it is typed; however, a backspace
+          will delete a character and an at-sign (@) will kill the
+          entire line.  You will be asked to verify the password by
+          re-typing it.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          When the ----pppp option is specified, _d_m_d_l_o_c_k creates a private
+          password file (.dmd.lock) to hold an encrypted login pass-
+          word, and exits. When present, the .dmd.lock password is
+          used in place of any /etc/passwd file entry.
+
+          Your login password (found in /etc/passwd or .dmd.lock) is
+          used automatically when you use the ----uuuu option.  This over-
+          rides the default action of prompting for a newly typed
+          password.  If your login password cannot be obtained for
+          some reason (i.e. /etc/private has been installed and
+          .dmd.lock doesn't exist), and you have used the ----uuuu option,
+          _d_m_d_l_o_c_k will fail with an error message, and will suggest
+          that you run _d_m_d_l_o_c_k with the ----pppp option first.
+
+          When the ----cccc option is used, _d_m_d_l_o_c_k will cache the dmdlock
+          in memory so the layer can be deleted, and accessed later
+          using the Button 3 "other" menu.  (MTG 630 only)
+
+          When the ----llll option is used, _d_m_d_l_o_c_k selects the moused based
+          trigger. The default is keyboard based locking.  Mouse based
+          triggering works by locking the terminal whenever the
+          _d_m_d_l_o_c_k layer is selected. Keyboard based triggering locks
+          the terminal whenever the _d_m_d_l_o_c_k layer is current and the
+          return key is pressed.
+
+          When the ----LLLL option is used, mouse based triggering is
+          selected, and the terminal is locked immediately when down-
+          load into the current layer, or when accessed via the button
+
+
+
+     Page 1                                          (printed 5/15/92)
+
+
+
+
+
+
+     DDDDMMMMDDDDLLLLOOOOCCCCKKKK((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDMMMMDDDDLLLLOOOOCCCCKKKK((((1111))))
+
+
+
+          3 "other" menu (see ----cccc above.)
+
+          When the ----bbbb option is specified, the screen will blank on
+          locking. The screen will restore when the terminal is
+          unlocked.  (MTG 630 only)
+
+          The ----aaaa option is used to specify the autolock timeout period
+          in minutes.  Dmdlock locks the terminal automatically when-
+          ever the terminal remains inactive for a period of time
+          exceeding the timeout period.  The default timeout period is
+          15 minutes;  this is also the maximum allowable setting.
+          Specifing a timeout period of 0 disables automatic locking.
+          The keyboard will sound a tone when the countdown is in its
+          last minute.  (MTG 630 only)
+
+          The ----AAAA option works like the ----aaaa option, but the countdown is
+          suppressed till the last minute.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGG
+          _D_m_d_l_o_c_k only runs under layers.  The ----pppp option will invoke
+          the C compiler, and hence will only run on machines that
+          have the cc(1) command installed.  It is unsafe to provide
+          the password via the command line; Command line arguments
+          can be viewed by other users using the ps command.
+
+     BBBBUUUUGGGGSSSS
+          _D_m_d_l_o_c_k doesn't know about your stty(1) erase/kill charac-
+          ters.  When running the dmdlock command on a terminal where
+          a dmdlock process is cached, the dmdlock command arguments
+          are ignored, and the cached ones are used instead.
+
+          On old 630 terminal upgraded with a LAN board and an X win-
+          dows cartridge, harware bus noise sometimes wreaks havok on
+          dmdlock's crypt function. The only known work around is to
+          not use the -u option (or to get a newer terminal).
+
+     FFFFIIIILLLLEEEESSSS
+          /etc/passwd         the system-wide password file
+          ~/.dmd.lock         a private password file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          layers(1), stty(1), crypt(3), cc(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 5/15/92)
+
+
+

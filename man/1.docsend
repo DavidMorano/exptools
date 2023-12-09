@@ -1,0 +1,990 @@
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            docsend - format, print, and send a document
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            ddddooooccccsssseeeennnndddd [ _o_p_t_i_o_n_s ] [ _f_i_l_e ]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            _d_o_c_s_e_n_d invokes the special _n_r_o_f_f/_t_r_o_f_f macros needed to
+            format a document source file, prints a paper copy of the
+            document, and sends an electronic copy of the document to
+            the Library Network UNIX system.  Both hardcopy and elec-
+            tronic versions are time-stamped to permit subsequent match-
+            ing.
+
+            _d_o_c_s_e_n_d with the ----mmmmccccssss option (current default) uses the -_m_c_s
+            cover sheet macros to format a cover sheet source file and
+            generates a hardcopy version of the document cover sheet on
+            the Xerox or Kodak PostScript high-speed page printers;
+            Imagen Imprint-10, Imagen 8/300, or QMS PostScript laser
+            printers; or DASI 450 (or DIABLO 630) terminal.  See _m_c_s(_5)
+            for details about the -_m_c_s macros.
+
+            When the approved paper version is received by the Internal
+            Technical Document Service (ITDS), the matching electronic
+            copy is retrieved and used as the source of data entered
+            into the ITDS database.
+
+            _d_o_c_s_e_n_d helps AT&T cut costs by eliminating redundant retyp-
+            ing of coversheets by ITDS personnel. In addition, the
+            author is ensured that the complete abstract is included in
+            the ITDS database (rather than the 8 lines customarily pro-
+            vided by ITDS manual entry).
+
+            If no input filename is specified, file ``temp.cover'' is
+            used by default.  Preprocessing with _e_q_n or _n_e_q_n is handled
+            automatically, if needed.  Default device varies with ins-
+            tallation.
+
+            The following options may appear in any order preceding the
+            filename:
+
+            ----mmmmccccssss      Prepend the special -_m_c_s macro file to the input
+                      file, format, and generate a document cover sheet
+                      (the default).
+
+            ----TTTT_d_e_v_i_c_e  Generate a paper copy of the document on _d_e_v_i_c_e.
+                      Legal _d_e_v_i_c_e_s for _t_r_o_f_f output are: XXXX99997777 (Xerox
+                      high-speed printer), iiii11110000 (Imprint-10 laser
+                      printer), iiii333300000000 (Imagen 8/300 laser printer), and
+                      ppppoooosssstttt (Kodak or QMS PostScript laser printer).
+                      Supported _n_r_o_f_f _d_e_v_i_c_e_s are: XXXX (Xerox high-speed
+                      printer) and 444455550000 (Dasi 450 or Diablo 630
+
+
+
+       Page 1                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+                      terminal).  The logical _d_e_v_i_c_e llllooooccccaaaallll generates
+                      output on an unsupported device using the format-
+                      ting, equation preprocessing, and print commands
+                      and options defined in the DOCFORMAT, DOCEQN, and
+                      DOCPRINT environmental variables.  All three vari-
+                      ables must be defined and exported.
+
+            ----aaaa_a_c_c_t    Use account number _a_c_c_t.  By default, the account
+                      number is taken from the password file.
+
+            ----bbbb_b_i_n     Send output to bin number _b_i_n.  (_b_i_n may also be
+                      used to specify a mailing address.)  By default,
+                      the bin number is taken from the environment vari-
+                      able BIN unless it is null, in which case it is
+                      taken from the password file.  Blanks may be
+                      included if _b_i_n is enclosed in quotes.  If _b_i_n is
+                      longer than 8 characters, the _o_p_r ----mmmmaaaaiiiillll option
+                      will be used for all Xerox output.  If the print
+                      device is accessed via UNISON software, the _b_i_n
+                      string will be handled as a mailing address if the
+                      first character of the string is a % symbol.
+
+            ----dddd_d_e_s_t    Send output to remote location _d_e_s_t where _d_e_s_t is
+                      a site code (Xerox output) or a specific
+                      PostScript or Imagen printer station.  By default,
+                      the destination is taken from the environment
+                      variable DEST.  Imagen and PostScript destinations
+                      vary with installation.
+
+            ----ffffnnnnoooohhhhoooolllleeee  Use paper with no holes. Valid only for Xerox and
+                      Kodak PostScript printers.
+
+            ----cccc_n       Make _n copies of the output. Default is 1.  Valid
+                      only for Xerox and Kodak PostScript printers.
+
+            ----1111        Print on _1 side of a sheet of paper. Valid only
+                      for Xerox and Kodak PostScript printers.
+
+            ----2222        Print on _2 sides of a sheet of paper. Valid only
+                      for Xerox and Kodak PostScript printers.  Ignored
+                      at sites without the duplexing feature.
+
+            ----vvvv        Verbose option.  Display resulting command line
+                      without execution.
+
+            An entry is appended to file ._D_O_C_L_O_G in the user's home
+            directory indicating date and time of execution, input
+            filename, device, document number, and 9-digit timestamp.
+
+          TTTTaaaaiiiilllloooorrrriiiinnnngggg tttthhhheeee PPPPrrrriiiinnnntttt CCCCoooommmmmmmmaaaannnndddd
+            The environmental variable DOCPRINT may be used to define
+            (or redefine) the command string needed to print _t_r_o_f_f
+
+
+
+       Page 2                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            output on a local Imagen Imprint-10, Imagen 8/300, or
+            PostScript printer.  Blanks may be included if the string is
+            enclosed in quotes.  Account number, bin, and destination
+            should be included in the DOCPRINT definition, if required
+            locally.  Export DOCPRINT and invoke _d_o_c_s_e_n_d with the
+            appropriate ----TTTTiiii11110000, ----TTTTiiii333300000000, or ----TTTTppppoooosssstttt option.  See EXAMPLES
+            below.
+
+          HHHHaaaannnnddddlllliiiinnnngggg aaaannnn UUUUnnnnssssuuuuppppppppoooorrrrtttteeeedddd DDDDeeeevvvviiiicccceeee
+            The environmental variables DOCFORMAT, DOCEQN, and DOCPRINT
+            may be used to define the command strings needed to format
+            and print a cover sheet on an unsupported device.  Set
+            DOCFORMAT to the command string (including options) used to
+            format text on the device and similarly DOCEQN to the com-
+            mand string (including options) used to format mathematical
+            text.  The ----mmmmccccssss option should be included in the DOCFORMAT
+            definition.  DOCPRINT should be set up as described earlier.
+            Export the three variables and invoke _d_o_c_s_e_n_d with the ----
+            TTTTllllooooccccaaaallll option.  See EXAMPLES below.
+
+            DOCFORMAT, DOCEQN, and DOCPRINT can be defined and exported
+            in the user's ._p_r_o_f_i_l_e file to save retyping during each
+            _d_o_c_s_e_n_d session.
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+            Generate a cover sheet on the default device using input
+            file "temp.cover":
+
+                 docsend -mcs
+
+            Generate a cover sheet on the local Xerox printer, producing
+            two copies of "nohole" output; mail to WB address:
+
+                 docsend -mcs -TX97 -fnohole -c2 -b"H. Smith, WB 1L-300"
+
+            Generate a cover sheet on local QMS PS-800 (PostScript)
+            printer "sierra" using the default print command string and
+            input file "myfile":
+
+                 DEST="sierra"; export DEST
+                 docsend -mcs -Tpost myfile
+
+            Generate a cover sheet on MH Kodak PostScript printer
+            "mh/kodak", printing on two sides of "nohole" paper and
+            using input file "temp.cover"; mail to WV address:
+
+                 docsend -mcs -Tpost -dmh/kodak -fnohole -2 -b"%B.J.
+                 Jones; WV 1A-100"
+
+            Generate a cover sheet on local Imagen 8/300 printer
+            "west300" using nonstandard print command "i10send" and
+            input file "temp.cover":
+
+
+
+       Page 3                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+                 DOCPRINT="i10send -dwest300"; export DOCPRINT
+                 docsend -mcs -Ti300
+
+            Generate a cover sheet on unsupported local abc printer
+            "southabc" using format command "lroff -Tabc", equation pro-
+            cessing command "leqn", and print command "lprt -lroff" and
+            input file "myfile":
+
+                 DOCFORMAT="lroff -Tabc -mcs"; export DOCFORMAT
+                 DOCEQN="leqn"; export DOCEQN
+                 DOCPRINT="lprt -lroff -dsouthabc"; export DOCPRINT
+                 docsend -Tlocal myfile
+
+            Display command line used to generate a cover sheet on the
+            default device using input file "temp.cover":
+
+                 docsend -mcs -v
+
+       CCCCOOOOVVVVEEEERRRR SSSSHHHHEEEEEEEETTTT MMMMAAAACCCCRRRROOOOSSSS
+            _d_o_c_s_e_n_d invokes a special stand-alone nroff/troff macro
+            package developed specifically for use in the preparation of
+            the G.E.I.-required document cover sheet.  Currently, AT&T
+            Bell Laboratories (default), AT&T Information Systems, AT&T
+            Technologies, Inc., and AT&T Corporate Headquarters (ERC)
+            are supported in the macros.
+
+            The new macros are styled after the Memorandum Macros but
+            the two macro packages are not compatible and should NOT be
+            used together.
+
+            The macros currently provide facilities for generating para-
+            graphs and footnotes as well as handling the specific for-
+            matting requirements of the new cover sheet. Additional
+            capabilities will be added if warranted by user interest.
+
+            A list of the macro commands follows.
+
+            AT&T Company
+
+              .aC code
+
+            The .aC macro is used to designate the AT&T company for whom
+            the cover sheet is generated. Legal codes and the
+            corresponding companies are:
+
+                    BL      AT&T Bell Laboratories
+                    IS      AT&T Information Systems
+                    TI      AT&T Technologies, Inc.
+                    CH      AT&T Corporate Headquarters (ERC)
+
+            If the macro is omitted, the default AT&T company is AT&T
+            Bell Laboratories.
+
+
+
+       Page 4                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            Title
+
+              .TL
+              one or more lines of title text
+
+            No arguments to the .TL macro are expected and any supplied
+            are ignored.  The title follows the .TL macro and is pro-
+            cessed in fill mode.
+
+            This macro is required for the document cover sheet.  The
+            title is used on the first page of the cover sheet and is
+            also included near the top of any continuation pages
+            required in the case of abstract or distribution list over-
+            flow.
+
+            Author(s)
+
+              .AU name "" loc dept ext room AT&T_company
+
+            The .AU macro receives as arguments information that
+            describes an author.  If any argument contains blanks, it
+            must be enclosed within double quotes.  The arguments must
+            appear in the order given.  The second argument is ignored
+            by the cover sheet macros but is defined for compatibility
+            with the Memorandum Macros. A null argument ("") should be
+            supplied.
+
+            The seventh argument (AT&T company) should be supplied only
+            when different from the AT&T company for whom the cover
+            sheet is generated (.aC macro or default).
+
+            A separate .AU macro is required for each author. At least
+            one .AU macro is required for each document cover sheet.
+
+            Responsible Person
+
+              .rP name
+
+            The .rP macro is used to supply the name of a responsible
+            person from the AT&T company for whom the cover sheet is
+            generated (.aC macro or default) when there is no author
+            representing that company. The macro is optional.
+
+            Abstract
+
+              .AS
+              text of the abstract
+              .AE
+
+            The .AS (abstract start) and .AE (abstract end) macros
+            bracket the abstract. Abstracts are printed on page 1 of the
+            cover sheet and, if necessary, overflow to a continuation
+
+
+
+       Page 5                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            page.
+
+            No arguments to the .AS macro are expected and any supplied
+            are ignored.
+
+            Abstracts are required for cover sheets of technical and
+            internal memoranda.
+
+            Other Keywords
+
+              .OK [keyword] ...
+
+            Up to nine topical keywords or keyword phrases may be speci-
+            fied as arguments to the optional .OK macro. If any keyword
+            contains spaces, it must be enclosed within double quotes.
+
+            Memorandum Type
+
+              .MT type
+
+            Legal codes for "type" and the corresponding values are:
+
+                                1    Technical Memorandum
+                                2    Internal Memorandum
+                                3    Technical Correspondence
+
+            No other values are recognized. No other arguments are
+            expected.
+
+            This macro is required for all cover sheets. It causes the
+            character string "TM", "IM", or "TC" to be appended to the
+            numeric portion of the document number defined with each .dN
+            macro.  It also places the string "for Technical Memoran-
+            dum", "for Internal Memorandum" or "for Technical Correspon-
+            dence" under the words "Document Cover Sheet" at the top of
+            page 1 (and on continuation pages).
+
+            Software
+
+              .sF
+
+            If the document contains software (any nontrivial executable
+            computer program routine), include the .sF macro.  This
+            causes a trailing 'S' to be appended to each document number
+            string constructed from data supplied by the .dN and .MT
+            macros.  If the document does not contain software, omit the
+            macro.
+
+            Document Number(s)
+
+              .dN org-date-sequence
+
+
+
+
+       Page 6                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            A document number (assigned to each document by each issuing
+            organization) consists of the organization number, date,
+            sequence number, category suffix, and possible software suf-
+            fix.  An example of a complete AT&T-BL document number is
+            "79111-870630-02TMS".
+
+            The first three elements (the numeric portion of the docu-
+            ment number) are supplied by the first argument of the .dN
+            macro.  Dashes separate the fields.
+
+            The "organization" field for AT&T-BL and AT&T Corporate
+            Headquarters (ERC) has at most 5 digits (10 digits for the
+            other defined companies); the "date" field has 2 digits
+            (year) for AT&T Technologies, Inc. and 6 digits (year month
+            day) for the other defined companies; the "sequence number"
+            field has 2 digits.  Examples of the numeric portion of a
+            document number:
+
+                                79111-870930-02     (BL)
+                                XMPF70000-870930-01 (IS)
+                                11NW500000-87-01    (TI)
+                                60313-870930-01     (CH)
+
+            At least one .dN macro is required for every cover sheet.
+            If the document has multiple authors, there should be one
+            .dN macro for each organization represented.
+
+            Document numbers appear on the first page of the cover
+            sheet. The first document number also appears at the very
+            top of the second page and any succeeding continuation
+            pages.
+
+            Full Date
+
+              .fD date
+
+            The .fD macro is used for AT&T Technologies, Inc.  cover
+            sheets only.  At least one full date must be specified for
+            each document.  The date has 6 digits (year month day).
+
+            Filing Case(s)
+
+              .fC filing_case
+
+            The .fC macro is used to supply the filing case (and sub-
+            case, if applicable) for the document. If multiple filing
+            cases pertain to the document, a separate .fC macro should
+            be used for each. At least one .fC macro is required for
+            AT&T-BL and AT&T-IS cover sheets (none for AT&T Technolo-
+            gies, Inc. and AT&T Corporate Headquarters (ERC)).
+
+            Work Project Number(s)
+
+
+
+       Page 7                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+              .wP work_project_number
+
+            The .wP macro is used to supply the work project number for
+            the document.  If multiple work project numbers pertain to
+            the document, a separate .wP macro should be used for each.
+            At least one .wP macro is required.
+
+            MERCURY Announcement Bulletin Sections
+
+              .mC [code] [code] [code]
+
+            One or more MERCURY classifications (maximum 3) can be
+            specified by supplying MERCURY codes as arguments to the .mC
+            macro. Legal codes and the corresponding MERCURY classifica-
+            tions are as follows:
+
+                    chm     Chemistry and Materials
+                    cmm     Communications
+                    cmp     Computing
+                    elc     Electronics
+                    lfs     Life Sciences
+                    man     Manufacturing
+                    mas     Mathematics and Statistics
+                    mkt     Marketing
+                    phy     Physics
+                    std     Standards
+
+            At least one MERCURY classification must be supplied for
+            technical memoranda.
+
+            Proprietary Markings
+
+              .PM [code]
+
+            By default, the AT&T - PROPRIETARY marking is placed near
+            the bottom left-hand corner of the first page of the cover
+            sheet.
+
+            The .PM macro allows the alternate selection of the AT&T -
+            PROPRIETARY (RESTRICTED) marking by specifying the code
+            "RS".
+
+            If the PROPRIETARY (RESTRICTED) marking is selected, use the
+            space in the new Organization Approval section on page 2 of
+            the cover sheet for the required approval by the responsible
+            department head(s).  The space may be used for optional
+            organizational approval for documents with the PROPRIETARY
+            marking.
+
+            Government Security
+
+              .gS
+
+
+
+       Page 8                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            If the document carries a government security classifica-
+            tion, include the .gS macro.  This causes an appropriate
+            section to be generated on page 2 of the cover sheet.  If
+            the document is not government security classified, omit the
+            macro.
+
+            Earlier Document Number
+
+              .eD complete_document_number
+
+            If the document supersedes or amends an earlier document,
+            include the .eD macro followed by the complete document
+            number (including TM/IM/TC/S suffix) of the earlier docu-
+            ment.
+
+            Future AT&T Distribution by ITDS
+
+              .fA code
+
+            The .fA macro is used to indicate the policy that ITDS
+            should follow concerning the Future Distribution of the
+            document to AT&T employees (excluding contract employees).
+
+            Although this macro is not currently required, it is impor-
+            tant to provide it for all cover sheets.  Otherwise, you
+            will be contacted by ITDS for the necessary decision.
+
+            The .fA macro with code of "y" indicates that you authorize
+            ITDS to release the document to any AT&T employee (except
+            contract employees).
+
+            Conversely, the .fA macro with code of "n" indicates that
+            you want ITDS to obtain appropriate approval for each
+            request for the document.
+
+            NOTE: AT&T PROPRIETARY (RESTRICTED) documents require appro-
+            val for each request (i.e. .fA with "n" code).
+
+            Initial Distribution Specifications
+
+              .cC
+              list of names for complete copy distribution (one per line)
+              .cE
+              .cS
+              list of names for cover sheet only distribution (one per line)
+              .cE
+
+            Space is provided on page 2 of the cover sheet for the ini-
+            tial distribution specifications. Use the optional .cC (com-
+            plete copy) macro to mark the beginning of the list of names
+            to receive a complete copy of the document and .cE (end
+            list) to mark the end of the list. Use the optional .cS
+
+
+
+       Page 9                                           (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            (cover only) macro to mark the beginning of the list of
+            names to receive the document cover sheet only and .cE (end
+            list) to mark the end of the list. For non-AT&T-BL reci-
+            pients add tab character and company name after the addres-
+            see name.  The .cC, .cS and .cE macros do not expect argu-
+            ments and any supplied will be ignored.
+
+            The number of names provided on page 2 of the cover sheet
+            varies according to the amount of space consumed by some of
+            the optional sections. Overflow will be printed either on a
+            separate continuation sheet or at the end of the abstract
+            overflow (if one exists and if the overflow names will fit).
+            Any overflow that will not fit on one continuation sheet
+            will be lost.
+
+            Cover Sheet
+
+              .CS pages other "" "" "" ""
+
+            The required .CS macro actually generates the cover sheet
+            from the information provided by its arguments and by the
+            other macros.  If the third argument is supplied, it is
+            interpreted as "total pages (including document cover
+            sheet)". Otherwise, the macros automatically calculate this
+            total by adding the figures in the first and second argu-
+            ments to the number of pages generated in the cover sheet
+            itself.  All other .CS arguments are ignored but are defined
+            for compatibility with the Memorandum Macros.  Null argu-
+            ments ("") should be supplied.
+
+            Order of Invocation of Macros
+
+            The macros described above, if present, should be given in
+            the following order:
+
+              .aC code
+              .TL
+              one or more lines of text
+              .AU name "" loc dept ext room
+              .AS
+              one or more lines of text
+              .AE
+              .OK [keyword] ...
+              .MT type
+              .sF
+              .dN org-date-sequence
+              .fC filing_case (or .fD  full_date)
+              .wP work_project_number
+              .mC [code] [code] [code]
+              .PM [code]
+              .gS
+              .eD complete_document_number (including TM/IM/TC/S suffix)
+
+
+
+       Page 10                                          (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+              .fA code
+              .cC
+              one or more complete copy addressees - one per line
+              .cE
+              .cS
+              one or more cover sheet addressees - one per line
+              .cE
+              .CS pages other "" "" "" ""
+
+            The only macros required for the document cover sheet are:
+            .TL, .AU (at least one), .AS and .AE (for technical and
+            internal memoranda), .MT, .dN (at least one), .fC (at least
+            one for AT&T-BL and AT&T-IS only), .fD (at least one for
+            AT&T Technologies, Inc.  only), .wP (at least one), and .CS.
+            All arguments to these macros must be supplied.  In addi-
+            tion, at least one MERCURY classification (.mC macro) must
+            be supplied for technical memoranda.  Although not currently
+            required, it is also important to include the .fA macro with
+            "y" or "n" code.
+
+            Paragraphs
+
+              .P [type]
+
+            The .P macro marks the beginning of a paragraph and may be
+            used within the text of the abstract. .P without argument or
+            with an argument of "0" produces a left-adjusted paragraph.
+            .P with argument of "1" produces a paragraph that is
+            indented 5 spaces.
+
+            Footnotes
+
+              .FS [label]
+              one or more lines of footnote text
+              .FE
+
+            The .FS and .FE macros mark the beginning and end of foot-
+            note text and may be used in the title or author sections or
+            within the abstract.
+
+            The footnote macros and text should be typed on the lines
+            immediately following the word being footnoted. The footnote
+            label, if present, will be used to mark the footnote text.
+            The label should also be typed at the end of the footnoted
+            word.
+
+            Footnotes used within the title or author sections appear in
+            the lower left portion of page 1 of the cover sheet. Foot-
+            notes used within the abstract itself appear at the end of
+            the abstract text.
+
+            Variable-Item List
+
+
+
+       Page 11                                          (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+              .VL text-indent [mark-indent] [1]
+              .LI mark [1]
+              one or more line of text that make up the list item
+              .LE [1]
+
+            A variable-item list must include the .VL macro, the .LI
+            macro with mandatory first argument (the mark), and the .LE
+            macro.
+
+            The required .VL text-indent gives the distance from the
+            current indent to the beginning of the text. The optional
+            mark-indent gives the number of spaces from the current
+            indent to the beginning of the mark (default 0 if omitted or
+            null). If the third argument is specified, no blank lines
+            will separate the items in the list.
+
+            If two arguments are supplied to the .LI macro, the first
+            argument becomes a prefix to the mark, thus allowing the
+            user to emphasize one or more items in a list. One unpadd-
+            able space is inserted between the prefix and the mark.
+            Multiple .LI macros can be used between the .VL and .LE.
+
+            The .LE marks the end of the variable-item list. If the
+            optional argument is given, the .LE outputs a blank line
+            (1/2 vertical space).
+
+            Marked List
+
+              .ML mark [text-indent] [1]
+              .LI [mark] [1]
+              one or more lines of text that make up the list item
+              .LE [1]
+
+            A marked list must include the .ML, .LI, and .LE macros.
+
+            The mark is supplied by the first argument to the .ML macro.
+            Text is indented text-indent spaces if the second argument
+            is not null; otherwise, the text is indented one more space
+            than the width of mark. If the third argument is specified,
+            no blank lines will separate the items in the list.
+
+            If a single argument is given to .LI, that argument is out-
+            put instead of the current mark. If two arguments are given,
+            the first argument becomes a prefix to the current mark,
+            thus allowing the user to emphasize one or more items in a
+            list. One unpaddable space is inserted between the prefix
+            and the mark. Multiple .LI macros can be used between the
+            .ML and .LE.
+
+            The .LE marks the end of the marked list. If the optional
+            argument is given, the .LE outputs a blank line (1/2 verti-
+            cal space).
+
+
+
+       Page 12                                          (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            The marked list may be used to generate a bullet list by
+            supplying the bullet character (\(bu) as the mark.
+
+            Static Displays
+
+              .DS [format] [fill] [rindent]
+              one or more lines of text
+              .DE
+
+            A static display is started by the .DS macro and terminated
+            by the .DE macro.  With no arguments, .DS will accept lines
+            of text exactly as they are typed (no-fill) and will not
+            indent them from the prevailing left margin indentation or
+            from the right margin. The rindent argument is the number of
+            characters that the line length should be decreased, i.e. an
+            indentation from the right margin.
+
+            The format argument to .DS is an integer or letter used to
+            control the left margin indentation and centering with the
+            following meanings:
+
+                                0 or L    no indent (default)
+                                1 or I    indent 5 spaces
+                                2 or C    center each line
+                                3 or CB   center as a block
+
+            The fill argument is also an integer or letter and can have
+            the following meanings:
+
+                                0 or N    no-fill mode (default)
+                                1 or F    fill mode
+
+            Omitted arguments are taken to be zero.
+
+            Display format value 3 (CB) must be used in order for the
+            eqn/neqn "mark" and "lineup" feature to work with centered
+            equations.
+
+            Equations
+
+              .DS
+              .EQ [label]
+              equation(s)
+              .EN
+              .DE
+
+            The equation setters eqn and neqn expect to use the .EQ
+            (equation start) and .EN (equation end) macros as delim-
+            iters. The .EQ and .EN must occur inside a .DS/.DE pair
+            (unless the .EQ and .EN are used only to specify the delim-
+            iters for in-line equations or to specify eqn/neqn
+            "defines").
+
+
+
+       Page 13                                          (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            The .EQ macro takes an argument that will be used a a label
+            for the equation.  By default, the label will appear at the
+            right margin of the general equation.
+
+            The equation will be centered for centered displays; other-
+            wise, the equation will be adjusted to the opposite margin
+            from the label.
+
+            Points to Note
+
+            A trademark string \*(Tm is available with the macros. This
+            places the letters "TM" one-half line above the text that it
+            follows.
+
+            The .aC (AT&T company) and .mC (MERCURY) macros are defined
+            in all versions of the csmacros beginning 6/30/85.  The .mC
+            macro should be used to specify MERCURY codes instead of the
+            earlier .mE macro (which supported only the seven original
+            MERCURY codes).
+
+            The .cI (CI-II Review) macro should no longer be used.
+
+            The .eD (earlier document) macro is defined in all versions
+            of the csmacros beginning 5/30/87. Other changes introduced
+            at this time include: a new code "CH" for use with the .aC
+            macro to produce cover sheets for AT&T Corporate Headquar-
+            ters (ERC); a new code "RS" for use with the .PM macro to
+            generate the AT&T - PROPRIETARY (RESTRICTED) marking.
+
+            Finally, if the third argument of the .CS macro is supplied,
+            it is interpreted as "total pages (including document cover
+            sheet)".  Otherwise, the macros automatically calculate this
+            total by adding the figures in the first and second argu-
+            ments to the number of pages generated in the cover sheet
+            itself.  All other .CS arguments are ignored.
+
+            The .fA (Future AT&T Distribution) macro is defined in all
+            versions of the csmacros beginning 7/20/87.  It supercedes
+            the .rA (release approval) macro which was introduced in the
+            csmacros beginning 5/30/87.
+
+       FFFFIIIILLLLEEEESSSS
+            /etc/passwd                     account and bin numbers
+
+            $TOOLS/lib/docsend/csmacros     -_m_c_s _n_r_o_f_f/_t_r_o_f_f macro
+                                            definition file
+
+            $TOOLS/lib/docsend/model.cs     model input for -_m_c_s
+
+            $HOME/.DOCLOG                   _d_o_c_s_e_n_d log file
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+
+
+
+       Page 14                                          (printed 2/3/93)
+
+
+
+
+
+
+       DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           DDDDOOOOCCCCSSSSEEEENNNNDDDD((((1111))))
+
+
+
+            dx9700(1), i10(EXPTOOLS), mail(1), nroff(1), npf(1), opr(1),
+            troff(1), x9700(1), mcs(5)
+
+       DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+            Because the -_m_c_s macro package uses sizes not available on
+            the Xerox high-speed printer, _t_r_o_f_f and _d_x_9_7_0_0 may generate
+            a stream of error messages warning of size mapping which,
+            along with all other error messages, have been redirected
+            (overwrite) to file "err._p_r_o_c_e_s_s_#".  Fatal "ERROR" messages
+            and certain "WARNING" messages generated by the cover sheets
+            macros are also written to this file and mailed to the user.
+
+       WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+            The -_m_c_s .CS macro has been redefined.  See _m_c_s(_5).  Only
+            one argument is now recognized and all other arguments are
+            ignored. The argument represents the total page count of the
+            document (NOT including the pages of the cover sheet
+            itself).
+
+            Not all devices are available at every location.
+
+            No checking is done within _d_o_c_s_e_n_d for valid destination
+            names.
+
+            Source files should NOT be preprocessed with _e_q_n or _n_e_q_n.
+
+            Strange page-order sometimes results with the ----2222 option when
+            the cover sheet has more than two pages.
+
+            Format and print commands for each supported device are set
+            up within _d_o_c_s_e_n_d at the time of installation.  The ----vvvv
+            option may be used with the various ----TTTT options to check the
+            predefined command values.  The ----TTTTllllooooccccaaaallll option can be used
+            to redefine format (and print) commands, if necessary, as
+            well as to handle unsupported devices.
+
+            Only those -_m_m macros that are listed on the _m_c_s(5) manual
+            page can be used to format document cover sheet title and
+            abstract text. Refer to the _m_c_s(5) manual page.
+
+       BBBBUUUUGGGGSSSS
+            Currently, only cover sheet macros have been implemented.
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+            Delma Puttress
+
+
+
+
+
+
+
+
+
+
+       Page 15                                          (printed 2/3/93)
+
+
+

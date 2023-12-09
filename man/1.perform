@@ -1,0 +1,462 @@
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          perform - a PERsonalized FORM-letter generator
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ppppeeeerrrrffffoooorrrrmmmm  [options]  addressfile  formfile  [outfile]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This program allows a user to take a file of addresses (or
+          other information) together with a form-letter file and
+          produce an output file consisting of the form letter
+          repeated once for each address selected from the address
+          file.  The form-letter file typically contains variables
+          that are to be replaced in the output by data found in the
+          address file.
+
+          Typical uses of this program are to create nroff documents
+          tailored to the individuals receiving them, to create input
+          files for label-making programs, or to create formated lists
+          of people from a mailing list for a report.
+
+        OOOOppppttttiiiioooonnnnssss
+          The options recognized by this program are as follows:
+
+          ----qqqq        Invoke the program quietly, i.e., do not echo the
+                    names of the _a_d_d_r_e_s_s, _f_o_r_m, and _o_u_t_p_u_t files.
+
+          ----ffff_t_e_s_t    Invoke the program only on certain addresses in
+                    the address file: those passing a test defined by
+                    the _t_e_s_t word.  The content of this word is a
+                    regular expression (see REGCMP(3X)) to be applied
+                    to the '[flags]' variable defined for each address
+                    (see "Variables" below).  Those [flag] variables
+                    passing the test, i.e., those in which a match can
+                    be found, determine which addresses will be
+                    processed by the program.  If the test word
+                    contains shell meta-characters, such as
+                    '*$^[](){}', then it should be quoted with single
+                    quotes.
+
+                    The simplest kind of test to use is searching the
+                    [flags] variable for a given string.  For example,
+                    invoking the command with the option
+
+                                        -f group1
+
+                    will cause the program to only process addresses
+                    whose [flags] variable contains the string
+                    'group1'.  Please note, however, that a [flags]
+                    variable containing the string 'group12' would
+                    also pass such a test.
+
+          ----nnnn        Invoke the program with the meaning of the '-f'
+
+
+
+     Page 1                                          (printed 7/25/91)
+
+
+
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+                    option negated, i.e., only those addresses that do
+                    _n_o_t pass the specified test are processed.  If no
+                    -f option is given, this option is ignored.
+
+
+        VVVVaaaarrrriiiiaaaabbbblllleeeessss
+          The heart of this program is the set of variables defined by
+          the address file or by the program and inserted into the
+          output according to the instructions found in the form-
+          letter file.  All such variables are of the form
+
+                                     [name]
+
+          Embedded blanks _a_r_e allowed in a variable's name.  The
+          variable [person receiving], for example, is permitted.  If
+          a variable contains embedded blanks, then when it is used in
+          a form letter it must contain exactly the same number of
+          embedded blanks.
+
+          There are two basic types of variables: global and local.
+          Global variables are those whose _d_e_f_i_n_i_t_i_o_n_s are established
+          before the first address is read in from the address file.
+          Local variables are those defined when an address is read
+          in.  If a variable is used that has both a local and a
+          global definition, the local one is used.  This allows the
+          user a means to override global definitions of variables if
+          need be.
+
+          The user can define variables using lines of the form
+
+                               [name]=_d_e_f_i_n_i_t_i_o_n
+
+          in the address file.  All characters are meaningful in the
+          above expression.  There can be no leading spaces on the
+          line, nor can there be spaces between the variable being
+          defined and the equals sign.  Any space encountered in the
+          definition, including leading spaces, will be taken
+          literally.
+
+          A variable's definition can contain either text or other
+          variables.  Text will be taken literally; variables will be
+          substituted for _a_t _t_h_e _m_o_m_e_n_t _t_h_e _d_e_f_i_n_e_d _v_a_r_i_a_b_l_e _i_s _u_s_e_d.
+          This permits global variables to be defined in terms of
+          local ones, providing much flexibility to the user.
+
+          If the same variable is defined several times at the same
+          level (i.e., at local or global level), then only the _l_a_s_t
+          definition encountered at that level will take effect.
+
+          If the last character of a definition is '\' then the
+          newline following it will be ignored and the definition will
+          be continued on the next line.  This is useful for defining
+
+
+
+     Page 2                                          (printed 7/25/91)
+
+
+
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+          extended sections of text.
+
+        SSSSyyyysssstttteeeemmmm GGGGlllloooobbbbaaaallll VVVVaaaarrrriiiiaaaabbbblllleeeessss
+          The program provides a number of global variables
+          automatically:
+
+          [[[[ffffllllaaaaggggssss]]]]    Always initialized to a null string by default.
+                     Users can establish their own local or global
+                     [flags] variables to override this default value.
+                     When each address is processed, the contents of
+                     [flags] is examined by the '-f' option test (see
+                     above).
+
+          [[[[wwwweeeeeeeekkkkddddaaaayyyy]]]]  The day of the week completely spelled out, such
+                     as 'Monday'.
+
+          [[[[mmmmoooonnnntttthhhh]]]]    The month of the year completely spelled out,
+                     such as 'January'.
+
+          [[[[yyyyeeeeaaaarrrr]]]]     The current year in full form, such as '1983'.
+
+          [[[[yyyyyyyy]]]]       The last two digits of the current year, such as
+                     '83'.
+
+          [[[[mmmmmmmm]]]]       The current month _a_l_w_a_y_s represented in two
+                     digits, such as '02' to represent February.
+
+          [[[[mmmm]]]]        The current month represented in one or two
+                     digits, as needed, such as '2' for February or
+                     '12' for December.
+
+          [[[[dddddddd]]]]       The current day of the month _a_l_w_a_y_s represented
+                     in two digits, such as '05'.
+
+          [[[[dddd]]]]        The current day of the month represented in one
+                     or two digits, as needed, such as '2' or '12'.
+
+          [[[[ddddaaaatttteeee]]]]     The current date in full form, such as 'July 8,
+                     1983'.
+
+          [[[[ddddaaaatttteeee2222]]]]    The current date in the form 'dd/mm/yy'.
+
+
+        SSSSyyyysssstttteeeemmmm LLLLooooccccaaaallll VVVVaaaarrrriiiiaaaabbbblllleeeessss
+          This program provides a number of local variables
+          automatically:
+
+          [[[[aaaaddddddddrrrreeeessssssss]]]]   The entire given address, excluding variable
+                      definitions.  Newline characters embedded in the
+                      address will be preserved during substitution.
+
+          [[[[lllliiiinnnneeee _n]]]]    The entire nth line of the given address, where
+
+
+
+     Page 3                                          (printed 7/25/91)
+
+
+
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+                      _n can range from 1 to 20.
+
+          [[[[llllaaaasssstttt lllliiiinnnneeee]]]] The entire _l_a_s_t line of the given address.
+
+          [[[[wwwwoooorrrrdddd _n]]]]    The nth word encountered on line 1 of the given
+                      address, where _n can range from 1 to 20.
+
+          [[[[llllaaaasssstttt wwwwoooorrrrdddd]]]] The _l_a_s_t word encountered on line 1 of the given
+                      address.
+
+          Please note that all local variables -- system and user --
+          are defined in the order in which they are encountered.
+          System local variables are defined when the text on which
+          they are based is read.  Thus, [word 1] and [line 1] are
+          defined when the first line of the address is read in.  If
+          the user wants to _o_v_e_r_r_i_d_e the definitions of these
+          variables by providing user local variables with the same
+          names, they would have to be defined in the address file
+          _a_f_t_e_r address line 1.  (Remember, with multiple definitions
+          of the same variable, the last definition is the one that is
+          used.)
+
+        TTTThhhheeee AAAAddddddddrrrreeeessssssss FFFFiiiilllleeee
+          The address file consists primarily of a sequence of
+          addresses (or other, similar data).  Each address can take
+          several lines, and is _i_n_t_r_o_d_u_c_e_d by a line consisting of 5
+          or more hyphens.  Here is how a file of two addresses might
+          look:
+
+                    -----
+                    Alice Zanzibar
+                    23250. Main Street
+                    Bigtown, TW
+                    -----
+                    John Q. Public
+                    153 North Street
+                    Anytown, ST
+
+          Please remember that a line of hyphens _p_r_e_c_e_d_e_s each
+          address.
+
+          Users can define their own global and local variables in the
+          address file.  Variables defined before the first address is
+          encountered (i.e., before the first line of hyphens) are
+          global and are in effect for all addresses.  Variables
+          defined within an address (i.e., after a line of hyphens)
+          are local and are in effect only for that particular
+          address.
+
+          For example, suppose the above addresses were to be used in
+          a form letter where a person's nickname was to be used if it
+          were known, but their first name otherwise.  Such a file
+
+
+
+     Page 4                                          (printed 7/25/91)
+
+
+
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+          might be organized as follows:
+
+                    [nickname]=[word 1]
+                    -----
+                    Alice Zanzibar
+                    2325 W. Main Street
+                    Bigtown, TW
+                    -----
+                    John Q. Public
+                    153 North Street
+                    Anytown, ST
+                    [nickname]=Bubba
+
+          The first line of the file defines the global definition of
+          [nickname] to be dependent on the system local variable
+          [word 1], the first word of line 1 of each address, i.e.,
+          the person's first name.  In the first address there is no
+          reference to [nickname], meaning that the global definition
+          is in effect.  In the second address, however, there is a
+          local definition of [nickname] that overrides the global
+          one.  As a result, the [nickname] variable would become
+          "Alice" with the first address and "Bubba" with the second.
+
+          Lines beginning with an asterisk (*) are regarded as
+          comments and are ignored.
+
+        TTTThhhheeee FFFFoooorrrrmmmm----LLLLeeeetttttttteeeerrrr FFFFiiiilllleeee
+          The form file can be any text file to be processed against
+          the address file.  The form file commonly contains variables
+          to be replaced by text found in the address file.  For
+          example, to use the [nickname] variable defined earlier a
+          form-letter file might contain the following text:
+
+                     Dear [nickname],
+
+                     You may already have won ...
+
+          For each address used, the form file is read in, processed,
+          and written to output.  If a line is encountered that
+          contains a variable, the value of that variable replaces it
+          in the line and the resulting line is then reexamined.  If
+          it _s_t_i_l_l contains a variable the above process is repeated,
+          until either all variables have been replaced or no more
+          replacements are possible.
+
+          There is a maximum number of replacements permitted on a
+          line, to prevent problems with circularly defined variables.
+
+          Form letters do not always have to be complex affairs.
+          Sometimes a simple transformation is all that is needed, and
+          a simple form letter does the job.  For example, to prepare
+          an input file for the dolabels(EXPTOOLS) label-making
+
+
+
+     Page 5                                          (printed 7/25/91)
+
+
+
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+          routine the following two-line form letter file is all that
+          is needed:
+
+                     .AD
+                     [address]
+
+          Other, simple "form letters" can be used to convert address
+          files to forms needed by other programs.
+
+        CCCCoooonnnnddddiiiittttiiiioooonnnnaaaallll TTTTeeeexxxxtttt
+          Although this program does not itself provide for
+          conditional text, it is possible to insert text
+          conditionally into form letters using the facilities
+          provided by nroff.  The basic idea is to use a variable in
+          the test part of an '.ie' nroff command.  The value
+          substituted for the variable will be tested, and can control
+          what text appears in nroff output.
+
+          For example, suppose a variable called [copies] contained a
+          positive integer for each address being processed.  Suppose
+          further that somewhere in a form letter the phrase "You will
+          receive 1 copy of the book" or "You will receive 2 copies of
+          the book" is to appear.  The following section of a form
+          letter file would produce the desired result:
+
+                     You will receive [copies]
+                     .ie [copies]=1 copy
+                     .el            copies
+                     of the book.
+
+          The [copies] variable will be replaced in the 'perform'
+          output twice: once in the regular text and once in the '.ie'
+          nroff command controlling the word to appear in the phrase.
+          Other tests, including string comparisons, are possible with
+          the '.ie' nroff command.
+
+        VVVVaaaarrrriiiiaaaabbbblllleeee AAAArrrrrrrraaaayyyyssss
+          Because of the way variables are replaced it is possible to
+          do a _l_i_m_i_t_e_d kind of array access with this program.
+          Suppose, for example, that with each address in a file there
+          were two variables called [loc] and [lab].  It would be
+          possible to insert text in a form letter that was a joint
+          function of both of these variables.  This could be done by
+          defining global variables of the form [HO 9999] that
+          contained the specialized text tailored to each location and
+          laboratory, then using the variable
+
+                                 [[loc] [lab]]
+
+          where this text was to be inserted.  When the line
+          containing the above variable is processed, first the [loc]
+          and [lab] variables are replaced by their values, then the
+
+
+
+     Page 6                                          (printed 7/25/91)
+
+
+
+
+
+
+     PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           PPPPEEEERRRRFFFFOOOORRRRMMMM((((1111))))
+
+
+
+          new, resulting variable is replaced by its value.
+
+          Remember, the number of embedded blanks in a variable is
+          important.
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          _U_n_a_b_l_e _t_o _o_p_e_n _f_i_l_e _X
+                    The given file could not be opened.
+
+          _E_x_c_e_s_s_i_v_e _v_a_r_i_a_b_l_e _s_u_b_s_t_i_t_u_t_i_o_n
+                    Too many variable substitutions were attempted on
+                    a single line, usually the result of circularly
+                    defined variables.  The limit on the number of
+                    substitutions per line is 30.
+
+     BBBBUUUUGGGGSSSS
+          The output of this program is a single file with the given
+          form letter repeated once for each address processed.  This
+          is _n_o_t a form suitable for producing multiple copies of
+          complete _m_m-style memos (with title page, logo, etc.), since
+          mm expects to encounter a memo's beginning only once.  There
+          should be no problem, however, using individual mm macros
+          such as .BL or .DS.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          dolabels(EXPTOOLS).
+
+     HHHHIIIISSSSTTTTOOOORRRRYYYY
+          8/79      Program originally developed at the Moore School,
+                    University of Pennsylvania.
+
+          2/82      Program converted to run at BTL.
+
+          7/83      Program released under exptools.
+
+     AAAAUUUUTTTTHHHHOOOORRRR AAAANNNNDDDD PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          George Otto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 7/25/91)
+
+
+

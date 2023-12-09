@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# Hope PATH is OK for echo, cat, rm, mv, as well as tex, latex
+# MPBIN is where newer, mptotex, and dvitomp are installed
+MPBIN=${TOOLS:?}/lib/mp/bin
+DOTEX=${TEX:-tex}
+
+#####################################################
+# Everything below here should seldom need changing #
+#####################################################
+ERRLOG=mpxerr.log		# file for an error log if necessary
+TEXERR=mpxerr.tex		# file for erroneous TeX file if any
+DVIERR=mpxerr.dvi		# troublesome dvi file if any
+MPFILE=$1			# input file
+MPXFILE=$2			# output file
+NL='
+'
+
+trap "rm -f mpx$$.* $ERRLOG; exit 4" 1 2 15
+
+
+if $MPBIN/newer $MPFILE $MPXFILE
+then
+    $MPBIN/mptotex $MPFILE >mpx$$.tex 2>$ERRLOG
+    case $? in
+    0)	;;
+    *)	echo "$NL"'Command failed: ' $MPBIN/mptotex $MPFILE
+	cat $ERRLOG
+	rm -f mpx$$.tex
+	exit 1
+	;;
+    esac
+
+    $DOTEX '\batchmode\input 'mpx$$ >/dev/null
+    case $? in
+    0)	;;
+    *)	mv -f mpx$$.tex $TEXERR
+	mv -f mpx$$.log $ERRLOG
+	echo "$NL"'Command failed:' $DOTEX $TEXERR $NL'See' $ERRLOG
+	rm -f mpx$$.*
+	exit 2
+	;;
+    esac
+
+    $MPBIN/dvitomp mpx$$.dvi $MPXFILE >$ERRlOG
+    case $? in
+    0)	;;
+    *)  mv -f mpx$$.dvi $DVIERR
+	echo "$NL"'Command failed:' $MPBIN/dvitomp $DVIERR
+	cat $ERRLOG
+	rm -f mpx$$.*
+	exit 3
+	;;
+    esac
+
+    rm -f $ERRLOG mpx$$.*
+fi

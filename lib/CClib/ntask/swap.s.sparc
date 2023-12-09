@@ -1,0 +1,290 @@
+!	.file "swap.s.sparc"
+!	ident	"@(#)ctrans:lib/task/task/swap.s.68k	1.3"
+! Transliterated from the 68k version with the above ident.
+! Sun SCCSID @(#)swap.s.sparc 1.2 88/05/18 SMI
+! Ported to V2.0 by GRT 89/09/28
+!
+!##############################################################################
+!			Copyright (c) 1984 AT&T
+!	  		  All Rights Reserved  	
+!
+!	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
+!	
+!	The copyright notice above does not evidence any   	
+!	actual or intended publication of such source code.
+!
+!##############################################################################
+
+!	swap of DEDICATED
+!!call swap(*running_task, *to_run_task, is_new_child, running_is_terminated)
+! This routine saves the fp in running's t_framep.
+!!If running is a SHARED task, we must save its stack size as well,
+!!although the stack does not need to be copied out here.
+! It then restores to_run's t_framep to be the current fp.
+! If to_run is a new child, it explicitly restores the registers from
+! New_task_regs, and returns without movem to restore the regs saved in
+! the stack.
+! If to_run is not a new child, it restores all the registers saved in
+! the frame on returning.
+!
+! This is complicated on SPARC by the extra window registers.
+!
+
+! The following constants are displacements of elements in class task:
+!!t_framep, th, t_basep, t_size, t_savearea,
+!!t_save_i6, t_save_i7, and t_mode.
+TFRAME = 20
+TH = 24
+TBASEP = 32
+TSIZE = 36
+TSAVE = 40
+TSAVE_I6 = 44
+TSAVE_I7 = 48
+TMODE = 60
+
+! The stack frame size for "swap" has enough room for the
+! "minimum stack frame" (MINFRAME).
+
+#include <machine/asm_linkage.h>
+#include <machine/trap.h>
+
+	.text
+	.globl	_swap
+_swap:
+	! Create a new stack frame for "swap", with room for two regs.
+	save	%sp, -SA(MINFRAME), %sp
+
+	!
+	! After the save,
+	!	%i0 points to the running task
+	!	%i1 points to the task to be run
+	!	%i2 = is_new_child
+	!!	%i3 = running_is_terminated
+	! %sp points to swap's own (fresh) stack frame
+	! %fp points to the caller's (task::task's stack frame
+	! (task::restore is in-line so it doesn't have one).
+
+	! This trap tells the SunOS kernel to flush all of the machine's
+	! registers (i.e., all of the register windows) to the stack.
+	! The kernel will reload them from the new stack upon return
+	! from "swap" (when the "restore" is executed, we'll get a
+	! register-window-underflow trap).
+	t	T_FLUSH_WINDOWS
+	!
+	tst	%i3			!! is running TERMINATED?
+	bne	L_restore		!! yes, skip the save
+	 nop
+
+	! save state of running task in its framep et al.
+	st	%sp,[%i0 + TFRAME]	! running->t_framep = fp (%sp)
+	st	%fp,[%i0 + TSAVE_I6]	! "->t_save_i6 = prev fp (%i6 is %fp)
+	st	%i7,[%i0 + TSAVE_I7]	! "->t_save_i7 = rtn adr reg (%i7)
+
+	! Restore state of to_run task.  If the kernel causes a context
+	! switch after the first of these loads, then the %fp and %i7
+	! from the *old task* will be stored into the register-save
+	! spots on the stack for the *new task*.  Thus, we have to keep
+	! these two critical registers elsewhere.  No other frames
+	! should be affected because of the FLUSH above.
+L_restore:
+	ld	[%i1 + TFRAME],%sp	! %sp (fp) = to_run->t_framep
+	ld	[%i1 + TSAVE_I6],%fp	! %fp (prev fp) = to_run->t_save_i6
+	ld	[%i1 + TSAVE_I7],%i7	! %i7 (rtn) = to_run->t_save_i7
+
+	!
+	! If this is not a new child (i.e., %i2 == 0), then we branch
+	! to the return, to return to task::task or to task::resume.
+	! In that case, we return nothing; task::restore is "void".
+	!
+	tst	%i2
+	be	L_retr			! Go back; delay slot doesn't matter.
+	 nop
+
+	!
+	! This is a new child task.  Our current frame (in the newly
+	! copied stack) is a copy of the frame for task::task.  We
+	! restore registers for new child from New_task_regs, then will
+	! return to the derived-task constructor, who will be fooled
+	! into thinking that task::task just returned.
+	!
+	set	_New_task_regs,%o1	! %o1 = address of New_task_regs
+
+	/* unsigned long	global_regs[ N_GLOBAL_REGS ]; */
+	ld	[%o1 +  0], %g1
+	ld	[%o1 +  4], %g2
+	ld	[%o1 +  8], %g3
+	ld	[%o1 + 12], %g4
+	ld	[%o1 + 16], %g5
+	ld	[%o1 + 20], %g6
+	ld	[%o1 + 24], %g7
+
+	/* unsigned long	param_dump[ N_STK_PARAMS ]; */
+	ld	[%sp + 56], %o0		! Get addr of caller's FP.
+	add	%o0, 68, %o0		! Get addr of first stack param
+	add	%o1, 28, %o1		! Get addr of param_dump[0]
+	ld	[%o1], %o2		! Get param_dump[0].
+	st	%o2, [%o0]		! Store into first stack param
+	ld	[%o1 + 4], %o2
+	st	%o2, [%o0 + 4]
+	ld	[%o1 + 8], %o2
+	st	%o2, [%o0 + 8]
+	ld	[%o1 + 12], %o2
+	st	%o2, [%o0 + 12]
+	ld	[%o1 + 16], %o2
+	st	%o2, [%o0 + 16]
+	ld	[%o1 + 20], %o2
+	st	%o2, [%o0 + 20]
+
+	!
+	! Must return "this" (to_run->th) because the derived-task
+	! constructor (to whom we're about to return) expects task::task
+	! to return a freshly minted task variable.  
+	!
+	ld	[%i1 + TH],%i0		! prepare return value -- to_run->th
+
+L_retr:	ret			! Normal (non-leaf) function return sequence
+	 restore
+
+
+!	swap of SHARED
+!!sswap(*running, *prevOnStack, *to_run, is_new_child, running_is_terminated)
+! This routine saves the fp in running's t_framep and the stack size in t_size.
+! Then it copies out the target stack to prevOnStack's t_savearea.
+! If to_run is not a new child, it then copies the saved stack of to_run 
+! (from t_savearea) to the target stack, and then restores to_run's t_framep 
+! to be the current fp.  We don't need to restore state of a child 
+! to_run object, because it's already in place.
+!!If running_task is TERMINATED, then we don't need to do a save,
+!!and if running_task is TERMINATED and equals prevOnStack, then we don't
+!!have to do the stack copy.
+!
+! This code transliterated from 68k, but not while I was awake.
+!
+	.text
+	.globl	_sswap
+_sswap:
+	! Create a new stack frame for "sswap", with room for two regs.
+	save	%sp, -(WINDOWSIZE), %sp
+
+	!
+	! After the save,
+	!	%i0 points to the running task
+	!!	%i1 (prevOnStack) points to the task that was last
+	!	    using the relevant part of the stack (may == to_run).
+	!	%i2 points to the task to be run
+	!	%i3 = is_new_child
+	!!	%i4 = running_is_terminated
+
+	! flush register windows to the stack.
+	t	T_FLUSH_WINDOWS
+	tst	%i4			!! is running TERMINATED?
+	bne	L_SKIP			!! yes, skip the save
+	 nop
+
+	! save hw state of running task
+	!	(running->t_framep := fp ( == %sp == %o6))
+	st	%sp,[%i0 + TFRAME]	! running->t_framep = fp (%sp)
+	st	%fp,[%i0 + TSAVE_I6]	! "->t_save_i6 = prev fp (%i6 is %fp)
+	st	%i7,[%i0 + TSAVE_I7]	! "->t_save_i7 = rtn adr reg (%i7)
+
+	ld	[%i0 + TBASEP],%l0	! %l0 = running->t_basep
+	sub	%l0, %sp, %l0		! %l0 = running->t_basep - sp
+
+	add	%l0, 4, %l0		! (size in bytes)
+	sra	%l0, 2, %l0		! %l0 /= 4 (size in ints)
+	st	%l0,[%i0 + TSIZE]	! running->t_size = %l0
+	ba	L_SAVE			!! delay slot doesn't matter
+	 nop
+
+L_SKIP:
+	cmp	%i0, %i1		!! if running == prevOnStack
+	be	L_REST			!!	skip prevOnStack save
+	 nop
+
+L_SAVE:	! copy out target stack to prevOnStack->t_savearea
+	! (Recall %i1 == prevOnStack)
+	ld	[%i1 + TSIZE],%l1	! %l1 = prevOnStack->t_size (count)
+	mov	%l1,%o0			! Pass the count to "new"...
+
+	! Q:  Can this call cause a window-overflow kernel trap that
+	!	would cause the registers to be smash the parts of the
+	!	stack that we're even now messing with?
+	call	_swap_call_new		! get count bytes of storage
+
+	sll	%l1, 2, %l1		! scale t_size to bytes
+	add	%l1, %o0, %l2		! %l2 = base of new stack, plus 1 long
+	sub	%l2, 4, %l2		! %l2 = base of new stack (to)
+
+	st	%l2, [%i1 + TSAVE]	! prevOnStack->t_savearea = %l2 (to)
+
+	ld	[%i1 + TBASEP],%l3	! %l3 = prevOnStack->t_basep (from)
+	ld	[%i1 + TSIZE], %l4	! %l4 = prevOnStack->t_size (count)
+	add	%l3, 4, %l3		!! prepare for 1st decr
+	ba	L2			!! go to the loop test
+	 tst	%l4			!! initial test for zero (in delay slot)
+
+L1:	! copy out loop
+	ld	[%l2], %l5		! *from
+	sub	%l2, 4, %l2		!! --from
+	st	%l5, [%l3]		! store into *to
+	subcc	%l4, 1, %l4		!! --count
+L2:	bg	L1			!! if( count > 0 ) continue;
+	 sub	%l3, 4, %l3		!! --to (in delay slot)
+
+L_REST:
+	tst	%i3			!! test fourth arg (is_new_child)
+	bne	L6			! if is_new_child != 0,
+					!	skip the copy-in loop
+	!  (Delay slot don't matter)
+
+	! copy into target stack from to_run->t_savearea
+					! (%i2 == to_run)
+	ld	[%i2 + TBASEP], %l0	! %l0 = to_run->t_basep (to)
+	ld	[%i2 + TSIZE], %l1	! %l1 = to_run->t_size (count)
+
+	! Kick up the sp if new stack will be taller than current.
+	! This organization cannot work on the sparc under Unix because
+	! of the possibility of other processes causing stack smashing
+	! in the middle of the copy or just after "kicking up" sp.
+	!
+	! Ick.
+	sll	%l1, 2, %l1		! %l1 = new stack height in bytes
+	sub	%l0, %l1, %l0		! %l0 = target sp
+	sub	%l0, %sp, %l0		! %l0 -= %sp
+	cmp	%l0, 0
+	bge	L3			! if %l0 < 0
+	 nop				!   (delay slot)
+	add	%sp, %l0,%sp		!	kick up sp ???
+L3:	ld	[%i2 + TBASEP], %l0	! %l0 = to_run->t_basep (to)
+	ld	[%i2 + TSIZE], %l2	! %l2 = to_run->t_size (count)
+	ld	[%i2 + TSAVE], %l1 	! %l1 = to_run->t_savearea (from)
+	add	%l0, 4, %l0		!! prepare for 1st decr
+	ba	L5			!! Go to the test
+	 tst	%l2			!! initial test for zero (in delay slot)
+
+L4:	! copy in loop
+	ld	[%l1], %l4		! Get *from
+	sub	%l1, 4, %l1		!! --from
+	st	%l4, [%l0]		! Store into *to
+	subcc	%l2, 1, %l2		!! --count
+L5:	bg	L4			!! if( count > 0 ) continue;
+	 sub	%l0, 4, %l0		!! --to (in delay slot)
+
+	! restore state of to_run
+	ld	[%i2 + TFRAME], %sp	! fp (%sp) = to_run->t_framep
+	! finally, delete to_run's t_savearea
+	ld	[%i2 + TSIZE],%o0	! %o0 = to_run->t_size
+	sll	%o0, 2, %o0		! scale size to bytes
+	ld	[%i2 + TSAVE], %l1	! %l1 = to_run->t_savearea
+	sub	%l1, %o0, %o0		!! get low address of savearea
+	add	%o0, 4, %o0		! ptr to savearea is argument reg
+	call	_swap_call_delete	! delete to_run->t_savearea
+	ld	[%i2 + TH], %i0		! return( to_run->th );
+	st	%g0, [%i2 + TSAVE]	!! set to_run->t_savearea = 0
+
+	ld	[%i2 + TFRAME],%sp	!! %sp (fp) = to_run->t_framep
+	ld	[%i2 + TSAVE_I6],%fp	!! %fp (prev fp) = to_run->t_save_i6
+	ld	[%i2 + TSAVE_I7],%i7	!! %i7 (rtn) = to_run->t_save_i7
+
+L6:	ret
+	 restore

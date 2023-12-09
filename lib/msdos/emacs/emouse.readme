@@ -1,0 +1,76 @@
+This is the mousy EMACS 5.6d for DOS installation archive.  To use,
+move to your root directory (cd c:\) and unpack using the
+-d option:  pkunzip -d emacs.zip
+
+The '-d' is critical to proper installation.
+
+This will create (if needed) the bin directory, the lib directory,
+and the lib\emacs subdirectory.  Init files (emacs.ini, dired.ini)
+and macros (move, shift, basic, etc) are placed in lib\emacs.
+
+Two versions of emacs are included.  emacs.exe works on all
+8086/8088 machines and higher (80x86).  emacs386.exe is smaller and
+faster but requires a 80386 or 80486 machine.  Rename as needed.
+
+In your autoexec.bat, add the following two lines:
+
+	SET TEMP4EMACS=C:\TEMP\
+	SET EMACSLIB=C:\LIB\EMACS\
+
+	
+The trailing slash is required.  Also, add c:\bin to your path.
+Finally, and this is *CRITICAL*, create the directory c:\temp.
+
+Now reboot (to invoke the changes in autoexec.bat).
+
+The DOS equivalent of .emacs_init is c:\lib\emacs\emacs.ini
+It must be written in binary mode (^X^Mbinary) as must all macro
+files.
+
+dired.bat is the DOS equivalent of dired in Unix.
+
+If a usable mouse is detected, then the mode line will say: 
+	PC EMACS (mouse)
+else it will say:
+	PC EMACS (no mouse)
+
+The left mouse button brings the text cursor to the same position
+as the mouse cursor and the mark is not touched.  The right button
+brings the text cursor AND the mark to the mouse cursor when
+pressed and brings the text cursor to the mouse cursor when
+released; use this button to sweep out a region.
+
+The screen attributes are controlled by the 'mode' variable,
+attrib.  The program SHOWSCRN displays all possible values of this
+variable on one screen.  Normal (white on black) is 7 (obtained
+with "^[7^X^Mattrib"), reverse video (black on white) is 112
+(obtained with "^[112^X^Mattrib").  30 is also popular.
+
+If you are using an old version of DOS (pre-5.0) then the dired
+macros may not work properly.  To fix it, get into emacs, go into
+binary mode (^X^Mbinary), read in dired (^X^R/lib/emacs/dired) and
+search for the string "dir/-w".  Change this to "dir" and save it.
+
+Remember that emacs is AT&T Proprietary and should not be released
+outside the company.  Questions about emacs should be directed
+first to the manual page available in exptools and then to the
+author of emacs, Warren Montgomery.  All I did was port it from one
+version of a DOS compiler to Borland C++ 3.1 and added in the simple
+mousing stuff.  I also added the extended keyboard stuff
+(CTRL-DOWN, etc).
+
+Mouse problems should be reported to me at ihlpf!bamford.  Other
+emacs problems should be reported to Warren Montgomery at
+ihlpf!warren.
+
+-- Harold Bamford
+
+PS:
+The pkunzip.exe file in this same directory is known to be safe.
+It is shareware, so if you use it, you are morally obligated to
+send in the contribution.  Do a pkunzip -? for complete help.
+
+This version of pkunzip is NOT the trojan version you may have
+heard about.
+
+-- HB

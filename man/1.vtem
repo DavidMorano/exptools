@@ -1,0 +1,264 @@
+
+
+
+     VVVVTTTTEEEEMMMM((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       VVVVTTTTEEEEMMMM((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  vtem - a curses based	VT102/VT100 emulator
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  _v_t_e_m [----rrrr] [----eeee] [----0000] _c_o_m_m_a_n_d
+
+	  _v_t_e_m [----VVVV]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _V_t_e_m runs on UNIX and	works by starting the _c_o_m_m_a_n_d in a
+	  sub-shell and	then translating input and output control and
+	  escape sequences.  Various input control sequences are
+	  converted into their VT100 equivalents to be passed to the
+	  command.  All	escape sequences output	by the command are
+	  treated as VT102/VT100 escape	sequences.  The	shell
+	  environment variable $$$$TTTTEEEERRRRMMMM is	set to vvvvtttt111100002222 for the sub-
+	  shell.  The ----0000 option	forces it to identify itself as	a
+	  vt100	terminal.
+
+	  If $$$$LLLLIIIINNNNEEEESSSS and	$$$$CCCCOOOOLLLLUUUUMMMMNNNNSSSS are set, they will be reset to	24 and
+	  80, respectively.
+
+	  Since	pipes are used for communication between the
+	  processes, the setting of echo and raw mode must be under
+	  user control.	 The ----eeee	option turns off echoing initially.
+	  The ----rrrr option	sets raw mode initially.  Both of these
+	  options may be toggled after starting	_v_t_e_m using the
+	  sequences listed below.  When	the _c_o_m_m_a_n_d is ccccuuuu or ddddkkkkccccuuuu,
+	  both of these	options	are appropriate.
+
+	  The ----VVVV option	prints the version of _v_t_e_m and exits.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+	  The command
+	       vtem -re	cu _h_o_s_t
+	  will start a _c_u session connected to the site	_h_o_s_t.
+
+     IIIINNNNPPPPUUUUTTTT SSSSEEEEQQQQUUUUEEEENNNNCCCCEEEESSSS
+	VVVVtttteeeemmmm CCCCoooonnnnttttrrrroooollll SSSSeeeeqqqquuuueeeennnncccceeeessss
+	  The following	control	sequences control the operation	of
+	  _v_t_e_m.
+
+	  ^A c	    Set	cooked mode
+
+	  ^A e	    Toggle echo	mode
+
+	  ^A r	    Set	raw mode
+
+	  ^A ^L	    Redraw the screen
+
+	  ^A ^A	    Transmit a ^A
+
+
+
+
+     Page 1					     (printed 3/26/91)
+
+
+
+
+
+
+     VVVVTTTTEEEEMMMM((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       VVVVTTTTEEEEMMMM((((1111))))
+
+
+
+	VVVVTTTT111100000000 NNNNoooorrrrmmmmaaaallll MMMMooooddddeeee FFFFuuuunnnnccccttttiiiioooonnnn KKKKeeeeyyyyssss
+	  ^P 1	    Transmit PF1
+
+	  ^P 2	    Transmit PF2
+
+	  ^P 3	    Transmit PF3
+
+	  ^P 4	    Transmit PF4
+
+	  ^P u	    Transmit Up	arrow
+
+	  ^P d	    Transmit Down arrow
+
+	  ^P l	    Transmit Left arrow
+
+	  ^P r	    Transmit Right arrow
+
+	  ^P ^P	    Transmit a ^P
+
+	AAAANNNNSSSSIIII AAAApppppppplllliiiiccccaaaattttiiiioooonnnn MMMMooooddddeeee FFFFuuuunnnnccccttttiiiioooonnnn KKKKeeeeyyyyssss
+	  The following	control	sequences transmit what	is sent	by the
+	  keypad keys when ANSI	Application Mode is set.
+
+	  ^F 1	    Transmit ANSI Application mode keypad 1
+
+	  ^F 2	    Transmit ANSI Application mode keypad 2
+
+	  ^F 3	    Transmit ANSI Application mode keypad 3
+
+	  ^F 4	    Transmit ANSI Application mode keypad 4
+
+	  ^F 5	    Transmit ANSI Application mode keypad 5
+
+	  ^F 6	    Transmit ANSI Application mode keypad 6
+
+	  ^F 7	    Transmit ANSI Application mode keypad 7
+
+	  ^F 8	    Transmit ANSI Application mode keypad 8
+
+	  ^F 9	    Transmit ANSI Application mode keypad 9
+
+	  ^F 0	    Transmit ANSI Application mode keypad 0
+
+	  ^F -	    Transmit ANSI Application mode keypad -
+
+	  ^F ,	    Transmit ANSI Application mode keypad ,
+
+	  ^F .	    Transmit ANSI Application mode keypad .
+
+	  ^F ^M	    Transmit ANSI Application mode keypad Return
+
+	  ^F u	    Transmit ANSI Application Up arrow
+
+
+
+     Page 2					     (printed 3/26/91)
+
+
+
+
+
+
+     VVVVTTTTEEEEMMMM((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       VVVVTTTTEEEEMMMM((((1111))))
+
+
+
+	  ^F d	    Transmit ANSI Application Down arrow
+
+	  ^F l	    Transmit ANSI Application Left arrow
+
+	  ^F r	    Transmit ANSI Application Right arrow
+
+	  ^F ^F	    Transmit a ^F
+
+	VVVVTTTT55552222 MMMMooooddddeeee FFFFuuuunnnnccccttttiiiioooonnnn KKKKeeeeyyyyssss
+	  The following	control	sequences transmit what	is sent	by the
+	  function keys	when VT52 Mode is set.
+
+	  ^V ^V	    Transmit a ^V
+
+	  ^V u	    Transmit VT52 Up arrow
+
+	  ^V d	    Transmit VT52 Down arrow
+
+	  ^V l	    Transmit VT52 Left arrow
+
+	  ^V r	    Transmit VT52 Right	arrow
+
+	  ^V A	    Transmit VT52 PF 1
+
+	  ^V B	    Transmit VT52 PF 2
+
+	  ^V C	    Transmit VT52 PF 3
+
+	  ^V D	    Transmit VT52 PF 4
+
+	VVVVTTTT55552222 AAAApppppppplllliiiiccccaaaattttiiiioooonnnn MMMMooooddddeeee FFFFuuuunnnnccccttttiiiioooonnnn KKKKeeeeyyyyssss
+	  The following	control	sequences transmit what	is sent	by the
+	  keypad keys when VT52	Application Mode is set.
+
+	  ^V 1	    Transmit VT52 Application mode keypad 1
+
+	  ^V 2	    Transmit VT52 Application mode keypad 2
+
+	  ^V 3	    Transmit VT52 Application mode keypad 3
+
+	  ^V 4	    Transmit VT52 Application mode keypad 4
+
+	  ^V 5	    Transmit VT52 Application mode keypad 5
+
+	  ^V 6	    Transmit VT52 Application mode keypad 6
+
+	  ^V 7	    Transmit VT52 Application mode keypad 7
+
+	  ^V 8	    Transmit VT52 Application mode keypad 8
+
+	  ^V 9	    Transmit VT52 Application mode keypad 9
+
+
+
+
+     Page 3					     (printed 3/26/91)
+
+
+
+
+
+
+     VVVVTTTTEEEEMMMM((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	       VVVVTTTTEEEEMMMM((((1111))))
+
+
+
+	  ^V 0	    Transmit VT52 Application mode keypad 0
+
+	  ^V -	    Transmit VT52 Application mode keypad -
+
+	  ^V ,	    Transmit VT52 Application mode keypad ,
+
+	  ^V .	    Transmit VT52 Application mode keypad .
+
+	  ^V ^M	    Transmit VT52 Application mode keypad Return
+
+     LLLLIIIIMMMMIIIITTTTAAAATTTTIIIIOOOONNNNSSSS
+	  No soft scroll.
+
+	  132 width not	supported.
+
+	  Terminals smaller than 24x80 are not supported.
+
+	  No double height or double width lines.
+
+	  No printer support.
+
+	  No SETUP mode.
+
+	  No LEDs.
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+	  Original vtem	for 4.2	BSD:
+	  Leif Samuelsson
+	  leif@erisun.UUCP  or	..enea!erix!erisun!leif
+
+	  Completely rewritten by:
+	  Tony Hansen
+	  pegasus!hansen or hansen@pegasus.att.com
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Tony Hansen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4					     (printed 3/26/91)
+
+
+

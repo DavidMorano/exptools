@@ -1,0 +1,198 @@
+
+
+
+     PPPPAAAARRRREEEENNNN((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             PPPPAAAARRRREEEENNNN((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          paren - C and C++ syntax checker
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          paren [-abCdfv] [-t tabsize] file ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Paren helps to find many common errors in C and C++ language
+          programs that are not flagged by the C compiler (cc), static
+          analyzer (lint), nor the C++ translator (CC).
+
+          These include:
+
+              Comparison taking precedence over assignment
+
+              Comparison taking precedence over bitwise operators
+
+              Assignment in a conditional context
+
+              Bitwise-or in a conditional context
+
+              Inappropriate operator usage
+
+              Unusual operator adjacency
+
+              Extra semicolons after else if for and while
+
+              Dangling else
+
+              Nesting comments
+
+              EOF before end of comments or strings and
+
+              Breakless case statements
+
+              Use of =op instead of op=
+
+              String needing \ before newline
+
+          These are not flagged as errors by cc lint nor CC because
+          they are allowed in C and C++, and can be intentional.
+
+          The -a (assignment) option will flag possible errors caused
+          by assignments in a conditional context (if, while, and
+          for).  For example:
+
+               if (errno = EDOM)
+                    exception();
+
+          Assignment in a while or for is flagged only when the -v
+          (verbose) option is also given.
+
+
+
+
+     Page 1                                          (printed 7/10/92)
+
+
+
+
+
+
+     PPPPAAAARRRREEEENNNN((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             PPPPAAAARRRREEEENNNN((((1111))))
+
+
+
+          The -b option detects breakless case statements.  The
+          keywords break continue goto return and exit all count as a
+          'break'.  This option needs some improvement.
+
+          The -C (C++) option should be used when examining C++ files.
+
+          The -d (debug) option is available only if paren is compiled
+          with -DDEBUG.  This option is used to aid the developer of
+          paren in debugging.
+
+          The -f (fortran) option recognizes the comparison operators
+          LT LE LEQ GT GE GEQ EQ NEQ, the logical operators OR and
+          AND, and the keywords CASE DO ELSE IF FOR SWITCH WHILE.
+          Additionally, the keywords BEGIN (begin) and END (end) are
+          interpreted to be { and } respectively.
+
+          The -t tabsize option defines the number of characters per
+          tabstop.  The default tabsize is 8.
+
+          The -v (verbose) option forces some possible errors to be
+          flagged even when they do not occur in parenthesis.  These
+          are less likely to be errors so the default is to not flag
+          them.
+
+          Paren is fast so it could be called from lint without great
+          penalty.  If you are examining a large volume of code try:
+
+              find directory -name '*.[ch]' -a -print |
+                  xargs paren [-abCfv] [-t tabsize]
+
+          Paren will also work on Concurrent C and Concurrent C++
+          programs but this capability has not been thoroughly tested.
+
+          It should be possible to modify paren so that it will work
+          on B language programs.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          lint(1)
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          Self explanatory.
+
+     BBBBUUUUGGGGSSSS
+          Some possible errors are not detected, in particular:
+
+               x = (struct X *) p + 1;
+
+          may need to be:
+
+               x = (struct X *)(p + 1);
+
+          and
+
+
+
+     Page 2                                          (printed 7/10/92)
+
+
+
+
+
+
+     PPPPAAAARRRREEEENNNN((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             PPPPAAAARRRREEEENNNN((((1111))))
+
+
+
+               a = i << j + k;
+
+          may need to be:
+
+               a = (i << j) + k;
+
+          Programs with gross syntactic errors may cause paren to
+          fail.
+
+          Since preprocessor expansion is not done some possible
+          errors won't be detected, while others are detected that the
+          preprocessor would remove.
+
+          The error messages can be misleading, and the line printed
+          may not be the one the error actually occurred on.
+
+          Paren does not know about the ?: operator.
+
+          Paren should flag 'xy' as a non-portable integer.
+
+          Paren can't fix your programs.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Lawrence V. Cipriani - AT&T Bell Laboratories
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 7/10/92)
+
+
+

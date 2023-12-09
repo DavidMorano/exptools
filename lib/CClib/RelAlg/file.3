@@ -1,0 +1,44 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/file/s.file.3"
+.\"
+.PH "'FILE(3SB)'SBLIB C++ Library'FILE(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+create_file, fileTrace - file manipulations
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <sblib.h>
+
+.SO file.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The \*(Cf function can be used to create a file when the file does not
+need to be opened.  The \fIpath\fP argument is a NULL terminated character
+string containing a UNIX pathname.  The \*(Cf function creates the file using
+the O_RDWR, O_CREAT and O_EXCL flags (see open(2)).  If \fIpath\fP already
+exists or cannot be created, \*(Cf returns FALSE.  If it succeeds in creating
+the file, it returns TRUE.  The \*(Cf function uses the \fBopen(2)\fP system 
+call to create the file, but it closes the resulting file descriptor.
+.P
+The \*(Ft function does an fstat(2) on each of a process' 20 file
+descriptors to determine if the file descriptors are associated with
+an open file.
+If a file descriptor associated with an open file, a trace message is printed.
+This trace message contains the file descriptor, device, inode and raw device
+numbers.
+After all of the file descriptors have been examined,
+a trace error message is printed containing the \fItag\fP
+argument followed by a string of C's and O's.  A 'C' indicates that
+the file descriptor, associated with the C's position in the string, is closed.
+An 'O' indicates that the file descriptor, associated with the O's position in
+the string, is open.
+.LI "\fBSEE ALSO\fP"
+.br
+open(2), creat(2), fstat(2)
+.LE

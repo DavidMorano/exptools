@@ -1,0 +1,173 @@
+#!/bin/sh
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Extract rule dependencies from a PROLOG source file
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    prolog  [-F char] [-p]  [-i file_of_files] [source_files]
+#
+# This program writes to stdout lines of the form:
+#
+#	rule1 rule2
+#
+# The argument to this script should be PROLOG lanuage
+# source files.
+#
+##########################################################
+PGM=`basename $0`
+
+FORHELP="\n\n(For more help, read the manual page then contact Bob Parnass)\n"
+USAGE="### error ### ${PGM}\nUSAGE:  ${PGM}  [-p] [-i file_of_files] [-F char]\n\t\t[prolog_source_files] ${FORHELP}"
+
+TMP=/usr/tmp
+JUNKFILE=$TMP/PC$$.c
+CFILE=$TMP/PCb$$
+CSCOPEFILE=$TMP/PCc$$
+ALLFILES=$TMP/PCd$$
+TMPF1=$TMP/PCe$$
+
+
+TMPFILES="${CSCOPEFILE} ${JUNKFILE} ${CFILE} ${ALLFILES} ${TMPF1}"
+
+# see if a public version of the newform program exists
+test -x /usr/bin/newform
+if [ $? -eq 0 ]
+then
+	# use public version
+	NEWFORM=/usr/bin/newform
+else
+	# use private version
+	NEWFORM=$TOOLS/lib/comment/newform
+fi
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# parse command line arguments 
+set -- `getopt i:F:p $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	IFLAG=
+	FFLAG=
+	PFLAG=
+	for i in $*
+	do
+		case $i in
+		-p)
+			# print params
+			PFLAG="-p"
+			shift 1;;
+		-i)
+			# file of files
+			IFLAG="-I"
+			FILEOFFILES=$2
+			shift 2;;
+		-F)
+			# change interfield separator character
+			FFLAG="-F $2"
+			shift 2;;
+		'-?')
+			echo ${USAGE} 1>&2
+			exit
+			;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+# input file of fcn calls was specified
+if [ "$IFLAG" ]
+then
+	# -i argument specified on command line
+	# extract name of file of files
+
+	> "${ALLFILES}"
+
+	# for each file in file of files
+	for file in `cat $FILEOFFILES`
+	do
+		cat $file >> "${ALLFILES}"
+	done
+else
+	if [ $# -eq 0 ]
+		then
+		# assume source file is piped 
+		cat > "${ALLFILES}"
+
+	else
+		# files are specified on command line
+		> "${ALLFILES}"
+		while [ $# -gt 0 ]
+		do
+			INFILE=${1}
+			test -r "${INFILE}"
+			if [ $? -eq 0 ]
+			then
+				cat "${INFILE}" >> "${ALLFILES}"
+			else
+				echo "### error ### ${PGM}: Cannot read file ${INFILE}." 1>&2
+				echo "${USAGE}" 1>&2
+				rm -f ${TMPFILES}
+				exit 1
+			fi
+			shift
+		done
+	fi
+fi
+
+# cull out lines of interest
+# convert tabs to spaces
+# then delete all spaces
+${NEWFORM} -i $ALLFILES \
+	| sed -e 's/%.*//' \
+	| sed -e 's/ //g' \
+	> ${JUNKFILE}
+
+
+sed -e 's/\.$/;}/g' \
+	-e 's/\-\-\>/\{/g' \
+	-e 's/\[.*\]//g' \
+	-e 's/\=/,/g' \
+	-e 's/:\-/\{/g' ${JUNKFILE} > ${CFILE}
+
+# convert things like f(a, b(z), c) { to
+# f(a,b,z,c){
+
+sed -e '/{/s/(/%/' \
+	-e '/{/s/){/={/' \
+	-e '/{/s/(/,/g' \
+	-e '/{/s/)/,/g' \
+	-e 's/%/(/' \
+	-e 's/=/)/' ${CFILE}  > ${TMPF1}
+
+#cat $CFILE 2>&1 # kluge
+cscope -b -f ${CSCOPEFILE} ${TMPF1}  > /dev/null 2>&1
+EXITCODE=$?
+
+if [ $EXITCODE -eq 0 ]
+then
+	# extract rule names
+	ccalls $FFLAG $PFLAG ${CSCOPEFILE}  \
+		| sed -e 's/\{.*//'
+	EXITCODE=$?
+else
+	echo "### error ### ${PGM}:  cscope failed" 1>&2
+fi
+
+rm -f "${TMPFILES}"
+
+exit $EXITCODE

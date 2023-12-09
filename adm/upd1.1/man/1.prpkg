@@ -1,0 +1,132 @@
+
+
+
+     PPPPRRRRPPPPKKKKGGGG((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))        PPPPRRRRPPPPKKKKGGGG((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          prpkg - EXPTOOLS print package permissions in readable form
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          pppprrrrppppkkkkgggg [ ----ffffiiiirrrrvvvv ] ppppkkkkggggiiiidddd ............
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _p_r_p_k_g displays the paths that may be updated and the
+          services that may be requested by the given ppppkkkkggggiiiiddddssss.... The
+          options are:
+
+          ----ffff        (filenames) Prints only filenames belonging to a
+                    package.
+
+          ----iiii        (input) Reads standard input for the list of
+                    packages.
+
+          ----rrrr        (recursive) Recursively descends the paths
+                    belonging to each package, printing each path name
+                    encountered.
+
+          ----vvvv        (verbose) A more human-readable output format is
+                    used.
+
+          Verbose (----vvvv) output is meant to be self explanatory.  Other
+          options are used by administrative scripts to generate lists
+          of files on packages.  If no options are chosen, each line
+          is of the form
+                    pkgid:operation:type:path
+
+          where
+
+          pkgid          is the package ID,
+
+          operation      is one of
+
+                         ccccrrrreeeeaaaatttteeee    Indicates create and delete
+                                   permissions on a path.
+
+                         ddddeeeennnnyyyy      The pkgid may not affect the given
+                                   path at all.
+
+                         sssseeeerrrrvvvviiiicccceeee   Services are operations that may be
+                                   requested.
+
+                         uuuuppppddddaaaatttteeee    Indicates a path may be updated if
+                                   it is present (but not created or
+                                   deleted).
+
+          type           is specific to an operation (a file type or
+                         service name),
+
+
+
+
+     Page 1                                          (printed 3/19/91)
+
+
+
+
+
+
+     PPPPRRRRPPPPKKKKGGGG((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))        PPPPRRRRPPPPKKKKGGGG((((1111))))
+
+
+
+          path           is the path the operation applies to.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Terse output looks like this:
+
+               $ prpkg vsh
+               vsh:service:update:
+               vsh:service:shell:
+               vsh:service:build:
+               vsh:service:delete:
+               vsh:create:file:bin/vsh
+               vsh:create:file:man/1.vsh
+               vsh:create:directory:lib/vsh
+               vsh:create:file:lib/toolnews/vsh
+
+          Verbose output for the same pkgid looks like this:
+
+               $ prpkg -v vsh
+               pkgid: vsh
+               remote execution allowed
+               rmake jobs can be sent
+               file bin/vsh: permission to create/delete and update
+               file man/1.vsh: permission to create/delete and update
+               directory lib/vsh: permission to create/delete and update files
+               file lib/toolnews/vsh: permission to create/delete and update
+
+          File name output for the same pkgid looks like this:
+
+               $ prpkg -f vsh
+               bin/vsh
+               man/1.vsh
+               lib/vsh
+               lib/toolnews/vsh
+
+          Recursive file name output for the same pkgid looks like
+          this:
+
+               $ prpkg -r vsh
+               bin/vsh
+               man/1.vsh
+               lib/vsh
+               lib/vsh/genhelp
+               lib/vsh/rmhelp
+               lib/vsh/showhelp
+
+          Note that files that do not exist are not output.
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 3/19/91)
+
+
+

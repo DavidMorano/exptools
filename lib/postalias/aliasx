@@ -1,0 +1,1253 @@
+#!/bin/ksh
+# EMACS_MODES: tabstop=4
+
+###################################################################
+##  THIS SCRIPT RECURSIVELY EXPANDS POST UPAS ALIASES, CONVERTING
+##  THEM TO A MAILRC FORMAT.  IT USES POST -W FOR THE QUERY.
+##  IT CAN BE USED TO EXPAND ALIAS GROUPS TO POST ENTRIES, NAME,
+##  EMAIL, ETC. AND IS USEFUL IN DEBUGGING SYSTEM UPAS ALIASES.
+##
+##  ALIASX is used by the EXPTOOL 'postalias'
+##
+##	REQUIRES: POST 4.0(and up)/UPAS alias files,
+##		cat cd comm file cgrep grep mkdir nawk post pq rm sed sort tr uname wc
+##		print set rmdir
+##
+##  G. R. Lee  5/92, 1/95
+###################################################################
+
+# version 2.0 (grl, 1/95):
+#	added support for multiple aliases per line
+#	-l looks at Src 1st, then converted instead of just converted
+#	added counts and much better error checking diagnostics/audit
+#	use getopts to process options
+#	now ignore entries less than 3 significant characters
+#	order of names is maintained (by reversing order of MAILRC)
+
+# 3.0g (grl 9/95):
+#	Provide support for SENDMAIL mail aliases:
+#		Alias name in file is optional not required
+#		Pass through (untouched) lines starting : | or /
+#		Treat f.m.last@att.com as NAME not EMAIL
+#
+#	Minimize embedded '$VARS' in big nawk (for an old shell on a 3B2)
+#
+# 3.0h (grl 10/95)
+# Work around Sun post bug that allows:
+#	"post -w ema=grl@ihlpf"  to be passed through without lookup
+#	no longer add ema= if an '@' exists in string
+#	This affected the format option of postalias - Owen Beckley
+
+# 3.1 (grl 7/96)
+# Added full GLOBALQUAL capability (use all GLOBALQUALs found)
+# Added "set OPTION expand=on" capability
+# Made LOCALQUAL apply to "qualifier-only" entries
+
+SELF=aliasx
+VERSION="@(#) aliasx version 3.1 (7/26/96)"
+
+USAGE="
+Usage: $SELF [Format_option] [Input_option] [Misc_option] name [name ...]
+
+                 $VERSION
+
+Expand and error-check POST4.0+ mail-alias files.
+Only one option of each type should be given. If more than
+one of any type is given, only the last will apply.
+
+FORMAT OPTIONS:
+	-f)  Expand to POST Entry   [DEFAULT]
+	-n)  Expand to Name (last, first i - sorted)
+	-N)  Expand to POST Name/loc=loc (unsorted)
+	-o)  Expand to POST Name, Org, and Loc (unsorted)
+	-O)  Expand to Org Chart format Name, Phone Room, and Email (unsorted)
+	-e)  Expand to Email (forces -x)
+	-F  'fmt')  Flexible format (see -o option on post/pq)
+	-q)  Quick (column output of names)
+	-m)  Output unexpanded alias in MAILRC-File Format
+	-a) Audit an alias (show errors/warnings only, not expanded alias)
+
+INPUT OPTIONS:
+	-l)  Local - Search local aliases in \$HOME/lib/names first.
+	-c)  Current Dir - Search aliases in current directory first.
+
+MISC OPTIONS:
+	-x) Exclude expansion of hardcoded email addresses
+	-X) Exclude expansion of non-name entries (loc=xyz)
+	-r) Exclude recursion of embedded aliases (unless delete notation used)
+	-R) Exclude recursion of embedded aliases (always)
+	-h) Print help message
+	-d) Show the deleted names only (- name feature)
+	-s) Suppress informational/commentary output to std error (except errors/warnings)
+	-S) Suppress commentary output to std error (except errors/warnings/info)
+	-?) Same as -h
+	-D) Debug option
+	-V) Print version
+"
+
+ENV=
+# THIS SCRIPT REQUIRES KSH
+if [ "$RANDOM" = "$RANDOM" ]; then
+	exec ksh $0 "${@:-}"
+fi
+
+HOME=~
+
+if [ -z "$PA_ERR" ]; then
+
+	## NOT CALLED FROM POSTALIAS - SET PATH FOR ALL MACHINES
+	unalias read export alias
+	TOOLS=~exptools
+	export PATH ENV
+	ENV=
+
+	# ADD COMMON BINS TO FRONT OF PATH
+PATH="/usr/5bin:/bin:/usr/ucb:/usr/bin:/usr/lbin:/usr/add-on/local/bin:/opt/bin:/usr/add-on/post/bin:/usr/local/bin:/opt/local/bin:$TOOLS/bin:/usr/add-on/unison/bin:/opt/unison/bin:/opt/mail/bin:/usr/etc:$PATH"
+
+	##
+	## UNALIAS REMAINING USER-DEFINED ALIASES
+	##	(setting PATH above unaliases any tracked aliases)
+	alias | while read line; do
+		cmd=${line%%=*}
+		case $cmd in
+		autoload|functions|hash|history|integer|nohup|r|type)	;;
+		*)	unalias $cmd;;
+		esac
+	done
+
+	unset CMDS cmd cmdloc line
+
+	set -h
+
+	ALIASX=$(whence $SELF)
+fi
+
+# SET LOCATION(s) OF OFFICIAL ALIASES ($ALIAS_DIRS)
+# NOTE USRC AND ULST ARE SET BY POSTALIAS
+case "${USRC:-}" in
+PA_NULL)	;;	# NO OFFICIAL
+
+*)	: ${USRC:=/usr/lib/upas/list/Src}	# SOURCE (UNEXPANDED ALIAS) DIRECTORY
+	: ${ULST:=/usr/lib/upas/list}		# EXPANDED ALIAS DIRECTORY
+	: ${LOC:=${LIBNMS:=$HOME/lib/names}}
+	if [ -d $USRC ]; then
+		ALIAS_DIRS="$USRC"
+	fi
+	if [ -d $ULST ]; then
+		ALIAS_DIRS="$ALIAS_DIRS $ULST"
+	fi
+	;;
+esac
+
+
+uname -sn | read OSNAME MACH
+
+# SENDMAIL=0 for UPAS, 1 for SENDMAIL/EMS Mail
+case "${PA_ALIASTYPE:-}" in
+UPAS)	SENDMAIL=0;;
+SENDMAIL)	SENDMAIL=1;;
+*)	case ${ULST:-} in
+	*/upas*|*lib/names/Src)	SENDMAIL=0;;
+	*/opt/mail/lib/include*)	SENDMAIL=1;;
+	*)	case $OSNAME in
+		uts)	SENDMAIL=0;;
+		*)	SENDMAIL=1;;
+		esac
+		;;
+	esac
+	;;
+esac
+
+: ${PWD:=`pwd`}				# CURRENT DIRECTORY
+
+cmd='post -w ${Alias}'		# EXPAND TO FULL ENTRY
+filter=''					# MAINTAIN ORDER OF NAMES
+
+AUDIT=n	# MANUAL AUDIT
+audit=n	# AUTO AUDIT
+suppress=0	# DONT suppress any output (2: suppress comments  1: suppress com&info)
+suppema=0
+lookup=y	# ASSUME POST LOOKUP
+
+# PROCESS ARGUMENTS
+while getopts :clmqenNoOfaEF:xXrRVvDSsdh arg; do
+
+	case ${arg:-} in
+
+	c)	ALIAS_DIRS="$PWD $ALIAS_DIRS"
+		ALIASLOC=c
+		;;
+	l)	if [ -d "$LOC" ]; then
+			ALIAS_DIRS="$LOC $ALIAS_DIRS"
+			if [ -d "$LOC/Src" ]; then
+				ALIAS_DIRS="$LOC/Src $ALIAS_DIRS"
+			fi
+		fi
+		ALIASLOC=l
+		;;
+
+	m)	# OUTPUT MAILRC FILE
+		fmt=""
+		cmd='cat $MAILRC'
+		filter=''
+		lookup=n
+		;;
+
+	q)	# QUICK FORMAT (NO POST)
+		fmt=""
+		cmd='quickfunc'
+		filter=''
+		look_email=0
+		lookup=n
+		darg="$darg -q"
+		;;	
+
+	e)	# FUNCTION - EXPAND TO EMAIL
+		fmt="%ema (%^name)"
+		cmd='post -w -o"$fmt" ${Alias}'
+		filter='outemail'
+		: ${look_email:=0}
+		darg="$darg -e"
+		;;
+
+	n) # EXPAND TO NAME
+		fmt="%^pn"
+		cmd='post -w -o"$fmt" ${Alias}'
+		filter='sort -u'
+		darg="$darg -n"
+		;;	
+
+	N)	# EXPAND TO POST NAME
+		fmt="%name/loc=%loc"
+		cmd='post -w -o"$fmt" ${Alias}'
+		filter=''
+		darg="$darg -N"
+		;;
+
+	o) # EXPAND TO POST NAME
+		fmt="%name/loc=%loc/org=%org"
+		cmd='post -w -o"$fmt" ${Alias}'
+		darg="$darg -o"
+		filter=''
+		;;	
+
+	O)	# EXPAND TO ORG CHART
+		fmt="%^last,%+.1first%+.1middle (%^first);%exch-%ext;%+room;%ema"
+		cmd='post -w -o"$fmt" ${Alias}'
+		darg="$darg -O"
+		filter='nawk -F\; '\''{printf "%-27s %-10s %-8s %-12s\n",$1,$2,$3,$4}'\'''
+		;;	
+
+	f)	# EXPAND TO FULL ENTRY
+		fmt=""
+		darg="$darg -f"
+		cmd='post -w ${Alias}'
+		filter=''
+		;;
+
+	a)	# EXPAND TO FULL ENTRY
+		fmt=""
+		cmd='post -w ${Alias}'
+		filter=''
+		AUDIT=y			# toss std out so only warnings/errors show
+		;;
+
+	F) # FLEXIBLE FORMAT
+		fmt="$OPTARG"
+		darg="$darg -F'$fmt'"
+		if [ -z "$fmt" ]; then
+			print - "$SELF: ERROR: Format string cannot be null">&2
+			exit 1
+		fi
+		cmd='post -w -o"${fmt}" ${Alias}'
+		filter=''
+		;;
+
+	x) look_email=0;;		# DO NOT LOOK UP EMAIL ADDRS (JUST OUTPUT)
+	X) look_quals=0;;		# DO NOT LOOK UP NON-NAME ENTS (JUST OUTPUT)
+	r) recurs=0;;			# DO NOT SEARCH RECURSIVLY (UNLESS DEL IS USED)
+	R) RECURS=0; recurs=0;;			# DO NOT SEARCH RECURSIVLY (EVER)
+	V|v)	print - "$VERSION"; exit;;
+	D)	PA_DEBUG=1; PA_SETS=1;;
+	S)	suppress=1; if [ ! -t 1 ]; then suppema=1; fi;;
+	s)	suppress=2;;
+	E)	SENDMAIL=1;;
+	d)	deleteonly=y;;
+	h)	print - "\n$USAGE"; exit;;
+	:)	print - "\nOption [-$OPTARG] requires an argument\n$USAGE">&2; exit 1;;
+	\?)	print - "\nBad option [-$OPTARG]:\t\tUse -h for help\n">&2; exit 1;;
+	esac
+done
+shift OPTIND-1
+
+outemail()
+{
+	# OUTPUT IN EMAIL FORMAT
+	# THIS ONE IS A FUNCTION BECAUSE IT IS MORE COMPLEX THAN THE OTHER FORMATS
+
+	sed -e "s/^ (/$SELF: post: no email in POST for:	(/" -e "s/ (.*//" > $tmpfile2
+	# COUNT NUMBER OF RECORDS WITH MISSING EMAIL
+	num_nema=`grep -c "^$SELF: " $tmpfile2`
+	if [ "$num_nema" = 0 ]; then
+		cat $tmpfile2
+	else
+		# SEPARATE MISSING ENTRIES WITH WARNING TO STD ERROR
+		grep -v "^$SELF: " $tmpfile2
+		if [ "$suppema" = 0 ]; then
+			print - '' >&2
+			grep "^$SELF: " $tmpfile2 >&2
+		fi
+	fi
+}
+
+quickfunc()
+{
+	# FORMAT NAME ONLY IN COLUMNS
+	cat $ALI_LR $QUALS $NAMES $EMAILS |
+	cgrep -Fv -f $OMIT |
+	nawk '{
+		sub( /\/.*/, "" )
+		num=gsub("\\.", ".")
+		if( num == 1 )	sub("\\.", "..")
+		print
+	}' - |
+	sort -t. +2 -3 +0 -2 | 
+	sed 's/\.\./\./' | pr -l99999 -w80 -t ${COLUMN:--4}
+}
+
+
+case ${PA_SETS:=0} in
+1)	set >&2;;
+esac
+case ${PA_DEBUG:=0} in
+1)	set -x;;
+esac
+set +u
+
+: ${look_email:=1}	# LOOKUP EMAIL ADDRS IN POST
+: ${look_quals:=1}	# LOOKUP QUALS-ONLY IN POST
+: ${RECURS:=1}		# EXPAND RECURSIVELY
+: ${recurs:=1}		# EXPAND RECURSIVELY
+
+# FORMAT INPUT ALIASES
+for a in ${*:-}; do
+	a=${a##$MACH!}
+	a=${a##!}
+	ALIAS="${ALIAS:+$ALIAS
+}$a"
+done
+
+Alias="$ALIAS"	# The requested ALIAS
+
+case ${ALIAS:-} in
+*[a-zA-Z]*)	;;
+*)	print - "\nERROR[$SELF]: ALIAS must be specified">&2
+	print - "$USAGE">&2; exit 1;;
+esac
+
+# CD TO FIRST DIRECTORY IN LIST
+print - "$ALIAS_DIRS" | read FIRST_DIR rest
+if [ ! -d "$FIRST_DIR" ]; then
+	print - "\nERROR[$SELF]: Cannot access any ALIAS directories">&2
+	exit 1
+fi
+
+if [ "$suppress" -lt 1 -a "$ALIASLOC" != "l" ]; then
+	print - "Searching: $ALIAS_DIRS">&2
+fi
+
+: ${PWD:=`pwd`}
+TDIR=/tmp/ax$$
+mkdir $TDIR
+
+MAILRC=$TDIR/MAILRC; export MAILRC
+
+OMIT=$TDIR/OMIT			# ALIASES TO OMIT
+OMIT_EX=$TDIR/OMIT_EX		# NAMES TO OMIT, LATER EXPANDED
+OMIT_RECURS=$TDIR/OMIT_REC	# FOR -R ONLY
+> $OMIT
+> $OMIT_EX
+omit=omit			# TMP OMIT MAILALIAS (RELATIVE TO TDIR)
+
+# TEMP FILES
+nums=$TDIR/nums			# RAW COUNTS OF ALIASES
+cntfile=$TDIR/cntfile	# FORMATTED COUNTS OF ALIASES
+cmdout=$TDIR/cmdout
+cmderr=$TDIR/cmderr
+tmpfile=$TDIR/tmpfile
+tmpfile2=$TDIR/tmpfile2
+HAVE=$TDIR/HAVE		
+WARN=$TDIR/WARN		# WARNING MESSAGES
+ERRS=$TDIR/ERRS		# ERROR MESSAGES
+GQUAL=$TDIR/GQUAL	# GLOBAL QUALIFER (FILE)
+
+NAMES=$TDIR/NAMES	# NAMES
+ALI_LR=$TDIR/ALI_LR	# ALIASES LOCAL AND REMOTE
+EMAILS=$TDIR/EMAILS	# EMAIL
+QUALS=$TDIR/QUALS	# QUALIFIER ONLY
+PASS=$TDIR/PASS		# PASS SOME LINES THROUGH UNPARSED (SENDMAIL)
+
+> $NAMES
+> $EMAILS
+> $ALI_LR
+> $QUALS
+
+unset POSTQUAL POSTETC
+if [ -n "$ALIASQUAL" ]; then
+	export POSTQUAL=$ALIASQUAL
+fi
+
+trap "cd /; rm -f ${TDIR}/*; rmdir $TDIR 2>/dev/null; exit" 0 1 2 13 15
+> $MAILRC	# TEMPORARY MAILRC FILE
+> $HAVE		# LIST OF ALIAS FILES THAT HAVE BEEN PROCESSED
+> $nums
+
+typeset -i loopcnt=0
+
+# CD to OFC for file expansion of aliases '*name*'
+if [ -d "$USRC" ]; then
+	cd $USRC
+else
+	cd $FIRST_DIR
+fi
+
+# LOOP UNTIL ALL ALIASES ARE EXPANDED
+while :; do
+
+	loopcnt=$loopcnt+1
+
+	# IDENTIFY AND PROCESS NEW ALIAS FILES
+	# THROW AWAY (AND WARN OF) NAMES THAT DON'T EXIST
+	if [ -s $HAVE ]; then
+		# NEW ALIASES
+		ALIAS=`print - "$ALIAS" | fgrep -xv -f $HAVE | sort -u`
+	fi
+
+	# FIND FULL PATHS TO ALIASES - TMP1=FULL PATH  TMP2=REL PATH
+	TMP1=''; TMP2=''
+	for alias in ${ALIAS:-}; do
+		found=0
+		for adir in $ALIAS_DIRS; do
+			if [ -s "$adir/$alias" ]; then
+				if [ "$recurs" = 1 -a "$suppress" -lt 2 ]; then
+					print - "# ### Included: $adir/$alias">&2
+				fi
+				TMP1="${TMP1:+$TMP1
+}$adir/$alias"
+				TMP2="${TMP2:+$TMP2
+}$alias"
+				found=1
+				break 1
+			else
+				if [ -r "$adir/$alias" ]; then
+					print - "$SELF: WARNING: null alias file  [$adir/$alias]">&2
+				fi
+			fi
+		done
+
+		if [ $found = 0 ]; then
+			print - "$SELF: WARNING: cannot access alias file [$alias]">&2
+		fi
+	done
+
+	# QUIT HERE IF NO MORE ALIASES TO PROCESS
+	if [ -z "$TMP1" ]; then
+		break
+	fi
+
+	ALIAS="$TMP1"
+
+	if [ "$recurs" = 0 ]; then
+		if [ "$loopcnt" = 1 ]; then
+			if [ "$RECURS" = 1 ]; then
+				# SEE IF ALIAS(s) USE DELETE OR GLOBALQUAL NOTATION
+				# IF SO, RECURSION MUST BE FORCED ON SINCE POST DOESNT DO EITHER
+				if [ "$(cgrep -Ec '^[ 	]*-|^[ 	]*set.*GLOBALQUAL|^[ 	]*set.*expand=on' $ALIAS)" -gt 0 ]; then
+					if [ "$suppress" -lt 1 ]; then
+						print - "# NOTE: full recursive expansion is required for [$ALIAS], forced on">&2
+					fi
+					recurs=1
+				fi
+			fi
+		else
+			break	# QUIT AFTER 1 PASS IF RECURSION IS OFF
+					# NOTE THAT RECURSION CAN BE FORCED ON (BELOW)
+		fi
+	fi
+
+	print - "$TMP2" >> $HAVE	# SAVE PROCESSED FILES
+
+	if [ -s "$GQUAL" ]; then
+		# PASS GLOBAL QUALIFIER ON TO SUB-ALIASES
+		export GLOBALQUAL GQUALS
+		eval $(cat $GQUAL)	# SETS GLOBALQUAL AND GQUAL
+	fi
+
+	# CONVERT SYSTEM ALIAS TO MAILRC FORMAT
+	# AND OUTPUT ANY SUB-ALIASES THAT MAY NEED EXPANSION
+
+	ALIAS=`nawk '
+	BEGIN {
+		w=1
+		SELF="'"$SELF"'"
+		MAILRC="'"$MAILRC"'"
+		GLOBALQUAL="'"$GLOBALQUAL"'"
+		GQUALS="'"$GQUALS"'"
+		WARN="'"$WARN"'"
+		OMIT_EX="'"$OMIT_EX"'"
+		NAMES="'"$NAMES"'"
+		SENDMAIL="'"$SENDMAIL"'"
+		PASS="'"$PASS"'"
+		recurs="'"$recurs"'"
+		OMIT="'"$OMIT"'" 
+	}
+	{
+		if ( FNR == 1 ) {
+			# NEW ALIAS FILE - OUTPUT START OF MAILRC ALIAS
+			LOCALQUAL=""
+			if (cur_file)	outnums()
+			cur_file=FILENAME
+			sub(/.*\//, "", cur_file)	# GET BASENAME OF FILE
+			doneflag=0
+			while ( $0~/^[ 	]*#/ || NF == 0 ) {
+				if( getline <= 0 )	break		# IGNORE COMMENTS/BLANK LINES
+			}
+			outrev()	# OUTPUT PREVIOUS ALIAS TO MAILRC IN REVERSE ORDER
+			printf( "\n#	********  %s  ********\nalias %s \\\\\n", \
+				cur_file, cur_file) >> MAILRC
+
+			# POST/UPAS TYPE ALIAS - ALIAS NAME INCLUDED IN FILE
+			if ( $1 == cur_file ) {
+				# THIS MUST BE THE UPAS ALIAS NAME
+				# JUST IGNORE AND USE FILE NAME
+				if( NF > 1 )
+					sub( $1, "" )	# PROCESS REMAINDER OF LINE AS NAMES
+				else
+					getline
+			}
+		}
+
+#printf "\n%s: WARNING: alias name [%s] differs from file name [%s]\n", \
+#	SELF, $1, cur_file >> WARN
+
+		sub( /#.*/, "" )			# STRIP COMMENTS
+		if ( NF == 0 )	next
+		if ( $0 ~ /\\\\[^\\012]/ ) {
+			printf "\n%s: WARNING: file [%s] (line %d), Bad Character after Backslash:\n\t%s\n", \
+				SELF, cur_file, FNR, $0 >> WARN
+		}
+		sub( /^[ 	][ 	]*/, "" )	# STRIP LEADING WHITE SPACE
+		gsub( "\\\\\\\", "")		# STRIP BACKSLASH(s)
+		gsub( /\([^(]*\)/, "" )		# STRIP PARENTHESIZED NOTATION(s)
+		sub( /[ 	][ 	]*$/, "" )	# STRIP TRAILING WHITE SPACE
+
+		if ( NF == 0 || $0 ~ /^[ 	]*\|/ )	next
+
+		Del=0
+
+		if( $0 ~ /^set / ) {
+			# "SET" NOTATION
+			if ( NF == 3 ) {
+				if( $3 !~ /\=/ ) {
+					printf( "\n%s: WARNING: Qualifier must have \"field=value\" format [%s], file: %s\n", \
+					SELF, $0, FILENAME ) >> WARN
+					next
+				}
+			} else {
+				# set without 3 fields
+				printf( "\n%s: WARNING: Bad \"set\" format: [%s]\n\tmust be in format:\n\
+	\"set LOCALQUAL value\"  or \n\
+	\"set GLOBALQUAL value\" or\n\
+	\"set OPTION expand=on\"\n", SELF, $0 ) >> WARN
+				next
+			}
+
+
+			if( $2 == "LOCALQUAL" ) {
+				LOCALQUAL=modqual($3)
+				LOCALQUAL = sprintf( ":%s", LOCALQUAL )
+
+
+			} else if( $2 == "GLOBALQUAL" ) {
+				if( GLOBALQUAL ) {
+					# MORE THAN ONE GLOBALQUAL FOUND
+					# MODIFY NEW ONE TO AVOID CLASHES AND APPEND
+					newqual=modqual($3)
+					GLOBALQUAL = sprintf( "%s:%s", GLOBALQUAL, newqual )
+				} else {
+					GLOBALQUAL = sprintf( ":%s", $3 )
+				}
+				# CREATE list of qualifiers (GQUALS) for modqual()
+				# From: org=ih/loc=ih:loc=nj  create: ^org|^loc
+				gsub( "/", ":", GLOBALQUAL )
+				GLOBS=GLOBALQUAL
+
+				split( GLOBS, A, ":" )
+				for ( i in A ) {
+					if( ! A[i] )	continue
+					sub(/\=.*/, "", A[i])
+					G[A[i]]=1	# KEEP ONLY UNIQUE NAMES
+				}
+				GQUALS=""; sep=""
+				for( i in G ) {
+					GQUALS=sprintf( "%s%s^%s", GQUALS, sep, i )
+					sep="|"
+				}
+				# SAVE FOR FUTURE PASSES
+				printf "GLOBALQUAL=\"%s\"\nGQUALS=\"%s\"\n", \
+				GLOBALQUAL, GQUALS > "'"$GQUAL"'"
+			} else if( $2 == "OPTION" ) {
+				if( $3 != "expand=on" && $3 != "expand=off" ) {
+					printf( "\n%s: WARNING: Unrecognized \"set\" OPTION [%s] in [%s]\n", \
+					SELF, $3, FILENAME ) >> WARN
+				}
+			} else {
+				printf( "\n%s: WARNING: Unrecognized \"set\" parameter [%s] in [%s]\n", \
+				SELF, $2, FILENAME ) >> WARN
+			}
+			next
+
+
+		} else if ( SENDMAIL == 1 && $0 ~ /^:|^\/|^\|/ && $0 !~ /\=/ ) {
+			# SENDMAIL NOTATION - PASS THROUGH UNTOUCHED
+			print $0 >> PASS
+			next
+
+		} else if ( $0 ~ /^\-[ 	]*/ ) {
+
+			# DELETE (-) NOTATION
+			num_omit++
+			sub( /^\-[ 	]*/, "" )	# STRIP "-"
+			if( "'"$RECURS"'" == 0 ) {
+				# NO RECURSION FORCED, SAVE DELETE ENTRY
+				printf( "-%s\n", $0 ) >> "'"$OMIT_RECURS"'"
+				next
+			}
+			Del=1
+		}
+
+		tchar += (length(MA[w-1])+3)
+		if( tchar > 4800 ) {
+			tchar=0
+			# TOTAL CHARS OVER 4800 (~post -w limit) start new internal alias
+			outrev()	# OUTPUT PREVIOUS ALIAS TO MAILRC IN REVERSE ORDER
+			ia++		# INTERNAL ALIAS COUNTER
+			printf( "%s%d\n\n#	********  internal alias  ********\nalias %s%d \\\\\n", \
+				cur_file, ia, cur_file, ia) >> MAILRC
+		}
+
+		last_line=$0; last_line_no=FNR	# SAVE FOR ERROR CHECKS
+
+		# FOR EACH (blank separated) FIELD (alias) ON LINE
+		for( a=1; a<=NF; a++ )
+		{
+			# CHECK LENGTH OF ENTRY
+			chkit=$a; gsub( "[\!\@\%\_\/\:\=\.]", "", chkit )
+			if( length(chkit) < 3 ) {
+				printf "\n%s: file [%s] (line %d), short line ignored: [%s]\n", \
+					SELF, cur_file, FNR, $a >> WARN
+				continue
+			}
+
+			# CHECK FOR NAME FORMAT
+			if( $a ~ /[\.\_=]/ )
+			{
+#				sub( "@att.com", ""); sub( "@lucent.com", "")
+				if( $a ~ /[!@]/ && $a !~ /\=/ )
+				{
+					# STRING HAS ! or @ but no =: CONSIDER IT EMAIL
+					do_email()
+				} else {
+					## STRING IS NAME OR QUALIFIER: EXPAND VIA POST
+
+					# IS IT QUALIFIER ONLY OR NAME?
+					e=index($0, "=")
+					s=index($0, "/")
+					if( s == 0 )	s=index($0, ":")	# CAN USE : TOO
+					# EQUAL BEFORE SLASH, OR EQUAL but NO SLASH(or 1st char)
+					if( e>0 && (e<s || s<=1) ) {
+						# QUALIFIER ONLY
+						$a=modqual($a)
+						$a=sprintf( "%s%s%s", $a, GLOBALQUAL, LOCALQUAL)
+						if ( "'"$look_quals"'" == 1 ) {
+							bufit=$a
+						} else {
+							bufit=sprintf( "!Qual:%s", $a )
+						}
+						if( Del == 0 ) {
+							print $a >> "'"$QUALS"'"
+							num_oth++
+							MA[w++]=bufit
+						} else {
+							print bufit >> OMIT_EX
+						}
+
+					} else {
+						# NAME
+						if( $a ~ /\/|:/ ) {
+							# ALREADY HAS OVERRIDING QUALIFER
+							$a=modqual($a)
+							$a=sprintf( "%s%s", $a, GLOBALQUAL)
+						} else {
+							$a=modqual($a)
+							$a=sprintf( "%s%s%s", $a, GLOBALQUAL, LOCALQUAL)
+						}
+						if( Del == 0 ) {
+							print $a >> NAMES
+							MA[w++]=$a
+							num_name++
+						} else {
+							print $a >> OMIT_EX
+						}
+					}
+				}
+			}
+			# CHECK FOR AN ALIAS (postalias convention of "-" in alias)
+			else if( $a ~ /-/ )
+			{
+				# ALIAS
+				sub(/'^$MACH'!/, "")	# STRIP LOCAL MACHINE
+				sub(/^!/, "")			# STRIP LEADING !
+				if ( $a !~ /!/ )
+				{
+					# LOCAL ALIAS: NEEDS FURTHER EXPANSION
+					if( Del == 0 ) {
+						print $a
+					}
+
+					if ( recurs == 1 ) {
+						# ! IS ILLEGAL IN MAILALIAS, SO REMOVE "!"
+						if ( $a ~ /!/ )	gsub ( /.*!/, "", $a )
+					} else {
+						# ADD "!" SO ALIAS IS OUTPUT BY POST AS ADDRESS
+						if ( $a !~ /!/ )	gsub ( /^/, "!", $a )
+						if( Del == 0 ) {
+							printf( "%s\n", $a) >> "'"$ALI_LR"'"
+						}
+					}
+
+					if( Del == 0 ) {
+						MA[w++]=$a
+						num_loca++
+					} else {
+						print $a >> OMIT
+					}
+				} else {
+					# REMOTE ALIAS: PRINT AS IS, CANT EXPAND
+					if( Del == 0 ) {
+						MA[w++]=$a
+						print $a >> "'"$ALI_LR"'"
+						num_rema++
+					} else {
+						print $a >> OMIT
+					}
+				}
+			}
+			# CHECK FOR EMAIL
+			else if ( $a ~ /[!@]/ )	# HAS ! or @, THIS IS AN EMAIL ADDRESS
+			{
+				do_email()
+			} else {
+				# CATCH ALL: (PROBABLY LAST NAME ONLY)
+				if( $a ~ /\/|:/ ) {
+					$a=modqual($a)
+					$a=sprintf( "%s%s", $a, GLOBALQUAL)
+				} else {
+					$a=modqual($a)
+					$a=sprintf( "%s%s%s", $a, GLOBALQUAL, LOCALQUAL)
+				}
+				if( Del == 0 ) {
+					MA[w++]=$a
+					print $a >> NAMES
+					num_name++
+				} else {
+					print $a >> OMIT_EX
+				}
+			}
+		}	#END FOR EACH ALIAS ON A LINE
+	}
+
+	END {
+		# NEED FOR NESTED ALIASES IN CASE ALIAS ENDS WITH BACKSLASH
+		outrev()	# OUTPUT LAST ALIAS TO MAILRC IN REVERSE ORDER
+		printf "\n" >> MAILRC
+		# OUTPUT COUNTS ON THE LAST FILE
+		cur_file=FILENAME
+		sub(/.*\//, "", cur_file)
+		outnums()
+	}
+
+	function do_email()
+	{
+		if ( $a ~ /^!/ )	mach="'"$MACH"'"
+		else	mach=""
+		if ( "'"$look_email"'" == 1 && $a !~ /@/ ) {
+			# POST -W DOES NOT HANDLE ema=grl@ihlpf.att.com
+			# ONLY GLOBAL QUAL WILL APPLY TO EMAIL
+			bufit=sprintf( "ema=%s%s%s", mach, $a, GLOBALQUAL)
+		} else {
+			bufit=sprintf( "%s%s", mach, $a )
+		}
+
+		if( Del == 1 ) {
+ 			print bufit >> OMIT
+			return
+		} else {
+			MA[w++]=bufit
+		}
+		
+		printf( "%s\n", $a) >> "'"$EMAILS"'"
+		num_email++
+	}
+
+	function outrev()
+	{
+		for( c=w-1; c>0; c-- ) {
+			printf("%s \\\\\n", MA[c]) >> MAILRC
+		}
+		w=1
+	}
+
+	function outnums()
+	{
+		if ( recurs == 1 )
+			# RECURSION, ALIASES ARE EXPANDED
+			num_ent = num_name + num_email + num_oth
+		else
+			# NO RECURSION, MUST COUNT ALIASES IN TOTAL
+			num_ent = num_name + num_email + num_loca + num_rema + num_oth
+
+		printf( "%s %d %d %d %d %d %d\n", \
+			cur_file, \
+			num_ent, \
+			num_name, \
+			num_email, \
+			num_loca+num_rema, \
+			num_omit, \
+			num_oth) >> "'"$nums"'"
+		num_name=0; num_email=0; num_loca=0; num_rema=0; num_omit=0; num_oth=0
+	}
+	
+	# REMOVE QUALIFIERS THAT ARE ALREADY IN THE GLOBALQUAL LIST [GQUALS]
+	function modqual(quals)
+	{
+		if( ! GQUALS || quals !~ /\=/ )	return(quals)	# NO QUALS TO PROCESS
+		gsub( "/", ":", quals )
+		split( quals, A, ":" )
+		out=""
+		for( i=1; A[i]!=""; i++ ) {
+			if( A[i] !~ GQUALS ) {
+				out=sprintf("%s%s:", out, A[i])
+			}
+		}
+#		print out > "/dev/tty"
+		return(out)
+
+	}' ${ALIAS}`
+
+done
+
+if [ ! -s $MAILRC ]; then
+	exit 1
+fi
+
+typeset -i num_in=0		# TOTAL INPUT ENTRIES
+typeset -i num_uin=0	# UNIQUE INPUT ENTRIES
+typeset -i num_email=0	# EMAIL INPUT ENTRIES
+typeset -i ema_pct=0	# EMAIL PERCENT OF INPUT
+typeset -i num_omit=0	# OMITTED ENTRIES
+typeset -i num_out=0	# TOTAL OUTPUT ENTRIES (AFTER POST LOOKUP)
+typeset -i num_uout=0	# UNIQUE OUTPUT ENTRIES
+typeset -i num_ala=0	# TOTAL ALIAS FILES READ
+typeset -i not_fnd=0	# NUMBER NOT FOUND IN POST
+typeset -i num_nema=0	# NUMBER WITH NULL EMAIL (-e only)
+typeset -i num_fout=0	# FULL OUTPUT (num_out + not_fnd + num_omit + num_nema)
+typeset -i num_match=0	# NUMBER MATCHED (FOR AUDIT)
+typeset -i differ=0		# DIFFERENCE (FOR AUDIT)
+
+sort -u $NAMES $EMAILS $ALI_LR $QUALS | wc -l |
+	read num_uin	# UNIQUE INPUT ENTRIES
+
+if [ -s $OMIT -o -s $OMIT_EX ]; then
+	## STUFF TO OMIT
+	cat $OMIT $OMIT_EX | wc -l | read num_omit
+	SDIR=${PWD:=`pwd`}	# SAVE DIRECTORY
+	cd $TDIR	# TMP DIRECTORY
+
+	if [ -s $OMIT ]; then
+		## OMIT ALIASES AND EMAIL DIRECTLY FROM THE MAILRC 
+		sed 's/$/ \\/' $OMIT > $tmpfile
+		cgrep -Fx -f $tmpfile $MAILRC > $tmpfile2	# SEE WHAT WILL MATCH
+		if [ -s $tmpfile2 ]; then
+			# REMOVE FROM MAILRC
+			cgrep -Fxv -f $tmpfile2 $MAILRC > $tmpfile
+			mv $tmpfile $MAILRC
+
+			# WHATEVER DIDN'T MATCH DIRECTLY IS APPENDED TO OMIT_EX 
+			# SO THAT IT CAN BE REMOVED AFTER EXPANSION
+			# THIS ENSURES THAT g.r.lee will be removed if -ihlpf!grl IS USED
+			cgrep -Fxv -f $tmpfile2 $OMIT >> $OMIT_EX
+		else
+			cat $OMIT >> $OMIT_EX
+		fi
+	fi
+	if [ -s "$OMIT_EX" -a "$lookup" = y ]; then
+		# EXPAND OMIT TO SAME FORMAT USER REQUESTED (BEFORE filter)
+		print - "$omit \\" > $omit
+		cat $OMIT_EX >> $omit
+		print - "\n" >> $omit
+
+#		$ALIASX -xcls ${fmt:+-F"$fmt"} omit > $OMIT_EX # 2>/dev/null
+		eval ${ALIASX:-aliasx} -xcls ${darg:-} omit > $OMIT_EX # 2>/dev/null
+	else
+		> $OMIT_EX
+	fi
+	cd $SDIR
+fi
+
+if [ -s $ERRS ]; then
+	cat $ERRS >&2
+	exit 1
+fi
+if [ -s $WARN ]; then
+	cat $WARN >&2
+fi
+
+if [ "${deleteonly:-n}" = y ]; then
+	if [ -s $OMIT_EX ]; then
+		print - "Showing Omitted entries (- name) ONLY:">&2
+		cat $OMIT_EX
+	else
+		print - "\nNo entries omitted (- name)\n">&2
+	fi
+	exit
+fi
+
+
+# CALCULATE AND FORMAT THE INPUT COUNTS
+`nawk '
+BEGIN{
+	printf( "	%-14s   %7s %7s %7s %7s %7s %7s\n", \
+		"FILE", "ENTRIES", "NAMES", "EMAIL", \
+		" ALIASES", "OMIT ", "OTHER ") > "'"$cntfile"'"
+}
+{
+	nf++
+	printf( "	%-14s %7d %7d %7d %7d %7d %7s\n", \
+		$1, $2, $3, $4, $5, $6, $7) >> "'"$cntfile"'"
+	t2+=$2; t3+=$3; t4+=$4; t5+=$5; t6+=$6; t7+=$7
+}
+END{
+	if( nf > 1 ) {
+		printf( "	%-14s %7d %7d %7d %7d %7d %7d\n", \
+			"TOTAL", t2, t3, t4, t5, t6, t7) >> "'"$cntfile"'"
+	}
+	# TOTAL NUMBER IN
+	if( t2 == 0 )	pct=0
+	else			pct=t4*100/t2
+	printf("eval num_in=%d num_ala=%d num_email=%d ema_pct=%d", \
+		t2, t5+1, t4, pct )
+}' $nums`
+
+: ${num_in:=0}
+
+if [ "$num_in" = 0 ]; then
+	print - "$SELF: ERROR: No entries found">&2
+	exit 1
+fi
+
+# OUTPUT IN SELECTED FORMAT
+if [ "$suppress" -lt 1 ]; then
+	case $cmd in
+	*post*|*outemail*)
+		print "\n$num_in entries found, now querying POST DB, please wait ...\n" >&2
+		if [ -n "$POSTQUAL" ]; then
+			print - "$SELF: Using ALIASQUAL [$POSTQUAL] for expansion">&2
+		fi
+		;;
+	esac
+fi
+
+
+##
+##	RUN THE COMMAND, THEN THE FILTER, IF ANY
+##
+
+eval "$cmd" >$tmpfile 2>$cmderr
+rc=$?
+
+if [ $rc != 0 ]; then
+	print - "\nERROR[$SELF]: expansion via [$cmd] failed
+	Output was:\n">&2
+	cat $cmderr >&2
+	if [ $(cgrep -Eci 'coredump|Illegal instruction|Memory fault|Bus error' $cmderr) -gt 0 ]; then
+		print - "
+	NOTE: Post -w may coredump on long aliases (>5000 characters).
+	Break up long aliases (over 200-300 entries) into smaller sub-aliases,
+	then include the sub-aliases in the main alias.\n">&2
+	else
+		print - '' >&2
+	fi
+	rm -f $LOC/Src/core
+	exit 1
+fi
+
+# IF UNEXPANDED QUALIFIERS EXIST, STRIP FRONT END
+if [ "$look_quals" = 0 -a -s "$QUALS" ]; then
+	sed 's/^!Qual://' $tmpfile > $tmpfile2
+	mv $tmpfile2 $tmpfile
+fi
+
+## FILTER OUTPUT TO CREATE CMDOUT
+if [ -n "$filter" ]; then
+	cat $tmpfile | eval "$filter" > $cmdout 2>>$cmderr
+	rc=$?
+	if [ $rc != 0 ]; then
+		print - "\nERROR[$SELF]: Filtering via [$filter] failed">&2
+		exit 1
+	fi
+else
+	mv $tmpfile $cmdout
+fi
+
+
+if [ -s $cmderr ]; then
+	if [ -s "$GQUAL" ]; then
+		# IF A GLOBAL QUALIFIER IS USED - IGNORE NOT FOUND and EMAIL THAT IS NOT
+		# IN POST WARNINGS COMPLETELY
+		cgrep -Eiv 'not found$|ema=' $cmderr > $tmpfile
+		mv $tmpfile $cmderr
+	fi
+
+	# DO NOT CONSIDER EMAIL THAT IS NOT IN POST AN ERROR
+	# OUTPUT "ema= Not found" lines
+	> $tmpfile
+	nawk '{
+		if( $0 ~ / ema=/ ) {
+			sub( /.*ema=/, "")
+			sub( /:.*/, "")
+			print $0 >> cmdout	# APPEND TO OUTPUT
+		}
+		else print $0 > tmpfile	# RETAIN ERROR
+	}' cmdout="$cmdout" tmpfile="$tmpfile" $cmderr
+	mv $tmpfile $cmderr
+fi
+
+# ALL COUNTS ARE DONE BEFORE DELETIONS
+if [ "$lookup" = "y" ]; then
+	wc -l < $cmdout | read num_out		# ACTUAL NUMBER OUTPUT
+	NUM_OUT=$num_out	# FOR REPORTING
+	sort -u $cmdout | wc -l | read num_uout		# UNIQUE OUTPUT ENTRIES
+fi
+
+# OMIT EXPANDED ENTRIES IF NEEDED
+if [ -s $OMIT_EX ]; then
+	if [ "$suppress" -lt 2 ]; then
+		print - "\nNOTE[$SELF]: $num_omit entries marked to omit (-d to show deletions)\n">&2
+	fi
+	# NOTE: OMIT_EX WILL BE NULL IF lookup=n
+	cgrep -v -f $OMIT_EX $cmdout > $tmpfile2
+	mv $tmpfile2 $cmdout
+	wc -l < $cmdout | read NUM_OUT
+fi
+
+# OUTPUT
+if [ "$SENDMAIL" = 1 -a -s "$PASS" ]; then
+	cat $PASS
+fi
+cat $cmdout
+
+if [ "$RECURS" = 0 ]; then
+	if [ -s "$OMIT_RECURS" ]; then
+		cat $OMIT_RECURS
+	fi
+fi
+
+# OUTPUT COUNTS
+if [ "$suppress" -lt  2 ]; then
+	print - "\n`cat $cntfile`">&2
+	if [ -n "$NUM_OUT" ]; then
+		print - "\n\tTotal Records Output (after POST lookup): $NUM_OUT">&2
+	fi
+fi
+
+HINTS=0
+
+##
+## PROCESS ERROR OUTPUT FROM POST (or cmd) - WARN OF PROBLEMS
+##
+
+# GREP STRING FOR POST -w "Not found" ERRORS
+NF_STRING='not found| attribute$'
+
+if [ -s $cmderr ]; then
+	# NUMBER OF UNIQUE ENTRIES NOT FOUND IN POST
+	cgrep -Ei "$NF_STRING" $cmderr > $tmpfile
+	if [ -s $tmpfile ]; then
+		sort -u -o$tmpfile $tmpfile
+		wc -l < $tmpfile | read not_fnd
+
+		if [ -z "$POSTQUAL" ]; then
+			print "\n$SELF: WARNING: [$not_fnd] entries not found in POST:">&2
+			sed 's/^/	/' $tmpfile >&2
+			HINTS=1
+		else
+			if [ "$suppress" -lt 1 ]; then
+				print "\n$SELF: NOTE: [$not_fnd] entries not matched [QUAL=$POSTQUAL] in POST:">&2
+				sed 's/^/	/' $tmpfile >&2
+			fi
+		fi
+	fi
+
+	# Show other failures
+	cgrep -Evi "$NF_STRING" $cmderr >&2
+fi
+
+if [ ! -s $cmdout ]; then
+	print - "\n$SELF: ERROR: No entries found">&2
+	exit 1
+fi
+
+##
+## CHECK NUMBERS - WARN OF INCONSISTANCIES
+##
+if [ "$ema_pct" -ge 20 -a "$num_in" -ge 5 -a "$suppress" -lt 2 -a -t 1 ]; then
+	print "\n$SELF: NOTE: $ema_pct% of the entries are in email-format!">&2
+	print "	Use name-format (first.m.last/loc=<loc>) to minimize updates">&2
+	print "	and returned mail.  postalias -f will format to name-format.\n">&2
+fi
+
+if [ "$lookup" = "y" ]; then
+	num_fout=$num_out+$not_fnd+$num_nema
+	if [ $num_out -gt $num_uout -o $num_in -gt $num_uin ]; then
+		audit=y		# DUPLICATE ENTRIES DETECTED
+	fi
+
+	differ=$num_fout-$num_uin
+
+	# DEBUG COUNTS
+#	print "differ = num_fout - num_uin  	num_fout = num_out + not_fnd + num_nema"
+#	print "num_fout=$num_fout not_fnd=$not_fnd num_omit=$num_omit num_nema=$num_nema differ=$differ"
+#	print "num_in=$num_in num_uin=$num_uin  num_out=$num_out num_uout=$num_uout"
+	
+	if [ $differ -gt 0 -a \( ! -s $QUALS -o "$AUDIT" = y \) ]; then
+		print "\n$SELF: WARNING: More POST matches than expected (expected $num_uin, got $num_fout)">&2
+		audit=y
+	fi
+
+else	# NO POST LOOKUP, CHECK INPUT NUMBERS ONLY
+
+	if [ $num_in -gt $num_uin ]; then
+		audit=y
+	fi
+fi
+
+##
+## AUDIT - DO ADDITIONAL CHECKS IF AUDIT REQUESTED
+##
+if [ "$audit" = y -o "$AUDIT" = y ]; then
+	##
+	## SHOW DUPS IN INPUT FILES
+	##
+	HINTS=1
+	sort $NAMES $EMAILS > $tmpfile
+	sort -u $tmpfile > $tmpfile2
+	dups=`comm -23 $tmpfile $tmpfile2 |
+		sed -e 's/^[ 	]*$//' -e 's/^/	/' | sort -u`
+	if [ -n "$dups" ]; then
+		if [ "$num_ala" = 1 ]; then
+			text=WARNING
+			prlev=2
+		else
+			text=NOTE
+			prlev=1
+			HINTS=1
+		fi
+		if [ "$suppress" -lt "$prlev" ]; then
+			print "\n$SELF: $text: Duplicate input entries exist for:\n$dups">&2
+		fi
+	fi
+
+	##
+	## SHOW DUPS IN POST OUTPUT
+	##
+	sort $cmdout > $tmpfile
+	sort -u $tmpfile > $tmpfile2
+	dups=`comm -23 $tmpfile $tmpfile2 |
+		sed -e 's/^[ 	]*$//' -e 's/^/	/' -e '/^[ 	]*$/d' | sort -u`
+#	if [ "$num_ala" = 1 ]; then
+#		text=WARNING
+#		prlev=2
+#	else
+		text=NOTE
+		prlev=1
+		HINTS=1
+#	fi
+	if [ -n "$dups" ]; then
+		if [ "$suppress" -lt "$prlev" ]; then
+			print "\n$SELF: $text: Duplicate output records exist for:\n$dups">&2
+		fi
+	fi
+
+	# QUIT HERE IF ANY QUALS-ONLY ARE USED
+	if [ -s "$QUALS" -a $look_quals = 1 ]; then
+		exit
+	fi
+
+	##
+	## SHOW MULTIPLE POST MATCHES (ONE ENTRY THAT MATCHES ON MULTIPLE PEOPLE)
+	##
+	if [ $differ -le 0 ]; then
+		exit
+	fi
+	if [ -s "$NAMES" -o -s "$QUALS" ]; then
+		# PUT NAMES LIKELY TO MATCH MULTIPLE TIMES NEAR TOP OF LIST
+		#	UNQUALIFIED NAMES (NO /loc=) TOWARDS TOP
+		#	NAMES WITH FEWER PARTS (.) and SHORT NAMES TOWARDS TOP
+
+		if [ "$suppress" -lt 1 ]; then
+			print "\nAuditing for mismatch of records, please wait ...">&2
+		fi
+		> $tmpfile
+		if [ -s $QUALS ]; then
+			# CHECK QUALIFIERS-ONLY FIRST, SINCE THEY WILL PROBABLY
+			# HAVE MULTIPLE MATCHES
+			cat $QUALS > $tmpfile
+		fi
+		sort -u $NAMES |
+		nawk '{
+			q=0; n=0
+			if( $0 ~ /\// )	q=10	# QUALIFIED: 10 POINTS
+
+			if( $0 ~ /[a-zA-Z]\.[a-zA-Z]\./ )
+				n=10	# 2 INITIALS/NAMES: 10 POINTS
+			else if( $0 ~ /[a-zA-Z]\./ )
+				n=5		# 1 INITIAL/NAME: 5 POINTS
+
+			print length($0)+q+n, $0
+		}' | sort +0n -1 |
+			nawk '{print $2}' >> $tmpfile
+
+		for name in `cat $tmpfile`
+		do
+			MATCH=$(pq -o'%25.25name %2.2state %8.8loc %10.10org %ema' $name 2>$tmpfile2)
+			if [ -n "$MATCH" ]; then
+				print "$MATCH" | wc -l | read num_match
+				if [ $num_match -gt 1 ]; then
+					print "\n$SELF: WARNING: [$num_match] matches for [$name]:">&2
+					print "$MATCH" | sed 's/^/	/' >&2
+					differ=$differ-$num_match+1
+					if [ $differ -le 0 ]; then
+						# FOUND ALL MISMATCHES, EXIT
+						exit
+					fi
+				fi
+			fi
+		done
+	fi
+fi
+
+if [ "$HINTS" = 1 -a "$num_ala" -gt 1 -a "$recurs" = 1 ]; then
+	# HINT ABOUT FINDING TEXT IN SUB-ALIASES
+	print "\nHINT: postalias -t \"string\" can be used to help locate names in sub-aliases">&2
+fi

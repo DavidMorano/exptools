@@ -1,0 +1,132 @@
+
+
+
+     mmmmaaaannnnttttoooommmmmmmm((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           mmmmaaaannnnttttoooommmmmmmm((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          mantomm - convert man macros to mm macros
+
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmaaaannnnttttoooommmmmmmm [[[[ files ]]]]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _M_a_n_t_o_m_m converts manual page source files that use the
+          _m_a_n(_5) macros into MM source files.  This conversion is
+          especially useful for including manual pages in appendices
+          of MM documents.
+
+          _M_a_n_t_o_m_m reads the named files in order.  If no file name is
+          given, or if the file name ---- is encountered, the standard
+          input is read.  The converted manual pages are written to
+          standard output.
+
+          If several manual pages are being converted with a single
+          invocation of _m_a_n_t_o_m_m, there is no need to put page breaks
+          (i.e., ....bbbbpppp or ....SSSSKKKK macros) between the manual pages.  _M_a_n_t_o_m_m
+          will generate appropriate page breaks so that each manual
+          page begins on a separate page when formatted.
+
+          _M_a_n_t_o_m_m handles the manual page title line so that it does
+          not interfere with the MM document's header lines, which are
+          set with the PPPPHHHH, PPPPEEEE, and PPPPOOOO macros.  However, the manual
+          page footer (which contains the page number and date
+          printed) is placed in the MM document's footer line using
+          the EEEEFFFF and OOOOFFFF macros.  Using these macros for the manual
+          page footer allows the MM document to have its own general
+          footer (using the PPPPFFFF macro) in addition to the manual page
+          footer.
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following is a typical example of using _m_a_n_t_o_m_m:
+
+               mmmmaaaannnnttttoooommmmmmmm tool.1 >tool.mm
+
+          Once the manual page has been converted, it can be included
+          in an MM document using the following _n/_t_r_o_f_f(_1) command:
+
+               ....ssssoooo tool.mm
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          man(5), mm(5), nroff(1), troff(1)
+
+          _M_M - _M_e_m_o_r_a_n_d_u_m _M_a_c_r_o_s
+
+
+
+
+     Page 1                                         (printed 10/24/90)
+
+
+
+
+
+
+     mmmmaaaannnnttttoooommmmmmmm((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           mmmmaaaannnnttttoooommmmmmmm((((1111))))
+
+
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+          _M_a_n_t_o_m_m does not support the following features of the
+          _m_a_n(_5) macro package:
+
+               The number registers IIIINNNN, LLLLLLLL, and PPPPDDDD.
+
+               The string \\\\****SSSS.
+
+               The macro DDDDTTTT.
+
+               Arguments for the RRRRSSSS and RRRREEEE macros.
+
+          Also, the following differences exist between features of
+          the _m_a_n(_5) macro package and their conversion to _m_m(_5):
+
+               When using the TTTTPPPP macro, the tag is always put on a
+               separate line (even if it is short enough to fit on the
+               first line of the paragraph).
+
+               When changing the interparagraph distance with the PPPPDDDD
+               macro, only the spacing between paragraphs delimited
+               with the PPPP and PPPPPPPP macros will be changed.  The new
+               distance will not affect the spacing between manual
+               page sections nor between paragraphs delimited with the
+               HHHHPPPP, IIIIPPPP, and TTTTPPPP macros.
+
+          Finally, as mentioned above, the EEEEFFFF and OOOOFFFF macros are used
+          to produced the manual page footer.  This will wipe out an
+          previous EEEEFFFF or OOOOFFFF setting that was made in the document.
+
+
+     BBBBUUUUGGGGSSSS
+          When formatting the converted manual page(s), the page
+          footer (indicating the manual page number and the date
+          printed) will not appear on the last page of the last manual
+          page converted.
+
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+          _M_a_n_t_o_m_m was originally written by Paul Gross and extended by
+          John Hammond.  The current version of the tool has several
+          significant modifications and bug fixes made by Dennis
+          Vadner.
+
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Dennis A. Vadner
+
+
+
+
+
+
+
+
+     Page 2                                         (printed 10/24/90)
+
+
+

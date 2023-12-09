@@ -1,0 +1,1650 @@
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  finfo	- File Selection & Information Tool/Language
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  ffffiiiinnnnffffoooo	[ _o_p_t_i_o_n_s ] _f_o_r_m_a_t [ _o_p_t_i_o_n_s ] [ _f_i_l_e ]	...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  This command reports information, often about	files.	It can
+	  be   used   to  replace  many	 existing  small,  specialized
+	  UNIX(Reg.)  programs - as the	examples attest.  The informa-
+	  tion	available  through this	program	is that	available to C
+	  programs _v_i_a the stat(2), lstat, and ustat(2)	system	calls,
+	  and  more.   _f_i_n_f_o has developed into	a programming language
+	  that does for	files (their names & other  information)  what
+	  awk(1) does for the contents of files.
+
+	  Because of the conditional macros within the	_f_o_r_m_a_t,	 _f_i_n_f_o
+	  also	becomes	 a powerful file selection tool, like find(1),
+	  except that _y_o_u get to choose	the files to be	selected from,
+	  rather than it searching a whole directory tree.
+
+	  Simple examples are:
+	  # Replacement	for pwd(1) command:
+	  finfo	%F .
+
+	  # Replacement	for dirname(1):
+	  finfo	%/ $arg
+
+	  # Almost replacement for basename(1):
+	  finfo	%b $arg
+
+	  # Replacement	for wc(1) -c:
+	  finfo	"#8s  %f" *
+
+	  # Number of files in this directory:
+	  finfo	-T "#x"	*
+
+	  # Total size of all files in this directory:
+	  finfo	-T "#s"	*
+
+	  # Replacement	for date(1) command?!?
+	  finfo	'%3w %3m #2d #H:#M:#S %z #Y'
+	    And	even _m_o_r_e user-customizable.
+
+	  # Same information, but for this time	yesterday:
+	  finfo	'\@(#n-day)%3w %3m #2d #H:#M:#S	%z #Y'
+
+	  # List file names centered in	an 80 character	line:
+	  finfo	'%?(len[%f] >= 80){%f}{%(len<%f>/2+40)f}' *
+	    If any file	name is	longer than 80 characters, it is  out-
+	  put  verbatim	{{{{%%%%ffff}}}}; otherwise	a %%%%ffff macro is constructed that
+	  calculates the correct width for centering the  file	in  80
+
+
+
+     Page 1					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  characters.
+
+	  # List only regular files belonging to me!:
+	  finfo	'%?(f && #u=#:u)[%f]' *
+
+	  The status of	each of	the named files	is  determined	before
+	  it starts printing any information.  Files for which stat(2)
+	  returns an error cause an error  message  and	 are  ignored,
+	  even	in file	counts.	 Normally, symbolic link files (start-
+	  ing with Release 4) are handled such	that  their  own  stat
+	  information  (rather	than  that  of the pointed to file) is
+	  retrieved.  The ----ssss option causes symbolic link files	to  be
+	  "followed  through" so that the status information is	on the
+	  pointed to file.
+
+	  The special _f_i_l_e values ----0000, ----1111, ----2222, ... cause	_f_i_n_f_o  to  get
+	  the  status of the file opened on the	given file descriptor.
+	  ---- is the same	as ----0000 and means	the standard input, ----1111 is  the
+	  standard output, and ----2222 is the standard error	output.
+
+	  The user chooses the presentation of	the  information  with
+	  the  printf(3S)-like	_f_o_r_m_a_t string.	A backslash (\\\\)	intro-
+	  duces	a two-character	sequence that causes the  printing  of
+	  some	special	characters, or changes time stamp settings.  A
+	  percent (%%%%) or a number  sign	 (####)  introduces  a  multiple-
+	  character sequence (called a _m_a_c_r_o) that causes the printing
+	  of an	information item.  Leading-%%%% macros print  string-type
+	  information items, while leading-#### macros print numeric-type
+	  information.	All other characters in	the _f_o_r_m_a_t are printed
+	  verbatim, as are unknown macros also.
+
+	  => For your convenience, if the _f_o_r_m_a_t doesn't  contain  any
+	  macro	 references,  and the ----FFFF and ----ffff	options	weren't	given,
+	  _f_i_n_f_o	tries to see if	there is a format file with  the  name
+	  given	 by the	_f_o_r_m_a_t (assuming that it is a file name	rather
+	  than an actual format), as though the	 ----ffff  option  had  been
+	  given	 (see  its description in the OOOOppppttttiiiioooonnnnssss section).	 If it
+	  can't	find such a file, it does _n_o_t issue an error  message,
+	  but  assumes that the	_f_o_r_m_a_t as given	was intended as	a for-
+	  mat, not a file name.
+
+	  Since	####, space and  other  characters	 are  special  to  the
+	  shell,  it  is  a  good  practice to quote the entire	_f_o_r_m_a_t
+	  string.
+
+	  If a _f_o_r_m_a_t is given without any _f_i_l_e	 names,	 _f_i_n_f_o	inter-
+	  prets	 the  format and prints	any text and macros that don't
+	  pertain to file-specific information.	 The ----ffff	or ----FFFF  options
+	  may  be  used	to cause _f_i_n_f_o to read the _f_o_r_m_a_t from a file,
+	  rather than from a command line argument.
+
+	  The options may be placed before or after the	_f_o_r_m_a_t so that
+
+
+
+     Page 2					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  _f_i_n_f_o	 may  be used easily in	shell aliases.	Presumably the
+	  alias	would contain the call to _f_i_n_f_o	and  the  _f_o_r_m_a_t,  and
+	  the user could then type _f_i_n_f_o options before	a list of file
+	  names.  Otherwise, you would normally	use it following  nor-
+	  mal UNIX command conventions:	options	before other things.
+
+	OOOObbbbttttaaaaiiiinnnniiiinnnngggg AAAA UUUUssssaaaaggggeeee SSSSuuuummmmmmmmaaaarrrryyyy
+	  As a special case, typing:
+
+	  finfo	help
+
+	  sends	a usage	summary	to the standard	output and exits  nor-
+	  mally	 (0  exit  code).  If standard output is to a terminal
+	  and the PPPPAAAAGGGGEEEERRRR	environment variable  is  set,	the  specified
+	  pager	 is  used to display the help text.  The usage message
+	  may be printed as a cheat sheet:
+
+	  finfo	help | pr | prt
+
+	_f_o_r_m_a_t////_s_t_r_i_n_g DDDDeeeelllliiiimmmmiiiitttteeeerrrrssss
+	  In some of the macros	or backslash sequences listed below  a
+	  portion  of  a  _f_o_r_m_a_t must be delineated for	a special pur-
+	  pose.	 When doing so,	any character not in the  _f_o_r_m_a_t  por-
+	  tion	itself may be used to delineate	the portion.  However,
+	  when one of the characters (((( [[[[ {{{{ <<<< ```` is used as the  opening
+	  delimiter,  then  the	 corresponding	character  ))))  ]]]]	 }}}} >>>> ````
+	  (respectively) must be used to close the delineated  portion
+	  of the _f_o_r_m_a_t.
+
+	  Examples:
+	      \\\\QQQQ[[[[ssssttttrrrriiiinnnngggg]]]]     delimiters	are [ and ]
+	      %%%%::::QQQQ////ssssttttrrrriiiinnnngggg////    delimiters	are / and /
+	      %%%%::::@@@@{{{{ssssttttrrrriiiinnnngggg}}}}    delimiters	are { and }
+
+	_f_o_r_m_a_t MMMMaaaaccccrrrroooossss
+	  A _f_o_r_m_a_t macro looks like either:
+	     %%%%[_f_l_a_g][_w_i_d_t_h]_d_e_s_i_g_n_a_t_o_r
+	  or
+	     ####[_f_l_a_g][_w_i_d_t_h]_d_e_s_i_g_n_a_t_o_r
+
+	  (Here	the brackets only mean	"optional.")   Valid  examples
+	  are: %%%%22223333////  ####----6666RRRR  %%%%22224444****	 %%%%%%%%  ####00008888gggg
+
+	  The optional _f_l_a_g can	either be ---- (meaning left justify this
+	  item),  or 0000 (zero - meaning don't zero-suppress this	item).
+	  Only one or the other	may be specified.
+
+	  The  optional	 _w_i_d_t_h,	 which	is  either  a  number	or   a
+	  parenthesized	 expression  (explained	 later),  is usually a
+	  width	specifier, but it is sometimes a repetition  count  or
+	  other	 data,	as  noted  in the tables.  If no _f_l_a_g or width
+	  specifier _w_i_d_t_h are specified,  the  data  item  printed  is
+
+
+
+     Page 3					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  usually  printed  non-fixed  width,  unless  as noted	in the
+	  tables.
+
+	  In the case of those items that are fixed-width by  default,
+	  a  _f_l_a_g  with	 no  _w_i_d_t_h  (_e._g. #-d)	forces	the item to be
+	  printed non-fixed width.  (Otherwise,	a _f_l_a_g with  no	 _w_i_d_t_h
+	  would	be meaningless.)
+
+	  The _d_e_s_i_g_n_a_t_o_r is a single character that  tells  what  data
+	  item	to  print.   These  are	 enumerated  in	 the following
+	  tables.  In these tables, the	term _t_i_m_e _s_t_a_m_p	refers to  the
+	  currently selected time stamp	from the stat(2) call, or from
+	  back-slash sequences,	listed below.  By default, it  is  the
+	  time of last modification, but options can be	used to	change
+	  the default.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+			  % STRING INFORMATION MACROS
+
+       _M_a_c_r_o	_N_o_t_e_s	_I_n_f_o_r_m_a_t_i_o_n _p_r_i_n_t_e_d
+
+	 %&	  P	Contents of given string buffer	(see \\\\====	and  _r_e_x,
+			below)
+	 %$	  P	Value of given environment variable (see below)
+	 %/	  f	Directory name of _f_i_l_e (empty, if no  /	 in  _f_i_l_e
+			name)
+	 %?	  P	Conditional _f_o_r_m_a_t section (see	below)
+	 %@	  P	Unconditional _f_o_r_m_a_t section (see below)
+	 %A	  2	AAAAMMMM or PPPPMMMM of the	time stamp (see	####hhhh)
+	 %b	 f,T	Base name of _f_i_l_e (as specified)
+	 %D		Fully qualified	path name of directory _f_i_l_e is in
+	 %F	  T	Full path name of _f_i_l_e (fully qualified)
+	 %f	 f,T	Name of	_f_i_l_e (as specified)
+	 %G	 N,3	Group permissions (_e._g.	rrrr----xxxx) of	_f_i_l_e
+	 %g	  #	Group name of _f_i_l_e
+	 %l		Symbolic link value (file pointed to)
+	 %L		%f if not symbolic link, else same as repeated %l
+			until not a symbolic link
+	 %m		Month (JJJJaaaannnnuuuuaaaarrrryyyy to DDDDeeeecccceeeemmmmbbbbeeeerrrr) of time stamp
+	 %n	 T,n	Normalized name	of _f_i_l_e	[see normfile(1)]
+	 %O	 N,3	Others'	permissions (_e._g. rrrr--------) of _f_i_l_e
+	 %p	L,10	Permissions as in ls(1)	(_e._g. ddddrrrrwwwwxxxxrrrrwwwwxxxxrrrrwwwwxxxx)
+	 $R		Combination of %L and %F, full real file name
+	 %s	L,a,S	If a device: #3J,#3N  Else: #7s
+	 %T	 24	Time stamp in ctime(3C)	format (no newline)
+	 %t	L,S,5	If time	stamp older than  180  days:  #5Y   Else:
+			#H:#M
+	 %U	 N,3	User permissions (_e._g. rrrrwwww----) of _f_i_l_e
+	 %u	  #	User's login name to whom _f_i_l_e belongs
+	 %w		Day of week (SSSSuuuunnnnddddaaaayyyy to SSSSaaaattttuuuurrrrddddaaaayyyy) of time stamp
+	 %z		Time zone of time stamp	(_e._g. CCCCSSSSTTTT)
+       %# %%	 C,P	Print designator character _w_i_d_t_h times
+       %* %=
+       %_
+       %_s_p_a_c_e
+	 %-	 R,P	Print the designator character (----) _w_i_d_t_h times
+	 %\	  P	Print the _w_i_d_t_h	character, only	if _w_i_d_t_h  is  not
+			0.  %\ prints %%%%.
+	 %"		Ignores	the enclosed format section,  which  must
+			still follow format rules.
+
+			    % STRING EXTENDED MACROS
+
+	%:*	  P	Repeated string
+	%:@	  P	Substring
+	%:c	  P	Print string with all capital letters
+	%:D	  x	Device file is mounted on
+	%:g	 #,P	Executor's real	group name
+	%:G	 #,P	Executor's effective group name
+
+
+
+     Page 5					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	%:l	  P	Print string with all lower case letters
+	%:M	  x	Filesystem name	file is	mounted	on
+	%:m	  P	This machine's name
+	%:Q	  P	Quote the following string
+	%:u	 #,P	Executor's real	user name
+	%:U	 #,P	Executor's effective user name
+	%:V	  P	_f_i_n_f_o's	version	"number"
+	%:X	  Z	Set exit code to _w_i_d_t_h
+	%:Z	  Z	Abort, setting exit code to _w_i_d_t_h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+				 % MACRO NOTES
+
+	   _N_o_t_e	   _E_x_p_l_a_n_a_t_i_o_n
+
+	  number   If no _w_i_d_t_h is used,	on the after pass  it  prints
+		   as this many	spaces.
+	    f	   %/%b	= %f
+	    T	   On after pass, these	output as "**** TTTTOOOOTTTTAAAALLLL ****", unless
+		   ----TTTT option is	specified
+	    N	   Unlike ls -l, these never contain s,	S, t, or T in
+		   the	x  location;  thus making them more practical
+		   for testing access permissions only.
+	    #	   Indeterminables  (_e._g.  no  known  uid  123)	  are
+		   printed as ####111122223333
+	    L	   Identical to	the  way  ls -l	 treats	 permissions,
+		   file	 sizes	& time stamps.	Don't bother to	use a
+		   _w_i_d_t_h on this mess.
+	    n	   This	is done	with norm_file(3) [available from the
+		   author] specifying compression on.
+	    a	   Unlike ####TTTT, this does	 _n_o_t  cause  an	 after	pass,
+		   unless the ----tttt option	is specified.
+	    C	   If _w_i_d_t_h is not specified, a	single	character  is
+		   printed.  If	_w_i_d_t_h is specified as 0, no character
+		   is printed.
+	    P	   Also	printed	on the after pass.
+	    R	   The _w_i_d_t_h is	required  here	(to  distinguish  the
+		   designator  from the	- _f_l_a_g), and if	0, nothing is
+		   printed.
+	    S	   The numeric macros and verbatim text	 referred  to
+		   herein  are	expanded before	being printed subject
+		   to the macro's _f_l_a_g & _w_i_d_t_h.
+	    Z	   If 0000	flag used, exit	code is	set to _w_i_d_t_h,  other-
+		   wise	the _w_i_d_t_h value	is ORed	into the current exit
+		   code	setting.  If exit  code	 non-zero,  currently
+		   formed  output  sent	to standard error, instead of
+		   standard output, even if ----TTTT used.
+	    x	   Not available on HP-UX, i486, Mips,	and  Pyramid.
+		   Prints as nothing or	appropriate number of spaces.
+
+	  Note that the	following causes an error message,
+	     finfo '%"[#:(]'
+	  because the numeric expression macro (explained  below)  was
+	  not  properly	terminated.  Don't use %%%%"""" for comments.	 It is
+	  mainly good for temporarily "commenting out" format sections
+	  during testing/debugging.  Use \\\\"""", below, for	comments.
+
+
+
+
+
+
+
+
+
+
+     Page 7					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+			  # NUMERIC INFORMATION	MACROS
+
+	_M_a_c_r_o	_N_o_t_e_s	_I_n_f_o_r_m_a_t_i_o_n _p_r_i_n_t_e_d
+
+	 #&	  P	Value in variable _x (any small letter);	see \\\\====
+	 #b	 4,s	Number of blocks, if regular file or directory
+	 #B	4,A,s	Same as	####bbbb, except  on	after  pass  it's  total
+			blocks that ####bbbb or ####BBBB reported
+	 #D		Device number of device	containing _f_i_l_e
+	 #d	  2	Day of month (00001111 to 33331111)	of time	stamp
+	 #g		Group id (numeric) of _f_i_l_e
+	 #H	  2	Hour (00000000 to 22224444)	of time	stamp
+	 #h	  2	Hour (00001111 to 11112222)	of time	stamp (see %%%%AAAA)
+	 #i		Inode number of	_f_i_l_e
+	 #J	  R	Major device number of _f_i_l_e (if	a device)
+	 #j	  3	Day of year (000000001111 to 333366666666) of time stamp
+	 #l		Number of links	to _f_i_l_e
+	 #M	  2	Minute (00000000 to 55559999) of time stamp
+	 #m	  2	Month (00001111 to 11112222) of time stamp
+	 #N	  R	Minor device number of _f_i_l_e (if	a device)
+	 #n		Current	(now) time stamp (see #t, below)
+	 #P	  7	Modes/permissions (octal number) of _f_i_l_e
+	 #p	  3	Permissions (octal number) of _f_i_l_e
+	 #R		Device number of _f_i_l_e (if a device)
+	 #S	  2	Second (00000000 to 55559999) of time stamp
+	 #s	  t	Size of	_f_i_l_e in	bytes
+	 #T	 8,A	Same as	####ssss, except  on	after  pass  it's  total
+			bytes that ####ssss or ####TTTT reported
+	 #t		Time stamp as a	long  integer  (no.  of	 seconds
+			since 00:00:00 GMT 1/1/1970)
+	 #u		User id	(numeric) to whom _f_i_l_e belongs
+	 #w		Time stamp's day of week (0000=Sunday to 6666)
+	 #x	  t	Index of _f_i_l_e in given files (1, ...)
+	 #X	  A	Same as	####xxxx, except on after pass it's number  of
+			files that ####xxxx or ####XXXX reported
+	 #Y	  4	Year (_e._g. 1111999988888888) of time stamp
+	 #y	  2	Year (00000000 to 99999999)	of time	stamp
+	 ##		Number of good [stat()able] files given
+
+			   # NUMERIC EXTENDED MACROS
+
+	 #:#	  P	Value of previous numeric expression (see below)
+	 #:(	  P	Long integer value of expression (see below)
+	 #:b	  s	Number of blocks remaining on _f_i_l_e's file system
+	 #:B	 x,s	Total number of	blocks on _f_i_l_e's file system
+	 #:g		Executor's real	group ID
+	 #:G		Executor's effective group ID
+	 #:i		Number of inodes remaining on _f_i_l_e's file system
+	 #:I	  x	Total number of	inodes on _f_i_l_e's file system
+	 #:s	  s	Number of bytes/block in _f_i_l_e's	file system
+	 #:u		Executor's real	user ID
+	 #:U		Executor's effective user ID
+
+
+
+     Page 8					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+				 # MACRO NOTES
+
+      _N_o_t_e   _E_x_p_l_a_n_a_t_i_o_n
+
+       2     Default [_f_l_a_g][_w_i_d_t_h] is set to 00002222, if _n_e_i_t_h_e_r is given.
+       3     Default [_f_l_a_g][_w_i_d_t_h] is set to 00003333, if _n_e_i_t_h_e_r is given.
+       4     Default [_f_l_a_g][_w_i_d_t_h] is set to 00004444, if _n_e_i_t_h_e_r is given.
+       7     Default [_f_l_a_g][_w_i_d_t_h] is set to 00007777, if _n_e_i_t_h_e_r is given.
+       8     Default [_w_i_d_t_h] is	set to 8888, if not given.
+       R     This is derived from the ####RRRR number.
+       t     If	the ----tttt option is specified,  this  causes  an  after  pass
+	     through the _f_o_r_m_a_t.
+       A     Causes an after pass through the _f_o_r_m_a_t, and prints then too.
+       P     Also printed on the after pass.
+       x     Not available on HP-UX, Pyramid, 3B20,  or	 Vax.	Prints	as
+	     nothing or	appropriate number of spaces.  Returns 0 when used
+	     in	an expression (below).
+       s     On	the Sun	systems	these numbers agree with the System V mode
+	     /usr/5bin/ls  and	/usr/5bin/df  commands'	numbers, which use
+	     block sizes normalized  to	 512  bytes  (and  the	####::::ssss  macro
+	     returns  512),  rather  than the corresponding /bin commands,
+	     which use physical	blocks.
+
+			     \ BACKSLASH SEQUENCES
+
+	    _A_f_t_e_r \	  _C_h_a_r_a_c_t_e_r _p_r_i_n_t_e_d
+
+	       %	  %
+	       #	  #
+	       \	  \
+	       ,	  ,
+	    newline	  Nothing is printed
+	       "	  This & everything through the	next newline or
+			  end of format	is ignored (nothing printed)
+	       A	  Switch to access time	stamp (nothing printed)
+	       C	  Switch to status change time stamp (ditto)
+	       M	  Switch to modification time stamp (ditto)
+	       N	  Switch to current time stamp (ditto)
+	   Q/_s_t_r_i_n_g/	  _s_t_r_i_n_g with no macro or back slash  interpre-
+			  tation
+	       T	  Switch to time  stamp	 specified  on	command
+			  line (default	= modification)
+	 @(_e_x_p_r_e_s_s_i_o_n)	  Switch to given time stamp (nothing printed)
+	       b	  backspace
+	       c	  Interrupt interpreting of _f_o_r_m_a_t.   The  rest
+			  of _f_o_r_m_a_t is ignored.	 No newline is output.
+	       f	  form feed
+	       n	  newline
+	       r	  carriage return
+	       t	  tab
+
+
+
+
+
+     Page 9					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	   =_n/_f_o_r_m_a_t/	  Stores interpreted _f_o_r_m_a_t into string	 buffer
+			  _n (0 to 9); nothing is printed
+	 =_x(_e_x_p_r_e_s_s_i_o_n)	  Stores  numeric  value  of  _e_x_p_r_e_s_s_i_o_n   (see
+			  below)  in  variable	_x  (any	 small letter);
+			  nothing is printed
+
+	  If  any  other  character  follows  a	 backslash,  _b_o_t_h  the
+	  backslash and	that character are output verbatim.  The above
+	  are also output on the after pass, if	applicable.
+
+	  Unless the \\\\cccc	sequence is encountered, _f_i_n_f_o outputs a  new-
+	  line	after  each  time  that	scanning the _f_o_r_m_a_t causes any
+	  output, including the	after pass,  if	 applicable.   The  \\\\""""
+	  sequence  is	useful	for putting comments in	a _f_i_n_f_o	format
+	  file.	 Everything up to the next newline in the  format,  or
+	  the  end  of	the  format,  is  ignored.   Thus, you needn't
+	  backslash the	newline	in a comment.
+
+	  The \\\\AAAA, \\\\CCCC, and \\\\MMMM sequences have no	effect	on  the	 after
+	  pass,	 and  the  \\\\TTTT sequence is the same as \\\\NNNN, which	is the
+	  default time stamp on	the after pass.	 \\\\@@@@ does work  on  the
+	  after	pass.  See below for the meaning of the	_e_x_p_r_e_s_s_i_o_n.
+
+	  Curiously, \\\\====	followed by a digit stores away	a string to be
+	  recalled  later,  while \\\\==== followed by a small letter	stores
+	  away a number	to be recalled later!  \\\\====0000////_f_o_r_m_a_t//// stores  the
+	  results  of expanding	the given _f_o_r_m_a_t into the given	string
+	  buffer 0 to 9	(here 0).  Value  of  string  buffers  can  be
+	  recalled with	%%%%&&&&0000 to %%%%&&&&9999 macros.
+
+	  \\\\====xxxx((((_e_x_p_r_e_s_s_i_o_n)))) stores a value in the	 given	real  variable
+	  (here	xxxx), which can be recalled with ####&&&&xxxx.  If	used as	a nor-
+	  mal macro to be printed, the integer value only is  printed.
+	  If used inside an expression,	the real value of the variable
+	  is used.
+	     \=f(2.5)#&f #:(#&f*2)
+	  Prints: 2222 5555
+
+	  \\\\QQQQ is	similar	to %%%%::::QQQQ,	but with no _f_l_a_g or _w_i_d_t_h, of course.
+
+	SSSSppppeeeecccciiiiaaaallll	AAAAfffftttteeeerrrr----PPPPaaaassssssss MMMMaaaaccccrrrroooossss
+	  The ####TTTT, ####XXXX,  and  ####BBBB	macros	are  special.	Each  normally
+	  reports  the	same information as the	####ssss, ####xxxx,	and ####bbbb macros,
+	  respectively.	 However, the presence of any  of  the	former
+	  macros  in  the  _f_o_r_m_a_t  string cause	_f_i_n_f_o to interpret the
+	  _f_o_r_m_a_t string	one extra time after all the _f_i_l_es  have  been
+	  processed.  During this so-called _a_f_t_e_r _p_a_s_s:
+
+	  1.  most macros are output as	empty  strings,	 blank	filled
+	      whenever	a  _w_i_d_t_h  is  used  or the macro has a default
+	      width - so that columns of text line up;
+
+
+
+
+     Page 10					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  2.  the ####TTTT macro itself is replaced with the total number of
+	      bytes of all _f_i_l_es (regular or directory)	for which a ####ssss
+	      or ####TTTT or %%%%ssss macro	were interpreted;
+
+	  3.  the ####BBBB macro itself is replaced with the total number of
+	      blocks in	regular	files or directories for which a ####bbbb or
+	      ####BBBB macro were interpreted;
+
+	  4.  the ####XXXX macro itself is replaced with the total number of
+	      _f_i_l_es for	which a	####xxxx or ####XXXX macro were interpreted;
+
+	  5.  the filename macros (%%%%bbbb, %%%%FFFF, %%%%ffff, and  %%%%nnnn)	 are  replaced
+	      with  meaningful	strings	 to  indicate that the printed
+	      size and counts are totals; and
+
+	  6.  all other	verbatim text in the _f_o_r_m_a_t is also output  on
+	      the  after  pass,	 as are	the special repetitive charac-
+	      ters, such as %%%%****.
+
+	  The ----tttt option, explained later, makes	several	 other	macros
+	  cause	an after pass, behaving	like the special macros	above.
+
+	QQQQuuuuooootttteeeedddd SSSSttttrrrriiiinnnngggg FFFFoooorrrrmmmmaaaatttt SSSSeeeeccccttttiiiioooonnnnssss %%%%::::QQQQ oooorrrr \\\\QQQQ
+	  The %%%%::::QQQQ macro	and \\\\QQQQ sequence	allow you to have text in your
+	  format  that	is  _n_o_t	to be treated for macros or back slash
+	  sequences.  The form of the macros is:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]::::QQQQ////_s_t_r_i_n_g////
+
+	  and of the sequence is:
+
+	  \\\\QQQQ////_s_t_r_i_n_g////
+
+	  Of course, quoted strings can't be "nested" because no  spe-
+	  cial	processing  is	done  to the _s_t_r_i_n_g between the	delim-
+	  iters!
+
+	EEEEnnnnvvvviiiirrrroooonnnnmmmmeeeennnntttt MMMMaaaaccccrrrroooo %%%%$$$$
+	  The %%%%$$$$ macro allows you to retrieve the value	of an environ-
+	  ment variable.  Its form is either:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]$$$$_v_a_r_n_a_m_e
+
+	  or
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]$$$$////_f_o_r_m_a_t////
+
+	  In the first form, the _v_a_r_n_a_m_e  must	begin  with  a	letter
+	  (either  case)  or underline (_).  _f_i_n_f_o stops scanning _v_a_r_-
+	  _n_a_m_e when it sees a character	that is	not a  letter,	digit,
+	  or  underscore.   It then looks up the value of the environ-
+	  ment variable	named by _v_a_r_n_a_m_e and formats it	 according  to
+
+
+
+     Page 11					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  the _f_l_a_g and _w_i_d_t_h.
+
+	  In the second	form, after expanding the _f_o_r_m_a_t, its value is
+	  taken	as the name of an environment variable,	whose value is
+	  retrieved and	formatted according to the _f_l_a_g	and _w_i_d_t_h.  An
+	  important difference between this and	the first form is that
+	  the _f_o_r_m_a_t is	interpreted (recursively) and may contain  any
+	  other	 macro reference.  For example,	%${%${D}} looks	up the
+	  value	of environment variable	DDDD, then	looks to see what  the
+	  value	of the variable	named in DDDD is.	So if DDDD====HHHHOOOOMMMMEEEE, then the
+	  above	 prints	 the  value  of	 the  HHHHOOOOMMMMEEEE  variable.	 Also,
+	  %${DAY#d}  would  print  the value of	the variable DDDDAAAAYYYY00001111 ...
+	  DDDDAAAAYYYY33331111, depending on the time-stamp's day of the month.
+
+	UUUUnnnnccccoooonnnnddddiiiittttiiiioooonnnnaaaallll FFFFoooorrrrmmmmaaaatttt SSSSeeeeccccttttiiiioooonnnnssss %%%%@@@@
+	  The %%%%@@@@ macro defines a section of the	_f_o_r_m_a_t to which	a _f_l_a_g
+	  and/or  _w_i_d_t_h	 applies  to entirely.	The form of this macro
+	  is:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]@@@@////_f_o_r_m_a_t////
+
+	  Format sections can be nested:
+
+	  %23@(	... %-6@( ... ))
+
+	  %23@(	... %-6@[ ... )	... ])
+
+	  The latter is	even valid, since the inner group "hides"  the
+	  first	right parenthesis from the outer group.
+
+	  A \\\\cccc found in	the _f_o_r_m_a_t section causes it to	quit all  lev-
+	  els of nesting.
+
+	SSSSiiiimmmmpppplllleeee CCCCoooonnnnddddiiiittttiiiioooonnnnaaaallll FFFFoooorrrrmmmmaaaatttt SSSSeeeeccccttttiiiioooonnnnssss %%%%????
+	  The %%%%???? macro defines a section of the	_f_o_r_m_a_t	that  is  only
+	  interpreted  under  certain  conditions, as specified	in the
+	  macro.  There	are two	forms of this macro,  the  simple  and
+	  the complex.
+
+	  The simple form of the macro looks like:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]????[!!!!]_x////_t_h_e_n-_f_o_r_m_a_t////[////_e_l_s_e-_f_o_r_m_a_t////]
+
+	  The _x	is actually a letter that states what the condition is
+	  that	is  to	be  tested.  The _t_h_e_n-_f_o_r_m_a_t is	the section of
+	  format that is interpreted if	the condition  passes,	other-
+	  wise	it is skipped.	The delimiters around it are as	above,
+	  and can be nested the	same way:
+
+	  %?f{ ... %23?s{ ... }}
+
+	  The !!!!	means the negation of the condition (if	the  condition
+
+
+
+     Page 12					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  isn't	true the _t_h_e_n-_f_o_r_m_a_t is	interpreted).
+
+	  If the character immediately following the ending  delimiter
+	  of  the  _t_h_e_n-_f_o_r_m_a_t is the same as the beginning delimiter,
+	  _f_i_n_f_o	assumes	it begins an _e_l_s_e-_f_o_r_m_a_t that is to be	inter-
+	  preted  if  and only if the condition	does not pass (or does
+	  pass with the	!!!!).
+
+	  The _f_l_a_g and _w_i_d_t_h are used on  the  entire  _t_h_e_n-_f_o_r_m_a_t  or
+	  _e_l_s_e-_f_o_r_m_a_t.	 If  the condition fails and there is no _e_l_s_e-
+	  _f_o_r_m_a_t, the _f_l_a_g and _w_i_d_t_h have  no  effect.	 They  do  not
+	  cause	that many spaces, for example.
+
+	  The conditions that can be tested are:
+
+	      A	  Was the access time (-a) requested?
+	      a	  Is this the after pass?
+	      b	  Is this a block special file?
+	      C	  Was the status change	time (-c) requested?
+	      c	  Is this a character special file?
+	      d	  Is this a directory?
+	      f	  Is this a regular file?
+	      F	  Is this a file descriptor argument?
+	      g	  Does this entry have the set group ID	bit set?
+	      k	  Does this entry have the sticky bit set?
+	      L	  -s not requested?  False on systems without sym-
+		  bolic	links (as if -s	is always given).
+	      l	  Is this a symbolic link file?
+	      M	  Was the  modification	 time  (-m,  the  default)
+		  requested?
+	      p	  Is this a named pipe file (FIFO)?
+	      r	  Is this entry	readable by my login?
+	      s	  Is this a file or directory with nonzero size?
+	      T	  Is this the after pass with the ----TTTT option?
+	      t	  Was the total	option ----tttt given?
+	      u	  Does this entry have the set user ID bit set?
+	      v	  Is verbose mode option (-v) on?
+	      w	  Is this entry	writable by my login?
+	      x	  Is this entry	executable/searchable by my login?
+
+	  When a file descriptor argument is used, the rrrr and  wwww	 tests
+	  go  farther  in  that	 they not only test the	file or	device
+	  referenced by	the file descriptor for	the  given  mode,  but
+	  they	also  test to see if the given file descriptor is open
+	  for the given	mode.  The xxxx test is not affected.
+
+	  Only one of the AAAA, CCCC,	or MMMM will be TRUE.  It merely reflects
+	  which	 of  the options, ----aaaa, ----cccc, or ----mmmm	"won," keeping in mind
+	  that,	following normal conventions, the _l_a_s_t such option  on
+	  the  command	line  "wins" (takes affect), with ----mmmm being the
+	  default if none of them is used.
+
+
+
+
+     Page 13					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  When a format	 section  is  ignored  (because	 of  the  test
+	  results), macros and back slash sequences that usually cause
+	  side effects (such as	 \\\\AAAA)  don't.   ####TTTT  doesn't  cause  the
+	  current file's size to be added to the total,	and so on.
+
+	CCCCoooommmmpppplllleeeexxxx	CCCCoooonnnnddddiiiittttiiiioooonnnnaaaallll FFFFoooorrrrmmmmaaaatttt SSSSeeeeccccttttiiiioooonnnnssss %%%%????
+	  The more complex form	of the %%%%???? conditional macro is similar
+	  to  the  simple  form,  but  the  single test	character (and
+	  optional preceding !!!!)	 are  replaced	with  a	 parenthesized
+	  expression:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]????((((_e_x_p_r_e_s_s_i_o_n))))////_t_h_e_n-_f_o_r_m_a_t////[////_e_l_s_e-_f_o_r_m_a_t////]
+
+	  If the _e_x_p_r_e_s_s_i_o_n, explained in the next section,  evaluates
+	  to  non-zero,	 the conditional _f_o_r_m_a_t	is interpreted,	other-
+	  wise it is skipped, as before.  Only parenthesis may be used
+	  around the _e_x_p_r_e_s_s_i_o_n	here.
+
+	EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss
+	  An expression	consists of
+
+	  +o operators, listed below,
+
+	  +o the	above test letters (Simple Conditional), which	evalu-
+	    ate	to 1 if	true or	0 if false,
+
+	  +o number constants, which may	be any real values,
+
+	  +o the	#### numeric macros (no _f_l_a_g  or  _w_i_d_t_h  allowed  here!),
+	    such as ####YYYY for year	of currently selected time stamp, [The
+	    ####::::((((_e_x_p_r_e_s_s_i_o_n)))) macro is not	allowed	here, and indeed isn't
+	    needed.]
+
+	  +o functions, also listed below,
+
+	  +o mmmmiiiinnnnuuuutttteeee or mmmmiiiinnnnuuuutttteeeessss with a value of 60,  or  hhhhoooouuuurrrr  or	 hhhhoooouuuurrrrssss
+	    with  a  value  of	60*60,	or ddddaaaayyyy or ddddaaaayyyyssss with a value of
+	    60*60*24, or wwwweeeeeeeekkkk or wwwweeeeeeeekkkkssss with  a	value  of  60*60*24*7.
+	    These  are	handy  in  expressions with time stamp values,
+	    such as
+
+	    #t > #n - 5*days
+
+	    which is true if the time stamp of the file	is later  than
+	    5 days ago.
+
+	  +o and	####$$$$_v_a_r_i_a_b_l_e,  which  is	the  value  contained  in  the
+	    environment	 _v_a_r_i_a_b_l_e, or 0.0 if the variable isn't	set or
+	    isn't numeric.  This is short-hand for vvvvaaaallll((((%%%%$$$$vvvvaaaarrrriiiiaaaabbbblllleeee)))).
+
+	  The  time-stamp  changing  back-slash	 sequences  are	  also
+	  accepted  prior  to any operand (_i._e.	anything but non-unary
+
+
+
+     Page 14					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  operators or parenthesis) to	switch	the  referred-to  time
+	  stamp,  as above.  Macros that normally cause	an after pass,
+	  such as ####TTTT still do so even  in  the	_e_x_p_r_e_s_s_i_o_n.   See  the
+	  EXAMPLES, below.
+
+	  Expression evaluation	uses double  precision	real  numbers.
+	  Number  constants that begin with 0x or 0X are assumed to be
+	  hexadecimal integers (long), such as	0xFACE.	  Number  con-
+	  stants  that	begin with 0, but do not contain 8, 9, decimal
+	  point	(.), e,	or E, are taken	to be octal  integers  (long),
+	  such	as  0644.  Octal or hexadecimal	long integer constants
+	  are converted	to double precision real numbers.
+
+	  The operators	are as follows,	according to precedence:
+
+	   (_e_x_p_r_e_s_s_i_o_n)	      parenthesized sub-expressions
+	  _f_u_n_c_t_i_o_n(...)	      and functions
+
+	  unary	- ! % ~	      negative,	NOT, integer part, 1s complement
+
+	      *	/ %	      multiply,	divide,	modulus
+
+	       + -	      add, subtract
+
+	      >> <<	      shift right, shift left
+
+		&	      bit-wise AND
+
+	       | ^	      bit-wise OR, bit-wise XOR
+
+	  = != < <= > >=      magnitude	comparisons
+
+		&&	      logical AND
+
+		||	      logical OR
+
+	_e_x_p_1 ? _e_x_p_2 : _e_x_p_3    if/then/else
+
+	  Notice that only parenthesis are used	 for  grouping	within
+	  expressions,	not  the other delimiters that surround	format
+	  sections.  Division or modulus  by  zero  doesn't  cause  an
+	  error, but does nothing.
+
+	  NOT (!!!!) causes a 1 result if the following term is equal  to
+	  0 and	a 0 result if the following term is not	0.  The	magni-
+	  tude comparisons and logical AND and OR cause	a 1 result  if
+	  true	and  a 0 result	if false.  !!!!<<<<,,,, !!!!<<<<====,,,, !!!!>>>>,,,,	!!!!>>>>==== and	<<<<>>>> are
+	  synonyms for >>>>====,,,, >>>>,,,, <<<<====,,,, <<<< and	!!!!====.
+
+	  The modulus operator,	AAAA %%%% BBBB, is defined as AAAA----%%%%((((AAAA////BBBB))))****BBBB, which
+	  can  cause  a	 non-integer result if AAAA or BBBB are non-integer.
+	  Use the integer coercion unary operator to force an  integer
+
+
+
+     Page 15					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  result: %%%%AAAA %%%% %%%%BBBB.
+
+	  The "if/then/else" operator works like this:
+	     _e_x_p_r_e_s_s_i_o_n_1 ???? _e_x_p_r_e_s_s_i_o_n_2 :::: _e_x_p_r_e_s_s_i_o_n_3
+	  If the value of _e_x_p_r_e_s_s_i_o_n_1 is non-zero, the result  is  the
+	  value	 of  _e_x_p_r_e_s_s_i_o_n_2, otherwise the	result is the value of
+	  _e_x_p_r_e_s_s_i_o_n_3.
+
+	  Like C and shell, _f_i_n_f_o parses both sides of the &&&&&&&&  and  ||||||||
+	  operators, as	well as	all parts of the "if/then/else"	opera-
+	  tor, but they	"ignore" portions of the expression,  such  as
+	  the "then" portion when the first expression (the "if" part)
+	  evaluates to 0.  _f_i_n_f_o "ignores" any macros in  the  portion
+	  that would increase totals (such as ####TTTT), as well as any time
+	  stamp	changers (such as \\\\AAAA), and so on.
+
+	  The functions	are as follows.	eeee represents a numeric expres-
+	  sion,	 ssss  and	tttt represent _f_o_r_m_a_t sections (strings of	text),
+	  and <<<<	and >>>> represent	the usual _f_o_r_m_a_t/_s_t_r_i_n_g	delimiters.
+
+	  abs(e)      absolute value
+	  ceil(e)     smallest integer not < _e
+	 cmp<s,t>     _s	compared to _t: <0, 0, >0 (strcmp)
+	cmpn<s,t,e>   same as ccccmmmmpppp but only first _e characters (strncmp)
+	  eq<s,t>     string equality (ccccmmmmpppp((((ssss,,,,tttt))))	==== 0000)
+	eqn<s,t,e>    same but only first _e characters (ccccmmmmppppnnnn((((ssss,,,,tttt,,,,eeee)))) ==== 0000)
+	 floor(e)     largest integer not > _e
+	  len<s>      length of	expanded format	string _s
+	 mch<s,t>     does _s match file	name pattern _t
+	 rex<s,t>     does _s match regular expression _t
+	  sqrt(e)     square root
+	  val<s>      numeric value of format section _s	(atof)
+
+	  Don't	 place	any  extra  spaces  around   format   sections
+	  (strings) in function	calls or the spaces become part	of the
+	  string.  Since comma is used as a  fixed  delimiter  between
+	  _f_o_r_m_a_t  portions,  notice that you may "escape it" with back
+	  slash	(\\\\,,,,).
+
+	  mmmmcccchhhh returns 1	(true) or 0 (false) depending on  whether  the
+	  first	 string	 is  matched  by the second, which should look
+	  like a shell file name pattern, including  wild-cards:  ????  ****
+	  [[[[[!!!!]_c_h_a_r_s].	Note  that unlike the shell, slashes in	either
+	  the subject string or	the match string are not treated  spe-
+	  cial.	  But  you  can	 match	just  the  base	name of	a file
+	  against a pattern, or	just its directory name:
+
+	  mch(%f,*woods*)   ! mch[%b,finfo.?]	mch{%D,*/src}
+
+	  fffflllloooooooorrrr((((xxxx)))) is not the same as %%%%xxxx.  For example,	fffflllloooooooorrrr((((----3333....4444)))) is
+	  ----4444, while %%%%----3333....4444 is ----3333.
+
+
+
+
+     Page 16					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  rrrreeeexxxx is similar to mmmmcccchhhh	except that  it	 matches  the  subject
+	  string   against   a	 regular  expression,  as  defined  in
+	  regcmp(3X).  If the ((((	............ ))))$$$$0000	construct is used, the matched
+	  sub-text  is stored away in the same-numbered	string buffers
+	  (see \\\\==== above), which	can be accessed	with %%%%&&&&0000 to  %%%%&&&&9999.   To
+	  avoid	 confusion,  you  may  want to quote the entire	second
+	  argument to the _r_e_x function using the \\\\QQQQ sequence.
+
+	RRRReeeeppppeeeeaaaatttt MMMMaaaaccccrrrroooo %%%%::::****
+	  The %%%%::::**** repeat macro is a  generalization  of	 the  repeated
+	  character  macros, such as %%%%_n====.  It processes	a given	format
+	  section, then	outputs	it repeatedly,	the  number  of	 times
+	  being	 given by the _w_i_d_t_h portion of the macro.  The form of
+	  the macro is:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]::::****{{{{_f_o_r_m_a_t}}}}
+
+	  The _f_l_a_g is ignored in this  macro,  since  the  _w_i_d_t_h  just
+	  gives	 a  repetition	count.	 If  _w_i_d_t_h is not given, or is
+	  zero,	 nothing  is  output,  but  any	 macros	 having	 "side
+	  effects",  such  as  \\\\AAAA  or  ####TTTT, in the _f_o_r_m_a_t ddddoooo have their
+	  effect.
+
+	SSSSuuuubbbbssssttttrrrriiiinnnngggg MMMMaaaaccccrrrroooo	%%%%::::@@@@
+	  The %%%%::::@@@@ macro	processes a given format  section,  then  only
+	  outputs  a  portion  of the result, as defined by one	or two
+	  numeric expressions.	As usual, it does output  the  portion
+	  based	 on optional _f_l_a_g and _w_i_d_t_h specifications immediately
+	  after	the %%%%.	The form of this macro is:
+
+	  %%%%[_f_l_a_g][_w_i_d_t_h]::::@@@@{{{{_f_o_r_m_a_t,,,,[_s_t_a_r_t ][,,,,_c_o_u_n_t]}}}}
+
+	  The _s_t_a_r_t expression indicates where to start	 the  portion,
+	  and  the first character is 1	(not 0 as in C).  If negative,
+	  it is	assumed	to be relative to the right end	of the	_f_o_r_m_a_t
+	  (-1  would  start  at	 the  last character).	If omitted, it
+	  starts with the first	character of the _f_o_r_m_a_t.
+
+	  The optional _c_o_u_n_t expression	indicates the number of	 char-
+	  acters  to  take from	the portion.  If omitted, it takes the
+	  rest of the format, from _s_t_a_r_t to the	end.  If negative,  it
+	  lops off that	many characters	from the end of	the format and
+	  takes	up to there (-2	means up to the	third from last	 char-
+	  acter, lopping off the last 2	characters).
+
+
+
+
+
+
+
+
+
+
+
+     Page 17					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+		       _S_t_r_i_n_g	_s_t_a_r_t	 _c_o_u_n_t	  _R_e_s_u_l_t
+		       ABCDEF	 1	  4	  ABCD
+		       ABCDEF	  none	  3	  ABC
+		       ABCDEF	 3	  2	  CD
+		       ABCDEF	 2	  0	  BCDEF
+		       ABCDEF	 4	   none	  DEF
+		       ABCDEF	 2	 -2	  BCD
+		       ABCDEF	-3	  1	  D
+		       ABCDEF	-4	  0	  CDEF
+		       ABCDEF	-5	 -2	  BCD
+
+	OOOOppppttttiiiioooonnnnssss::::
+	  ----AAAA	      Always forces an after pass, even	if none	of the
+		      named  _f_i_l_es  existed,  and even if no macro was
+		      interpreted that causes  an  after  pass.	  This
+		      does  not	turn on	the ----tttt option.	This option is
+		      automatically turned on if a _f_o_r_m_a_t is given but
+		      no _f_i_l_e names.  See General Information, below.
+
+	  ----aaaa	      The time stamp used prior	to any \\\\AAAA, \\\\CCCC, \\\\MMMM,  or
+		      \\\\NNNN is the	time of	last access, instead of	modif-
+		      ication (the default).
+
+	  ----cccc	      The time stamp used prior	to any \\\\AAAA, \\\\CCCC, \\\\MMMM,  or
+		      \\\\NNNN is the	time of	last status change, instead of
+		      modification (the	default).
+
+	  ----FFFF	      The _f_o_r_m_a_t given on the command line is actually
+		      the  name	of a file, whose contents are taken as
+		      the real format.	The final newline in the  file
+		      (if any) is ignored.
+
+	  ----ffff	      is the same as ----FFFF	except that if the  file  name
+		      (given in	place of a _f_o_r_m_a_t) does	not start with
+		      a	slash (/, that is, is  not  fully  qualified),
+		      and does not exist relative to the current work-
+		      ing directory, then _f_i_n_f_o	 looks	for  the  file
+		      relative	to "finfo libraries."  finfo libraries
+		      are  merely  each	 directory  from   your	  PPPPAAAATTTTHHHH
+		      environment variable with	////........////lllliiiibbbb////ffffiiiinnnnffffoooo appended
+		      to  each.	  If  the  _f_i_n_f_o  command  itself  was
+		      invoked  using  a	 directory name	(full or rela-
+		      tive), that directory is internally prepended to
+		      your PATH	when looking for finfo libraries.
+
+		      For   example,	if    your    PATH    contains
+		      ////uuuussssrrrr////eeeexxxxppppttttoooooooollllssss////bbbbiiiinnnn,  you  may  have  format files
+		      contained	in ////uuuussssrrrr////eeeexxxxppppttttoooooooollllssss////lllliiiibbbb////ffffiiiinnnnffffoooo that	can be
+		      accessed	by merely using	----ffff and the name	of the
+		      format file therein, since
+		      /usr/exptools/bin/../lib/finfo = /usr/exptools/lib/finfo.
+
+
+
+
+     Page 18					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  ----mmmm	      The time stamp used prior	to any \\\\AAAA, \\\\CCCC, \\\\MMMM,  or
+		      \\\\NNNN   is  the  time  of  last  modification  (the
+		      default).
+
+	  ----oooo _o_u_t_f_i_l_e  Output from the _f_i_n_f_o command is written to  the
+		      specified	output file, _o_u_t_f_i_l_e.
+
+	  ----OOOO _o_u_t_f_i_l_e  Output from the _f_i_n_f_o command is appended	to the
+		      specified	 output	file, _o_u_t_f_i_l_e.	The last ----oooo or
+		      ----OOOO, if any, determines where the output goes to.
+		      Otherwise	the output goes	to standard output.
+
+	  ----qqqq	      Don't  complain  about  _f_i_l_es  that   can't   be
+		      stat()ed.	   Exit	 code  still  shows  how  many
+		      failed.
+
+	  ----ssss	      Status information is about files	pointed	to  by
+		      symbolic	links  (when  they  are	given),	rather
+		      than on the symbolic link	files themselves.
+
+	  ----tttt	      Interpret	####ssss as though it	were  ####TTTT  (except  the
+		      default  _w_i_d_t_h), ####xxxx as though it were ####XXXX,	%%%%ssss (on
+		      non-device files)	as though it were ####7777TTTT, and  ####bbbb
+		      as though	it were	####BBBB (on regular files or	direc-
+		      tories).	This, of course, forces	an after  pass
+		      if  the  _f_o_r_m_a_t  contains	 any  of these macros.
+		      Doesn't change the behavior of any ####TTTT and	so on.
+
+	  ----TTTT	      Turns on the ----tttt option.  Plus  the  scanning  of
+		      the  _f_o_r_m_a_t  for	each  individual _f_i_l_e does _n_o_t
+		      cause any	output.	 Instead, only the after  pass
+		      scan  of the _f_o_r_m_a_t causes output, and the pres-
+		      ence of %%%%ffff (_e_t _a_l) macros	in the format  do  _n_o_t
+		      print the	text "****	TTTTOOOOTTTTAAAALLLL ****".
+
+	  ----hhhh	      Prints a usage message to	standard output	before
+		      continuing.  If standard output is to a terminal
+		      and the PPPPAAAAGGGGEEEERRRR environment	variable is  set,  the
+		      specified	 pager	is  used  to  display the help
+		      text.  If	a genuine usage	error occurs  (missing
+		      _f_o_r_m_a_t)  no  usage  message  is sent to standard
+		      error.
+
+	  ----====_x[_v_a_l_u_e]  If _x is a	 letter	 (capitals  are	 converted  to
+		      smalls),	the  _v_a_l_u_e  must  be  a	(real) number,
+		      which is given to	the  specified	variable,  and
+		      can  be  retrieved  in  the _f_o_r_m_a_t with ####&&&&_x.  No
+		      _v_a_l_u_e causes the variable	to be zeroed.
+		      If _x is a	digit, the _v_a_l_u_e is a string  that  is
+		      stored  in the given string buffer, which	can be
+		      retrieved	in the	_f_o_r_m_a_t	with  %%%%&&&&_x.   No	 _v_a_l_u_e
+		      causes the buffer	to be cleared.
+
+
+
+     Page 19					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+		      Anything else for	_x (including no	_x!)  causes  a
+		      usage error.
+
+	  ----VVVV	      Prints the program version  number  to  standard
+		      output before continuing.	 If no _f_i_l_e names were
+		      given, the program exits successfully, even if a
+		      _f_o_r_m_a_t was given.	 You can use ----AAAA	to force it to
+		      interpret	the _f_o_r_m_a_t anyway.
+
+	  ----vvvv	      Verbose mode.  This does nothing to _f_i_n_f_o	except
+		      set  the	"verbose  mode"	flag, which the	user's
+		      format can test with the vvvv test.	 _f_i_n_f_o	itself
+		      does nothing more	with the flag.
+
+	  Note:	Because	_f_i_n_f_o gets  the	 status	 of  all  input	 files
+	  before  beginning  output,  if a file	is named in a ----oooo or ----OOOO
+	  option and also appears as an	input  file,  the  information
+	  written  to this file	is the old information about the file.
+	  As an	example, to keep a file	for its	time stamp, but	 store
+	  the  previous	 modification  time  (of the file) in the file
+	  itself, you could use:
+
+	  finfo	-o file	'#m#d#H#M#y' file
+
+	  (ffffiiiilllleeee	is now touched,	 but  contains	its  old  modification
+	  time.)   Then	 to  touch(1)  this  file back to its previous
+	  modification time, you would use:
+
+	  touch	`cat file` file
+
+	GGGGeeeennnneeeerrrraaaallll	IIIInnnnffffoooorrrrmmmmaaaattttiiiioooonnnn
+	  If no	_f_i_l_e names are specified, _f_i_n_f_o	forces an "after pass"
+	  which	 simply	 prints	 (a) the values	of time	stamp oriented
+	  macros using the current ("now") time	stamp (\\\\NNNN) by default;
+	  (b)  the  values  of other non-file oriented macros, such as
+	  %%%%::::uuuu; (c) spaces for default fixed-width macros, unless the ----
+	  flag is used in them without a _w_i_d_t_h;	and (d)	verbatim text.
+	  This allows _f_i_n_f_o  to	 be  used  as  a  general  information
+	  printer.
+
+	PPPPrrrreeeeddddeeeeffffiiiinnnneeeedddd ffffiiiinnnnffffoooo FFFFoooorrrrmmmmaaaatttt	FFFFiiiilllleeeessss
+	  These	files are available in the tools finfo library,	so you
+	  only need to type:
+
+	  finfo	_f_o_r_m_a_t_f_i_l_e_n_a_m_e [ _o_p_t_i_o_n(_s) ] [ _f_i_l_e(_s) ]
+
+
+	  ffffiiiilllleeee____iiiinnnnffffoooo   gives complete information in a nicely formatted
+		      79-column	 box  for all files specified.	The ----vvvv
+		      option causes the	file name to be	 fully	quali-
+		      fied  on	the  output.   You may also use	the ----tttt
+		      option to	get file size totals.
+
+
+
+     Page 20					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  ssssiiiizzzzeeeeooooffff      reports the size (in bytes) of the named	files,
+		      much  faster  than  "wc -c" could.  If more than
+		      one file name is given, or if the	----vvvv  option  is
+		      used,  it	 outputs the size followed by the file
+		      name, the	size is	8 characters, right justified.
+		      If  only	one file name is given (without	the ----vvvv
+		      option), only the	size  is  output  (not	fixed-
+		      width),  which is	useful for command output sub-
+		      stitution, such as `finfo	sizeof file`.  The  ----vvvv
+		      option is	used to	force the file name to be out-
+		      put even if only one file	name is	given, as in
+		      finfo sizeof -v *
+
+	  mmmmttttiiiimmmmeeee	      Is a quick way to	 see  a	 file's	 modification,
+		      last access, or last status change time.	Unlike
+		      "ls -l", it includes the seconds	&  time	 zone,
+		      and  does	not just give you the year if the file
+		      was modified, etc., too long ago.	 The file name
+		      accompanies each time report.
+
+		      Just use ----aaaa or ----cccc	as  usual  to  get  the	 other
+		      times in place of	the modification time.
+
+	  mmmmttttiiiimmmmeeee----tttt     Gives the	modification,  last  access,  or  last
+		      status  change  time  in	the  format  needed by
+		      _t_o_u_c_h(1),	including the file name.  Using	the ----cccc
+		      option  is  useless, since the _t_o_u_c_h command has
+		      no option	to just	touch the status change	 time.
+		      This may be used with a single file, to touch it
+		      back  to	a  previous  modification  time	 after
+		      intervening  commands have modified the file, as
+		      follows:
+
+		      TOUCHFILE=`finfo mtime-t file`
+		      .	. .
+		      _I_n_t_e_r_v_e_n_i_n_g _c_o_m_m_a_n_d_s _t_h_a_t	_c_h_a_n_g_e _f_i_l_e'_s _t_i_m_e _s_t_a_m_p
+		      .	. .
+		      touch $TOUCHFILE
+
+		      If the ----vvvv	option is used,	the ttttoooouuuucccchhhh  command  is
+		      prepended	to each	line of	output.	 If the	access
+		      time is requested, the ----aaaa	option is included  in
+		      the  output  after  the  ttttoooouuuucccchhhh  command.	If the
+		      modification time	is requested (default),	the ----mmmm
+		      option  is  included in the output.  This	may be
+		      used when	multiple files have to be touched back
+		      to a previous modification time, as follows:
+
+		      finfo mtime-t -v -o/tmp/tch$$ *
+		      .	. .
+		      .	/tmp/tch$$
+		      rm -f /tmp/tch$$
+
+
+
+     Page 21					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  ddddffff	      On systems on which the %%%%::::MMMM and %%%%::::DDDD macros work,
+		      this  is the same	as the System 5	_d_f(1) command,
+		      with the	----vvvv  option  being  used	 for  _d_f's  ----tttt
+		      option.	If  no	files  (directories, etc.) are
+		      specified	with this format  it  prints  a	 usage
+		      message.	 To  print  all	 file systems, see the
+		      usage message.
+
+	  Send me your _f_i_n_f_o format script and	I'll  add  it  to  the
+	  library, with	credits	to you.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+	  Usage	or bad _f_o_r_m_a_t errors cause a -1	return	code  (255  to
+	  the shell).  Otherwise, the exit code	is the number of files
+	  that could not be stat()ed (even if the ----qqqq option was	speci-
+	  fied).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  A useful format in $HOME/lib/finfo/lsl:
+	  %p#4l	%-9u%-9g%s %3m #2d %t %f%?l( ->	%l)
+	    Note:  %?l	=  if  this  is	 a  symbolic  link,  then   do
+	  parenthesized	stuff.
+
+	  # Use	it:
+	  finfo	lsl *	  # Looks just like an ls -ld *	!!!!!
+
+	  finfo	-a lsl *  # Looks just like an ls -ldu * !!!!
+
+	  # Try	an ls -l but with total	file size:
+	  finfo	-t lsl finfo*
+	  _S_a_m_p_l_e _o_u_t_p_u_t:
+	  -rw-r--r--   1 woods	  ftddev     66649 Jan	4 22:35	finfo.c
+	  -rw-rw-r--   1 woods	  ftddev    115900 Jan	4 15:34	finfo.o
+					    182549		* TOTAL	*
+
+	  # Just like an ls -s *:
+	  finfo	"#b %f"	*
+
+	  # Two	ways to	do above & get total blocks:
+	  finfo	-t "#b %f" *
+	  finfo	"#B %f"	*
+
+	  # Modified ls	-l type	permissions w/out setuid bit, etc.:
+	  finfo	"%1p%U%G%O %f" file
+	  # (1st character of permissions, plus	simplified permissions.)
+
+	  # List empty files (not directories):
+	  finfo	"%?(f && !s){%f}" *
+	    f =	is a regular file, !s =	is empty (no size)
+
+	  # ls only regular files, but fully expanded:
+	  finfo	'%?f{%F}' *
+
+
+
+     Page 22					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  # List objects that are greater than 100K bytes, including size:
+	  finfo	'%?(#s > 100000):#8s %f:' *.o
+
+	  # Length of a	string function:
+	  length()
+	  {
+		finfo "#:(len{Q^A$*^A})"
+	  }
+	  Those	^As are	control	A characters.  The  input  string  may
+	  contain  anything  but  NULs	or  SOHs.  Sample uses of this
+	  function:
+	  length $FILENAME
+	  LEN=`length $DIR/$REPLY.Z`
+
+	  # List info. about group writable, regular files:
+	  finfo	'%?a:\n:%?((#p & 020 &&	f) || a){#3X #4B %p #8T	%f}' *
+	    1	27 -rw-rw-r--	 12974 checkpath.o
+	    2  168 -rw-rw-r--	 84480 finfo.cpio
+	    3	 1 -rw-rw-r--	    53 sample
+	    4	 4 -rw-rw-r--	  1835 searchpath.new
+	    5	67 -rw-rw-r--	 33496 searchpath.o
+	    6	 7 -rw-rw-r--	  3294 vers.checkpath
+	    7	 2 -rw-rw-r--	   649 vers.finfo
+	    8	 2 -rw-rw-r--	   911 vers.mailnews
+	    9	 6 -rw-rw-r--	  2904 where.news
+
+	    9  284		140596 * TOTAL *
+	    Because of precedence, the inner parenthesis on the	second
+	  %%%%????  test weren't needed; but they clarify the	portion	of the
+	  test for files, as opposed to	the after pass.
+	    The	last line tells	us that	the ####3333XXXX	macro was  interpreted
+	  for  9  files,  that	the  ####4444BBBB macro was interpreted for 284
+	  blocks total,	and that the ####8888TTTT  macro	 was  interpreted  for
+	  140,596 bytes	total.
+
+	  # Like `echo *' except only list regular files:
+	  finfo	-A '%?f[%?(#x>1)" "%f]%?a"\n"\c' *
+	    Same as:
+	  x=0
+	  for FILE in *
+	  do
+	     if	[ -f "$FILE" ]
+	     then
+		x=`expr	$x + 1`	  # ksh: let x=x+1
+		[ $x -gt 1 ] &&	echo ' \c'
+		echo "$FILE\c"
+	     fi
+	  done
+	  echo
+
+	  # List only directories (plus	ending /) & files:
+	  finfo	'%?(f||d)@%f@%?d#/#' *
+
+
+
+     Page 23					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+	  # List files that haven't been accessed since	last modified:
+	  finfo	'%?(\M #t !< \A	#t){%T %f}' $files
+	    Modification time stamp isn't less than access time	stamp.
+
+	  # See	if source file is newer	than object (for Bourne	shellers):
+	  eval `finfo "Time#x=#t" $file.c $file.o`
+	  if [ 0$Time1 -gt 0$Time2 ]
+	  then ...
+	    The	_e_v_a_l line sets TTTTiiiimmmmeeee1111 to	the time stamp	of  the	 first
+	  file	and  TTTTiiiimmmmeeee2222 to the time stamp of	the second.  The zeros
+	  before the variable references in the	test  are  to  prevent
+	  shell	 syntax	errors should something	go wrong in the	previ-
+	  ous step.
+
+	  # Let's see what others can do with myfile:
+	  case `finfo %O myfile` in
+	  r?x)	# At least read	and execute permission on this file.
+	      .	. . ;;
+	  esac
+
+	  # Two	ways to	get file types only:
+	  finfo	'%1p' *		  # <--	Except regular file = -
+	  finfo	'%?f[f][%1p]' *	  # Now	it's fixed.
+
+	  # Replacement	for the	id(1) command, but customizable:
+	  finfo	'uid=#:u(%:u) gid=#:g(%:g)'
+
+	  And so on, with powerful possibilities.
+
+	  Note that the	\\\\TTTT sequence is the same	as
+
+	  %?M{\M}%?A{\A}%?C{\C}
+
+	  The %%%%ssss macro is the same as
+
+	  %7?(b||c){#J,#3N}{#s}
+
+	  If block special or character	 special,  then	 major	device
+	  number,  comma,  minor  device number, otherwise file	size -
+	  all in a right justified 7 character field.
+
+	  The %%%%tttt macro is the same as
+
+	  %5?(#t < #n-180*days || #t > #n+hour){#Y}{#H:#M}
+
+	  If the file's	selected time stamp is less than (before)  the
+	  current  time	stamp minus 180	days, or if it is greater than
+	  (beyond) the current time stamp plus 1 hour, print the year;
+	  otherwise  print  the	hours, colon, minutes.	In either case
+	  the result is	5 characters right justified.
+
+	  The ####YYYY macro is the same as ####::::((((####yyyy++++1111999900000000)))).
+
+
+
+     Page 24					     (printed 1/26/96)
+
+
+
+
+
+
+     FFFFIIIINNNNFFFFOOOO((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      FFFFIIIINNNNFFFFOOOO((((1111))))
+
+
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  stat(2), statfs(2)  or  ustat(2),  ctime(3C),	 getmntent(3),
+	  regcmp(3X) - standard	UNIX
+	  dir_name(3),	base_name(3),  norm_file(3),  expression(3)  -
+	  available from the author
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+	  Using	####xxxx or ####XXXX in an expression for a	file  (as  opposed  to
+	  the after pass), causes it to	"count"	the file (if it	hasn't
+	  already been counted), unlike	the ####ssss,	####TTTT, ####bbbb,	and ####BBBB macros,
+	  which	 only  accumulate  their  data when used outside of an
+	  expression.  (Inside an expression they refer	to the current
+	  file's information, rather than the accumulated data anyway.
+	  Buf if ####xxxx is only used inside	of  an	expression,  it	 would
+	  stay at 0 were it not	bumped for each	new file.)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEEDDDD BBBBYYYY
+	  Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 25					     (printed 1/26/96)
+
+
+

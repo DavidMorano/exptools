@@ -1,0 +1,216 @@
+[[edited slightly for clarification since it was originally posted ... wjc]]
+
+Message-ID: <1992Feb11.174506.22769@cbnewsh.cb.att.com>
+References: <1992Feb4.204509.27726@cbfsb.att.com>
+	<1992Feb10.155710.8064@cbfsb.att.com>
+Newsgroups: att.news,att.exptools,att.emacs
+From: billc@pegasus.ATT.COM (Bill Carpenter)
+Subject: GNUemacs sources (was Re: local gnuemacs to be removed on Feb. 11)
+Organization: AT&T Bell Laboratories
+Distribution: att
+Date: Tue, 11 Feb 1992 17:45:06 GMT
+In-Reply-To: tgt@cbnewsg.cb.att.com's message of Mon, 10 Feb 1992 15: 57:10 GMT
+
+tgt> The local copy of gnuemacs (in /usr/add-on/server/gnuemacs) will
+tgt> be removed from the netnews servers tomorrow, February 11th.
+
+The cbnews administrators have graciously let us park some of the
+sources there for a while, but other arrangements have now been made.
+This is a note about where to find GNUemacs sources, locally and afar.
+
+GENERAL
+=======
+GNUemacs is an outside tool supported through the exptools mechanism
+in Bell Labs and some other AT&T machines.  Due to disk space
+constraints and because not everyone wants it, there are some things
+that we don't distribute automatically.  For one thing, the C source
+files are only of use to a very small number of folks.  The
+byte-compiled versions of elisp files are distributed because the
+non-compiled versions are quite a bit larger and are really only
+needed for reference and mystery solving.
+
+THE SUPER OFFICIAL NO-KIDDING PLACE
+===================================
+The "master" copies of the officially distributed GNUemacs sources are
+available via anonymous FTP from prep.ai.mit.edu; however, you
+probably don't want to bother with this, since the same thing is
+available within AT&T already (described below).  For more information
+about the master (non-exptools) source distribution, you might like to
+read these exptools files:
+
+	$TOOLS/lib/gnuemacs/dist/etc/DISTRIB
+	$TOOLS/lib/gnuemacs/dist/etc/FTP
+	$TOOLS/lib/gnuemacs/dist/etc/COPYING
+
+Again, the only reason full sources are not provided in exptools is
+because it gets replicated on so many different disks.
+
+OUR ARCHIVES
+============
+Sources for everything distributed in exptools GNUemacs are available
+via anonymous FTP from bell1.hdtv.att.com (see the further note below
+about using FTP).  Here's the basic directory structure:
+
+	/pub/gnuemacs/
+	              Readme.before.getting.anything
+	              What_do_I_do
+	              doc/
+	              src/
+	                  emacs-18.57.tar.Z
+	                  exptools_src.tar.Z
+	                  Elisp-Sources/
+	                                dist/
+	                                local/
+	              sun3/
+	              sun4/
+
+Most folks will just be interested in getting copies of a few
+uncompiled elisp files.  These are located under
+
+	/pub/gnuemacs/src/Elisp-Sources/dist/
+	/pub/gnuemacs/src/Elisp-Sources/local/
+
+The directory hierarchy there parallels the locations of elisp files
+under $TOOLS/lib/gnuemacs/.  By the way, you can also have a look at
+the byte-compiled elisp under $TOOLS/lib/gnuemacs/ and sometimes get
+the answers to simple questions.  Even though it is byte-compiled,
+much of it is still human-readable.  This might save you a certain
+amount of trouble in some cases.
+
+If you're looking for something that's not in the exptools GNUemacs
+distribution, you're not likely to find it in this archive either.
+You might find a pointer to it by browsing around the "tips"
+directory, though.  (Which reminds me to tell you that it's not quite
+true that everything in the exptools distribution is in those
+archives.  The master copies of the files from the "tips" directory are
+maintained elsewhere.  That's an artifact of distributed providership,
+but you can read them on any exptools machine anyhow.)
+
+Other Interesting Things in the Archives
+----------------------------------------
+/pub/gnuemacs/doc/*
+	Sources for documentation for GNUemacs and various add-on
+	packages.  Most is in TeXinfo format; some is in postscript
+	format.  If you have only a few questions about something, you
+	might find it simpler to just browse the online documentation
+	in GNUemacs.  Many of the add-on packages that are included in
+	the exptools package have their own "info" nodes.  Do "M-x info"
+	to see what's available online.
+
+/pub/gnuemacs/src/emacs-18.57.tar.Z
+	This is the "official" stuff that is used as the base for the
+	exptools distribution when it's built.  If you just want plain
+	vanilla GNUemacs without exptools enhancements, this is what
+	you want.  Obviously, the version number part of the filename
+	changes as the version number of GNUemacs that we're using
+	changes.
+
+/pub/gnuemacs/src/exptools_src.tar.Z
+	The sources for everything in the exptools distribution.  This
+	is a rather large package and includes the "official" base as
+	well as several add-on packages.  (Note:  The "official" base
+	included herein is not guaranteed to exactly match the stuff
+	available in emacs-18.57.tar.Z.)  The average person will
+	almost certainly find it easier to get exptools installed and
+	use GNUemacs from there than to try to deal with this package.
+
+/pub/gnuemacs/sun[34]/
+	These are prebuilt and packaged up copies of the sun3 and sun4
+	versions of exptools GNUemacs, in your choice of tar or cpio
+	format.  These packages are made available this way because
+	it's easy for the providers (and because sun4 exptools has
+	GNUemacs available, but sun3 currently doesn't).  If you can
+	get things through exptools, you're better off (you'll get
+	automatic updates, etc).  If you get the files in one of these
+	directories, also get /pub/gnuemacs/What_do_I_do.
+
+ABOUT ANONYMOUS FTP
+===================
+The ftp command can be used to fetch things from the above-mentioned
+archive site.  This is not a complete description of the FTP process,
+but is intended to get you started if you don't know anything about it
+already.
+
+If you have the ftp command on your machine, that's the best place to
+use it.  If you're not sure, ask your system administrator or a
+knowledgable user.  You should at least browse through the lengthy ftp
+manual page.
+
+If you don't have the ftp command on any of the machines you normally
+use, you can use it from the cbnews* machine on which you have a
+login.  However, using ftp from cbnews* is not the preferred route if
+you can avoid it.  Obviously, anything you fetch to cbnews* will have
+to be transferred to your home machine anyhow, and it's best to avoid
+the double transfer.  Also, if you are transferring a relatively large
+amount of data, you'll be clogging up what is essentially a public
+facility.  That's anti-social.  So, if you can, use ftp on some other
+machine and use cbnews* only as a last resort (keep us all out of hot
+water).
+
+To use what's commonly called anonymous FTP, first connect to the
+remote machine, e.g., "some.place.att.com", using the command line:
+
+	$ ftp some.place.att.com
+	Name (some.place.att.com:somebody): ftp
+	Password (some.place.att.com:ftp):
+	ftp>
+
+When prompted for "Name", enter "ftp" (some places want you to enter
+"anonymous", but most places accept either).  When prompted for a
+password, enter your email address (this is a courtesy to let people
+know who's using their archives).  When you see the "ftp>" prompt,
+you're in.  When you're done with FTP and want to get out, the command
+is "bye".
+
+The number 1 rule of anonymous FTP is to be polite, since you're using
+someone else's resources.  If you can, do anything but trivial
+transfers during off-hours, since many ftp archive sites are also used
+for real work during prime time (or all the time).  You're also using
+up network bandwidth to do the transfer.  When considering
+"off-hours", don't forget to take the timezone of the other machine
+into consideration.  Some sites don't allow ftp during what they
+consider prime time, but even if they do, a little judgement on your
+part will help preserve the overall spirit of cooperation.
+
+If you're trying to reach an AT&T site, and you get "unknown host" or
+some similar error, you might not be on the AT&T R&D Internet (check with
+your system administrator or a knowledgable user).  If you're trying
+to get to a site outside AT&T, you will almost certainly have to use
+proxy ftp ("pftp"), which is briefly described below.  If ftp fails
+for some other reason, you may be able to just try again later and
+have it work.  Network congestion sometimes leads to spurious
+problems.
+
+Once at the "ftp>" prompt, give the command "hash" and then the
+command "binary":
+
+	ftp> hash
+	ftp> binary
+	ftp>
+
+(To see what these do, read the ftp man page.)  From this point, use
+"cd" to move to another directory.  Use "ls" to see what's in a
+directory.  Use "get" or "mget" to actually transfer files:
+
+	ftp> get that.file
+	ftp> mget some.files.*
+
+It's a good idea to do "ls -la" to see how big things are before doing
+a "get".  Some of the things in our archive are over 8MB, for example.
+
+If you're trying to get to a site outside AT&T, you will probably have
+to use proxy ftp; the command is "pftp".  Other than having a
+different name, it acts just like the normal ftp command.  The
+difference is that it transparently uses a gateway machine to bridge
+onto the external internet.  A nice side benefit of proxy ftp is that
+you can use a DATAKIT link to get as far as the AT&T gateway machine,
+so for that you don't need to be on the AT&T R&D Internet.  If you don't
+have the pftp command on your machine, ask your system administrator
+or a knowledgeable user if s/he can install it for you.  The sources
+for the proxy package are available via anonymous FTP from
+toucan.att.com; look for /outgoing/newproxy.tar.Z.
+-- 
+  Bill                      William_J_Carpenter@ATT.COM        or
+  (908) 576-2932            attmail!bill   or   att!pegasus!billc
+  AT&T Bell Labs / AT&T EasyLink Services               LZ 1E-207
+(unofficial GNUemacs guy)

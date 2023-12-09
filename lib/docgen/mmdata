@@ -1,0 +1,82 @@
+tm, mf, im, pn, en, rp, el
+"What type of document is it?
+	for technical memo type : 	tm
+	for memo for file type :	mf
+	for internal memo type :	im
+	for programmer's notes type : 	pn
+	for engineering notes type : 	en
+	for released paper type : 	rp
+	for external letter type : 	el"
+
+tm, mf, im, en, pn, el, rp : .ND : SKIP		*@(#)dcs:mmdata	2.1 of 9/26/88*
+	"What date should I use (just type return if today)?"
+tm, mf, im, rp, pn, en : .TL : ARGS&MANY
+	"Type the title."
+	"	charging case?"
+	"	filing case?"
+el : .AU : ARGS
+	"Type the author's name."
+tm, mf, im, en, pn, rp :  {
+	tm, mf, im, en, pn, rp : .AU : ARGS
+		"Type the author's name."
+		"	his/her initials?"
+		"	his/her location? (MH PY WH HO IN DR CB)"
+		"	department?"
+		"	his/her extension?"
+		"	his/her room number?"
+} "Are there more authors? (y or n)"
+
+tm : .TM : ARGS
+	"Type the tm-number."
+tm : .AS : MANY
+	"Type in the abstract."
+mf, rp, en, pn : .AS 2 : MANY
+	"Type in the abstract."
+tm, mf, en, pn, rp : .AE : OUT
+tm : .OK : ARGS
+	"What are the keywords for the abstract?"
+im : .MT 0 : OUT
+tm, mf : .MT 1 : OUT
+pn : .MT 2 : OUT
+en : .MT 3 : OUT
+rp : .MT 4 : OUT
+el : .MT 5 : OUT
+tm, rp, mf, im, pn, en, el :   : PRINT
+	"For headings use one of those listed below:
+		numbered headings (level 1-2)	use .H [#] [heading]
+		numbered headings (level 3-7)	use .H [#] [heading]
+		unnumbered headings		use .HU [heading]"
+tm, rp, mf, im, pn, en, el :  : MANY
+	"Type in rest of document"
+tm, im, mf, en, pn : .SG : ARGS
+	"Type signature line."
+el : .SG : OUT
+tm, im, mf, en, pn : : QUEST & PRINT
+	"Do you want a list of notations? (y or n)"
+	"Available notation types are:
+		Copy to			0
+		Copy (with att.) to	1
+		Copy (without att.) to	2
+		Att.			3
+		Atts.			4
+		Enc.			5
+		Encs.			6
+		Under Separate Cover	7
+		Letter to		8
+		Memorandum to		9"
+tm, im, mf, en, pn : { "Do you want a notation? (y or n)"
+	tm, im, mf, en, pn : .NS : ARG
+		"Type the number of the notation type."
+	tm, im, mf, en, pn : : MANY
+		"Type in notation list."
+	tm, im, mf, en, pn : .NE : OUT
+} "Is there another notation list? (y or n)"
+
+tm : .CS : ARGS
+	"For the bottom of the cover sheet:
+		pages of text?"
+"		other pages?"
+"		total pages?"
+"		number of figures?"
+"		number of tables?"
+"		number of references?"

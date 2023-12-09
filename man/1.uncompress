@@ -1,0 +1,132 @@
+
+
+
+     CCCCOOOOMMMMPPPPRRRREEEESSSSSSSS((((1111))))            UUUUNNNNIIIIXXXX 5555....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCOOOOMMMMPPPPRRRREEEESSSSSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          compress   -  compress files
+          uncompress -  uncompress files
+          zcat       -  cat compressed files
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccoooommmmpppprrrreeeessssssss [ ----dddd ] [ ----ffff ] [ ----FFFF ] [ ----qqqq ] [ ----cccc ] [ ----bbbb _b_i_t_s ] [ _f_i_l_e_n_a_m_e
+          ... ]
+          uuuunnnnccccoooommmmpppprrrreeeessssssss [ ----ffff ] [ ----qqqq ] [ ----cccc ] [ _f_i_l_e_n_a_m_e ... ]
+          zzzzccccaaaatttt [ _f_i_l_e_n_a_m_e ... ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Compresses the specified files or standard input.  Each file
+          is replaced by a file with the extension ....ZZZZ,,,, but only if the
+          file got smaller.  If no files are specified, the
+          compression is applied to the standard input and is written
+          to standard output regardless of the results.  Compressed
+          files can be restored to their original form by specifying
+          the ----dddd option, or by running _u_n_c_o_m_p_r_e_s_s (linked to
+          _c_o_m_p_r_e_s_s), on the ....ZZZZ files or the standard input.
+
+          If the output file exists, it will not be overwritten unless
+          the ----ffff flag is given.  If ----ffff is not specified and _c_o_m_p_r_e_s_s
+          is run in the foreground, the user is prompted as to whether
+          the file should be overwritten.
+
+          If the ----FFFF flag is given, all files specified are replaced
+          with ....ZZZZ files - even if the file didn't get smaller.
+
+          When file names are given, the ownership (if run by root),
+          modes, accessed and modified times are maintained between
+          the file and its ....ZZZZ version.  In this respect, _c_o_m_p_r_e_s_s can
+          be used for archival purposes, yet can still be used with
+          _m_a_k_e(1) after uncompression.
+
+          The ----cccc option causes the results of the compress/uncompress
+          operation to be written to stdout; no files are changed.
+          The _z_c_a_t program is the same as specifying ----cccc to _u_n_c_o_m_p_r_e_s_s
+          (all files are unpacked and written to stdout).
+
+          _C_o_m_p_r_e_s_s uses the modified Lempel-Ziv algorithm described in
+          "A Technique for High Performance Data Compression", Terry
+          A. Welch, _I_E_E_E _C_o_m_p_u_t_e_r Vol 17, No 6 (June 1984), pp 8-19.
+          Common substrings in the file are first replaced by 9-bit
+          codes 257 and up.  When code 512 is reached, the algorithm
+          switches to 10-bit codes and continues to use more bits
+          until the _b_i_t_s limit as specified by the ----bbbb flag is reached
+          (default 16).  _B_i_t_s must be between 9 and 16.  The default
+          can be changed in the source to allow _c_o_m_p_r_e_s_s to be run on
+          a smaller machine.
+
+          After the _b_i_t_s limit is reached, _c_o_m_p_r_e_s_s periodically
+
+
+
+     Page 1                                           (printed 1/7/85)
+
+
+
+
+
+
+     CCCCOOOOMMMMPPPPRRRREEEESSSSSSSS((((1111))))            UUUUNNNNIIIIXXXX 5555....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            CCCCOOOOMMMMPPPPRRRREEEESSSSSSSS((((1111))))
+
+
+
+          checks the compression ratio.  If it is increasing, _c_o_m_p_r_e_s_s
+          continues to use the codes that were previously found in the
+          file.  However, if the compression ratio decreases, _c_o_m_p_r_e_s_s
+          discards the table of substrings and rebuilds it from
+          scratch.  This allows the algorithm to adapt to the next
+          "block" of the file.
+
+          A two byte magic number is prepended to the file to ensure
+          that neither uncompression of random text nor recompression
+          of compressed text are attempted.  In addition, the _b_i_t_s
+          specified during _c_o_m_p_r_e_s_s is written to the file so that the
+          ----bbbb flag can be omitted for _u_n_c_o_m_p_r_e_s_s.
+
+          The amount of compression obtained depends on the size of
+          the input file, the amount of _b_i_t_s per code, and the
+          distribution of character substrings.  Typically, text
+          files, such as C programs, are reduced by 50-60%.
+          Compression is generally much better than that achieved by
+          Huffman coding (as used in _p_a_c_k), or adaptive Huffman coding
+          (_c_o_m_p_a_c_t), and takes less time to compute.
+
+          After each file is compressed, a message is printed giving
+          the percentage of the input file that has been saved by
+          compression.  This message is suppressed when the ----qqqq (quiet)
+          flag is given.
+
+          The exit status is normally 0; if the last file gets bigger
+          after compression, the exit status is 2; if an error occurs,
+          the exit status is 1.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          pack(1)
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          K. R. Stanley
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                           (printed 1/7/85)
+
+
+

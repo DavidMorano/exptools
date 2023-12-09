@@ -1,0 +1,396 @@
+
+
+
+     SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  soarchive - expand and archive nroff '.so' requests
+	  sounarchive -	extract	archived nroff '.so' files
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  ssssooooaaaarrrrcccchhhhiiiivvvveeee [[[[----tttt||||----ssss||||----vvvv]]]] [[[[ffffiiiilllleeeennnnaaaammmmeeee]]]]
+	  ssssoooouuuunnnnaaaarrrrcccchhhhiiiivvvveeee [[[[----ffff]]]] [[[[----tttt||||----ssss||||----vvvv]]]] [[[[ffffiiiilllleeeennnnaaaammmmeeee]]]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _S_o_a_r_c_h_i_v_e(_1) is a command similar in nature to the _s_o_e_x_p_a_n_d
+	  exptool; given a file	on the command line or standard	input
+	  if no	filename is specified, _s_o_a_r_c_h_i_v_e parses	the file,
+	  looking for _t_r_o_f_f(_1) .so commands.  For _s_o_a_r_c_h_i_v_e, the
+	  standard output is whatever was given	as input to the
+	  command (either a filename or	standard input), modified so
+	  that the .so'd files are included.  For _s_o_u_n_a_r_c_h_i_v_e, the
+	  standard output is whatever was given	as the input to	the
+	  command (either a filename or	standard input), modified so
+	  that the .so'd files are removed and the .so line is
+	  replaced.  The .so files are recreated if they do not
+	  already exist	with _s_o_u_n_a_r_c_h_i_v_e. More detail on the usage of
+	  .so and how the _s_o_a_r_c_h_i_v_e and	_s_o_u_n_a_r_c_h_i_v_e commands operate
+	  is given in the UUUUSSSSAAAAGGGGEEEE	section	of this	manual page.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  The following	options	are recognized by the _s_o_a_r_c_h_i_v_e	and
+	  _s_o_u_n_a_r_c_h_i_v_e programs.
+
+	  ----tttt   TROFF language mode (default).
+	       Troff language mode is the native language of the
+	       soarchive and sounarchive programs, and thus this mode
+	       is the default.	This optional argument,	recognized by
+	       both the	archiver and unarchiver, changes the operation
+	       of the program so that it is appropriate	for archiving
+	       troff language files.  The parsers look for a string of
+	       the form:
+
+		     .so filename
+
+	       When such a line	is found in the	file to	be archived,
+	       it is replaced with the contents	of the file (if
+	       readable) surrounded by troff style comments of the
+	       form
+
+		     .\" sobegin filename
+
+			  (included file)
+
+		     .\" soend filename
+
+	       Note that in this mode, since troff recognizes the .so
+	       as the inclusion	macro, the archived file can be
+
+
+
+     Page 1					     (printed 1/17/92)
+
+
+
+
+
+
+     SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))
+
+
+
+	       printed just as if it were the original,	with exactly
+	       the same	results.  Printing the archive and printing
+	       the original file are functionally equivalent
+	       operations.
+
+	  ----ssss   SHELL language mode.
+	       This optional argument, recognized by both the archiver
+	       and unarchiver, changes the operation of	the program so
+	       that it is appropriate for archiving shell language
+	       programs.  Rather than using a .so to identify included
+	       files, the parsers look for a string of the form:
+
+		    #include filename
+
+	       When such a line	is found in the	file to	be archived,
+	       it is replaced with the contents	of the file (if
+	       readable) surrounded by shell style comments of the
+	       form
+
+		    # sobegin filename
+
+		       (included file)
+
+		    # soend filename
+
+	       Note that in this mode, since the original #include
+	       line constitutes	a comment line for shell, the archived
+	       file will include more shell commands than the original
+	       top level file did.  Thus the functional	content	of the
+	       file is not the same before archiving as	after, as is
+	       the case	for TROFF mode (in troff mode, since troff
+	       recognizes the .so command for file inclusion, printing
+	       the archive and printing	the original file are
+	       functionally equivalent operations).
+
+	  ----vvvv   VENTURA language	mode.
+	       This optional argument, recognized by both the archiver
+	       and unarchiver, changes the operation of	the program so
+	       that it is appropriate for archiving _V_e_n_t_u_r_a _P_u_b_l_i_s_h_e_r
+	       language	files.	Rather than using a .so	to identify
+	       included	files, the parsers look	for a string of	the
+	       form:
+
+		    <$!include filename>
+
+	       When such a line	is found in the	file to	be archived,
+	       it is replaced with the contents	of the file (if
+	       readable) surrounded by _V_e_n_t_u_r_a _P_u_b_l_i_s_h_e_r style
+	       comments	of the form
+
+		    <$!sobegin filename>
+
+
+
+
+     Page 2					     (printed 1/17/92)
+
+
+
+
+
+
+     SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))
+
+
+
+		       (included file)
+
+		    <$!soend filename>
+
+	       Note that in this mode, since the original <$!include
+	       filename> line constitutes a comment line for _V_e_n_t_u_r_a
+	       _P_u_b_l_i_s_h_e_r, the archived file will include more text
+	       commands	than the original top level file did.  Thus
+	       the functional content of the file is not the same
+	       before archiving	as after, as is	the case for TROFF
+	       mode (in	troff mode, since troff	recognizes the .so
+	       command for file	inclusion, printing the	archive	and
+	       printing	the original file are functionally equivalent
+	       operations).
+
+	  ----ffff   Force file overwrites ( _s_o_u_n_a_r_c_h_i_v_e only).
+	       This optional argument, recognized only by the
+	       _s_o_u_n_a_r_c_h_i_v_e command, ``forces'' file overwrites for
+	       files that already exist.  During operation without the
+	       argument, the _s_o_u_n_a_r_c_h_i_v_e program will complain if a
+	       file exists with	the same name as one that it is	trying
+	       to extract from the archive, and	the file will nnnnooootttt be
+	       overwritten.  With this option specified, however, the
+	       _s_o_u_n_a_r_c_h_i_v_e will	print a	message	when it	encounters
+	       such files, but will overwrite the contents with	the
+	       information in the archive.
+
+     UUUUSSSSAAAAGGGGEEEE
+	  The following	assumes	TROFF mode operation.  The concepts
+	  presented follow through for SHELL and VENTURA mode, except
+	  for the notable difference that in SHELL and VENTURA modes,
+	  the inclusion	line is	actually a comment to the language, so
+	  the act of archiving creates an archive file that
+	  functionally has more	in it than the original	file did.
+
+	  The .so command tells	_t_r_o_f_f to ``switch source files,'' so
+	  that the top input (file reading) level is switched to the
+	  filename given as an argument	to .so.	 When the new file
+	  ends,	input is again taken from the original file.  _T_r_o_f_f
+	  allows nesting of the	.so commands.
+
+	  When the _s_o_a_r_c_h_i_v_e finds a .so command in the	file, it also
+	  switches input to that file, but before and after the	file
+	  the _s_o_a_r_c_h_i_v_e	command	puts _t_r_o_f_f comments in the output to
+	  mark where the .so began and ended.  These markers are
+	  transparent to all text processing commands such as _t_r_o_f_f.
+	  As _t_r_o_f_f, does, _s_o_a_r_c_h_i_v_e allows nesting of the .so's, but
+	  for the _s_o_a_r_c_h_i_v_e command, nesting is	limited	to a depth of
+	  approximately	20, the	maximum	number of files	that UNIX
+	  allows a process to have open	at any one time..
+
+	  So why would one wish	to use _s_o_a_r_c_h_i_v_e rather	than the more
+
+
+
+     Page 3					     (printed 1/17/92)
+
+
+
+
+
+
+     SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))
+
+
+
+	  familiar _s_o_e_x_p_a_n_d command in exptools?  Since	_s_o_a_r_c_h_i_v_e puts
+	  markers before and after the included	file, it is possible
+	  to de-archive	the file and recreate the original .so'd file,
+	  by using the _s_o_u_n_a_r_c_h_i_v_e command, which performs the inverse
+	  operation: it	takes either a file or,	given no file on the
+	  command line,	standard input,	and scans for the markers put
+	  in the file by the _s_o_a_r_c_h_i_v_e command.	 It then removes the
+	  included lines, replaces them	with the original .so line,
+	  and trys to create new files with the	same name as the
+	  originally archived .so files	had.  If the file already
+	  exists, then the lines are removed and the .so is put	in
+	  their	place, but the file is not overwritten.	 _S_o_u_n_a_r_c_h_i_v_e
+	  will print a warning,	and the	lines in the original file
+	  will be thrown away.	The design decision to not overwrite
+	  files	if they	already	exist was made because it is expected
+	  that the actual files	referenced by the .so will be more
+	  current than the one in the archived file.  Thus, if the
+	  _s_o_a_r_c_h_i_v_e command were then again run	on the output of the
+	  _s_o_u_n_a_r_c_h_i_v_e file, the	most current copy (the ones in the
+	  files	that were not overwritten) are re-archived into	the
+	  output of the	_s_o_a_r_c_h_i_v_e command.
+
+	  As an	example	of the expected	usage of these two commands,
+	  consider the case where a database is	used to	store and
+	  retrieve files for edit.  This kind of action	is typical of
+	  test script databases, for instance.	If the files are in
+	  the form of _t_r_o_f_f commands, then users will wish to be able
+	  to use the .so macro to include such things as pic files
+	  created with the _x_c_i_p	command.  Usually, the file-add,
+	  file-get, and	file-put commands for these databases do not
+	  have any facility for	handling included files, such as the
+	  .so macro implies.  So the user normally must	expand the
+	  file and place that in the database.	If he/she then wishes
+	  to get the file for edit, it is necessary for	the user to
+	  strip	out the	included file (especially if it	was created
+	  using	the _x_c_i_p command) using	an editor, modify the various
+	  resultant files, re-expand them, and then submit the file to
+	  the database.	 The _s_o_a_r_c_h_i_v_e and _s_o_u_n_a_r_c_h_i_v_e commands
+	  provide an easy facility for doing these operations
+	  automatically.  If the user writes a shell front end to the
+	  file-add, file-get, and file-put commands for	the database,
+	  and includes the _s_o_a_r_c_h_i_v_e and _s_o_u_n_a_r_c_h_i_v_e commands in these
+	  front	ends, then the archiving can be	made transparent.
+	  Every	file stored in the database will have all .so files
+	  included with	it.  Other users who do	not have access	to the
+	  front	end scripts that archive and dearchive the file	will
+	  see the entire contents, including the .so'd files, (but not
+	  including the	original .so line), and	can actually print the
+	  file as is without modification since	the _s_o_a_r_c_h_i_v_e command
+	  uses markers that are	transparent to _t_r_o_f_f and _s_o_e_x_p_a_n_d.
+
+	  Neither the _s_o_a_r_c_h_i_v_e	nor the	_s_o_u_n_a_r_c_h_i_v_e commands currently
+
+
+
+     Page 4					     (printed 1/17/92)
+
+
+
+
+
+
+     SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))
+
+
+
+	  support any options.	Only one (optional) argument is
+	  allowed on the command line, and this	argument must be the
+	  name of a file.  The output of both commands appears on
+	  standard output (with	the _s_o_u_n_a_r_c_h_i_v_e	command	additionally
+	  recreating the original .so files if they do not exist).
+
+	  For either command, if no arguments are given	on the command
+	  line,	then standard input is used.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  What follows are  examples of	how the	_s_o_a_r_c_h_i_v_e command can
+	  be used to archive and de-archive .so	files.	For each
+	  example, a full command line is given, with a	description of
+	  what the command line	will accomplish.
+
+	  __________________________________________________________________
+	 |	  Example Command		    Actions Taken	   |
+	 |___________________________________________________________________________________________________________________________________|_
+	 | soarchive < oldfn > newfn	   This	command	will feed _s_o_a_r_c_h_i_v_e|
+	 |				   from	the file with filename	   |
+	 |				   ``oldfn.''  All .so commands	in |
+	 |				   ``oldfn'' will be replaced with |
+	 |				   the actual contents of the .so'd|
+	 |				   files, and the output will be   |
+	 |				   placed in the ``newfn'' file.   |
+	 |__________________________________________________________________|
+	 | sounarchive < newfn > newerfn   The ``newfn'' file will be read |
+	 |				   by the _s_o_u_n_a_r_c_h_i_v_e command, and |
+	 |				   all files that were archived	in |
+	 |				   it by _s_o_a_r_c_h_i_v_e will	be	   |
+	 |				   extracted, and the actual .so   |
+	 |				   lines will be replaced in the   |
+	 |				   output.  The	processed file will|
+	 |				   be written to the ``newerfn''   |
+	 |				   file.  If the files referenced  |
+	 |				   by the .so lines in ``newfn''   |
+	 |				   already exist, they will not	be |
+	 |				   overwritten and the archived	   |
+	 |_________________________________c_o_n_t_e_n_t_s__w_i_l_l__b_e__t_h_r_o_w_n__a_w_a_y_._____|
+	 | soarchive oldfn > newfn	   This	command	line will perform  |
+	 |				   the same function as	the first  |
+	 |				   example.  Here, the source file |
+	 |				   for the _s_o_a_r_c_h_i_v_e command is	   |
+	 |				   given as an argument.	   |
+	 |__________________________________________________________________|
+	 | sounarchive newfn > newerfn	   This	command	line will perform  |
+	 |				   the same function as	the second |
+	 |				   example.  Here, the source file |
+	 |				   for the _s_o_u_n_a_r_c_h_i_v_e command is  |
+	 ||_________________________________g_i_v_e_n__a_s__a_n__a_r_g_u_m_e_n_t_._____________||
+
+
+
+
+
+     Page 5					     (printed 1/17/92)
+
+
+
+
+
+
+     SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  SSSSOOOOAAAARRRRCCCCHHHHIIIIVVVVEEEE((((1111))))
+
+
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+	  Both _s_o_a_r_c_h_i_v_e and _s_o_u_n_a_r_c_h_i_v_e will fail if the UNIX open
+	  file limit is	reached	during parsing.	 Each nested .so file
+	  uses an open file descriptor:	if the open file limit is
+	  reached, an error message will be printed and	processing
+	  will be immediately terminated with an exit status of	1.  If
+	  this happens,	the user should	not use	the resulting output.
+
+	  The _s_o_u_n_a_r_c_h_i_v_e command has an additional failure mode: if
+	  the _t_r_o_f_f comments marking the beginning and end of the
+	  included files are not consistent, then an out of phase
+	  message will be printed and processing will stop.  This can
+	  happen if the	user edits the comment lines in	the archived
+	  file directly.  However, no checksums	are performed, so any
+	  line other than the comment lines can	be edited without
+	  affecting _s_o_u_n_a_r_c_h_i_v_e, as long as each begin marker is
+	  matched by an	end marker at the proper nesting level.	 If
+	  the _s_o_u_n_a_r_c_h_i_v_e command gets out of phase, then it will
+	  print	an error message and exit with status 1.
+
+	  If the _s_o_u_n_a_r_c_h_i_v_e command discovers that a file that	is
+	  referenced by	a .so already exists, then a warning is
+	  printed but processing continues.  If	the program completes
+	  with warnings	only, the exit status will be 0.
+
+	  Both _s_o_a_r_c_h_i_v_e and _s_o_u_n_a_r_c_h_i_v_e will fail and print an	error
+	  message if a file to process is given	on the command line
+	  and that file	does not exist.	 Also, for both	commands,
+	  warning and error messages are printed on standard error to
+	  separate these messages from the processed output, which
+	  appears on standard output.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  troff(1), soexpand(1), and xcip(1).
+
+     AAAACCCCKKKKNNNNOOOOWWWWLLLLEEEEDDDDGGGGEEEEMMMMEEEENNNNTTTTSSSS
+	  _V_e_n_t_u_r_a _P_u_b_l_i_s_h_e_r is a registered trademark of Ventura
+	  Software, Inc.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  _S_o_a_r_c_h_i_v_e and	_s_o_u_n_a_r_c_h_i_v_e were written by Bryan R. Davies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6					     (printed 1/17/92)
+
+
+

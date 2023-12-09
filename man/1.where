@@ -1,0 +1,264 @@
+
+
+
+     WHERE(1)            UNIX System V (EXPTOOLS)             WHERE(1)
+
+
+
+     NAME
+          where - Find location of commands or files in a path list
+
+     SYNOPSIS
+          where [-fFrwxV] [-p_p_a_t_h_l_i_s_t] _n_a_m_e ...
+
+     DESCRIPTION
+          _w_h_e_r_e prints the paths of executable files from  directories
+          listed  in  your PATH environment variable that have _n_a_m_e as
+          their last component(s), in the order that they are found in
+          your  PATH.  The _n_a_m_e arguments may be shell-style file name
+          patterns containing ?, *, [ and ].   Options,  below,  allow
+          _w_h_e_r_e  to search for files that are readable or writable, as
+          well as executable, or any combination thereof.
+
+          If a _n_a_m_e argument on the command line begins with  a  slash
+          (/),  _i._e.  it  is a fully-qualified path, _w_h_e_r_e ignores the
+          path list and simply echoes the given _n_a_m_e if it  meets  the
+          permission  conditions.  The -F option has no effect in this
+          case.  For example,
+             where /bin/ls
+          echoes /bin/ls since that file is executable.
+
+        Options
+          -f          Print only the first path found for each _n_a_m_e.
+
+          -F          Fully expands the path of each located file.
+
+          -p_p_a_t_h_l_i_s_t  Uses the given path list instead of the  default
+                      taken  from your PATH environment variable.  The
+                      _p_a_t_h_l_i_s_t may either be a colon-separated list of
+                      directories, or the name of an exported environ-
+                      ment variable that  contains  a  colon-separated
+                      list of directories (_e._g. -pCDPATH).
+
+          -rwx        Only locates files with  at  least  all  of  the
+                      specified  permissions.   For example, -rw means
+                      each file must be readable  _a_n_d  writable  (they
+                      may  or may not be executable, but _w_h_e_r_e doesn't
+                      care in this example).
+
+          -V          reports the program version number, and if there
+                      are  no  other  command  line  arguments, simply
+                      exits.
+
+          If the -p  option  is  _n_o_t  used,  the  default  permissions
+          searched  for are -x.  If the -p option is used, the default
+          permissions searched for are -r.
+
+     EXIT CODES
+          The exit code is 0 if all _n_a_m_es were found, 1  if  any  _n_a_m_e
+          could not be found, or 2 on usage errors.
+
+
+
+     Page 1                                          (printed 10/4/93)
+
+
+
+
+
+
+     WHERE(1)            UNIX System V (EXPTOOLS)             WHERE(1)
+
+
+
+     EXAMPLES
+          To find the locations of the emacs editor
+             where emacs
+
+          To list all commands you have access to
+             where '*'
+
+          To search for DMD or 630 object  files  (assuming  JPATH  is
+          set)
+             where -p $JPATH '*.m'
+
+          To find out whether _c_o_m_m_a_n_d is a shell script or an  execut-
+          able file
+             file `where command`
+
+          To edit a file in your view path (which should be exported)
+             $EDITOR `where -pVPATH src/file`
+
+          Before contacting the provider, let's see  what  version  we
+          have:
+             where -V
+
+          List commands in /bin, ignoring the PATH:
+             where '/bin/*'
+
+     NOTES
+          _w_h_e_r_e is actually a special case of the  much-more  flexible
+          (and  complex)  _s_e_a_r_c_h_p_a_t_h(1)  command,  and is just another
+          link [see cp(1)] to the _s_e_a_r_c_h_p_a_t_h program.  (The _s_e_a_r_c_h_p_a_t_h
+          tool  behaves  differently when invoked as _w_h_e_r_e to maintain
+          compatibility with the historic _w_h_e_r_e command.)
+
+          If you don't see what you  need  here,  please  consult  the
+          searchpath manual page.
+
+          Known differences between this  version  of  _w_h_e_r_e  and  the
+          older version:
+
+          o+  Using the -p option no longer automatically turns on  the
+             -f  option.   (I  can see no reason for it to do so.  The
+             old version didn't allow you to look for all  occurrences
+             of a file or command in a path list other than $PATH.)
+
+          o+  The -F option, which was present but  not  documented  in
+             the old version of _w_h_e_r_e, now fully expands any path that
+             does not _s_t_a_r_t with /, including  those  that  _c_o_n_t_a_i_n  /
+             elsewhere.
+
+          o+  The -V option was added for support reasons.
+
+          Differences between _w_h_e_r_e and _s_e_a_r_c_h_p_a_t_h behavior include:
+
+
+
+
+     Page 2                                          (printed 10/4/93)
+
+
+
+
+
+
+     WHERE(1)            UNIX System V (EXPTOOLS)             WHERE(1)
+
+
+
+          o+  The option syntax is  completely  different.   Especially
+             beware  that _s_e_a_r_c_h_p_a_t_h uses + to turn things on and - to
+             turn them off.
+
+          o+  The default mode options for _w_h_e_r_e depend on whether  you
+             use  the  -p  option or not, whereas _s_e_a_r_c_h_p_a_t_h's default
+             mode  options  are  always  the  same.   These  are  only
+             defaults.   You  can  always  specify  the modes you want
+             explicitly to avoid confusion.
+
+          o+  _w_h_e_r_e defaults to looking for all occurrences of  a  file
+             unless  told  otherwise  (with  -f),  whereas  _s_e_a_r_c_h_p_a_t_h
+             defaults to locating the  first  occurrence  of  an  item
+             unless told otherwise.
+
+          o+  _s_e_a_r_c_h_p_a_t_h ignores later occurrences of the  same  direc-
+             tory  in  the  path list.  For example, if /bin and . are
+             the same directory,  the  first  one  in  the  path  list
+             "wins."  For  historical reasons, _w_h_e_r_e doesn't bother to
+             check.
+
+          o+  When given the -f option and a file name  pattern,  _w_h_e_r_e
+             finds  only the very first file that matches that pattern
+             in the first directory where a match  was  found.   _s_e_a_r_-
+             _c_h_p_a_t_h  would  print  all files that match the pattern in
+             the first directory where a match was  found.   In  other
+             words,  _w_h_e_r_e  applies  the  -f  to  find the first _f_i_l_e,
+             whereas _s_e_a_r_c_h_p_a_t_h applies its equivalent  (-a)  to  find
+             the  first  _d_i_r_e_c_t_o_r_y  (from the path list) that contains
+             the file, and lists all such files.
+
+          o+  When a file name pattern is used,  _s_e_a_r_c_h_p_a_t_h  sorts  the
+             matched  files' names (for each directory).  For histori-
+             cal reasons, _w_h_e_r_e does not.
+
+          o+  _s_e_a_r_c_h_p_a_t_h prints  a  message  for  each  item  it  can't
+             locate,  unless told not to.  _w_h_e_r_e never complains about
+             non-locatable items.
+
+          o+  The exit codes for failures are different.
+
+     SEE ALSO
+          searchpath(1), ksh(1) (especially the whence  built-in  com-
+          mand), checkpath(1), formpath(1), normfile(1), purgepath(1),
+          splitpath(1)
+
+     CAVEATS
+          _w_h_e_r_e knows nothing about shell built-in commands  (such  as
+          cd,  eval,  etc.).  It locates loadable executables or other
+          types of files only.
+
+          If a _n_a_m_e argument contains directory components,  only  the
+
+
+
+     Page 3                                          (printed 10/4/93)
+
+
+
+
+
+
+     WHERE(1)            UNIX System V (EXPTOOLS)             WHERE(1)
+
+
+
+          last may be a file name pattern.
+
+     PROVIDED BY
+          Warren D. Swan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 10/4/93)
+
+
+

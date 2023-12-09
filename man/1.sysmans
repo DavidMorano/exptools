@@ -1,0 +1,594 @@
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    manx - print entries from online manual pages
+	    sysmans - get list of directories containing manual	pages
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    ssssyyyyssssmmmmaaaannnnssss [[[[----pppp]]]] [[[[ppppaaaatttthhhhssss............]]]]
+
+	    mmmmaaaannnnxxxx [-zZfncsearwD]	[-C cmd] [-N file] [-p prods] [-d dir] [
+	    sect-spec ]	ttttiiiittttlllleeee [	sect-spec ] ttttiiiittttlllleeee ...
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _M_a_n_x locates and prints the	entry of the manual page named
+	    _t_i_t_l_e using	the _s_e_c_t_i_o_n-_s_p_e_c.  The _t_i_t_l_e is	entered	in lower
+	    case.  The _s_e_c_t_i_o_n-_s_p_e_c is an optional suffix as in	_3 (sec-
+	    tion 3 of the manual, library routines).  If a _s_e_c_t_i_o_n-_s_p_e_c
+	    is not specified, the whole	manual is searched for _t_i_t_l_e.
+	    When there are multiple manual pages in the	same section,
+	    (malloc(3x), malloc(3c) etc...), the subsection can	be
+	    specified as in
+
+		 mmmmaaaannnnxxxx 3333	mmmmaaaalllllllloooocccc....3333xxxx
+
+	    This format	allows the exact manual	to be found quicker than
+	    using
+
+		 mmmmaaaannnnxxxx ----eeeeaaaa mmmmaaaalllllllloooocccc
+
+	    and	answering yes to the prompt for	the manual you desire.
+
+	    By default,	only the first occurence found will be pro-
+	    cessed. The	`-a' option can	be used	to alter this behavior.
+	    The	recognized command line	options	and their meanings are
+	    listed below.
+
+
+	    ----aaaa	      Show all matches,	instead	of only	the first.  This
+		      option is	most handy when	used in	the context of
+		      the command mmmmaaaannnnxxxx ----eeeeaaaa mmmmaaaallllllll	|||| llllpppprrrr.	In this	case all
+		      manual pages matching the	partial	name mmmmaaaallllllll will
+		      be fed to	the llllpppprrrr	command.
+
+
+	    ----cccc	      The ----cccc option is used in conjunction with	the ----nnnn
+		      and ----wwww options.  It causes these options to use
+		      the ccccaaaattttmmmmaaaannnn directory structure rather than the mmmmaaaannnn
+		      directory	structure.
+
+
+	    ----CCCC	      The parameter to this option is a	command	which
+		      will be executed to format an out	of date	manual
+		      page.  CCCCmmmmdddd will receive 4	arguments which	are the
+		      input file name, the file	creation month,	day and
+
+
+
+       Page 1					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+		      year.  If	the file to be formatted is
+		      /usr/man/pkg_man/man1/thisthing.1, and it	was last
+		      modified on 3/5/91.  Then	the command line would
+		      be
+
+			   ccccmmmmdddd /usr/man/pkg_man/man1/thisthing.1 3 5 91
+
+		      The output is redirected by manx to the appropri-
+		      ate file,	so all output generated	on standard out
+		      will be part of the resulting formatted document.
+
+
+	    ----zzzz	      This option tells	_m_a_n_x to	use _p_a_c_k(_1) on any gen-
+		      erated ccccaaaattttmmmmaaaannnn files.  Any	preexisting .z or .Z
+		      suffixed files will be assumed to	be packed and
+		      compressed respectively, regardless of the pres-
+		      ence of this flag.
+
+
+	    ----ZZZZ	      This option tells	_m_a_n_x to	use _c_o_m_p_r_e_s_s(_1)	on any
+		      generated	ccccaaaattttmmmmaaaannnn files.  Any preexisting .z or .Z
+		      suffixed files will be assumed to	be packed or
+		      compressed respectively, regardless of the pres-
+		      ence of this flag.
+
+
+	    ----dddd	      The parameter to this option explictly replace all
+		      path values that _m_a_n_x would normally use.	 This
+		      effectively limits searches to just the paths
+		      specified	as the argument.
+
+
+	    ----eeee	      This option tells	_m_a_n_x to	not match _t_i_t_l_e	exactly.
+		      This is helpful for times	when the exact spelling,
+		      is not really known.  Thus, mmmmaaaannnnxxxx ----eeeeaaaa mmmmaaaallllllll	produces
+		      a	search that will find all pages	beginning with
+		      the string mmmmaaaallllllll.
+
+
+	    ----ffff	      Normally _m_a_n_x will not attempt to	reformat a
+		      manual page whose	associated catman file could not
+		      be written to the	appropriate file.  The ----ffff option
+		      forces _m_a_n_x to reformat the manual page so that
+		      the most recent information is displayed.	 In this
+		      case the formatted output	is put in a temporary
+		      file which is discarded when _m_a_n_x	exits.
+
+
+	    ----nnnn	      This option causes _m_a_n_x to print the name(s) (no
+		      paths) of	the manual page(s) found.
+
+
+
+
+
+       Page 2					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+	    ----pppp	      This option allows you to	explictly specify a list
+		      of pppprrrroooodddduuuuccccttttssss that have manual pages located in the
+		      directories specified by the environment (see dis-
+		      cussion below).  These products have their manuals
+		      stored in	directories named pppprrrroooodddduuuucccctttt_man.	For
+		      example, the ffffoooooooobbbbaaaarrrr product might	have its manuals
+		      stored under the directory ////uuuussssrrrr/man/ffffoooooooobbbbaaaarrrr_man.
+		      The command
+
+			   mmmmaaaannnnxxxx	----ppppffffoooooooobbbbaaaarrrr hhhhaaaacccckkkk
+
+		      would print the manual page for hhhhaaaacccckkkk as found
+		      under the	ffffoooooooobbbbaaaarrrr product.
+
+
+	    ----rrrr	      This option provides an installation dependent
+		      option.  If installed, this option allows	regular
+		      expressions to be	used in	place of the manual name
+		      when envoking _m_a_n_x.  To find out if the option is
+		      installed, you can issue the _m_a_n_x	command	with nnnnoooo
+		      arguments.  If ----rrrr	is given as an argument, then ----rrrr
+		      should be	available.
+
+
+	    ----ssss	      Show the name(s),	location(s) and	other associated
+		      information for the pages	found.	The contents of
+		      the manual(s) are	not displayed.
+
+
+	    ----wwww	      Causes _m_a_n_x to print the path and	filename of the
+		      manual page(s) found. E.g.
+
+			   $$$$ mmmmaaaannnnxxxx ----wwww mmmmaaaakkkkeeee
+			   ////uuuussssrrrr////mmmmaaaannnn////uuuu____mmmmaaaannnn////mmmmaaaannnn1111////mmmmaaaakkkkeeee....1111
+
+		      If -w is used and	no unformatted manual page
+		      exists, _m_a_n_x will	report that no manual page
+		      exists.  Adding the ----cccc option will cause _m_a_n_x to
+		      output the name of the preformatted file (provid-
+		      ing it exists).  This logic allows auxilary pro-
+		      grams to partition the manual pages into two
+		      groups, the formatted ones, and the unformatted
+		      ones.  An	example	use of this partioning is the
+		      use of prt(1) verses prtfmt(1) (as supplied with
+		      the _U_n_i_s_o_n print spooler).
+
+
+	    ----NNNN	      The ----NNNN flag takes	a file name as the argument.
+		      When used	with the -w, -s, -n, -wc and -nc flags,
+		      it restricts the pages names/specs printed to
+		      those where the date on the manual page file is
+		      greater than the date on the argument file.  This
+
+
+
+       Page 3					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+		      is particularly useful to	keep track of when a
+		      particular manual	page is	changed.  A typical use
+		      would be
+
+			   $$$$ mmmmaaaannnnxxxx ----NNNN ////ssssoooommmmeeee////ffffiiiilllleeee
+		      ----dddd!!!!////ssssoooommmmeeee////mmmmaaaannnnuuuuaaaallll////ddddiiiirrrreeeeccccttttoooorrrryyyy	----nnnnrrrr ....
+
+		      This command would print out the names of	those
+		      manuals which have changed since the date	of
+		      /some/file.
+
+		      The date on /some/file is	NNNNOOOOTTTT changed by _m_a_n_x.
+		      The _t_o_u_c_h(_1) command can be used to update the
+		      date on that file	after using _m_a_n_x to get	the
+		      desired information.
+
+	    _M_a_n_x attempts to be	everything to everybody.  To that end,
+	    several different parameters affect	_m_a_n_x'_s behavior.  Four
+	    parameters are the environment variables, MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH,	$$$$MMMMAAAANNNN----
+	    PPPPAAAATTTTHHHH, $$$$MMMMAAAANNNNPPPPRRRROOOODDDD and $$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR.  The environment variables
+	    MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH and $$$$MMMMAAAANNNNPPPPAAAATTTTHHHH can contain the names	of directories
+	    where _m_a_n_x will look first for manual pages.  If MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH is
+	    defined, it	will overide any definition of MMMMAAAANNNNPPPPAAAATTTTHHHH.	 _M_a_n_x
+	    looks in the directories listed there first.  Next (if the
+	    requested manual page is not found in the MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH or $$$$MMMMAAAANNNN----
+	    PPPPAAAATTTTHHHH directories), the list	as given by the	contents of
+	    ////uuuussssrrrr////lllliiiibbbb////mmmmaaaannnnxxxx....ddddiiiirrrr is used.	Finally, the file
+	    $$$$HHHHOOOOMMMMEEEE////....mmmmaaaannnnxxxx....ddddiiiirrrr is used.  If none of these sources of paths
+	    are	available, _m_a_n_x	will only look in the ////uuuussssrrrr manuals.
+
+	    The	string,	mmmmaaaannnnxxxx, in those filenames is derived from the
+	    _b_a_s_e_n_a_m_e(_1)	value of the program name.  Thus simple	links
+	    created to _m_a_n_x will provide access	to different sets of
+	    manuals.
+
+	    The	various	files provide the ability for administration to
+	    maintain a list of system directories.  It also allows the
+	    user the ability to	add their own, or through the use of
+	    MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH or	$$$$MMMMAAAANNNNPPPPAAAATTTTHHHH, supercede the	system directories (if
+	    need be).
+
+	    If a '<' precedes a	string,	that string is assumed to be a
+	    file name which indicates a	file containing	more path infor-
+	    mation.  _M_a_n_x will open the	file and read path specifica-
+	    tions from it at that point.  This allows groups of	users to
+	    share the same set of manual pages which might be specific
+	    to a project or application	but not	have to	maintain the
+	    list themselves.  Thus, ._M_a_n_x._d_i_r might contain something
+	    like
+
+		 !~me/lib/manuals      <~project/lib/manlists/devcmds
+		 <~project/lib/manlists/3bcmds
+
+
+
+       Page 4					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+		 <~project/lib/manlists/iapxcmds
+		 <~project/lib/manlists/mc68cmds
+
+	    for	a user involved	in a project requiring access to several
+	    different cross compilers.
+
+	    Four different types of directory structures are understood
+	    by _m_a_n_x.  A	path entry in a	file, or as part of the	colon
+	    separated list in $$$$MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH	or $$$$MMMMAAAANNNNPPPPAAAATTTTHHHH is either a	direc-
+	    tory structure like
+
+	    1111))))
+
+		 ddddiiiirrrr/man/<products>_man/man[0-9]
+		 ddddiiiirrrr/catman/<products>_man/man[0-9]
+
+	    or 2222))))
+
+		 ddddiiiirrrr////<<<<pppprrrreeeeffffiiiixxxx>>>>mmmmaaaannnn/<products>_man/man[0-9]
+		 ddddiiiirrrr////<<<<pppprrrreeeeffffiiiixxxx>>>>ccccaaaattttmmmmaaaannnn/<products>_man/man[0-9]
+
+	    or 3333))))
+
+		 ddddiiiirrrr/man[0-9]
+		 ddddiiiirrrr/cat[0-9]
+
+	    or 4444))))
+
+		 ddddiiiirrrr/catman/<products>_man/man[0-9]
+
+	    or 5555))))
+
+		 points	directly at a directory	which contains files.
+
+	    In the cases 1, 2 and 4 the	----pppp option can be used to control
+	    where _m_a_n_x looks.  In the case 5, _m_a_n_x will	search only the
+	    specified directory, i.e. ----pppp or $$$$MMMMAAAANNNNPPPPRRRROOOODDDD values as well as
+	    any	section	specification is not used.
+
+	    When a path	specification in MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH or MMMMAAAANNNNPPPPAAAATTTTHHHH begins with
+	    a '#', case	3 above	applies.  This is the standard BSD
+	    manual page	structure.  The	string '#/usr/man' should be
+	    used to access the normal system manual pages under	BSD.
+
+	    When a path	specification in MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH or MMMMAAAANNNNPPPPAAAATTTTHHHH begins with
+	    a '*', case	4 above	applies.  This is the standard SYSV
+	    manual page	structure without the unformatted manual pages.
+	    E.g. if the	catman structure is under /usr/catman, then
+	    '*/usr' should appear in the MMMMAAAANNNNPPPPAAAATTTTHHHH specification.
+
+	    When a path	in $$$$MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH or	$$$$MMMMAAAANNNNPPPPAAAATTTTHHHH is a directory	contain-
+	    ing	files case 5 above, a '!' placed in front of the path
+
+
+
+       Page 5					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+	    tells _m_a_n_x this information.  For example, the following
+	    change to the value	of $$$$MMMMAAAANNNNPPPPAAAATTTTHHHH will allow manual pages (or
+	    other preformatted documents) in the directory $$$$HHHHOOOOMMMMEEEE////mmmmaaaannnnuuuuaaaallllssss
+	    to be viewed using _m_a_n_x.
+
+		 MMMMAAAANNNNPPPPAAAATTTTHHHH====""""!!!!$$$$HHHHOOOOMMMMEEEE////mmmmaaaannnnuuuuaaaallllssss::::$$$$MMMMAAAANNNNPPPPAAAATTTTHHHH""""
+
+	    When an '!'	is used	in front of a directory	name, _m_a_n_x trys
+	    to be smart	and look at the	manual page to discover	if it is
+	    already formatted.	It does	this by	reading	the initial por-
+	    tion of the	file and checking for an _n_r_o_f_f(_1) control
+	    sequence.  If it finds one,	then it	will run _n_r_o_f_f(_1) in the
+	    usual way to format	manual pages before displaying it.
+
+	    When a path	in $$$$MMMMAAAANNNNXXXXPPPPAAAATTTTHHHH or	$$$$MMMMAAAANNNNPPPPAAAATTTTHHHH is a non-standard root
+	    name to a standard directory structure as shown in case 2
+	    above, _m_a_n_x	goes through some contortions to try and make
+	    the	root work.  A path with	an '@' in front	of it is
+	    expected to	be of the form ////ssssoooommmmeeee////ppppaaaatttthhhh////<<<<pppprrrreeeeffffiiiixxxx>>>>mmmmaaaannnn.	_M_a_n_x
+	    uses <prefix> to create the	name of	the ccccaaaattttmmmmaaaannnn directory,
+	    i.e.  ////ssssoooommmmeeee////ppppaaaatttthhhh////<<<<pppprrrreeeeffffiiiixxxx>>>>ccccaaaattttmmmmaaaannnn.  Thus, the	string
+	    @@@@////uuuussssrrrr////llllmmmmaaaannnn allows _m_a_n_x access to the ////uuuussssrrrr////llllmmmmaaaannnn////............ structure
+	    and	its counterpart, ////uuuussssrrrr////llllccccaaaattttmmmmaaaannnn, where the preformatted
+	    pages reside.
+
+	    Default options for	the ----pppp option can be specified using the
+	    $$$$MMMMAAAANNNNPPPPRRRROOOODDDD environment variable.  This variable should contain
+	    a comma separated list of products.	 The default list of
+	    llll,,,,uuuu,,,,pppp,,,,dddd,,,,aaaa is replaced with this value, so you must add these
+	    to your list if you	desire to have access to the system
+	    manual pages, as well as any that you specify in $$$$MMMMAAAANNNNPPPPRRRROOOODDDD.
+
+	    The	$$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR environment variable,	or $$$$PPPPAAAAGGGGEEEERRRR if $$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR
+	    is not defined, is used by _m_a_n_x to display the manual page
+	    when _m_a_n_x is envoked with the output directed to a terminal.
+	    Typically, $$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR contains your favorite	pager's	name.
+	    By default,	_p_g(_1) is used when neither $$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR nor $$$$PPPPAAAAGGGGEEEERRRR
+	    are	in the environment.  Since the string in $$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR is
+	    executed via the shell, you	can specify several commands
+	    tied together by pipes, e.g.  sssssssspppp ||||	ppppgggg.  As	a special case,
+	    exporting MANPAGER,	and setting it to the empty string as in
+
+		 $ export MANPAGER
+		 $ MANPAGER=""
+
+	    will eliminate the use of a	pager, the file	will be
+	    displayed using only _c_a_t(_1).
+
+       FFFFIIIILLLLEEEESSSS
+	    /dir/man/u_man/man[16]/*	  The _S_y_s_t_e_m _U_s_e_r _M_a_n_u_a_l
+	    /dir/man/p_man/man[2345]/*	  The _S_y_s_t_e_m _P_r_o_g_r_a_m_m_e_r	_M_a_n_u_a_l
+	    /dir/man/a_man/man[179]/*	  The _S_y_s_t_e_m _A_d_m_i_n_i_s_t_a_t_o_r _M_a_n_u_a_l
+
+
+
+       Page 6					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+	    /dir/man/d_man/man[179]/*	  The _D_o_c_u_m_e_n_t_e_r_s _W_o_r_k_b_e_n_c_h
+					  _I_n_t_r_o_d_u_c_t_i_o_n _a_n_d _R_e_f_e_r_e_n_c_e
+					  _M_a_n_u_a_l
+	    /dir/man/l_man/man[1-9]/*	  Local	additions
+	    /dir/man/<product>_man/man[1-9]/*
+					  Local	additions of large pro-
+					  ducts.
+	    /dir/catman/*/*/*		  The _f_o_r_m_a_t_t_e_d	version	for the
+					  above	directories
+	    */dir/catman/*/*/*		  The _f_o_r_m_a_t_t_e_d	version	of manu-
+					  als when the unformatted
+					  structure is not present to be
+					  searched through.
+	    !/dir			  [un]formatted	manual pages or
+					  similar documents
+	    @/path/<prefix>man		  The root of a	structure simi-
+					  lar to ////uuuussssrrrr////llllmmmmaaaannnn and
+					  ////uuuussssrrrr////llllccccaaaattttmmmmaaaannnn.
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	    cat(1), environ(5),	eqn(1D), man(5).  nroff(1D), ocw(1D),
+	    pack(1), pcat(1), pg(1), prt(1), prtfmt(1),	tbl(1D), tc(1D),
+	    troff(1D),
+
+       BBBBUUUUGGGGSSSS
+	    All	entries	are supposed to	be reproducible	either on a
+	    lineprinter	or on a	terminal.  However, on a terminal some
+	    information	may be lost.
+
+	    Directories	specified with the '!' prefix which contain
+	    manual pages with the same prefix as other files confuse
+	    _m_a_n_x.  In particular the command mmmmaaaannnnxxxx ----dddd!!!!....	mmmmaaaannnn would match
+	    such file names as mmmmaaaannnn....cccc,,,, mmmmaaaannnn....llll and	mmmmaaaannnn....1111.	The problems
+	    arises during the directory	search,	because	the first file
+	    found with the mmmmaaaannnn prefix will be used.  To	solve the prob-
+	    lem	always use the complete	file name as in	mmmmaaaannnnxxxx ----dddd!!!!.... mmmmaaaannnn....1111.
+
+	    _M_a_n_x really	does more work than is necessary.  All manual
+	    pages could	reside in the ////uuuussssrrrr////mmmmaaaannnn and ////uuuussssrrrr////ccccaaaattttmmmmaaaannnn but
+	    sysadmins typically	don't ever put them there.
+
+
+       SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCSSSS
+	    Several of the manual pages	have names of the form mmmmaaaalllllllloooocccc....3333cccc
+	    verses mmmmaaaalllllllloooocccc....3333xxxx.  Since both are in the same section and
+	    manual (and	actually the same directory), it is necessary to
+	    specify which one you desire.  You can use the full	name as
+	    the	manual name when envoking _m_a_n_x,	or a sssseeeeccccttttiiiioooonnnn----ssssppppeeeecccc.  An
+	    example would be
+
+		 mmmmaaaannnnxxxx mmmmaaaalllllllloooocccc....3333xxxx.
+
+
+
+
+       Page 7					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+	    When ----eeee is given on	the command line, a prompt will	be
+	    issued for each manual page	that matches the given name.
+	    The	prompt asks whether or not you wish to use the manual
+	    page corresponding to the name printed.  Any response
+	    (including jjjjuuuusssstttt return) that does not begin	with the letter
+	    'y', upper or lower	case, is taken to mean nnnnoooo.
+
+	    When ssssttttddddoooouuuutttt	is not a terminal, _m_a_n_x	uses _c_a_t(_1) to display
+	    the	manual entry.  When ssssttttddddoooouuuutttt is a	terminal, _m_a_n_x uses the
+	    pipeline ccccaaaatttt |||| $$$$MMMMAAAANNNNPPPPAAAAGGGGEEEERRRR to	display	the manual entry.
+
+	    When the `-f' options is used, _m_a_n_x	looks at directory
+	    structures that have corresponding ccccaaaattttmmmmaaaannnn structures and
+	    compares the dates of the two files	(formatted and unformat-
+	    ted	version).  If the ccccaaaattttmmmmaaaannnn (formatted) file is older than
+	    the	mmmmaaaannnn (unformatted) file,	_m_a_n_x will reformat the manual
+	    page from the source before	displaying it.	OOOOnnnnllllyyyy if	the ccccaaaatttt----
+	    mmmmaaaannnn	directory is writeable,	will the new version be	written
+	    to the proper ccccaaaattttmmmmaaaannnn file.
+
+	    The	_s_y_s_m_a_n_s	command	produces a list	of directory specifica-
+	    tions and can also generate	manual product names for setting
+	    MMMMAAAANNNNPPPPRRRROOOODDDD.  The directory specifications have	the appropriate
+	    prefixes to	allow _m_a_n_x access to any manual	pages that they
+	    contain.  Normally,	it is used in the following way.
+
+		 eeeecccchhhhoooo ''''$$$$HHHHOOOOMMMMEEEE::::!!!!$$$$HHHHOOOOMMMMEEEE////ddddoooocccc'''' >>>>$$$$HHHHOOOOMMMMEEEE////....mmmmaaaannnnxxxx....ddddiiiirrrr
+		 iiiiffff [[[[ !!!!	----ffff ////uuuussssrrrr////lllliiiibbbb////mmmmaaaannnnxxxx....ddddiiiirrrr ]]]];;;;	tttthhhheeeennnn
+		      ssssyyyyssssmmmmaaaannnnssss >>>>>>>>$$$$HHHHOOOOMMMMEEEE////....mmmmaaaannnnxxxx....ddddiiiirrrr
+		 ffffiiii
+		 export	MANPROD;MANPROD=`sysmans -p`
+
+	    These commands place the users own manual page directory
+	    structure and a document directory at the beginning	of the
+	    $$$$HHHHOOOOMMMMEEEE////....mmmmaaaannnnxxxx....ddddiiiirrrr file.  Then, if the	system administrator has
+	    not	created	a manual page directory	structure file in
+	    ////uuuussssrrrr////lllliiiibbbb, the _s_y_s_m_a_n_s command is used to append the	probable
+	    system manual pages	to the users file.  Finally, MMMMAAAANNNNPPPPRRRROOOODDDD is
+	    set	to contain all of the manual page product names	that
+	    exist in the directories that _s_y_s_m_a_n_s can find.
+
+	    If COMPRESSION is defined in the makefile, _m_a_n_x will
+	    pack/compress (based on -z or -Z parameter)	generated ccccaaaattttmmmmaaaannnn
+	    files using	_p_a_c_k(_1)/_c_o_m_p_r_e_s_s(_1) and	display	packed files
+	    using _p_c_a_t(_1)/_z_c_a_t(_1) instead of _c_a_t(_1).
+
+	    Formatting defaults	to the command line
+
+		 tbl -TX [man-source] |	\
+		 nroff -Tlp -rdnn -rmnn	-rynn -man | \
+		 col > [cat-file]
+
+
+
+
+       Page 8					      (last mod. 1/6/93)
+
+
+
+
+
+
+       MMMMAAAANNNNXXXX((((1111))))		   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		 MMMMAAAANNNNXXXX((((1111))))
+
+
+
+	    where the -rm, -ry,	and -rd	flags specify the modification
+	    date on the	source file.  The -C option allows this	format-
+	    ting command to be something else.
+
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    _M_a_n_x is provided by	Gregg Wonderly
+
+
+       AAAAUUUUTTTTHHHHOOOORRRR
+	    _M_a_n_x was written by	Gregg Wonderly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 9					      (last mod. 1/6/93)
+
+
+

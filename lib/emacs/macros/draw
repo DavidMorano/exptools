@@ -1,0 +1,77 @@
+Ggraphics (draw) [MACRO]
+
+Warren Montgomery, Emacs 4.5
+
+This macro allows the user to draw on the screen using a subset
+of the keyboard as a keypad, and uses the characters - | \ and /
+to draw
+			set graphics modes
+<overwrite
+<picture
+<nodelete
+
+		$4 = 1
+^û		while ($4 == 1)
+				$0 = getchar()
+	0-<Graphics
+	!û0		switch ($0)
+		ûu\ý
+		ûi|ý
+		û^^ý
+		ûo/ý
+		ûl-ý
+		û>>ý
+		û.\ý
+		û,|ý
+		ûvvý
+		ûm/ý
+		ûj-ý
+		û<<ý
+		ûý
+		ûý
+		ûý
+		ûý
+		ûý
+		ûý
+		ûý
+		ûý
+		ûÿ		default:
+			0		$4 = 0
+			˜			execute the command in $0
+		ý
+	ý
+	°		update the screen
+ý
+bbox -- draw a box between cursor and mark [MACRO]
+
+			set graphics modes
+<picture
+|ûû­í		If picture mode is on
+<overwrite
+<nodelete
+
+³=		Current column
+´°=		Current line
+			Exchange
+³±2~³=Column Difference
+´±2~´°=line Difference
+|ûû³~°³If column difference is less than 0
+	³±2~°³³ýý
+|ûû³~°´If column difference is less than 0
+	´±2~°´´ýý
+³±1~³	Adjust column difference
+³-±2~´ødownline
+±2~³´		Back to top
+±2~´ødownline
+³-			Complete box
+ýû °<Enter graphics mode (^XG) before drawing box
+ýý
+üdownline -- draw down arg characters
+
+^û³~°±2~|ý
+nnormal (non-graphics) modes [MACRO]
+			set normal modes
+<overwrite
+°<picture
+°<nodelete
+°

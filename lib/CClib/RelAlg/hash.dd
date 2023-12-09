@@ -1,0 +1,17 @@
+#ident "@(#) /sable/sdb/ra/rel/tuple/s.hash.dd"
+/*      Copyright (c) 1989,1991 AT&T - All Rights Reserved */
+
+typedef unsigned long Hashindex;        /* largest table 4G slots, 1G tuples */
+
+class Tuple_Hash
+   {
+include(hash.pd)
+public:
+   Tuple_Hash(Hashindex cardinality);
+   ~Tuple_Hash();
+   static Hashindex crunch(Hashindex,const char,const char);
+   Hashindex size() { return _size; }
+   Hashindex hash(char *start,Dlength length,Hashindex startval=0);
+   Boolean_t insert(Tuple *tuple,Hashindex start);
+   Tuple **table;        /* treat as Tuple * table[size] */
+   };

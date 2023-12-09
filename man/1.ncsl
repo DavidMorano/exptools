@@ -1,0 +1,528 @@
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  ncsl - non-commentary	source line filter
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  ncsl -l lang [-i filein -o
+	  fileout1[,fileout2,fileout3,fileout4]	-s statfile -f
+	  filename -L specfile -a -c -g	-n -r -V]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _N_c_s_l reads the standard input	or the filein specified	by the
+	  optional ----iiii argument and copies it to	the standard output or
+	  the fileout specified	by the optional	----oooo argument eliminat-
+	  ing comments and blank lines (and indentation).  Ncsl	keeps
+	  counts of total lines, comment lines,	non-comment lines,
+	  lines	which are both comment and non-comment and blank lines
+	  and prints these counts on stderr or the statfile specified
+	  by the optional ----ssss argument.	The optional ----cccc	argument will
+	  cause	headings to be suppressed.  If the statfile already
+	  exists the new line of counts	will be	appended to the	end of
+	  the file.  The line of counts	is prefixed by the file	name,
+	  the language specified, and the year,month,day,hour,minute
+	  that the file	was processed.
+
+	  If the input is from a pipe or from redirected input the
+	  filename will	be "unknown" unless a filename is specified
+	  with the optional ----ffff argument.  If ----iiii	is specified ----ffff	is
+	  ignored and the filename specified in	the ----iiii argument	is
+	  used as the printed filename.
+
+	  If the filename is greater than 14 characters	and ----nnnn is not
+	  specified, only the rightmost	14 characters are printed.
+	  The ----llll argument is required and specifies the	language of
+	  the input file which must be one of the languages specified
+	  below.  If the argument is not a known language, processing
+	  will stop unless the ----gggg flag is supplied.  If	----gggg is supplied
+	  the input will be copied to the output after removing	lead-
+	  ing blanks and tabs and blank	lines.	If ----llll is not speci-
+	  fied,	and ----gggg is specified, _u_n_k is the	default	for the
+	  language and 2 error messages	are written and	the input will
+	  be copied to the output as it	was for	an unrecognized
+	  language.
+
+	  If the language is TMS test scripts (ts) or prl5.0 (prl5),
+	  the ----oooo option	allows you to specify multiple,	comma
+	  separated filenames.	For TMS	test scripts, the filenames
+	  will be for the header section, the manual section, and the
+	  automatic/semi-automatic section.  For prl5.0, the filenames
+	  will be for the data section,	default	section, distribution
+	  section, and poprules	section.
+
+	  Ncsl expects the input to be correctly formatted and syntac-
+	  tically correct.  If the input is usually processed by RJE
+
+
+
+     Page 1					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	  _s_e_n_d(1), the user of ncsl should preprocess the input	with
+	  RJE _g_a_t_h(1) using the	----kkkk option.  This option	will permit
+	  the tabs to be expanded into blanks without replacing	key-
+	  words.  Unless the ----rrrr	option is used,	RJE _g_a_t_h type comments
+	  (ie. lines beginning with ~~)	are always counted as comments
+	  by _n_c_s_l.
+
+	  The ----LLLL option	allows you to define the commenting convention
+	  or specification of a	language (See Language Specification
+	  section).  If	you do not specify the ----LLLL option, ncsl uses
+	  $TOOLS/lib/ncsl/specfile.
+
+	  The ----aaaa option	will print the known language list and exit.
+
+	  The ----VVVV option	will print the program version and exit.
+
+     LLLLAAAANNNNGGGGUUUUAAAAGGGGEEEE SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCAAAATTTTIIIIOOOONNNN
+	  Ncsl allows user to define (----LLLL) the commenting convention of
+	  a language in	a file.	 Ncsl will read	this file and gen-
+	  erates the NCSL counts for that language.  The format	of the
+	  specification	file is	of the form:
+
+		  keyword delimiter values [delimiter position delim-
+		  iter comment]
+	  where:
+	       _k_e_y_w_o_r_d - is the	operation that needs to	be performed
+	       on the language (see below for a	list of	supported
+	       operations).  This is a required	field.
+	       _d_e_l_i_m_i_t_e_r - this	is used	to separate fields and it is a
+	       required	field.	It can be blanks and/or	tabs.
+	       _v_a_l_u_e_s -	these are user-defined values for comment,
+	       non-comment and skip lines.  Values that	are multi-
+	       words (words separated by blanks) must be surrounded
+	       with double quotes ("").	 If double quote is part of a
+	       value, it must be preceded with an escape character
+	       (\).  Also, the following special values	can also be
+	       used: BBBBOOOOFFFF (for beginning	of file) and EEEEOOOOLLLL (for end of
+	       line).  This is a required field.
+	       _p_o_s_i_t_i_o_n	- for languages	that are position-significant,
+	       this field indicates the	beginning location of the
+	       value.  This is an optional field.
+	       _c_o_m_m_e_n_t - like the shell	language, a comment begins
+	       with a #.  Blank	lines are also consider	comment	lines.
+	       This is an optional field.
+
+	  The following	keywords are currently supported:
+	       llllaaaannnngggguuuuaaaaggggeeee	---- a required keyword that is used to specify
+	       language	type and it must be the	first non-comment,
+	       non-blank record.  This keyword does not	accept a posi-
+	       tional parameter.  Since	multiple languages can be
+	       specified in the	specification file, this keyword
+	       separate	the languages (indicates the beginning of a
+
+
+
+     Page 2					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	       new language specification).
+	       _o_r_i_e_n_t_a_t_i_o_n - at	present, only character-oriented
+	       languages are supported,	therefore the value is
+	       "character-oriented".  This keyword does	not accept a
+	       positional parameter.
+	       _c_o_m_m_e_n_t-_s_t_a_r_t - specifies the string that begins	a com-
+	       ment.  For every	ccccoooommmmmmmmeeeennnntttt----ssssttttaaaarrrrtttt keyword specified, there
+	       must be a corresponding ccccoooommmmmmmmeeeennnntttt----eeeennnndddd keyword and the
+	       first ccccoooommmmmmmmeeeennnntttt----ssssttttaaaarrrrtttt keyword must	map to the first
+	       ccccoooommmmmmmmeeeennnntttt----eeeennnndddd keyword, the	second ccccoooommmmmmmmeeeennnntttt----ssssttttaaaarrrrtttt keyword
+	       must map	to the second ccccoooommmmmmmmeeeennnntttt----eeeennnnddddssss keyword, etc.  For
+	       example,	a C++ comment specification will look like:
+
+		       comment-start //
+
+		       comment-start /*
+
+		       comment-end EOL
+
+		       comment-end */
+
+	  In the example above,	lines 1	and 3 indicate the beginning
+	  and ending of	a comment and lines 2 and 4 indicates the
+	  beginning and	ending of another type of comment.  This is an
+	  optional keyword.  Within a language,	multiple ccccoooommmmmmmmeeeennnntttt----
+	  ssssttttaaaarrrrttttssss are supported.
+	  ccccoooommmmmmmmeeeennnntttt----eeeennnndddd ----	specifies the string that ends a comment.  For
+	  every	ccccoooommmmmmmmeeeennnntttt----eeeennnndddd keyword specified, there must be a
+	  corresponding	ccccoooommmmmmmmeeeennnntttt----ssssttttaaaarrrrtttt keyword.	See the	ccccoooommmmmmmmeeeennnntttt----ssssttttaaaarrrrtttt
+	  section for more information.	 This is also an optional key-
+	  word.	 Within	a language, multiple ccccoooommmmmmmmeeeennnntttt----eeeennnnddddssss are sup-
+	  ported.
+	  ssssttttrrrriiiinnnngggg----qqqquuuuooootttteeee ---- this is an optional string quote keyword.
+	  Within a language, multiple keywords are not supported.  If
+	  the quote is double quote ("), it must be preceded with the
+	  escape character (\).	 Comments inside the quotes will not
+	  be counted.
+	  lllliiiitttteeeerrrraaaallll----qqqquuuuooootttteeee	---- this is an optional literal quote keyword
+	  and within a language, multiple keywords are not supported.
+	  Comments inside the quotes will not be counted.
+	  sssskkkkiiiipppp ---- specifies that	any line beginning with	the specified
+	  string should	be treated as a	special	line.  That is,	the
+	  lines	should not be counted.
+	  ssssyyyynnnnttttaaaaxxxx ---- specifies that if you remove	a comment, special,
+	  and blank lines from a file, the rest	of the file has	the
+	  same language	syntax as the one specified.  This keyword
+	  does not accept a positional parameter.
+
+	  Below	is a specification file	for two	languages: TMS
+	  testscripts (_t_s) and PRL5.0 (_p_r_l_5) (the file can be found in
+	  $TOOLS/lib/ncsl/specfile):
+
+
+
+
+     Page 3					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	       #  This is the language specification for test scripts and prl5.
+	       language	prl5
+	       orientation character-oriented
+	       comment-start BOF   # BOF - Beginning Of	File
+	       comment-end default-rules:
+	       comment-start attribute:
+	       comment-end checks:
+	       comment-start /*
+	       comment-end */
+	       comment-start BOF   # BOF - Beginning Of	File
+	       comment-end definitions:
+
+	       language	ts
+	       orientation character-oriented
+	       comment-start #
+	       comment-end EOL	# EOL -	End Of Line
+	       comment-start /*
+	       comment-end */
+
+     SSSSUUUUPPPPPPPPOOOORRRRTTTTEEEEDDDD LLLLAAAANNNNGGGGUUUUAAAAGGGGEEEESSSS
+	  LLLLaaaannnngggguuuuaaaaggggeeee AAAArrrrgggguuuummmmeeeennnntttt   CCCCoooommmmmmmmeeeennnnttttiiiinnnngggg CCCCoooonnnnvvvveeeennnnttttiiiioooonnnn
+
+	  pppplllliiii ((((oooorrrr ppppllll1111)))),,,,	cccc,,,,    anything enclosed	within ``/* */'' is con-
+	  lllleeeexxxx,,,, yyyyaaaacccccccc,,,, lllleeeeaaaapppp     sidered commentary.
+
+	  cccc++++++++		      anything enclosed	within ``/* */'', or
+			      anything from ``//'' to end of line.
+
+	  ssssnnnnooooffffllllaaaakkkkeeee,,,, ssssppppiiiitttt----     an ``*'' in column 1.
+	  bbbboooollll,,,, ccccoooommmmpppp
+	  ((((DDDDIIIIRRRR////EEEECCCCTTTT ccccoooommmmppppoooossssiiii----
+	  ttttiiiioooonnnn llllaaaannnngggguuuuaaaaggggeeee)))),,,, &&&&
+	  ssssrrrrtttt ((((ssssyyyynnnnccccssssoooorrrrtttt
+	  ccccoooonnnnttttrrrroooollll ccccaaaarrrrddddssss))))
+
+	  ffffoooorrrrttttrrrraaaannnn	      a	``C'' in column	1.
+
+	  ccccoooobbbboooollll		      an ``*'' or ``/''	in column 7, cobol note
+			      lines, note paragraphs and anything
+			      between the program-id and environment
+			      division is considered commentary.
+
+	  ddddttttpppp		      a	``#'' followed by a blank in columns 7
+			      and 8 and	any cobol like comments.
+
+	  bbbbaaaallll,,,, ppppssssbbbb,,,, ddddbbbbdddd	      an ``*'' in column 1 or a	``.*'' in
+			      columns 1	and 2, and any text after
+			      operand to end of	line.
+
+	  ssssaaaallll		      any BAL or PL1 type comment.
+
+
+
+
+
+     Page 4					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	  jjjjccccllll		      a	``//*''	in columns 1-3.	 blanks	are con-
+			      sidered as data.
+
+	  ddddiiiirrrrjjjjccccllll ((((DDDDIIIIRRRR////EEEECCCCTTTT     comments are an ``*'' in column 1	or the
+	  JJJJCCCCLLLL---- ssssoooouuuurrrrcccceeee kkkkeeeepppptttt    macros ``.LS'' and ``.BR'' which expand
+	  uuuunnnnddddeeeerrrr	SSSSCCCCCCCCSSSS bbbbeeeeffffoooorrrreeee   into comment lines.  ``.LS'' expands into
+	  bbbbeeeeiiiinnnngggg	eeeexxxxppppaaaannnnddddeeeedddd bbbbyyyy   the last line comment and	``.BR''	expands
+	  pppprrrreeeepppprrrroooocccceeeessssssssoooorrrrssss))))      to a bar line comprised of *'s.
+
+	  ddddoooossssbbbbaaaattttcccchhhh ((((DDDDOOOOSSSS	      comments may start in any	column and must
+	  BBBBaaaattttcccchhhh	ffffiiiilllleeee))))	      be preceded by ``rem'' (case is ignored).
+
+	  mmmmaaaarrrrkkkk4444		      an ``aa''	in columns 9 and 10.
+
+	  mmmm11111111 ((((DDDDEEEECCCC mmmmaaaaccccrrrroooo      any chars	after a	``;'' to end of	line
+	  aaaasssssssseeeemmmmbbbblllleeeerrrr 11111111))))
+
+	  sssshhhheeeellllllll		      anything from a ``#'' character to the end
+			      of line.	If ``#'' is escaped or quoted,
+			      it's not a comment.
+
+	  llllkkkkeeee ((((lllliiiinnnnkkkkaaaaggggeeee eeeeddddiiii----   comments are anything that follows an
+	  ttttoooorrrr ccccoooonnnnttttrrrroooollll	      operator and operand field.  A comment is
+	  ccccaaaarrrrddddssss))))	      continued, if column 72 is non-blank and
+			      the last character of the	operand	is NOT a
+			      comma.
+
+	  LLLLRRRR ((((ppppaaaarrrrsssseeeerrrr ggggeeeennnn----     comments may start in any	column and must
+	  eeeerrrraaaattttoooorrrr))))	      be preceded by ``&C''.
+
+	  ppppddddppppaaaassss	((((PPPPDDDDPPPP////11111111	      a	``/'' to the end of the	line
+	  AAAAsssssssseeeemmmmbbbbllllyyyy))))
+
+	  aaaassss ((((ggggeeeennnneeeerrrriiiicccc	      a	``#'' to the end of the	line
+	  aaaasssssssseeeemmmmbbbbllllyyyy))))
+
+	  mmmmaaaakkkkeeee ((((mmmmaaaakkkkeeee ffffiiiilllleeeessss))))   a	``#'' to the end of the	line
+
+	  ppppaaaarrrrmmmmssss	((((ppppaaaarrrraaaammmmeeeetttteeeerrrr    no comments but must process anyway.
+	  iiiinnnnppppuuuutttt	ccccaaaarrrrddddssss)))),,,,
+	  eeeerrrrrrrruuuuppppddddtttt ((((DDDDBBBB
+	  uuuuppppddddaaaatttteeee ttttrrrraaaannnnssssaaaacccc----
+	  ttttiiiioooonnnnssss)))),,,, nnnnoooonnnneeee ((((nnnnoooo
+	  llllaaaannnngggguuuuaaaaggggeeee))))
+
+	  ttttssss ((((TTTTMMMMSSSS tttteeeesssstttt	      see LANGUAGE SPECIFICATION section.
+	  ssssccccrrrriiiippppttttssss))))
+
+	  pppprrrrllll5555....0000	      see LANGUAGE SPECIFICATION section.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  cat m4file | ncsl -l mark4 -f	m4file
+
+
+
+     Page 5					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	  get -s -p cobolprg | gath | ncsl -l cobol -o ocobolprg -s
+	  stats	-f cobolprg -c
+
+	  ncsl -l prl5 -L specfile -i prl5file
+	  -odata,default,distribute,poprules
+
+	  ncsl -l ts -L	specfile -i tsfile -oheader,manual,automatic
+
+	  The examples above will give you the number of uncommented
+	  lines	of code	in the source file but the cobol program is
+	  first	retrieved from SCCS and	preprocessed through gath to
+	  expand the tab specifications	into blanks.
+
+	  If _n_c_s_l were run on _n_c_s_l._c , the statistics output will look
+	  something like this:
+
+     input file	  lang	 date	       lines   cmnt   non-cmnt	 both	blanks
+     ncsl.c	  c	 920414-1452   1780    704	1232	 157	137
+
+     WWWWHHHHYYYY WWWWOOOONNNN''''TTTT TTTTHHHHOOOOSSSSEEEE NNNNUUUUMMMMBBBBEEEERRRRSSSS AAAADDDDDDDD UUUUPPPP????
+	  The theory behind code counting and a	discussion on the
+	  proper use of	these statistics may be	found in _A _S_t_a_n_d_a_r_d
+	  _f_o_r _C_o_d_e _C_o_u_n_t_i_n_g , TM83-58121-01, by	G. C. Patton.  Unfor-
+	  tunately, if one tries the simple task of adding up some of
+	  the columns produced by ncsl,	it will	be found that the com-
+	  bination of _c_o_m_m_e_n_t_s + _n_o_n-_c_o_m_m_e_n_t_s +	_b_o_t_h + _b_l_a_n_k will sel-
+	  dom equal the	number given by	_t_o_t_a_l _l_i_n_e_s . To understand
+	  why, you must	look at	the definition of a comment line:
+
+	  +o	    a line which has no	source code on it, but does
+		    have a comment, such as this C source line:
+		    /* this is a comment */
+
+	  +o	    a line which has both source code and a comment on
+		    it,	such as	this C source line:
+		    i =	3; /* this is a	comment	*/
+
+	  +o	    one	or more	blank lines in a row is	considered to
+		    be a single	comment	line
+
+	  Thus it can be seen that the number given under _c_o_m_m_e_n_t_s is
+	  a combination	of the unshown _c_o_m_m_e_n_t_s-_o_n_l_y lines, plus the
+	  number shown under _b_o_t_h , plus a fraction of the number
+	  shown	under _b_l_a_n_k . Consider an example where	you received
+	  the following	numbers	from _n_c_s_l:
+
+		    lines   cmnt   non-cmnt   both   blanks
+		    10041   4784     6607     1388    1220
+
+	  Given	these numbers, we can find the number of _c_o_m_m_e_n_t_s-_o_n_l_y
+	  lines	by subtracting the _n_o_n-_c_m_n_t number and the _b_l_a_n_k_s
+	  number from the total: ccccoooommmmmmmmeeeennnnttttssss----oooonnnnllllyyyy ==== 11110000000044441111 ---- 6666666600007777 ----	1111222222220000 ====
+
+
+
+     Page 6					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	  2222777755554444.	 Subtracting this number and the _b_o_t_h number from the
+	  _c_m_n_t number tells us how many	of the blank lines were	actu-
+	  ally counted as comment lines: 4444777788884444 ----	2222777755554444 ---- 1111333388888888 ==== 666644442222.
+	  This means that 1111222222220000 ---- 666644442222 ==== 555577778888 blank lines were combined
+	  with other blank lines as comments lines and were not
+	  included in the _c_m_n_t number.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  ncsldiff
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+	  Ncsl will complain if	the language parameter is omitted or
+	  not one of the defined languages (however see	----gggg option), if
+	  one of the files can't be opened, or if the output cannot be
+	  fully	written.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+	  Ncsl thinks the input	files for the fixed format languages
+	  are already in card image form.  If a	tabspec	is defined in
+	  the input, then the input should be preprocessed by _g_a_t_h
+	  before executing _n_c_s_l.
+
+	  Some special non-printing characters may be treated
+	  incorrectly.
+
+	  Multiple blank lines in a block are counted separately when
+	  counting blanks, but are only	counted	as being a single com-
+	  ment.
+
+	  Linkage editor comments on lines with	linkage	editor control
+	  information are not removed, but the line is properly
+	  counted as both a comment line and a non-comment line.
+
+	  Unless ----ssss is specified, errors and the counts	will be
+	  printed to stderr and	any error diagnostic lines will	appear
+	  before the counts.
+
+	  A missing argument for the ----llll, ----oooo, ----ssss, or ----ffff argument	will
+	  cause	the next flag or characters to be used as that argu-
+	  ment with unpredictable results.  For	example, a missing ----llll
+	  argument may cause the ----iiii flag to be ignored and the program
+	  will expect input from stdin.
+
+     FFFFIIIILLLLEEEESSSS
+	  /tmp/nXXXXXX	      An intermediate file written and read
+			      when processing the languages DTP	and
+			      SAL.
+
+     AAAAUUUUTTTTHHHHOOOORRRRSSSS
+	  Ellen	M. Sondheim, G.	C. Patton, T. L. Hansen, O. Ladipo
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+
+
+
+     Page 7					     (printed 5/16/92)
+
+
+
+
+
+
+     NNNNCCCCSSSSLLLL((((1111))))		   IIIISSSSSSSSUUUUEEEE 3333....5555 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))		       NNNNCCCCSSSSLLLL((((1111))))
+
+
+
+	  Tony L. Hansen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8					     (printed 5/16/92)
+
+
+

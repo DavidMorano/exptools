@@ -1,0 +1,198 @@
+
+
+
+       FFFFOOOORRRRWWWWAAAARRRRDDDDMMMMAAAAIIIILLLL((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  FFFFOOOORRRRWWWWAAAARRRRDDDDMMMMAAAAIIIILLLL((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    forwardmail	- sets and unsets mail forwarding
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    forwardmail	address
+	    forwardmail	-u
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _F_o_r_w_a_r_d_m_a_i_l	sets up	(and unsets) mail forwarding for a log-
+	    name.  Mail	forwarding is performed	by adding the line "For-
+	    ward to _a_d_d_r_e_s_s" to	the _m_a_i_l_f_i_l_e (see FFFFIIIILLLLEEEESSSS	))));;;; mail	forward-
+	    ing	is unset by removing the "Forward to _a_d_d_r_e_s_s" line.
+
+       PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+	    address	  _A_d_d_r_e_s_s can have two forms: _d_e_s_t!_l_o_g_n_a_m_e and
+			  _l_o_g_n_a_m_e . For	form _d_e_s_t!_l_o_g_n_a_m_e , _d_e_s_t is the
+			  name of the destination machine and _l_o_g_n_a_m_e is
+			  the login name to which mail should be for-
+			  warded.
+
+	    For	form _l_o_g_n_a_m_e , the destination machine is assumed to be
+	    the	current	machine, and the _l_o_g_n_a_m_e is a login name which
+	    exists on the current machine.
+
+	    -u	 Unsets	current	mail forwarding.
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+		 forwardmail ihu1h!takao
+
+		 forwardmail doggy
+
+		 forwardmail -u
+
+       UUUUSSSSEEEEFFFFUUUULLLL TTTTRRRRIIIICCCCKKKK
+	    If you have	a login	on a machine that you access infre-
+	    quently, it	is sometimes  desirable	to unset mail forwarding
+	    when logging in, then to reset mail	forwarding upon	exit.
+	    The	following two lines, if	placed in $HOME/.profile, should
+	    do the trick:
+
+		 forwardmail -u
+		 trap "forwardmail dest!logname" 0
+
+	    If you exec	a shell	at the bottom of your .profile,	a rather
+	    nasty problem occurs:  The trap that was set in the	.profile
+	    disappears when the	new shell is exec'ed, i.e., mail for-
+	    warding is not set up for you via the "useful trick."
+
+	    If the shell you exec is _k_s_h(_1), the following lines,
+	    although not particularly elegant, get the job done:
+
+	    In file $HOME/.profile:
+
+
+
+       Page 1					       (printed	6/30/94)
+
+
+
+
+
+
+       FFFFOOOORRRRWWWWAAAARRRRDDDDMMMMAAAAIIIILLLL((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  FFFFOOOORRRRWWWWAAAARRRRDDDDMMMMAAAAIIIILLLL((((1111))))
+
+
+
+		 export	ENV TRAP
+		 ENV=<your_env_file>
+		 TRAP="trap 'forwardmail dest!logname' 0"
+		 forwardmail -u
+		 eval "$TRAP"	# In case ksh not exec'ed
+
+	    In file <your_env_file>:
+
+		 if test -n "${TRAP:-}"
+		 then
+		      eval "$TRAP"
+		      unset TRAP
+		 fi
+
+	    Note, though, that if the machine crashes while you	are
+	    currently logged in, the trap will not fire	and mail for-
+	    warding will not be	set up.	 This is, hopefully, a rare
+	    occurrence.
+
+       SSSSHHHHEEEELLLLLLLL VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+	    $$$$LLLLOOOOGGGGNNNNAAAAMMMMEEEE  Current login name; automatically	set during
+		      login.  Can also be derived by _l_o_g_n_a_m_e(_1)	.
+
+	    $$$$MMMMAAAAIIIILLLL     Normally set to /usr/mail/$_L_O_G_N_A_M_E (see _F_I_L_E_S ).
+		      _F_o_r_w_a_r_d_m_a_i_l will use the file specified by $MAIL
+		      if $MAIL is set and exported, otherwise
+		      _f_o_r_w_a_r_d_m_a_i_l defaults to /usr/mail/$_L_O_G_N_A_M_E.
+
+       FFFFIIIILLLLEEEESSSS
+	    /usr/mail/$_L_O_G_N_A_M_E	      The _m_a_i_l_f_i_l_e in which unread mail
+				      is stored.  It is	also the file
+				      that _f_o_r_w_a_r_d_m_a_i_l manipulates.
+
+	    /usr/tmp/$_L_O_G_N_A_M_E$$/_x_x_A_B  Where $_L_O_G_N_A_M_E is	the current log-
+				      name (see	SSSSHHHHEEEELLLLLLLL VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS	)))),,,, $$ is
+				      the current process number, _x_x is
+				      "xx", and	_A_B are digits 00 through
+				      99.  These temporary files are
+				      used when	unread mail must be for-
+				      warded (see WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS )))).... The direc-
+				      tory /usr/tmp/$_L_O_G_N_A_M_E$$ and files
+				      _x_x_A_B are removed.
+
+	    /usr/tmp/$_L_O_G_N_A_M_E$$/_t_m_p._s_a_v_e
+				      If there are more	than 98	unread
+				      messages when forwarding is
+				      invoked, this file temporarily
+				      stores all messages beyond message
+				      number 98.  Do not worry too much
+				      about this file.
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+
+
+
+       Page 2					       (printed	6/30/94)
+
+
+
+
+
+
+       FFFFOOOORRRRWWWWAAAARRRRDDDDMMMMAAAAIIIILLLL((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	  FFFFOOOORRRRWWWWAAAARRRRDDDDMMMMAAAAIIIILLLL((((1111))))
+
+
+
+	    logname(1),	mail(1), sh(1),	ksh(1)
+
+       DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+	    Returns a 0	if successful, returns a 1 otherwise.
+
+       WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+	    If there is	unread mail in the _m_a_i_l_f_i_l_e (see FFFFIIIILLLLEEEESSSS )))),,,, and
+	    mail forwarding is set, the	unread mail is sent to the new
+	    address.  The unread messages are temporarily stored in
+	    directory /usr/tmp/$_L_O_G_N_A_M_E$$ (see FFFFIIIILLLLEEEESSSS); the permissions
+	    on the temporary files ensure that the messages remain
+	    private.  A	large number of	unread messages	causes
+	    _f_o_r_w_a_r_d_m_a_i_l	to be extremely	slow, which could cause	a race
+	    condition if new mail is coming in.	 Reading your mail
+	    _b_e_f_o_r_e setting up forwarding is a good habit to nurture.
+
+	    If the forwarding address is of the	form _d_e_s_t!_l_o_g_n_a_m_e then
+	    no validity	checking is performed on _d_e_s_t!_l_o_g_n_a_m_e ;	i.e.,
+	    please double-check	the forwarding address so that your mail
+	    will not be	sent into limbo.
+
+       EEEERRRRRRRROOOORRRRSSSS
+	    If you receive the message
+
+	    Warning! /usr/lib/sendmail exists on your system and for-
+	    warding may	not work properly.
+
+	    it means that sendmail may or may not be in	use on your sys-
+	    tem.  _F_o_r_w_a_r_d_m_a_i_l assumes that you're using	a UNIX System V
+	    compatible mailer, that is,	one that responds to a "Forward
+	    to"	line in	the mailbox under /usr/mail (or	/var/mail or
+	    /var/spool/mail or whatever).  Most	sendmail systems do not
+	    understand this convention,	but instead use	the file
+	    $HOME/.forward to indicate forwarding.  If your system uses
+	    sendmail, then what	forwardmail does to your mailbox may not
+	    work.  Unfortunately, the presence of /usr/lib/sendmail
+	    isn't sufficient to	determine if it's actually used.
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    Tony Hansen, hansen@pegasus.att.com, pegasus!hansen,
+	    attmail!tony
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 3					       (printed	6/30/94)
+
+
+

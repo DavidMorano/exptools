@@ -1,0 +1,330 @@
+
+
+
+     PPPPRRRREEEEFFFFEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPRRRREEEEFFFFEEEERRRR((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          prefer, pinvert, penter, plook, pconvert - maintain and use
+          bibliographic references
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          pppprrrreeeeffffeeeerrrr [ _o_p_t_i_o_n ... ]
+
+          ppppeeeennnntttteeeerrrr [ _o_u_t_f_i_l_e ]
+
+          ppppiiiinnnnvvvveeeerrrrtttt [ _o_p_t_i_o_n ... ] [ _f_i_l_e ... ]
+
+          ppppllllooooooookkkk [ ----pppp _d_b_f_i_l_e ] [ _k_e_y_w_o_r_d ... ]
+
+          ppppccccoooonnnnvvvveeeerrrrtttt [ ----dddd ] _f_i_l_e
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _P_r_e_f_e_r is a _t_r_o_f_f(1) preprocessor for bibliographic
+          references.  It copies a document from the standard input to
+          the standard output, using a bibliographic database to
+          change symbolic references into full references ready for
+          typesetting by _t_r_o_f_f(1).  Although symbolic references are
+          in the style of _m_o_n_k(1), _p_r_e_f_e_r does not depend on _m_o_n_k. The
+          options are:
+
+          ----nnnn   Format for _n_r_o_f_f.
+
+          ----oooo_s_o_r_t_k_e_y
+               Under the ||||rrrreeeeffffeeeerrrreeeennnncccceeee____lllliiiisssstttt command, sort according to
+               _s_o_r_t_k_e_y, any combinations of the letters aaaa (author) dddd
+               (date), and tttt (title), rather than in database
+               sequence.  If _s_o_r_t_k_e_y _i_s ssssoooorrrrtttt, sort according to the
+               current style.
+
+          ----pppp_d_b_f_i_l_e
+               Use _d_b_f_i_l_e as the bibliographic database (default
+               _p_r_e_f_e_r._o_u_t).
+
+          ----rrrr   Format as a released paper (technical memorandum
+               default).
+
+          ----ssss_s_t_y_l_e
+               Set the formatting _s_t_y_l_e , one of aaaatttttttt (default), aaaaccccmmmm,
+               aaaappppaaaa, iiiieeeeeeeeeeee, llllssssaaaa, ppppaaaammmmiiii, ssssppppeeeeccccttttrrrruuuummmm.
+
+          _P_r_e_f_e_r recognizes the following commands, which may appear
+          anywhere in a document.  Parentheses (((()))) in the commands may
+          be replaced by any of {{{{}}}} [[[[]]]] <<<<>>>> ....
+
+          ||||rrrreeeeffffeeeerrrreeeennnncccceeee____ssssttttyyyylllleeee(((( _s_t_y_l_e _a_r_g ...))))
+               Switch to a new formatting style.  All previous
+               references are forgotten and a new list of references
+               is begun.  If _s_t_y_l_e is ssssaaaammmmeeee the current style remains
+
+
+
+     Page 1                                          (printed 11/6/91)
+
+
+
+
+
+
+     PPPPRRRREEEEFFFFEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPRRRREEEEFFFFEEEERRRR((((1111))))
+
+
+
+               (but all previous references are forgotten).  Optional
+               _a_r_g_s are:
+
+               ttttmmmm   Format as a technical memorandum.
+
+               rrrrpppp   Format as a released paper.
+
+               nnnnrrrrooooffffffff
+                    Format for _n_r_o_f_f.
+
+               ttttrrrrooooffffffff
+                    Format for _t_r_o_f_f.
+
+               ssssoooorrrrtttt Print a ||||rrrreeeeffffeeeerrrreeeennnncccceeee____lllliiiisssstttt in an order appropriate
+                    for the current style.
+
+               sssseeeeqqqquuuueeeennnncccceeee
+                    Print a ||||rrrreeeeffffeeeerrrreeeennnncccceeee____lllliiiisssstttt in database sequence.
+
+               _s_o_r_t_k_e_y
+                    Print a ||||rrrreeeeffffeeeerrrreeeennnncccceeee____lllliiiisssstttt according to the _s_o_r_t_k_e_y,
+                    any combination of the letters aaaa, dddd, tttt as above.
+
+          ||||rrrreeeeffffeeeerrrreeeennnncccceeee((((_k_e_y_w_o_r_d_s
+               %_r_e_f__f_i_e_l_d_s %_f_l_a_g_s))))
+               Insert a citation mark in the current style (e.g. [7],
+               3, (Knuth, 1975)).  One or more _k_e_y_w_o_r_d_s cause
+               selection from the bibliographic database.  Each %%%%
+               argument must begin a new line.  %_r_e_f__f_i_e_l_d lines
+               override information from the database; with no
+               _k_e_y_w_o_r_d_s a complete reference may be given.  For the
+               form of reference fields, see the output of _p_e_n_t_e_r. The
+               following %_f_l_a_g_s may modify the citation.
+
+               %%%%nnnnoooo____aaaauuuutttthhhhoooorrrr
+                    Exclude author information.
+
+               %%%%nnnnoooo____ddddaaaatttteeee
+                    Exclude date from the citation mark.
+
+               %%%%nnnnoooo____cccciiiitttteeee
+                    Omit the entire citation, but include the entry in
+                    the final reference list.
+
+               %%%%pppprrrreeee____tttteeeexxxxtttt _s_t_r_i_n_g
+                    Insert _s_t_r_i_n_g before the citation mark.
+
+               %%%%ppppoooosssstttt____tttteeeexxxxtttt _s_t_r_i_n_g
+                    Insert _s_t_r_i_n_g after the citation mark
+
+          ||||rrrreeeeffffeeeerrrreeeennnncccceeee____iiiinnnncccclllluuuuddddeeee(((( _d_b_f_i_l_e ...))))
+               Include the contents of the database(s) _d_b_f_i_l_e(_s) in
+
+
+
+     Page 2                                          (printed 11/6/91)
+
+
+
+
+
+
+     PPPPRRRREEEEFFFFEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPRRRREEEEFFFFEEEERRRR((((1111))))
+
+
+
+               the list of references, treating them as %%%%nnnnoooo____cccciiiitttteeee
+               entries.
+
+          ||||rrrreeeeffffeeeerrrreeeennnncccceeee____ppppllllaaaacccceeeemmmmeeeennnntttt
+               Produce a list of all references specified in
+               ||||rrrreeeeffffeeeerrrreeeennnncccceeee or ||||rrrreeeeffffeeeerrrreeeennnncccceeee____iiiinnnncccclllluuuuddddeeee commands since the
+               beginning of the document or the last ||||rrrreeeeffffeeeerrrreeeennnncccceeee____ssssttttyyyylllleeee
+               or ||||rrrreeeeffffeeeerrrreeeennnncccceeee____ppppllllaaaacccceeeemmmmeeeennnntttt.
+
+          ||||rrrreeeeffffeeeerrrreeeennnncccceeee____lllliiiisssstttt(((( _d_b_f_i_l_e ...))))
+               Format the contents of the database(s) _d_b_f_i_l_e.
+
+          ||||rrrreeeeffffeeeerrrreeeennnncccceeee____ddddaaaattttaaaabbbbaaaasssseeee(((( _d_b_f_i_l_e ))))
+               Switch to database _d_b_f_i_l_e
+
+          _P_e_n_t_e_r helps build _p_r_e_f_e_r bibliographic databses.  It
+          prompts for a reference type, and then for admissible
+          attributes, such as author, date, etc.  A default value
+          proposed in brackets [[[[]]]] may be accepted by typing a newline,
+          skipped by typing spaces before the newline, or overridden
+          by typing a new value.  The character &&&& appended to an
+          attribute causes _p_e_n_t_e_r to prompt for the attribute again
+          (to enter multiple authors, for example).
+
+          The answer ???? to the initial prompt gets a list of all
+          reference types.  The answer hhhheeeellllpppp gets a subprompt for a
+          reference type whose pertinent attributes will then be
+          listed.  The answer ???? to the subprompt gets attributes for
+          every type.
+
+          The attribute aaaallllssssoooo permits one entry to refer to another by
+          naming keywords for the other reference.  An entire `also'
+          citation may be included within a ||||rrrreeeeffffeeeerrrreeeennnncccceeee thus:
+               %also_begin _t_e_x_t %_r_e_f__f_i_e_l_d_s %also_end
+
+          The attribute kkkkeeeeyyyywwwwoooorrrrddddssss prompts for distinguishing keys for
+          the current entry, in addition to those already occurring
+          within author, title, etc.
+
+          The `reference type' qqqquuuuiiiitttt causes _p_e_n_t_e_r to exit, first
+          appending the collected database information to _o_u_t_f_i_l_e by
+          default).
+
+          The `attribute' ~~~~eeee permits editing of the current reference
+          with the editor specified by environment variable EEEEDDDDIIIITTTTOOOORRRR,
+          _e_d(1) by default; ~~~~vvvv gets the editor VVVVIIIISSSSUUUUAAAALLLL, _v_i(1) by
+          default.
+
+          _P_i_n_v_e_r_t creates an inverted index to one or more
+          bibliographic database _f_i_l_e_s. The index is placed in _f_i_l_e....iiii,
+          where _f_i_l_e is the first input file.  An associated _f_i_l_e....hhhh
+          contains the names of the input files.  The options are:
+
+
+
+     Page 3                                          (printed 11/6/91)
+
+
+
+
+
+
+     PPPPRRRREEEEFFFFEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPRRRREEEEFFFFEEEERRRR((((1111))))
+
+
+
+          ----cccc_c_o_m_m_o_n
+               Do not index words listed in file _c_o_m_m_o_n (default
+               /_u_s_r/_l_i_b/_e_i_g_n).
+
+          ----iiii_i_g_n_o_r_e
+               Do not index information about attributes listed in
+               file _i_g_n_o_r_e. (The default $_T_O_O_L_S/_l_i_b/_p_r_e_f_e_r/_i_g_n_o_r_e
+               lists %%%%vvvvoooolllluuuummmmeeee, %%%%nnnnuuuummmmbbbbeeeerrrr, %%%%ppppaaaarrrrtttt, %%%%ppppaaaaggggeeeessss, %%%%XXXX (location
+               status), %%%%YYYY (read status), %%%%ZZZZ (comment).)
+
+          ----kkkk_i  Maximum number of keys kept per record (default 100).
+
+          ----llll_i  Maximum length of keywords (default 6, none is less
+               than 3).
+
+          ----pppp_f_i_l_e
+               The basename of the index is _f_i_l_e. Prefer will write
+               the index to _f_i_l_e....iiii.
+
+          ----vvvv   Verbose.  Print statistics.
+
+          _P_l_o_o_k uses the inverted index to retrieve bibliographic
+          records by _k_e_y_w_o_r_d_s from the command line or the standard
+          input.  Records that contain all the keywords in the request
+          are sent to the standard output.  Option ----pppp is the same as
+          for _p_i_n_v_e_r_t.
+
+          _P_c_o_n_v_e_r_t converts a _r_e_f_e_r(1) database to _p_r_e_f_e_r style.
+          Under option ----dddd it converts _r_e_f_e_r-style commands in a
+          document to _p_r_e_f_e_r style.
+
+     FFFFIIIILLLLEEEESSSS
+          _p_r_e_f_e_r._o_u_t
+               default database
+
+          _p_r_e_f_e_r._o_u_t._i
+               default index file
+
+          _p_r_e_f_e_r._o_u_t._h
+               default header file containing names of databases
+
+          /_u_s_r/_l_i_b/_e_i_g_n
+               default list of common words
+
+          $_T_O_O_L_S/_l_i_b/_p_r_e_f_e_r/_i_g_n_o_r_e
+               default list of %_r_e_f__f_i_e_l_d_s to ignore for indexing
+
+          $_T_O_O_L_S/_l_i_b/_p_r_e_f_e_r/_s_t_y_l_e_s/*
+               _a_w_k scripts of formatting instructions for each style
+
+          /_t_m_p/_p_r_e_f_e_r*
+               scratch file
+
+
+
+     Page 4                                          (printed 11/6/91)
+
+
+
+
+
+
+     PPPPRRRREEEEFFFFEEEERRRR((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            PPPPRRRREEEEFFFFEEEERRRR((((1111))))
+
+
+
+          $_T_O_O_L_S/_l_i_b/_p_r_e_f_e_r/_p_t_e_m_p_l_a_t_e
+               reference type definitions, self-describing
+
+          $_T_O_O_L_S/_l_i_b/_p_r_e_f_e_r/_m_y_p_u_b_e_n_t_e_r
+               program executed by penter
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          M. A. Derr, `Formatting References with Prefer', this
+          manual, Volume 2
+          _r_e_f_e_r(1), _m_o_n_k(1), _t_r_o_f_f(1)
+
+     BBBBUUUUGGGGSSSS
+          _P_r_e_f_e_r commands don't work immediately after certain
+          formatting macros, e.g. .SM, .I, .B.
+          _P_l_o_o_k complains if the first key matches more references
+          than it can store.  Try rearranging your request so a less
+          common word comes first.
+          _P_i_n_v_e_r_t does not record options ----cccc and ----llll.  If you use them
+          with _p_i_n_v_e_r_t, you will have to supply them for _p_r_e_f_e_r and
+          _p_l_o_o_k as well.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Alan R. Hastings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 11/6/91)
+
+
+

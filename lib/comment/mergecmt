@@ -1,0 +1,152 @@
+#####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1992
+#			AT&T Bell Laboratories
+#####################################################################
+
+#####################################################################
+#					Bob Parnass
+#					AT&T Bell Laboratories
+#					DATE: June 1992
+#
+# NAME:		mergecmt
+#
+# USAGE:	mergecmt lang_analyzer db_file file.c
+#
+# EXITS:
+#		0	-ok
+#		1	-error
+#
+#
+# PURPOSE:	Merge comment lines with source file lines
+#
+#####################################################################
+# part of comment exptool
+
+PGM=`basename $0`
+
+TMP=/usr/tmp
+COM=$TMP/mrgco$$
+NUMSRC=$TMP/mrgn$$
+CCFILE=$TMP/mrgcc$$
+
+TMPFILES="$COM $NUMSRC $CCFILE"
+
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "${PGM}: Aborted" 1>&2; exit 1' 1 2 3 15
+
+LANGANALYZER=$1
+ALLDBFILE=$2
+CFILE=$3
+
+
+
+EXIT_CODE=0
+
+# if proper number of cmd line arguments
+
+if [ $# -eq 3 ]
+then
+
+	# see if a public version of the newform program exists
+	test -x /usr/bin/newform
+	if [ $? -eq 0 ]
+	then
+		# use public version
+		NEWFORM=/usr/bin/newform
+	else
+		# use private version
+		NEWFORM=$TOOLS/lib/comment/newform
+	fi
+
+	${NEWFORM} -i $CFILE > $CCFILE
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: ${NEWFORM} failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1;
+		> $CCFILE
+	fi
+
+	${LANGANALYZER} -f ${ALLDBFILE} "${CCFILE}"  \
+		| sort -u \
+		| awk -F\; '\
+			{
+			printf "%d;0;%2d;%s\n", $1, $2, $3
+			}' > ${COM}
+
+	if [ $? -ne 0 ]
+	then
+		echo "Error in ${PGM}: analyzer ${LANGANALYZER} failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1
+	else
+
+		# create file with line numbered program source 
+		awk '\
+			{
+			printf "%d;1;0;%s\n", NR, $0
+			}' ${CCFILE} > "${NUMSRC}"
+
+		# sort comments and src lines by line number
+		# and write them out.
+		# The logic below indents the comment as far
+		# as the next line is indented
+		sort -r -n -t\; ${COM} ${NUMSRC}  \
+			| awk -F\; '\
+				{
+				type = $2
+				restline = $0
+
+				semicolon = index(restline, ";")
+				len = length(restline)
+				if(semicolon)
+					restline = substr(restline, semicolon + 1, len - semicolon)
+				len = length(restline)
+				semicolon = index(restline, ";")
+				if(semicolon)
+					restline = substr(restline, semicolon + 1, len - semicolon)
+				len = length(restline)
+				semicolon = index(restline, ";")
+				if(semicolon)
+					restline = substr(restline, semicolon + 1, len - semicolon)
+# printf "restline=%s|%s\n", restline, $0
+				if(type == "1")
+					{
+					# source line
+					# calculate the number of
+					# leading spaces in src line
+					buf = restline
+					spaces = " "
+					while((space = index(restline, spaces)) == 1)
+						{
+						spaces = spaces " "
+						
+						}
+					# print source line
+					printf "%d;%s\n", NR, restline
+					# delete one space
+					len = length(spaces)
+					if(len)
+						spaces = substr(spaces, 1, len-1)
+					}
+				else
+					{
+					# assume comment line
+					# print comment line
+					printf "%d;%s%s\n", NR, spaces, restline
+					}
+				}' \
+			| sort -r -n -t\; \
+			| sed -e 's/[^;]*;//'
+	
+	fi
+else
+	echo "${PGM}: need 3 parameters" 1>&2
+	EXIT_CODE=1
+fi
+
+exit ${EXIT_CODE}

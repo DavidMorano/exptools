@@ -1,0 +1,114 @@
+-V = Print current version number = %s %s
+-a = access time;  -c = status change time;  -m = modification time
+-s = follow symbolic links;  -v = Verbose mode;  -q = quiet;
+-F = read format from file;  -f = -F, but also look for file in finfo libraries
+-t = after pass (totals);  -T = only totals print;  -A = Force after pass
+-=a# = set #&a variable to # value;  -=0string = set %&0 string to string value
+-=z# = set #&z variable to # value;  -=9string = set %&9 string to string value
+-o outfile = send output to named file;  -O = -o but append
+
+finfo Format Macros:
+#&x Value of variable x (a to z)     %&n Contents of rex dollar buffer n (0-9)
+#b  # of blocks in file/directory    %${varname} Value of environment variable
+#B  Total # of blocks on after       %/  Directory name of file
+    pass;  Else #b                   %A  AM or PM of time stamp
+#d  Day of month of time stamp       %@{format} format sub-group
+#D  # of device containing file      %b  Base name of file
+#g  Numeric group ID of file         %D  Fully qualified directory name of file
+#H  Hour of time stamp (24 hour)     %F  Fully qualified file name
+#h  Hour of time stamp (12 hour)     %f  File name as specified
+#i  Inode number of file             %G  Group's permissions (rwx)
+#J  Major device # if device         %g  File's group
+#j  Day of year of time stamp        %l  Linked to file, if symbolic link
+#l  Number of links to file          %L  Real filename if symb. link, else %f
+#M  Minute of time stamp             %m  Month of time stamp
+#n  Current (now) time stamp         %n  Normalized file name
+#m  Month of time stamp              %O  Others' permissions (rwx)
+#N  Minor device # if device         %p  Permissions (drwxrwxrwx)
+#P  Modes/permissions (octal)        %R  Comb. of %L and %F: full real filename
+#p  Permissions (octal)              %s  If device: #3J,#3N  Else: #7s
+#R  Device # if device                   Or #7T on the after pass
+#S  Second of time stamp             %T  Time stamp in ctime format
+#s  Size of file in bytes            %t  If older than 180 days: #5Y else #H:#M
+#T  Total size of all files on       %U  User's permissions (rwx)
+    after pass;  Else: #s            %u  File's user login name
+#t  Time stamp (long integer)        %w  Time stamp day (Sunday to Saturday)
+#u  Numeric user ID of file          %z  Time zone of time stamp
+#w  Day of week (0 to 6) of time     %n# Print n #s, same with %n_  %n%  %n*
+    stamp (0 = Sunday)                   %n-  and  %n=    (Example: %79-)
+#x  Index of file in selected files  %n\ Print the nth ASCII character
+#X  = ## on after pass; Else: #x     %?[!]x{then}[{else}]  Simple conditional
+#y  Year of time stamp (2 digits)    %?(exp){then}[{else}] Complex conditional
+#Y  Year of time stamp (4 digits)    %"{Ignore format sect.} Format must be OK
+##  Number of stat()able files given
+
+#:#  Value of last expression          %:*{format}  Repeat format width times
+#:(expression)  Value of expression    %:@{format,[start][,count]}  Substring
+#:b  # of blocks left on file's f.s.   %:c{format}  Print format capitalized
+#:B  Total # of blocks on file's f.s.  %:D  Name of device that file is on
+#:g  Execution real group ID           %:g  Execution real group name
+#:G  Execution effective group ID      %:G  Execution effective group name
+#:i  # of inodes left on file's f.s.   %:l{format}  Print format lower cased
+#:I  Total # of inodes on file's f.s.  %:m  This machine's name
+#:s  # of bytes/block on file's f.s.   %:M  Filesystem (mount point) file is on
+#:u  Execution real user ID            %:Q{format}  Quoted format section
+#:U  Execution effective user ID       %:u  Execution real user name
+                                       %:U  Execution effective user name
+                                       %:V  finfo version (#.##L)
+                                       %:X  Set exit code
+                                       %:Z  Abort, setting exit code
+
+#:B & #:I currently do nothing on HP-UX, Pyramid, 3B20, and Vax.
+%:M & %:D currently do nothing on HP-UX, i486, Mips, and Pyramid.
+%$VAR is similar to %${VAR} but mustn't be followed by letter, digit, or _.
+
+finfo Backslash Sequences:
+\newline  Prints nothing (hides it)   \C  Status change time stamp
+\"  Comment until newline or end      \f  form feed
+\#  Prints #                          \M  Modification time stamp
+\%  Prints %                          \n  newline
+\,  Prints ,                          \N  Now time stamp (ignores file's)
+\=x(expr) Store expr value in x       \Q/string/  Don't treat string special
+\@(ts-expr) Use given time stamp      \r  carriage return
+\A  Access time stamp                 \T  Command line time stamp (\M default)
+\b  backspace                         \t  tab
+\c  interrupt format - no newline     \\  Prints \
+
+finfo Condition Tests:
+A  Access time requested (-a)           l  Is this a symbolic link file?
+a  Is this the after pass?              M  Modification time requested (-m)
+b  Is this a block special file?        p  Is this a named pipe (FIFO)?
+C  Status change time requested (-c)    r  Is this file readable by my login?
+c  Is this a character special file?    s  Is this a non-empty reg. file or dir
+d  Is this a directory?                 T  Is the after pass with the -T option
+F  Is this a file descriptor arg.?      t  Totals requested (-t)
+f  Is this a regular file?              u  File has the setuid bit set?
+g  File has the setgid bit set?         v  Is verbose mode (-v) on?
+k  File has the sticky bit set?         w  Is this file writable by my login?
+L  Not -s opt.? Never if no sym. links  x  Executable/searchable by my login?
+
+finfo Expressions:
+     Allowed Terms:                          Precedence:
+# macros [except #:( macro]           (expression) function(expression)
+Tests (= 1 if true, 0 if false)       unary - ! % ~  Negative NOT Int. 1s comp.
+Real number constants:                * / %          Multiply Divide Modulus
+  1  3.5  1e-3  0.5                   + -            Add Subtract
+Octal integer constants:              >> <<          Right & Left shift
+  0644  020  0777                     &              Bit-wise AND
+Hexadecimal integer constants:        | ^            Bit-wise OR XOR
+  0xFACE  0X1ED0CE                    = != < <= > >= Comparisons
+Time stamp selector prefixes:         &&             Logical AND
+  \A#t  \@(\C#t-5*days) #t            ||             Logical OR
+#$VAR as short form of val[%$VAR]     e1 ? e2 : e3   If/then/else
+minute or minutes = 60
+hour or hours = 60 * minutes
+day or days = 24 * hours
+week or weeks = 7 * days
+
+finfo Expression Functions:  (s & t are strings, e is an expression)
+abs(e)      Absolute value of number    floor(e)   Greatest int. <= number
+ceil(e)     Lowest int. >= number       mch[s,t]   String matches pattern?
+cmp[s,t]    String compare (<0,0,>0)    rex[s,t]   String matches r.e.?
+cmpn[s,t,e] String compare e chars.     sqrt(e)    Square root of number
+eq[s,t]     Strings are equal?          val[s]     Value of s [i.e. atof(s)]
+eqn[s,t,e]  Strings equal to e chars.?

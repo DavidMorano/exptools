@@ -1,0 +1,20 @@
+%?(##<1){Usage: info [-v] files ...%2:Z}\
+%?(a && #T=0 && #B=0){%:Z}\
+%?(#x=1&&!a||T){%79=\n}\
+\=0{%?v[%F][%f]%?T[* TOTAL *]}\
+\=l(len[%&0])%?(#&l>77){%&0}{|%((#&l+77)/2)&0%((78-#&l)/2) |}
+|%77-|
+%?l<| Linked to: %-65l|\n>\
+%?!a<| Mode: #P  %p%4 Device: #-9D  Inode: #-7i   Links: #-4l|\n>\
+| Size/DevID:%s  Blocks: #-4b\
+%?!a< User: %-14@{#u %u} Group: %-14@{#g %g} ><%44 >|
+%?!a<| Modified:\M#11t%6 Accessed:\A#11t%6 Stat Change:\C#11t |
+| \M%3w #m/#d/#Y #H:#M:#S   \A%3w #m/#d/#Y #H:#M:#S   \C%3w #m/#d/#Y #H:#M:#S |\n>\
+%?(!a && !eq[%:M,])<| Mounted on: %-23:M  Device: %-30:D |\n>\
+%79=\n\comments:
+
+@(#)file_info       1.03B: W. D. Swan - 05/31/1995
+Usage: finfo -f file_info [-vt] file ...
+REV:  DATE:    WHO: CHANGE:
+1.03B 05/31/95 WDS  Gave device more room for NFS mounted file systems
+1.03A 01/04/94 WDS  Added mount information, if available

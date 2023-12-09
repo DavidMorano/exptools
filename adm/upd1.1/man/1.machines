@@ -1,0 +1,198 @@
+
+
+
+     MMMMAAAACCCCHHHHIIIINNNNEEEESSSS((((1111)))) UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS UUUUPPPPDDDD1111....1111 PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))  MMMMAAAACCCCHHHHIIIINNNNEEEESSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          machines - query EXPTOOLS machines database
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmaaaacccchhhhiiiinnnneeeessss [ ----aaaadddd ] [ ----ffff ffffiiiieeeelllldddd[,,,,ffffiiiieeeelllldddd] ] [ ----tttt ttttaaaabbbblllleeee ]
+          sssseeeelllleeeeccccttttiiiioooonnnn----ccccllllaaaauuuusssseeee
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _m_a_c_h_i_n_e_s is used by experimental tool providers and
+          coordinators to obtain a list of machine names selected from
+          a database by the given sssseeeelllleeeeccccttttiiiioooonnnn----ccccllllaaaauuuusssseeee.... Among the
+          possible attributes are machine type (3b2, ibm, vax, etc.),
+          UNIX operating system release (SVR3, SunOS4.0, etc.), and
+          keywords that may specify the tools available on a machine.
+          This program may be called explicitly by a provider, but is
+          most often called from one of the other provider commands
+          such as _r_m_a_k_e(1) or _r_e_p_f_i_l_e(1).  The options are:
+
+          ----aaaa     (all) Print all attribute values for each selected
+                 site.
+
+          ----dddd     (debug) Print the query command instead of executing
+                 it.
+
+          ----ffff     (field) Specifies the fields to print.  Default is to
+                 print the name of a each selected site.
+
+          ----tttt     (table) Specifies an alternate UNITY table to query.
+
+          The desired set of machines is specified with a selection
+          clause built up of a logical combination of keyword
+          specifications.  A keyword can be:
+
+          aaaallllllll    The "aaaallllllll" keyword selects all machines.
+
+          _t_y_p_e   A machine type by itself selects all machines of that
+                 type.
+
+          _m_a_c_h   A machine name selects just that machine.  If the
+                 machine is not in the database, nothing is printed.
+
+          _a_t_t_r<_r_e_l_o_p>_e_x_p_r_e_s_s_i_o_n
+                 Specific attributes and values may be used.  Here,
+                 <<<<rrrreeeelllloooopppp>>>> may be ======== (or !!!!========), in which case eeeexxxxpppprrrreeeessssssssiiiioooonnnn
+                 is an exact value to match (not match) in the aaaattttttttrrrr
+                 attribute, or ==== (or !!!!====), in which case eeeexxxxpppprrrreeeessssssssiiiioooonnnn is
+                 a regular expression as in _e_d(1) to match (not match)
+                 in the aaaattttttttrrrr attribute.  The valid attribute names
+                 currently are:
+
+                    nnnnaaaammmmeeee      The name by which the site is known to
+                              the EXPTOOLS world (e.g. Xsparc).
+
+
+
+     Page 1                                          (printed 10/8/92)
+
+
+
+
+
+
+     MMMMAAAACCCCHHHHIIIINNNNEEEESSSS((((1111)))) UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS UUUUPPPPDDDD1111....1111 PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))  MMMMAAAACCCCHHHHIIIINNNNEEEESSSS((((1111))))
+
+
+
+                    aaaaddddddddrrrr      The uucp network name.  For example, a
+                              site's nnnnaaaammmmeeee could be Xsparc, while its
+                              aaaaddddddddrrrr might be Xspc.
+
+                    ttttyyyyppppeeee      The hardware type of the machine (e.g.
+                              3b2, ibm, vax).  This attribute is
+                              forced internally to use an exact match
+                              (rather than a regular expression match)
+                              to avoid confusion.
+
+                    rrrreeeelllleeeeaaaasssseeee   The release of the Unix operating system
+                              the machine is running (e.g. SVR3,
+                              SunOS4.0)
+
+                    ffffllllaaaavvvvoooorrrr    A modifier for the rrrreeeelllleeeeaaaasssseeee field (e.g.
+                              paging).  This allows distributions to
+                              differentiate between incompatible
+                              releases for the same machine type.
+
+                    kkkkeeeeyyyywwwwoooorrrrddddssss  Various keywords describing, for
+                              example, what optional tools are
+                              available for the machine (e.g. gmacs,
+                              unity).
+
+          ttttyyyyppppeeeessss  The list of all machine types is displayed.
+
+          nnnnaaaammmmeeeessss  The list of all machine names is displayed.
+
+          aaaaddddddddrrrrssss  The list of all machine addresses is displayed.
+
+          rrrreeeelllleeeeaaaasssseeeessss
+                 The list of all operating system releases is
+                 displayed.
+
+          ffffllllaaaavvvvoooorrrrssss
+                 The list of operating system flavors is displayed.
+
+          kkkkeeeeyyyywwwwoooorrrrddddssss
+                 The list of all possible optional package keywords is
+                 displayed.
+
+          The _a_t_t_r<_r_e_l_o_p> portion can be omitted, in which case
+          "keywords=" will be assumed.
+
+          Logical expressions may be built from the keyword
+          specifications using the operators (in increasing order of
+          precedence):
+
+          oooorrrr     The subexpression "a or b" is considered true if
+                 either a or b is true.
+
+          aaaannnndddd    The subexpression "a and b" is only true in both a
+
+
+
+     Page 2                                          (printed 10/8/92)
+
+
+
+
+
+
+     MMMMAAAACCCCHHHHIIIINNNNEEEESSSS((((1111)))) UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS UUUUPPPPDDDD1111....1111 PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))  MMMMAAAACCCCHHHHIIIINNNNEEEESSSS((((1111))))
+
+
+
+                 and b are true.
+
+          !!!!      The subexpression "! a" is only true if a is false.
+
+          (((( aaaa ))))  True if a is true.  Parentheses may be used to change
+                 precedence and must be quoted for the shell.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Legal logical expressions resulting from the combination of
+          keyword specifications could be, for example:
+
+          machines all
+                    displays all machines.
+
+          machines -a vax
+                    displays the EXPTOOLS VAX server machine and the
+                    optional tools on it.
+
+          machines gmacs
+                    displays all EXPTOOLS server machines with the
+                    _g_m_a_c_s optional tool.
+
+          Note that there are some restrictions on format:
+
+          (1)  all operators must be surrounded by spaces,
+
+          (2)  keyword specifications must contain no spaces,
+
+          (3)  some characters are special to the shell ('*', '(', and
+               ')') and must be quoted.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _d_e_l_f_i_l_e(1), _p_k_g_a_u_d_i_t(1), _r_e_p_f_i_l_e(1), _r_m_a_k_e(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 10/8/92)
+
+
+

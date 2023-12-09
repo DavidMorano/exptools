@@ -1,0 +1,198 @@
+
+
+
+     ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          parsewhere - Parse the where-clause for a query.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuuqqqquuuueeeerrrryyyy....hhhh""""
+
+          ssssttttrrrruuuucccctttt qqqquuuueeeerrrryyyyeeeexxxxpppprrrr ****
+          ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee(((( wwwwhhhheeeerrrreeee,,,, wwwwhhhheeeerrrreeeeccccnnnntttt,,,, nnnnooooddddeeeelllliiiisssstttt,,,, nnnnooooddddeeeeccccnnnntttt ))))
+          cccchhhhaaaarrrr ********wwwwhhhheeeerrrreeee;;;;
+          iiiinnnntttt wwwwhhhheeeerrrreeeeccccnnnntttt;;;;
+          ssssttttrrrruuuucccctttt qqqqnnnnooooddddeeee ****nnnnooooddddeeeelllliiiisssstttt;;;;
+          iiiinnnntttt nnnnooooddddeeeeccccnnnntttt;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee() routine is used to parse a where-clause for
+          a query into a query expression, which can then be passed to
+          bbbbllllddddqqqquuuueeeerrrryyyy(3) to create a query structure.  The where-clause
+          is given as a list of character strings, each of which
+          represents one argument in the where-clause.  A list of
+          query nodes (relations) must be passed in for locating
+          attribute references.  A query node is an instance of a
+          relation; the same relation may be used multiple times in a
+          query.
+
+          Upon a successful parse, a pointer to the query expression
+          is returned.  NULL is returned on failure.  This routine is
+          one of the few New UNITY routines that prints error messages
+          rather than setting an error code in uuuueeeerrrrrrrroooorrrr.  This is done
+          because there is no way to include context information when
+          setting uuuueeeerrrrrrrroooorrrr.  This routine uses the pppprrrrmmmmssssgggg(3) interface
+          for printing the messages.
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _w_h_e_r_e
+               An array of character pointers which represent the
+               arguments of the where-clause.  The where-clause
+               specifies a subset of records to be retrieved.  If no
+               where-clause is given, a cross product of all records
+               in all projected relations will be retrieved.
+
+               The where-clause is made up of expressions comparing
+               the value of an attribute to a constant or to the value
+               of another attribute.  The expressions can be combined
+               using boolean operators and parenthesis.
+
+               The comparison operators are: lllltttt (less than), lllleeee (less
+               than or equal to), ggggtttt (greater than), ggggeeee (greater than
+               or equal to), eeeeqqqq (equal to), and nnnneeee (not equal to). If
+
+
+
+     Page 1                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee((((3333))))
+
+
+
+               they appear as is, they are numeric comparisons.  They
+               can also have the following prefixes: llll (lexical
+               comparison), cccc (lexical comparison, but ignore the case
+               of letters), nnnn (numeric comparison), rrrr (regular
+               expression comparison - eeeeqqqq and nnnneeee only), dddd (date and
+               time comparison), and ffff (field-to-field comparison -
+               may also be combined with llll, cccc, nnnn, and dddd prefixes).
+
+               The boolean operations are: !!!! (negation), aaaannnndddd (logical
+               conjunction), oooorrrr (logical disjunction), (((( and ))))
+               (grouping), and eeeellllsssseeee (selection precedence).
+
+               See the rrrreeeettttrrrriiiieeeevvvveeee(1) manual page for more information.
+
+          _w_h_e_r_e_c_n_t
+               The number of arguments given in _w_h_e_r_e.
+
+          _n_o_d_e_l_i_s_t
+               The array of query nodes (i.e., relations) used in the
+               query.  A query node is an instance of a relation; the
+               same relation may be referenced multiple times in
+               _n_o_d_e_l_i_s_t.  These structures should be initialized by
+               setting the rel element in each qnode structure to
+               point to the corresponding urelation structure obtained
+               from ggggeeeettttrrrreeeelllliiiinnnnffffoooo(3), as in
+
+                    relptr = getrelinfo( relpath[i], NULL, FALSE );
+                    nodelist[i].rel = relptr;
+
+          _n_o_d_e_c_n_t
+               The number of query node structures in the _n_o_d_e_l_i_s_t
+               array.  At most eight relations may be queried at any
+               one time.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          Upon a successful parse, a pointer to the query expression
+          is returned.  NULL is returned on failure and an explanatory
+          error message is printed using pppprrrrmmmmssssgggg(3).
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          No more than MAXRELATION (currently defined in _u_q_u_e_r_y._h as
+          8) relations may be used in the query.
+
+          Since ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee() uses yyyyaaaacccccccc(1), no other portions of an
+          application my use yyyyaaaacccccccc(1) within the same process.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Parse a given where-clause.
+
+               char *where[];
+               int wherecnt;
+                . . .
+
+
+
+     Page 2                                          (printed 8/30/90)
+
+
+
+
+
+
+     ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ppppaaaarrrrsssseeeewwwwhhhheeeerrrreeee((((3333))))
+
+
+
+               if ( wherecnt > 0 ) {
+                    qptr = parsewhere( where, wherecnt, nodelist, relcnt );
+                    if ( qptr == NULL ) {
+                         prmsg( MSG_ERROR, "unsuccessful parse for where-clause" );
+                         /* return failure */
+                    }
+               }
+               else
+                    qptr = NULL;
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          bldquery(3), cmpquery(1), lookupattr(3), mkquery(3), and
+          retrieve(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 8/30/90)
+
+
+

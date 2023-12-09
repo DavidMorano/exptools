@@ -1,0 +1,132 @@
+
+
+
+       777733330000CCCCOOOONNNNPPPP((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      777733330000CCCCOOOONNNNPPPP((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    730conp - Connect two ports	in the 730 with	software
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    777733330000ccccoooonnnnpppp [options] [from-host to-host]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _7_3_0_c_o_n_p provides the ability to route the data on one host
+	    connection on the 730 no another.  The obvious use for this
+	    is to allow	you to connect a PC or terminal	to the serial
+	    port on the	730 terminal and then connect that serial port
+	    to a starlan or IDM	(ISDN Data Module) host	connection.
+	    This eliminates the	need for a serial/RS232	connection for
+	    the	PC or other terminal.  By default, _7_3_0_c_o_n_p will	connect
+	    the	main port (physical host 0) to the next	available IDM
+	    host (physical host	6).
+
+	    The	options	recognized by _7_3_0_c_o_n_p are listed below.	 The
+	    term hhhhoooosssstttt ccccoooonnnnnnnneeeeccccttttiiiioooonnnn refers	to the name of the device that
+	    provides a type of interface to a remote host.  Examples of
+	    hhhhoooosssstttt ccccoooonnnnnnnneeeeccccttttiiiioooonnnn names are:
+
+		 MMMMaaaaiiiinnnn,,,, AAAAuuuuxxxx,,,, MMMMaaaaiiiinnnn2222,,,, SSSSSSSSIIII,,,,	TTTTeeeellllnnnneeeetttt aaaannnndddd IIIIddddmmmm
+
+	    The	order of the optional hhhhoooosssstttt ccccoooonnnnnnnneeeeccccttttiiiioooonnnn names, from-host
+	    and	to-host, is directly related to	the use	of 'from' and
+	    'to' in the	option names.  I.e.  ----sssshhhhoooowwwwffffrrrroooommmm means show the
+	    output comming from	the first hhhhoooosssstttt ccccoooonnnnnnnneeeeccccttttiiiioooonnnn name speci-
+	    fied, and ----sssshhhhoooowwwwttttoooo means show the output comming from the
+	    second hhhhoooosssstttt	ccccoooonnnnnnnneeeeccccttttiiiioooonnnn name	specified.
+
+	    All	options	which are boolean flags	can have 'nnnnoooo' in front
+	    of the option name to mean the negative of the boolean (e.g.
+	    -noshowfrom).  The default is for all of these options to be
+	    off.
+
+
+	    -showfrom		In the window that is opened, show all
+				characters coming from the `from' hhhhoooosssstttt
+				ccccoooonnnnnnnneeeeccccttttiiiioooonnnn.
+
+	    -showto		In the window that is opened, show all
+				characters coming from the `to'	hhhhoooosssstttt
+				ccccoooonnnnnnnneeeeccccttttiiiioooonnnn.
+
+	    -showkbd		In the window that is opened, show all
+				characters which are typed at the key-
+				board.	This is	considered `local echo'.
+
+	    -fromcrlf		In the window that is opened, convert
+				all occurances of the carriage return
+				character comming from the `from' hhhhoooosssstttt
+
+
+
+       Page 1					       (printed	3/29/93)
+
+
+
+
+
+
+       777733330000CCCCOOOONNNNPPPP((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	      777733330000CCCCOOOONNNNPPPP((((1111))))
+
+
+
+				ccccoooonnnnnnnneeeeccccttttiiiioooonnnn to the sequence of charac-
+				ters, CR followed by LF	(line feed) for
+				display	purposes in that window
+
+	    -tocrlf		In the window that is opened, convert
+				all occurances of the carriage return
+				character comming from the `to'	hhhhoooosssstttt
+				ccccoooonnnnnnnneeeeccccttttiiiioooonnnn to the sequence of charac-
+				ters, CR followed by LF	(line feed) for
+				display	purposes in that window
+
+	    -xlatectrl		Causes control characters to be
+				displayed as octal numbers rather than
+				their equivalent character.
+
+       FFFFIIIILLLLEEEESSSS
+	    $TOOLS/lib/630/730conp.m
+
+       CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	    If you use the terminal as a baudrate matcher be aware that
+	    sustained data transfers where the sending device is faster
+	    than the receiving device can result in lost data if flow
+	    control is not handled by the sending device.  Make	sure
+	    that the rcvflow and sendflow options are enabled on both
+	    730	hhhhoooosssstttt ccccoooonnnnnnnneeeeccccttttiiiioooonnnnssss to allow the terminal request flowcon-
+	    trol.
+
+	    You	will probably want the 730 ports associated with the
+	    connections	to be set to 8 bits no parity, to allow	tran-
+	    sparent data transfer.
+
+	    The	window provided	by _7_3_0_c_o_n_p is not a wproc+ window.  This
+	    means that it is not generally useful as a window to work
+	    in.	 It is intended	that this window just provides con-
+	    vienent status information showing that the	connection is in
+	    fact active.
+
+	    You	must use the Exit menu to exit out of one side of the
+	    connection.
+
+	    _7_3_0_c_o_n_p MMMMUUUUSSSSTTTT be envoked from within	layers.	 This is because
+	    it disconnects from	the current host/window	and if you are
+	    not	in layers, this	would normally disconnect you from that
+	    host.  The terminal	firmware has a check for this condition
+	    and	will abort the _a_t_t_a_c_h(_3) request.
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    _7_3_0_c_o_n_p is provided	by Gregg Wonderly
+
+
+
+
+
+
+
+       Page 2					       (printed	3/29/93)
+
+
+

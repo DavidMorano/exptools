@@ -1,0 +1,52 @@
+#  @(#)  SID: 1.2;  module: @ls;  last changed: 6/9/91  18:58:25
+
+USAGE="USAGE:  $0  [ case ... ]"
+
+CMD=`basename $0`			# The basic command name
+ERRMSG="$CMD: ERROR: not running under ksh88 -- aborting!"
+
+KSHTEST=""
+echo OK | read KSHTEST
+if test "$KSHTEST" != "OK"; then
+    echo "$ERRMSG"
+    exit 2
+fi
+
+if test -z "$MODULES"; then
+    @error@ 1
+else
+    for ARG; do
+	case $ARG in
+	all)
+	    ARGLIST="[0-9].+([0-9])"
+	;;
+	ALL)
+	    ARGLIST="+([0-9]).+([0-9])"
+	;;
+	* )
+	    ARGLIST="$ARGLIST $1"
+	esac
+	shift
+    done
+    NN="+([0-9])"
+    if test -z "$ARGLIST"; then
+	if test -r $REGRESSDIR/@casenames; then
+	    ARGLIST=@($(<$REGRESSDIR/@casenames)|$NN).$NN
+	else
+	    ARGLIST=$NN.$NN
+	fi
+    fi
+    for MODULE in $MODULES; do
+	if test $MODCNT -gt 1; then
+	    echo "\n> Module: $MODULE"
+	fi >&2
+	cd $REGRESSDIR/$MODULE/cases
+	eval ls $ARGLIST 2>/dev/null | 
+	if test -t; then
+	    pr -4 -t -o2
+	else
+	    cat
+	fi
+    done
+fi
+echo

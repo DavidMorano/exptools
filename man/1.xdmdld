@@ -1,0 +1,330 @@
+
+
+
+       DDDDMMMMDDDDLLLLDDDD((((1111))))        ((((666633330000 NNNNeeeettttwwwwoooorrrrkkkk DDDDeeeevvvveeeellllooooppppmmmmeeeennnntttt PPPPaaaacccckkkkaaaaggggeeee))))        DDDDMMMMDDDDLLLLDDDD((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+            dmdld - 630 MTG application bootstrap loader
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+            ddddmmmmddddlllldddd [ options ] file [ application - arguments ]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+            The _d_m_d_l_d program downloads the named _f_i_l_e from the host,
+            for execution in the 630 MTG terminal's window connected to
+            its standard output. It can also be used to invoke cached
+            applications.
+
+            The _d_m_d_l_d program works in _l_a_y_e_r_s(_1) and non-layers environ-
+            ments.  In _l_a_y_e_r_s(_1), the download runs on top of the exist-
+            ing _x_t error-correcting protocol which guarantees the
+            integrity of the download.
+
+            In the non-layers environment, _d_m_d_l_d (version 2.0 and later)
+            will interrogate the terminal about the medium of the con-
+            nection. If the medium is not trustworthy (such as over
+            RS232-C connections), _d_m_d_l_d temporarily puts the 630 MTG
+            terminal into the _x_t protocol mode, and mimics that protocol
+            from its side, thus insuring an error-free download. If the
+            medium is inherently trustworthy (such as over the AT&T
+            StarLAN network), _d_m_d_l_d will not impose any superfluous pro-
+            tocol in order to maximize the download performance. Ver-
+            sions of _d_m_d_l_d before version 2.0 do not interrogate the
+            terminal and always impose the _x_t protocol even when not
+            needed.
+
+            _d_m_d_l_d then asks the terminal if there is a cached applica-
+            tion of name _f_i_l_e already in the terminal. The inquiry uses
+            the filename clipped from any pathname prefix.  If such an
+            application exists and is available, that application will
+            be booted in the window without going through the download
+            sequence.
+
+            If a cached application of the inquired filename does not
+            exist in the terminal or is not available (see _c_a_c_h_e(_3_L) for
+            reasons), _d_m_d_l_d will attempt to download _f_i_l_e from the host.
+            Files to be downloaded by _d_m_d_l_d must be 630 MTG object files
+            created with _d_m_d_c_c(_1).
+
+            During compilation, _d_m_d_c_c(_1) looks for the programming
+            environment identification (PEID) number of all the library
+            functions link-loaded, and assumes the highest number as the
+            PEID of the application. During the download initialization,
+            _d_m_d_l_d will send this number to the terminal. If the
+            terminal's firmware version does not support this PEID, - in
+            other words, the firmware does not have some new library
+            functions used by the application- the download will be
+            aborted. The argument flag ----ffff will override this checking,
+
+
+
+       Page 1                                          (printed 6/16/93)
+
+
+
+
+
+
+       DDDDMMMMDDDDLLLLDDDD((((1111))))        ((((666633330000 NNNNeeeettttwwwwoooorrrrkkkk DDDDeeeevvvveeeellllooooppppmmmmeeeennnntttt PPPPaaaacccckkkkaaaaggggeeee))))        DDDDMMMMDDDDLLLLDDDD((((1111))))
+
+
+
+            but the sanity of the application (after being downloaded
+            and running) cannot be guaranteed.
+
+            The optional _a_p_p_l_i_c_a_t_i_o_n-_a_r_g_u_m_e_n_t_s are also sent to the ter-
+            minal in order to initialize the parameters _a_r_g_c and _a_r_g_v of
+            the function _m_a_i_n of the application.
+
+            During the download, the 630 MTG mouse cursor will turn into
+            a "coffee cup", and the progress of the download is shown by
+            a gradual filling of the window with inverse video.  The
+            code to be downloaded is relocated on-the-fly by _d_m_d_l_d to
+            the memory area allocated for it by the terminal. If the
+            download succeeds, the application will take over the window
+            and start execution.
+
+            The following options are supported by _d_m_d_l_d:
+
+            ----dddd   causes a printout of the download information on the
+                 diagnostic output (standard error).
+
+            ----pppp   prints non-layers protocol statistics on the diagnostic
+                 output (standard error).  Note that this option forces
+                 the ----dddd option. In _l_a_y_e_r_s(_1), this option is the same as
+                 the ----dddd option.
+
+            ----zzzz   loads the process but does not run it.  The process can
+                 then be started using _d_m_d_p_i(1).  This option works only
+                 under _l_a_y_e_r_s(1).
+
+            ----mmmm _m_a_x-_p_k_t
+                 Set maximum size for the data part of download packets
+                 for non-layers downloads.  Legal values are between 16
+                 and 120, or 0 for default.  This option also implies
+                 that the _x_t-like protocol should be used even though
+                 the terminal's initial connection is on an inherently
+                 trustworthy network.
+
+            ----xxxx   Force hex encoding mode for standalone downloads even
+                 if the terminal does not request it.  This option
+                 implies "-m 0".  This option can also be enabled by
+                 setting the DMDLOAD environment variable to "hex", for
+                 compatibility with an undocumented feature of
+                 _l_a_y_e_r_s(_1).
+
+            ----rrrr   Use regular xt protocol for standalone downloads.  This
+                 is the same as "-m 0".  This option can also be enabled
+                 by setting the DMDLOAD environment variable to "regu-
+                 lar".
+
+            ----ffff   forces the download even if the programming environment
+                 identification number of the application is not sup-
+                 ported by the terminal it is downloaded into.
+
+
+
+       Page 2                                          (printed 6/16/93)
+
+
+
+
+
+
+       DDDDMMMMDDDDLLLLDDDD((((1111))))        ((((666633330000 NNNNeeeettttwwwwoooorrrrkkkk DDDDeeeevvvveeeellllooooppppmmmmeeeennnntttt PPPPaaaacccckkkkaaaaggggeeee))))        DDDDMMMMDDDDLLLLDDDD((((1111))))
+
+
+
+            ----nnnn   is a null option, and is ignored by _d_m_d_l_d. It is used
+                 by processes that want to fork _d_m_d_l_d with a variable
+                 argument option.
+
+            ----ZZZZ _n overrides the inherent stack size of the download
+                 application and sets it to _n bytes.  _N must be greater
+                 than or equal to 2048, or else stack size is defaulted
+                 to 2048.  Inherent stack size of the download applica-
+                 tion is specified through the -Z option of _d_m_d_c_c(_1) (or
+                 defaulted to 2048).
+
+
+            ----TTTT   loads an absolute file (already link-loaded to a fixed
+                 address) such as a new version of the terminal's
+                 firmware into the terminal's RAM space.  This download
+                 is called a takeover (overlay) download because it will
+                 close all physical ports except for the one running
+                 _d_m_d_l_d.  The whole terminal screen will turn blank, and
+                 will be gradually filled up with inverse video
+                 representing the code being downloaded. When the down-
+                 load is finished, execution will begin at the first
+                 address of _f_i_l_e. Relocation will be done by _d_m_d_l_d only
+                 if the first address of _f_i_l_e is lower than the first
+                 available RAM address of the terminal. This is neces-
+                 sary because low-addressed RAM is used to store the
+                 terminal's system tables and variables, and overwriting
+                 them with the downloaded data may put the terminal into
+                 undetermined states. The ----NNNN option can be used instead,
+                 if the relocation possibility is not wanted.
+
+            ----NNNN   loads an absolute file into the terminal's RAM space.
+                 The difference between the ----TTTT and ----NNNN options is that
+                 the ----NNNN does not relocate the absolute file. Therefore
+                 the absolute file can be generated without relocation
+                 information.
+
+             ----VVVV  causes _d_m_d_l_d to print a message that identifies which
+                 version it is.
+
+            The ----TTTT and ----NNNN options only work in the non-layers environ-
+            ment, and are exclusive of each other.
+
+            The environment variable JJJJPPPPAAAATTTTHHHH is the analog of the shell's
+            PPPPAAAATTTTHHHH variable to define a set of directories in which to
+            search for _f_i_l_e.
+
+            NNNNOOOOTTTTEEEE:
+                 Standard error should be redirected when using the ----dddd
+                 or ----pppp options.
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+            Invoking the terminal resident PPPPFFFF EEEEddddiiiitttt application using
+
+
+
+       Page 3                                          (printed 6/16/93)
+
+
+
+
+
+
+       DDDDMMMMDDDDLLLLDDDD((((1111))))        ((((666633330000 NNNNeeeettttwwwwoooorrrrkkkk DDDDeeeevvvveeeellllooooppppmmmmeeeennnntttt PPPPaaaacccckkkkaaaaggggeeee))))        DDDDMMMMDDDDLLLLDDDD((((1111))))
+
+
+
+            _d_m_d_l_d:
+                dmdld "PF Edit"
+
+            Invoking a _d_m_d_c_c(_1) compiled application:
+                dmdld dmda.out
+
+            Invoking a _d_m_d_c_c(_1) compiled application with the ----dddd flag,
+            redirecting standard error to _t_e_m_p:
+                dmdld -d dmda.out 2>temp
+
+            Invoking a _d_m_d_c_c(_1) compiled application with _a_p_p_l_i_c_a_t_i_o_n-
+            _a_r_g_u_m_e_n_t:
+                dmdld $DMD/lib/demolib/clock "`date`"
+
+       FFFFIIIILLLLEEEESSSS
+            $TOOLS/bin                    host support for _d_m_d_l_d
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+            cache(3L), dmdcc(1), dmdld(1), dmdpi(1), jx(1) in the _6_3_0
+            _M_T_G _S_o_f_t_w_a_r_e _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+            layers(1) in the _U_N_I_X _S_y_s_t_e_m _V _R_e_l_e_a_s_e _3 _U_s_e_r'_s _R_e_f_e_r_e_n_c_e
+            _M_a_n_u_a_l.
+            layers(1) in the _5_6_2_0 _D_o_t-_M_a_p_p_e_d _D_i_s_p_l_a_y _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+
+       DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+            The error message "_d_m_d_l_d: ... _i_s _n_o_t _c_o_m_p_a_t_i_b_l_e _w_i_t_h _t_e_r_m_i_-
+            _n_a_l" means that the application the user attempts to down-
+            load cannot execute safely in the terminal because it calls
+            library routines which do not exist in the terminal's
+            firmware version (i.e. the programming environment ID of the
+            application is "newer" than the one supported by the termi-
+            nal). A firmware upgrade is necessary, or the user can force
+            the download by using the ----ffff flag.
+
+            The error messages "_d_m_d_l_d: _c_a_n_n_o_t _a_c_c_e_s_s ..." or "_d_m_d_l_d:
+            _c_a_n_n_o_t _o_p_e_n ..."  appearing when the named _f_i_l_e is known to
+            be in the cache, indicate that the application is not avail-
+            able for booting, and _d_m_d_l_d cannot find or open the named
+            _f_i_l_e in the host.
+
+            The error message "_d_m_d_l_d: _n_o _m_e_m_o_r_y _i_n _t_e_r_m_i_n_a_l" indicates
+            that the terminal has run out of memory to accept the down-
+            load. The user may free up memory (by deleting windows,
+            etc..) and retry.
+
+            Other error messages are self-explanatory.
+
+       BBBBUUUUGGGGSSSS
+            This problem exists when using _d_m_d_l_d with 630 firmware
+            Release 8;8;6: the _a_p_p_l_i_c_a_t_i_o_n-_a_r_g_u_m_e_n_t_s are not sent to the
+            terminal to update _a_r_g_c and _a_r_g_v if the named _f_i_l_e is found
+            in the terminal's application cache.  Newer firmware
+
+
+
+       Page 4                                          (printed 6/16/93)
+
+
+
+
+
+
+       DDDDMMMMDDDDLLLLDDDD((((1111))))        ((((666633330000 NNNNeeeettttwwwwoooorrrrkkkk DDDDeeeevvvveeeellllooooppppmmmmeeeennnntttt PPPPaaaacccckkkkaaaaggggeeee))))        DDDDMMMMDDDDLLLLDDDD((((1111))))
+
+
+
+            releases have this problem fixed.
+
+            This problem exists when using versions of _d_m_d_l_d before ver-
+            sion 2.0: if the _f_i_l_e to be downloaded contains a PEID
+            greater than 0 (such as networking applications compiled
+            with the 630 Network Development Package's lllliiiibbbbnnnnssssllll____ssss
+            library), and the download is done from AT&T 6386 WGSs or
+            machines with similar word ordering, the download will be
+            wrongly rejected by the terminal due to an incorrect reading
+            of the PEID number. _d_m_d_l_d version 2.0 has this problem
+            fixed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 5                                          (printed 6/16/93)
+
+
+

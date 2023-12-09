@@ -1,0 +1,198 @@
+
+
+
+     ffffoooorrrrmmmmaaaatttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ffffoooorrrrmmmmaaaatttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          format - change format of a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _f_o_r_m_a_t [-q] [-Itable] [-Otable] table1 _i_n_t_o table2
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _f_o_r_m_a_t program aids the user in changing the format of a
+          table from the description given in one description file to
+          that given in another.  The user must have previously
+          created one description file for the input table (table1 in
+          the SYNOPSIS) and another description file for the output
+          table (table2 in the SYNOPSIS).  The description files are
+          named Dtable1 and Dtable2 (the user need not worry about the
+          naming conventions if description files are created using
+          the _t_a_b_l_e command).  The _f_o_r_m_a_t command outputs a new table
+          by projection of those fields in table1 that are specified
+          in the description for table2 (in the order specified) or
+          creating new attributes for fields specified in the
+          description for table2 that do not appear in the description
+          for table1.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.  If the -O option is used, the
+          table name specified is used to determine an alternate
+          description file to be used in formating the output table.
+
+          The _f_o_r_m_a_t command takes care of conversion between field
+          types (e.g., fixed width fields and terminator fields).
+          When converting between terminator fields (the simplest
+          case), only the terminator for the field is changed.  When
+          converting from a fixed width field to a terminator field,
+          the new terminator is appended after the field value.
+          Conversions to a fixed width field are slightly more
+          complicated.  If the width of an output fixed width field is
+          less than the width of the input field (either fixed width
+          or terminator), the input attribute value is truncated on
+          the right (without warning) to produce the output value.  If
+          the widths are equal then no conversion takes place (other
+          than to remove the terminator if the input field is a
+          terminator field).  If the output field width is greater
+          than the length of the input field, the input value is
+          padded with blanks to fill the entire width of the output
+          field.  If the print justification of the output field is
+          'l' or no justification is given, the output value is left
+          justified and the value is padded with blanks on the right.
+          Otherwise, the attribute value is padded on the left with
+          blanks and the value is right justified.  There is no
+          centering of attribute values.
+
+          If a field is named in the output file description that does
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ffffoooorrrrmmmmaaaatttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ffffoooorrrrmmmmaaaatttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          not appear in the input file description, the user is warned
+          that a new attribute is being created in the output file.
+          If the new attribute is a fixed width field, then the new
+          attribute values are spaces.  If it is a terminator field,
+          then the new attribute values are null (i.e., only the
+          terminator is output for the field).
+
+          The output is written into the table named in the "into
+          clause"; an error is printed if the table already exists.
+          If _o_n_t_o is specified instead of _i_n_t_o, the output is appended
+          to the file if it already exists or the file is created and
+          written if it does not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined so
+          that the output format may be determined.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are formatted.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Desc file DSP:         Desc file DINV:
+
+          snumber t|      3l      snumber t|      3l
+          pnumber t|      3l      pnumber t|      3l
+          qty     t\n     4r      qty     t|      4r
+                                  price   t|      5r
+                                  total   t\n     6r
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     ffffoooorrrrmmmmaaaatttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          ffffoooorrrrmmmmaaaatttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          $ format SP into INV
+          format: Warning - attribute price not in SP and is being created in INV.
+          format: Warning - attribute total not in SP and is being created in INV.
+          format: 6 records formatted from SP.
+
+          SP:                INV:
+
+          |------------|     |-------------------------|
+          |snu|pnu| qty|     |snu|pnu| qty|price| total|
+          |mbe|mbe|    |     |mbe|mbe|    |     |      |
+          |r  |r  |    |     |r  |r  |    |     |      |
+          |------------|     |-------------------------|
+          |s1 |p1 | 300|     |s1 |p1 | 300|     |      |
+          |s1 |p2 | 200|     |s1 |p2 | 200|     |      |
+          |s1 |p3 | 400|     |s1 |p3 | 400|     |      |
+          |s2 |p1 | 100|     |s2 |p1 | 100|     |      |
+          |s2 |p2 | 200|     |s2 |p2 | 200|     |      |
+          |s3 |p1 | 300|     |s3 |p1 | 300|     |      |
+          |------------|     |-------------------------|
+
+     FFFFIIIILLLLEEEESSSS
+          unity/format.c, zformat.c - the C source program
+          bin/format - the executable program
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

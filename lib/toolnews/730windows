@@ -1,0 +1,60 @@
+I have updated 730windows to add the following...
+
+New options to "warp" the cursor on tile, untile, and swap
+have been added.
+
+-warptile will cause the mouse cursor to move to the tile on a tile
+operation.
+
+-warpuntile will cause the mouse cursor to move to the window on an
+untile operation.
+
+-warpswap will cause the mouse cursor to move the
+window that you select in the screen managers window when you change
+screens.
+
+There are two new agent(1) calls available to tile and untile windows.
+This allows shell applications to tile or untile windows automatically.
+
+You can now specify the scale of the screen manager window when it is
+active and inactive as different sizes.  This should allow easier
+use of the screenmanger without having to delete or tile it if it gets in
+the way.  By default, the active scale will now be 7 and the inactive
+scale will be 3.  You can change these values with the -scrscale and
+-scrinscale options respectively.  The mouse cursor will zoom to the corrent
+region of the window as it changes from inactive to active.
+
+There is now a crude facility for setting the tile image associated with
+particular windows.  Look at the manual page for 730settile.  It allows
+you to download a tile, and then use button one to select which window
+gets that tile.  Due to the current terminal software architecture it
+is not possible to map a tile into the current window by downloading
+something (wproc reboots in that window and all of its old memory is
+freed).  Until I discover a way around this, the 730settile command
+will not actually work in the window that you download into.
+
+I have added a stackback trace facility into the fault handling of the
+terminal.  If you get a process or system exception, you will hopefully
+get stack backtrace information.  Sending that information to the
+provider of the software you suspect is causing the problem may help
+them fix the problem.  I did this specifically for some odd problems
+that people are reporting with 730windows, so don't be afraid to
+send me this information.
+
+I have made some optimizations to the screen managers drawing to
+avoid some annoying flickers when it is displayed in larger sizes.
+
+-------------- old news ----------------
+
+I have updated 730windows to correct some problems dealing with the screen
+manager.
+
+All paths of exit from the screen manager were not correctly tracked.  This
+resulted in certain parts of 730windows not knowing that the process had
+terminated.  They would then proceed to do things which would crash the
+terminal.  This bug has been fixed.
+
+Two new command line options, and corresponding menu items have been
+added to allow the old borders to be selected.  '-borderold' selects
+the old borders and '-bordernew' selects the new borders (which is
+the default).

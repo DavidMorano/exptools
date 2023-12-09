@@ -1,0 +1,77 @@
+Àtemplate expand template and execute commands [MACRO]
+
+ Modifed from the abbrev macro by Bill Paulson and Keith Stanley.
+ Last modified 9/8/88 by Joe Steffen to save/restore save mode.
+
+ This macro looks for TEMPLATE FILE:<template file> in the first 10 lines
+ of the file.  If none, <template file> defaults to .templates.  <template
+ file> must be in your home directory.
+
+ Templates in <template file> are of the form:
+
+	abbreviation@ body
+
+ The body can span multiple lines, can contain emacs commands, and should
+ contain a '^' where the cursor should end up.  There can be multiple '^'s;
+ you can go to succeeding ones with the M-^ macro.  For example:
+
+	de@ #define	ƒ^	/* ^ */
+	if@ if (^) {
+	
+	}
+
+ Note: This macro uses mark 15 as a temporary marker.
+
+<save
+0	turn off save mode (save old value)
+Bÿ		save buffer, and delete previous word then add an @
++<@
+<^
++			make a copy starting with a newline
+			search for string  "TEMPLATE FILE:" in
+			first 10 lines
+15 10ç	mark here - go to 10'th line
+<TEMPLATE FILE:
+			look for string starting with "TEMPLATE FILE:"
+|û û		in front of this line  -  if found
+14ä-	get file name, delete, and reinsert
+<$HOME/
++ð		start file name at home and add new file name
+ý			else
+û <$HOME/.templates
+ýý		put default file name in,end if and go back to
+1515 	where should be and set mark 15
+-		switch to file  (but don't complain if new)
+2>B		Prepare to check if in same buffer (get old buffer
+			name and check present against it)
+|û		See if in buffer
+	û&-2-ý	in buffer, just ignore it
+			(dump 2 copies of abbreviation and buffer name)
+	û ¾|û	Not in buffer, process abbrevs
+		û-“< 
+			search for abbreviation from back and if found
+		- <@
+			find space and mark next character go to next line
+		|ûûýsearch for next at and go to end of 
+					previous line
+			û ¾ýýor go to end of buffer and
+				back up to end of next line
+		ð	put abbreviation on kill stack
+		<...
+		-</usr/tmp/emacs$LOGNAME
+
+		B%go to home buffer and destroy temp buff
+		</usr/tmp/emacs$LOGNAME
+			execute input
+		 delete newline and indentation
+		15Þgo to start of abbrev and do M-^
+		ýend of found
+		û %-
+							 question
+			ýýýýif found if in buffer
+<save
+	restore old save mode value
+
+Þd_caret find and delete the next caret
+<^
+

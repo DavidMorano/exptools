@@ -1,0 +1,542 @@
+#!/bin/sh
+
+#####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1992
+#			AT&T Bell Laboratories
+#####################################################################
+
+#  ''There is a fifth dimension beyond that which is known to
+#  man. It is a dimension as vast as space and as timeless as
+#  infinity.  It is the middle ground between light and shadow,
+#  between science and superstition. And it lies between the
+#  pit of Man's fears and the summit of his knowledge.  This is
+#  the dimension of imagination -- it is an area which we call
+#  "The Twilight Zone".''
+
+####################################################################
+# Add comment header blocks to a C program source
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				June 1992
+#
+# This program inserts a header block describing the
+# file, then inserts a header block before each function.
+#
+# USAGE:  cheader -f dbfile file.c
+#
+####################################################################
+VERSION="3.1"
+PGM=`basename $0`
+LIBDIR=
+
+: ${TOOLS:?"environment variable is not set or is not exported"}
+
+
+TMP=/usr/tmp
+
+# set temporary file names
+ALLDEFSFILE=$TMP/challd$$	# typedefs, defs, members
+TYPEDFILE=$TMP/chtdf$$	# typedefs
+DEFSFILE=$TMP/chdf$$		# #defines in all files
+DDEFSFILE=$TMP/chddf$$		# #defines in this file only
+GLOBSFILE=$TMP/chg$$
+LOCVFILE=$TMP/chl$$		# local variable, fcn
+INCFILE=$TMP/chi$$
+FCNSFILE=$TMP/chf$$
+FUNCFILE=$TMP/chF$$		# holds source lines for a function
+FDESCFILE=$TMP/chfd$$		# function name; comment
+FCDFILE=$TMP/chfcd$$		# caller fcn;called fcn;called descr
+NCSLFILE=$TMP/chn$$
+PARAMFILE=$TMP/chp$$
+SPARAMFILE=$TMP/chsp$$
+SYMFILE=$TMP/chsy$$		# symbol, fcn
+MEMBERFILE=$TMP/chmem$$	# structure and member names
+TMPCF=$TMP/cht$$
+CALLSFILE=$TMP/chcc$$		# fcn calls file
+CCFILE=$TMP/4sl$$		# C source file
+CSCOPEFILE=$TMP/chc$$		# cscope database
+JUNKFILE=$TMP/chx$$		# functions which may exit()
+J1=$TMP/chjn1$$		# temp files used for relational joins
+J2=$TMP/chjn2$$
+
+
+TMPLIST1="$GLOBSFILE $FCNSFILE $INCFILE $CCFILE $NCSLFILE $SPARAMFILE"
+TMPLIST2="$TMPCF $FUNCFILE $CSCOPEFILE $JUNKFILE $CALLSFILE $J1 $J2"
+TMPLIST3="$SYMFILE $PARAMFILE $LOCVFILE $DEFSFILE $MEMBERFILE"
+TMPLIST4="$TYPEDFILE $FDESCFILE $FCDFILE $ALLDEFSFILE $DDEFSFILE"
+
+TMPFILES="$TMPLIST1 $TMPLIST2 $TMPLIST3 $TMPLIST4"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+FORHELP="\n\t(Type 'toolman showloop' for a manual page, then contact Bob Parnass\n\tif you need help.)\n"
+USAGE="USAGE:  ${PGM}  -f dbfile [file.c]\nVersion ${VERSION}\n${FORHELP}"
+
+EXIT_CODE=0
+
+
+# parse command line arguments 
+set -- `getopt df: $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	DFLAG=
+	FFLAG=
+
+	for i in $*
+	do
+		case $i in
+		-d)
+			DFLAG=1
+			shift 1;;
+		-f)
+			FFLAG=1
+			DBFILE=$2
+			shift 2;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+NFILES=$#
+
+# if there are no source files on the command line
+if [ $# -eq 0 ]
+then
+	# read C source from stdin
+
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	LASTLINE=`wc -l $CFILE | awk '{printf "%s\n", $1}'`
+
+	# build database for this C source
+
+	cscope -bc -f ${CSCOPEFILE} $CFILE  1>&2 2>/dev/null
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: cscope failed on file '${CFILE}'." 1>&2
+		# clean up
+		rm -f ${TMPFILES}
+
+		exit 1
+	fi
+
+	# get all #defines
+	
+	ccalls -d ${CSCOPEFILE} \
+		| cut -d' ' -f2 > ${DEFSFILE}
+
+
+	# find all #defines defined
+	#	for the first file (not #included files).
+	ccalls -d ${CSCOPEFILE} \
+		| awk '{ \
+			if(NR == 1)
+				{
+				firstfile = $1
+				printf "%s\n", $2
+				}
+			else
+				{
+				if($1 == firstfile)
+					printf "%s\n", $2
+				}
+			
+			}' \
+		| sort -u > ${DDEFSFILE}
+
+	# get all typedefs 
+	
+	ccalls -t ${CSCOPEFILE} \
+		| cut -d' ' -f2  > ${TYPEDFILE}
+
+	# get all structure names and member names
+	ccalls -S ${CSCOPEFILE} \
+		| awk '{printf "%s\n%s\n", $1, $2 }'  > $MEMBERFILE
+
+	# sort symbol names and eliminate duplicates
+	sort -u ${TYPEDFILE} $MEMBERFILE ${DEFSFILE} > $ALLDEFSFILE
+
+	BASE=`basename $CFILE`
+	DATE=`date`
+
+	# sort the function descriptions by function name
+	sort -u ${DBFILE} > ${FDESCFILE}
+
+	
+	# find all functions and their line numbers, but only
+	#	for the first file (not #included files).
+	ccalls -f ${CSCOPEFILE} \
+		| awk '{ \
+			if(NR == 1)
+				{
+				firstfile = $1
+				printf "%s %s %s\n", $2, $3, $4
+				}
+			else
+				{
+				if($1 == firstfile)
+					printf "%s %s %s\n", $2, $3, $4
+				}
+			
+			}' > ${FCNSFILE}
+
+	# find all functions which call other functions
+	ccalls  -F';' ${CSCOPEFILE} \
+		| sort -u > ${CALLSFILE}
+
+	# sort function calls file on called fcn name
+	sort -t';' +1 ${CALLSFILE} > ${J1}
+
+
+	join -t\; -a1 -j1 2 -j2 1 -o 1.1 1.2 2.2  ${J1} ${FDESCFILE} \
+			| sort -t';' -f +1 > ${FCDFILE}
+
+	# FCDFILE now contains:
+	#	calling fcn
+	#	called fcn
+	#	description of called fcn
+
+	# find global variables defined in C source file
+	ccalls -g ${CSCOPEFILE} \
+		| cut -d' ' -f2 \
+		| sort -u > ${GLOBSFILE}
+
+	# find all symbols in source file and associate each one
+	#	with the name of the function in which they appear.
+	#	Note: cparser is a mighty crude lex(1) program.
+
+	($TOOLS/lib/cloop/cparser $CFILE \
+		| awk '($2 == "var") \
+			{ \
+			printf "%d %s\n", $3, $1
+			}'  ; \
+		awk '{\
+			printf "%d %s START\n", $2, $1 
+			printf "%d %s END\n", $3, $1 
+			}' ${FCNSFILE} ) \
+		| sort -n   > $JUNKFILE
+
+	awk ' { \
+		# for each line
+		if((NF == 3) && ($3 == "START"))
+			f=$2
+		else if((NF == 3) && ($3 == "END"))
+			f=""
+		else if(length(f))
+			printf "%s %s\n", $2, f
+		}' $JUNKFILE > ${SYMFILE}
+
+	sort -u  -o ${SYMFILE} ${SYMFILE}
+
+	# SYMFILE now contains lines of the form:
+	#	symbol function
+
+	# find all local variables
+	ccalls -l ${CSCOPEFILE} \
+		| awk '{ printf "%s %s\n", $2, $1 }' \
+		| sort -u > ${LOCVFILE}
+
+	# LOCVFILE now contains lines of the form:
+	#	lvariable function
+
+
+	ncsl -lc -i ${CFILE} > /dev/null 2>${NCSLFILE}
+	NCSL=`tail -1 ${NCSLFILE} | cut -c50-58`
+	echo "/******************************************************************"
+	echo "* FILE:	$BASE        TOTAL NCSL: $NCSL"
+	echo "*"
+
+	ccalls -I ${CSCOPEFILE}  > ${INCFILE}
+
+	# if there are #include files, display their names in
+	#	a comma-separated list
+
+	test -s ${INCFILE}
+	if [ $? -eq 0 ]
+	then
+		echo "* INCLUDE FILES:"
+		# print #include files
+		cut -d' ' -f2  ${INCFILE} \
+			| sort -fu \
+			| sed -e 's/$/,/' \
+			| sed -e '$s/,//' \
+			| nroff \
+			| sed -e '/^$/d' -e 's/^/\*        /'
+	else
+		echo "* INCLUDE FILES: (none)"
+	fi
+
+	echo "*"
+
+	# if there are #include files, display their names in
+	#	a comma-separated list
+
+	test -s ${DDEFSFILE}
+	if [ $? -eq 0 ]
+	then
+		echo "* #DEFINES DEFINED:"
+
+		sed -e 's/$/,/' ${DDEFSFILE} \
+			| sed -e '$s/,//' \
+			| nroff \
+			| sed -e '/^$/d' -e 's/^/\*        /'
+	else
+		echo "* #DEFINES DEFINED: (none)"
+	fi
+
+	echo "*"
+
+	# if there are global variables
+	test -s ${GLOBSFILE}
+	if [ $? -eq 0 ]
+	then
+		echo "* GLOBAL VARIABLES DEFINED:"
+		sort -fu ${GLOBSFILE} \
+			| sed -e 's/$/,/' \
+			| sed -e '$s/,//' \
+			| nroff \
+			| sed -e '/^$/d' -e 's/^/\*        /'
+	else
+		echo "* GLOBAL VARIABLES DEFINED: (none)"
+	fi
+
+
+	cut -d' ' -f1  ${FCNSFILE} > ${JUNKFILE}
+
+	# if this file contains fcns
+	test -s ${JUNKFILE}
+	if [ $? -eq 0 ]
+	then
+		echo "*"
+		echo "* CONTAINS FUNCTIONS:"
+
+		sort -u ${JUNKFILE} > ${J1}
+
+		# display the names of functions contained and a
+		#	single line description for each one
+		#	we know about
+
+		join -a1 -t\; ${J1} ${FDESCFILE} \
+			| awk -F\; '{\
+				printf "*        %-20s-", $1
+				if(NF==2)
+					printf "%s", $2
+				printf "\n"
+				}' \
+			| sort -f
+	else
+		echo "* CONTAINS FUNCTIONS: (none)"
+	fi
+
+	echo "*"
+	echo "* analysis produced by comment: $DATE"
+	echo "******************************************************************/"
+	
+	# find parameters for all functions
+	ccalls -P ${CSCOPEFILE} \
+		| sort -u > ${PARAMFILE}
+
+	# redirect stdin to read from functions file
+	exec < ${FCNSFILE}
+
+	ELINEPRV=1
+
+	NFCNS=0
+
+	# for each function in the C source file
+	while read RECORD
+	do
+		NFCNS=`/bin/expr ${NFCNS} + 1`
+
+		# line number where function starts
+		BLINE=`echo ${RECORD} | cut -d' ' -f2`
+
+		# line number where function ends
+		ELINE=`echo ${RECORD} | cut -d' ' -f3`
+
+		if [ $ELINE -eq 0 ]
+		then
+			# set equal to last line of source file
+			ELINE="${LASTLINE}"
+		fi
+
+		# display portion of C source file between the
+		# end of the last function and start of this function
+
+		# write form feed at end of previous function
+		echo "\f"
+
+		BLINEMINUS1=`expr ${BLINE} - 1`
+
+		if [ ${BLINEMINUS1} -ge ${ELINEPRV} ]
+		then
+			sed -n "${ELINEPRV},${BLINEMINUS1}p" $CFILE 
+		fi
+
+		ELINEPRV=`expr ${ELINE} + 1`
+
+		# function name
+		FCN=`echo ${RECORD} | cut -d' ' -f1`
+
+		# calculate number of lines in function
+		LEN=`/bin/expr ${ELINE} - ${BLINE} + 1`
+
+		# Bean-counter's delight:
+		# count ncsl in portions of source file
+		#	associated with function
+
+		sed -n "${BLINE},${ELINE}p" $CFILE > ${FUNCFILE}
+
+		ncsl -lc -i ${FUNCFILE} > /dev/null 2>${NCSLFILE}
+		NCSL=`tail -1 ${NCSLFILE} | cut -c50-58`
+
+		echo "/******************************************************************"
+		echo "* FUNCTION: ${FCN}        NCSL: ${NCSL}"
+		echo "*"
+
+		grep "${FCN} " ${PARAMFILE} > ${SPARAMFILE}
+
+		# if there are parameters
+		test -s ${SPARAMFILE}
+		if [ $? -eq 0 ]
+		then
+			# print parameters
+			echo "* PARAMETERS:"
+
+			cut -d' ' -f2 ${SPARAMFILE} \
+				| sed -e 's/^/\*        /'
+		else
+			echo "* PARAMETERS: (none)"
+		fi
+		echo "*"
+
+		grep "^${FCN};" ${FCDFILE} > ${JUNKFILE}
+
+		# if this fcn calls other fcns
+		test -s ${JUNKFILE}
+		if [ $? -eq 0 ]
+		then
+			# display functions called and
+			#	their descriptions
+
+			echo "* FUNCTIONS CALLED:"
+			awk -F\; '{\
+				printf "*        %-20s-%s\n", $2, $3
+				}' ${JUNKFILE}
+		else
+			echo "* FUNCTIONS CALLED: (none)"
+		fi
+		echo "*"
+
+		# determine what global variables are used by this fcn
+		grep " $FCN" $SYMFILE > ${J1}
+		(grep " $FCN" $LOCVFILE ;\
+			awk '{ printf "%s %s\n", $2, $1 }' ${SPARAMFILE} \
+			) | sort -u > ${J2}
+
+		# find symbols in function which are neither local vars
+		#	nor parameters
+		join -a1   ${J1} ${J2}  \
+			| awk '(NF==2) { print $0 }' \
+			| sort -u -o ${J1}
+
+
+		# find symbols in function which are neither local vars
+		#	nor parameters nor #defines nor structure names
+		#	nor structure members nor typedefs
+		join  ${J1} ${ALLDEFSFILE} \
+			|sort -u \
+			|comm -23 $J1 - > ${JUNKFILE}
+
+
+
+		# if there are global vars used by this fcn
+		test -s ${JUNKFILE}
+		if [ $? -eq 0 ]
+		then
+			# print globals
+			echo "* GLOBAL VARIABLES USED:"
+			cut -d' ' -f1  ${JUNKFILE} \
+				| sort -fu \
+				| sed -e 's/$/,/' \
+				| sed -e '$s/,//' \
+				| nroff \
+				| sed -e '/^$/d' -e 's/^/\*        /'
+		else
+			echo "* GLOBAL VARIABLES USED: (none)"
+		fi
+
+		echo "*"
+
+		grep "^$FCN;exit" ${CALLSFILE} > /dev/null
+
+		# if this function calls exit()
+		if [ $? -eq 0 ]
+		then
+			if [ $FCN != "main" ]
+			then
+				echo "* NOTE: This function may call exit() instead of returning."
+			fi
+		fi
+
+		echo "******************************************************************/"
+
+		# display part of source file associated with function
+		sed -n "${BLINE},${ELINE}p" $CFILE 
+
+		# form feed
+		# echo "\f"
+		
+	done
+
+	# if this file contained no functions at all,
+	
+	if [ "${NFCNS}" -eq 0 ]
+	then
+		cat $CFILE
+	fi
+
+	# display any lines after the last right curly brace
+	#	in the last function and the end of fileo
+
+	if [ "$ELINE" -gt 0 ]
+	then
+		if [ "${LASTLINE}" -gt "${ELINE}" ]
+		then
+			sed -n "${ELINE},${LASTLINE}p" $CFILE 
+		fi
+	fi
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`/bin/expr ${NFILES} - 1`
+
+	# set next source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}

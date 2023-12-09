@@ -1,0 +1,462 @@
+
+
+
+     CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          cloop -- highlight loops & control statements in C programs
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          cccclllloooooooopppp [-bcdhinsv]  [-m minsize]  [files]
+
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _c_l_o_o_p can help one understand a C program.  _c_l_o_o_p reads C
+          source files and writes them to standard output, marking
+          lines containing bbbbrrrreeeeaaaakkkk and ccccoooonnnnttttiiiinnnnuuuueeee statements telling to
+          which line control will transfer when the statement is exe-
+          cuted.
+
+          In addition, the span (beginning, middle, and ending lines)
+          of sssswwwwiiiittttcccchhhh,,,, iiiiffff////eeeellllsssseeee,,,, ddddoooo----wwwwhhhhiiiilllleeee,,,, ffffoooorrrr,,,, and wwwwhhhhiiiilllleeee loops are
+          clearly marked.
+
+          If two loops end on the same line, only one ending comment
+          will be printed.
+
+          If no input file is specified on the command line, _c_l_o_o_p
+          reads from standard input.
+
+          The output of _c_l_o_o_p can be piped to printer programs like
+          _p_r, _o_p_r, and _x_c_l. You can also pipe the output to _c_p_r if you
+          use cpr's -m option to realign the left column.
+
+          Command line options are:
+
+          ----bbbb        Supress the printing of break and continue desti-
+                    nations.
+
+
+          ----cccc        In the left margin, print a comment at the begin-
+                    ning and end of each sssswwwwiiiittttcccchhhh block and ffffoooorrrr,,,, ddddoooo,,,, and
+                    wwwwhhhhiiiilllleeee loops.
+
+
+          ----dddd        Debug mode.  Writes diagnostic messages to stan-
+                    dard error for use in testing _c_l_o_o_p.
+
+
+          ----hhhh        Supress the printing of horizontal dashed lines
+                    which show the span of loops and if/else state-
+                    ments.
+
+
+          ----iiii        Ignore iiiiffff and eeeellllsssseeee statements.
+
+
+          ----mmmm_m_i_n_s_i_z_e Ignore loops, switches, and if/else regions which
+
+
+
+     Page 1                                          (printed 7/27/92)
+
+
+
+
+
+
+     CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                    span less than _m_i_n_s_i_z_e lines.  If -m is not speci-
+                    fied, _c_l_o_o_p will ignore loops, switches, and
+                    if/else regions spanning less than 3 lines.
+
+
+          ----nnnn        Supress the printing of line numbers.  The default
+                    is to print line numbers down the left margin.
+                    These line numbers correspond to the line numbers
+                    one would get when using _v_i(_1) or _e_m_a_c_s(_1) to edit
+                    the file.  Be aware that files containing
+                    Control-L characters can cause problems.  Such
+                    files, when printed by _p_r(_1) or _x_c_l may not be
+                    numbered consistently as they treat form feed
+                    characters differently than the popular editors
+                    when the form feed is not the only character on
+                    the line.
+
+
+          ----ssss        Supress the printing of vertical lines next to the
+                    source code which show the span of loops and
+                    if/else statements.
+
+
+          ----vvvv        Change the symbol used to show scope of loops and
+                    if/else/switches from '|' and ':' to 'f', 'w',
+                    'd', 'i', 'e', and 's'.  By default, '|' is used
+                    for loops and ':' is used for ifs, elses, and
+                    switches.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 7/27/92)
+
+
+
+
+
+
+     CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+     If file.c contains:
+
+     main()
+     {
+          int  i, j ;
+
+          for (i = 0; i < 4; ++i)
+               if (i / 2)
+                    for (j = 0; j < 3; ++j)
+                         {
+                         printf("i is %4d, j is %4d", i, j);
+                         if ((i * j) > 9)
+                              continue;
+                         if (i == j)
+                              break;
+                         }
+               else
+                    printf("i is odd");
+
+          for (i = 0; i < 2; ++ i)
+               printf("hello world");
+          exit(0);
+     }
+
+                             cloop file.c
+
+     writes this to standard output:
+
+        1)               main()
+        2)               {
+        3)                       int     i, j ;
+        4)
+        5)       +-  -  -  -  -  for (i = 0; i < 4; ++i)
+        6)       |+  -  -  -  -  -  -  - if (i / 2)
+        7)       |:+ -  -  -  -  -  -  -  -  -   for (j = 0; j < 3; ++j)
+        8)       |:|                                     {
+        9)       |:|                                     printf("i is %4d, j is %4d", i, j);
+       10)       |:|                                     if ((i * j) > 9)
+       11) g7    |:|                                             continue;
+       12)       |:|                                     if (i == j)
+       13) g15   |:|                                             break;
+       14)       |++ -  -  -  -  -  -  -  -  -  -  -  -  }
+       15)       |                       else
+       16)       +-  -  -  -  -  -  -  -  -  -   printf("i is odd");
+       17)
+       18)                       for (i = 0; i < 2; ++ i)
+       19)                               printf("hello world");
+       20)                       exit(0);
+       21)               }
+
+
+
+
+
+Page 3                                          (printed 7/27/92)
+
+
+
+
+
+
+CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                           cloop -s file.c
+
+     writes this to standard output:
+        1)       main()
+        2)       {
+        3)               int     i, j ;
+        4)
+        5)               for (i = 0; i < 4; ++i)
+        6)                       if (i / 2)
+        7)                               for (j = 0; j < 3; ++j)
+        8)                                       {
+        9)                                       printf("i is %4d, j is %4d", i, j);
+       10)                                       if ((i * j) > 9)
+       11) g7                                            continue;
+       12)                                       if (i == j)
+       13) g15                                           break;
+       14)                                       }
+       15)                       else
+       16)                               printf("i is odd");
+       17)
+       18)               for (i = 0; i < 2; ++ i)
+       19)                       printf("hello world");
+       20)               exit(0);
+       21)       }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 4                                          (printed 7/27/92)
+
+
+
+
+
+
+CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                           cloop -cv file.c
+
+     writes this to standard output:
+
+        1)                                      main()
+        2)                                      {
+        3)                                              int     i, j ;
+        4)
+        5)       e16                    f-  -  -  -  -  for (i = 0; i < 4; ++i)
+        6)       e14                    fi  -  -  -  -  -  -  - if (i / 2)
+        7)       e14                    fif -  -  -  -  -  -  -  -  -   for (j = 0; j < 3; ++j)
+        8)                              fif                                     {
+        9)                              fif                                     printf("i is %4d, j is %4d", i, j);
+       10)                              fif                                     if ((i * j) > 9)
+       11) g7                           fif                                             continue;
+       12)                              fif                                     if (i == j)
+       13) g15                          fif                                             break;
+       14)       for() b7, if() b6      fif -  -  -  -  -  -  -  -  -  -  -  -  }
+       15)                              f                       else
+       16)       for() b5               f-  -  -  -  -  -  -  -  -  -   printf("i is odd");
+       17)
+       18)                                              for (i = 0; i < 2; ++ i)
+       19)                                                      printf("hello world");
+       20)                                              exit(0);
+       21)                                      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Page 5                                          (printed 7/27/92)
+
+
+
+
+
+
+CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                           cloop -iv file.c
+
+     writes this to standard output:
+
+        1)               main()
+        2)               {
+        3)                       int     i, j ;
+        4)
+        5)       f-  -  -  -  -  for (i = 0; i < 4; ++i)
+        6)       f                       if (i / 2)
+        7)       ff  -  -  -  -  -  -  -  -  -   for (j = 0; j < 3; ++j)
+        8)       ff                                      {
+        9)       ff                                      printf("i is %4d, j is %4d", i, j);
+       10)       ff                                      if ((i * j) > 9)
+       11) g7    ff                                              continue;
+       12)       ff                                      if (i == j)
+       13) g15   ff                                              break;
+       14)       ff  -  -  -  -  -  -  -  -  -  -  -  -  }
+       15)       f                       else
+       16)       f-  -  -  -  -  -  -  -  -  -   printf("i is odd");
+       17)
+       18)                       for (i = 0; i < 2; ++ i)
+       19)                               printf("hello world");
+       20)                       exit(0);
+       21)               }
+
+
+            EEEEXXXXIIIITTTT CCCCOOOODDDDEEEE
+                 0 means no errors
+
+                 1 if there were any errors
+
+
+            WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS
+                 _c_l_o_o_p does not execute the C preprocessor, so source lines
+                 bounded by preprocessor conditional directives, like #ifdef,
+                 are analyzed along with all the remaining lines.
+
+                 _c_l_o_o_p will not annotate loops and if/elses nested over 8
+                 levels deep.
+
+                 Multiple statements on the same line may confuse _c_l_o_o_p. For
+                 example:
+
+                 for(i=0; i<3; ++i) do printf("hi"); while(j--);
+
+                 Files containing C syntax errors may cause _c_l_o_o_p to produce
+                 erroneous comments.
+
+                 If the C source file contains a Control-L form feed charac-
+                 ter, then the line numbers produced by piping the output of
+                 _c_l_o_o_p to _p_r(_1) and _x_c_l(_1) may not agree with those produced
+
+
+
+            Page 6                                          (printed 7/27/92)
+
+
+
+
+
+
+            CCCCLLLLOOOOOOOOPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+                 by _c_l_o_o_p. Editors like _v_i(_1) and _e_m_a_c_s(_1) treat Control-L
+                 characters differently than does _p_r(_1) when the Control-L
+                 characters are mixed with other characters on the same line.
+
+                 If several files are specified on the command line, and one
+                 of those files cannot be parsed properly, _c_l_o_o_p will attempt
+                 to print as much of that file is possible, write an error
+                 message on standard error, and continue processing the
+                 remaining files.
+
+
+            FFFFIIIILLLLEEEESSSS
+                 /usr/tmp/[1-5]cl$$ used for temporary storage.
+
+
+            SSSSEEEEEEEE AAAALLLLSSSSOOOO
+                 _c_l_o_o_p - _A _T_o_o_l _f_o_r _S_h_o_w_i_n_g _L_o_o_p_s _a_n_d _C_o_n_t_r_o_l _S_t_a_t_e_m_e_n_t_s _i_n _C
+                 _P_r_o_g_r_a_m_s, by R. S. Parnass.  55013-900417-01TM.
+
+
+            AAAAUUUUTTTTHHHHOOOORRRR
+                 The C loop tool was written by Bob Parnass.
+
+
+            PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+                 The C loop tool is provided by Bob Parnass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            Page 7                                          (printed 7/27/92)
+
+
+

@@ -1,0 +1,198 @@
+
+
+
+     uuuujjjjooooiiiinnnn,,,,jjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))      UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll      uuuujjjjooooiiiinnnn,,,,jjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ujoin, join - join two existing UNITY tables
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_j_o_i_n [-q] [-Itable1] [-Itable2] [-Otable] a1a[,a1b,...] \
+           a2a[,a2b,...] _f_r_o_m table1 table2 [_i_n_t_o table3]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _u_j_o_i_n command allows the user to build a new table by
+          joining two existing tables (table1 and table2).  The first
+          two arguments specify the attributes on which tables table1
+          and table2 are to be joined; the arguments are composed of
+          one or more attributes in the respective tables, separated
+          by commas (no white space is allowed in the attribute
+          lists).  The join of tables table1 and table2 is composed of
+          those records whose attribute values from table1 equal the
+          attribute values from table2 for those fields on which the
+          join is being done.  The records are concatenated together
+          with the attributes from table1 appearing first.  The
+          attributes in table2 on which the join is done do not appear
+          in the output since they are a duplicate of the attribute
+          values in table1.  If the last attribute of table1 is a
+          terminator field (the terminator must be newline), then the
+          terminator is changed to tab so that each joined record is a
+          single line on output.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the first input table.  If the -I option is used
+          twice, the second occurrance table name specified in the
+          second occurrance is used to determine an alternate
+          description file to be used in reading the second input
+          table.  Note that this makes the -I option positional.  Even
+          if an alternate description file is not desired for the
+          first table, it must be entered if an alternate description
+          file is desired for the second table.  In this case, the
+          table name entered in the first occurrance of the -I option
+          should be the same as table1.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          If an input table specified is "-", then input is taken from
+          the standard input instead of a table.  The -I option must
+          be used to specify the name of a table from which the
+          description file name can be determined and used.  If the
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuujjjjooooiiiinnnn,,,,jjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))      UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll      uuuujjjjooooiiiinnnn,,,,jjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          second table specified is "-", then two occurrances of the
+          -I option must appear as described above; the first
+          occurrance applies to the first table and the second
+          occurrance applies to the second table.  Both table names
+          cannot be "-"; one of them must be specified.  The indexes,
+          as described below, cannot be used on a table that is read
+          from the standard input.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+          To perform the join operation efficiently, table1 must have
+          an index on the first join attribute specified for table1 or
+          table2 must have an index on the first join attribute
+          specified for table2.
+
+          If an attribute in table1 other than an attribute on which
+          the join is being done has the same name as an attribute in
+          table2, then the resulting description file will have two
+          attributes with the same name; this causes strange results
+          when used by several of the UNITY programs.  The program
+          attempts to solve  the problem by renaming the duplicate
+          attribute name in the second description file to
+          <attribute>1 (i.e., a "1" is appended to the attribute name
+          for all duplicate pairs other than the joined attributes)
+          and warning the user about the name change.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are joined.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Table S:                        Table SP:
+
+          |-------------------------|     |------------|
+          |snu|sname     |city      |     |snu|pnu| qty|
+          |mbe|          |          |     |mbe|mbe|    |
+          |r  |          |          |     |r  |r  |    |
+          |-------------------------|     |------------|
+          |s1 |smith     |london    |     |s1 |p1 | 300|
+          |s2 |jones     |paris     |     |s1 |p2 | 200|
+          |s3 |blake     |paris     |     |s1 |p3 | 400|
+          |-------------------------|     |s2 |p1 | 100|
+                                          |s2 |p2 | 200|
+                                          |------------|
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuujjjjooooiiiinnnn,,,,jjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))      UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll      uuuujjjjooooiiiinnnn,,,,jjjjooooiiiinnnn((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          $ ujoin snumber snumber from S SP into tmp1
+          ujoin: 5 records joined from S and SP.
+          $ uprint tmp1
+          |----------------------------------|
+          |snu|sname     |city      |pnu| qty|
+          |mbe|          |          |mbe|    |
+          |r  |          |          |r  |    |
+          |----------------------------------|
+          |s1 |smith     |london    |p1 | 300|
+          |s1 |smith     |london    |p2 | 200|
+          |s1 |smith     |london    |p3 | 400|
+          |s2 |jones     |paris     |p1 | 100|
+          |s2 |jones     |paris     |p2 | 200|
+          |----------------------------------|
+
+     FFFFIIIILLLLEEEESSSS
+          unity/ujoin.c, zujoin.c - the C source program
+          bin/ujoin, join - the executable programs (linked)
+          A<table>.<attribute>, B<table>.<attribute> - the index files
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _r_e_g_j_o_i_n, _o_u_t_e_r_j_o_i_n, _s_e_t_d_i_f_f, _i_n_d_e_x(UNITY)
+
+     CCCCAAAAVVVVEEEEAAAATTTT
+          This command was originally named _j_o_i_n but, due to the
+          conflict with the name of the standard UNIX command _j_o_i_n(1),
+          it was renamed _u_j_o_i_n.  _u_j_o_i_n is linked to _j_o_i_n so that users
+          with their $PATH set correctly can still access it under the
+          old name (for upward compatibility).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

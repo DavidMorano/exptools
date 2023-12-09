@@ -1,0 +1,107 @@
+# netcmd - find network command for machine list
+
+cmd=$0
+case $cmd in
+*/*)
+	cmd=`basename $0`
+	;;
+esac
+
+: ${EXPACCT:=`sed -n -e '/^exptools:/{
+			s/.*(\([^)]*\)).*/-a \1/p
+			q
+			}' /etc/passwd`}
+: ${TOOLS:=`logdir exptools`}
+: ${XNETPREF:=`cat -s ${TOOLS:?}/adm/upd1.1/lib/netpref`}
+: ${XNETPREF:=uucp}
+
+netpref=`echo $XNETPREF | tr ':' ' '`
+
+case ${#} in
+0)
+	;;
+*)
+	echo "usage: ${cmd}" >&2
+	exit 1
+	;;
+esac
+
+tmproot=/usr/tmp/net$$
+tmpinput=${tmproot}input
+tmptype=${tmproot}type
+tmpnet=${tmproot}net
+tmplist=${tmproot}list
+tmpgrep=${tmproot}grep
+tmpfix=${tmproot}fix
+tmpUUCP=${tmproot}UUNAME
+
+retval=0
+trap "retval=1; exit" 1 2 3 15
+trap "$debug rm -f $tmproot*; exit \$retval" 0
+
+uname=`uname -n`
+
+# collect args off stdin and do loop on machine type
+
+sed \
+	-e 's/^[ 	][ 	]*//' \
+	-e 's/[ 	][ 	]*$//' \
+	-e 's/[ 	][ 	]*/:/g' \
+	-e '/^:*$/d' \
+	-e '/:/!s/$/:notype/' \
+	-e "/^$uname:/s/:/:_self_/" \
+| sort -u \
+> $tmpinput
+
+if [ ! -s $tmpinput ]
+then
+	echo "$cmd: no machines selected" >&2
+	retval=1
+	exit
+fi
+
+for type in `sort -t: -u +1 -2 $tmpinput | cut -f2 -d:`
+do
+	grep ":$type$" $tmpinput > $tmptype
+
+	case $type in
+	_self_*)
+		sed 's/\([^:]*\):_self_\(.*\)/self \2/' $tmptype
+		continue
+		;;
+	esac
+
+	UUCP=
+	for net in $netpref
+	do
+		if [ ! -s $tmptype ]
+		then break
+		fi
+
+		case $net in
+		UUCP|uucp|uux)
+			eval ${UUCP:+continue}
+			UUCP=done
+			if [ ! -s $tmpUUCP ]
+			then	uuname 2>/dev/null \
+				| sort -u \
+				| sed 's/$/:/' > $tmpUUCP
+			fi
+			join -t: $tmptype $tmpUUCP \
+			> $tmplist
+			sed 's/:.*/:/' $tmplist > $tmpgrep
+			fgrep -vf $tmpgrep $tmptype > $tmpfix
+			cp $tmpfix $tmptype
+			sed "s/\([^:]*\):.*/uucp $type uux \1/" $tmplist
+			;;
+		*)
+			echo "$cmd: network $net unrecognized" >&2
+			;;
+		esac
+	done
+
+	if [ -s $tmptype ]
+	then
+		echo "$cmd: no network found for" `cat $tmptype` >&2
+	fi
+done

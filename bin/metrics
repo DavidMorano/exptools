@@ -1,0 +1,177 @@
+#!/bin/sh
+#      metrics.sh 
+#
+#      Programs for measuring software 
+#
+
+# variable initializations
+M=${METRICSLIB:-$TOOLS/lib/metrics}
+
+if test $# = 0
+then
+	echo "usage:
+     metrics [-l] lines by file and total lines \n
+         ... [-lf] line information by file and function \n
+         ... [-f] full (by each function-when used with l m h or s)\n
+         ... [-m] McCabe Complexity metrics\n
+         ... [-h] Halstead metrics\n
+         ... [-s] program flow metrics\n
+	default .. all metrics by each file\n
+	[ example 1:   metrics -h -s file(s)  ]\n
+	[ example 2:   metrics -hsm file(s)   ]\n"
+	exit 1	
+fi	
+
+set -- `getopt lmhsfv $*`;
+
+echo "\nC Software Static Metrics"
+
+for OPTION in $*
+do
+    case $OPTION in
+    -l)
+	FLAGL=YES;shift;Optset=y;Otherop=y;;
+    -f)
+	FLAGF=YES;shift;Optset=y;;
+    -m)
+	FLAGM=YES;shift;Optset=y;Otherop=y;;
+    -h)
+	FLAGH=YES;shift;Optset=y;Otherop=y;;
+    -s)
+	FLAGS=YES;shift;Optset=y;Otherop=y;;
+    -v)
+	FLAGV=YES;shift;;
+    --)
+	if [ ! "$Optset" ]
+	then
+	    FLAGM=YES; FLAGH=YES; FLAGS=YES;
+	fi;
+	shift; break;;
+    esac;
+		
+done
+if [ "$FLAGF" ]&&[ ! "$Otherop" ]
+then
+    echo "\n\t\tERROR-- The -f option must be combined with other options\n"
+    exit 1
+fi
+if [ "$FLAGV" ]
+then
+    NEWARGS="";
+    IFSSAVE="$IFS";
+    IFS="$IFS:";
+
+    for i in $*
+    do
+	TMPi="";
+	for STUB in $VPATH
+	do
+	    if [ -s "$STUB/$i" ]
+	    then
+		TMPi="$STUB/$i"
+		break
+	    fi
+	done
+	
+	if [ "$TMPi" ]
+	then
+	    NEWARGS="$NEWARGS $TMPi"
+	    TMPi=""
+	else
+	    echo "Couldn't find $i on VPATH..."
+	fi
+    done
+    if [ "$NEWARGS" ]
+    then
+	set $NEWARGS
+    else
+	echo "No files found!"
+	exit 1;
+    fi;
+    IFS="$IFSSAVE"
+fi
+
+if [ "$FLAGL" ]
+then
+    if [ "$FLAGF" ]
+    then
+	${M}/fncnt -f $*
+	exit 0
+    else
+	${M}/fncnt -c $*
+	exit 0
+    fi
+fi
+
+# Need to make temporary files -- create a holding directory
+# and set up to remove it at termination
+T=${TMPDIR:-/tmp}/${LOGNAME}$$	export T
+mkdir ${T}
+trap 'rm -rf ${T} trap 0; exit 0'  0 1 2 3 15
+
+for i in $*
+do
+    ${M}/fncnt ${i}
+
+    ${M}/parser ${i} > ${T}/int
+    sort +1 -2 +0 -1 +2 -3 > ${T}/sort < ${T}/int
+
+    if [ "$FLAGM" ]
+    then
+	${M}/mccabe < ${T}/sort
+    fi
+
+    if [ "$FLAGH" ]
+    then
+	${M}/halstead > ${T}/halcnt < ${T}/sort
+	${M}/halsmath < ${T}/halcnt
+	rm ${T}/halcnt
+    fi
+
+    if [ "$FLAGS" ]
+    then
+	${M}/span < ${T}/sort
+	echo "\nFunctions Called From ${i} (and line number of call):"
+	${M}/flow < ${T}/sort
+    fi
+
+    rm ${T}/sort
+
+    if [ ! "$FLAGF" ]
+	then
+	rm ${T}/int
+	echo "\n<<<<<<<<<<   end of file ${i}   >>>>>>>>>>>>\n\f"
+	continue
+    fi
+
+    echo "\nBreakdown by Function Follows:\n"
+    for a in `${M}/fncsplt $i`
+    do
+	echo "\f\n============   Function: $a  =============="
+	${M}/fncnt -s ${T}/${a}
+	${M}/parser < ${T}/${a} > ${T}/par
+	sort +1 -2 +0 -1 +2 -3 >  ${T}/sort < ${T}/par
+	if [ "$FLAGM" ]
+	then
+	    ${M}/mccabe < ${T}/sort
+	fi
+	if [ "$FLAGH" ]
+	then
+	    ${M}/halstead > ${T}/halcnt < ${T}/sort
+	    ${M}/halsmath < ${T}/halcnt
+	    rm ${T}/halcnt
+	fi
+	if [ "$FLAGS" ]
+	then
+	    ${M}/span < ${T}/sort
+	    echo "\nFunctions Called From $a (and Lines Called):"
+	    ${M}/flow < ${T}/sort
+	fi
+	rm ${T}/${a} ${T}/sort ${T}/par 
+	echo "::::::::::::   end of function $a   ::::::::::::::"
+    done
+    rm ${T}/int
+    echo "\n <<<<<<<<<<<<   end of file $i    >>>>>>>>>>>\n\f"
+done
+echo "\n||||||||||||||||||    END   ||||||||||||||||||||||||\n"
+exit 0

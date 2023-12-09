@@ -1,0 +1,198 @@
+
+
+
+     iiiinnnnsssseeeerrrrtttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          iiiinnnnsssseeeerrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          insert - insert new records into a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _i_n_s_e_r_t [-q] [-Itable] [-n[newline]] _i_n table1 [_i_n_t_o table2]\
+           [{_p_r_o_m_p_t_i_n_g | _f_r_o_m table3}]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _i_n_s_e_r_t command allows the user to add new records to the
+          end of an existing UNITY table (table1 in the SYNOPSIS).
+          There are three different insertion formats:
+
+          From a UNIX file:
+               Records are inserted into the table from the UNIX file
+               table2 specified in the _f_r_o_m clause as in
+
+               _i_n_s_e_r_t _i_n table1 _f_r_o_m table2
+
+               The records in the file must be prepared according to
+               the table description of the table table1.  If the -I
+               option is used, the table name specified is used to
+               determine an alternate description file to be used in
+               reading the input table (table2).
+
+          Interactive record insertion:
+               Records are interactively inserted by entering them
+               from the standard input.  The program reads an entire
+               record at a time and then prompts for a new record with
+               the phrase "New record:".  This option is specified by
+               executing
+
+               _i_n_s_e_r_t _i_n table1
+
+               The user must type the list of attribute values of a
+               record, including terminators, followed by a carriage
+               return.  The user can enter as many new records as
+               desired and input is terminated with an EOF (control-
+               d).  If the -I option is used, the table name specified
+               is used to determine an alternate description file to
+               be used in reading the input.
+
+          Interactive prompting for individual attributes:
+               The _i_n_s_e_r_t program allows the user the option of being
+               prompted for every attribute of records to be inserted
+               in the table.  Normally, the _u_e_n_t_e_r command would be
+               used instead (this option is now obsolete but remains
+               for upward compatibility).  This option is invoked by
+               specifying the "_p_r_o_m_p_t_i_n_g" option on the command line
+               as in
+
+               _i_n_s_e_r_t _i_n table1 _p_r_o_m_p_t_i_n_g
+
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     iiiinnnnsssseeeerrrrtttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          iiiinnnnsssseeeerrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               The program informs the user that input is terminated
+               by a control-d, prints "New record:" and then begins
+               prompting for attribute values (one per line).  When an
+               entire record has been input, the program asks the user
+               if the record is to be inserted.  A response beginning
+               with 'N' or 'n' will cause the record to be discarded;
+               otherwise, the record is written out to a temporary
+               file.  "New record:" is printed to let the user know
+               that a new record is being started and the program
+               continues prompting for attribute value input.  If the
+               -I option is used, the table name specified is used to
+               determine an alternate description file to be used in
+               reading the input and for what attribute values to
+               prompt.
+
+               The prompting mode also allows the user to easily enter
+               multi-line attributes.  If a line is entered whose last
+               character is a '\', then it is taken to mean that the
+               field is continued on the following line.  The '\' is
+               replaced by a "newline" character (tilde being the
+               default) and the program reads the next input line as
+               part of the current field.  This continues until a line
+               not ending in '\' is received.  The "-n_c" option can be
+               used to change the default "newline" character to _c.
+               If "-n" is specified without a following character,
+               then the multi-line input is directly concatenated
+               together without any "newline" character inserted.
+
+               When the last record has been input, the user enters
+               control-d when prompted for another attribute.  The
+               program ensures that only complete records are output
+               so that a user may terminate entry while being prompted
+               for any attribute.
+
+               If either interactive mode of inserting records is
+               being used, the program then informs the user of the
+               temporary file name in which the new records are stored
+               before continuing so that if the program is interrupted
+               or if an error occurs in the table, the input can be
+               retrieved from the temporary file for further use.  The
+               program asks if the records are to be inserted into the
+               table.  A response beginning with 'N' or 'n' will cause
+               the program to exit leaving the records in the
+               temporary file (the user may also break the program at
+               this point causing the same results).  The input may
+               then be edited if a mistake has been made and then
+               inserted using the "_f_r_o_m" clause with the temporary
+               file name.  Otherwise, the records are checked and then
+               inserted at the end of the table if no errors are
+               detected.  The table is locked for update only after
+               the records have been checked and found valid.
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     iiiinnnnsssseeeerrrrtttt((((UUUUNNNNIIIITTTTYYYY))))          UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll          iiiinnnnsssseeeerrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          The command is considered an update command if a table name
+          is given (not "-") and the "into clause" is not specified.
+          In this case, the _i_n_s_e_r_t program copies the original table
+          to a temporary file, appends the new records to the end of
+          the file, and then links the temporary file into the table.
+          Although increasing the update time, it makes this update
+          program crash-resistant.  Only one user may update the table
+          at a time but any number of users may read the table.  The
+          user must have write permission in the directory containing
+          the table, but needs only read permission on the table
+          itself.  The group and user identification, and mode of the
+          table are preserved.
+
+          If an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  The data in the input
+          table (table1) is first copied to the output file followed
+          by the records to be inserted.  An error is printed if the
+          output table already exists.  If _o_n_t_o is specified instead
+          of _i_n_t_o, the output is appended to that table if it already
+          exists or the table created and written if it does not
+          exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.  The
+          standard input cannot be specified for either interactive
+          input options (either record or attribute prompting).
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are inserted.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/insert.c, zinsert.c - the C source program
+          bin/insert - the executable program
+          /tmp/???????? - the lockfile
+          itmp?????? - temporary hold file for interactive input
+          <directory of table>/itmp2?????? - the temporary update file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          Intro(UNITY), _a_l_t_e_r(UNITY), _d_e_l_e_t_e(UNITY), _u_e_d_i_t(UNITY),
+          _u_e_n_t_e_r(UNITY)
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+

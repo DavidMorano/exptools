@@ -1,0 +1,92 @@
+:
+# @(#)sysmans.sh, 1.25
+# gregg@ihlpb.att.com - 12:49:23, 9/16/92
+#
+tmp1=/usr/tmp/manxa$$
+tmp2=/usr/tmp/manxb$$
+findprods=/usr/tmp/manxc$$
+trap "rm -f $tmp1 $tmp2 $findprods;exit" 0 1 2 3 15
+
+prods=n
+if [ "$#" -gt 0 ]; then
+	if [ $1 = "-p" ]; then
+		prods=y
+		shift
+	fi
+fi
+
+if [ "$prods" = "y" ]; then
+	cat <<'!' >$findprods
+for j in $1/*/man*
+do
+	if [ -d $j ]; then
+		j=`dirname $j`
+		if [ "`basename $j`" = "catman" ]; then
+			continue;
+		fi
+		prod=`basename \`basename $j\` _man`
+		if [ "$prod" != "" ]; then
+			echo $prod
+		fi
+	fi
+done
+exit
+!
+else
+	touch $findprods
+fi
+chmod 700 $findprods
+
+#
+#	Standard SYSV directory structure
+#
+if [ -d /usr/man/u_man ]; then
+	echo "/usr:\c" >>$tmp2
+	sh $findprods /usr/man >>$tmp1
+fi
+
+#
+#	Local man page directory...sigh...
+#
+if [ -d /usr/lman ]; then
+	echo "@/usr/lman:\c" >>$tmp2
+	sh $findprods /usr/lman >>$tmp1
+fi
+
+#
+#	Berkeley UNIX path
+#
+if [ -d /usr/man/man1 ]; then
+	echo "#/usr/man:\c" >>$tmp2
+fi
+#
+s=""
+for j in /usr/add-on/*
+do
+	if [ -d $j/man ]; then
+		s="$j/man $s"
+	fi
+done
+set -- $s ${1+"$@"}
+
+if [ $# -gt 0 ]; then
+	while [ $# -gt 0 ]
+	do
+		s=$1
+		f=`ls -d $1/*man 2>/dev/null | head -1`
+		if [ -d "$f" ]; then
+			s=`dirname $1`
+			sh $findprods $s >>$tmp1
+		elif [ -d $1 ]; then
+			s="!$1"
+		fi
+		echo "$s" >>$tmp2
+		shift
+	done
+fi
+
+if [ "$prods" = y ]; then
+	echo `echo \`sort -u $tmp1\` | sed 's/ /,/g'`
+else
+	cat $tmp2
+fi

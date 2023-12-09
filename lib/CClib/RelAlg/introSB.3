@@ -1,0 +1,87 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/s.introSB.3"
+.\"
+.PH "'INTRO(3SB)'SBLIB C++ Library'INTRO(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.VL 7 0
+.LI "\fBNAME\fP"
+.sp
+intro - introduction to functions and classes in the sblib C++ library
+.LI "\fBSYNOPSIS\fP"
+.sp
+.EX
+\#include <sblib.h>
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The Santa Barbara Library (sblib) is a set of miscellaneous C++ classes and
+functions developed at AT&T Santa Barbara Laboratory.  The sblib includes
+functions and classes for file handling, error handling, regular
+expressions, screen management and simple list containers.
+.P
+The basename, dirname and create_file functions, as well as the Vfd and
+Vfile classes, are used for file handling.  The basename and dirname
+functions parse a UNIX pathname into its directory entry component and
+directory path component, respectively.  The create_file function creates
+a file in the UNIX file hierarchy.  Unlike the creat(2) system call, it
+does not leave an open file descriptor.  The Vfd and Vfile classes provide
+caching of open files to provide apparently unlimited open files.  The
+Vfd class provides a system I/O (file descriptor) interface while the Vfile
+class provides a standard I/O (FILE pointer) interface.
+.P
+The upper and lower functions are used for string handling.  They return
+a copy of a string translated to upper or lower case, respectively.
+.P
+The Error class provides a uniform interface for error handling.  Although
+it does not behave identically to System V Release 4 error handling, it
+provides roughly the same appearance and features and is intended to ease
+the transition to System V Release 4.
+.P
+The Form class provides automatically generated forms for input, update and
+display with a built-in look and feel.  The forms are based on the curses
+library, but pre-date FMLI and the Character User Interface Style Guide.
+.P
+The List classes provide simple containers with list, stack or queue
+behavior.
+The Pattern class encapsulates the interface to the regcmp/regex functions,
+which provide regular expression pattern matching.
+.LI "\fBDEFINITIONS\fP"
+.br
+The sblib has several typedefs.  Addr_t is similar to the system's caddr_t
+and is used for addresses.  Float_t and Int_t provide consistent treatment
+of floating point and integer data.  Boolean_t and its two constants, TRUE
+and FALSE, provide for boolean values.  These typedefs exist in part to
+provide compatibility with the relational algebra library.
+.P
+The sblib also #defines several cpp(1) constants.  EMPTY_STRING is a string
+containing an immediate NULL character.  PARENT, CHILD and FORKERR are
+defined to make it convenient to switch on the fork(2) system call.  The
+max() macro takes the greater of two objects.  The strNcpy() macro works
+like strncpy(3) but ensures that the result is NULL terminated.
+.P
+The error(3SB) and wgets(3SB) manual pages describe additional sblib
+definitions
+.LI "\fBFILES\fP"
+.br
+.DS
+LDIR and INCLUDE are specified during installation.
+
+INCLUDE/sblib.h - declarations for the sblib classes and functions.
+LDIR/libsblib.a - definition for the sblib classes and functions.
+.DE
+.LI "\fBDIAGNOSTICS\fP
+.br
+Functions and classes in the sblib use the syserr, formerr, listerr
+or ptrn_err Error objects.  Some functions, particularly those compiled
+with the C compiler, may use perror(3) or the sys_errlist[].
+.LI "\fBWARNINGS\fP
+.sp
+Some of the functions and classes in the sblib library require linkage to
+system libraries, including libcurses.a and libPW.a.  Use of libmalloc.a
+is recommended since occasional problems have occurred with the libc.a version
+of malloc.
+.LI "\fBSEE ALSO\fP"
+.sp
+ar(1),CC(1),cc(1),intro(3),intro(3RA)
+.LE

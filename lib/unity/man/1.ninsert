@@ -1,0 +1,330 @@
+
+
+
+     nnnniiiinnnnsssseeeerrrrtttt((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  nnnniiiinnnnsssseeeerrrrtttt((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ninsert - insert records in a UNITY relation
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnniiiinnnnsssseeeerrrrtttt [-cCpqV] [-d<_d_e_l_i_m-_c_h_a_r>] [-m|-r<_r_e_c_o_r_d__c_n_t>] [-
+               n<_n_e_w_l_i_n_e__c_h_a_r>] [[<_a_t_t_r> as] <_a_t_t_r>[=<_v_a_l_u_e>]]...
+               into|onto <_t_a_b_l_e_1>[=<_a_l_t__t_a_b_l_e>] [from
+               <_t_a_b_l_e_2>[=<_a_l_t__t_a_b_l_e>]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The nnnniiiinnnnsssseeeerrrrtttt command allows new records to be inserted into a
+          UNITY  table.   Records  can be taken from standard input or
+          from another table.  Selected attributes of the new  records
+          can be given constant values on the command line so that the
+          value doesn't have to be repeated  for  each  record.   When
+          input is from another table, attributes can be renamed.
+
+          If the table being inserted into doesn't exist, nnnniiiinnnnsssseeeerrrrtttt  can
+          create it and, optionally, its descriptor file.  nnnniiiinnnnsssseeeerrrrtttt can
+          also prompt the user for attribute values when input is from
+          standard input and no from-clause is given.
+
+          While insertions are  taking  place,  the  table  is  locked
+          against other users changing it.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----cccc        If the output table,  <_t_a_b_l_e_1>,  does  not  exist,
+                    create  a  description  file  for  it based on the
+                    attribute names appearing  on  the  command  line.
+                    The  attributes  are  normally  separated  by  the
+                    attribute delimiter from  the  input  table  or  a
+                    colon (:) if there is not an input table.
+
+          ----CCCC        Create the description for the output table,  like
+                    the  ----cccc  option,  but put the description with the
+                    data table itself, not in a descriptor file.
+
+          ----dddd<_d_e_l_i_m-_c_h_a_r>
+                    Within  the  input  lines   attributes   will   be
+                    delimited  by <_d_e_l_i_m__c_h_a_r>.  The default delimiter
+                    character is a newline.  This only applies if  the
+                    input  is  from standard input and the user is not
+                    prompted for values (----pppp option).
+
+          ----mmmm||||----rrrr<_r_e_c_o_r_d__c_n_t>
+                    At most (----mmmm) or exactly (----rrrr) <_r_e_c_o_r_d__c_n_t>  records
+                    will  be inserted in the destination relation.  If
+                    ----rrrr is  used,  but  <_r_e_c_o_r_d__c_n_t>  records  are  not
+                    available  from  the  input  source, then an error
+                    message will be printed,  NO  insertions  will  be
+                    done,  and nnnniiiinnnnsssseeeerrrrtttt will exit with a failure status
+                    of 4.  These options are ignored if all  attribute
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnniiiinnnnsssseeeerrrrtttt((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  nnnniiiinnnnsssseeeerrrrtttt((((1111))))
+
+
+
+                    values  are  given  on  the  command  line,  i.e.,
+                    exactly one record is inserted.
+
+          ----nnnn<_n_e_w_l_i_n_e__c_h_a_r>
+                    When  prompting  for  input   interactively,   any
+                    attribute  value may be continued on the next line
+                    by ending the line with a backslash  as  the  last
+                    character.     When    this    is    occurs,   the
+                    <_n_e_w_l_i_n_e__c_h_a_r> replaces the backslash and  newline
+                    in the prompted input.
+
+          If this option is not given, the default  <_n_e_w_l_i_n_e__c_h_a_r>  is
+          tilde  ('~').   If  ----nnnn  is  given with no argument, then the
+          newline character is assumed to be null and  any  backslash-
+          newline in the prompted input will be removed.
+
+          ----pppp   Prompt the user for new tuple values; not applicable if
+               the _f_r_o_m option is given.
+
+          ----qqqq   Quiet mode.  Do not print a  count  of  the  number  of
+               records inserted.
+
+          ----VVVV   Print  the  version  of  the  command  and  exit.    No
+               insertions are done.
+
+          [<_a_t_t_r> aaaassss ]<_a_t_t_r>[====<_v_a_l_u_e>]
+               Specify the attributes to insert into  the  new  table.
+               If  no  form  of this parameter appears, all attributes
+               for the output table will be expected in the input,  in
+               the  order  they  appear in the descriptor file for the
+               table.
+
+               If <_a_t_t_r> appears alone, it  names  an  attribute  that
+               will receive values to insert; attributes not specified
+               will be  null.   If  attributes  appear  alone  on  the
+               command  line, only values for those attributes will be
+               expected from the standard input.
+
+               The  <_a_t_t_r>====<_v_a_l_u_e>  form  is  used  to  give  selected
+               attributes  of  the  inserted  records constant values.
+               Without this, unspecified  attributes  will  have  null
+               values.
+
+               The <_a_t_t_r> aaaassss <_a_t_t_r> form is used to rename  attributes
+               when  input  is taken from another table using the _f_r_o_m
+               option.
+
+          iiiinnnnttttoooo|oooonnnnttttoooo <_t_a_b_l_e_1>[====<_a_l_t__t_a_b_l_e>]
+               The table where the records are to be inserted; it will
+               be created if it does not exist, and a description file
+               exists or the -_c option was given.
+
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnniiiinnnnsssseeeerrrrtttt((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  nnnniiiinnnnsssseeeerrrrtttt((((1111))))
+
+
+
+               If ``into'' is specified, the table must not previously
+               exist.
+
+               By default, the descriptor file for the table is  named
+               D<_t_a_b_l_e_1>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>''  after  the  table
+               name.    The   alternate   descriptor   file   will  be
+               D<_a_l_t__t_a_b_l_e>.  Note  that  if  <_a_l_t__t_a_b_l_e>  contains  a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the  UNITYDFILES  directories
+               or in the current directory.
+
+          ffffrrrroooommmm <_t_a_b_l_e_2>[====<_a_l_t__t_a_b_l_e>]
+               The table where records are to be read  from.   The  _a_s
+               parameter  can also be used to rename the attributes in
+               <_t_a_b_l_e_2>.  A  table  named  ``-''  refers  to  standard
+               input.
+
+               If no attribute names are given on  the  command  line,
+               nnnniiiinnnnsssseeeerrrrtttt will match the attributes from the source table
+               to the destination table.  Any missing attributes  will
+               be  blank  in  the new records.  If any attribute names
+               are given on the command line, then if any of the named
+               attributes  are  missing  in the source table, an error
+               message will be printed and no insertions will be done.
+
+               By default, the descriptor file for the table is  named
+               D<_t_a_b_l_e_2>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>''  after  the  table
+               name.    The   alternate   descriptor   file   will  be
+               D<_a_l_t__t_a_b_l_e>.  Note  that  if  <_a_l_t__t_a_b_l_e>  contains  a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the  UNITYDFILES  directories
+               or in the current directory.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+                    A colon-separated list of  directories  to  search
+                    for  table  descriptor  files.   If  this  is  not
+                    specified, or if a needed file is not found in one
+                    of  the  directories,  the  current  directory  is
+                    searched.  If that fails, the directory where  the
+                    associated  table  is  located (based on the table
+                    name on the command line) is searched.
+
+                    NOTE: UNITY commands in _e_x_p_t_o_o_l_s only  accept  one
+                    directory  in  this  variable.   Also, they use it
+                    only after looking in the current directory and in
+                    the table's directory; some commands do not use it
+                    at all.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+
+
+
+     PPPPaaaaggggeeee 3333                                          ((((pppprrrriiiinnnntttteeeedddd 11110000////8888////99991111))))
+
+
+
+
+
+
+     nnnniiiinnnnsssseeeerrrrtttt((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  nnnniiiinnnnsssseeeerrrrtttt((((1111))))
+
+
+
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+          4    The required number of records specified  with  the  ----rrrr
+               option were not available in the input.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          There is no maximum record size limit, but  each  individual
+          attribute  is  limited  to  the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and  4K
+          on other smaller machines.
+
+          There is a limit on the number of attributes each table  can
+          have.   Currently,  this is 200 on mainframes and 100 on all
+          other machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Insert owner information records into an ownership data base
+          (appending them), prompting the user for input:
+
+               ninsert -p onto owninfo
+
+          Insert owner information records into an ownership data base
+          (which  must  not  previously  exist), without prompting the
+          user for input:
+
+               ninsert into owninfo
+
+          Add owners of a particular file  into  the  _o_w_n_e_r  relation.
+          The  user  will only supply the owners' logins and ownership
+          types.  The file and loadline are given constant  values  on
+          the command line; all other fields will be null.
+
+               ninsert -p login owntype file=dir/filename  ldline=%all
+               \
+                   onto owner
+
+          Add people to the  _o_w_n_i_n_f_o  relation  from  the  /_e_t_c/_p_a_s_s_w_d
+          file.   Here  we assume that the department number attribute
+          in /_e_t_c/_p_a_s_s_w_d is called ``deptno'', but in  _o_w_n_i_n_f_o  it  is
+          called ``dept''.
+
+               ninsert -p login name deptno as dept onto owninfo \
+                    from /etc/passwd
+
+     FFFFIIIILLLLEEEESSSS
+          AAAA<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e> and BBBB<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e>
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+
+
+
+
+     nnnniiiinnnnsssseeeerrrrtttt((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  nnnniiiinnnnsssseeeerrrrtttt((((1111))))
+
+
+
+                    - Index files for <_a_t_t_r_i_b_u_t_e> in <_t_a_b_l_e>.
+
+          DDDD<_t_a_b_l_e>  -  Descriptor  file  for  <_t_a_b_l_e>,   listing   the
+                    attributes,  their  delimiting-character or width,
+                    printing information, and user-friendly names.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          insert(UNITY),     nalter(1),     ndelete(1),     nuedit(1),
+          retrieve(1), and uedit(UNITY).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 10/8/91)
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+     mmmmaaaarrrrggggSSSSiiiippppffff((((1111))))   UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr aaaaddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr))))   mmmmaaaarrrrggggSSSSiiiippppffff((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          margSipf - Merge or make records in an existing database
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmaaaarrrrggggSSSSiiiippppffff [[[[ooooppppttttiiiioooonnnnssss]]]] DDDDBBBBPPPPAAAATTTTHHHH DDDDBBBBNNNNAAAAMMMMEEEE
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          MMMMaaaarrrrggggSSSSiiiippppffff is the main slimmer tool for updating an existing
+          slimmer database.  The database is located in the directory
+          _D_B_P_A_T_H, with most files having the prefix _D_B_N_A_M_E. It takes
+          raw input starting with a .new line (indicating a new
+          record), followed by designator/value information for the
+          record.  If no control number is given on the .new line,
+          then a new record is created with the next available control
+          number for the database.  If a control number is given, then
+          either a new record is created with the indicated number, or
+          the new data is merged into the existing record.  This merge
+          is done so that existing fields are thrown out and the new
+          data is used.
+
+          The .new line can also contain a search statement, starting
+          with an open parenthesis.  The software does the indicated
+          search to determine which record is being worked on.  This
+          feature is handy for databases with unique fields which are
+          NOT the actual slimmer record keys.  If the search retrieves
+          more than 1 record, then the record update is skipped.  If
+          the search retrieves zero items, the record is skipped
+          unless the .new line ended with a <tab><control number>.  In
+          this case the indicated control number is used.  Note that
+          if the control number is zero, then a new record key is
+          assigned.
+
+          There are a variety of options to control how _m_a_r_g_S_i_p_f
+          operates:
+
+               ----iiii <<<<FFFFiiiilllleeee nnnnaaaammmmeeee>>>>
+                    This tells the command to take its data from the
+                    indicated file rather than stdin.
+
+               ----ssss   This tells the command to be silent on certain
+                    type of problems.  Presently this is if a field is
+                    being added and it is: a flag with content; or a
+                    string with no content.
+
+               ----AAAA   Leave the data fields in the order they arrive.
+                    By default, they are arranged by the field numbers
+                    given in the designator table.
+
+               ----FFFF   This causes all terms from the new record to be
+                    added into the index.  Normally this is not
+                    desirable, since if you are merging into an
+                    existing record many terms will already be in the
+
+
+
+     Page 1                                          (printed 8/16/90)
+
+
+
+
+
+
+     mmmmaaaarrrrggggSSSSiiiippppffff((((1111))))   UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr aaaaddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr))))   mmmmaaaarrrrggggSSSSiiiippppffff((((1111))))
+
+
+
+                    index.  However, if two indeces are being
+                    maintained to one database, then it is necessary
+                    to use this option.
+
+               ----NNNN   For long fields, slimmer usually keeps the field
+                    as a single string with no new lines.  This way,
+                    the display can be made depend on the width of the
+                    output media.  However, for some data, the
+                    placement of the new lines is important.  This
+                    switch says to leave new lines where they are in
+                    the incoming data.
+
+               ----OOOO   This tells the system to overwrite existing
+                    records with the incoming data.  That is, instead
+                    of merging records, the new data replaces existing
+                    records.
+
+               ----SSSS <<<<nnnnuuuummmmbbbbeeeerrrr>>>>
+                    This switch tells the starting control number to
+                    assign new records that are created.
+
+               ----XXXX   This switch tells the command to NOT write the
+                    record.  That is, only the index is updated.
+
+               ----YYYY   This switch says only update the record, not the
+                    index.  This is generally a bad idea since it puts
+                    the index and and database out of sync.
+
+          To delete a record using _m_a_r_g_S_i_p_f give it just a .new while
+          using the overwrite flag (-O).  This causes it to overwrite
+          the existing record with an empty record, which is
+          interpreted as a delete.
+
+          To delete a field depends on the type of field.  To delete a
+          string or count field, simply give the field designator with
+          no data.  To delete a flag field, give the flag designator
+          with data.  For example to delete the "flag" field, give the
+          input
+                                  .flag delete
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          slimedit(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 8/16/90)
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+     nnnneeeewwwwffffiiiinnnngggg((((1111))))    UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr aaaaddddmmmmiiiinnnniiiissssttttrrrraaaattttoooorrrr))))    nnnneeeewwwwffffiiiinnnngggg((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          newfing - build an iolib database index (finger) file
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnneeeewwwwffffiiiinnnngggg [[[[----LLLLvvvv]]]] [[[[----ssss nnnnuuuummmm]]]] IIIIPPPPFFFFnnnnaaaammmmeeee FFFFIIIINNNNGGGGnnnnaaaammmmeeee
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The nnnneeeewwwwffffiiiinnnngggg command build the index or finger file of an
+          iolib database.  Usually it is not invoked directly, but
+          rather through the slimmer command
+                                  build-db -f
+          and usually the FINGname will be DBNAME.fing.  NNNNeeeewwwwffffiiiinnnngggg build
+          up a list of all key / location pairs in memory (this
+          information is what is stored in the finger file).  These
+          are sorted only if they are not in order to start.
+
+          The parameters are not often used, and serve very special
+          purposes:
+
+               ----vvvv   Makes the command run verbose; this causes it to
+                    put out usually uninteresting additional
+                    information on how it is doing.
+
+               ----ssss <<<<nnnnuuuummmmbbbbeeeerrrr>>>>
+                    This is the number of empty slots to leave per
+                    block for growth.  Note that a block will simply
+                    overflow once it exceeds the number of empty
+                    slots.
+
+               ----LLLL   For very large databases all key/location pairs
+                    cannot be collected in main memory.  If a realloc
+                    to grow this space fails, _n_e_w_f_i_n_g dumps the pairs
+                    to a temporary file to use in place of memory.
+                    However, this means the process has grown very
+                    large, with space it has freed.  The -L flag tells
+                    it at start to use a temporary file, not memory.
+                    Note large is relative - this feature has been
+                    only been utilized on databases with over two
+                    million records, and even then on machines with
+                    (by present standards) small amounts of memory.
+
+          The command will often put out a message of the form
+                       9452 carcasses taking 9332488 space
+          This message indicates how much wasted space is in the
+          database that would be recovered by a garbage collection
+          (using command conv_slim).
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          conv_slim(slimmer administrator).  makeipf(slimmer
+          administrator).
+
+
+
+
+
+     Page 1                                          (printed 8/16/90)
+
+
+

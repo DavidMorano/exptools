@@ -1,0 +1,473 @@
+
+(defconst cscope-version "patchlevel 1, 11 Nov 91")
+
+(defvar cscope-bindings-2deep nil "\
+*If non-nil, then two character bindings are applied when 
+\"cscope-bind-keys\" is called.  The two character bindings are mostly
+of the form \"C-c letter\".  The reason they are optional is that there
+is an elisp coding convention which suggests that those kinds of bindings
+should be reserved for users.  The binding of \"C-c C-c\" is not controlled
+by this user option variable; it is always applied.")
+
+(defvar cscope-bindings-3deep t "\
+*If non-nil, then three character bindings are applied when
+\"cscope-bind-keys\" is called.  The three character bindings are mostly
+of the form \"C-c C-s letter\".")
+
+(defvar cscope-bind-keys-hook nil "\
+At the end of the function \"cscope-find-keys\", this hook is run.
+This provides an opportunity for custom keybinding schemes as well as any 
+other buffer-specific set-up.  In cscope output buffers, this hook is run
+before the extra bindings are applied; however, since those extra bindings
+are all in \"cscope-keymap\", they can be modified directly by the user
+to affect all cscope output buffers.")
+
+(defvar cscope-quit-hook nil "\
+Called after a cscope subprocess is told to exit.  If called as part of
+a command that also kills the buffer, the hook is run before the buffer is
+killed.")
+
+(defvar cscope-b-and-f-hook nil "\
+Run after the user bounces back to the cscope output buffer from a
+source file.  This hook is run after the cursor has been positoned.  It gives
+the user an opportunity to use some other cursor positioning strategy instead
+of just advancing to the next line.")
+
+(defvar cscope-interpret-output-hook nil "\
+Run after the user moves from a cscope output line to the referenced
+source file.  This hook is run after the cursor has been positoned.  It gives
+the user an opportunity to use some other cursor positioning strategy.")
+
+(defvar cscope-query-hook nil "\
+Run after a query has been made of the cscope subprocess.  Normally, the
+cscope interface tries to position the cursor at the first cscope
+result line, but it is possible for it to miss.  This hook allows an
+alternate cursor positioning strategy or any other after-the-query
+processing.  For example, if you felt like it, you could \"pre-visit\"
+all the files mentioned in output lines.  More usefully, you might
+like to automatically visit a referenced source file
+line if there is only one output line from cscope.")
+
+(defvar cscope-file-not-found-hook nil "\
+If defined, this behaves slightly differently than a standard emacs
+hook function.  It is run instead of (not in addition to) the normal
+action taken if some referenced source file can't be found.  Normally,
+(if this hook is not defined) the cscope interface will signal an
+error and give up looking.")
+
+(defvar cscope-filename-fixxer-raw nil "\
+If defined as a function, called to generate a filename.  The single
+argument is a raw filename reference as taken from a cscope output
+buffer.  The expected return value is something that the cscope
+interface will try to resolve into a full pathname (using mechanisms
+desribed elsewhere).")
+
+(defvar cscope-filename-fixxer-cooked nil "\
+If defined as a function, called to generate a filename.  The
+single argument is a cooked filename reference, meaning that the
+cscope interface has already tried to resolve it into a full pathname
+(using mechanisms described elsewhere).  Since the resolution doesn't
+always succeed, the argument might not be a full pathname.  The
+expected return value is something that the cscope interface will try
+to visit with \"find-file\".")
+
+(defvar cscope-blurb nil "\
+This is an interface from GNUemacs to the line-oriented mode of Joe
+Steffen's cscope, a C code browser (cscope itself is available from
+the USL Toolchest, 908-522-6900, login " guest ".  cscope is also
+bundled with the SVR4 development tools, but the Toolchest version is
+newer.  The version bundled with the SVR3 development tools doesn't
+contain the line-oriented interface, so it can't be used with this
+package.)
+
+The interface includes provisions for having multiple concurrent
+unrelated cscope sessions.  For casual use, arrange for this file to
+be loaded and call the function \"cscope-bind-keys\".  See the
+documentation for \"cscope-bind-keys\" for more information about
+that.  If you are inclined to have multiple cscope sessions, possibly
+with different invocation command lines or using pre-built databases,
+then see the documentation for cscope-master-info-table and
+cscope-master-info-default.
+
+The general method of using this is to arrange for the cscope-related
+bindings to be made, place the cursor over some symbol or filename in
+question, and invoke the appropriate cscope function.  This will invoke
+a cscope subprocess (if it's not already running) and perform the query.
+The results of the query are presented in a cscope output buffer.  The
+user can place the cursor over a cscope reference line and type \"C-c C-c\"
+to move to the referenced location.  After that, the user can type
+\"C-c C-c\" again and move back to the cscope output buffer, automatically
+advancing the cursor to the next line.  Functions that cause other buffers
+to be displayed generally pop them up in another window.  If those functions
+are called with prefix arguments, then the summoned buffer is put in the
+currently selected window.
+
+A good way to arrange for this file to be loaded is via c-mode-hook.  This
+file \"provides\" cscope, so you can use \"require\" directives and/or
+autoloading.  Here's a example:
+
+	(autoload 'cscope-bind-keys \"cscope\" nil t)
+
+	(defun wjc:c-mode-hook () \"my C mode hook\"
+		;; only bother doing the bindings first time ... they'll stick
+		(or (where-is-internal 'cscope-find-c-symbol (current-local-map))
+			(cscope-bind-keys))
+		;; (and (boundp 'cscope-blurb) (makunbound 'cscope-blurb))
+		(local-set-key \"\\M-?\" 'cscope-find-c-symbol))
+
+	(setq c-mode-hook 'wjc:c-mode-hook)
+
+If you've seen the information in the description of this user option
+variable enough times, you can let emacs reclaim the string space by
+doing (makunbound 'cscope-blurb) after the cscope interface is loaded 
+(shown as a commented line in the above example).  Even if you don't
+have handy the source file, cscope.el, you'll still be able to read the
+docstrings in cscope.elc.")
+
+(defvar cscope-master-info-table nil "\
+*A list-of-lists telling how to run cscope for a given buffer.
+If you're not doing anything fancy with the cscope interface, like browsing
+multiple databases concurrently, then you probably don't need to set this.
+Each item in \"cscope-master-info-table\" is a list.  Trailing nil items from
+the sublists may be omitted.
+
+The first item in each sublist is a string which acts as the key for that
+sublist.  If the value of the buffer-local variable \"cscope-id\" matches
+the key, then that sublist is used to decide how to run cscope for that
+buffer.  If no sublist in the entire table matches \"cscope-id\", then
+\"cscope-master-info-default\" is used.
+
+The second item in each sublist is itself a list.  It's a list of strings
+which comprise the command line and arguments for invoking cscope.  See
+the cscope man page for valid command line arguments.  Don't forget to make
+sure that cscope and/or user-specified cscope commands are available via
+the PATH environment variable.
+
+The third item in each sublist is an optional \"cd place\".  If a non-nil
+string, the current directory will be temporarily changed to the directory
+named while cscope is being invoked (ie, while the cscope subprocess is
+being spawned).  After cscope is invoked, the current directory is returned
+to whatever it was before.
+
+The fourth item in each sublist is a user-specified path prefix.  A
+cscope database might only know relative pathnames.  Some versions of
+cscope can be queried for the path prefix to use with relative
+pathnames, but this does not work with all versions.  If cscope tells
+emacs about a filename that is a relative pathname, the automatically
+known path prefix is prepended.  If there is no automatically known
+path prefix, the user-specified path prefix is used.  If there is no
+user-specified path prefix, the \"cd place\" is used.  Otherwise, the
+unprefixed relative pathname is used.
+
+Here's an example of a personal setting for this variable:
+
+	(setq cscope-master-info-table
+	  '(
+		(\"projA\" (\"cscope\" \"-l\" \"-d\" \"-f\" \"/projA/src/cscope.out\"))
+		(\"projB\" (\"cscope\" \"-l\" \"-d\" \"-f\" \"/projB/src/cscope.out\"))
+	  ))
+
+The example uses separate pre-built cscope databases for projects
+\"projA\" and \"projB\".  The last two items in the sublists are nil
+(because they're not specified), which is a good clue that the
+databases were built knowing full pathnames.  For buffers that are not
+\"projA\" or \"projB\", the default cscope invocation will be used.")
+
+(defvar cscope-master-info-default (quote ("CSCOPE" ("cscope" "-l") nil nil)) "\
+*When a search of \"cscope-master-info-table\" is done and no match
+is found, the list specified by this variable is returned instead.  See
+the documentation for \"cscope-master-info-table\" for an explanation of
+the items in the list.")
+
+(defvar cscope-id nil "\
+*Used as a key into \"cscope-master-info-table\".  This is a buffer-local
+variable and could be set manually or by some mode-specific hook function.
+If this variable is not explicitly set, it will generally result in the
+use of \"cscope-master-info-default\".  The value of \"cscope-id\"
+follows from buffer to buffer, but will not override any previously
+set values.  That is, if a given buffer has a cscope-id of \"foo\", a
+cscope output buffer for a cscope process started from that buffer
+will also get a cscope-id of \"foo\".  Any source files newly visited
+as a result of cscope queries from that cscope process will also get a
+cscope-id of \"foo\".  Users can overcome that by explicitly setting
+cscope-id via some hook or other means.  \"cscope-id\" is
+buffer-local, so if you kill-all-local-variables, the value will be
+lost.")
+
+(make-variable-buffer-local (quote cscope-id))
+
+(defvar cscope-output-line-regexp "\\s-*\\(\\S-+\\)\\s-+\\(\\S-+\\)\\s-+\\([0-9]+\\)" "\
+*This regular expression is used to recognize valid reference lines of 
+output from the output of the line-oriented mode of cscope.  It must include
+subexpressions which obtain the filename, function name, and line number.")
+
+(defvar cscope-output-file-place 1 "\
+*Position number of the \"cscope-output-line-regexp\" subexpression
+which locates the filename.")
+
+(defvar cscope-output-func-place 2 "\
+*Position number of the \"cscope-output-line-regexp\" subexpression
+which locates the function name.")
+
+(defvar cscope-output-line-place 3 "\
+*Position number of the \"cscope-output-line-regexp\" subexpression
+which locates the line number.")
+
+(defvar cscope-c-symbol-regexp "[a-zA-Z0-9_]+" "\
+*A regular expression specifying a legitimate C symbol.  Used for
+finding a default symbol for minibuffer prompting.  User input need
+not conform to this regular expression.")
+
+(defvar cscope-filename-regexp "[a-zA-Z0-9_.-]+" "\
+*A regular expression specifying a legitimate file name.  Used for
+finding a default filename for minibuffer prompting.  User input need
+not conform to this regular expression.")
+
+(defmacro cscope:label-of-list (cl) (byte-code "ÁÂE‡" [cl nth 0] 3))
+
+(defmacro cscope:command-of-list (cl) (byte-code "ÁÂE‡" [cl nth 1] 3))
+
+(defmacro cscope:cdplace-of-list (cl) (byte-code "ÁÂE‡" [cl nth 2] 3))
+
+(defmacro cscope:pathprefix-of-list (cl) (byte-code "ÁÂE‡" [cl nth 3] 3))
+
+(defun cscope-bind-keys nil "\
+Establish the key bindings for cscope queries and interactions.
+A reasonable thing to do is to call this function from \"c-mode-hook\".
+However, if you use a minor mode which changes the keymap, you may
+have to take extra steps.  For example, \"view-mode\" installs its own
+keymap and is often called via \"find-file-hooks\".  For that
+particular case, it may be helpful to have a line something like this
+automatically invoked after \"view-mode\" has been installed:
+
+	  (if (eq major-mode 'c-mode) (cscope-bind-keys))
+
+Keys bound by invoking this function can be listed by going to a
+buffer where the bindings are active and doing \\[describe-bindings].
+They usually begin with a C-c C-s prefix.  If \"cscope-bindings-2deep\"
+is non-nil, then you will see bindings of the form \"C-c letter\".  If
+\"cscope-bindings-3deep\" is non-nil (the default), you will see
+bindings of the form \"C-c C-s letter\".  These settings are
+independent of one another, and by default the three character
+bindings are provided and the two character bindings are not.  The
+bindings are put in place by modifying whatever keymaps happen to be in
+effect whenever you invoke this function.  For most users, this will mean
+it's a more or less global change (e.g., to \"c-mode-map\").
+
+In any case, the binding of \"C-c C-c\" is provided.  After the bindings
+have been made, the optional user-supplied \"cscope-bind-keys-hook\" is run.
+
+In cscope output buffers, there are additional single character
+bindings (not controlled by any user option variable).  Further, the
+two and/or three character bindings are provided, depending on the
+values of the \"cscope-bindings-2deep\" and \"cscope-bindings-3deep\"
+at the time the cscope interface is first loaded.  A different binding is
+given to \"C-c C-c\" in cscope output buffers.
+
+Within each set of bindings, more than one binding is made for some
+functions for convenience.  Use \\[describe-bindings] to get a
+complete list.  The intent of the alternate bindings of
+cscope-interpret-output-line and cscope-goback-and-goforth in
+different buffer types is so that an interested user can step through
+references in a cscope output buffer by repeatedly typing the same
+keys." (interactive) (byte-code "Âˆ… Ã ˆ	… Ä ˆÅÆÇ\"ˆÈÉ!‡" [cscope-bindings-2deep cscope-bindings-3deep nil cscope-bind-keys-2deep cscope-bind-keys-3deep local-set-key "" cscope-goback-and-goforth run-hooks cscope-bind-keys-hook] 5))
+
+(defun cscope-bind-keys-2deep nil (interactive) (byte-code "ÀˆÁˆÂÃÄ\"ˆÂÅÄ\"ˆÂÆÇ\"ˆÂÈÇ\"ˆÂÉÇ\"ˆÂÊË\"ˆÂÌË\"ˆÂÍË\"ˆÂÎÏ\"ˆÂÐÏ\"ˆÂÑÒ\"ˆÂÓÒ\"ˆÂÔÒ\"ˆÂÕÖ\"ˆÂ×Ö\"ˆÂØÖ\"ˆÂÙÚ\"ˆÂÛÚ\"ˆÂÜÚ\"ˆÂÝÞ\"ˆÂßÞ\"ˆÂàÞ\"ˆÂáâ\"ˆÂãâ\"ˆÂäâ\"ˆÂåâ\"ˆÂæâ\"ˆÂçè\"ˆÂéè\"ˆÂêë\"ˆÂìë\"ˆÂíë\"ˆÂîï\"ˆÂðï\"ˆÂñï\"ˆÂòó\"ˆÂôó\"ˆÂõó\"ˆÂö÷\"ˆÂø÷\"ˆÂù÷\"ˆÂúû\"ˆÂüû\"ˆÂýû\"‡" [nil "Apply two character cscope bindings to the currently active keymap.
+The bindings are of the form \"C-c letter\"  See variable
+\"cscope-bindings-2deep\"." local-set-key "c" cscope-find-c-symbol "C" "d" cscope-find-global-definition "D" "" "v" cscope-find-functions-called "V" "" "^" cscope-find-functions-calling "6" "t" cscope-find-text-string "T" "" "g" cscope-find-grep-pattern "G" "" "e" cscope-find-egrep-pattern "E" "" "f" cscope-find-file "F" "" "i" cscope-find-files-including "I" "	" "#" "3" "*" cscope-find-all "8" "a" cscope-admin-toggle-case "A" "" "r" cscope-admin-rebuild-db "R" "" "p" cscope-query-path-prefix "P" "" "x" cscope-admin-quit "X" "" "q" cscope-admin-quit-and-kill-buffer "Q" ""] 46))
+
+(defun cscope-bind-keys-3deep nil (interactive) (byte-code "ÀˆÁˆÂÃÄ\"ˆÂÅÄ\"ˆÂÆÄ\"ˆÂÇÈ\"ˆÂÉÈ\"ˆÂÊÈ\"ˆÂËÌ\"ˆÂÍÌ\"ˆÂÎÌ\"ˆÂÏÐ\"ˆÂÑÐ\"ˆÂÒÓ\"ˆÂÔÓ\"ˆÂÕÓ\"ˆÂÖ×\"ˆÂØ×\"ˆÂÙ×\"ˆÂÚÛ\"ˆÂÜÛ\"ˆÂÝÛ\"ˆÂÞß\"ˆÂàß\"ˆÂáß\"ˆÂâã\"ˆÂäã\"ˆÂåã\"ˆÂæã\"ˆÂçã\"ˆÂèé\"ˆÂêé\"ˆÂëì\"ˆÂíì\"ˆÂîì\"ˆÂïð\"ˆÂñð\"ˆÂòð\"ˆÂóô\"ˆÂõô\"ˆÂöô\"ˆÂ÷ø\"ˆÂùø\"ˆÂúø\"ˆÂûü\"ˆÂýü\"ˆÂþü\"‡" [nil "Apply three character cscope bindings to the currently active keymap.
+The bindings are of the form \"C-c C-s letter\"  See variable
+\"cscope-bindings-3deep\"." local-set-key "c" cscope-find-c-symbol "C" "" "d" cscope-find-global-definition "D" "" "v" cscope-find-functions-called "V" "" "^" cscope-find-functions-calling "6" "t" cscope-find-text-string "T" "" "g" cscope-find-grep-pattern "G" "" "e" cscope-find-egrep-pattern "E" "" "f" cscope-find-file "F" "" "i" cscope-find-files-including "I" "	" "#" "3" "*" cscope-find-all "8" "a" cscope-admin-toggle-case "A" "" "r" cscope-admin-rebuild-db "R" "" "p" cscope-query-path-prefix "P" "" "x" cscope-admin-quit "X" "" "q" cscope-admin-quit-and-kill-buffer "Q" ""] 47))
+
+(if (not (boundp (quote cscope-keymap))) (progn (setq cscope-keymap (copy-keymap text-mode-map)) (let ((real-keymap (current-local-map))) (use-local-map cscope-keymap) (cscope-bind-keys) (use-local-map real-keymap)) (define-key cscope-keymap "c" (quote cscope-find-c-symbol)) (define-key cscope-keymap "C" (quote cscope-find-c-symbol)) (define-key cscope-keymap "d" (quote cscope-find-global-definition)) (define-key cscope-keymap "D" (quote cscope-find-global-definition)) (define-key cscope-keymap "v" (quote cscope-find-functions-called)) (define-key cscope-keymap "V" (quote cscope-find-functions-called)) (define-key cscope-keymap "^" (quote cscope-find-functions-calling)) (define-key cscope-keymap "t" (quote cscope-find-text-string)) (define-key cscope-keymap "T" (quote cscope-find-text-string)) (define-key cscope-keymap "g" (quote cscope-find-grep-pattern)) (define-key cscope-keymap "G" (quote cscope-find-grep-pattern)) (define-key cscope-keymap "e" (quote cscope-find-egrep-pattern)) (define-key cscope-keymap "E" (quote cscope-find-egrep-pattern)) (define-key cscope-keymap "f" (quote cscope-find-file)) (define-key cscope-keymap "F" (quote cscope-find-file)) (define-key cscope-keymap "i" (quote cscope-find-files-including)) (define-key cscope-keymap "I" (quote cscope-find-files-including)) (define-key cscope-keymap "#" (quote cscope-find-files-including)) (define-key cscope-keymap "*" (quote cscope-find-all)) (define-key cscope-keymap "a" (quote cscope-admin-toggle-case)) (define-key cscope-keymap "A" (quote cscope-admin-toggle-case)) (define-key cscope-keymap "r" (quote cscope-admin-rebuild-db)) (define-key cscope-keymap "R" (quote cscope-admin-rebuild-db)) (define-key cscope-keymap "p" (quote cscope-query-path-prefix)) (define-key cscope-keymap "P" (quote cscope-query-path-prefix)) (define-key cscope-keymap "x" (quote cscope-admin-quit)) (define-key cscope-keymap "X" (quote cscope-admin-quit)) (define-key cscope-keymap "q" (quote cscope-admin-quit-and-kill-buffer)) (define-key cscope-keymap "Q" (quote cscope-admin-quit-and-kill-buffer)) (define-key cscope-keymap "" (quote cscope-interpret-output-line))))
+
+(defun cscope-find-c-symbol (symbol) "\
+Query cscope for the whereabouts of the given symbol.
+When called interactively, the user is prompted for the symbol name,
+with a symbol near point being the default.  A prefix argument causes
+the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-c-symbol "0"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "0"] 3))
+
+(defun cscope-find-global-definition (symbol) "\
+Query cscope for the global definition of the given symbol.
+When called interactively, the user is prompted for the symbol name,
+with a symbol near point being the default.  A prefix argument causes
+the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-c-symbol "1"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "1"] 3))
+
+(defun cscope-find-functions-called (symbol) "\
+Query cscope for the names of functions called by a function.
+When called interactively, the user is prompted for the function name,
+with a symbol near point being the default.  A prefix argument causes
+the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-c-symbol "2"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "2"] 3))
+
+(defun cscope-find-functions-calling (symbol) "\
+Query cscope for the names of functions calling a function.
+When called interactively, the user is prompted for the function name,
+with a symbol near point being the default.  A prefix argument causes
+the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-c-symbol "3"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "3"] 3))
+
+(defun cscope-find-text-string (symbol) "\
+Query cscope for the whereabouts of the given text string.
+When called interactively, the user is prompted for the string.  A
+prefix argument causes the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-text-string "4"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "4"] 3))
+
+(defun cscope-find-grep-pattern (symbol) "\
+Query cscope for the whereabouts of the given grep pattern.  When
+called interactively, the user is prompted for the pattern.  (The
+line-oriented mode of cscope does not support changing occurrences of
+the given pattern; the full-screen version of cscope does.)  A prefix
+argument causes the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-text-string "5"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "5"] 3))
+
+(defun cscope-find-egrep-pattern (symbol) "\
+Query cscope for the whereabouts of the given egrep pattern.  When
+called interactively, the user is prompted for the pattern.  A prefix
+argument causes the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-text-string "6"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "6"] 3))
+
+(defun cscope-find-file (symbol) "\
+Query cscope for the whereabouts of the given file.
+When called interactively, the user is prompted for the file name,
+with a symbol near point being the default.  A prefix argument causes
+the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-file-name "7"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "7"] 3))
+
+(defun cscope-find-files-including (symbol) "\
+Query cscope for the files including a given file.
+When called interactively, the user is prompted for the file name,
+with a symbol near point being the default.  A prefix argument causes
+the current window to be used for the output." (interactive (byte-code "ÀÁ!‡" [cscope:gather-file-name "8"] 2)) (byte-code "ÁˆÂÃ\"‡" [symbol nil cscope:query-omnibus "8"] 3))
+
+(defun cscope-find-all (&rest symbol) "\
+Query cscope for the definitions of all functions and C++ classes.
+Any arguments to this function are ignored.  A prefix argument causes
+the current window to be used for the output." (interactive) (byte-code "ÀˆÁÂÃ\"‡" [nil cscope:query-omnibus "9" "fake"] 3))
+
+(defun cscope-admin-toggle-case (&rest symbol) "\
+Toggle case-folding for subsequent cscope searches.  Since
+case-folding can also be affected by a command line option when cscope
+is invoked, it's up to the user to keep track of the state of the
+toggle.  Any arguments to this function are ignored.  A prefix
+argument causes the current window to be used for the output." (interactive) (byte-code "ÀˆÁÂ!‡" [nil cscope:query-omnibus "c"] 2))
+
+(defun cscope-admin-rebuild-db (&rest symbol) "\
+Tell the cscope subprocess to rebuild its database.
+Any arguments to this function are ignored.  A prefix argument causes
+the current window to be used for the output." (interactive) (byte-code "ÀˆÁÂ!‡" [nil cscope:query-omnibus "r"] 2))
+
+(defun cscope-query-path-prefix (&rest symbol) "\
+Query cscope for the relative filename path prefix.  Not all
+versions of cscope support this feature; if yours doesn't, it will be
+obvious from what you see in the cscope output buffer after running
+this command.  Any arguments to this function are ignored.  A prefix
+argument causes the current window to be used for the output." (interactive) (byte-code "ÀˆÁÂ!‡" [nil cscope:query-omnibus "P"] 2))
+
+(defun cscope-admin-quit (&rest symbol) "\
+Tell the cscope subprocess to terminate.
+Any arguments to this function are ignored.  Afterwards, run the 
+optional user-supplied \"cscope-quit-hook\".  A prefix argument causes
+the current window to be used for the output." (interactive) (byte-code "ÀˆÁÂ!ÃÄ!ˆ‡" [nil cscope:query-omnibus "q" run-hooks cscope-quit-hook] 4))
+
+(defun cscope-admin-quit-and-kill-buffer (&rest symbol) "\
+Tell the cscope subprocess to terminate.
+You can achieve the same effect by simply killing the affiliated cscope
+output buffer or by exiting emacs.  Any arguments to this function are
+ignored." (interactive) (byte-code "ÄˆÅ ˆÆ	!Ç8È
+!É!… Ê!+‡" [cscope-list cscope-id cscope-label cscope-buffer-name nil cscope-admin-quit cscope:pick-description-list 0 cscope:bname-from-label get-buffer kill-buffer] 6))
+
+(defun cscope-goback-and-goforth nil "\
+Return to the affiliated cscope buffer and advance the cursor by one line.
+The affect of this will usually be to help in stepping through references
+in the cscope output buffer.  See also \"cscope-interpret-output-line\".
+After the cursor has been positioned, the optional user-supplied
+\"cscope-b-and-f-hook\" is run.  A prefix argument causes
+the current window to be used for the cscope output buffer." (interactive) (byte-code "Âˆ…	 Ã!ƒ# 	… Ä!?ƒ Å!‚  Æ!‚& ÇÈ!ˆÉ ˆÊË!‡" [cscope:affiliated-buffer current-prefix-arg nil get-buffer get-buffer-window switch-to-buffer pop-to-buffer error "CSCOPE: No affiliated cscope output buffer" forward-line run-hooks cscope-b-and-f-hook] 8))
+
+(defun cscope-interpret-output-line nil "\
+Parse the line under the cursor as a cscope output reference line.
+Try to visit the named file and place the cursor on the mentioned line number.
+After the cursor has been positioned, run the optional user-supplied
+\"cscope-interpret-output-hook\".  A prefix argument causes
+the current window to be used for the visited file." (interactive) (byte-code "ÏˆÐ ˆÑ!?ƒ ÒÓ!‚• ÔÕ
+!Ö
+!\"ÔÕ!Ö!\"ÔÕ!Ö!\"×CØ 
+	ÙË!…H Ú	\"‰ˆÛ	!?…U Ü	!‰ˆÙÌ!…c Ú	\"‰ˆƒo Ý	!‚r Þ	!ˆ‰ˆ
+?…„ 	‰
+ˆßà!!ˆáâ\"ˆãä!.‡" [cscope-output-line-regexp cscope:filename cscope-output-file-place linenumb cscope-output-line-place function cscope-output-func-place find-file-not-found-hooks affiliated-buffer cscope-id-affiliated cscope-id cscope-filename-fixxer-raw cscope-filename-fixxer-cooked current-prefix-arg cscope:affiliated-buffer nil beginning-of-line looking-at error "CSCOPE: Line not understood as a cscope reference line" buffer-substring match-beginning match-end cscope:file-not-found buffer-name fboundp funcall file-name-absolute-p cscope:fulfill-relative-path find-file find-file-other-window goto-line string-to-int message "CSCOPE: Function: %s" run-hooks cscope-interpret-output-hook] 26))
+
+(defvar cscope:affiliated-buffer nil)
+
+(make-variable-buffer-local (quote cscope:affiliated-buffer))
+
+(defun cscope:get-menu-subtext (menu-item-key) (byte-code "Â	\"AÃÄO‡" [menu-item-key cscope:menu-text-list assoc 0 -2] 4))
+
+(defun cscope:looking-at (regexp) (byte-code "ÁŠÄ
+!† Å
+ÁÃ#ƒ< Ä
+!… o?…# ÆÇ!ˆ‚ ˆÈ
+ÁÃ#ƒ6 ÉÊË!Ì \"‚9 ÍÎ!‚? ÍÎ!))‡" [fore-marker nil regexp t looking-at re-search-backward backward-char 1 re-search-forward buffer-substring match-beginning 0 point-marker identity ""] 11))
+
+(defun cscope:gather-c-symbol (menu-item-key) (byte-code "ÂÃ!Ä	!\"C‡" [menu-item-key cscope-c-symbol-regexp read-string cscope:get-menu-subtext cscope:looking-at] 5))
+
+(defun cscope:gather-file-name (menu-item-key) (byte-code "ÂÃ!Ä	!\"C‡" [menu-item-key cscope-filename-regexp read-string cscope:get-menu-subtext cscope:looking-at] 5))
+
+(defun cscope:gather-text-string (menu-item-key) (byte-code "ÁÂ!!C‡" [menu-item-key read-string cscope:get-menu-subtext] 3))
+
+(defun cscope:query-omnibus (menu-item-key &optional item-argument) (byte-code "ÇÇÇƒ ‚ È‰ˆÉÊ\"AËP\"‰ˆÌÍÎ!8!‰ˆÏ
+!Ð=†7 ÑÒ\"?…c Ó	!‰ˆÔ
+ËQ\"ˆÕ
+!ˆebˆÖ×!ˆÕ ˆØÙ!…_ Ö×!ˆÚÛ!+‡" [symbol do-this cscope-process item-argument menu-item-key cscope:menu-text-list cscope-id nil "" format assoc "
+" cscope:pname-from-label 0 cscope:pick-description-list process-status run string-equal "q" cscope:guarantee-process process-send-string accept-process-output forward-line 1 looking-at "cscope: " run-hooks cscope-query-hook] 15))
+
+(defconst cscope:menu-text-list (quote (("0" . "Find this C symbol: %s") ("1" . "Find this global definition: %s") ("2" . "Find functions called by this function: %s") ("3" . "Find functions calling this function: %s") ("4" . "Find this text string: %s") ("5" . "Find this grep pattern: %s") ("6" . "Find this egrep pattern: %s") ("7" . "Find this file: %s") ("8" . "Find files #including this file: %s") ("9" . "Find all functions and C++ classes") ("c" . "Toggle ignore/use letter case when searching") ("r" . "Rebuild the symbol database") ("P" . "Print relative-path prefix") ("q" . "Quit cscope"))))
+
+(defconst cscope:bname-prefix "cscope: ")
+
+(defconst cscope:bname-prefix-length (length cscope:bname-prefix))
+
+(defconst cscope:bname-suffix " Output")
+
+(defconst cscope:bname-suffix-length (length cscope:bname-suffix))
+
+(defun cscope:bname-from-label (label) (byte-code "	
+Q‡" [cscope:bname-prefix label cscope:bname-suffix] 3))
+
+(defun cscope:label-from-bname (name) (byte-code "Ã	[O
+ÄO‡" [name cscope:bname-suffix-length cscope:bname-prefix-length 0 nil] 3))
+
+(defconst cscope:pname-prefix "cscope: ")
+
+(defconst cscope:pname-prefix-length (length cscope:pname-prefix))
+
+(defconst cscope:pname-suffix " Process")
+
+(defconst cscope:pname-suffix-length (length cscope:pname-suffix))
+
+(defun cscope:pname-from-label (label) (byte-code "	
+Q‡" [cscope:pname-prefix label cscope:pname-suffix] 3))
+
+(defun cscope:label-from-pname (name) (byte-code "Ã	[O
+ÄO‡" [name cscope:pname-suffix-length cscope:pname-prefix-length 0 nil] 3))
+
+(defun cscope:guarantee-process (do-this) (byte-code "Í	!Î8Ï
+!Ð
+!ÆÑ8ƒ Ñ8‚  Ò!Ó=ƒ4 ŠqˆÔ )‚h ÕÖ
+\"ˆ×!…B Ø!ˆÆ	ÙÚÛ8$*‰ˆÜ!ˆÝ
+#ˆÕÞ
+\"ˆßà!ˆ
+…r á!?ƒ{ â!‚~ ã!ˆä!‰ˆ	?… 
+‰ˆå!ˆcˆæç!d\"ˆè!.‡" [cscope-list cscope-id cscope-label cscope-buffer-name cscope-process-name cscope-process nil cd-place default-directory process-connection-type current-prefix-arg cscope-keymap do-this cscope:pick-description-list 0 cscope:bname-from-label cscope:pname-from-label 2 process-status run erase-buffer message "CSCOPE: Starting process for %s ..." get-buffer kill-buffer apply start-process 1 process-kill-without-query cscope:figure-out-path-prefix "CSCOPE: Starting process for %s ... started" run-hooks cscope-start-process-hook get-buffer-window switch-to-buffer pop-to-buffer get-process use-local-map set-marker process-mark identity] 22))
+
+(defvar cscope:path-prefix-table nil)
+
+(defun cscope:figure-out-path-prefix (cscope-label cscope-buffer-name cscope-process) (byte-code "qˆebˆÈ	!É=… ÊËÂÃ#?…  ebˆÌ ˆ‚ ˆÈ	!É=?ƒ1 ÍÎ\"‚‹ Ï ˆÐ	Ñ\"ˆÈ	!É=…G ÊËÂÃ#?…S ebˆÌ ˆ‚9 ˆebˆÒÓ!?…‹ Ô ˆÕe`\"ƒs Ö\"‚t Âƒƒ ×\"‚Š ØB‰*ˆÏ ‡" [cscope-buffer-name cscope-process nil t cscope-label path-prefix list-item cscope:path-prefix-table process-status run re-search-forward "^>>" accept-process-output message "CSCOPE: Dead process for %s" erase-buffer process-send-string "P
+" looking-at ".*cscope.* unknown " end-of-line buffer-substring assoc setcdr (cscope-label . path-prefix)] 17))
+
+(defun cscope:pick-description-list (cscope-id) (byte-code "… Ã	\"ƒ Ã	\"‚ Ä
+!‡" [cscope-master-info-table cscope-id cscope-master-info-default assoc identity] 4))
+
+(defun cscope:file-not-found nil (byte-code "ƒ
+ ÂÀ!‚ ÃÄ	!!ˆÅÆ	\"‡" [cscope-file-not-found-hook cscope:filename run-hooks kill-buffer get-file-buffer error "CSCOPE: Can't find file %s"] 6))
+
+(defun cscope:fulfill-relative-path (filename) (byte-code "	ƒ Ç
+	\"‚ Ãƒ A‚ ÃÈ
+!?…& É8‰ˆ?…1 Ê8‰ˆƒ? ËÌ#‚C Í!+‡" [list-item cscope:path-prefix-table cscope-id nil prefix cscope-list filename assoc cscope:pick-description-list 3 2 format "%s/%s" identity] 6))
+
+(provide (quote cscope))

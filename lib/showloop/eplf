@@ -1,0 +1,175 @@
+#!/bin/sh
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Find featuring in an EPL, SWAP macro, or 1A assembly language program
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990/Aug 1992
+#		AT&T Bell Laboratories
+#
+# USAGE:    fepl source_files
+#
+#	source_files should not have TSS line numbers on them
+#
+# This program parses a swap macro/assembly language source file
+# and writes lines of the form:
+#
+#	start_line# end_line#
+#
+# where start_line is the line number of an INFOR or OUTFOR
+# and end_line is the line number of the next RESUME
+#
+##########################################################
+
+
+FORHELP="\n\n(For more help, contact Bob Parnass)\n"
+USAGE="*** error, USAGE:  `basename $0`   files ${FORHELP}"
+
+TMP=/usr/tmp
+JUNKFILE=$TMP/a3a$$
+FINFILE=$TMP/a4a$$
+
+TMPFILES="$JUNKFILE $FINFILE"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# check for bad command line args which start with a minus sign
+for ARG do
+	case "${ARG}" in
+		-*)
+			echo "${USAGE}" 1>&2
+			echo "        Bogus command line argument" 1>&2
+			exit 1
+			# script exits
+			;;
+		*)
+			;;
+	esac
+done
+
+# input file of fcn calls must be specfied
+if [ $# -ge 1 ]
+then
+	while [ $# -ne 0 ]
+	do
+		# cull out lines of interest
+		# remove line numbers
+		INFILE=${1}
+		sed -e 's/^[0-9][0-9][0-9][0-9][0-9].[0-9][0-9][0-9][0-9] //'  $INFILE \
+			| tr '[A-Z]' '[a-z]'  > ${FINFILE}
+
+		awk '\
+		# for each line of input
+		(index($0, "#") != 1) \
+			{
+			restline = $0
+			# read ahead to assemble all
+			# continuation lines into single lines
+
+
+			len = length($0)
+			atsign = index($0, "@")
+
+			# if this line contains a continuation
+			if(atsign && (atsign == len))
+				more = 1
+
+			while(more == 1)
+				{
+				more = getline(junk)
+				if(more == 1)
+					{
+					len = length($0)
+					atsign = index($0, "@")
+					# if this line contains a continuation
+					if(atsign && (atsign == len))
+						more = 1
+					else
+						more = 0
+			
+					# append this line to previous line(s)
+					restline = restline $0
+					}
+				}
+
+			# strip comment from line
+			pound = index(restline, "#")
+			if(pound)
+				restline = substr(restline, 1, pound - 1)
+
+			# find first space
+			space = index(restline, " ")
+
+			# if line has a label
+			if(space != 1)
+				{
+				if(space == 0)
+					label = restline
+				else
+					label = substr(restline, 1, space-1)
+				}
+			else
+				{
+				label = ""
+				if($1 == "mc")
+					{
+					k = index(restline, "mc")
+					len = length(restline)
+					restline = substr(restline, k + 3, len - 4)
+					}
+				else if($1 == "me")
+					{
+					k = index(restline, "me")
+					len = length(restline)
+					restline = substr(restline, k + 3, len - 4)
+					}
+				}
+
+			# if line has a label
+			if(label != "")
+				{
+				restline = substr(restline, length(label) + 1, len - length(label))
+				}
+			len = length(restline)
+			nfields = split(restline, field, " ")
+			if(nfields)
+				{
+				opcode = field[1]
+				}
+			else
+				opcode = "" 
+#printf "%4d. nfields=%d, opcode=%-10s|%s\n", NR, nfields, opcode, $0
+			#if((opcode == "dfn_sub_") || (opcode == "call_sub_"))
+			if((opcode == "infor") || (opcode == "outfor"))
+				printf "%d ", NR
+			else if(opcode == "resume")
+				printf "%d\n", NR
+			 } ' $FINFILE > $TMP/bobs
+
+cat $TMP/bobs
+				
+		# branch now contains lines of the form:
+		#	label line#
+		
+				
+
+		shift
+	done
+
+	rm -f "${TMPFILES}"
+
+	exit 0
+else
+	# input file not specified on cmd line
+	echo "${USAGE}" 1>&2
+	echo "        Input file must be specified" 1>&2
+	exit 1
+fi

@@ -1,0 +1,164 @@
+#
+# Name:		$TOOLS/lib/manual/database
+#
+# Abstract:	database of manual locations for the manual tool
+#
+# Description:	A list of the potential manual page locations on UNIX
+#		systems, a list that manual uses in searching for
+#		manual pages.
+#
+#
+# History:
+#
+# 	v1.00	15 May 1994
+#	First version
+#
+#	v1.01	16 May 1994
+#	Added this prologue to the database file
+#
+#	v1.02	17 May 1994
+#	Reordered entries in database so that standard bins
+#	and exptools come first, then other manuals.
+#
+#	v1.03	17 May 1994
+#	Added exptools adm manuals to the database
+#
+#	v1.04	19 May 1994
+#	Tweak to fix problem on hvss07 machine where there are
+#	symbolic links to the current directory (u_man -> .) which
+#	makes manual go into an infinite loop.
+#
+#	v1.05	20 May 1994
+#	More tweaks to avoid more problems with symbolic links on the
+#	Hilversum machines.  This time in /apt/man/u_man.
+#
+
+#
+# Exptools
+#
+~exptools/man	C
+~exptools/lib/unity/man	C
+~exptools/lib/gmacs/man	C
+~exptools/adm/upd1.1/man	C
+
+#
+# Typical standard UNIX manual pages directories
+#
+#
+
+#
+# On some UNIX systems common manual pages are held in preformatted form
+#
+#IFPATH /usr/catman
+#IGNORE /usr/catman/tools
+/usr/catman		P
+#ELSE
+/usr/man		N
+#FI
+
+#
+# System 5 specific
+#
+/usr/lman		N
+
+#
+# BSD/SunOS Specific
+#
+/usr/share/man		N
+
+#
+# OpenWindows manuals
+#
+/usr/openwin/man	N
+
+# the directory below doesn't work because the files in there
+# are not packed according to "pack" standard.  so use the
+# man directories instead?!
+#/usr/add-on/630/catman/u_man/man1	P
+#
+/usr/add-on/630/man/u_man/man1		P
+/usr/add-on/630/man/p_man/man3		P
+/usr/add-on/630/man/p_man/man4		P
+
+#
+# SUN-OS unix doesn't have "pack" so the manuals are stored as catable
+# files
+/usr/add-on/630/man/cat1		C
+/usr/add-on/630/man/cat3		C
+/usr/add-on/630/man/cat4		C
+#
+# manuals for miscellaneous tools under /usr/add-on directory
+#
+#
+/usr/add-on/5enews/man		C
+/usr/add-on/S/man		N
+/usr/add-on/NewS/man		N
+/usr/add-on/awkcc/man		N
+/usr/add-on/c++2.1/man/man1	N
+/usr/add-on/c++2.1/man/man3	N
+/usr/add-on/c++2.1/man/man4	N
+/usr/add-on/dact/man		N
+/usr/add-on/dwb/man		N
+/usr/add-on/ef/man		N
+/usr/add-on/fsa/man		N
+/usr/add-on/local/man		N
+/usr/add-on/lotus/man		N
+/usr/add-on/mica/man		N
+/usr/add-on/nlayers/man		N
+/usr/add-on/nusend/man		N
+/usr/add-on/post/man		N
+/usr/add-on/sunpc/man		N
+#
+# tweak to enable manual to work on the hvss07 machine.
+# This machines has symbolic links from u_man -> . which makes
+# manual go into an infinite loop.
+# Get round this by bypassing the u_man level of the directory
+# and listing the subdirectories explicitly.
+#
+#IFPATH /usr/add-on/unison/man/man1
+/usr/add-on/unison/man/man1	N
+/usr/add-on/unison/man/man3	N
+/usr/add-on/unison/man/man4	N
+/usr/add-on/unison/man/man5	N
+#ELSE
+/usr/add-on/unison/man		N
+#FI
+
+/usr/add-on/usors/man		N
+/usr/add-on/wwb/man		N
+#
+# tweak to avoid referencing the u_man/a_man/p_man directories
+# because these have symbolic links on the hilversum machines
+#
+/apt/man/u_man/man1		N
+/apt/man/u_man/man3		N
+/apt/man/u_man/man5		N
+/apt/man/a_man/man1		N
+/apt/man/a_man/man3		N
+/apt/man/a_man/man5		N
+/apt/man/p_man/man1		N
+/apt/man/p_man/man2		N
+/apt/man/p_man/man3		N
+/apt/man/man1		N
+
+#
+# this list of directories was produced by executing
+# $ lman_locs
+#
+/usr/5ess/src_12.0/tool/man	C
+/usr/5ess/src/ecms1.1/man/cms	C
+/usr/5ess/src/ecms1.1/man/imr	C
+/usr/5ess/src/toolcom_1.0/man	C
+/usr/5ess/src/tms_1.0/man	C
+/usr/5ess/src/tes/man	C
+/usr/5ess/src/ppscom_1.0/man	C
+/usr/5ess/sds/sgs_11.2/man/3b	C
+/usr/5ess/sds/sgs_11.2/man/mc68	C
+/usr/5ess/sds/sgs_11.2/man/u370	C
+/usr/5ess/sds/b16_11.2/man	C
+/usr/5ess/sds/iapx_11.2/man/iapx	C
+/usr/5ess/sds/3b2_11.2/man	C
+/usr/5ess/pub/man	C
+/usr/5ess/data/man	C
+/usr/5ess/unity/man	C
+/usr/5ess/man	C

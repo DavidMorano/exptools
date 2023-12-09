@@ -1,0 +1,330 @@
+
+
+
+     sssslllliiiimmmmssssrrrrcccchhhh((((1111))))       UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr uuuusssseeeerrrr))))        sssslllliiiimmmmssssrrrrcccchhhh((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          slimsrch - Powerful interactive search tool for slimmer
+          databases.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          sssslllliiiimmmmssssrrrrcccchhhh [[[[ooooppppttttiiiioooonnnnssss]]]] DDDDBBBBppppaaaatttthhhh DDDDBBBBnnnnaaaammmmeeee
+          sssslllliiiimmmmssssrrrrcccchhhh [[[[ooooppppttttiiiioooonnnnssss]]]] ----GGGG [[[[pppprrrrooooxxxxyyyy||||ttttccccpppp]]]]!!!!aaaaddddddddrrrr[[[[DDDDBBBB]]]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The sssslllliiiimmmmssssrrrrcccchhhh command is the most powerful search tool (from
+          a general user perspective) connected with slimmer.  It has
+          two basic modes, the command mode and the user mode.  The
+          invocation options available to _s_l_i_m_s_r_c_h are:
+
+               ----AAAA <<<<ssssttttrrrriiiinnnngggg>>>>
+                    This indicates that output is to be arranged as
+                    indicated by <string>.  A good value for string is
+                    "default", since most databases will have a
+                    default sort.  However, it can use the full capa-
+                    cities of the arrange command as described in the
+                    user documentation for slimsrch.
+
+               ----CCCC ccccoooolllluuuummmmnnnnssss
+                    This makes the display output assume an output
+                    device of the specified width.  This switch over-
+                    rides the other ways by which _s_l_i_m_s_r_c_h determines
+                    the width of the output device.  The width of the
+                    output is determined by (in order of precedence):
+                    the -C parameter; the COLUMNS environment vari-
+                    able; the terminfo specification; and the default
+                    of 80 if none of the above exist.
+
+               ----DDDD ffffiiiilllleeeennnnaaaammmmeeee
+                    This overrides the use of the normal display
+                    descriptions.  Instead the descriptions are gotten
+                    from the file "filename".
+
+               ----FFFF <<<<ffffoooorrrrmmmmaaaatttt>>>>
+                    This specifies the default format used to display
+                    full records in the user mode.  By default, this
+                    is the "f" format.
+
+               ----GGGG [[[[ttttccccpppp||||pppprrrrooooxxxxyyyy]]]]!!!!iiiinnnntttteeeerrrrnnnneeeettttAAAAddddddddrrrr[[[[DDDDBBBBiiiinnnnddddiiiiccccaaaattttoooorrrr]]]]{{{{ppppoooorrrrtttt}}}}
+                    This tells the command that the search is really
+                    being done against a Z39.50 gateway.  A path
+                    starting with "tcp!" says the servers in within
+                    the AT&T Internet; it also has the side effect
+                    that the init handshake includes the users ID from
+                    the file HOME/.lib, from a line like
+                            id: PAN or Social Security Number
+                    If the line starts with "proxy!" the command uses
+                    proxy code to gateway outside the AT&T Internet to
+
+
+
+     Page 1                                         (printed 10/27/92)
+
+
+
+
+
+
+     sssslllliiiimmmmssssrrrrcccchhhh((((1111))))       UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr uuuusssseeeerrrr))))        sssslllliiiimmmmssssrrrrcccchhhh((((1111))))
+
+
+
+                    external information sources.
+
+                    The internet address is in standard form, a common
+                    address will be
+                                      linus.att.com
+                    which is the Library Network's database server.
+
+                    The DBindicator is enclosed in square brackets and
+                    is optional.  If it is left out the default data-
+                    base is used, which for the LINUS server is the
+                    "books" DB.  Note that for the LINUS server the
+                    DBindicator can be either a name or a number (e.g.
+                    ahd or 136).
+
+                    The port number is in curly braces and is
+                    optional. The official port for Z39.50 is 210, and
+                    is the default.
+
+               ----LLLL   This is a curious feature controlling the way
+                    _s_l_i_m_s_r_c_h handles time outs.  Under normal opera-
+                    tion _s_l_i_m_s_r_c_h exits on timeout.  However, when the
+                    -L switch is given _s_l_i_m_s_r_c_h simply loops to its
+                    welcome screen.  This enables the system to be
+                    left on all day, unattended.
+
+               ----cccc   Causes _s_l_i_m_s_r_c_h to start in command mode.
+
+               ----dddd   Diagnostic mode.  In particular tells the steps to
+                    connect when -G is used.
+
+               ----tttt <<<<sssseeeeccccoooonnnnddddssss>>>>
+                    This tells slimsrch how many seconds between
+                    timeouts.  Note that the default is 600 (10
+                    minutes).  Giving a timeout period of 0 seconds
+                    cause no timeouts to happen.
+
+               ----uuuu   Causes _s_l_i_m_s_r_c_h to start in user mode.  Since this
+                    is the default, this has no effect.
+
+               ----HHHH <<<<nnnnuuuummmmbbbbeeeerrrr>>>>
+                    The maximum distance a truncated search will walk
+                    through the index accumulating terms.  That is, a?
+                    will stop after combining the posting lists for
+                    the number specified by this parameter.  This is a
+                    user response rate / efficiency issue.  The
+                    default is 1000.
+
+               ----RRRR <<<<ssssttttrrrriiiinnnngggg>>>>
+                    This gives a record-level restriction to be
+                    applied to all retrieved items.  This is a very
+                    powerful, and very slow, feature.  The restriction
+                    <string> must be given in the record level
+
+
+
+     Page 2                                         (printed 10/27/92)
+
+
+
+
+
+
+     sssslllliiiimmmmssssrrrrcccchhhh((((1111))))       UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr uuuusssseeeerrrr))))        sssslllliiiimmmmssssrrrrcccchhhh((((1111))))
+
+
+
+                    restriction language described in the user manual.
+
+               ----ffff   This turns off the tofile command.  This prevents
+                    users from creating files or sending data to a
+                    remote login.
+
+               ----gggg   This turns off the tofile command into actual
+                    files only.  This prevents users from creating
+                    files while allowing them to send data to a remote
+                    login.
+
+               ----llll <<<<ffffiiiilllleeeennnnaaaammmmeeee>>>>
+                    THis changes the file where slimsrch keeps a log
+                    of its useage.
+
+               ----rrrr   This disables all escapes to the shell from the
+                    slimsrch command.  This is often very important
+                    for security reasons.
+
+               ----XXXX <<<<ffffiiiilllleeeennnnaaaammmmeeee>>>>
+                    THis changes the file where slimsrch determines
+                    the format of its log.  Note that by default it
+                    looks in DBpath/logformat.
+
+          There are two search modes in _s_l_i_m_s_r_c_h; the user mode which
+          is supposed to be nearly self-explanatory, and the command
+          mode which requires knowledge of the command language.  The
+          following are useful common commands in the user mode:
+
+               ppppeeeerrrriiiioooodddd....
+                    Entering a period will kick you out of what you
+                    are doing to a higher level.
+
+               qqqquuuueeeessssttttiiiioooonnnn mmmmaaaarrrrkkkk
+                    A question mark will give you help wherever you
+                    are.
+
+               <<<<ccccoooonnnnttttrrrroooollll LLLL>>>>
+                    This causes the screen to be redrawn.
+
+               <<<<sssshhhheeeellllllll ccccmmmmdddd>>>>
+                    This is a shell escape starting with an exclama-
+                    tion (!) point.  It allows you to do arbitrary
+                    shell commands.
+
+          The following is a quick list of the _s_l_i_m_s_r_c_h commands.  A
+          more complete description is given in the slimmer user TM.
+
+               sssseeeeaaaarrrrcccchhhh <<<<sssseeeeaaaarrrrcccchhhh ccccmmmmdddd>>>>
+                    This is the basic search command.  It takes a full
+                    Boolean search request.  For example,
+                         s ((waldstein and slimmer) not librar?)
+
+
+
+     Page 3                                         (printed 10/27/92)
+
+
+
+
+
+
+     sssslllliiiimmmmssssrrrrcccchhhh((((1111))))       UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr uuuusssseeeerrrr))))        sssslllliiiimmmmssssrrrrcccchhhh((((1111))))
+
+
+
+               ddddiiiissssppppllllaaaayyyy <<<<sssseeeetttt>>>>////<<<<ffffoooorrrrmmmmaaaatttt>>>>////<<<<iiiitttteeeemmmm lllliiiisssstttt>>>>
+                    This is the main set display command.  It displays
+                    the specified items from a given set in the indi-
+                    cated format.  For example,
+                                    d S4/b/1,6,8-12,15
+
+               pppprrrriiiinnnntttt <<<<sssseeeetttt>>>>////<<<<ffffoooorrrrmmmmaaaatttt>>>>////<<<<iiiitttteeeemmmm lllliiiisssstttt>>>>
+                    Like the display command but turns on the slave
+                    printer if possible.
+
+               bbbbrrrroooowwwwsssseeee <<<<ssssttttrrrriiiinnnngggg>>>>
+                    This causes a browse of records similar to
+                    <string>.
+
+               eeeexxxxaaaammmmiiiinnnneeee <<<<ssssttttrrrriiiinnnngggg>>>>
+                    This causes a section of the index to be
+                    displayed, with the number of postings per index
+                    term.
+
+               aaaarrrrrrrraaaannnnggggeeee <<<<sssseeeetttt>>>> <<<<hhhhoooowwww aaaarrrrrrrraaaannnnggggeeee>>>>
+                    This causes the indicated set to be sorted accord-
+                    ing to the described arrangement.
+
+               rrrreeeessssttttrrrriiiicccctttt <<<<sssseeeetttt>>>> <<<<rrrreeeessssttttrrrriiiiccccttttiiiioooonnnn>>>>
+                    This causes the indicated set to be restricted and
+                    a new set created.
+
+               lllliiiimmmmiiiitttt <<<<sssseeeetttt>>>> <<<<bbbbyyyy wwwwhhhhaaaatttt>>>>
+                    This causes a set to be limited according to some
+                    parameter set up by the database administrator.
+
+               rrrreeeeqqqquuuueeeesssstttt <<<<sssseeeetttt>>>>////<<<<iiiitttteeeemmmm lllliiiisssstttt>>>>
+                    Submits requests for the indicated items.
+
+               qqqquuuuiiiitttt Quits the _s_l_i_m_s_r_c_h command.
+
+               ttttooooffffiiiilllleeee <<<<ffffiiiilllleeeennnnaaaammmmeeee>>>>
+                    Causes all future displays to go into the indi-
+                    cated file.
+
+               ttttooootttteeeerrrrmmmm
+                    Causes display output to come to the terminal
+                    again.
+
+               sssseeeettttddddiiiisssspppp
+                    Allows the user to define a display format (d) for
+                    use during this session only.
+
+               cccchhhhgggglllliiiimmmm <<<<ppppaaaarrrrmmmmssss>>>>
+                    Allows certain _s_l_i_m_s_r_c_h limitations to be overrid-
+                    den.
+
+
+
+
+     Page 4                                         (printed 10/27/92)
+
+
+
+
+
+
+     sssslllliiiimmmmssssrrrrcccchhhh((((1111))))       UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((sssslllliiiimmmmmmmmeeeerrrr uuuusssseeeerrrr))))        sssslllliiiimmmmssssrrrrcccchhhh((((1111))))
+
+
+
+               eeeexxxxeeeecccc <<<<ffffiiiilllleeeennnnaaaammmmeeee>>>>
+                    This causes _s_l_i_m_s_r_c_h to execute the commands saved
+                    in the indicated file.
+
+               ssssaaaavvvveeee <<<<ffffiiiilllleeeennnnaaaammmmeeee>>>>
+                    This causes all the commands to this point to be
+                    saved in the given file.
+
+               ddddssss   This "display sets" command displays all the sets
+                    created so far.
+
+               ccccssss   This "current set" command tells which set is
+                    current.
+
+               uuuusssseeeerrrr This switches to the user mode.
+
+               ffffrrrreeeeeeee <<<<sssseeeetttt>>>>
+                    This command frees up a set and its associated
+                    space.  This is necessary only if computer memory
+                    resources are being used up by large sets.
+
+               <<<<sssshhhheeeellllllll ccccmmmmdddd>>>>
+                    This is a shell escape starting with an exclama-
+                    tion (!) point.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          quicksrch(slimmer user)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                         (printed 10/27/92)
+
+
+

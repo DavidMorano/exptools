@@ -1,0 +1,107 @@
+A new release of UNITY and New UNITY is being distributed to
+the following machine types:
+
+	solaris
+	sparc
+
+Other machines will follow shortly.
+
+Below are the major bug fixes and enhancements included
+in this new release.  If your favorite change isn't in
+the list, please let me know (via email, please):
+
+1) Solaris machines will (finally) have native unity
+applications.  Prior to this release, they were running
+SunOS binaries in a compatibility mode.  This wasn't
+completely transparent, and resulted in random core
+dumps.
+
+2) The default maximum number of attributes in
+a record was raised to 200.  Previously it was 100 for
+all but ibm implementations.
+
+3) Unity commands now accept attribute names of 15
+characters, the same as new unity commands.
+
+4) New unity commands now handle attribute names longer
+than 15 characters the same as old unity commands -
+they give a warning message and truncate the name.
+
+Old unity now recognizes an underscore as the first
+character of an attribute name, the same as new unity.
+There is a work-around for a regular expression bug
+that caused new unity commands on some machines to not
+recognize attribute names with underscores in them.
+
+5) The maximum path to a table or descriptor file is
+now set based on a system #define when it is
+available.  When the #define doesn't exist, the default
+is 128 characters (unchanged for new unity, up from 64
+characters in old unity).
+
+Related to this, index file names (which are made up of
+the relation name and an attribute name) can now be as
+long as the system will allow.  If you are moving
+indexes from a machine where file names are limited to
+14 characters, you may need to regenerate the indexes
+to have them recognized on a machine which allows
+longer file names.
+
+6) Relation locking on Solaris and SunOS machines (and
+on Intel machines running SVR4 when that version is released)
+has changed.  *** This is not backward compatible! ***
+
+The original locking mechanism was based on the inode
+number of the relation, and the lock file was kept in
+/tmp.  Even on a single machine, this mechanism has
+some problems, but it breaks down under NFS, since /tmp
+is not (usually) shared across machines.  As a result,
+each lock only applied to the machine it is on,
+allowing users on other machines to update the relation.
+This causes problems for users sharing a relation on
+Sun clusters.
+
+The new locking mechanism is based on the relation name
+(the lock is L<relation>, similar to the D<relation>
+convention used for descriptor files) and the locks are
+kept in the same directory as the relations are.  This
+will work across NFS, and it also remedies many of the
+weaknesses of the original mechanism.
+
+**************** IMPORTANT ********************
+If you are using private versions of UNITY commands
+(such as those from USTOP), they will not recognize the 
+new locking mechanism.  You should convert to using the
+exptools versions of the commands if possible, or
+contact me for the updated source to the lock routines.
+
+If you use the C-level access routines for commands and
+linked against a previous version of the exptools
+libraries, you need to relink your commands so that
+they will use the new locking mechanism.
+**************** IMPORTANT ********************
+
+7) prtable with the -R option (or retrieve -T -R)
+no longer causes core dumps on Suns.  (A temporary
+patch has been in place for awhile.)
+ 
+8) Negative numbers are now recognized as numbers
+(rather than as strings or syntax errors) in NUNITY
+where clauses.
+
+9) uget (which extracts UNITY data bases from SCCS)
+no longer generates an invalid SCCS command.
+
+10) unmkquery() now frees malloc-ed query data
+structures more correctly.  Only applications using the
+C-level interface will be affected by this fix.
+
+Please let me know if you have any questions, comments,
+or problems with this new release.
+
+Paul Gross
+uscbu!gross	<- best way to contact me
+(708)979-1195
+IX 1A-368
+
+

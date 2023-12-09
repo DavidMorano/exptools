@@ -1,0 +1,129 @@
+# Mary E. Crabb (Created: 06/27/91)
+#
+# This script is used to process and print the
+# SSBU's Performance Appraisal Summary on a
+# PostScript printer.  This script uses UNISON's
+# "prtfmt" command and checks to see that the user has
+# a .prt file.  If not, the user is told to create one
+# and exited from this script.
+
+VERS="2.0 (09/09/91 - MEC)"
+PATH=/usr/5bin:/bin:/usr/bin:/usr/lbin:/usr/add-on/local/bin:/usr/add-on/unison/bin:/usr/add-on/wwb/bin:$PATH:
+IFS="	 
+"
+
+#####################################################
+# check for .prt file - if not there, exit.
+#####################################################
+
+if [ ! -s $HOME/.prt ]
+then
+  /bin/cat <<!
+     You must have a ".prt" file in your \$HOME directory to
+     use this tool.  Minimally it must contain -Tdevice_type
+     and -ddestination (e.g., -Tpost -dih12345z).  Create a
+     .prt file containing the above information and execute
+     this command again.
+!
+fi
+
+#####################################################
+# check for arguments - if none, usage message.
+# if there, assign them to variables.
+#####################################################
+
+if [ $# -lt 1 -o "${1}" = "-?" ]
+then
+  /bin/cat <<!
+     Usage:  $0 [-p] [-Z] [-V] filename
+
+     OPTIONS:
+       -p   Input file will be formatted for proofing on the
+            terminal (must be in layers on a 630, 730, or dmd).
+       -Z   Send PostScript output to stdout instead of
+            printing it.
+       -V   Print version number.
+!
+  exit
+fi
+
+while true
+do
+  case $1 in
+     -p) PROOF=y
+         shift ;;
+     -Z) PSCRIPT=y
+         shift ;;
+     -V) echo "VERSION: ${VERS}"
+         exit 0 ;;
+     -*) echo "Invalid option ${1} - sorry!"
+         exit 1 ;;
+      *) FN=${1}
+         break ;;
+  esac
+done
+
+#####################################################
+# check to see if file is encrypted
+#####################################################
+
+CRYPT=`file ${FN} | sed 's/.*	//'`
+case $CRYPT in
+  data|"c program text with garbage") CRYPT=y ;;
+                                   *) CRYPT=n ;;
+esac
+
+#####################################################
+# START OF "-p" STUFF
+#####################################################
+# if "-p" was called, check to see if they're in
+# layers and set path to include DMD stuff; if xproof
+# is available, use it, otherwise use proof; then
+# format the file and run it through the appropriate
+# "proofer"; if "-p" was not called, then just format
+# and print the file using prtfmt.
+#####################################################
+if [ "$PROOF" = "y" ]
+then
+  if ${DMD:?"variable not set; proofing not allowed"}/bin/ismpx 2> /dev/null || ismpx > /dev/null 2>&1
+  then
+    PATH=$PATH:${DMD}/bin
+    if [ "$TOOLS" -a -x "$TOOLS/bin/xproof" ]
+    then
+      PRFCMD=$TOOLS/bin/xproof
+    else
+      PRFCMD=$DMD/bin/proof
+    fi
+    case "$TERM" in
+      *[67]30*) CACHE=-c;;
+             *) CACHE=;;
+    esac
+    if [ "$CRYPT" = "y" ]
+    then
+      /bin/crypt < ${FN} | prtfmt -Z $TOOLS/lib/55recprt/55sum.macs - | $PRFCMD ${CACHE}
+    else
+      prtfmt -Z $TOOLS/lib/55recprt/55sum.macs ${FN} | $PRFCMD ${CACHE}
+    fi
+  else
+    echo "You must be in layers to proof!"
+    exit 1
+  fi
+elif [ "$PSCRIPT" = "y" ]
+then
+  if [ "$CRYPT" = "y" ]
+  then
+    /bin/crypt < ${FN} | prtfmt -j55sumary -Z $TOOLS/lib/55recprt/55sum.macs - | dpost
+  else
+    prtfmt -j55summary -Z $TOOLS/lib/55recprt/55sum.macs ${FN} | dpost
+  fi
+else
+  if [ "$CRYPT" = "y" ]
+  then
+    /bin/crypt < ${FN} | prtfmt -j55summary $TOOLS/lib/55recprt/55sum.macs -
+  else
+    prtfmt -j55summary $TOOLS/lib/55recprt/55sum.macs ${FN}
+  fi
+fi
+#####################################################
+# END OF -p STUFF
+#####################################################

@@ -1,0 +1,458 @@
+[[Last Modified: Fri Jul 21 19:35:48 EDT 1995]]
+
+[[Look for general news and announcements about NNTP service in the
+newsgroup att.news.  Look for general news and announcements about
+GNUemacs in newsgroup att.emacs.]]
+
+This note is a description of how to use the GNUS newsreading package
+of exptools GNUemacs with the NNTP service offered by cbnews.  It's
+not a general description of how to use GNUS or GNUemacs.  For more
+information about GNUS and/or GNUemacs, see the files under
+$TOOLS/lib/gnuemacs/local/tips/ and, while in GNUemacs, do "M-x info".
+
+Contents of this note:
+
+	INTRODUCTION
+	WHAT IS NNTP SERVICE?
+	OLD vs NEW NNTP SERVICE
+	TCP/IP vs DATAKIT
+	HOW TO USE THE TCP/IP TRANSPORT (the default for GNUS)
+	HOW TO USE THE DATAKIT TRANSPORT
+	THE AUTHENTICATION STEP
+	GNUEMACS VARIABLES
+	NON-EXPTOOLS GNUEMACS USERS
+	COMMON PROBLEMS
+	WHO YA GONNA CALL?
+
+INTRODUCTION
+============
+The cbnews maintainers are now offering NNTP service for reading
+netnews.  We have made some small local modifications to the GNUS
+newsreader package to accommodate the cbnews-specific authentication.
+GNUS is distributed as part of the exptools package "gnuemacs".
+
+WHAT IS NNTP SERVICE?
+=====================
+NNTP is a (de facto) standard way of reading news remotely.  A server
+machine actually stores the netnews articles and administrative
+overhead (this is no different than it always has been).  Users on
+client machines run news readers on those local client machines,
+usually using the same user interface that they've become used to.
+Behind the scenes, rather than directly reading articles and other
+information from disk files, a networked conversation takes place
+between the client and the server.  That's already more than you
+actually need to know about how it works to be able to use it
+effectively.
+
+Advantages for you in reading news via NNTP service include:
+
+(1)  Using local CPU cycles, which will generally give better
+performance than having the equivalent number of users logged directly
+onto the server machine.  (The CPU usage of NNTP daemon processes is
+remarkably low.)
+
+(2)  Using local storage.  Not only can you freely use as much space as
+local policy allows, but files that you might need to include in
+replies, etc, are right where you want them to be.  No untidy hopping from
+machine to machine.
+
+(3)  If you're using GNUS as your newsreader, it's just another thing
+going on in a couple of GNUemacs windows.  You can easily task switch
+between GNUS and other stuff you're doing.  If you were running GNUS
+on a server machine, there probably wouldn't be other things to switch
+to.
+
+(4)  It's what all the cool kids are using!  :-)
+
+The principal user-visible disadvantage to using NNTP is that network
+congestion can sometimes degrade the performance you see.  Whether or
+not that happens to you depends on what you're doing, what the other
+traffic is, what program you're using as your user interface to NNTP
+(i.e., what newsreader), and, of course, what the performance is like on
+the server you normally used.
+
+Since cbnews is providing NNTP versions of the cbnews-supported
+newsreaders and code for converting others, and the GNUemacs providers
+(and me :-) are doing the right thing with GNUS, you should be able to
+switch to NNTP service to check it out with relative ease (of course,
+there is some minor setup, like copying your ~/.newsrc file from
+cbnews to your home machine and going through an authentication step).
+
+Although GNUS users don't actually need it to get started using NNTP,
+we recommend that you ask your system administrator to obtain and
+install the NNTP client package on your home machine.  That package
+will contain the latest connectivity and authentication instructions,
+and will also bring the benefits of NNTP to non-GNUS users at your
+site.  The NNTP client package can be obtained from USTOP.  Check out
+the periodic postings in att.news and att.netnews for more specific
+information.
+
+OLD vs NEW NNTP SERVICE
+=======================
+As of February 1994, cbnews started offering "Netnews Phase II".
+Under this plan, direct login access to the "cbnews*" machines will be
+mostly phased out.  Most customers will eventually be using NNTP
+access served by one of the new "nntp*" machines.
+
+The information in this note applies only to getting going on the new
+"nntp*" servers.  If you haven't been using GNUS via NNTP already,
+then you shouldn't even bother trying to get it going on a "cbnews*"
+machine.
+
+If you are currently using a "cbnews*" machine, you should probably
+switch to an "nntp*" machine as soon as convenient.
+
+TCP/IP vs DATAKIT
+=================
+The cbnews-supported newsreaders can select between using TCP/IP and
+DATAKIT for network transport via a compile-time option, depending on
+what's available on your machine.  For GNUS, you choose at run time
+via GNUemacs variable settings and other minor customizations.  (If
+you use a modem to connect to cbnews, you won't be able to use NNTP.)
+
+Which one should you pick?  Well, obviously, if you only have TCP/IP
+or only have DATAKIT, you should go with the one that you have.  If
+you have both transports available to you, you can easily switch back
+and forth between them (in separate GNUS sessions) and see which gives
+you better performance.  (There are no user interface differences
+between the two, so performance is pretty much the only decision
+factor.)
+
+Based on past experience, most people will see dramatically better
+performance using TCP/IP rather than DATAKIT.  Of course, as they say,
+past performance is no guarantee of future earnings.  Since the
+recommended way for all NNTP users is TCP/IP, maybe the traffic will
+pick up to the extent that it will rival DATAKIT.  Or, maybe it will
+stay as comparably fast as it is today.
+
+HOW TO USE THE TCP/IP TRANSPORT (the default for GNUS)
+======================================================
+To be able to use the TCP/IP transport, you have to be able to reach
+your cbnews server ("nntp*") via telnet.  For a quick test, try:
+
+	$ telnet nntpX.cb.att.com 119
+
+(where nntpX is the appropriate machine for you).  If you get an
+NNTP greeting, you have connectivity.  If you get a message like
+"cannot reach nntpX" or something similar, it means that there is no
+link between the network you're on and the network that the cbnews
+machines are on.  In short, you're not connected to the ATTBL R&D
+Internet, and you can't use the TCP/IP transport.  [[I don't know how
+you can get connected to the R&D Internet; ask your system
+administrator or a knowledgable local user about it.]]
+
+If you are using a SUN, your copy of GNUemacs will have built into it
+a function called open-network-stream.  If you are using some other
+platform but happen to have TCP/IP support, you will probably not have
+that function built in, and you'll have to define it.  To do that, put
+this line somewhere in your ~/.emacs file so that it's evaluated
+before you run GNUS (*don't* do this on a SUN):
+
+	(require 'tcptelnet)
+
+That will define open-network-stream so that it gives you a connection
+via a "telnet" subprocess.  "telnet" must be on your PATH before you
+run GNUemacs.  There is a performance penalty and an inelegance
+factor in connecting this way, so don't use it unless you have to.
+[If your "telnet" command happens to be called something else, like
+"mytelnet", then you can (setq tcptelnet-program-name "mytelnet").]
+
+After you have done the authentication step (see below), use GNUS as
+usual.  Your per-session authentication will be taken care of mostly
+automatically for you.
+
+HOW TO USE THE DATAKIT TRANSPORT
+================================
+To be able to use the DATAKIT transport, you have to have the "dk"
+command and you have to be able to call your cbnews server using "dk".
+
+There is no DATAKIT support built into any version of exptools
+GNUemacs.  To use DATAKIT, put this line somewhere in your ~/.emacs
+file so that it's evaluated before you run GNUS:
+
+	(require 'tcpdk)
+
+That will define open-network-stream so that it gives you a connection
+via a "dk" subprocess.  "dk" must be on your PATH before you run
+GNUemacs.  [If your "dk" command happens to be called something else,
+like "mydk", then you can (setq tcpdk-program-name "mydk").]  
+
+It is possible for a somewhat industrious souls to get this to work
+using "dkcu" instead of "dk" (there's more to it than that, of
+course).  If you are trying that, don't forget that "dkcu" recognizes
+file redirection tilde sequences from the remote end.  That makes it
+both an inconvenience and a security problem.  If you can't cook up a
+"dkcu" that ignores those sequences, we recommend that you not use
+"dkcu" for the NNTP transport.
+
+After you have done the authentication step (see below), use GNUS as
+usual.  Your per-session authentication will be taken care of
+automatically for you.
+
+THE AUTHENTICATION STEP
+=======================
+[[You should watch for official news about authentication and other NNTP
+admin stuff in newsgroups att.news and att.netnews.  The stuff below
+is an unofficial synopsis and is a bit GNUS-ocentric.]]
+
+GNUS was actually written with NNTP in mind, so most of the required
+features are in the standard package.  The cbnews NNTP package uses
+additional user authentication which is not part of standard NNTP.
+Our local mods to GNUS take care of the per-session authentication,
+but you must set up your authorization to begin with.
+
+The process is slightly different for TCP/IP versus DATAKIT.  You
+should use whichever is appropriate to the transport you're using (and
+if you might be using both transports, then go through both types of
+authentication).
+
+For TCP/IP, run this command from your client machine:
+
+	$ telnet nntpX.cb.att.com 1119
+
+(Notice the number is 1119, not 119.)  Of course, "nntpX" is the
+name of a server machine where you already have a login.
+
+For DATAKIT, run this command from your client machine:
+
+	$ dk nntpX.nntpauth
+
+Of course, "nntpX" is the name of a server machine where you
+already have a login.  You may have to supply the area code and
+exchange for the dial string, depending on your local situation.
+
+BTW, the cbnews folks recommend that if your last name starts with
+A-M, you use nntpa.  If N-Z, use nntpb.
+
+If you have trouble with the set up of the authentication, contact
+postmaster@netnews.att.com (this step applies to all NNTP users and is
+independent of GNUS).  If you have authentication problems while in a
+GNUS session, you should see a buffer with advice about what to do to
+resolve it; if you don't see such a buffer, contact me or a GNUemacs
+provider.
+
+After you have gone through the authentication step above, you will
+have given the NNTP server a password for NNTP service.  DON'T FORGET
+IT!  (Good advice, no?)  By the way, don't forget your password.  And,
+just in case you didn't get the idea, you should remember your
+password.
+
+Next, you'll be creating a local file with an MD5 hash of your
+password in it.  Run this program:
+
+	$TOOLS/lib/gnuemacs/local/etc/md5cbnews
+
+It will prompt you for a password (use the same one) and create a file
+called ~/.nntpauth.  By default, the file is created only readable by
+you, and you should leave it that way since anyone with access to that
+file can masquerade as you in an NNTP session.  (If there is no such
+program on your machine, look for
+
+	$TOOLS/lib/gnuemacs/local/etc/md5cbnews.c
+
+and follow directions in the comments at the top.  Or, delete the file
+~/.nntpauth and run any cbnews supported NNTP newsreader (not GNUS) at
+least through the authentication step.  Those programs also create the
+~/.nntpauth file.)
+
+From time to time, you will receive a message about an expired entry
+on the NNTP servers.  When you do, just redo the authentication steps
+and you'll be prompted for a new password.  Locally, re-run md5cbnews
+to regenerate the ~/.nntpauth file with the new password information.
+Did I mention that you should remember that password?
+
+If this is the first time you will be using Phase II servers ("nntp*"
+machines), your ~/.newsrc file will be way out of whack.  The best
+thing you can probably do is get rid of it (and ~/.newsrc.el)
+completely and start over.  At the beginning of your first session,
+GNUS will automatically subscribe you to all of the groups.  (If you
+keep your old ~/.newsrc, you probably won't see articles in most of
+the groups because the "nntp*" machines have very low article numbers,
+and GNUS will think you've already read them.)
+
+See also GNUEMACS VARIABLES below.
+
+GNUEMACS VARIABLES
+==================
+If you were previously using GNUS on one of the cbnews servers, almost
+all of your variable settings will probably be okay.
+
+When you're setting the server name, either via the shell environment
+variable NNTPSERVER or the GNUemacs variable gnus-nntp-server, you
+should use a complete host name (e.g., "oh/cbh/nntpb" or
+"nntpb.cb.att.com") appropriate to the transport you're using.  In any
+case, don't use the DATAKIT form when using TCP/IP transport, or vice
+versa).  (On some inconveniently administered machines, you may have
+to use IP numbers for TCP/IP instead of a host name.  On such
+machines, you will probably be unable to do the command for setting up
+authentication anyhow.  Your only resort is to ask your system
+administrator to fix things up for you.)
+
+For per-session authentication when talking to a Phase II server
+("nntp*"), you should have a line something like this in your
+~/.emacs:
+
+	(setq cbnews-authinfo-method "md5")
+
+This tells GNUS to use the information from your ~/.nntpauth file and
+force-feed the authentication to the server.
+
+For other GNUS-related variables and customizations, see the GNUS
+manual or online "info" subsystem in GNUemacs.  When you get around to
+trying to post something, I recommend you first try some postings to
+one or more of the AT&T internal test groups (e.g., "att.test"), since
+folks often end up with news headers different from what they're
+expecting the first few times around.
+
+NON-EXPTOOLS GNUEMACS USERS
+===========================
+If you have a GNUemacs site that isn't part of exptools, you can still
+use our local mods.  Pick up the following files from any exptools
+machine:
+
+	$TOOLS/lib/gnuemacs/local/lisp/nntp.elc
+	$TOOLS/lib/gnuemacs/local/lisp/nntpcbnews.elc
+	$TOOLS/lib/gnuemacs/local/lisp/tcpdk.elc
+	$TOOLS/lib/gnuemacs/local/lisp/tcptelnet.elc
+
+Our local changes were based on GNUS 3.13, but we believe they will
+work okay with GNUS 3.12 and the beta GNUS 3.14 (untested, though).
+"nntp.elc" is a replacement for the file that comes with GNUS.  The
+other files are local additions.  (If you want the *.el sources for
+these files [not a bad idea, but not strictly necessary], see:
+
+	$TOOLS/lib/gnuemacs/local/tips/GettingSources
+
+You might also like to have a browse around that "tips" directory for
+a copy of this file and other handy tips.
+
+If you have nntp.el from another version of GNUS, you might be able to
+just add this line at the bottom of it:
+
+	(require 'nntpcbnews)
+
+and things might work.  However, nntpcbnews.el redefines some things
+from nntp.el, so there is no guarantee.
+
+COMMON PROBLEMS
+===============
+This stuff works and lots of folks are using it already.  Even before
+the official NNTP service announcement, beta testers were using it for
+months.  As with any other part of life in the '90s, lots of little
+things can go wrong.  Here are some things you can do to try to
+isolate problems if GNUS doesn't just work.
+
+  o  Re-read all of this message.  We get many problem reports that
+     were actually about things done contrary to information in this
+     note.  We don't mind the false alarms much, but you may be on the
+     air sooner if, just like in the SATs, you re-check your work.
+     This note is also updated periodically to reflect the latest
+     info, so if it's been a while since you read it, grab a fresh
+     copy and have another glance ($TOOLS/lib/gnuemacs/local/tips/GNUSandNNTP).
+
+  o  When trying to isolate problems, it is helpful to try things from
+     a fresh GNUemacs session.  That is, fire up GNUemacs and do only
+     the steps necessary to run GNUS.  This will eliminate a lot of
+     unrelated factors.
+
+  o  Are you authorized properly?  If you're using DATAKIT transport,
+     you must have gone through the DATAKIT authorization method.
+     Ditto for TCP/IP.  It's okay to authorize both ways if you might
+     be using both transport methods.  (I'm not sure this matters for
+     Phase II stuff, though.)
+
+  o  Are you specifying your server properly?  Be sure you're using a
+     dialstring (slashes) for DATAKIT transport and domains (dots) for
+     TCP/IP.
+
+  o  If you have an authentication problem after the NNTP dialog
+     starts up, you'll probably see a GNUemacs window with an
+     explanation of what's going on.  The explanations closely
+     parallel the messages seen by users of cbnews-supported
+     newsreaders.  On the other hand, if there is a connectivity
+     problem and you don't get as far as starting up the NNTP dialog,
+     then things may just seem hung.  You might see a message
+     something like "NNTP: Reading {0}..." in the message buffer.
+     This condition is most commonly caused by something mentioned
+     already.
+
+  o  If you session seems hung on startup or dies mysteriously at some
+     later time, you may be able to find valuable clues in the NNTP
+     dialog buffer.  Wait 30 seconds or so to make sure it's not just
+     some temporary bottleneck, then C-g to interrupt GNUS' NNTP
+     interaction.  Depending on where you are in the session, you may
+     have to C-g a second time.  Before quitting GNUS, switch to a
+     buffer named " *nntpd" (notice the leading space in the buffer
+     name; it doesn't show up in the buffer menus).  This is the
+     buffer where the actual NNTP dialog takes place, and a variety of
+     enlightening remarks about failures often show up there.
+
+  o  If all that fails, or if you just run out of patience trying
+     things, then ask for help.  See the next section.
+
+Here are a couple of "fine tuning" notes about running GNUS and NNTP.
+(They're not really "common problems".)
+
+  o  If you are using the DATAKIT transport, your performance is
+     probably on the lame side.  You can improve the situation a bit
+     by using a buffering trick.  I'm not sure exactly why this makes
+     a difference, but I know it makes a significant one.
+
+        * in your ~/.emacs, do this:
+
+                (setq tcpdk-program-name "dknntp")
+
+        * somewhere on your $PATH, create a shell script called
+          "dknntp" with the following contents:
+
+                cat | dk oh/cbh/nntpa.nntp | cat
+
+          (of course, use "nntpb" if that's your server)
+
+     This has the effect of buffering I/O of the "dk" command.  It
+     costs some extra processes, though.
+
+
+   o Suppose GNUS tells you "nntpd not running".  That usually means
+     your session was timed out by the NNTP server or the connection
+     was dropped for some other reason.  If you just type M-x gnus at
+     that point, you probably get an authentication failure and are
+     asked to re-run md5cbnews.  If instead you first quit GNUS ("q")
+     and then do M-x gnus, all should be well (it's not necessary to
+     exit GNUemacs).
+
+     This happens because of the way I put the force-feeding of
+     authentication into the innards of GNUS.  I could fix it with
+     some trouble, but the workaround is so easy that I probably won't
+     bother.
+
+WHO YA GONNA CALL?
+==================
+Get the NNTP Client Package from USTOP; problems with NNTP (but not
+related to GNUS nor GNUemacs) should be reported to
+nntp-support@netnews.att.com (netnews!nntp-support).  Other general
+netnews-related problems should be addressed to
+postmaster@netnews.att.com (netnews!postmaster).  Remember, the
+cbnews folks support NNTP service and the NNTP client package, but
+they're not directly involved in the support of GNUS.
+
+General problems and questions about GNUemacs and/or any of the
+packages provided with it should go to the GNUemacs providers (on an
+exptools machine, run "providers gnuemacs").
+
+Problems and questions about the GNUS mods to use cbnews NNTP can come
+to me or the GNUemacs providers.
+
+Of course, problems and questions about just about any aspect of
+GNUemacs can go to att.emacs or one of the non-AT&T emacs-related
+newsgroups.  You can also consult the local GNUemacs experts (most
+places seem to have at least a few).
+
+Random GNUemacs and GNUS user comments are also welcome in att.emacs
+(apply "random" wherever it suits you best :-).
+-- 
+  Bill@attmail.com                    billc@pegasus.ATT.COM    or
+  (Voice/Fax) +1.908.576.2932         William_J_Carpenter@ATT.COM
+  AT&T Bell Labs                                        LZ 1C-320
+(GNUemacs helper-outer, GNUS-via-NNTP ConnectMeister)
+

@@ -1,0 +1,264 @@
+
+
+
+FIT(1)              UNIX System V (EXPTOOLS)               FIT(1)
+
+
+
+NAME
+     fit - a powerful and easy to use programming language
+
+SYNOPSIS
+     fit [ -n ] [ -I_d_i_r_e_c_t_o_r_y ... ] [ -L_d_i_r_e_c_t_o_r_y ... ]
+          [ [-p]_m_o_d_u_l_e ... ] [ -o|O _o_b_j ]
+     fit [ -n ] [ -I_d_i_r_e_c_t_o_r_y ... ] [ -L_d_i_r_e_c_t_o_r_y ... ]
+          [ [-p]_m_o_d_u_l_e ... ] [ -x['_c_o_d_e'] [ _a_r_g ... ] ]
+
+DESCRIPTION
+     The fit command  is  the  interpreter/debugger  for  FIT,  a
+     powerful  and  easy  to  use programming language.  This man
+     page describes only the fit command, and  assumes  knowledge
+     of  the language.  The references listed at the end describe
+     the language.
+
+     Exit exits from fit.  Control-D also exits when  the  prompt
+     is a single >.
+
+     In interactive use, fit searches for .fitrc and evaluates it
+     as  if  typed  from the keyboard.  Lines typed to the inter-
+     preter can be edited with ksh-like command line editing.
+
+     fit loads each _m_o_d_u_l_e file containing FIT  function  defini-
+     tions.   If  _m_o_d_u_l_e  is  in source form (with a .t suffix by
+     convention), it is compiled and loaded.   If  _m_o_d_u_l_e  is  in
+     object  form  (with  a  .i suffix by convention), it is just
+     loaded.  The result is a _l_o_a_d _m_o_d_u_l_e in object form contain-
+     ing all the functions in all the _m_o_d_u_l_e files loaded.
+
+     -n   When a program is compiled or run with the -n option, a
+          fatal error will not cause the interpreter to be evoked
+          for interactively debugging the program.   This  option
+          should  be  used to compile a production version of the
+          program intended for use by people other than the  pro-
+          gram developer.
+
+     -I   Add _d_i_r_e_c_t_o_r_y to the FIT_INCLUDE search path list.
+
+     -I-  Normally "" include files are searched for first in the
+          including  files  directory, then in the -I directories
+          and finally in the FIT_INCLUDE directories.  <> is  the
+          same  as "" except the including files directory is not
+          searched.  The -I- option allows  the  including  files
+          directory to be replaced by the -I directories (if any)
+          listed before the -I-.
+
+     -L   Add _d_i_r_e_c_t_o_r_y to the FIT_LIBRARY search path list.
+
+     -o   If the -o _o_u_t_p_u_t option is given, the  load  module  is
+          output  to  _o_b_j.   If  function  Main  is  defined in a
+          _m_o_d_u_l_e, then _o_b_j is created  with  execute  permission,
+
+
+
+                   Last change: March 29, 1993                  1
+
+
+
+
+
+
+FIT(1)              UNIX System V (EXPTOOLS)               FIT(1)
+
+
+
+          and  _o_b_j  is runnable as a command.  Arguments given to
+          the _o_b_j command are passed to Main.
+
+     -O   The -O option is the same as the -o option except  that
+          function  Main  must  be  defined and only the required
+          modules will be stored in _o_b_j.
+
+     -p   If the -p _p_a_t_h option is prefixed to _m_o_d_u_l_e, fit  looks
+          for  _m_o_d_u_l_e  in  the  directories specified by the PATH
+          environment variable.  A source _m_o_d_u_l_e  runnable  as  a
+          Unix command has the following _t_r_i_g_g_e_r
+               :; exec fit -p$0 -x "$@"
+          as the first line of _m_o_d_u_l_e.
+
+     -x   If the -x _e_x_e_c_u_t_e option is  given  without  _c_o_d_e,  the
+          load  module  is  immediately executed with Main as the
+          entry point.  Each _a_r_g is passed to  Main.   If  -x  is
+          given  with  _c_o_d_e,  where _c_o_d_e is a FIT expression, the
+          load module is immediately executed using _c_o_d_e  as  the
+          entry  point.   There  must  be no space between -x and
+          _c_o_d_e, and _c_o_d_e must be enclosed in single quotes.  _c_o_d_e
+          can access _a_r_g via the command_arg system array.
+
+ENVIRONMENT VARIABLES
+     If a program asks to include a file - say, file  format.h  -
+     with
+          Macro "format.h"
+     fit always looks for the include file in the directory  con-
+     taining  the  module  asking  for the file.  The FIT_INCLUDE
+     environment variable may be set to specify additional direc-
+     tories to search for include files.  For example,
+          FIT_INCLUDE=.:/usr/abc/include
+     specifies that the module directory, the  current  directory
+     and the /usr/abc/include directory be searched in that order
+     for include files.  The syntax of FIT_INCLUDE  is  identical
+     to that of PATH.  To exclude looking in the module directory
+     for the include file use the following form:
+          Macro <format.h>
+
+     fit looks by default for module files in the current  direc-
+     tory   and  its  own  library  directory.   The  FIT_LIBRARY
+     environment variable may be set to specify  the  directories
+     to search for files.  For example,
+          FIT_LIBRARY=.:/usr/abc/lib:+
+     specifies  that  the  current  directory,  the  /usr/abc/lib
+     directory,  and the default fit library directory (signified
+     by the +) be searched in that order for files.   The  syntax
+     of FIT_LIBRARY is identical to that of PATH.
+
+     In interactive use, fit first searches  for  .fitrc  in  the
+     current directory, then in HOME and then in FIT_LIBRARY.
+
+
+
+
+                   Last change: March 29, 1993                  2
+
+
+
+
+
+
+FIT(1)              UNIX System V (EXPTOOLS)               FIT(1)
+
+
+
+     Command line editing uses similar environment  variables  as
+     ksh: if the value of VISUAL ends in emacs, gmacs, or vi then
+     the corresponding editing is turned on.  If  VISUAL  is  not
+     set,  EDITOR is checked. FIT_HISTFILE is the pathname of the
+     file that will be used to store  the  command  history.  The
+     default  is  .fit_history. FIT_HISTSIZE sets the size of the
+     history file. COLUMNS defines the width of the edit  window.
+     See ksh(1) for more information.
+
+EXAMPLES
+     Start FIT for interactive use:
+          fit
+
+     Start FIT for interactive use with source module main.t  and
+     object module io.i loaded:
+          fit main.t io.i
+
+     Load source modules main.t and utility.t, and  start  execu-
+     tion at entry point Main with arguments input and output:
+          fit main.t utility.t -x input output
+
+     Execute the one-line program given after -x:
+          fit -x'Print |"\n"| (Cut ":" environment["PATH"])[] ""'
+     The program pretty-prints the value of the PATH  environment
+     variable.
+
+     Load module table and start  execution  with  Table  as  the
+     entry point and with argument july_sales:
+          fit table.t -x'Table "july_sales"'
+     or
+          fit table.t -x'Table command_args[]' july_sales
+
+FILES
+     For the files mentioned below, $TOOLS is the directory  with
+     subdirectory bin containing the fit command:
+
+     $TOOLS/lib/fit/fit.lib             FIT function library
+
+     $TOOLS/lib/fit/fit.lst             Optional list of  library
+                                        module files
+
+     $TOOLS/lib/fit/fit.primer          FIT  Primer  document  in
+                                        troff source form
+
+     $TOOLS/lib/fit/examples            Examples of FIT functions
+                                        and programs
+
+     .fitrc                             initialization file
+
+SEE ALSO
+     Lloyd H. Nakatani & Laurence W. Ruedisueli, _T_h_e _F_I_T _P_r_o_g_r_a_m_-
+     _m_i_n_g _L_a_n_g_u_a_g_e _P_r_i_m_e_r, November 1, 1991.
+
+
+
+                   Last change: March 29, 1993                  3
+
+
+
+
+
+
+FIT(1)              UNIX System V (EXPTOOLS)               FIT(1)
+
+
+
+     Lloyd H. Nakatani & Laurence W. Ruedisueli, _F_I_T  _P_r_o_g_r_a_m_m_i_n_g
+     _L_a_n_g_u_a_g_e, November 1, 1991.
+     Both  documents   are   available   from   research!fit   or
+     fit@research.att.com.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   Last change: March 29, 1993                  4
+
+
+

@@ -1,0 +1,71 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/attribute/s.attribut.3"
+.\"
+.PH "'ATTRIBUTE(3RA)'Relational Algebra C++ Library'ATTRIBUTE(3RA)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Attribute, Predicate - field names and operations for relational algebra
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <relation.h>
+
+.SO attribut.dd
+
+.SO predicat.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+Attributes are the names of the fields of a relation.  They are conceptually
+similar to structure member names in C.  Attributes are used to select fields
+in a projection, specify values in a selection and determine which fields will
+participate in joins.
+.P
+Attributes must be associated with a previously declared Domain.  They are
+usually defined with the attribute macro which maps the internal attribute
+name to the C++ identifier.
+.P
+The attribute operations (==,!=,<=,>=,<,>) are used to build predicate
+expressions.  The predicate expressions allow Attributes to be compared to
+other Attributes as well as to variables and constants.
+.P
+The Predicate class provides the logical and (&&), logical or (\(br\(br) and
+not (!) operations.  Unlike Constraints, Predicates permit different Attributes
+to be mixed in the same Predicate expression.  When the select (Relation
+operator::%) or startwalk functions apply the Predicate expression to a
+Relation, all the Attributes must be present in that Relation.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The attribute operations (==,!=,<=,>=,<,>) will fail and abort, and
+relerr.errno will be set if one of the following are true:
+.VL 10 0
+.LI "[R_NOT_INT_ATTRIBUTE]"
+The attribute's type is not INT, but it is being compared to an INT.
+.LI "[R_NOT_FLOAT_ATTRIBUTE]"
+The attribute's type is not FLOAT, but it is being compared to a FLOAT.
+.LI "[R_NOT_STRING_ATTRIBUTE]"
+The attribute's type is not char *, but it is being compared
+to a char * or Pattern.
+.LI "[R_MIXED_DOMAINS]"
+The attributes being compared to each other do not have the same Domain.
+.LE
+.P
+The attribute operations (==,!=,<=,>=,<,>) will fail and abort, and
+syserr.errno will be set if the following is true:
+.VL 30 0
+.LI "[NULL_POINTER]"
+The char * is NULL.
+.LE
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO attributE.ex
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Dm, \*(Er, \*(Ex, \*(Pn, \*(Rl, \*(Tp, intro(3RA)
+.LE

@@ -1,0 +1,46 @@
+Subject: update to xprf document display tool for 630/730 terminals
+
+
+Changes in new release:
+
+1)  Now uses prtfmt to do the formatting if possible.  If prtfmt is not
+    available, xprf will scan the input and produce its own formatting
+    command string.
+
+2)  The grap(1) and gc2pic(1) preprocessors are now supported.
+
+3)  No longer depends on the soexpand tool.  Several other methods will be
+    tried for expanding .so macros before trying soexpand.  If no .so macro
+    expansion tool exists in the user's PATH, an error will be printed and
+    xprf will abort.
+
+4)  The -M option has been removed because the new formatter (prtfmt) is
+    usually smart enough to know when not to include the MM macros.
+
+5)  A new -C option has been added that will run xproof in the current window
+    rather than calling agent to create a new xproof window.
+
+
+
+			    SYNOPSIS
+
+		xprf [-B] [-C] [-L] [troff_options] [filenames]
+
+Xprf is a prtfmt-like front-end to the exptool xproof.  Xprf scans the
+named input files to determine what preprocessors and macro packages
+need to be used to format the files.  After the files have been formatted,
+xprf creates a new window and runs the xproof tool to display the files.
+
+Xprf supports both portrait mode (default) and landscape mode (-L option)
+displays.  The tool will automatically create the largest possible 630/730
+window that it can with the appropriate orientation.  This window will
+then automatically be deleted when you exit xproof.
+
+See the manual page for a complete description of the tool and its options.
+
+
+			AUTHOR/PROVIDER
+
+Dennis A. Vadner
+(708) 979-5627
+ihlpm!vadner

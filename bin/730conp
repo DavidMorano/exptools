@@ -1,0 +1,20 @@
+# 730conp
+#
+# 730conp, 1.3 - gregg.g.wonderly@att.com
+# 10:37:04, 4/6/93
+#
+if [ $# = 0 ]; then
+	echo "usage: $0 [options] from-port-name to-port-name" >&2
+	exit 1
+fi
+
+for j in $*
+do
+	case $j in
+		-showfrom|-showto|-showkbd|-fromcrlf|-tocrlf|-xlatectrl);;
+		-*) echo $0: illegal option "'"$j"'"; exit 1;;
+		Aux|Idm|Main|Main2|SSI|Telnet|I[Ss][Oo]*);;
+		*) echo $0: unrecognized port name: $j >&2;;
+	esac
+done
+exec ${DMDTOOLS:-$TOOLS}/lib/dmdtools/dmdtool `basename $0` ${1+"$@"}

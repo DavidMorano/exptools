@@ -1,0 +1,1152 @@
+Info file: calc.info,    -*-Text-*-
+produced by texinfo-format-buffer
+from file: calc.texinfo
+
+
+
+
+
+This file documents Calc, the GNU Emacs calculator.
+
+Copyright (C) 1990, 1991 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled "GNU General Public License" is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled "GNU General Public License" may be
+included in a translation approved by the author instead of in the
+original English.
+
+
+
+File: calc.info  Node: Algebraic Simplifications, Prev: Default Simplifications, Up: Simplifying Formulas, Next: Unsafe Simplifications
+
+Algebraic Simplifications
+-------------------------
+
+The `a s' command makes simplifications that may be too slow to
+do all the time, or that may not be desirable all of the time.
+If you find these simplifications are worthwhile, you can type
+`m A' to have Calc apply them all the time.
+
+This section describes all simplifications that are performed by
+the `a s' command.  Note that these occur in addition to the
+default simplifications; even if the default simplifications have
+been turned off by an `m O' command, `a s' will turn them
+back on temporarily while it simplifies the formula.
+
+There is a variable, `AlgSimpRules', in which you can put rewrites
+to be applied by `a s'.  Its use is analogous to `EvalRules',
+but without the special cases.  Basically, the simplifier does
+`a r AlgSimpRules' with an infinite repeat count on the whole
+expression being simplified, then it traverses the expression applying
+the built-in rules described below.  If the result is different from
+the original expression, the process repeats with the default
+simplifications (including `EvalRules'), then `AlgSimpRules',
+then the built-in simplifications, and so on.
+
+
+Sums are simplified in two ways.  Constant terms are commuted to the
+end of the sum, so that `a + 2 + b' changes to `a + b + 2'.
+The only exception is that a constant will not be commuted away
+from the first position of a difference, i.e., `2 - x' is not
+commuted to `-x + 2'.
+
+Also, terms of sums are combined by the distributive law, as in
+`x + y + 2 x' to `y + 3 x'.  This always occurs for
+adjacent terms, but `a s' compares all pairs of terms including
+non-adjacent ones.
+
+
+Products are sorted into a canonical order using the commutative
+law.  For example, `b c a' is commuted to `a b c'.
+This allows easier comparison of products; for example, the default
+simplifications will not change `x y + y x' to `2 x y',
+but `a s' will; it first rewrites the sum to `x y + x y',
+and then the default simplifications are able to recognize a sum
+of identical terms.
+
+The canonical ordering used to sort terms of products has the
+property that real-valued numbers, interval forms and infinities
+come first, and are sorted into increasing order.  The `V S'
+command uses the same ordering when sorting a vector.
+
+Sorting of terms of products is inhibited when matrix mode is
+turned on; in this case, Calc will never exchange the order of
+two terms unless it knows at least one of the terms is a scalar.
+
+Products of powers are distributed by comparing all pairs of
+terms, using the same method that the default simplifications
+use for adjacent terms of products.
+
+Even though sums are not sorted, the commutative law is still
+taken into account when terms of a product are being compared.
+Thus `(x + y) (y + x)' will be simplified to `(x + y)^2'.
+A subtle point is that `(x - y) (y - x)' will *not*
+be simplified to `-(x - y)^2'; Calc does not notice that
+one term can be written as a constant (-1) times the other.
+
+A fraction times any expression, `(a:b) x' is changed to
+a quotient involving integers:  `a x / b'.  This is not
+done for floating-point numbers like `0.5', however.  This
+is one reason why you may find it convenient to turn Fraction mode
+on while doing algebra; *Note Fraction Mode::.
+
+
+Quotients are simplified by comparing all terms in the numerator
+with all terms in the denominator for possible cancellation using
+the distributive law.  For example, `a x^2 b / c x^3 d' will
+cancel `x^2' from both sides to get `a b / c x d'.
+(The terms in the denominator will then be rearranged to `c d x'
+as described above.)  If there is any common integer or fractional
+factor in the numerator and denominator, it is cancelled out;
+for example, `(4 x + 6) / 8 x' simplifies to `(2 x + 3) / 4 x'.
+
+Non-constant common factors are not found even by `a s'.  To
+cancel the factor `a' in `(a x + a) / a^2' you could first
+use `j M' on the product `a x' to Merge the numerator to
+`a (1+x)', which can then be simplified successfully.
+
+
+Integer powers of the variable `i' are simplified according
+to the identity `i^2 = -1'.  If you store a new value other
+than the complex number `(0,1)' in `i', this simplification
+will no longer occur.  This is done by `a s' instead of by default
+in case someone (unwisely) uses the name `i' for a variable
+unrelated to complex numbers; it would be unfortunate if Calc
+quietly and automatically changed this formula for reasons the
+user might not have been thinking of.
+
+Square roots of integer or rational arguments are simplified in
+several ways.  (Note that these will be left unevaluated only in
+Symbolic mode.)  First, square integer or rational factors are
+pulled out so that `sqrt(8)' is rewritten as
+`2 sqrt(2)'.  Conceptually speaking this implies factoring
+the argument into primes and moving pairs of primes out of the
+square root, but for reasons of efficiency Calc only looks for
+primes up to 29.
+
+Square roots in the denominator of a quotient are moved to the
+numerator:  `1 / sqrt(3)' changes to `sqrt(3) / 3'.
+The same effect occurs for the square root of a fraction:
+`sqrt(2:3)' changes to `sqrt(6) / 3'.
+
+
+The `%' (modulo) operator is simplified in several ways
+when the modulus `M' is a positive real number.  First, if
+the argument is of the form `x + n' for some real number
+`n', then `n' is itself reduced modulo `M'.  For
+example, `(x - 23) % 10' is simplified to `(x + 7) % 10'.
+
+If the argument is multiplied by a constant, and this constant
+has a common integer divisor with the modulus, then this factor is
+cancelled out.  For example, `12 x % 15' is changed to
+`3 (4 x % 5)' by factoring out 3.  Also, `(12 x + 1) % 15'
+is changed to `3 ((4 x + 1:3) % 5)'.  While these forms may
+not seem "simpler," they allow Calc to discover useful information
+about modulo forms in the presence of declarations.
+
+If the modulus is 1, then Calc can use `int' declarations to
+evaluate the expression.  For example, the idiom `x % 2' is
+often used to check whether a number is odd or even.  As described
+above, `2 n % 2' and `(2 n + 1) % 2' are simplified to
+`2 (n % 1)' and `2 ((n + 1:2) % 1)', respectively; Calc
+can simplify these to 0 and 1 (respectively) if `n' has been
+declared to be an integer.
+
+
+Trigonometric functions are simplified in several ways.  First,
+`sin(arcsin(x))' is simplified to `x', and
+similarly for `cos' and `tan'.  If the argument to
+`sin' is negative-looking, it is simplified to `-sin(x)',
+and similarly for `cos' and `tan'.  Finally, certain
+special values of the argument are recognized;
+*Note Trigonometric and Hyperbolic Functions::.
+
+Trigonometric functions of inverses of different trigonometric
+functions can also be simplified, as in `sin(arccos(x))'
+to `sqrt(1 - x^2)'.
+
+Hyperbolic functions of their inverses and of negative-looking
+arguments are also handled, as are exponentials of inverse
+hyperbolic functions.
+
+No simplifications for inverse trigonometric and hyperbolic
+functions are known, except for negative arguments of `arcsin',
+`arctan', `arcsinh', and `arctanh'.  Note that
+`arcsin(sin(x))' can *not* safely change to
+`x', since this only correct within an integer multiple
+of `2 pi' radians or 360 degrees.  However,
+`arcsinh(sinh(x))' is simplified to `x' if
+`x' is known to be real.
+
+Several simplifications that apply to logarithms and exponentials
+are that `exp(ln(x))', `e^ln(x)', and
+`10^log10(x)' all reduce to `x'.
+Also, `ln(exp(x))', etc., can reduce to `x' if
+`x' is provably real.  The form `exp(x)^y' is simplified
+to `exp(x y)'.  If `x' is a suitable multiple of `pi i'
+(as described above for the trigonometric functions), then `exp(x)'
+or `e^x' will be expanded.  Finally, `ln(x)' is simplified
+to a form involving `pi' and `i' where `x' is provably
+negative, positive imaginary, or negative imaginary.
+
+
+Equations and inequalities are simplified by cancelling factors
+of products, quotients, or sums on both sides.  Inequalities
+change sign if a negative multiplicative factor is cancelled.
+Non-constant multiplicative factors as in `a b = a c' are
+cancelled from equations only if they are provably nonzero (generally
+because they were declared so; *Note Declarations::).  Factors
+are cancelled from inequalities only if they are nonzero and their
+sign is known.
+
+Simplification also replaces an equation or inequality with
+1 or 0 ("true" or "false") if it can through the use of
+declarations.  If `x' is declared to be an integer greater
+than 5, then `x < 3', `x = 3', and `x = 7.5' are
+all simplified to 0, but `x > 3' is simplified to 1.
+By a similar analysis, `abs(x) >= 0' is simplified to 1,
+as is `x^2 >= 0' if `x' is known to be real.
+
+
+File: calc.info  Node: Unsafe Simplifications, Prev: Algebraic Simplifications, Up: Simplifying Formulas, Next: Simplification of Units
+
+"Unsafe" Simplifications
+------------------------
+
+The `a e' (`calc-simplify-extended') [`esimplify'] command is like `a s'
+except that it applies some additional simplifications which are not
+"safe" in all cases.  Use this only if you know the values in your
+formula lie in the restricted ranges for which these simplifications are
+valid.  The symbolic integrator uses `calc-simplify-extended'; one
+effect of this is that the integrator's results must be used with
+caution.  Where an integral table will often attach conditions like "for
+positive `a' only," Calc (like most other symbolic integration programs)
+will simply produce an unqualified result.
+
+Because `a e''s simplifications are unsafe, it is sometimes better
+to type `C-u - 3 a v', which does extended simplification only
+on the top level of the formula without affecting the sub-formulas.
+In fact, `C-u - 3 j v' allows you to target extended simplification
+to any specific part of a formula.
+
+The variable `ExtSimpRules' contains rewrites to be applied by
+the `a e' command.  These are applied in addition to
+`EvalRules' and `AlgSimpRules'.  (The `a r AlgSimpRules'
+step described above is simply followed by an `a r ExtSimpRules' step.)
+
+Following is a complete list of "unsafe" simplifications performed
+by `a e'.
+
+
+Inverse trigonometric or hyperbolic functions, called with their
+corresponding non-inverse functions as arguments, are simplified
+by `a e'.  For example, `arcsin(sin(x))' changes
+to `x'.  Also, `arcsin(cos(x))' and
+`arccos(sin(x))' both change to `pi/2 - x'.
+These simplifications are unsafe because they are valid only for
+values of `x' in a certain range; outside that range, values
+are folded down to the 360-degree range that the inverse trigonometric
+functions always produce.
+
+Powers of powers `(x^a)^b' are simplified to `x^(a b)'
+for all `a' and `b'.  These results will be valid only
+in a restricted range of `x'; for example, in `(x^2)^1:2'
+the powers cancel to get `x', which is valid for positive values
+of `x' but not for negative or complex values.
+
+Similarly, `sqrt(x^a)' and `sqrt(x)^a' are both
+simplified (possibly unsafely) to `x^(a/2)'.
+
+Forms like `sqrt(1 - sin(x)^2)' are simplified to, e.g.,
+`cos(x)'.  Calc has identities of this sort for `sin',
+`cos', `tan', `sinh', and `cosh'.
+
+Arguments of square roots are partially factored to look for
+squared terms that can be extracted.  For example,
+`sqrt(a^2 b^3 + a^3 b^2)' simplifies to `a b sqrt(a+b)'.
+
+The simplifications of `ln(exp(x))', `ln(e^x)',
+and `log10(10^x)' to `x' are unsafe for similar
+reasons.
+
+Common factors are cancelled from products on both sides of an
+equation, even if those factors may be zero:  `a x / b x'
+to `a / b'.  Such factors are never cancelled from
+inequalities:  Even `a e' is not bold enough to reduce
+`a x < b x' to `a < b' (or `a > b', depending
+on whether you believe `x' is positive or negative).
+
+
+File: calc.info  Node: Simplification of Units, Prev: Unsafe Simplifications, Up: Simplifying Formulas
+
+Simplification of Units
+-----------------------
+
+The simplifications described in this section are applied by the
+`u s' (`calc-simplify-units') command.  These are in addition
+to the regular `a s' (but not `a e') simplifications described
+earlier.  *Note Basic Operations on Units::.
+
+The variable `UnitSimpRules' contains rewrites to be applied by
+the `u s' command.  These are applied in addition to `EvalRules'
+and `AlgSimpRules'.
+
+Scalar mode is automatically put into effect when simplifying units.
+*Note Matrix Mode::.
+
+Sums `a + b' involving units are simplified by extracting the
+units from `a' as if by the `u x' command (call the result
+`u_a'), then simplifying the expression `b / u_a'
+using `u b' and `u s'.  If the result has units then the sum
+is inconsistent and is left alone.  Otherwise, it is rewritten
+in terms of the units `u_a'.
+
+If units auto-ranging mode is enabled, products or quotients in
+which the first argument is a number which is out of range for the
+leading unit are modified accordingly.
+
+When cancelling and combining units in products and quotients,
+Calc accounts for unit names that differ only in the prefix letter.
+For example, `2 km m' is simplified to `2000 m^2'.
+However, compatible but different units like `ft' and `in'
+are not combined in this way.
+
+Quotients `a / b' are simplified in two additional ways.  First,
+if `b' is a number or a product beginning with a number, Calc
+computes the reciprocal of this number and moves it to the numerator.
+
+For each pair of unit names from the numerator and denominator
+of a quotient, if the units are compatible (e.g., they are both
+units of area) then they are replaced by the ratio between those
+units.  For example, in `3 s in N / kg cm' the units
+`in / cm' will be replaced by `2.54'.
+
+For powers and square roots, the "unsafe" simplifications
+`(a b)^c' to `a^c b^c', `(a/b)^c' to `a^c / b^c',
+and `(a^b)^c' to `a^(b c)' are done if the powers are
+real numbers.  (These are safe in the context of units because
+all numbers involved can reasonably be assumed to be real.)
+
+Also, if a unit name is raised to a fractional power, and the
+base units in that unit name all occur to powers which are a
+multiple of the denominator of the power, then the unit name
+is expanded out into its base units, which can then be simplified
+according to the previous paragraph.  For example, `acre^1.5'
+is simplified by noting that `1.5 = 3:2', that `acre'
+is defined in terms of `m^2', and that the 2 in the power of
+`m' is a multiple of 2 in `3:2'.  Thus, `acre^1.5' is
+replaced by approximately `(4046 m^2)^1.5', which is then
+changed to `4046^1.5 (m^2)^1.5', then to `257440 m^3'.
+
+The functions `float', `frac', `clean', `abs',
+as well as `floor' and the other integer truncation functions,
+applied to unit names or products or quotients involving units are
+simplified.  For example, `round(1.6 in)' is changed to
+`round(1.6) round(in)'; the lefthand term evaluates to 2,
+and the righthand term simplifies to `in'.
+
+The functions `sin', `cos', and `tan' with arguments
+that have angular units like `rad' or `arcmin' are
+simplified by converting to base units (radians), then evaluating
+with the angular mode temporarily set to radians.
+
+
+File: calc.info  Node: Polynomials, Prev: Simplifying Formulas, Up: Algebra, Next: Calculus
+
+Polynomials
+===========
+
+A "polynomial" is a sum of terms which are coefficients times
+various powers of a "base" variable.  For example, `2 x^2 + 3 x - 4'
+is a polynomial in `x'.  Some formulas can be considered
+polynomials in several different variables:  `1 + 2 x + 3 y + 4 x y^2'
+is a polynomial in both `x' and `y'.  Polynomial coefficients
+are often numbers, but they may in general be any formulas not
+involving the base variable.
+
+The `a f' (`calc-factor') [`factor'] command factors a
+polynomial into a product of terms.  For example, the polynomial
+`x^3 + 2 x^2 + x' is factored into `x*(x+1)^2'.  As another
+example, `a c + b d + b c + a d' is factored into the product
+`(a + b) (c + d)'.
+
+Calc currently has three algorithms for factoring.  Formulas which are
+linear in several variables, such as the second example above, are
+merged according to the distributive law.  Formulas which are
+polynomials in a single variable, with constant integer or fractional
+coefficients, are factored into irreducible linear and/or quadratic
+terms.  The first example above factors into three linear terms
+(`x', `x+1', and `x+1' again).  Finally, formulas
+which do not fit the above criteria are handled by the algebraic
+rewrite mechanism.
+
+Calc's polynomial factorization algorithm works by using the general
+root-finding command (`a P') to solve for the roots of the
+polynomial.  It then looks for roots which are rational numbers
+or complex-conjugate pairs, and converts these into linear and
+quadratic terms, respectively.  Because it uses floating-point
+arithmetic, it may be unable to find terms that involve large
+integers (whose number of digits approaches the current precision).
+Also, irreducible factors of degree higher than quadratic are not
+found, and polynomials in more than one variable are not treated.
+(A more robust factorization algorithm may be included in a future
+version of Calc.)
+
+The rewrite-based factorization method uses rules stored in the variable
+`FactorRules'.  *Note Rewrite Rules::, for a discussion of the
+operation of rewrite rules.  The default `FactorRules' are able
+to factor quadratic forms symbolically into two linear terms,
+`(a x + b) (c x + d)'.  You can edit these rules to include other
+cases if you wish.  To use the rules, Calc builds the formula
+`thecoefs(x, [a, b, c, ...])' where `x' is the polynomial
+base variable and `a', `b', etc., are polynomial coefficients
+(which may be numbers or formulas).  The constant term is written first,
+i.e., in the `a' position.  When the rules complete, they should have
+changed the formula into the form `thefactors(x, [f1, f2, f3, ...])'
+where each `fi' should be a factored term, e.g., `x - ai'.
+Calc then multiplies these terms together to get the complete
+factored form of the polynomial.  If the rules do not change the
+`thecoefs' call to a `thefactors' call, `a f' leaves the
+polynomial alone on the assumption that it is unfactorable.  (Note that
+the function names `thecoefs' and `thefactors' are used only
+as placeholders; there are no actual Calc functions by those names.)
+
+The `H a f' [`factors'] command also factors a polynomial,
+but it returns a list of factors instead of an expression which is the
+product of the factors.  Each factor is represented by a sub-vector
+of the factor, and the power with which it appears.  For example,
+`x^5 + x^4 - 33 x^3 + 63 x^2' factors to `(x + 7) x^2 (x - 3)^2'
+in `a f', or to `[ [x, 2], [x+7, 1], [x-3, 2] ]' in `H a f'.
+If there is an overall numeric factor, it always comes first in the list.
+The functions `factor' and `factors' allow a second argument
+when written in algebraic form; `factor(x,v)' factors `x' with
+respect to the specific variable `v'.  The default is to factor with
+respect to all the variables that appear in `x'.
+
+The `a c' (`calc-collect') [`collect'] command rearranges a
+formula as a
+polynomial in a given variable, ordered in decreasing powers of that
+variable.  For example, given `1 + 2 x + 3 y + 4 x y^2' on
+the stack, `a c x' would produce `(2 + 4 y^2) x + (1 + 3 y)',
+and `a c y' would produce `(4 x) y^2 + 3 y + (1 + 2 x)'.
+The polynomial will be expanded out using the distributive law as
+necessary:  Collecting `x' in `(x - 1)^3' produces
+`x^3 - 3 x^2 + 3 x - 1'.  Terms not involving `x' will
+not be expanded.
+
+The "variable" you specify at the prompt can actually be any
+expression: `a c ln(x+1)' will collect together all terms multiplied
+by `ln(x+1)' or integer powers thereof.  If `x' also appears
+in the formula in a context other than `ln(x+1)', `a c' will
+treat those occurrences as unrelated to `ln(x+1)', i.e., as constants.
+
+The `a x' (`calc-expand') [`expand'] command expands an
+expression by applying the distributive law everywhere.  It applies to
+products, quotients, and powers involving sums.  By default, it fully
+distributes all parts of the expression.  With a numeric prefix argument,
+the distributive law is applied only the specified number of times, then
+the partially expanded expression is left on the stack.
+
+The `a x' and `j D' commands are somewhat redundant.  Use
+`a x' if you want to expand all products of sums in your formula.
+Use `j D' if you want to expand a particular specified term of
+the formula.  There is an exactly analogous correspondence between
+`a f' and `j M'.  (The `j D' and `j M' commands
+also know many other kinds of expansions, such as
+`exp(a + b) = exp(a) exp(b)'.)
+
+Calc's automatic simplifications will sometimes reverse a partial
+expansion.  For example, the first step in expanding `(x+1)^3' is
+to write `(x+1) (x+1)^2'.  If `a x' stops there and tries
+to put this formula onto the stack, though, Calc will automatically
+simplify it back to `(x+1)^3' form.  The solution is to turn
+simplification off first (*Note Simplification Modes::), or to run
+`a x' without a numeric prefix argument so that it expands all
+the way in one step.
+
+The `a a' (`calc-apart') [`apart'] command expands a
+rational function by partial fractions.  A rational function is the
+quotient of two polynomials; `apart' pulls this apart into a
+sum of rational functions with simple denominators.  In algebraic
+notation, the `apart' function allows a second argument that
+specifies which variable to use as the "base"; by default, Calc
+chooses the base variable automatically.
+
+The `a n' (`calc-normalize-rat') [`nrat'] command
+attempts to arrange a formula into a quotient of two polynomials.
+For example, given `1 + (a + b/c) / d', the result would be
+`(b + a c + c d) / c d'.  The quotient is reduced, so that
+`a n' will simplify `(x^2 + 2x + 1) / (x^2 - 1)' by dividing
+out the common factor `x + 1', yielding `(x + 1) / (x - 1)'.
+
+The `a \' (`calc-poly-div') [`pdiv'] command divides
+two polynomials `u' and `v', yielding a new polynomial
+`q'.  If several variables occur in the inputs, the inputs are
+considered multivariate polynomials.  (Calc divides by the variable
+with the largest power in `u' first, or, in the case of equal
+powers, chooses the variables in alphabetical order.)  For example,
+dividing `x^2 + 3 x + 2' by `x + 2' yields `x + 1'.
+The remainder from the division, if any, is reported at the bottom
+of the screen and is also placed in the Trail along with the quotient.
+
+Using `pdiv' in algebraic notation, you can specify the particular
+variable to be used as the base:  `pdiv(a,b,x)'.
+If `pdiv' is given only two arguments (as is always the case with
+the `a \' command), then it does a multivariate division as outlined
+above.
+
+The `a %' (`calc-poly-rem') [`prem'] command divides
+two polynomials and keeps the remainder `r'.  The quotient
+`q' is discarded.  For any formulas `a' and `b', the
+results of `a \' and `a %' satisfy `a = q b + r'.
+(This is analogous to plain `\' and `%', which compute the
+integer quotient and remainder from dividing two numbers.)
+
+The `a /' (`calc-poly-div-rem') [`pdivrem'] command
+divides two polynomials and reports both the quotient and the
+remainder as a vector `[q, r]'.  The `H a /' [`pdivide']
+command divides two polynomials and constructs the formula
+`q + r/b' on the stack.  (Naturally if the remainder is zero,
+this will immediately simplify to `q'.)
+
+The `a g' (`calc-poly-gcd') [`pgcd'] command computes
+the greatest common divisor of two polynomials.  (The GCD actually
+is unique only to within a constant multiplier; Calc attempts to
+choose a GCD which will be unsurprising.)  For example, the `a n'
+command uses `a g' to take the GCD of the numerator and denominator
+of a quotient, then divides each by the result using `a \'.  (The
+definition of GCD ensures that this division can take place without
+leaving a remainder.)
+
+While the polynomials used in operations like `a /' and `a g'
+often have integer coefficients, this is not required.  Calc can also
+deal with polynomials over the rationals or floating-point reals.
+Polynomials with modulo-form coefficients are also useful in many
+applications; if you enter `(x^2 + 3 x - 1) mod 5', Calc
+automatically transforms this into a polynomial over the field of
+integers mod 5:  `(1 mod 5) x^2 + (3 mod 5) x + (4 mod 5)'.
+
+Congratulations and thanks go to Ove Ewerlid
+(`ewerlid@mizar.DoCS.UU.SE'), who contributed many of the
+polynomial routines used in the above commands.
+
+*Note Decomposing Polynomials::, for several useful functions for
+extracting the individual coefficients of a polynomial.
+
+
+File: calc.info  Node: Calculus, Prev: Polynomials, Up: Algebra, Next: Solving Equations
+
+Calculus
+========
+
+The following calculus commands do not automatically simplify their
+inputs or outputs using `calc-simplify'.  You may find it helps
+to do this by hand by typing `a s' or `a e'.  It may also help
+to use `a x' and/or `a c' to arrange a result in the most
+readable way.
+
+* Menu:
+
+* Differentiation::
+* Integration::
+* Customizing the Integrator::
+* Numerical Integration::
+* Taylor Series::
+
+
+File: calc.info  Node: Differentiation, Prev: Calculus, Up: Calculus, Next: Integration
+
+Differentiation
+---------------
+
+The `a d' (`calc-derivative') [`deriv'] command computes
+the derivative of the expression on the top of the stack with respect to
+some variable, which it will prompt you to enter.  Normally, variables
+in the formula other than the specified differentiation variable are
+considered constant, i.e., `deriv(y,x)' is reduced to zero.  With
+the Hyperbolic flag, the `tderiv' (total derivative) operation is used
+instead, in which derivatives of variables are not reduced to zero
+unless those variables are known to be "constant," i.e., independent
+of any other variables.  (The built-in special variables like `pi'
+are considered constant, as are variables that have been declared
+`const'; *Note Declarations::.)
+
+With a numeric prefix argument N, this computes the Nth
+derivative.
+
+When working with trigonometric functions, it is best to switch to
+radians mode first (with `m r').  The derivative of `sin(x)'
+in degrees is `(pi/180) cos(x)', probably not the expected
+answer!
+
+If you use the `deriv' function directly in an algebraic formula,
+you can write `deriv(f,x,x0)' which represents the derivative
+of `f' with respect to `x', evaluated at the point `x=x0'.
+
+If the formula being differentiated contains functions which Calc does
+not know, the derivatives of those functions are produced by adding
+primes (apostrophe characters).  For example, `deriv(f(2x), x)'
+produces `2 f'(2 x)', where the function `f'' represents the
+derivative of `f'.
+
+For functions you have defined with the `Z F' command, Calc expands
+the functions according to their defining formulas unless you have
+also defined `f'' suitably.  For example, suppose we define
+`sinc(x) = sin(x)/x' using `Z F'.  If we then differentiate
+the formula `sinc(2 x)', the formula will be expanded to
+`sin(2 x) / (2 x)' and differentiated.  However, if we also
+define `sinc'(x) = dsinc(x)', say, then Calc will write the
+result as `2 dsinc(x)'.  *Note Algebraic Definitions::.
+
+For multi-argument functions `f(x,y,z)', the derivative with respect to
+the first argument is written `f'(x,y,z)'; derivatives with respect to
+the other arguments are `f'2(x,y,z)' and `f'3(x,y,z)'.  Various
+higher-order derivatives can be formed in the obvious way, e.g.,
+`f''(x)' (the second derivative of `f') or `f''2'3(x,y,z)' (`f'
+differentiated with respect to each argument once).
+
+
+File: calc.info  Node: Integration, Prev: Differentiation, Up: Calculus, Next: Customizing the Integrator
+
+Integration
+-----------
+
+The `a i' (`calc-integral') [`integ'] command computes the
+indefinite integral of the expression on the top of the stack with
+respect to a variable.  The integrator is not guaranteed to work for
+all integrable functions, but it is able to integrate several large
+classes of formulas.  In particular, any polynomial or rational function
+(a polynomial divided by a polynomial) is acceptable.  (Rational functions
+don't have to be in explicit quotient form, however; `x/(1+x^-2)'
+is not strictly a quotient of polynomials, but it is equivalent to
+`x^3/(x^2+1)', which is.)  Also, square roots of terms involving
+`x' and `x^2' may appear in rational functions being
+integrated.  Finally, rational functions involving trigonometric or
+hyperbolic functions can be integrated.
+
+If you use the `integ' function directly in an algebraic formula,
+you can also write `integ(f,x,v)' which expresses the resulting
+indefinite integral in terms of variable `v' instead of `x'.
+With four arguments, `integ(f(x),x,a,b)' represents a definite
+integral from `a' to `b'.
+
+Please note that the current implementation of Calc's integrator sometimes
+produces results that are significantly more complex than they need to
+be.  For example, the integral Calc finds for `1/(x+sqrt(x^2+1))'
+is several times more complicated than the answer Mathematica
+returns for the same input, although the two forms are numerically
+equivalent.  Also, any indefinite integral should be considered to have
+an arbitrary constant of integration added to it, although Calc does not
+write an explicit constant of integration in its result.  For example,
+Calc's solution for `1/(1+tan(x))' differs from the solution given
+in the *CRC Math Tables* by a constant factor of `pi i / 2',
+due to a different choice of constant of integration.
+
+The Calculator remembers all the integrals it has done.  If conditions
+change in a way that would invalidate the old integrals, they will be
+thrown out.  If you suspect this is not happening when it should,
+use the `calc-flush-caches' command; *Note Caches::.
+
+Calc normally will pursue integration by substitution or integration by
+parts up to 3 nested times before abandoning an approach as fruitless.
+If the integrator is taking too long, you can lower this limit by storing
+a number (like 2) in the variable `IntegLimit'.  (The `s I'
+command is a convenient way to edit `IntegLimit'.)  If this variable
+has no stored value or does not contain a nonnegative integer, a limit
+of 3 is used.  The lower this limit is, the greater the chance that Calc
+will be unable to integrate a function it could otherwise handle.  Raising
+this limit allows the Calculator to solve more integrals, though the time
+it takes may grow exponentially.  You can monitor the integrator's actions
+by creating an Emacs buffer called `*Trace*'.  If such a buffer
+exists, the `a i' command will write a log of its actions there.
+
+If you want to manipulate integrals in a purely symbolic way, you can
+set the integration nesting limit to 0 to prevent all but fast
+table-lookup solutions of integrals.  You might then wish to define
+rewrite rules for integration by parts, various kinds of substitutions,
+and so on.  *Note Rewrite Rules::.
+
+
+File: calc.info  Node: Customizing the Integrator, Prev: Integration, Up: Calculus, Next: Numerical Integration
+
+Customizing the Integrator
+--------------------------
+
+Calc has two built-in rewrite rules called `IntegRules' and
+`IntegAfterRules' which you can edit to define new integration
+methods.  *Note Rewrite Rules::.  At each step of the integration process,
+Calc wraps the current integrand in a call to the fictitious function
+`integtry(EXPR,VAR)', where EXPR is the
+integrand and VAR is the integration variable.  If your rules
+rewrite this to be a plain formula (not a call to `integtry', then
+Calc will use this formula as the integral of EXPR.  For example,
+the rule `integtry(mysin(x),x) := -mycos(x)' would define a rule to
+integrate a function `mysin' that acts like the sine function.
+Then, putting `4 mysin(2y+1)' on the stack and typing `a i y'
+will produce the integral `-2 mycos(2y+1)'.  Note that Calc has
+automatically made various transformations on the integral to allow it
+to use your rule; integral tables generally give rules for
+`mysin(a x + b)', but you don't need to use this generality in
+your `IntegRules'.
+
+Your rule may do further integration by calling `integ'.  For
+example, `integtry(twice(u),x) := twice(integ(u))' allows Calc
+to integrate `twice(sin(x))' to get `twice(-cos(x))'.
+Note that `integ' was called with only one argument.  This notation
+is allowed only within `IntegRules'; it means "integrate this
+with respect to the same integration variable."  If Calc is unable
+to integrate `u', the integration that invoked `IntegRules'
+also fails.  Thus integrating `twice(f(x))' fails, returning the
+unevaluated integral `integ(twice(f(x)), x)'.  It is still legal
+to call `integ' with two or more arguments, however; in this case,
+if `u' is not integrable, `twice' itself will still be
+integrated:  If the above rule is changed to `... := twice(integ(u,x))',
+then integrating `twice(f(x))' will yield `twice(integ(f(x),x))'.
+
+If a rule instead produces the formula `integsubst(SEXPR,
+SVAR)', either replacing the top-level `integtry' call or
+nested anywhere inside the expression, then Calc will apply the
+substitution `U = SEXPR(SVAR)' to try to
+integrate the original EXPR.  For example, the rule
+`sqrt(a) := integsubst(sqrt(x),x)' says that if Calc ever finds
+a square root in the integrand, it should attempt the substitution
+`u = sqrt(x)'.  (This particular rule is unnecessary because
+Calc always tries "obvious" substitutions where SEXPR actually
+appears in the integrand.)  The variable SVAR may be the same
+as the VAR that appeared in the call to `integtry', but
+it need not be.
+
+When integrating according to an `integsubst', Calc uses the
+equation solver to find the inverse of SEXPR (if the integrand
+refers to VAR anywhere except in subexpressions that exactly
+match SEXPR).  It uses the differentiator to find the derivative
+of SEXPR and/or its inverse (it has two methods that use one
+derivative or the other).  You can also specify these items by adding
+extra arguments to the `integsubst' your rules construct; the
+general form is `integsubst(SEXPR, SVAR, SINV,
+SPRIME)', where SINV is the inverse of SEXPR (still
+written as a function of SVAR), and SPRIME is the
+derivative of SEXPR with respect to SVAR.  If you don't
+specify these things, and Calc is not able to work them out on its
+own with the information it knows, then your substitution rule will
+work only in very specific, simple cases.
+
+Calc applies `IntegRules' as if by `C-u 1 a r IntegRules';
+in other words, Calc stops rewriting as soon as any rule in your rule
+set succeeds.  (If it weren't for this, the `integsubst(sqrt(x),x)'
+example above would keep on adding layers of `integsubst' calls
+forever!)
+
+Another set of rules, stored in `IntegSimpRules', are applied
+every time the integrator uses `a s' to simplify an intermediate
+result.  For example, putting the rule `twice(x) := 2 x' into
+`IntegSimpRules' would tell Calc to convert the `twice'
+function into a form it knows whenever integration is attempted.
+
+One more way to influence the integrator is to define a function with
+the `Z F' command (*Note Algebraic Definitions::).  Calc's
+integrator automatically expands such functions according to their
+defining formulas, even if you originally asked for the function to
+be left unevaluated for symbolic arguments.  (Certain other Calc
+systems, such as the differentiator and the equation solver, also
+do this.)
+
+Sometimes Calc is able to find a solution to your integral, but it
+expresses the result in a way that is unnecessarily complicated.  If
+this happens, you can either use `integsubst' hints as described
+above to try to hint at a more direct path to the desired result, or
+you can use `IntegAfterRules'.  This is an extra rule set that
+runs after the main integrator returns its result; basically, Calc does
+an `a r IntegAfterRules' on the result before showing it to you.
+(It also does an `a s', without `IntegSimpRules', after that
+to further simplify the result.)  For example, Calc's integrator
+sometimes produces expressions of the form `ln(1+x) - ln(1-x)';
+the default `IntegAfterRules' rewrite this into the more readable
+form `2 arctanh(x)'.  Note that, unlike `IntegRules',
+`IntegSimpRules' and `IntegAfterRules' are applied any number
+of times until no further changes are possible.  Rewriting by
+`IntegAfterRules' occurs only after the main integrator has
+finished, not at every step as for `IntegRules' and
+`IntegSimpRules'.
+
+
+File: calc.info  Node: Numerical Integration, Prev: Customizing the Integrator, Up: Calculus, Next: Taylor Series
+
+Numerical Integration
+---------------------
+
+If you want a purely numerical answer to an integration problem, you can
+use the `a I' (`calc-num-integral') [`ninteg'] command.  This
+command prompts for an integration variable, a lower limit, and an
+upper limit.  Except for the integration variable, all other variables
+that appear in the integrand formula must have stored values.  (A stored
+value, if any, for the integration variable itself is ignored.)
+
+Numerical integration works by evaluating your formula at many points in
+the specified interval.  Calc uses an "open Romberg" method; this means
+that it does not evaluate the formula actually at the endpoints (so that
+it is safe to integrate `sin(x)/x' from zero, for example).  Also,
+the Romberg method works especially well when the function being
+integrated is fairly smooth.  If the function is not smooth, Calc will
+have to evaluate it at quite a few points before it can accurately
+determine the value of the integral.
+
+Integration is much faster when the current precision is small.  It is
+best to set the precision to the smallest acceptable number of digits
+before you use `a I'.  If Calc appears to be taking too long, press
+`C-g' to halt it and try a lower precision.  If Calc still appears
+to need hundreds of evaluations, check to make sure your function is
+well-behaved in the specified interval.
+
+It is possible for the lower integration limit to be `-inf' (minus
+infinity).  Likewise, the upper limit may be plus infinity.  Calc
+internally transforms the integral into an equivalent one with finite
+limits.
+
+
+File: calc.info  Node: Taylor Series, Prev: Numerical Integration, Up: Calculus
+
+Taylor Series
+-------------
+
+The `a t' (`calc-taylor') [`taylor'] command computes a power series
+expansion or Taylor series of a function.  You specify the variable and
+the desired number of terms.  You may give an expression of the form
+`VAR = A' or `VAR - A' instead of just a variable to produce a Taylor
+expansion about the point A.  You may specify the number of terms with a
+numeric prefix argument; otherwise the command will prompt you for the
+number of terms.  Note that many series expansions have coefficients of
+zero for some terms, so you may appear to get fewer terms than you asked
+for.
+
+If the `a i' command is unable to find a symbolic integral for a
+function, you can get an approximation by integrating the function's
+Taylor series.
+
+
+File: calc.info  Node: Solving Equations, Prev: Calculus, Up: Algebra, Next: Numerical Solutions
+
+Solving Equations
+=================
+
+The `a S' (`calc-solve-for') [`solve'] command rearranges
+an equation to solve for a specific variable.  An equation is an
+expression of the form `L = R'.  For example, the command `a S x'
+will rearrange `y = 3x + 6' to the form, `x = y/3 - 2'.  If the
+input is not an equation, it is treated like an equation of the
+form `X = 0'.
+
+This command also works for inequalities, as in `y < 3x + 6'.
+Some inequalities cannot be solved where the analogous equation could
+be; for example, solving `a < b c' for `b' is impossible
+without knowing the sign of `c'.  In this case, `a S' will
+produce the result `b != a/c' (using the not-equal-to operator)
+to signify that the direction of the inequality was unknown.  The
+inequality `a <= b c' is not even partially solved.
+*Note Declarations::, for a way to tell Calc that the signs of the
+variables in a formula are in fact known.
+
+Two useful commands for working with the result of `a S' are
+`a .' (*Note Logical Operations::), which converts `x = y/3 - 2'
+to `y/3 - 2', and `s l' (*Note Let Command::) which evaluates
+a formula with `x' set equal to `y/3 - 2'.
+
+* Menu:
+
+* Multiple Solutions::
+* Solving Systems of Equations::
+* Decomposing Polynomials::
+
+
+File: calc.info  Node: Multiple Solutions, Prev: Solving Equations, Up: Solving Equations, Next: Solving Systems of Equations
+
+Multiple Solutions
+------------------
+
+Some equations have more than one solution.  The Hyperbolic flag
+(`H a S') [`fsolve'] tells the solver to report the fully
+general family of solutions.  It will invent variables `n1',
+`n2', ..., which represent independent arbitrary integers, and
+`s1', `s2', ..., which represent independent arbitrary
+signs (either +1 or -1).  If you don't use the Hyperbolic
+flag, Calc will use zero in place of all arbitrary integers, and plus
+one in place of all arbitrary signs.  Note that variables like `n1'
+and `s1' are not given any special interpretation in Calc except by
+`calc-solve-for' itself.  As usual, you can use the `s l'
+(`calc-let') command to obtain solutions for various actual values
+of these variables.
+
+For example, `' x^2 = y RET H a S x RET' solves to
+get `x = s1 sqrt(y)', indicating that the two solutions to the
+equation are `sqrt(y)' and `-sqrt(y)'.  Another way to
+think about it is that the square-root operation is really a
+two-valued function; since every Calc function must return a
+single result, `sqrt' chooses to return the positive result.
+Then `H a S' doctors this result using `s1' to indicate
+the full set of possible values of the mathematical square-root.
+
+There is a similar phenomenon going the other direction:  Suppose
+we solve `sqrt(y) = x' for `y'.  Calc squares both sides
+to get `y = x^2'.  This is correct, except that it introduces
+some dubious solutions.  Consider solving `sqrt(y) = -3':
+Calc will report `y = 9' as a valid solution, which is true
+in the mathematical sense of square-root, but false (there is no
+solution) for the actual Calc positive-valued `sqrt'.  This
+happens for both `a S' and `H a S'.
+
+If you store a positive integer in the Calc variable `GenCount',
+then Calc will generate formulas of the form `as(N)' for
+arbitrary signs, and `an(N)' for arbitrary integers,
+where N represents succeeding values taken by incrementing
+`GenCount' by one.  While the normal arbitrary sign and
+integer symbols start over at `s1' and `n1' with each
+new Calc command, the `GenCount' approach will give each
+arbitrary value a name that is unique throughout the entire Calc
+session.  Also, the arbitrary values are function calls instead
+of variables, which is advantageous in some cases.  For example,
+you can make a rewrite rule that recognizes all arbitrary signs
+using a pattern like `as(n)'.  The `s l' command only works
+on variables, but you can use the `a b' (`calc-substitute')
+command to substitute actual values for function calls like `as(3)'.
+
+The `s G' (`calc-edit-GenCount') command is a convenient
+way to create or edit this variable.  Press `M-# M-#' to finish.
+
+If you have not stored a value in `GenCount', or if the value
+in that variable is not a positive integer, the regular
+`s1'/`n1' notation is used.
+
+With the Inverse flag, `I a S' [`finv'] treats the expression
+on top of the stack as a function of the specified variable and solves
+to find the inverse function, written in terms of the same variable.
+For example, `I a S x' inverts `2x + 6' to `x/2 - 3'.
+You can use both Inverse and Hyperbolic [`ffinv'] to obtain a
+fully general inverse, as described above.
+
+Some equations, specifically polynomials, have a known, finite number
+of solutions.  The `a P' (`calc-poly-roots') [`roots']
+command uses `H a S' to solve an equation in general form, then, for
+all arbitrary-sign variables like `s1', and all arbitrary-integer
+variables like `n1' for which `n1' only usefully varies over
+a finite range, it expands these variables out to all their possible
+values.  The results are collected into a vector, which is returned.
+For example, `roots(x^4 = 1, x)' returns the four solutions
+`[1, -1, (0, 1), (0, -1)]'.  Generally an Nth degree
+polynomial will always have N roots on the complex plane.
+(If you have given a `real' declaration for the solution
+variable, then only the real-valued solutions, if any, will be
+reported; *Note Declarations::.)
+
+Note that because `a P' uses `H a S', it is able to deliver
+symbolic solutions if the polynomial has symbolic coefficients.  Also
+note that Calc's solver is not able to get exact symbolic solutions
+to all polynomials.  Polynomials containing powers up to `x^4'
+can always be solved exactly; polynomials of higher degree sometimes
+can be:  `x^6 + x^3 + 1' is converted to `(x^3)^2 + (x^3) + 1',
+which can be solved for `x^3' using the quadratic equation, and then
+for `x' by taking cube roots.  But in many cases, like
+`x^6 + x + 1', Calc does not know how to rewrite the polynomial
+into a form it can solve.  The `a P' command can still deliver a
+list of numerical roots, however, provided that symbolic mode (`m s')
+is not turned on.  (If you work with symbolic mode on, recall that the
+`N' (`calc-eval-num') key is a handy way to reevaluate the
+formula on the stack with symbolic mode temporarily off.)  Naturally,
+`a P' can only provide numerical roots if the polynomial coefficents
+are all numbers (real or complex).
+
+
+File: calc.info  Node: Solving Systems of Equations, Prev: Multiple Solutions, Up: Solving Equations, Next: Decomposing Polynomials
+
+Solving Systems of Equations
+----------------------------
+
+You can also use the commands described above to solve systems of
+simultaneous equations.  Just create a vector of equations, then
+specify a vector of variables for which to solve.  (You can omit
+the surrounding brackets when entering the vector of variables
+at the prompt.)
+
+For example, putting `[x + y = a, x - y = b]' on the stack
+and typing `a S x,y RET' produces the vector of solutions
+`[x = a - (a-b)/2, y = (a-b)/2]'.  The result vector will
+have the same length as the variables vector, and the variables
+will be listed in the same order there.  Note that the solutions
+are not always simplified as far as possible; the solution for
+`x' here could be improved by an application of `j M'
+(`calc-sel-merge') on the `/' sign, followed by
+`M-2 j v' also on the `/' sign (which runs `a s',
+`calc-simplify', to simplify the quotient).
+
+Calc's algorithm works by trying to eliminate one variable at a
+time by solving one of the equations for that variable and then
+substituting into the other equations.  Calc will try all the
+possiblities, but you can speed things up by noting that Calc
+first tries to eliminate the first variable with the first
+equation, then the second variable with the second equation,
+and so on.  It also helps to put the simpler (e.g., more linear)
+equations toward the front of the list.  Calc's algorithm will
+solve any system of linear equations, and also many kinds of
+nonlinear systems.
+
+Normally there will be as many variables as equations.  If you
+give fewer variables than equations (an "over-determined" system
+of equations), Calc will find a partial solution.  For example,
+typing `a S y RET' with the above system of equations
+would produce `[y = a - x]'.  There are now several ways to
+express this solution in terms of the original variables; Calc uses
+the first one that it finds.  You can control the choice by adding
+variable specifiers of the form `elim(V)' to the
+variables list.  This says that V should be eliminated from
+the equations; the variable will not appear at all in the solution.
+For example, typing `a S y,elim(x)' would yield
+`[y = a - (b+a)/2]'.
+
+If the variables list contains only `elim' specifiers,
+Calc simply eliminates those variables from the equations
+and then returns the resulting equations.  For example,
+`a S elim(x)' produces `[a - 2 y = b]'.  Every variable
+eliminated will reduce the number of equations in the system
+by one.
+
+Again, `a S' gives you one solution to the system of
+equations.  If there are several solutions, you can use `H a S'
+to get a general family of solutions, or, if there is a finite
+number of solutions, you can use `a P' to get a list.  (In
+the latter case, the result will take the form of a matrix where
+the rows are different solutions and the columns correspond to the
+variables you requested.)
+
+Another way to deal with certain kinds of overdetermined systems of
+equations is the `a F' command, which does least-squares fitting
+to satisfy the equations.  *Note Curve Fitting::.
+
+
+File: calc.info  Node: Decomposing Polynomials, Prev: Solving Systems of Equations, Up: Solving Equations
+
+Decomposing Polynomials
+-----------------------
+
+The `poly' function takes a polynomial and a variable as
+arguments, and returns a vector of polynomial coefficients (constant
+coefficient first).  For example, `poly(x^3 + 2 x, x)' returns
+`[0, 2, 0, 1]'.  If the input is not a polynomial in `x',
+the call to `poly' is left in symbolic form.  If the input does
+not involve the variable `x', the input is returned in a list
+of length one, representing a polynomial with only a constant
+coefficient.  The call `poly(x, x)' returns the vector `[0, 1]'.
+The last element of the returned vector is guaranteed to be nonzero;
+note that `poly(0, x)' returns the empty vector `[]'.
+Note that `x' may actually be any formula; for example,
+`poly(sin(x)^2 - sin(x) + 3, sin(x))' returns `[3, -1, 1]'.
+
+To get the `x^k' coefficient of polynomial `p', use
+`poly(p, x)_(k+1)'.  To get the degree of polynomial `p',
+use `vlen(poly(p, x)) - 1'.  For example, `poly((x+1)^4, x)'
+returns `[1, 4, 6, 4, 1]', so `poly((x+1)^4, x)_(2+1)'
+gives the `x^2' coefficient of this polynomial, 6.
+
+One important feature of the solver is its ability to recognize
+formulas which are "essentially" polynomials.  This ability is
+made available to the user through the `gpoly' function, which
+is used just like `poly':  `gpoly(EXPR, VAR)'.
+If EXPR is a polynomial in some term which includes VAR, then
+this function will return a vector `[X, C, A]'
+where X is the term that depends on VAR, C is a
+vector of polynomial coefficients (like the one returned by `poly'),
+and A is a multiplier which is usually 1.  Basically,
+`EXPR = A*(C_1 + C_2 X +
+C_3 X^2 + ...)'.  The last element of C is
+guaranteed to be non-zero, and C will not equal `[1]'
+(i.e., the trivial decomposition EXPR = X is not
+considered a polynomial).  One side effect is that `gpoly(x, x)'
+and `gpoly(6, x)', both of which might be expected to recognize
+their arguments as polynomials, will not because the decomposition
+is considered trivial.
+
+For example, `gpoly((x-2)^2, x)' returns `[x, [4, -4, 1], 1]',
+since the expanded form of this polynomial is `4 - 4 x + x^2'.
+
+The term X may itself be a polynomial in VAR.  This is
+done to reduce the size of the C vector.  For example,
+`gpoly(x^4 + x^2 - 1, x)' returns `[x^2, [-1, 1, 1], 1]',
+since a quadratic polynomial in `x^2' is easier to solve than
+a quartic polynomial in `x'.
+
+A few more examples of the kinds of polynomials `gpoly' can
+discover:
+
+     sin(x) - 1               [sin(x), [-1, 1], 1]
+     x + 1/x - 1              [x, [1, -1, 1], 1/x]
+     x + 1/x                  [x^2, [1, 1], 1/x]
+     x^3 + 2 x                [x^2, [2, 1], x]
+     x + x^2:3 + sqrt(x)      [x^1:6, [1, 1, 0, 1], x^1:2]
+     x^(2a) + 2 x^a + 5       [x^a, [5, 2, 1], 1]
+     (exp(-x) + exp(x)) / 2   [e^(2 x), [0.5, 0.5], e^-x]
+
+The `poly' and `gpoly' functions accept a third integer argument
+which specifies the largest degree of polynomial that is acceptable.
+If this is `n', then only C vectors of length `n+1'
+or less will be returned.  Otherwise, the `poly' or `gpoly'
+call will remain in symbolic form.  For example, the equation solver
+can handle quartics and smaller polynomials, so it calls
+`gpoly(EXPR, VAR, 4)' to discover whether EXPR
+can be treated by its linear, quadratic, cubic, or quartic formulas.
+
+The `pdeg' function computes the degree of a polynomial;
+`pdeg(p,x)' is the highest power of `x' that appears in
+`p'.  This is the same as `vlen(poly(p,x))-1', but is
+much more efficient.  If `p' is constant with respect to `x',
+then `pdeg(p,x) = 0'.  If `p' is not a polynomial in `x'
+(e.g., `pdeg(2 cos(x), x)', the function remains unevaluated.
+It is possible to omit the second argument `x', in which case
+`pdeg(p)' returns the highest total degree of any term of the
+polynomial, counting all variables that appear in `p'.  Note
+that `pdeg(c) = pdeg(c,x) = 0' for any nonzero constant `c';
+the degree of the constant zero is considered to be `-inf'
+(minus infinity).
+
+The `plead' function finds the leading term of a polynomial.
+Thus `plead(p,x)' is equivalent to `poly(p,x)_vlen(poly(p,x))',
+though again more efficient.  In particular, `plead((2x+1)^10, x)'
+returns 1024 without expanding out the list of coefficients.  The
+value of `plead(p,x)' will be zero only if `p = 0'.
+
+The `pcont' function finds the "content" of a polynomial.  This
+is the greatest common divisor of all the coefficients of the polynomial.
+With two arguments, `pcont(p,x)' effectively uses `poly(p,x)'
+to get a list of coefficients, then uses `pgcd' (the polynomial
+GCD function) to combine these into an answer.  For example,
+`pcont(4 x y^2 + 6 x^2 y, x)' is `2 y'.  The content is
+basically the "biggest" polynomial that can be divided into `p'
+exactly.  The sign of the content is the same as the sign of the leading
+coefficient.
+
+With only one argument, `pcont(p)' computes the numerical
+content of the polynomial, i.e., the `gcd' of the numerical
+coefficients of all the terms in the formula.  Note that `gcd'
+is defined on rational numbers as well as integers; it computes
+the `gcd' of the numerators and the `lcm' of the
+denominators.  Thus `pcont(4:3 x y^2 + 6 x^2 y)' returns 2:3.
+Dividing the polynomial by this number will clear all the
+denominators, as well as dividing by any common content in the
+numerators.  The numerical content of a polynomial is negative only
+if all the coefficients in the polynomial are negative.
+
+The `pprim' function finds the "primitive part" of a
+polynomial, which is simply the polynomial divided (using `pdiv'
+if necessary) by its content.  If the input polynomial has rational
+coefficients, the result will have integer coefficients in simplest
+terms.
+
+

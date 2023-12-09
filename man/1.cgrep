@@ -1,0 +1,1056 @@
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+           cgrep - shows context of matching patterns found in files
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccggggrrrreeeepppp [ _o_p_t_i_o_n_s ] [-e] _p_a_t_t_e_r_n_s [ _f_i_l_e_s ]
+
+          ccccggggrrrreeeepppp [ _o_p_t_i_o_n_s ] -f _p_a_t_t_e_r_n__f_i_l_e [ _f_i_l_e_s ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _c_g_r_e_p provides all the features of _g_r_e_p, _e_g_r_e_p, and _f_g_r_e_p,
+          with greatly enhanced performance (see the section on PPPPEEEERRRR----
+          FFFFOOOORRRRMMMMAAAANNNNCCCCEEEE) along with many additional features, one of which
+          is the ability to output the context (surrounding lines) of
+          the matching lines.  The use of _c_g_r_e_p is upward-compatible
+          with that of _g_r_e_p, _e_g_r_e_p (using the ----EEEE option), or _f_g_r_e_p
+          (using the ----FFFF option).  _c_g_r_e_p searches _f_i_l_e_s for lines
+          matching _p_a_t_t_e_r_n_s and normally sends to standard output
+          matching lines, possibly with a user-specified context win-
+          dow.  The window may be specified as a constant number of
+          lines before and after the matching lines (the number of
+          context lines before the matching lines and the number after
+          the matching lines may differ); or by specifying beginning
+          and ending _d_e_l_i_m_i_t_e_r_s (these may differ); or as any combina-
+          tion thereof.  The windows need not be delimited at the
+          nearest occurrence of _d_e_l_i_m_i_t_e_r_s, as any number of matches
+          to the beginning and ending _d_e_l_i_m_i_t_e_r_s may be independently
+          specified.  The lines delimiting the beginning or end of the
+          window may independently be either included in or excluded
+          from the window.
+
+          By default, the _p_a_t_t_e_r_n_s and _d_e_l_i_m_i_t_e_r_s are taken to be lim-
+          ited regular _e_x_p_r_e_s_s_i_o_n_s as in _g_r_e_p; however, full regular
+          _e_x_p_r_e_s_s_i_o_n_s as in _e_g_r_e_p, or fixed _s_t_r_i_n_g_s as in _f_g_r_e_p, may
+          also be used.
+
+          More than one _p_a_t_t_e_r_n or _d_e_l_i_m_i_t_e_r can be specified by
+          enclosing the entire set of _p_a_t_t_e_r_n_s or _d_e_l_i_m_i_t_e_r_s within
+          quotes and separating individual _p_a_t_t_e_r_n_s or _d_e_l_i_m_i_t_e_r_s with
+          newlines.  More than one _p_a_t_t_e_r_n or _d_e_l_i_m_i_t_e_r can also be
+          specified by using _e_g_r_e_p mode (the ----EEEE option) and separating
+          individual _p_a_t_t_e_r_n_s or _d_e_l_i_m_i_t_e_r_s with `||||' .  More than one
+          _p_a_t_t_e_r_n can also be specified by using the ----ffff option and
+          listing the _p_a_t_t_e_r_n_s, one per line in a file.  _p_a_t_t_e_r_n_s can
+          also be specified dynamically from the input itself by use
+          of the ----tttt or ++++tttt option.  _c_g_r_e_p also provides two special-
+          purpose options, ----RRRR and ----TTTT, for scanning 5ESS.nh  ROP out-
+          put.
+
+          If no _f_i_l_e_s are specified, standard input is assumed.
+
+          _c_g_r_e_p allows restricting matches to whole words or phrases.
+          The section, WWWWOOOORRRRDDDD MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG, explains this in more detail.
+
+
+
+
+     Page 1                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          _c_g_r_e_p supports approximate matching (matching with
+          mismatches allowed).  The description of the ----AAAA option
+          explains approximate matching in more detail.
+
+          Unlike _g_r_e_p, _e_g_r_e_p, or _f_g_r_e_p, _c_g_r_e_p allows the matching of
+          _p_a_t_t_e_r_n_s that may span multiple lines of text through the
+          use of literal newline characters in _p_a_t_t_e_r_n_s.  The section,
+          MMMMUUUULLLLTTTTIIII----LLLLIIIINNNNEEEE MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG, explains this in more detail.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          The specific options recognized by _c_g_r_e_p are grouped by
+          functional category in the sections that follow.  Some
+          options begin with a `----' , others with a `++++' .
+
+          Any _c_g_r_e_p option which does not take a mandatory argument
+          may take an optional numeric argument, which defaults to 0000.
+          The general format is ----_Q_n or ++++_Q_n, where ----_Q or ++++_Q represents
+          any option that takes no argument, and _n is a nonnegative
+          integer of one or more digits.  There cannot be any white
+          space between _Q and _n.  The interpretation of this numerical
+          value is dependent on the individual option.  Except when
+          explicitly documented below, these optional numeric argu-
+          ments are ignored.
+
+          The -------- option may optionally be used to terminate the com-
+          mand line options.  Each subsequent term on the command line
+          is then interpreted as an argument rather than as an option,
+          even if it begins with a `----' or a `++++' .
+
+        PPPPaaaatttttttteeeerrrrnnnn SSSSoooouuuurrrrcccceeee OOOOppppttttiiiioooonnnnssss
+          The following two options specify the source of _p_a_t_t_e_r_n_s to
+          be matched.  Either option may be specified instead of the
+          _p_a_t_t_e_r_n_s argument.  If _p_a_t_t_e_r_n_s begins with a `----' or a `++++' ,
+          one of these options _M_U_S_T be specified.
+
+
+          ----ffff _p_a_t_t_e_r_n__f_i_l_e
+                The _p_a_t_t_e_r_n_s list is taken from the _p_a_t_t_e_r_n__f_i_l_e.
+          ----eeee _p_a_t_t_e_r_n_s
+                Same as a _p_a_t_t_e_r_n_s argument, but will properly recog-
+                nize _p_a_t_t_e_r_n_s that begin with a `----' or a `++++' .
+        PPPPaaaatttttttteeeerrrrnnnn----MMMMaaaattttcccchhhhiiiinnnngggg OOOOppppttttiiiioooonnnnssss
+          The following options affect the comparisons with _p_a_t_t_e_r_n_s
+          for determining matched lines.  Comparisons with _d_e_l_i_m_i_t_e_r_s
+          or _t_r_a_i_l__p_a_t_t_e_r_n_s (see below) may also be affected.  Each of
+          these options may be set independently for _p_a_t_t_e_r_n_s,
+          _t_r_a_i_l__p_a_t_t_e_r_n_s, and each of the two _d_e_l_i_m_i_t_e_r_s.  Each option
+          applies to all subsequent arguments on the command line,
+          until changed by a complementary option.  These options do
+          not apply to preceding arguments on the command line.  For
+          example, the ----iiii option will cause upper/lower case distinc-
+          tion to be ignored during comparison with _d_e_l_i_m_i_t_e_r_s only if
+
+
+
+     Page 2                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          ----iiii appears _B_E_F_O_R_E _d_e_l_i_m_i_t_e_r_s.
+
+          ----EEEE    (_e_g_r_e_p mode) _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s
+                are interpreted as full regular _e_x_p_r_e_s_s_i_o_n_s as in
+                _e_g_r_e_p.  _e_g_r_e_p mode is the default if the _c_g_r_e_p execut-
+                able file is named _e_g_r_e_p.
+          ----FFFF    (_f_g_r_e_p mode) _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s
+                are interpreted as fixed _s_t_r_i_n_g_s as in _f_g_r_e_p.  _f_g_r_e_p
+                mode is the default if the _c_g_r_e_p executable file is
+                named _f_g_r_e_p.
+          ----GGGG    (_g_r_e_p mode) _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s
+                are interpreted as limited regular _e_x_p_r_e_s_s_i_o_n_s as in
+                _g_r_e_p.  _g_r_e_p mode is the default unless the _c_g_r_e_p exe-
+                cutable file is named _e_g_r_e_p or _f_g_r_e_p.
+          ----iiii    Ignore upper/lower case distinction during comparis-
+                ons.
+          ++++iiii    (default) Comparisons are case sensitive.
+          ----xxxx    Matches must be made to an entire line of input.
+          ----xxxx1111   Matches must be made to an entire word or phrase of
+                input.  The section, WWWWOOOORRRRDDDD MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG, explains this in
+                more detail.  (The ----xxxx1111 option does not affect com-
+                parisons with _t_r_a_i_l__p_a_t_t_e_r_n_s.)
+          ++++xxxx    (default) Matches may be made to a portion of an input
+                line or word.
+          ----aaaa    Allow easy specification of non-printing ASCII charac-
+                ters in _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s, using
+                the backslash character with a syntax like that in C
+                language strings.  Any 8-bit ASCII character may be
+                represented by \\\\_d_d_d, where _d_d_d is the ASCII character
+                code in one to three octal digits.  Also, \\\\bbbb,,,, \\\\tttt,,,, \\\\nnnn,,,,
+                \\\\vvvv,,,, \\\\ffff,,,, \\\\rrrr,,,, or \\\\aaaa can be used to represent the back
+                space, tab, newline, vertical tab, form feed, carriage
+                return, and alarm bell characters respectively.  All
+                other uses of backslash represent the literal charac-
+                ter following the backslash.  For example, \\\\\\\\
+                represents the backslash character itself.  The ----aaaa
+                option affects all uses of backslash, even those
+                inside regular expression character classes (square
+                brackets) and even those in _f_g_r_e_p mode.
+          ++++aaaa    (default) Backslash characters are interpreted ``nor-
+                mally,'' as they would be in _g_r_e_p, _e_g_r_e_p, or _f_g_r_e_p,
+                depending on which mode is in effect.
+          ----AAAA _n_e_r_r_o_r_s
+                Allow up to _n_e_r_r_o_r_s mismatches in matching _p_a_t_t_e_r_n_s or
+                _d_e_l_i_m_i_t_e_r_s.  (Comparisons with _t_r_a_i_l__p_a_t_t_e_r_n_s are
+                unaffected.)  _n_e_r_r_o_r_s must be a positive integer or
+                zero.  By default, a single mismatch is either the
+                insertion of an extra character in the text, a substi-
+                tution of a character in the text, or a deletion of a
+                character in the text.  However, portions of a fixed
+                string or regular expression that are enclosed in
+                angle brackets (<<<< and >>>>) must be matched exactly.
+
+
+
+     Page 3                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+                NNNNOOOOTTTTEEEE:::: Angle brackets become meta-characters in all
+                regular expressions or fixed strings for which approx-
+                imate matching is used.  For performance reasons, it
+                is a good idea to use angle brackets liberally when
+                using approximate matching.  Like other meta-
+                characters, an angle bracket may be escaped in a regu-
+                lar expression by preceding it with a backslash, and
+                an angle bracket retains its literal meaning inside of
+                regular expression character classes (square brack-
+                ets).  In a fixed string, an angle bracket may be
+                escaped by preceding it with a backslash and using the
+                ----aaaa option.
+
+                The cost of deletions, insertions, or substitutions
+                may be set independently with the ----CCCC, ++++CCCC, or ----++++CCCC
+                options respectively.  These options are explained
+                below.  Regardless of the cost option settings, new-
+                line characters may not be inserted or substituted
+                into an approximate match.  The section, AAAAPPPPPPPPRRRROOOOXXXXIIIIMMMMAAAATTTTEEEE
+                MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS, gives examples of the use of
+                approximate matching.
+          ----CCCC _d_e_l_e_t_i_o_n__c_o_s_t
+                Sets the cost of a deletion error to _d_e_l_e_t_i_o_n__c_o_s_t,
+                which must be a positive integer.  By default, a dele-
+                tion error counts as one mismatch.
+          ++++CCCC _i_n_s_e_r_t_i_o_n__c_o_s_t
+                Sets the cost of an insertion error to _i_n_s_e_r_t_i_o_n__c_o_s_t,
+                which must be a positive integer or zero.  By default,
+                an insertion error counts as one mismatch.  If
+                _i_n_s_e_r_t_i_o_n__c_o_s_t is zero, approximate matching is used
+                even if the ----AAAA option is not used or if zero
+                mismatches are specified.
+          ----++++CCCC _s_u_b_s_t_i_t_u_t_i_o_n__c_o_s_t
+                Sets the cost of a substitution error to
+                _s_u_b_s_t_i_t_u_t_i_o_n__c_o_s_t, which must be a positive integer.
+                By default, a substitution error counts as one
+                mismatch.
+          ++++----CCCC _s_u_b_s_t_i_t_u_t_i_o_n__c_o_s_t
+                Equivalent to ----++++CCCC _s_u_b_s_t_i_t_u_t_i_o_n__c_o_s_t
+
+          The following options also affect the comparisons with
+          _p_a_t_t_e_r_n_s for determining matched lines.  Comparisons with
+          _d_e_l_i_m_i_t_e_r_s or _t_r_a_i_l__p_a_t_t_e_r_n_s (see below) are unaffected.
+
+          ----vvvv    Lines that do _N_O_T contain one or more _p_a_t_t_e_r_n_s are
+                matched.
+                NNNNOOOOTTTTEEEE:::: See also the ----VVVV option.  The ----vvvv and ----VVVV options,
+                although related, are quite different.
+          ++++vvvv    (default) Lines that contain one or more _p_a_t_t_e_r_n_s are
+                matched.
+          ----NNNN _n_m_a_t_c_h_e_s
+                Match only the first _n_m_a_t_c_h_e_s lines containing
+
+
+
+     Page 4                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+                _p_a_t_t_e_r_n_s.  Subsequent occurrences of _p_a_t_t_e_r_n_s will not
+                be matched.
+          ++++NNNN _n_m_a_t_c_h_e_s
+                Do not match the first _n_m_a_t_c_h_e_s lines containing
+                _p_a_t_t_e_r_n_s.  Subsequent occurrences of _p_a_t_t_e_r_n_s will be
+                matched.
+          ----++++NNNN _n_m_a_t_c_h_e_s
+                Same as ++++NNNN _n_m_a_t_c_h_e_s and ----NNNN _n_m_a_t_c_h_e_s.
+          ++++----NNNN _n_m_a_t_c_h_e_s
+                Same as ++++NNNN _n_m_a_t_c_h_e_s and ----NNNN _n_m_a_t_c_h_e_s.
+        WWWWiiiinnnnddddoooowwwwiiiinnnngggg OOOOppppttttiiiioooonnnnssss
+          The following options cause lines surrounding each matched
+          line to be included in a context window.  If none of these
+          options are specified, only the matched lines themselves
+          will be included in the context windows.  Lines in the con-
+          text windows will normally be printed to standard output in
+          the order they appear in the input files.
+
+          -_n_l_i_n_e
+                In addition to the matching line, include the _n_l_i_n_e
+                preceding lines.  There is no maximum value for _n_l_i_n_e.
+          +_n_l_i_n_e
+                In addition to the matching line, include the _n_l_i_n_e
+                subsequent lines.  There is no maximum value for
+                _n_l_i_n_e.
+          +-_n_l_i_n_e
+                Same as +_n_l_i_n_e and -_n_l_i_n_e.
+          -+_n_l_i_n_e
+                Same as +_n_l_i_n_e and -_n_l_i_n_e.
+          ----wwww _d_e_l_i_m_i_t_e_r_s
+                In addition to the matching line, include the lines
+                preceding it.  If -_n_l_i_n_e is not also specified, the
+                beginning of the context window is delimited by the
+                closest line that contains one or more _d_e_l_i_m_i_t_e_r_s.  If
+                -_n_l_i_n_e is also specified, the beginning of the context
+                window is delimited by the _n_l_i_n_eth closest line that
+                contains one or more _d_e_l_i_m_i_t_e_r_s.  If the ----IIII option is
+                specified (the default), the delimiting line is itself
+                included in the window, and the matching line is
+                itself included in the search for _d_e_l_i_m_i_t_e_r_s.  If the
+                ----IIII1111 option is specified, the delimiting line is itself
+                included in the window, but the matching line is
+                itself excluded from the search for _d_e_l_i_m_i_t_e_r_s.  In
+                contrast, if the ----XXXX option is specified, the delimit-
+                ing line is itself excluded from the window, and the
+                matching line is itself excluded from the search for
+                _d_e_l_i_m_i_t_e_r_s.
+          ++++wwww _d_e_l_i_m_i_t_e_r_s
+                In addition to the matching line, include the lines
+                following it.  If +_n_l_i_n_e is not also specified, the
+                end of the context window is delimited by the closest
+                line that contains one or more _d_e_l_i_m_i_t_e_r_s.  If +_n_l_i_n_e
+
+
+
+     Page 5                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+                is also specified, the end of the context window is
+                delimited by the _n_l_i_n_eth closest line that contains
+                one or more _d_e_l_i_m_i_t_e_r_s.  If the ++++IIII option is specified
+                (the default), the delimiting line is itself included
+                in the window, and the matching line is itself
+                included in the search for _d_e_l_i_m_i_t_e_r_s.  If the ++++IIII1111
+                option is specified, the delimiting line is itself
+                included in the window, but the matching line is
+                itself excluded from the search for _d_e_l_i_m_i_t_e_r_s.  In
+                contrast, if the ++++XXXX option is specified, the delimit-
+                ing line is itself excluded from the window, and the
+                matching line is itself excluded from the search for
+                _d_e_l_i_m_i_t_e_r_s.
+          ----++++wwww _d_e_l_i_m_i_t_e_r_s
+                Same as ++++wwww _d_e_l_i_m_i_t_e_r_s and ----wwww _d_e_l_i_m_i_t_e_r_s.
+          ++++----wwww _d_e_l_i_m_i_t_e_r_s
+                Same as ++++wwww _d_e_l_i_m_i_t_e_r_s and ----wwww _d_e_l_i_m_i_t_e_r_s.
+          ----WWWW _d_e_l_i_m_i_t_e_r_s
+                Same as ----wwww _d_e_l_i_m_i_t_e_r_s except that the window is delim-
+                ited by lines that do _N_O_T contain one or more
+                _d_e_l_i_m_i_t_e_r_s.
+          ++++WWWW _d_e_l_i_m_i_t_e_r_s
+                Same as ++++wwww _d_e_l_i_m_i_t_e_r_s except that the window is delim-
+                ited by lines that do _N_O_T contain one or more
+                _d_e_l_i_m_i_t_e_r_s.
+          ----++++WWWW _d_e_l_i_m_i_t_e_r_s
+                Same as ++++WWWW _d_e_l_i_m_i_t_e_r_s and ----WWWW _d_e_l_i_m_i_t_e_r_s.
+          ++++----WWWW _d_e_l_i_m_i_t_e_r_s
+                Same as ++++WWWW _d_e_l_i_m_i_t_e_r_s and ----WWWW _d_e_l_i_m_i_t_e_r_s.
+
+          The following options are used in conjunction with the win-
+          dowing options described previously.  These options have no
+          effect if used without the appropriate windowing option.
+
+          ----IIII    (default) See ----wwww and ----WWWW above.
+          ++++IIII    (default) See ++++wwww and ++++WWWW above.
+          ----++++IIII   (default) Same as ----IIII and ++++IIII.
+          ++++----IIII   (default) Same as ----IIII and ++++IIII.
+          ----IIII1111   See ----wwww and ----WWWW above.
+          ++++IIII1111   See ++++wwww and ++++WWWW above.
+          ----++++IIII1111  Same as ----IIII1111 and ++++IIII1111.
+          ++++----IIII1111  Same as ----IIII1111 and ++++IIII1111....
+          ----XXXX    See ----wwww and ----WWWW above.
+          ++++XXXX    See ++++wwww and ++++WWWW above.
+          ----++++XXXX   Same as ----XXXX and ++++XXXX.
+          ++++----XXXX   Same as ----XXXX and ++++XXXX.
+        OOOOuuuuttttppppuuuutttt OOOOppppttttiiiioooonnnnssss
+          The following options affect only the output of matching
+          lines and their context windows.  The actual matching of
+          lines and the generation of context windows are unaffected
+          by these options.  By default, any line in one or more con-
+          text windows is output exactly once in the order that the
+
+
+
+     Page 6                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          lines appear in the input.
+
+          ----hhhh    The output of the file name on each output line is
+                suppressed.
+          ----hhhh1111   The file name is always output preceding each output
+                line.
+          ++++hhhh    (default) If two or more input files are specified
+                (and the ----MMMM option is not specified), the file name is
+                output preceding each output line.
+          ----bbbb    Each line output is preceded by the block number on
+                which it was found.  This is sometimes useful in
+                locating disk block numbers by context.
+          ----bbbb1111   Each line output is preceded by the byte offset of the
+                beginning of the line.
+          ++++bbbb    (default) No block or byte number is output.
+          ----nnnn    Each line output is preceded by its relative line
+                number in the file.
+          ++++nnnn    (default) No line number is output.
+          ----HHHH    If the output is directly to a terminal, matched lines
+                will be highlighted, so that they stand out from the
+                context windows.  If the output is not directly to a
+                terminal, this option has no effect.
+          ----HHHH1111   If the output is directly to a terminal, matched lines
+                will be highlighted, so that they stand out from the
+                context windows.  If the output is not directly to a
+                terminal, the appropriate escape sequences for the
+                current terminal type will be inserted into the out-
+                put.
+          ++++HHHH    (default) Matched lines will not be highlighted.
+          ----oooo    If two or more windows overlap or touch, output each
+                window separately in its entirety.  Lines common to
+                multiple windows will be output multiple times, once
+                in each window.
+                WWWWAAAARRRRNNNNIIIINNNNGGGG::::  This option could conceivably cause the out-
+                put of _N squared lines from an _N line file.  Use cau-
+                tiously when large windows are specified.
+          ++++oooo    (default) Overlapping or touching windows are output
+                as a single merged window, so that no input lines are
+                output more than once.
+          ----dddd _o_u_t_p_u_t__s_e_p_a_r_a_t_o_r
+                Specifies an output string to be used to separate win-
+                dows.  If any surrounding lines are requested, a
+                separator normally separates each printed window.  The
+                output separator defaults to a line of equal signs.
+                This option can be used to specify a different output
+                separator.  (Note: No output separator is printed when
+                no surrounding lines are requested, unless this option
+                is specified).
+          ----DDDD    The default output separator between windows is
+                suppressed.
+          ++++DDDD    (default) The default output separator between windows
+                is not suppressed.
+
+
+
+     Page 7                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          ----VVVV    Matching lines and their context windows are _N_O_T out-
+                put.  All other lines are output.
+                NNNNOOOOTTTTEEEE::::  The ----VVVV and ----vvvv options are quite different.
+          ++++VVVV    (default) Lines in context windows are output.
+          ----cccc    A count of output lines is printed (excluding output
+                separators) rather than the lines themselves.  The
+                count is normally preceded by the file name if there
+                are two or more input files.  The count is equal to
+                the total number of lines that would have been printed
+                (excluding output separators) had the ----cccc option not
+                been specified.
+          ----cccc1111   Same as ----cccc, except that the printout is suppressed for
+                files having zero output lines.
+          ++++cccc    (default) The output lines are printed.
+          ----llll    Only the names of files with lines to be printed are
+                printed (once), separated by new-lines.
+          ----llll1111   No output is printed.  This option is useful when only
+                the exit status is required.
+          ----llll2222   Only the names of files with _N_O lines to be printed
+                are printed (once), separated by new-lines.
+          ++++llll    (default) The output lines are printed.
+        TTTTeeeexxxxtttt IIIInnnnppppuuuutttt OOOOppppttttiiiioooonnnnssss
+          The following options affect the handling of input text
+          _f_i_l_e_s.
+
+          ----ssss    The error messages normally output for nonexistent or
+                unreadable files are suppressed.
+          ----ssss1111   The error messages normally output for nonexistent or
+                unreadable files are suppressed, and such files do not
+                affect the exit status of _c_g_r_e_p.
+          ++++ssss    (default) Error messages are output for nonexistent or
+                unreadable files.
+          ----MMMM    If this option is specified, _c_g_r_e_p treats multiple
+                input _f_i_l_e_s as a single concatenated file.  More pre-
+                cisely, _c_g_r_e_p ----MMMM _p_a_t_t_e_r_n _f_i_l_e_s is equivalent to _c_a_t
+                _f_i_l_e_s | _c_g_r_e_p _p_a_t_t_e_r_n.
+          ++++MMMM    (default) If multiple _f_i_l_e_s are specified, _c_g_r_e_p
+                treats each file independently.
+          ----BBBB _b_u_f_s_i_z_e
+                Specifies the buffer size used to read the input
+                file(s).  _B_u_f_s_i_z_e (default 64) is a number in the
+                range 1-64 inclusive.  The input buffer size is
+                _b_u_f_s_i_z_e * BBBBUUUUFFFFSSSSIIIIZZZZ bytes, where BBBBUUUUFFFFSSSSIIIIZZZZ is a machine-
+                dependent constant, typically ranging from 512 to
+                4096, defined in <stdio.h>.  The buffer size should be
+                decreased from the default value when _c_g_r_e_p is being
+                used interactively with interactively generated input.
+                An example follows:
+
+                ttttaaaaiiiillll ----ffff _f_i_l_e |||| ccccggggrrrreeeepppp ----BBBB 1111 _p_a_t_t_e_r_n
+
+                This should be done because _c_g_r_e_p processes input only
+
+
+
+     Page 8                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+                when an input end-of-file is encountered or the input
+                buffer is full.  However, the buffer size should not
+                be set smaller than the size of a typical text window
+                (see the LIMITATIONS section).
+        DDDDyyyynnnnaaaammmmiiiicccc PPPPaaaatttttttteeeerrrrnnnn----MMMMaaaattttcccchhhhiiiinnnngggg OOOOppppttttiiiioooonnnnssss
+          The following options allow the dynamic creation of patterns
+          for matching.
+
+          ----tttt _t_r_a_i_l__p_a_t_t_e_r_n_s
+                If a line matching _t_r_a_i_l__p_a_t_t_e_r_n_s is found on a line
+                also matching _p_a_t_t_e_r_n_s or in the context window of a
+                line matching _p_a_t_t_e_r_n_s, the portion of input that
+                matched _t_r_a_i_l__p_a_t_t_e_r_n_s is saved as a fixed _s_t_r_i_n_g
+                which is treated like one of the _p_a_t_t_e_r_n_s for subse-
+                quent matches.  Only the 16 most recently matched
+                fixed strings are saved, with newly saved fixed
+                strings replacing previously saved fixed strings, old-
+                est first.  For example, if  ----tttt ''''EEEEVVVVEEEENNNNTTTT====[[[[0000----9999]]]]''''  is
+                specified, and the string  """"EEEEVVVVEEEENNNNTTTT====6666""""  is found on a
+                line also matching _p_a_t_t_e_r_n_s or in the surrounding win-
+                dow of a line matching _p_a_t_t_e_r_n_s, subsequent
+                occurrences of the fixed string  """"EEEEVVVVEEEENNNNTTTT====6666""""  would gen-
+                erate a context window, subject to the above limita-
+                tion of 16 saved fixed strings.  This process of sav-
+                ing fixed strings is recursive in the sense that
+                matches with previously saved fixed strings are
+                equivalent to matches with _p_a_t_t_e_r_n_s for determining
+                new fixed strings to be saved.  See the description of
+                the ----TTTT option for another example of the use of the ----tttt
+                (actually the ++++tttt) option.
+          ++++tttt _t_r_a_i_l__p_a_t_t_e_r_n_s
+                This option is equivalent to ----tttt except for two differ-
+                ences.  First, the context windows generated from
+                fixed strings ignore +_n_l_i_n_e and terminate at the very
+                next ending _d_e_l_i_m_i_t_e_r, if specified, or at the line
+                containing the fixed string itself if no ending
+                _d_e_l_i_m_i_t_e_r was specified.  Secondly, the process of
+                saving fixed strings is non-recursive, in the sense
+                that matches with previously saved fixed strings do
+                not determine new fixed strings to be saved.  The ++++tttt
+                option prevents the unexpected run-on output that may
+                be produced with the ----tttt option.
+        5555EEEESSSSSSSS PPPPrrrroooojjjjeeeecccctttt----SSSSppppeeeecccciiiiffffiiiicccc OOOOppppttttiiiioooonnnnssss
+          The following special-purpose options are provided for the
+          convenience of those analyzing 5ESS International or Domes-
+          tic ROP reports.
+
+          ----RRRR    Sets window _d_e_l_i_m_i_t_e_r_s and other options for 5ESS
+                International or Domestic ROP reports.  The ----RRRR option
+                can also be used in conjunction with -_n_l_i_n_e or +_n_l_i_n_e
+                to output preceding or subsequent ROP reports to the
+                matched report, or both.  In either case, _n_l_i_n_e-1
+
+
+
+     Page 9                                          (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+                adjacent reports will also be printed.  The ----RRRR option
+                is almost equivalent to  ----DDDDEEEEMMMMhhhh ++++XXXX ----++++wwww ''''\\\\++++\\\\++++\\\\++++||||^^^^YYYY'''' ,
+                but has one additional effect.  Patterns of the form
+                ''''ssssmmmm====_n''''  (the literal  ssssmmmm  must be in lower case
+                letters) will be expanded into regular expressions to
+                match most if not all ROP reports pertaining to SM _n.
+                _n must be an unsigned number without leading zeros, in
+                which each digit may be either a simple digit or any
+                one of a set of digits enclosed in square brackets.
+                Within brackets, a hyphen can be used to indicate a
+                range of digits.  See the 5555EEEESSSSSSSS EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS section for
+                examples of the use of this feature.
+          ----TTTT    Same as ----RRRR, except also causes ROP event trails to be
+                followed.  If the string  """"EEEEVVVVEEEENNNNTTTT====_n""""  (_n is a number of
+                one or more digits, possibly preceded by a minus sign)
+                or  """"EEEEVVVVEEEENNNNTTTTOOOO====_n"  (Spanish) appears in a matched ROP
+                report, all subsequent reports with the same event
+                number will be printed.  Equivalent to the following:
+                ----RRRR ++++tttt ''''EEEEVVVVEEEENNNNTTTTOOOO????====----????[[[[0000----9999]]]]++++'''' .
+        PPPPaaaatttttttteeeerrrrnnnn----MMMMaaaattttcccchhhhiiiinnnngggg SSSSuuuummmmmmmmaaaarrrryyyy
+          In all matching modes, more than one _p_a_t_t_e_r_n, _t_r_a_i_l__p_a_t_t_e_r_n,
+          or _d_e_l_i_m_i_t_e_r can be specified by enclosing the entire set of
+          _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s within quotes and
+          separating individual _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or
+          _d_e_l_i_m_i_t_e_r_s with newlines.  More than one _p_a_t_t_e_r_n or
+          _d_e_l_i_m_i_t_e_r can also be specified in _e_g_r_e_p mode by separating
+          individual _p_a_t_t_e_r_n_s or _d_e_l_i_m_i_t_e_r_s with  `||||'  .  More than
+          one _p_a_t_t_e_r_n can also be specified in any mode by using the
+          ----ffff option and listing the _p_a_t_t_e_r_n_s one per line in the file.
+
+          The file name is normally output on each line if there is
+          more than one input file, unless an option suppressing this
+          output is specified.  Care should be taken when using char-
+          acters from the following set - { $$$$ **** [[[[ ^^^^ |||| (((( )))) \\\\ } - in
+          _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s because they are
+          also meaningful to the shell.  It is safest to enclose
+          _p_a_t_t_e_r_n_s, _t_r_a_i_l__p_a_t_t_e_r_n_s, or _d_e_l_i_m_i_t_e_r_s in single quotes
+          ''''...''''.
+     WWWWOOOORRRRDDDD MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG
+          _c_g_r_e_p allows the restriction of matches to complete words or
+          phrases.  The ----xxxx1111 option adds the restrictions that matched
+          strings or regular expressions must be either at the begin-
+          ning of a line or immediately following a character other
+          than a letter, number, or underscore, and also must be
+          either at the end of a line or immediately before a charac-
+          ter other than a letter, number, or underscore.  (The ----xxxx1111
+          option does not affect comparisons with _t_r_a_i_l__p_a_t_t_e_r_n_s.)
+          There is a second method to restrict matches to complete
+          words or phrases.  In UNIX.nh  System V Release 4 (SVR4),
+          limited regular expressions as used by _g_r_e_p(_1) have been
+          enhanced by recognizing ''''\\\\<<<<'''' and ''''\\\\>>>>'''' as begin-word and
+          end-word delimiters, respectively.  Similarly, _c_g_r_e_p, in
+
+
+
+     Page 10                                         (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          _g_r_e_p mode, recognizes these delimiters.  The begin-word and
+          end-word  delimiters are used as follows:
+
+          ccccggggrrrreeeepppp ''''\\\\<<<<_R_E'''' _f_i_l_e_s
+
+          will match the regular expression _R_E either at the beginning
+          of a line or immediately following a character other than a
+          letter, number, or underscore.
+
+          ccccggggrrrreeeepppp ''''_R_E\\\\>>>>'''' _f_i_l_e_s
+
+          will match the regular expression _R_E either at the end of a
+          line or immediately before a character other than a letter,
+          number, or underscore.
+
+          ccccggggrrrreeeepppp ''''\\\\<<<<_R_E\\\\>>>>'''' _f_i_l_e_s
+
+          will match the regular expression _R_E only if both the above
+          conditions hold.
+          Unlike _g_r_e_p(_1) in UNIX SVR4, _c_g_r_e_p recognizes ''''\\\\<<<<'''' and ''''\\\\>>>>''''
+          only if used at the beginning or end of a regular expres-
+          sion, respectively.
+     MMMMUUUULLLLTTTTIIII----LLLLIIIINNNNEEEE MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG
+          _c_g_r_e_p is capable of matching _p_a_t_t_e_r_n_s that span multiple
+          lines of input text.  No special option is needed.  Inside
+          character classes (square brackets) of regular expressions,
+          newline characters are interpreted as literal characters.
+          In regular expressions, outside of character classes, new-
+          line characters must be escaped with a backslash to be
+          interpreted literally rather than as separators between mul-
+          tiple expressions.  Also, if the ----aaaa option is used, ''''\\\\nnnn'''' can
+          be used anywhere in any mode to represent a literal newline
+          character.  _c_g_r_e_p treats literal newlines as begin-line or
+          end-line metacharacters.  A literal newline character will
+          match the beginning or the end of any line, even if no new-
+          line is present in the text.
+
+          Multi-line matches are legal only in _p_a_t_t_e_r_n_s.  They are
+          illegal in _d_e_l_i_m_i_t_e_r_s and _t_r_a_i_l__p_a_t_t_e_r_n_s.  Multi-line
+          matches are also illegal if any of the following conditions
+          hold:
+          ----    The ----tttt, ++++tttt, or ----TTTT option is used.
+          ----    Back-referencing (available in ggggrrrreeeepppp mode) is used in
+               _p_a_t_t_e_r_n_s.
+          ----    The ----vvvv option is used, _A_N_D a windowing option is also
+               used.
+          Also, a multi-line match will be missed if the matched text
+          completely contains another shorter (single or multi-line)
+          match to a pattern _A_N_D the match begins on an earlier line
+          than the shorter match.  The shorter match will be found,
+          however.
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+
+
+
+     Page 11                                         (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          The following command line will print each line in _f_i_l_e_1 and
+          _f_i_l_e_2 that contains the string "dog" or the string "cat",
+          and also print the preceding three lines and the subsequent
+          five lines:
+
+          ccccggggrrrreeeepppp ----3333 ++++5555 ----EEEE ''''ddddoooogggg||||ccccaaaatttt''''  _f_i_l_e_1 _f_i_l_e_2
+
+          The following example will print each line from the standard
+          input that contains the string "dog", and will also print
+          the preceding lines beginning with a line containing
+          "heckle" and the subsequent lines ending with a line con-
+          taining "jeckle":
+
+          ccccaaaatttt _f_i_l_e_s |||| ccccggggrrrreeeepppp ----wwww hhhheeeecccckkkklllleeee ++++wwww jjjjeeeecccckkkklllleeee ddddoooogggg
+
+          Either of the following examples will print each line con-
+          taining the literal RRRREEEEPPPPTTTT, and will also print the surround-
+          ing lines until a line consisting of just ^^^^YYYY (_C_T_R_L----YYYY) is
+          encountered both before and after:
+
+          ccccggggrrrreeeepppp ----xxxx ----++++wwww ^^^^YYYY ++++xxxx RRRREEEEPPPPTTTT _f_i_l_e
+
+          or
+
+          ccccggggrrrreeeepppp ----++++wwww ''''^^^^^^^^YYYY$$$$'''' RRRREEEEPPPPTTTT _f_i_l_e
+
+          The following example will output each line containing
+          "this" or "that" and will also output a surrounding window
+          beginning at a line containing the fixed string "/*" and
+          terminating at a line containing a capital letter as the
+          first character in the line:
+
+          ccccggggrrrreeeepppp ----FFFF ----wwww ''''////****'''' ----GGGG ++++wwww ''''^^^^[[[[AAAA----ZZZZ]]]]'''' ----EEEE ''''tttthhhhiiiissss||||tttthhhhaaaatttt'''' _f_i_l_e
+
+          Either of the following examples prints all paragraphs con-
+          taining "keyword" in the _n_r_o_f_f source file _d_o_c:
+
+          ccccggggrrrreeeepppp ----FFFF ----xxxx ----++++wwww ....PPPP ++++xxxx kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+
+          or
+
+          ccccggggrrrreeeepppp ----++++wwww ''''^^^^\\\\....PPPP$$$$'''' kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+
+          Either of the following examples prints all paragraphs _N_O_T
+          containing "keyword" in the _n_r_o_f_f source file _d_o_c:
+
+          ccccggggrrrreeeepppp ----VVVV ----xxxx ----FFFF ----++++wwww ....PPPP ++++xxxx kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+
+          or
+
+          ccccggggrrrreeeepppp ----VVVV ----++++wwww ''''^^^^\\\\....PPPP$$$$'''' kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+
+
+
+
+     Page 12                                         (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          Either of the following examples prints all paragraphs con-
+          taining a line _N_O_T containing "keyword" in the _n_r_o_f_f source
+          file _d_o_c:
+
+          ccccggggrrrreeeepppp ----vvvv ----xxxx ----FFFF ----++++wwww ....PPPP ++++xxxx kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+
+          or
+
+          ccccggggrrrreeeepppp ----vvvv ----++++wwww ''''^^^^\\\\....PPPP$$$$'''' kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+
+          Either of the following examples will print each line that
+          contains one or more of the strings "Larry", "Curley", or
+          "Moe":
+
+          ccccggggrrrreeeepppp ''''LLLLaaaarrrrrrrryyyy
+          CCCCuuuurrrrlllleeeeyyyy
+          MMMMooooeeee'''' _f_i_l_e
+
+          or
+
+          ccccggggrrrreeeepppp ----EEEE ''''LLLLaaaarrrrrrrryyyy||||CCCCuuuurrrrllllyyyy||||MMMMooooeeee'''' _f_i_l_e
+
+          The following example will print each line containing one or
+          more of the strings "Larry", "Barry", or "Harry".
+
+          ccccggggrrrreeeepppp ''''[[[[LLLLBBBBHHHH]]]]aaaarrrrrrrryyyy'''' _f_i_l_e
+
+          The following example will print each line that contains
+          "Hello, world", and will also print the preceding four lines
+          and each subsequent line until the third subsequent line
+          containing one or more of the strings "This is it" or "That
+          is it" is found:
+
+          ccccggggrrrreeeepppp ----EEEE ----4444 ++++3333 ++++wwww ''''TTTThhhhiiiissss iiiissss iiiitttt||||TTTThhhhaaaatttt iiiissss iiiitttt'''' ''''HHHHeeeelllllllloooo,,,, wwwwoooorrrrlllldddd''''
+          _f_i_l_e
+
+          The following example prints the fourth and fifth line con-
+          taining "keyword" in the file _d_o_c:
+
+          ccccggggrrrreeeepppp ++++NNNN 3333 ----NNNN 2222 kkkkeeeeyyyywwwwoooorrrrdddd _d_o_c
+     AAAAPPPPPPPPRRRROOOOXXXXIIIIMMMMAAAATTTTEEEE MMMMAAAATTTTCCCCHHHHIIIINNNNGGGG EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following example will print all paragraphs in an _n_r_o_f_f
+          source file that contain (among others) the strings "Connec-
+          ticut",  "Conneticut",  "Coneticut", and "Conecticut".  It
+          will not match "Connecticot" or "Connectickut", because
+          "cut" must be matched exactly.  It will also not match
+          "Conetacut", because three errors is one error too many.
+
+          ccccggggrrrreeeepppp ----++++wwww ''''^^^^\\\\....PPPP$$$$'''' ----AAAA2222 ''''<<<<CCCCoooonnnn>>>>nnnneeeeccccttttiiii<<<<ccccuuuutttt>>>>'''' _f_i_l_e
+
+          NNNNOOOOTTTTEEEE:::: The ----AAAA option flag must appear AFTER the delimiter
+          '^\.P$' or else the approximate matching would apply to the
+
+
+
+     Page 13                                         (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          paragraph delimiter as well.
+
+          The following example will print each line that contains
+          (among others) the strings "Connecticut",  "Connectickut",
+          and "Connectacut".  It will not match "Conneticut", because
+          the cost of a deletion error, four, is too high.  It will
+          also not match "Connectakut", because the total cost of two
+          substitution errors, four, is too high.  It will also not
+          match "Colnnecticut", because "Con" must be matched exactly,
+          even though the cost of an insertion is zero.
+
+          ccccggggrrrreeeepppp ----AAAA3333 ++++CCCC0000 ----CCCC4444 ++++----CCCC2222 ''''<<<<CCCCoooonnnn>>>>nnnneeeeccccttttiiiiccccuuuutttt'''' _f_i_l_e
+
+          Either of the following examples will print each line that
+          contains no more than three non-numeric characters, and any
+          number of numeric characters.
+
+          ccccggggrrrreeeepppp ----AAAA3333 ''''^^^^[[[[0000----9999]]]]****$$$$'''' _f_i_l_e
+
+          or
+
+          ccccggggrrrreeeepppp ----xxxx ----AAAA3333 ''''[[[[0000----9999]]]]****'''' _f_i_l_e
+     5555EEEESSSSSSSS EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following example prints all ROP reports containing the
+          string "CLNK" and the event trails following these reports:
+
+          ccccggggrrrreeeepppp ----TTTT CCCCLLLLNNNNKKKK _r_o_p_f_i_l_e_s
+
+          The following example prints all ROP reports containing the
+          string "CLNK" and also the five preceding and two subsequent
+          reports:
+
+          ccccggggrrrreeeepppp ----RRRR ----6666 ++++3333 CCCCLLLLNNNNKKKK _r_o_p_f_i_l_e_s
+
+          The following example prints all ROP reports containing the
+          string "CLNK" and also the five preceding and two subsequent
+          reports, provided that they are in the same file as the
+          matched report.  The ++++MMMM option must appear _A_F_T_E_R the ----RRRR
+          option in order to override the ----MMMM option implied by ----RRRR:
+
+          ccccggggrrrreeeepppp ----RRRR ++++MMMM ----6666 ++++3333 CCCCLLLLNNNNKKKK _r_o_p_f_i_l_e_s
+
+          The following example prints all ROP reports containing the
+          string "CLNK" and also all ROP reports pertaining to SM 12,
+          21, 24, 25, 26, or 27:
+
+          ccccggggrrrreeeepppp ----RRRR ''''CCCCLLLLNNNNKKKK||||ssssmmmm====11112222||||ssssmmmm====2222[[[[11114444----7777]]]]'''' _r_o_p_f_i_l_e_s
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ed(1), egrep(1), fgrep(1), grep(1), sed(1), sh(1) in the
+          _U_N_I_X _S_y_s_t_e_m _V _U_s_e_r'_s _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          Normally, the exit status is 0000 if any matches are found, 1111
+
+
+
+     Page 14                                         (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          if no matches are found, and 2222 for syntax errors or inacces-
+          sible files (even if matches were found).  However, if the
+          ----ssss1111 option is specified, inaccessible files do not affect
+          the exit status.  Also, if the ----VVVV option is specified, the
+          exit status is 0000 only if there are any lines that are out-
+          side of all context windows of matched lines.
+     PPPPEEEERRRRFFFFOOOORRRRMMMMAAAANNNNCCCCEEEE
+          _c_g_r_e_p is far superior in performance to the current versions
+          of _g_r_e_p or _e_g_r_e_p or _f_g_r_e_p.  _c_g_r_e_p should be used in place of
+          _g_r_e_p or _e_g_r_e_p or _f_g_r_e_p and will provide improved performance
+          in almost all cases.  More specifics are provided below.
+          Users of the Korn shell can achieve this performance
+          improvement by aliasing as follows:
+
+               alias -x grep="~exptools/bin/cgrep -G"
+               alias -x egrep="~exptools/bin/cgrep -E"
+               alias -x fgrep="~exptools/bin/cgrep -F"
+
+
+          _c_g_r_e_p ranges from 30 times as fast (user time) as _g_r_e_p to
+          20% slower than _g_r_e_p, depending on the expressions matched,
+          options used, and number of matches found.   In a search for
+          a five character fixed string, using no options, and with a
+          small percentage of the lines of text containing a match,
+          _c_g_r_e_p is about 8 times as fast as _g_r_e_p.
+
+          _c_g_r_e_p slowly loses its performance advantage over grep as
+          the percentage of lines matched increases.  In cases where a
+          match is found on a majority of the lines in the text, _c_g_r_e_p
+          typically performs comparably to _g_r_e_p, but may be up to 20%
+          slower under some circumstances, in particular where a match
+          is found on nearly every line.
+     CCCCOOOOMMMMPPPPAAAATTTTIIIIBBBBIIIILLLLIIIITTTTYYYY
+          _c_g_r_e_p is almost completely upward-compatible with _g_r_e_p,
+          _e_g_r_e_p, or _f_g_r_e_p.  The only known exception is that for
+          _c_g_r_e_p, _p_a_t_t_e_r_n_s that begin with a `++++' (or a `----') must be
+          preceded by the ----eeee option flag or placed in a file, while
+          for _g_r_e_p, _e_g_r_e_p, or _f_g_r_e_p, _p_a_t_t_e_r_n_s beginning with a `++++' may
+          be used directly.  When _c_g_r_e_p is used in shell scripts, it
+          is a good idea to precede _p_a_t_t_e_r_n_s with ----eeee.
+     LLLLIIIIMMMMIIIITTTTAAAATTTTIIIIOOOONNNNSSSS
+          If _p_a_t_t_e_r_n_s begins with a `----' or a `++++' , the ----eeee option or
+          the ----ffff option must be used.
+
+          On UNIX systems, the highlighting options, ----HHHH and ----HHHH1111,
+          require that the system support _t_e_r_m_i_n_f_o.  Also, the
+          highlighting options may not work in non-standard windows
+          (e.g. the _c_m_d_t_o_o_l_s window under OpenWindows on a Sun
+          Workstation.nh  (use an _x_t_e_r_m window or a _s_h_e_l_l_t_o_o_l win-
+          dow)).
+
+          _c_g_r_e_p does not allow back-referencing (available in ggggrrrreeeepppp
+
+
+
+     Page 15                                         (printed 7/21/95)
+
+
+
+
+
+
+     CCCCGGGGRRRREEEEPPPP((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCGGGGRRRREEEEPPPP((((1111))))
+
+
+
+          mode) in multiple regular expressions, in regular expres-
+          sions that use approximate matching, or in regular expres-
+          sions that match multiple lines of text.  If back-
+          referencing is used, only a single regular expression may be
+          specified for the pattern, delimiter, or trail pattern in
+          which back-referencing is used, approximate matching may not
+          be used for that regular expression, and the text that
+          matches that regular expression must be on a single line.
+
+          _c_g_r_e_p uses an input buffer whose size, by default, ranges
+          from 256K bytes on a mainframe computer down to 32K on a PC.
+          See the description of the ----BBBB option for more information.
+          The portion of any window including the matched line and all
+          preceding lines not overlapping a preceding window cannot
+          contain more characters than the size of the input buffer.
+          If a beginning delimiter is specified rather than a constant
+          number of preceding lines, this portion also cannot contain
+          more than 4096 lines.  If either limitation is exceeded,
+          lines will be discarded from the beginning of the portion
+          until the limitations are met.
+
+          When the ----oooo option is used, the portion of any window that
+          overlaps a preceding window cannot contain more than the
+          size of the input buffer.  If either a beginning or an end-
+          ing delimiter is also specified, this portion cannot contain
+          more than 4096 lines.  If either limitation is exceeded,
+          lines will be discarded from the beginning of the window
+          until the limitations are met.  If the matching line is
+          itself discarded, the entire window will be discarded.
+     VVVVEEEERRRRSSSSIIIIOOOONNNN
+          This manual page describes Version 7.0 of _c_g_r_e_p.
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Bill Tanenbaum (tan@ihgp.ih.att.com)
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Bill Tanenbaum (tan@ihgp.ih.att.com)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 16                                         (printed 7/21/95)
+
+
+

@@ -1,0 +1,264 @@
+
+
+
+       CCCCPPPPRRRR((((1111))))			 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV			  CCCCPPPPRRRR((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    cpr	- C program lister
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    ccccpppprrrr	[ options ] [ files ]
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _C_p_r	produces a listing of one or more C files, preceded by a
+	    table of contents.	The standard input is read if no files
+	    are	given, or if a dash (-)	is encountered.
+
+	    The	output is separated into pages with a header and footer.
+	    The	table of contents header contains the directory	name and
+	    date, and the program listing header contains the current
+	    file name and page number.	The headers, footers, and func-
+	    tion names are output in bold face;	and comments in	italics.
+	    Lines longer than the page width (minus the	width of added
+	    line numbers, if any) are continued	on the next line.
+
+	    These options may be given in any order:
+
+	    ----eeee _n     Set tab stops every _n columns instead of the
+		     default of	8.
+
+	    ----ffff	ffffooooooootttteeeerrrr
+		     Use _f_o_o_t_e_r	as the page footer for the files.  The
+		     file and function index headers will remain the
+		     same.  _F_o_o_t_e_r should be a plain text string, i.e.
+		     NO	TABS.  If it has spaces, be sure to enclose the
+		     entire header in quotes.  A single	%s can be placed
+		     in	the string to be replaced by the file name at
+		     run time.	Page numbers will still	be printed in
+		     the footer	when an	alternate footer is used.
+
+	    ----hhhh	hhhheeeeaaaaddddeeeerrrr
+		     Use _h_e_a_d_e_r	as the top of page header for the files.
+		     The file and function index headers will remain the
+		     same.  _H_e_a_d_e_r should be a plain text string, i.e.
+		     NO	TABS.  If it has spaces, be sure to enclose the
+		     entire header in quotes.  A single	%s can be placed
+		     in	the string to be replaced by the file name at
+		     run time.	Page numbers will still	be printed in
+		     the header	when an	alternate header is used.
+
+	    ----iiii _f_i_l_e  Read the list of C	files from _f_i_l_e, or from _s_t_d_i_n
+		     if	_f_i_l_e is	a dash (-).
+
+	    ----llll _n     Take the length of	the page to be _n lines instead
+		     of	the default 66.
+
+	    ----mmmm _n     When looking for functions	ignore the first _n
+		     columns, with tabs	expanded. This is useful when
+
+
+
+       Page 1					       (printed	12/1/93)
+
+
+
+
+
+
+       CCCCPPPPRRRR((((1111))))			 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV			  CCCCPPPPRRRR((((1111))))
+
+
+
+		     using _c_p_r for a file that had a margin included
+		     from a different program, such as _3_b_l_i_s_t(1) or
+		     _c_m_s_p_r(1).
+
+	    ----nnnn	     Print line	numbers.
+
+	    ----oooo	     Print one function	per page.
+
+	    ----ssss	     Sort the function list under each file in the table
+		     of	contents.
+
+	    ----wwww _n     Take the width of the page	to be _n	columns	instead
+		     of	the default 132.
+
+	    ----xxxx	     Output bold and italics control sequences suitable
+		     for _x_e_r_o_x(1) or _p_o_s_t_c_p_r(1X).
+
+	    ----CCCC	     Look for C++ style	function definitions.  When this
+		     flag is set, ccccpppprrrr will find	struct and class defini-
+		     tions, as well as C++ function definitions.  It
+		     will not, however,	find functions whose bodies are
+		     defined within a class definition (e.g. inline
+		     functions).
+
+	    ----FFFF	ffffoooorrrrmmmmaaaatttt
+		     Use _f_o_r_m_a_t	as the format for the line numbers.
+		     _F_o_r_m_a_t should be a	printf(3) format.  If there are
+		     spaces in _f_o_r_m_a_t then it should be	enclosed in
+		     quotes.
+
+	    ----LLLL	     This is the "Last Modified" option.  When this
+		     option is invoked,	the last modified date and
+		     printed (i.e. current) date are added to the header
+		     and footer.
+
+	    ----VVVV	     Print the version of the tool to stderr.
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	    Local line printer output:
+
+		 cpr *.h *.c | lpr
+		 cpr *.h *.c | prt -pland -dlocaldest
+
+	    Ordinary output:
+
+		 cpr *.h *.c | opr
+		 cpr *.h *.c | prt -pland -dcentraldest
+
+	    With bold and italics:
+
+		 cpr -x	*.h *.c	| xerox	-h 12 -v 5 -l 66 -s xerox | opr	-r
+		 cpr -x	*.h *.c	| postcpr -pland | prt -lpost
+
+
+
+       Page 2					       (printed	12/1/93)
+
+
+
+
+
+
+       CCCCPPPPRRRR((((1111))))			 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV			  CCCCPPPPRRRR((((1111))))
+
+
+
+	    Letter orientation:
+
+		 cpr -x	-l 72 -w 92 *.h	*.c | xerox -h 10 -l 72	-s vint	| opr -r
+		 cpr -x	-w 80 *.h *.c |	postcpr	| prt -lpost
+
+	    Two-sided letter orientation:
+
+		 cpr -x	-l 72 -w 92 *.h	*.c | xerox -h 10 -l 72	-s vint	-2 | opr -r -2
+		 cpr -x	-w 80 *.h *.c |	postcpr	| prt -lpost -s2
+
+	    2 logical landscape	pages on a portrait page:
+
+		 cpr -x	*.h *.c	| postcpr -pland -n2  |	prt -lpost -s2
+
+	    Using cpr on a _3_b_l_i_s_t(1) output file:
+
+		 cpr -m	8 -x -l	72 -w 92 file.bp | xerox -h 10 -l 72 -s	vint -2	|
+		      opr -r -2
+		 cpr -m8 -x file.bp | postcpr -pland | prt -lpost
+
+	    Using cpr on a _c_m_s_p_r(1) output file:
+
+		 cpr -m	16 -x -l 72 -w 92 file.bp | xerox -h 10	-l 72 -s vint -2 |
+		      opr -r -2
+		 cpr -m16 -x file.bp | postcpr -pland |	prt -lpost
+
+	    Generating 4 logical pages on each physical	page:
+
+		 cpr -x	-w 80 *.h *.c |	postcpr	-n4 | prt -lpost
+
+       BBBBUUUUGGGGSSSS
+	    Unable to find function names that do not begin at the left
+	    margin.
+	    Should be able to find function names when the argument list
+	    is longer than one line.
+
+       EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEE
+	    VVVVPPPPAAAATTTTHHHH   Change Management System (CMS) view	path.
+
+       SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	    _3_b_l_i_s_t(1), _c_m_s_p_r(1), _l_p_r(1), _o_p_r(1), _x_e_r_o_x(1), _p_o_s_t_c_p_r(1X),
+	    and	_p_r_i_n_t_f(3)
+
+       AAAAUUUUTTTTHHHHOOOORRRRSSSS
+	    Paul Breslin, Human	Computing Resources Corp.
+	    Lance E. Shepard, CCI & RIT
+	    Rick Wise, CALCULON	Corp.
+	    Joe	Steffen, AT&T Bell Labs
+	    Andrew J. Miller, AT&T Bell	Labs
+	    Harold E. Bamford, AT&T Bell Labs
+	    Ron	Crocker, AT&T Bell Labs
+
+
+
+
+       Page 3					       (printed	12/1/93)
+
+
+
+
+
+
+       CCCCPPPPRRRR((((1111))))			 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV			  CCCCPPPPRRRR((((1111))))
+
+
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    Peter Fales	(ihlpb!psfales)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 4					       (printed	12/1/93)
+
+
+

@@ -1,0 +1,456 @@
+#  @(#)  SID: 1.5;  module: @help;  last changed: 6/26/91  20:24:38
+
+USAGE="\nUsage:  $0  [ item ]\n"
+if test $# -gt 1; then
+    echo "$USAGE"
+elif test $# -eq 0; then
+    $SHOW <<\!
+
+This is the help for the set of commands to make regression testing available
+to users.  The command
+
+	@help introduction
+
+presents a beginning description of this command system.  The command
+
+	@help topics
+
+presents a list of topics that explain different parts of the system.
+The command
+
+	@help commands
+
+presents a one-line summary of each of the commands in the set.
+
+!
+else
+    case $1 in
+    @capture)
+	$SHOW <<\!
+
+SYNTAX:  @capture   case  [ case ... ]
+
+The "@capture" command runs the named tests, capturing the stdout and stderr
+in special files called GOLDEN (q.v.) files.  These files are used by the
+"@test" command to determine if tests pass or fail.
+
+!
+    ;;
+    @comment)
+	$SHOW <<\!
+
+SYNTAX:  @comment  [ -s ] comment
+
+The "@comment" command is intended for use in test scripts.  It provides a
+simple way to send the same comment to both stdout and stderr.  If the
+command is run with a terminal receiving the output (e.g., when a test case
+is run with the @try command), the comment is only send to stdout.
+
+Normally, this command prints out the comment with extra lines before and
+after to make the comment stand out in a log file.  The -s option requests
+that only a simple, single-line version of the comment be echoed.
+
+!
+    ;;
+    @explain)
+	$SHOW <<\!
+
+SYNTAX:  @explain  [ case ... ]
+
+The "@explain" command explains to the user the purpose for the cases given
+as arguments.  It does this by printing out at the terminal the lines in
+the case script that begin "# Purpose:".  These are the same lines that are
+displayed when the "@test" or "@try" commands are run.
+
+If used without arguments, it defaults to the argument 'ALL'.
+
+!
+    ;;
+    @help)
+	$SHOW <<\!
+
+SYNTAX:  @help   [ item ]
+
+The "@help" command prints information about @ commands or given topics.
+Without an argument, a general explanation is printed at the terminal.
+With an argument, detailed information is printed about the given command
+or topic.  Two topics of special interest are "commands" and "topics".
+
+New users should issue the command
+
+	@help introduction
+
+for a top-level explanation of "@" commands.
+
+!
+    ;;
+    @ls)
+	$SHOW <<\!
+
+SYNTAX:  @ls  [ case ... ]
+
+The "@ls" command prints out the names of the test cases that can be run.
+It can be issued from any directory.
+
+If used without arguments, it defaults to the argument 'ALL'.
+
+!
+    ;;
+    @mask)
+	$SHOW <<\!
+
+SYNTAX:  @mask  [ -s ] [ -r replacement ]  pattern  [ pattern ... ]
+
+The "@mask" command is a filter intended for use in test scripts.  It scans
+its standard input, looking for the patterns given on its command line in
+the pattern language used by sed(1).  When it finds such patterns, it
+replaces them with one of several replacement strings.  The default
+replacement string is 5 asterisks (*****).  However, users can specify their
+own replacement string using the -r option.  A third option is to surround
+the original string with the strings '[{*' and '*}]' when the -s options is
+used.
+
+The intent in all cases is to remove from stdout text that changes from test
+run to test run, such as date or time fields.  Such changing text will cause
+test runs to fail.  When such test is replaced by any of the three
+replacement strings above, the comparison routines used by the @test command
+will cause the fields to match.
+
+!
+    ;;
+    @remove)
+	$SHOW <<\!
+
+SYNTAX:  @remove  case [ case ... ]
+
+The "@remove" command removes the given test cases (and all their associated
+files) from the regression system.
+
+!
+    ;;
+    @rename)
+        $SHOW <<\!
+
+SYNTAX:  @rename   old_case  new_case
+
+The "@rename" command allows a user to rename a test case for a given
+module.  All the files associated with the test case in the $results,
+$stdout, $stderr, $db, etc., directories also have their names changed.
+
+!
+    ;;
+    @showdo)
+	$SHOW <<\!
+
+SYNTAX:  @showdo  command  [ comment ]
+
+The "@showdo" command is intended for use in test scripts.  It provides a
+simple way to echo a command to stdout and stderr, and then execute it. This
+results in output logs that are easier to understand, particularly when a
+single test script contains many commands to be tested.
+
+If a second argument is used, it is echoed as a comment to stdout and stderr
+immediately before the command is echoed.
+
+!
+    ;;
+    @test)
+        $SHOW <<\!
+
+SYNTAX:  @test  [ -i ]   case  [ case ... ]
+
+The "@test" command invokes the regression tests identified by "case" on the
+modules that were identified in the "regress" command.  The names of the
+cases (q.v.) are the filenames of shell scripts that are to be invoked.  The
+special case name "all" indicates that all tests recorded for the modules
+identified in the "regress" command are to be invoked.
+
+After each test is run, the stdout and stderr of the test are compared with
+officially approved GOLDEN (q.v.) versions of those tests.  The comparison
+is made using the diff(1) command.  If no differences are detected between
+the golden and test output, the test PASSES.  Otherwise it FAILS.
+
+Normally, when several tests are run together, the first one to fail stops
+the testing of the remaining cases.  The -i argument requests that such
+failures be ignored and all the given tests be run to their completion.
+
+SEE ALSO: golden, @mask, @try
+
+!
+    ;;
+    @try)
+        $SHOW <<\!
+
+SYNTAX:  @try   case  [ case ... ]
+
+The "@try" command is similar to the "@test" command in that it invokes the
+regression tests identified by "case" on the modules that were identified in
+the "regress" command.  The names of the cases (q.v.) are the filenames of
+shell scripts that are to be invoked.  The special case name "all" indicates
+that all tests recorded for the modules identified in the "regress" command
+are to be invoked.
+
+This command is different from "@test" in that the output from the test
+script is displayed at the terminal rather than put into files, and the
+comparison with the GOLDEN output is *not* performed.  The command's purpose
+is to try new test scripts until they are debugged enough to be used to
+populate a new golden set of files.
+
+SEE ALSO: @test
+
+!
+    ;;
+    @type)
+	$SHOW <<\!
+
+SYNTAX:  @type  case [ case ... ]
+
+The "@type" command displays the given test scripts on the terminal.
+
+!
+    ;;
+    @using)
+	$SHOW <<\!
+
+SYNTAX:  @using
+
+The "@using" command reminds the user what modules are being used by the @
+commands.  They are the modules given as arguments to the "regress" command.
+
+!
+    ;;
+    case*)
+	$SHOW <<\!
+
+Several commands take arguments that allow users to specify which test cases
+they would like run.  Test cases are identified by the files found in the
+directory identified by the environmental variable (q.v.) $cases.  The names
+of the cases are the names of the files in that directory.  Groups of test
+cases can be run at the same time by either naming them explicitly or by
+using filename pattern matching to name them as a group.  
+
+The special keyword "all" can be used to specify that all tests be run.
+
+Assume that a program had tests 4.0, 4.1, and 4.2 set up.  These tests could
+be run by the @test command in any of the following ways:
+
+	@test 4.0 4.1 4.2
+	@test 4.\*
+	@test "4.*"
+	@test 4.*
+
+The first three commands would work from any regress directory.  The last
+command would best be used only in the $cases directory.
+
+!
+    ;;
+    comment*)
+	$SHOW <<\!
+
+There are two kinds of comments in the regress system, comments that explain
+the purpose of test cases, and comments that explain individual steps in
+test scripts.  The latter are handled by use of the "@comment" command
+(q.v.).  The former are explained here.
+
+Comments explaining the purpose of each test can be included in test scripts
+in such a way as to be displayed when the scripts are processed with
+regression commands such as "@test," "@try," or "@explain."  Such comments
+must have the text "# Purpose:" at the beginning of their lines.
+
+Here is an example of the test script that will display the comment
+
+    Test with null input file
+
+whenever it is run:
+
+    #
+    # Purpose: Test with null input file
+    #
+    tstcmd < /dev/null
+
+SEE ALSO: @comment
+
+!
+    ;;
+    env_var*)
+	$SHOW <<\!
+
+Part of the environment set up for users by the "regress" command is a set
+of environmental variables that are meant to reduce the amount of typing
+needed to use this regression testing system.  The following variables are
+each set to a different directory containing files important to the
+regression testing process.  The following is a list of this set along with
+a brief description of what each variable is used for:
+
+
+	DIRECTORY	WHAT IT CONTAINS
+
+	$cases		The individual case scripts used by the modules.
+	$stdin		The standard inputs of each case in $cases.
+	$db		Any additional files needed to test the modules.
+	$stdout		The TEST versions of stdout for each case in $cases.
+	$stderr		The TEST versions of stderr for each case.
+	$stats		The TEST versions of the stats for each case.
+	$g_stdout	The GOLDEN versions of stdout for each case in $cases.
+	$g_stderr	The GOLDEN versions of stderr for each case.
+	$g_stats	The GOLDEN versions of the stats for each case.
+	$results	The differences between the GOLDEN and TEST versions
+			of stdout and stderr.
+
+
+The way these variables are used depends on the number of modules being
+tested, as determined by the "regress" command.  Typically a user will enter
+the regression system planning to test only one module.  Suppose that a user
+had issued the following command to enter the regression testing environment:
+
+	regress SanityChk
+
+In that case all the above environmental variables would be set up to point
+to the "cases," "stdout," "stderr," etc. files specifically associated with
+testing SanityChk.  For example, to list all the case files associated with
+SanityChk, the following command could be issued:
+
+	ls $cases
+
+If one wanted to list the contents of the script file containing test "0.1"
+for SanityChk, the command to be used would be
+
+	cat $cases/0.1
+
+or, if the user wanted to print out the results of running test 0.1, the
+commands to use would be 
+
+	cat $results/0.1
+	cat $stdout/0.1
+	cat $stderr/0.1
+
+!
+    ;;
+    golden* | GOLDEN* )
+	$SHOW <<\!
+
+The regress system not only runs tests, but also analyzes the results to
+determine whether the tests PASSED or FAILED.  It does this by comparing the
+stdout and stderr files generated during test runs against the GOLDEN
+versions of those files generated earlier and approved as correct.  These
+golden files are stored in the directories identified by the environmental
+variables (q.v.) $g_stdout and $g_stderr.  These files are populated using
+the
+	@capture
+
+command (q.v.).
+
+!
+    ;;
+    intro*)
+	$SHOW <<\!
+
+The "@" commands and environment you now have access to are a set of commands
+meant to provide a helpful set of commands used to control a regression
+testing system.  Entry to this environment is done through the "regress"
+command.  If it is issued with the name of a module or set of modules that
+are to be tested, such as
+
+	regress SanityChk
+
+then the module "SanityChk" is known to all "@" commands and need not be
+typed by the user again.  The "@" commands insert the module name and all
+needed additional syntax into the lower-level regression system whereever
+this information is required.  The effect is as if the user had "opened" the
+given module or modules for processing.  All "@" commands issued thereafter
+are oriented to the given module.
+
+Throughout the descriptions in this help facility are words or phrases that
+are followed by "(q.v.)," meaning that these words or phrases are also
+defined in this facility and the user is encouraged to ask for help on these
+topics for additional information.
+
+The command
+
+	@help topics
+
+will show the user the complete list of topics discussing this facility.
+The command
+
+	@help commands
+
+will show the user a one-line summary of what each "@" command in this
+system does.
+
+Other topics of special interest can be read about by issuing @help with the
+argument 'env_variables'.
+
+!
+    ;;
+    commands)
+	$SHOW <<\!
+
+*** Command summary:
+
+  @capture	Capture the golden versions of test cases.
+  @comment      Display comment on stdout and stderr (used in test scripts).
+  @explain	Explain the purpose of test cases.
+  @help		Provide help on  @  commands and topics.
+  @ls           List the case cases available.
+  @mask         Mask variable test output (used in test scripts)
+  @remove       Remove test cases.
+  @rename	Change the names of test cases.
+  @showdo       Display a command and execute it (used in test scripts).
+  @test		Run and analyze test cases.
+  @try		Run test cases, displaying output at terminal.
+  @type		Display test scripts.
+  @using	Display the name of the current modules.
+
+!
+    ;;
+    mask*)
+	$SHOW <<\!
+
+Sometimes there is a problem comparing the golden (q.v.) and test output
+files because certain fields change every time the test is run.  One example
+of this is DATE fields which always show the current date.  Such fields can
+cause a test to fail even when all other data in the stdout and stderr files
+are a perfect match.
+
+There is a simple program called '@mask' available to users to deal with this
+problem.  The mask program is a filter, scanning its input looking for
+given patterns.  Wherever that pattern is encountered, it is replaced using
+one of several replacement strings.  The default replacement string is 5
+asterisks (*****).
+
+The following shows an example use of this command:
+
+    $ runmsg
+    Program running on 10/01/89 at 10:51
+    $ runmsg | @mask "[01][0-9]/[0-3][0-9]/[0-9][0-9]" "[0-2][0-9]:[0-6][0-9]"
+    Program running on ***** at *****
+
+SEE ALSO: @mask, @test, golden
+
+!
+    ;;
+    topic*)
+        echo
+	echo "*** Help is available for the following topics:"
+	echo
+	$SHOW <<\! | pr -4 -t -o2
+cases
+commands
+comments
+env_variables
+golden_files
+introduction
+masking
+topics
+!
+	echo
+    ;;
+    *)
+        echo
+	echo "No help for  \"$1\""
+	echo "Type  \"@help commands\"  for list of currently available commands"
+	echo "Type  \"@help topics\"  for list of currently available topics"
+	echo
+    ;;
+    esac
+fi

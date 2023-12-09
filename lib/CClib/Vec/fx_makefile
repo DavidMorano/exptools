@@ -1,0 +1,16 @@
+CC = CC
+
+# Uncomment the following line if scomplex.h is available
+#CFLAGS = -O -I.
+CFLAGS = -O -Dscomplex=complex -I.
+
+libVec.a : fx_ucvec.o fx_cvec.o fx_svec.o fx_ivec.o fx_fvec.o fx_dvec.o \
+		fx_fcxvec.o fx_dcxvec.o nullreps.o
+	ar cr libVec.a fx_ucvec.o fx_cvec.o fx_svec.o fx_ivec.o fx_fvec.o fx_dvec.o fx_fcxvec.o fx_dcxvec.o nullreps.o
+	ranlib libVec.a
+	@-echo Vec built. | mail alice!bst
+
+install: libVec.a Vec.3C++
+	install libVec.a $(INSTALLROOT)/lib
+	ranlib $(INSTALLROOT)/lib/libVec.a
+	install Vec.3C++ $(INSTALLROOT)/man/man3

@@ -1,0 +1,167 @@
+#!/bin/sh
+
+#####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1992
+#			AT&T Bell Laboratories
+#####################################################################
+
+# If this script has a bug, it is not due to the "failed
+# social programs of the '60s."
+
+##########################################################
+# Find JUMPs in an IBM procdef file
+#
+#		Author: Bob Parnass
+#		Date:	June 1992
+#		AT&T Bell Laboratories
+#
+# USAGE:    procdef source_files
+#
+# This program parses an IBM370 procedure definintion (procdef)
+# source file and writes lines of the form:
+#
+#	start_line# end_line#
+#
+#
+# The argument to this script should be procdef source files.
+# Source file lines may or may not begin with TSS line numbers. 
+#
+##########################################################
+
+
+FORHELP="\n\n(For more help, contact Bob Parnass)\n"
+USAGE="*** error, USAGE:  `basename $0`   files ${FORHELP}"
+
+TMP=/usr/tmp
+LABELFILE=$TMP/a1a$$
+BRANCHFILE=$TMP/a2a$$
+JUNKFILE=$TMP/a3a$$
+
+TMPFILES="$LABELFILE $BRANCHFILE $JUNKFILE"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# check for bad command line args which start with a minus sign
+for ARG do
+	case "${ARG}" in
+		-*)
+			echo "${USAGE}" 1>&2
+			echo "        Bogus command line argument" 1>&2
+			exit 1
+			# script exits
+			;;
+		*)
+			;;
+	esac
+done
+
+# input file must be specfied
+if [ $# -ge 1 ]
+then
+	while [ $# -ne 0 ]
+	do
+
+		# It is difficult to define a single quote constant
+		#	in awk(1), so we emply a trick: read in a single
+		#	quote at the first line.
+
+		# Skip over optional TSS line numbers.
+
+		INFILE=${1}
+		(echo "'"; sed -e 's/^[0-9][0-9][0-9][0-9][0-9].[0-9][0-9][0-9][0-9] //' -e 's/  / /g' $INFILE) \
+			| awk ' \
+				{ \
+				# if first line of input
+				if(NR == 1)
+					tick = $0
+				else
+					{
+					# 2nd and later lines of input
+
+					wholeline = $0
+					len = length(wholeline)
+
+					# if line has a label
+					if(index(wholeline, tick) == 1)
+						{
+						restline = substr(wholeline, 2, len - 1)
+						k = index(restline, tick)
+						label = substr(restline, 1, k-1)
+						llabel = length(label)
+						len = length(restline)
+						restline = substr(restline, llabel + 1, len - llabel -1)
+# printf "line %d, k=%d, label=%s, restline=%s\n", NR, k, label, restline
+						}
+					else
+						{
+						label = ""
+						restline = wholeline
+						}
+	
+					# if line has a label
+					if(length(label))
+						{
+						printf "%s!%d!LABELFOO\n", label, NR -1
+						}
+	
+					if(length(restline))
+						{
+						k = index(restline, "JUMP ")
+						if(k > 0)
+							{
+							dest = substr(restline, k + 5, length(restline) - k - 4)
+							if(index(dest, tick) == 1)
+								dest = substr(dest, 2, length(dest) -2)
+		
+							if(length(dest) > 0)
+								{
+								printf "%s!%d\n", dest, NR -1
+								}
+							}
+						}
+					}
+				 } ' > $JUNKFILE
+
+
+				
+		grep 'LABELFOO$' $JUNKFILE \
+			| cut -d'!' -f1,2 \
+			| sort -u > $LABELFILE
+		
+		# labelfile now contains lines of the form:
+		#	label!line#
+		
+		
+		grep -v 'LABELFOO$' $JUNKFILE \
+			| cut -d'!' -f1,2 \
+			| sort -u > $BRANCHFILE
+		
+		# branch now contains lines of the form:
+		#	label line#
+		
+
+		join  -t'!' -a1 -j1 1 -j2 1 -o 1.2 2.2 $BRANCHFILE $LABELFILE \
+			| awk -F'!' '\
+				{
+				if((NF == 2) && (length($2)))
+					printf "%s %s\n", $1, $2
+				else
+					printf "%s %s\n", $1, $1
+				}'
+				
+		shift
+	done
+
+	rm -f "${TMPFILES}"
+
+	exit 0
+else
+	# input file not specified on cmd line
+	echo "${USAGE}" 1>&2
+	echo "        Input file must be specified" 1>&2
+	exit 1
+fi

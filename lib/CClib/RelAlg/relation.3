@@ -1,0 +1,268 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/relation/s.relation.3"
+.\"
+.PH "'RELATION(3RA)'Relational Algebra C++ Library'RELATION(3RA)'"
+.PF "'10/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910009'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910009'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Relation, WS_Relation, BF_Relation, AF_Relation, Form_Relation - tables for 
+relational algebra
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <relation.h>
+
+.SO relation.dd
+
+.SO wsRel.dd
+
+.SO bfRel.dd
+
+.SO bfLock.dd
+
+.SO afRel.dd
+
+.SO formRel.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+.VL 10 0
+.LI "<<"
+The friend operator << prints the contents of the Relation to the specified
+ostream.  Attribute names are used as column headings.  No pagination is done.
+.LI "degree"
+The degree function returns the number of Attributes in the Relation.
+.LI "cardinality"
+The cardinality function returns the number of Tuples in the Relation.
+.LI "truncate"
+The truncate function removes all Tuples from the Relation.
+.LI "walk"
+The walk functions startwalk, walk, endwalk and operator=(Tuple *) provide Tuple
+by Tuple iteration over the entire Relation or a selected subset of the
+Relation.  The general behavior of walks is described in Extension(3).
+Relations behave the same way, but assume that Tuples match the Intension and
+also allow a Predicate to be passed to the startwalk function.  When the
+predicate is passed, only Tuples that are TRUE for the Predicate are returned
+by walk.  The walk(IntensionValue &) function populates the IntensionValue
+with a Tuple returned from walk().  If the IntensionValue already
+contained a Tuple, that Tuple is deallocated before getting the new Tuple
+from walk().  In general, walk(IntensionValue &) should be used rather
+than walk() because IntensionValues provide a straight forward
+interface to Tuples.  If an application uses walk(), it has to manage the
+Tuples.
+.LI "= += -="
+The assignment operations update a Relation.  The Relation = Relation operation
+replaces all Tuples in the left Relation with the Tuples in the right Relation.
+The Relation += Relation operation appends to the left Relation all Tuples in
+the right Relation that are not already in the left Relation.
+The Relation -= Relation operation removes all Tuples in the left Relation that
+join with Tuples in the right Relation.
+The right Relation must have the same Intension as the left Relation.
+The right Relation may be manipulated via projects, joins, etc. so that
+an intermediate Relation is produced, whose Intension matches the left
+Relation's Intension, that can be used by the assignment.
+The Relation += Tuple operation appends the Tuple to the Relation.  The Relation
+is not checked for duplicates.  The Relation = Tuple operation is valid only
+within a walk and replaces the current Tuple in the walk with the right side
+Tuple.  The Relation is not checked for duplicates.
+All of the assignments return TRUE or FALSE.
+.LI "< <= > >= == !="
+The comparison operations compare two Relations.  The operations are set
+comparisons, so < is proper subset, <= is subset, > is proper superset, >= is
+superset, == is set equality and != is set inequality.  All of the comparisons
+return TRUE or FALSE.
+.LI "+ - & ^"
+All of these operations take two Relations as operands and return a Relation.
+The operator + returns the union of the two Relations, i.e. all Tuples in either
+Relation (with duplicates removed).  The right Relation must have the same
+Attributes as the left Relation, in the same order.
+The operator - returns the set difference
+of the two Relations, i.e. all Tuples in the left Relation which do not join
+with Tuples in the right Relation.  The right Relation does not need to have the
+same Attributes as the left Relation.
+The operator ^ returns the half join of the two Relations, i.e. all Tuples in
+the right Relation that join with the left Relation.  This is an extremely
+useful operator that may be thought of as an expansion of the simple predicate
+select ([]) operator. It can often be used to eliminate iterations through one
+Relation in order to select Tuples from another Relation.
+The operator & returns the natural join of the two Relations.  The Intension of
+the new Relation contains all Attributes of the left Relation followed by any
+Attributes in the right Relation that don't occur in the left Relation, keeping
+their relative sequence within the Intension.  Each Tuple from the left Relation
+is combined with all Tuples from the right Relation with equal values for each
+common Attribute.  Each new Tuple created by the combination is added to the
+Extension of the new Relation.  Duplicates are removed.  There are two limiting
+cases for natural joins.  If all of the Attributes are in common between the two
+Relations, the result is an intersection.  If none of the Attributes are in
+common, the result is a cross-product.
+.LI "[]"
+The operator [] is a relational project when it encloses an Intension
+(e.g. R[a1/a2/a3]).  The project
+returns a "vertical subset" of the Relation, containing those Attributes
+listed in the Intension (e.g. a1, a2, a3).  Attributes can be
+renamed within the Intension using new*old, e.g. R[a1/x2*a2/a3] results in
+Attributes a1, x2 and a3.  Attributes x2 and a2 would both need to be
+defined using the same Domain.  All the Tuples in the original Relation or
+expression participate in the projection, but duplicates are removed.
+Therefore the number of Tuples (cardinality) in the result may be less
+than in the original.
+.LI "[] %"
+The operator [] is a relational select when it encloses a predicate expression
+(e.g. R[user == root]). The select returns a "horizontal subset" of the
+Relation, containing the same Intension (Attributes) as
+the original and those Tuples from the original for which the Predicate is true.
+The % form of the operator is still available, but unsupported and will be
+deleted in the future.
+.LI "*"
+The operator * (transitive closure) iteratively joins a Relation to itself until
+it stops growing.  The Attributes to be joined are specified by the right
+Intension operand using the rename operator *.  For example, r1*(parent*child)
+repeatedly joins r1 to itself using the parent and child Attributes.  It returns
+a Relation with Attributes parent/child containing all ancestors of every child
+in r1.  This is equivalent to all descendents of every parent in r1.  It is
+possible for the transitive closure to be taken based on a concatenated key as
+well, e.g.  r2*(from_state*to_state/from_city*to_city).
+.LI "string()"
+The string() function converts the Relation to a character string and returns
+the string.  If the data in the Relation overflows string()'s internal buffer
+(BUFSIZ bytes), the string will be terminated with three dots (...)
+followed by the tuple separator.
+The separators between Tuples and between Attributes can be passed as
+parameters.  If a separator consists of more than one character (the parameters
+are character strings), the whole string is used as the separator.
+The default separators are newline ("\en") for Tuples and tab ("\et") for
+Attributes.  If the separators are passed as NULL pointers an error
+is generated.  The third parameter is used as the heading above the first Tuple.
+By default, there is not a heading.
+.LI "appendString()"
+The appendString() function converts the string (first parameter) into 
+one or more Tuples and adds them to the Relation.  The Relation is not
+checked for duplicates.   The conversion is based on the Tuple separator
+(second parameter) and the attribute separator (third parameter).
+.P
+The tupleSeparator parameter is a string of valid Tuple separators while
+the attrSeparator parameter is a single valid Attribute separator character.
+This is a compromise between making it easy to handle free-form input
+and making it easy to specify NULL Attribute values.  The str parameter
+will first be broken into Tuples based on the tupleSeparator.  Since this
+happens first, if the attrSeparator occurs in the tupleSeparator string it will
+be interpreted as a Tuple separator.  A sequence
+of valid characters ( e.g. "\en\en" ) will be treated as a single
+separator.  This makes it easy to handle free form input that may
+include blank lines.  As each Tuple is parsed, a single valid character
+is treated as a single separator.  For example, "a\et\etc" would
+be ( a, NULL, c ).  This makes it easy to specify NULL Attribute values.
+When parsing, if there are too few Attribute values the missing ones
+are initialized to NULLs.  If there are too many the extra ones are
+silently ignored.
+.P        
+If you need to specify a NULL Tuple you can easily do so by specifying
+the Attribute separator followed by a Tuple Separator ( e.g. "\et\en").
+If you want to use any sequence of white space ( tab or space ) as the
+Attribute separator, you can do so as a special case by specifying
+attrSeparator as NULL ('\e0').  This doesn't completely provide for free-form
+Attribute separators, but it handles the most common need.
+.LE
+.P
+WS_Relations, BF_Relations, AF_Relations and Form_Relations are derived
+from the base class Relation.  WS_Relations are stored in memory
+(workspace), BF_Relations are stored in binary files and AF_Relations
+are stored in ASCII files.  The constructors for the BF_Relations and
+AF_Relations take a pathname parameter file which defaults to NULL
+(this will create a temporary file and remove it as the Relation is
+destroyed) and an parameter perm which should be either READONLY or
+READWRITE.  AF_Relations take an additional parameter delim.  This
+can be set to a field delimiter character such as tab (\et) or colon
+(:).  The AF_Relations will expect one record per line with exactly
+one delimiter between each Attribute value on the line.  If delim
+is allowed to default to NULL, AF_Relations will still expect one record
+per line but will allow 1 or more spaces or tabs between each Attribute
+value on the line.  Obviously, a delimiter character should be selected
+that could never occur within the data.
+.P
+BF_Relations have the additional capability of triggering function calls
+on inserts, deletes or updates to Tuples in the BF_Relation.  The trigger
+function takes two parameters, a pointer to the old Tuple and a pointer to
+the new Tuple.  For an insert, new is not NULL.  For a delete, old is not
+NULL.  For an update, both are not NULL.  If the trigger function returns
+TRUE the insert, deletion or update continues.  If the trigger function
+returns false the insert, deletion or update is aborted and a TRIGGER_FAILED
+error message results.  The trigger function is set up by calling the
+BF_Relation trigger() operation.  ALL processes updating the BF_Relation must
+set up the trigger for it to fire reliably.  That is why triggering has not
+been made available for other types of Relations like AF_Relation.  An
+AF_Relation is too easily updated through the "back door" using an editor.
+.P
+BF_Relations can be locked via the LockBF class.  The application
+specifies the BF_Relation to be locked in the first argument to LockBF() and
+the type of lock in the second argument.  The LockBF destructor releases the
+lock.  A LockBF object should be defined within a block ({...}) of code
+for which the lock is to be in effect.
+.P
+Form_Relation constructors also take additional parameters.  A form heading
+may be specified.  A NULL value indicates that no heading is needed.
+A curses(3X) WINDOW pointer may also be specified.  If allowed to default
+to NULL, the full screen window stdscr will be used.  Assigning to
+Form_Relations causes them to display all assigned values to the user.
+Using Form_Relations in an expression causes them to elicit input from the
+user.  Form_Relations also have some additional functions.  The update
+function takes a Tuple, elicits updates to the Tuple from the user, and
+returns a new Tuple with the updates.  The criteria function displays a
+blank form, allows the user to fill in the blanks on the form, and returns
+a pointer to a Predicate that \fBand\fPs together all of the values
+specified.  In other words, it can be used to select all Tuples with
+Attribute values equal to every criteria specified by the user on the form.
+Any Attributes that the user left blank are not included in the Predicate.
+.LI "\fBDIAGNOSTICS\fP"
+The Relation operations will print an error message, set relerr.errno and
+abort under the following circumstances:
+.VL 10 0
+.LI "[R_BAD_ASSIGNMENT]"
+The Relation assignment operators =, += or -= are used when the left and
+right Relations do not have the same Intension.
+Not only must they have the same Attributes, they must be in the same order.
+.LI "[R_BAD_UNION]"
+The left and right Relations of the union do not have the same Intension.
+Not only must they have the same Attributes, they must be in the same order.
+.LI "[R_CLOSURE_TOO_BIG]"
+Too many Attributes are participating in the transitive closure.
+.LI "[R_INVALID_OPERATION]"
+The operators += or -= are used with a Form_Relation.
+.LI "[R_KEY_VIOLATION]"
+The constrain function detects two Tuples with the same key.  Instead
+of aborting, constrain will exclude one of the Tuples from the return
+value and continue.
+.LI "[R_MIXED_INTENSIONS]"
+The Intension of the argument passed to walk(IntensionValue &) does not
+match the Intension of the Relation (of which walk is a member).
+.LI "[R_NO_ATTRIBUTE]"
+The Predicate specified for the startwalk function or operator % (select)
+contains Attributes that
+are not in the Relation, or the Intension specified for the operators []
+(project) or * (closure) contains Attributes that are not in the Relation.
+.LI "[NULL_POINTER]"
+An pointer passed to a function was NULL.  Do not pass the function a
+NULL pointer, use the defaults (if there are any) or try passing NULL
+value (i.e. "" rather than (char *)0).
+.LE
+.sp
+The Form_Relation operations will print an error message, set formerr.errno 
+and abort under the following additional circumstances:
+.VL 10 0
+.LI "[F_INVALID_FIELD]"
+The user repeatedly enters incorrect data for a field.
+.LE 
+.br
+Additional errors may occur due to lower level objects used by Relations.
+.LI "\fBEXAMPLES\fP"
+.br
+.EX 
+.SO relationE.ex
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Er, \*(Dm, \*(At, \*(In, \*(Tp, \*(Ex, intro(3RA) 
+.LE

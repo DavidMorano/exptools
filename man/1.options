@@ -1,0 +1,396 @@
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))             UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+
+          options - generate options-parsing front ends
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+          ooooppppttttiiiioooonnnnssss [ ----aaaa srcfile ] [ ----ffff funcname ] [ ----gggg ] ] [ ----HHHH ]
+                  [ ----llll language ] [ ----nnnn ] [ ----oooo outfile ] [ ----hhhh||||????  ]
+                  [ ----VVVV ggggeeeettttooooppppttttssss----ppppaaaarrrrtttt aaaarrrrgggg----nnnnaaaammmmeeeessss............
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+          _O_p_t_i_o_n_s generates the front-end parsing code for a C (either
+          ANSI or K&R) or C++ program or a ksh or sh script.  OOOOppppttttiiiioooonnnnssss
+          accepts a string (getopts-part) suitable for passing to the
+          C getopt() function or the getopts program, together with
+          argument names that will be passed to the final application.
+          OOOOppppttttiiiioooonnnnssss then generates the "boiler-plate" code that an
+          application programmer would normally write to process the
+          options in a getopt(s) parsing loop, together with the
+          additional declarations and initializations required to
+          provide a shell for a complete application.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLIIIINNNNEEEE SSSSWWWWIIIITTTTCCCCHHHHEEEESSSS
+
+          OOOOppppttttiiiioooonnnnssss itself accepts the following options:
+
+             +o -a srcfile -- append the specified source file to the
+               final output.
+
+             +o -f funcname -- declare a function name (for ksh
+               function declarations).
+
+             +o -g -- declare options flags & arguments globally (e.g.
+               extern or export).
+
+             +o -H -- insert the logic required to process a help
+               option.
+
+             +o -l language -- generate source code in the specified
+               language.  The possible choices are ANSI, K&R, C++, ksh
+               and sh.
+
+             +o -n -- interactively specify the names of variables used
+               to hold the values of any options arguments.
+
+             +o -o outfile -- redirect output to a specified file.
+
+             +o -V -- print out the current version, and exit.
+
+             +o -h|? -- print out the on-line help message, and exit.
+
+          The user specifies the -l C option to generate a C program
+          shell (with ANSI and K&R compiler options), -lksh (or no -l
+          option) to generate a ksh script, etc.  For shell scripts,
+
+
+
+     Page 1                                          (printed 4/16/92)
+
+
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))             UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))
+
+
+
+          the user may specify the -f funcname option to generate a
+          function declaration.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE ooooppppttttiiiioooonnnnssss UUUUSSSSEEEE
+
+            options -n -H -o options.c -l C a:f:gHl:no:V getopts-part arg-names...
+          $:options: a_switch name: append
+          $:options: argument name: srcfile
+          $:options: f_switch name: name_fun
+          $:options: argument name: funcname
+          $:options: g_switch name: global
+          $:options: H_switch name: help
+          $:options: l_switch name: name_lng
+          $:options: argument name: language
+          $:options: n_switch name: name_var
+          $:options: o_switch name: redirect
+          $:options: argument name: outfile
+          $:options: V_switch name: version
+
+          In this example, options will generate front-end parsing
+          code suitable to begin construction of itself.  The
+          "$:options:" lines represent interactive naming of options
+          variables.  The result is as follows:
+
+     #include <string.h>
+     #include <stdio.h>
+
+     #ifndef TRUE
+     #define TRUE 1
+     #endif
+     #ifndef FALSE
+     #define FALSE 0
+     #endif
+
+     #define HELP_LENGTH 1120
+     #define ARGC 2 /* need these arguments past options. */
+
+     #ifdef __STDC__
+     char *getenv(char *name); /* get environment string */
+     /* get option character - called in a loop */
+     int getopt(int argc, char **argv, char *optstring);
+     void exit(int status);    /* exit from process */
+     #else
+     char *getenv(); /* get environment string */
+     int getopt();   /* get option character - in a loop */
+     exit();         /* exit from process */
+     #endif
+
+     extern char *optarg; /* option argument set by getopt() */
+     extern int optind;   /* option index set by getopt() */
+     extern int opterr;   /* option error set by getopt() */
+
+     char usage[HELP_LENGTH]; /* program usage string */
+     static char *prompt; /* used in printouts of usage messages */
+     static char *prefix; /* used in printouts of error messages */
+
+
+
+     Page 2                                          (printed 4/16/92)
+
+
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))             UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))
+
+
+
+     static char *program;/* used in printouts of all messages */
+
+
+     #ifdef __STDC__
+     int main(int argc, char **argv)
+     #else
+     int main(argc, argv)
+         int argc;
+         char **argv;
+     #endif
+     {
+         int errcount = 0; /* count of command-line errors */
+         int op_index;     /* index into options record array */
+         int option;       /* current option character */
+         static char PROMPT[3] = "$ "; /* default value of PS1 */
+         static char PREFIX[3] = "$:"; /* default value of PS5 */
+
+         int append = FALSE; /* logic variable for -a option */
+         int name_fun = FALSE; /* logic variable for -f option */
+         int global = FALSE; /* logic variable for -g option */
+         int help = FALSE; /* logic variable for -H option */
+         int name_lng = FALSE; /* logic variable for -l option */
+         int name_var = FALSE; /* logic variable for -n option */
+         int redirect = FALSE; /* logic variable for -o option */
+         int version = FALSE; /* logic variable for -V option */
+         char *srcfile = NULL; /* variable for -a argument */
+         char *funcname = NULL; /* variable for -f argument */
+         char *language = NULL; /* variable for -l argument */
+         char *outfile = NULL; /* variable for -o argument */
+
+         program = argv[0]; /* the program name */
+         prompt = getenv("PS1"); /* usage message prefix */
+         if (prompt == NULL) {
+             prompt = PROMPT;
+         }
+         prefix = getenv("PS5"); /* error message prefix */
+         if (prefix == NULL) {
+             prefix = PREFIX;
+         }
+         sprintf(usage, "%s%s [ -h|? ] [ -a srcfile ] [ -f funcname ]\n\
+               [ -g ] [ -H ] [ -l language ] [ -n ] [ -o outfile ]\n\
+               [ -V ] getopts-part arg-names...\n\
+     \n\
+         -h|?        -- print this help message and exit.\n\
+         -a srcfile  -- \n\
+         -f funcname -- \n\
+         -g          -- \n\
+         -H          -- \n\
+         -l language -- \n\
+         -n          -- \n\
+         -o outfile  -- \n\
+         -V          -- \n\
+     \n\
+         Notes:\n", prompt, program);
+         /* options parsing loop */
+
+
+
+     Page 3                                          (printed 4/16/92)
+
+
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))             UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))
+
+
+
+         while ((option = getopt(argc, argv, "h?a:f:gHl:no:V")) != EOF) {
+             switch (option) {
+             case 'h': /* "-h" help option */
+             case '?': /* "-?" help option */
+                 /* print out a usage message and exit */
+                 fprintf(stderr, "%s%s usage:\n%s", prefix, program, usage);
+                 return (0);
+             case 'a':
+                 /* -a handling case */
+                 append = TRUE;
+                 srcfile = optarg;
+                 break;
+             case 'f':
+                 /* -f handling case */
+                 name_fun = TRUE;
+                 funcname = optarg;
+                 break;
+             case 'g':
+                 /* -g handling case */
+                 global = TRUE;
+                 break;
+             case 'H':
+                 /* -H handling case */
+                 help = TRUE;
+                 break;
+             case 'l':
+                 /* -l handling case */
+                 name_lng = TRUE;
+                 language = optarg;
+                 break;
+             case 'n':
+                 /* -n handling case */
+                 name_var = TRUE;
+                 break;
+             case 'o':
+                 /* -o handling case */
+                 redirect = TRUE;
+                 outfile = optarg;
+                 break;
+             case 'V':
+                 /* -V handling case */
+                 version = TRUE;
+                 break;
+             }
+             if (*optarg == '-') {
+                 fprintf(stderr, "%s%s: missing argument for option -%c.\n",
+                         prefix, program, option);
+                 fprintf(stderr, "%s%s usage:\n%s",
+                         prefix, program, usage);
+                 return (2);
+             }
+         }
+
+         if (errcount > 0) {
+             /* print error summary, usage and exit */
+
+
+
+     Page 4                                          (printed 4/16/92)
+
+
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))             UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))
+
+
+
+             fprintf(stderr,
+                     "%s%s: %d error(s) found processing command line.\n",
+                     prefix, program, errcount);
+             fprintf(stderr, "%s%s usage:\n%s", prefix, program, usage);
+             return (2);
+         }
+
+         if (argc < optind + ARGC) { /* still need arguments */
+             fprintf(stderr, "%s%s: still missing arguments.\n",
+                     prefix, program);
+             fprintf(stderr, "%s%s usage:\n%s", prefix, program, usage);
+             return (2);
+         }
+
+         /* ...user action code goes here.
+          * The following illustrates access to non-switch arguments.
+          */
+
+         for (op_index = optind; op_index < argc; op_index++) {
+             printf("%s%s: %s\n", prefix, program, argv[op_index]);
+         }
+         return(0);
+     }
+
+     UUUUSSSSAAAAGGGGEEEE HHHHIIIINNNNTTTTSSSS
+
+          The following usage hints may be helpfull:
+
+          If you are using ooooppppttttiiiioooonnnnssss to add a front end getopt(s) loop
+          to work that you have already started, specify the work-in-
+          progress with the "-a" switch and direct the output to
+          "temp".  Then, after satisfying yourself that "temp"
+          contains what you want, rename it to the work-in-progress
+          file.
+
+          If you need to create a front-end getopts loop for a shell
+          function, use the "-f" switch to specify the function name.
+          Options will take care of enclosing the code in a shell
+          function declaration.
+
+          Not all, and maybe none, of the generated options logic
+          variables may be needed by your code.  In that case, treat
+          the assignments of logic values (TRUE/FALSE in C and
+          true/false in ksh) to be points-of-reference for your own
+          code.  Similarly, any assignment of an options argument may
+          also be treated as a point-of-reference for your own code.
+
+          Both ooooppppttttiiiioooonnnnssss and any generated code use the following
+          conventions:
+
+             +o Exported environment variable PS1 (the prompt appearing
+               in the usage message)
+
+             +o Exported environment variable PS5 (as an error/info
+               message prefix)
+
+
+
+     Page 5                                          (printed 4/16/92)
+
+
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))             UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             OOOOPPPPTTTTIIIIOOOONNNNSSSS((((1111))))
+
+
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+
+          It may be necessary, for the purposes of cleaning up what
+          the user of the final code sees, to insert extra newline
+          characters into the usage string assignment.  (This was
+          surreptitiously done in the example above.)
+
+          The user may not need option-negation processing in shell
+          code.  If so, then delete it.  The user may, on the other
+          hand, require option-negation processing in C code.  The
+          function getopt() does not currently provide this.  The C
+          generated getopt() loop will therefore ignore options
+          prefixed with "+".
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+
+            getopts(1)
+            getopt(1)
+            getopt(3)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+
+          Version 1.0 of ooooppppttttiiiioooonnnnssss was written by Larry Gearhart of
+          AT&T, Bell Labs.  The author is grateful to Tony Hansen and
+          the Exptools Administrators for valuable suggestions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 4/16/92)
+
+
+

@@ -1,0 +1,475 @@
+/* Hmap.h - Hashed associative arrays for C++
+   Last Changed: August 12, 1989, by Tim Peierls, to build under C++ 2.0
+*/
+
+#ifndef HMAP_DOT_H
+#define HMAP_DOT_H 1
+/* You need to have an ANSI C compatible limits.h file. */
+#include <limits.h>
+/* C++ 2.0 provides size_t type in stddef.h file. */
+#include <stddef.h>
+
+/* At least one system (UNIX System V 3.1 for the AT&T 6386 WGS)
+   has USI_MAX instead of UINT_MAX in limits.h.
+*/
+#ifndef UINT_MAX
+#  ifdef USI_MAX
+#  define UINT_MAX	((unsigned int) USI_MAX)
+#  else
+   +++ /* Make compiler choke -- no UINT_MAX or equivalent defined. */
+#  endif
+#endif
+
+#ifndef GENERICH
+#include <generic.h>
+#endif
+#ifndef POOLH
+#include <Pool.h>
+#endif
+
+/* String.h once-only macro name differs from 2.0b6 to 2.0. */
+#ifdef STRZZZXH
+#define STRING_DOT_H
+#endif STRZZZXH
+
+/* When in DEBUG mode the value type should be int. */
+#ifdef _HMAP_DEBUG
+#ifndef IOSTREAMH
+#include <iostream.h>
+#endif
+#ifndef STRING_DOT_H
+#include <String.h>
+#endif
+PT_define _HMAP_PEEK(X)
+int peek_default_val() {return default_val;}
+unsigned peek_resize_limit() {return resize_limit;}
+unsigned peek_bucket_cnt() {return bucket_cnt;}
+unsigned short peek_bucket_index() {return bucket_index;}
+unsigned short peek_orig_bucket_index() {return orig_bucket_index;}
+unsigned short peek_max_bucket_index() {return max_bucket_index;}
+int peek_active_iters() {return active_iters;}
+PT_end
+#else
+#define _HMAP_PEEK(X)
+#endif _HMAP_DEBUG
+
+/*
+Pre-defined hash functions.  The int, long, and pointer hash functions assume
+that sizeof(int) = sizeof(long) = sizeof(void*) = 32 bits.  The float and
+double functions assume that sizeof(float) = 32 bits and sizeof(double) = 64
+bits.  These functions will generally have to be changed for different
+machines.  (This implementation works on Alliants and Vaxen.)
+
+In general, pre-defined inline hash functions should be defined here while
+all other pre-defined hash functions should be declared with extern here,
+and should be defined in Hmap.c
+*/
+
+overload hash_value;
+extern unsigned Hmap_word_hash(const unsigned);
+
+/* Don't define hash_value for Strings unless Strings are being used.
+   We do things this way rather than include <String.h> in this file because
+   using Strings adds significant overhead to object files and there's no
+   point in forcing that overhead for programs that don't even use Strings.
+*/
+#ifdef STRING_DOT_H
+inline unsigned hash_value(const String& s)
+  {return (unsigned) s.hashval();}
+#endif
+
+inline unsigned hash_value(int i)
+  {return Hmap_word_hash((unsigned) i);}
+
+inline unsigned hash_value(unsigned i)
+  {return Hmap_word_hash(i);}
+
+inline unsigned hash_value(long i)
+  {return Hmap_word_hash((unsigned) i);}
+
+inline unsigned hash_value(unsigned long i)
+  {return Hmap_word_hash((unsigned) i);}
+
+inline unsigned hash_value(void* i)
+  {return Hmap_word_hash((unsigned) i);}
+
+inline unsigned hash_value(const float& x)
+  {
+    union {float float_val;
+           unsigned int uint_val;
+	  } foo;
+    foo.float_val = x;
+    return Hmap_word_hash(foo.uint_val);
+  }
+
+inline unsigned hash_value(const double& x)
+  {
+    union {double double_val;
+           unsigned int uint_val[2];
+	  } foo;
+    foo.double_val = x;
+    return Hmap_word_hash(foo.uint_val[0] ^ foo.uint_val[1]);
+  }
+  
+/* Begin base class definitions. */
+
+class _Hmap_node;
+typedef _Hmap_node *_Hmap_nodeP;
+
+class _Hmap_node
+  {
+    friend class _Hmap_;
+    friend class _Hmapiter_; 
+protected:
+    _Hmap_nodeP next;
+  };
+  
+enum _Hmap_constants
+  {
+/* These are absolute limits for the maximum number of buckets. */
+    _HMAP_MAX_BKT_IX = 86,     /* Must be <= 115. */
+    _HMAP_MAX_BKTS = 16777213, /* Must = prime(_HMAP_MAX_BKT_IX) */
+/* These are for the default maximum number of buckets. */
+    _HMAP_DEF_MAX_BKT_IX = 70, /* Must be <= _HMAP_MAX_BKT_IX. */
+    _HMAP_DEF_MAX_BKTS = 1048573, /* = prime(_HMAP_DEF_MAX_BKT_IX) */
+    _HMAP_DEFAULT_SIZE = 600,
+    _HMAP_DEFAULT_STEP = 4
+  };
+
+const float _HMAP_DEFAULT_MAX_LF = 3.0;
+
+class _Hmapiter_;
+
+class _Hmap_
+  {
+// Specification
+    friend class _Hmapiter_;
+public:
+    int size() {return map_size;}
+    void freeze() {if (!frozen) {frozen = 1; active_iters++;}}
+    void thaw()   {if (frozen) {frozen = 0; active_iters--;}}
+protected:
+    _Hmap_(const _Hmap_&);
+    _Hmap_(unsigned, float, unsigned, unsigned short);
+    void set_size(unsigned);
+    void resize_table();
+private:
+    void initialize_table();
+    static unsigned long prime(unsigned short);
+    
+// Implementation
+protected:
+    _Hmap_nodeP *bucket;
+    unsigned map_size;  /* Number of elements that have been hashed. */
+    unsigned resize_limit; /* Resize when map_size > resize_limit. */ 
+    unsigned bucket_cnt;  /* Number of hash buckets. */ 
+    int active_iters; /* The number of non-vacuous iterators, plus */
+		      /* one if the hmap has been frozen with freeze(). */
+    unsigned short bucket_index; /* Current bucket index. */
+    unsigned short orig_bucket_index; /* Bucket index when initialized. */
+    unsigned short max_bucket_index; /* Highest bucket index allowed. */
+private:
+    float max_load_factor; /* Resize when load factor exceeds this. */
+    unsigned short growth_step; /* When resizing, increase bucket_cnt by a */
+				/* factor of approx. 2**(growth_step/4).   */
+    char frozen; /* 1 if freeze() has been called without thawing since. */ 
+  };
+
+class _Hmapiter_
+  {
+// Specification
+    friend class _Hmap_;
+public:
+    operator int() {return p != 0;}
+    int operator==(const _Hmapiter_& i)	{return p == i.p && m == i.m;}
+    int operator!=(const _Hmapiter_& i)	{return p != i.p || m != i.m;}
+protected:
+    _Hmapiter_(_Hmap_& map) {m = &map; p = 0; b = 0;}
+    _Hmapiter_(const _Hmapiter_&);
+    _Hmapiter_(_Hmap_* map, _Hmap_nodeP n, unsigned bkt_ix)
+      {m = map; if (p = n) map->active_iters++; b = bkt_ix;}
+    ~_Hmapiter_() {if (p) m->active_iters--;}
+    _Hmapiter_& operator=(const _Hmapiter_&);
+    _Hmapiter_& operator++();
+    _Hmapiter_& operator--();
+    _Hmap_nodeP remove();
+// Implementation
+protected:
+    _Hmap_ *m;
+    _Hmap_nodeP p;
+    unsigned b;   /* index of bucket list */
+  };
+
+/* End base class definitions. */
+
+PT_names
+ Hmap(K,V)	Hmap_ K _ V
+PT_end
+PT_names
+ Hmapnode(K,V)	_Hnode_ K _ V
+PT_end
+PT_names
+ HmapnodeP(K,V)	_Hnodep_ K _ V
+PT_end
+PT_names
+ Hmappool(K,V)	_Hpool_ K _ V
+PT_end
+PT_names
+ Hmapiter(K,V)	Hmapiter_ K _ V
+PT_end
+PT_names
+ Hmapdefault(K,V)	_HmapTDef_ K _ V
+PT_end
+PT_names
+ HmapSdefault(K,V)	_HmapSDef_ K _ V
+PT_end
+PT_names
+ HmapTjunk(K,V)	_HmapTJ_ K _ V
+PT_end
+
+
+PT_define Hmapdeclare(S,T)
+extern Pool Hmappool(S,T);
+static T Hmapdefault(S,T);  /* Default value of type T. */
+static S HmapSdefault(S,T);  /* Default value of type S. */
+
+class Hmapnode(S,T): public _Hmap_node
+  {
+public:
+    void* operator new(size_t) {return Hmappool(S,T).alloc();}
+    void operator delete(void* p) {Hmappool(S,T).free(p);}
+private:
+    friend class Hmap(S,T);
+    friend class Hmapiter(S,T);
+    typedef Hmapnode(S,T) *HmapnodeP(S,T);
+    S key;
+    T value;
+    Hmapnode(S,T)(const S& ky, const T& val,
+				const HmapnodeP(S,T) nxt = 0) :
+      key(ky), value(val) { next = nxt;}
+  };
+
+class Hmapiter(S,T);
+
+class Hmap(S,T): public _Hmap_
+  {
+public:
+    Hmap(S,T)(const T& def = Hmapdefault(S,T),
+		unsigned nelements = _HMAP_DEFAULT_SIZE,
+		float max_lf = _HMAP_DEFAULT_MAX_LF,
+		unsigned max_bkts = _HMAP_DEF_MAX_BKTS,
+		unsigned short g_step = _HMAP_DEFAULT_STEP):
+		_Hmap_(nelements, max_lf, max_bkts, g_step),
+		default_val(def) {}
+    Hmap(S,T)(const Hmap(S,T)& m): _Hmap_(m), default_val(m.default_val)
+				 {operator=(m);}
+    ~Hmap(S,T)() {zap();}
+    Hmap(S,T)& operator=(const Hmap(S,T)&);
+    T& operator[](const S&);
+    int contains(const S& ky) {unsigned h; return lookup(ky, h) != 0;}
+    int remove(const S&);
+    void clear();
+    Hmapiter(S,T) element(const S&);
+    Hmapiter(S,T) first();
+    Hmapiter(S,T) last();
+    _HMAP_PEEK(X)
+private:
+    friend class Hmapiter(S,T);
+    T default_val;
+    void zap();
+    HmapnodeP(S,T) lookup(const S&, unsigned&);
+    void resize_table();
+  };
+
+class Hmapiter(S,T): public _Hmapiter_
+  {
+    friend class Hmap(S,T);
+public:
+    Hmapiter(S,T)(Hmap(S,T)& map):_Hmapiter_(map) {}
+    Hmapiter(S,T)(const Hmapiter(S,T)& iter):_Hmapiter_(iter) {}
+    ~Hmapiter(S,T)() {}
+    Hmapiter(S,T)& operator=(const Hmapiter(S,T)& iter)
+      {return *(Hmapiter(S,T)*)& _Hmapiter_::operator=(iter);}
+    const S& key()
+      {return p ? ((HmapnodeP(S,T)) p)->key : HmapSdefault(S,T);}
+    T& value()
+      {
+	if (p) return ((HmapnodeP(S,T)) p)->value;
+	else return junk_value();
+      }
+    Hmapiter(S,T)& operator++()
+      {return *(Hmapiter(S,T)*)& _Hmapiter_::operator++();}
+    Hmapiter(S,T)& operator--()
+      {return *(Hmapiter(S,T)*)& _Hmapiter_::operator--();}
+    int remove();
+private:
+    Hmapiter(S,T)(Hmap(S,T)* map, HmapnodeP(S,T) n, unsigned bkt_ix):
+      _Hmapiter_(map, n, bkt_ix) {}
+    static T& junk_value();
+  };
+PT_end
+
+PT_define Hmapimplement(S,T)
+
+Pool Hmappool(S,T)(sizeof(Hmapnode(S,T)));
+static T HmapTjunk(S,T);
+
+void Hmap(S,T)::clear()
+{
+  for (unsigned i = 0; i < bucket_cnt; i++)
+    {
+      register HmapnodeP(S,T) p = (HmapnodeP(S,T)) bucket[i];
+      while (p)
+	{
+	  register HmapnodeP(S,T) q = (HmapnodeP(S,T)) p->next;
+	  delete p;
+	  p = q;
+	}
+      bucket[i] = 0;
+    }
+  map_size = 0;
+}
+
+void Hmap(S,T)::zap()
+{
+  if (bucket)
+    {
+      clear();
+      delete [bucket_cnt] bucket;
+    }
+}
+
+Hmap(S,T)& Hmap(S,T)::operator=(const Hmap(S,T)& m)
+{
+  if (this != &m)
+    {
+      zap();
+      map_size = m.map_size;
+      set_size(map_size);
+      for (unsigned i = 0; i < m.bucket_cnt; i++)
+        {
+	  for (register HmapnodeP(S,T) p = (HmapnodeP(S,T)) m.bucket[i];
+			p; p = (HmapnodeP(S,T)) (p->next))
+	    {
+	      register unsigned h = hash_value(p->key) % bucket_cnt;
+	      bucket[h] = new Hmapnode(S,T)(p->key, p->value,
+					(HmapnodeP(S,T)) bucket[h]);
+	    }
+	}
+    }
+  return *this;
+}
+
+HmapnodeP(S,T) Hmap(S,T)::lookup(const S& ky, unsigned& bkt_ix)
+{
+  register HmapnodeP(S,T) prev = 0;
+  bkt_ix = hash_value(ky) % bucket_cnt;
+  for (register HmapnodeP(S,T) cur = (HmapnodeP(S,T)) bucket[bkt_ix];
+			cur; cur = (HmapnodeP(S,T)) (cur->next))
+    {
+      if (cur->key == ky)
+	{
+	  if (prev != 0 && active_iters == 0) /* Move to front */
+	    {
+	      prev->next = cur->next;
+	      cur->next = bucket[bkt_ix];
+	      bucket[bkt_ix] = cur;
+	    }
+	  return cur;
+	}
+      prev = cur;
+    }
+  return 0;
+}
+
+T& Hmap(S,T)::operator[](const S& ky)
+{
+  unsigned h;
+  HmapnodeP(S,T) p = lookup(ky, h);
+  if (p == 0)
+    {
+      p = new Hmapnode(S,T)(ky, default_val,
+					(HmapnodeP(S,T)) bucket[h]);
+      bucket[h] = p;
+      if (++map_size > resize_limit) resize_table();
+    }
+  return p->value;
+}
+
+int Hmap(S,T)::remove(const S& ky)
+{
+  unsigned bkt_ix = hash_value(ky) % bucket_cnt;
+  register HmapnodeP(S,T) prev = 0;
+  for (register HmapnodeP(S,T) cur = (HmapnodeP(S,T)) bucket[bkt_ix];
+			cur; cur = (HmapnodeP(S,T)) (cur->next))
+    {
+      if (cur->key == ky)
+	{
+	  if (prev) prev->next = cur->next;
+	  else      bucket[bkt_ix] = cur->next;
+	  delete cur;
+	  map_size--;
+	  return 0;
+	}
+      prev = cur;
+    }
+  return 1;
+}
+
+void Hmap(S,T)::resize_table()
+{
+  HmapnodeP(S,T) *old_bucket = (HmapnodeP(S,T)*) bucket;
+  unsigned old_bucket_cnt = bucket_cnt;
+  _Hmap_::resize_table();
+  for (unsigned b = 0; b < old_bucket_cnt; b++)
+    {
+      register HmapnodeP(S,T) nxt;
+      for (register HmapnodeP(S,T) cur = old_bucket[b]; cur; cur = nxt)
+	{
+	  nxt = (HmapnodeP(S,T)) cur->next;
+      	  register unsigned h = hash_value(cur->key) % bucket_cnt;
+	  cur->next = bucket[h];
+	  bucket[h] = cur;
+        }
+    }
+  delete [old_bucket_cnt] old_bucket;
+}
+
+Hmapiter(S,T) Hmap(S,T)::first()
+{
+  Hmapiter(S,T) iter_begin(*this);
+  return ++iter_begin;
+}
+
+Hmapiter(S,T) Hmap(S,T)::last()
+{
+  Hmapiter(S,T) iter_end(*this);
+  return --iter_end;
+}
+
+Hmapiter(S,T) Hmap(S,T)::element(const S& ky)
+{
+  unsigned h;
+  HmapnodeP(S,T) p = lookup(ky, h);
+  if (p == 0) h = 0;
+  { /* We want to say "return Hmapiter(S,T)(this, p, h);" but that */
+    /* tickles a compiler bug.	*/
+    Hmapiter(S,T) foo(this, p, h);
+    return foo;
+  }
+}
+
+int Hmapiter(S,T)::remove()
+{
+  register HmapnodeP(S,T) q = (HmapnodeP(S,T)) _Hmapiter_::remove();
+  if (q) {delete q; return 0;}
+  else return 1;
+}
+
+T& Hmapiter(S,T)::junk_value()
+{
+  HmapTjunk(S,T) = (const T&) Hmapdefault(S,T);
+  return HmapTjunk(S,T);
+}
+PT_end
+#endif

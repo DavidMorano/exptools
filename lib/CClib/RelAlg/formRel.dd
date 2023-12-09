@@ -1,0 +1,23 @@
+#ident "@(#) /sable/sdb/ra/rel/relation/s.formRel.dd"
+/*      Copyright (c) 1989, 1990,1991 AT&T - All Rights Reserved */
+
+class Form_Relation : public Relation
+   {
+include(formRel.pd)
+public:
+   Form_Relation(Intension &i,char *heading=(char *)0,WINDOW *w=(WINDOW *)0);
+   Form_Relation(Attribute &a,char *heading=(char *)0,WINDOW *w=(WINDOW *)0);
+   ~Form_Relation();
+   int cardinality();
+   void startwalk();
+   void startwalk(Predicate &);
+   void endwalk();
+   Boolean_t operator+=(Tuple *t); // returns FALSE
+   Boolean_t operator+=(Relation &r); // returns FALSE
+   Boolean_t operator-=(Relation &r); // returns FALSE
+   Boolean_t operator=(Tuple *);
+   Boolean_t operator=(Relation &);
+   Tuple *const update(Tuple *);
+   Predicate *criteria(); // return a Predicate of selection criteria
+   Relation &filter(Relation &r,char *prompt_string="Confirm[y\n]? ");
+   };

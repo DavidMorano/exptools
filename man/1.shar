@@ -1,0 +1,198 @@
+
+
+
+     SSSSHHHHAAAARRRR((((1111))))            1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11114444 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            SSSSHHHHAAAARRRR((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          shar - create shell archive file for extraction by /bin/sh
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          sssshhhhaaaarrrr [ ----bbbb ] [ ----iiii_n_a_m_e ] [ ----nnnn# ] [ ----eeee# ] [ ----oooo_n_a_m_e ] [ ----tttt_t_e_x_t ]
+               [ ----vvvv ] [ ----wwww ] [file...]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _S_h_a_r takes a list of files, and generates a  /_b_i_n/_s_h  script
+          that,  when  executed,  will  re-create  those  files  in  a
+          different  directory  or  on  a  different   machine.    The
+          resultant  script  will  use _w_c(1) to do a mild error-check,
+          and will warn about possibly-omitted control characters.
+
+          _S_h_a_r generates scripts that will make directories and  plain
+          files.   It will not try to generate intermediate filenames,
+          however, so
+               shar foo/bar/file
+          will not work.  Do
+               shar foo foo/bar foo/bar/file
+          instead.
+
+          The script is normally sent to standard output;  the  ``-o''
+          option  may  be used to specify an output filename.  This is
+          designed to prevent filling up the disk if
+               shar * >SHAR
+          command is done; do
+               shar -o SHAR *
+          instead.
+
+          The list of files is normally specified on the command line;
+          the  ''-i''  option  may  be used instead, to specify a file
+          that contains the list of files to pack up,  one  per  line.
+          If the file name is ``-'' the standard input is read.
+
+          The ``-b'' option says  that  all  leading  directory  names
+          should  be  stripped from the file when they are packed into
+          the archive.  For example,
+               shar -b /etc/termcap
+          creates an archive that, when executed, creates a file named
+          ``termcap''  in the current directory, rather than overwrite
+          the host system  file.   Note,  however,  that  the  scripts
+          generated  by _s_h_a_r normally refuse to overwrite pre-existing
+          files.
+
+          The scripts generated  by  _s_h_a_r  normally  contain  comments
+          indicating what is in the archive and who packaged it.  They
+          also contain as _e_c_h_o(_1) commands to print messages such as
+               shar: End of archive.
+          If the ``-w'' flag is used, then _s_h_a_r will not generate  the
+          prolog  and  epilog.   This  is  useful  when the shar's are
+          within a larger software distribution scheme.
+
+
+
+     Page 1                                           (printed 3/8/91)
+
+
+
+
+
+
+     SSSSHHHHAAAARRRR((((1111))))            1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11114444 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            SSSSHHHHAAAARRRR((((1111))))
+
+
+
+        MMMMuuuullllttttiiii----ppppaaaarrrrtttt AAAArrrrcccchhhhiiiivvvveeeessss
+          Most larger software packages are usually sent out in two or
+          more shell archives.  The ``-n,'' ``-e,'' and ``-t'' options
+          are used to make an archive that is part of a  series.   The
+          individual  archives  are often called ``kits'' when this is
+          done.  The ``-n'' option specifies the archive  number;  the
+          ``-e''  option  species  the  highest  number in the series.
+          When  executed,  the  generated  archives  will  then   echo
+          messages like
+               shar: End of archive 3 (of 9).
+          at their end.
+
+          In  addition,  each  shar  will  generate   a   file   named
+          _a_r_kX_i_s_d_o_n_e.   Each  script  will contain a loop to check for
+          the presence of these files, and indicate to  the  recipient
+          which archives still need to be executed.  The ``-t'' option
+          may be used to give starting instructions to the  recipient.
+          When  the  scripts determine that all the archives have been
+          unpacked, the text specified with this  flag  is  displayed.
+          For example,
+               shar -n1 -e9 -t "Now do 'sh ./Configure'" *.c >SHAR
+          Adds commands to output the following when all the  archives
+          have been unpacked:
+               You have run all 9 archives.
+               Now do 'sh ./Configure'
+
+               The
+               _m_a_k_e_k_i_t(1L)
+               program is designed to create such multi-part kits.
+
+          The ``-v'' option prints out the current version and exits.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          echo(1), findsrc(1L), makekit(1L), mkdir(1), sh(1), test(1),
+          unshar(1L), wc(1).
+
+
+     EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS NNNNOOOOTTTTEEEESSSS
+          [This same note is appended to  all  exptools  shar  package
+          programs.]
+
+          This version of the "shar" tool set is written by Rich  Salz
+          (rsalz@bbn.com  or  rsalz@uunet.uu.net).   Currently  I have
+          only placed shar and unshar in exptools, but  perhaps  we'll
+          add one or two more of Rich's shar tools later.
+
+          A previous version of  shar  had  an  upper  limit  on  some
+          systems  on  how many files one could archive... I hope this
+          bug is gone...
+
+          I researched the competing versions of shar before  settling
+          on  Rich's.  Though it might not flashy as the other leading
+
+
+
+     Page 2                                           (printed 3/8/91)
+
+
+
+
+
+
+     SSSSHHHHAAAARRRR((((1111))))            1111999999990000 NNNNoooovvvveeeemmmmbbbbeeeerrrr 11114444 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            SSSSHHHHAAAARRRR((((1111))))
+
+
+
+          brands, it is tastefully stable, etc.
+
+          If there are any problems, contact the exptools shar package
+          providers.  Use the exptools "providers" command to find out
+          who we currently are.  (As  of  1990  November  14  we  were
+          Dan_Jacobson@ATT.COM and Russell_B_Jorgensen@ATT.COM).
+
+          --Dan_Jacobson@ATT.COM, 1990 November 14
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                           (printed 3/8/91)
+
+
+

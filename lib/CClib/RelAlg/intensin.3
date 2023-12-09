@@ -1,0 +1,94 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/intension/s.intensin.3"
+.\"
+.PH "'INTENSION(3RA)'Relational Algebra C++ Library'INTENSION(3RA)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Intension - field names for relational algebra
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <relation.h>
+
+.SO intensin.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+An Intension describes the structure of a Relation with an ordered list of 
+Attributes.  Intensions are used to define Relations and are used with the 
+Relation operators project ( [] ) and transitive closure ( * ).  A Relation 
+definition uses % to separate the key Attributes from the non-key 
+Attributes and uses / as an ordinary Attribute separator.  The key 
+Attributes are always a prefix of the Relation.  If % is not specified, the 
+entire Attribute list becomes the key.  For example, Relation R(a%b/c) has 
+the key Attribute a and the non-key Attributes b and c.  A projection or 
+closure  uses / as an Attribute separator and * to rename Attributes.  For 
+example, R[c/x*a] projects the c and a Attributes from R and renames a to 
+x.  The definition of Attributes x and a must be based on the same Domain.  
+.P 
+The == and != operators are used to determine if two Intensions are 
+equivalent or not equivalent.  To be equivalent, the Intensions must have 
+the same Attributes in the same order.
+The member function constrain() will apply the Intension's Domain 
+constraints on the specified tuple.  
+.P
+Intensions are normally built during a Relation definition or projection 
+and never get assigned to a variable.  If there are several Relations with 
+the same Intension, or if a projection is done within a loop, it may be 
+more efficient to create the Intension once and assign it to a reference 
+variable.  This is allowed but requires awareness of the Intension's 
+lifetime.  Intensions are dynamically allocated and are automatically freed 
+when the Relation or Relational expression using them is complete.  If you 
+want to use an Intension reference variable to share the Intension, the 
+member functions use() and done() must be used to ensure that the Intension 
+does not get deallocated prematurely.  The function use() should be called 
+after the Intension reference is assigned and before it is used.  The 
+function done() should be called when the Intension is no longer needed.  
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The operator * will print an error message, set relerr.errno and abort
+under the following circumstances:
+.VL 10 0
+.LI "[R_MIXED_DOMAINS]"
+the two Attributes involved in the rename are not based on the same Domain.
+.LE
+.P
+The operators / and % will print an error message, set relerr.errno and abort
+under the following circumstances:
+.VL 10 0
+.LI "[R_REPEATED_ATTRIBUTE]"
+an Attribute occurs more than once in the Intension.
+.LI "[R_TOO_MANY_ATTRIBUTES]"
+more than NATTR (currently 32) Attributes occur in the Intension.
+.LE
+.P
+The done() function will print an error message, set relerr.errno and abort
+under the following circumstances:
+.VL 30 0
+.LI "[R_TOO_MANY_DONES]"
+the done() function is called more often than use() was called.
+.LE
+.P
+The constrain() function will print an error message, set relerr.errno
+ and abort under the following circumstances:
+.VL 30 0
+.LI "[R_BAD_TUPLE]"
+The Tuple is NULL or of the wrong size.
+.LE
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO intensinE.ex
+.EE
+.LI "\fBWARNING\fP"
+.br
+Parentheses should not be used in the Intension.  Keys are not currently 
+enforced.
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Er, \*(At, \*(Dm, \*(Er, \*(Rl, \*(Tp, intro(3RA)
+.LE

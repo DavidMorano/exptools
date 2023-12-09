@@ -1,0 +1,376 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Find branches in an EPL, SWAP macro, or 1A assembly language program
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    swap source_files
+#
+#	source_files should not have TSS line numbers on them
+#
+# This program parses a swap macro/assembly language source file
+# and writes lines of the form:
+#
+#	start_line# end_line#
+#
+#
+##########################################################
+
+
+FORHELP="\n\n(For more help, contact Bob Parnass)\n"
+USAGE="*** error, USAGE:  `basename $0`   files ${FORHELP}"
+
+TMP=/usr/tmp
+LABELFILE=$TMP/a1a$$
+BRANCHFILE=$TMP/a2a$$
+JUNKFILE=$TMP/a3a$$
+FINFILE=$TMP/a4a$$
+DOFILE=$TMP/a5a$$
+
+TMPFILES="$LABELFILE $BRANCHFILE $JUNKFILE $FINFILE $DOFILE"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# check for bad command line args which start with a minus sign
+for ARG do
+	case "${ARG}" in
+		-*)
+			echo "${USAGE}" 1>&2
+			echo "        Bogus command line argument" 1>&2
+			exit 1
+			# script exits
+			;;
+		*)
+			;;
+	esac
+done
+
+# input file of fcn calls must be specfied
+if [ $# -ge 1 ]
+then
+	while [ $# -ne 0 ]
+	do
+		# cull out lines of interest
+		# remove line numbers
+		INFILE=${1}
+		sed -e 's/^[0-9][0-9][0-9][0-9][0-9].[0-9][0-9][0-9][0-9] //'  $INFILE \
+			| tr '[A-Z]' '[a-z]'  > ${FINFILE}
+
+		awk '\
+		# for each line of input
+		(index($0, "#") != 1) \
+			{
+			restline = $0
+			# read ahead to assemble all
+			# continuation lines into single lines
+
+
+			len = length($0)
+			atsign = index($0, "@")
+
+			# if this line contains a continuation
+			if(atsign && (atsign == len))
+				more = 1
+
+			while(more == 1)
+				{
+				more = getline(junk)
+				if(more == 1)
+					{
+					len = length($0)
+					atsign = index($0, "@")
+					# if this line contains a continuation
+					if(atsign && (atsign == len))
+						more = 1
+					else
+						more = 0
+			
+					# append this line to previous line(s)
+					restline = restline $0
+					}
+				}
+
+			# strip comment from line
+			pound = index(restline, "#")
+			if(pound)
+				restline = substr(restline, 1, pound - 1)
+
+			# find first space
+			space = index(restline, " ")
+
+			# if line has a label
+			if(space != 1)
+				{
+				if(space == 0)
+					label = restline
+				else
+					label = substr(restline, 1, space-1)
+				}
+			else
+				{
+				label = ""
+				if($1 == "mc")
+					{
+					k = index(restline, "mc")
+					len = length(restline)
+					restline = substr(restline, k + 3, len - 4)
+					}
+				else if($1 == "me")
+					{
+					k = index(restline, "me")
+					len = length(restline)
+					restline = substr(restline, k + 3, len - 4)
+					}
+				}
+
+			# if line has a label
+			if(label != "")
+				{
+				printf "%s %d LABELFOO\n", label, NR
+				restline = substr(restline, length(label) + 1, len - length(label))
+				}
+			len = length(restline)
+			nfields = split(restline, field, " ")
+			if(nfields)
+				{
+				opcode = field[1]
+				}
+			else
+				opcode = "" 
+#printf "%4d. nfields=%d, opcode=%-10s|%s\n", NR, nfields, opcode, $0
+			#if((opcode == "dfn_sub_") || (opcode == "call_sub_"))
+			if(opcode == "dfn_sub_")
+				{
+				more = 1
+				while((more == 1) && ($1 != "me"))
+					{
+					more = getline(stuff)
+#printf "    %4d. more=%d|%s\n", NR, more, $0
+					}
+				}
+			else if((opcode == "if:t") \
+				|| (opcode == "if:ta") \
+				|| (opcode == "if:ti") \
+				|| (opcode == "if:tia"))
+				{
+				colon=index(field[2], ":")
+				if(colon)
+					{
+					len=length(field[2])
+					dest=substr(field[2], colon+1, len - colon)
+					}
+				if(length(dest) > 0)
+					printf "%s %d\n", dest, NR
+				}
+			else if(opcode == "t")
+				{
+				dest=field[2]
+				if(length(dest) > 0)
+					printf "%s %d\n", dest, NR
+				}
+			else if(index(restline, "goto"))
+				{
+				for(i = 1; i <= nfields; ++i)
+					{
+					if(field[i] == "goto")
+						{
+						dest = field[i+1]
+						printf "%s %d\n", dest, NR
+						}
+					else if(index(field[i], "goto="))
+						{
+#printf "          %4d. nfields=%d, detected a goto=\n", NR, nfields
+						buf = field[i]
+						nlp = split(buf, lpa, "(")
+						nrp = split(buf, rpa, ")")
+						save0 = $0
+						# assemble complete
+						# stmt by reading
+						# as many input lines
+						# as needed
+						more = 1
+#printf "%4d. %s\n", NR, $0
+						while((nlp != nrp) && (index($0, "me") == 0) && (more == 1))
+							{
+							# get next of input line
+							more = getline(junk)
+#printf "      %4d. %s\n", NR, $0
+							if(index($0, "#") != 1)
+								{
+								len = length($0)
+								# delete MC or ME string
+								tmp = $0
+								if($1 == "me")
+									{
+									k = index(tmp, "me")
+									len = length(tmp)
+									tmp = substr(tmp, k + 3, len - 4)
+									}
+								else if($1 == "mc")
+									{
+									k = index(tmp, "mc")
+									len = length(tmp)
+									tmp = substr(tmp, k + 3, len - 4)
+									}
+								# delete leading spaces
+								while(space == 1)
+									{
+									len = length(tmp)
+									tmp = substr(tmp, 2, len - 1)
+									space=index(tmp, " ")
+									}
+								buf = buf tmp
+								nlp = split(buf, lpa, "(")
+								nrp = split(buf, rpa, ")")
+								}
+							}
+#printf "        %4d. buf=%s\n", NR, buf
+						lp=5+index(buf, "goto=")
+						len=length(buf)
+						lastchar=substr(buf, len, 1)
+						# kluge - process destination
+						# only if last char is
+						# a right paren
+
+						if(lastchar == ")")
+							rp = len
+						else
+							rp = 0
+						if((lp && rp) && (rp == len))
+							{
+							list=substr(buf, lp+1, rp-lp-1)
+							nsf = split(list, sf, ",")
+#printf "%4d. list=%40s |%s\n", NR, list, $0
+							for(k=1; k<=nsf; ++k)
+								{
+								colon=index(sf[k], ":")
+								len=length(sf[k])
+								dest=substr(sf[k], colon+1, len-colon)
+								# if(index(dest, "(") == 0)
+									printf "%s %d\n", dest, NR
+								}
+							}
+						}
+
+
+					}
+				}
+			 } ' $FINFILE > $JUNKFILE
+
+				
+		grep 'LABELFOO$' $JUNKFILE \
+			| cut -d' ' -f1,2 \
+			| sort -u > $LABELFILE
+		
+		# labelfile now contains lines of the form:
+		#	label line#
+		
+		
+		grep -v 'LABELFOO$' $JUNKFILE \
+			| cut -d' ' -f1,2 \
+			| sort -u > $BRANCHFILE
+		
+		# branch now contains lines of the form:
+		#	label line#
+		
+		
+		# combine branches and labels
+		
+		join  -t' ' -a1 -j1 1 -j2 1 -o 1.2 2.2 $BRANCHFILE $LABELFILE \
+			| awk '\
+				{
+				if(NF == 2)
+					printf "%s %s\n", $1, $2
+				else
+					printf "%s %s\n", $1, $1
+				}' \
+			|  grep -v '^ $'
+
+		# find all the do loops, both iterative and conditional
+		awk '\
+			(index($0, "#") != 1) \
+			{
+			for(i = 1 ; i <= NF; ++i)
+				{
+				if($i == "doto")
+					{
+					if(i < (NF - 2))
+						{
+						j = i + 2
+						if(index($j, "while") \
+							|| index($j, "loop"))
+							{
+							# iterative
+							printf "%d %s %d\n", NR, $i, 1
+							}
+						else
+							printf "%d %s %d\n", NR, $i, 0
+						}
+					else
+						printf "%d %s %d\n", NR, $i, 0
+					}
+				else if($i == "endo")
+					{
+					printf "%d %s %d\n", NR, $i, i
+					}
+				}
+			}' ${FINFILE} > ${DOFILE}
+
+		# print only the iterative do loops
+		awk '\
+		BEGIN	{
+			nstart = 0
+			nend = 0
+			}
+			{
+			line = $1
+			token = $2
+			n = $3
+
+			# if DOTO
+			if(token == "doto")
+				{
+				# push DOTO
+				stack[nstart] = line
+				type[nstart] = n
+				++nstart
+				}
+			else
+				{
+				# it is an ENDO
+				# pop stack
+				if(nstart >= 0)
+					{
+					--nstart
+					# if iterative do loop
+					if(type[nstart] == 1)
+						printf "%d %d\n", line, stack[nstart]
+					else
+						printf "%d %d\n", stack[nstart], line
+					}
+				}
+			}' ${DOFILE}
+				
+
+		shift
+	done
+
+	rm -f "${TMPFILES}"
+
+	exit 0
+else
+	# input file not specified on cmd line
+	echo "${USAGE}" 1>&2
+	echo "        Input file must be specified" 1>&2
+	exit 1
+fi

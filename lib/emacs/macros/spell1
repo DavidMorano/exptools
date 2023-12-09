@@ -1,0 +1,76 @@
+Óruns the spell command on the current buffer [MACRO]
+
+ This macro runs spell on the file in the current buffer, and
+ finds all of the misspelled words in the buffer, allowing the
+ user to edit them.  If the argument is not 1, runs spell on the
+ comments in a C file.
+
+ If the shell variable $EMACSSPELL is set and exported before emacs
+ is invoked, the $EMACSSPELL will be expanded and used as command line
+ options to the spell(1) command.  This is particularly useful when you
+ want to have a local spelling dictionary of words that spell(1) considers
+ misspelled, but you do not, e.g., acronyms, names of people, etc.
+
+ Example:
+
+	EMACSSPELL="+spelldict" emacs file
+
+ Multiple options to spell(1) should be separated be white-space, e.g.:
+
+	EMACSSPELL="+spelldict -i -b"  emacs file
+
+ SEE ALSO:
+	spell(1)
+
+ The $EMACSSPELL feature was added to this macro by:
+
+	John Takao Collier	1986 June 10
+
+ Move the cursor to the word to be found and type .
+ Type ^Z to go to next match of the same word, or to return to the list
+ of misspelled words if no match is found.
+ Repeat the above until done, then type ° to exit this macro.
+
+ Spell C comments -
+	separates into words, one per line, then throws away all not between
+	lines containing /* and lines of */
+ 	tr -cs "/*_[a-z][A-Z]" "[\012*]" <file |
+		awk '/\/\*/, /\*\//' | spell
+
+0<Executing Spell
+0		indicate that execution is in progress
+			save the text file
+F			put the filename on the stack
+1<.exec
+2			put .exec in the lower window
+¹û<usilent
+ý		Disable spelling output
+|ûû´~±±	if arg != 1
+	tr -cs "/*_[a-z][A-Z]" "[\012*]" <|awk '/\/\*/, /\*\//'|spell ${EMACSSPELL:-}-¤
+	ý
+	û spell ${EMACSSPELL:-}  -¤	spell <filename> >.exec
+	ýý
+<usilent
+¹Restore Usilent Mode
+0<Enter M-0^Z to exit, or move cursor to word and enter ^Z to find it.
+^û7~	while the cursor is moved to the next word and  is typed
+	<\(\\f.\|\<\)
+	 +ð+ form expression to match word with or without \fX
+	<\>
+	0>	duplicate the search word on the stack
+	¼	goto the top of the text file
+	^û“	while the word is found in the text file
+		0<Enter ^Z to find next occurence of word, or to return to word list.
+		|ûû ý	if edit returns failure (°)
+			û ¾ý		goto eof so search fails
+		ý			end if
+					move the cursor past the word
+		0>		duplicate the word on the stack
+	ý		end while
+	-		pop the word from the stack
+		goto the next word in .exec
+	0<Enter M-0^Z to exit, or move cursor to word and enter ^Z to find it.
+ý		end while
+	return to the text file and save the changes
+1		drop spelling list window to signal end of spell
+

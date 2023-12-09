@@ -1,0 +1,123 @@
+#######################################################
+# Program written by Dan Alfrey (11/11/94) to access
+# il/ihq/411.tess from the UNIX command line.
+#######################################################
+
+TOOLSYS="nwopk"
+MAXTIME1="15"
+MAXTIME2="60"
+
+
+badnetmsg()
+{
+#######################################################
+# Banner message in the event of inaccessable network. 
+#######################################################
+
+cat << eof
+
+	You may access the TESS system directly by typing:
+
+			il/ihq/411.tess 
+		
+	       at the datakit "DESTINATION:" prompt
+
+			     OR
+
+			by typing:
+		
+	          rlogin ${TOOLSYS} -l trainme
+
+		    from your UNIX prompt
+eof
+}
+
+timestamp()
+{
+        ENDDATE=`date "+%y%m%d%H%M%S"`
+
+	DIFFDATE=`expr ${ENDDATE} - ${STARTDATE}`
+
+	if [ "${DIFFDATE}" -le "${MAXTIME2}" ]
+	then
+		badnetmsg
+	fi
+}
+
+edplanmsg()
+{
+
+cat << eof
+
+         >>> The 'edplan' tool has been on June 5, 1995 <<<
+
+    The 'edplan' tool has been replaced by a new release of the TESS
+    tool.  TESS 5.0 creates a linkage between education planning and
+    the GPN (Global Public Networks) training listed on TESS.  The
+    'edplan' tool was removed from service on May 29, 1995 in order 
+    to make the transition to TESS 5.0.
+
+    With TESS 5.0 it is no longer necessary for you to register for
+    training using the TESS tool and then enter the same training
+    event into your education plan using the 'edplan' tool; all
+    TESS registrations automatically become part of your education
+    plan!  You still need to add non-TESS training events to your
+    education plan manually on TESS 5.0.
+
+>> NOTE: ONLY MEMBERS OF THE GLOBAL PUBLIC NETWORK (GPN) HAVE
+>>       ACCESS TO THE EDUCATION PLANNING FEATURE OF TESS 5.0.
+>>       Non-GPN associates are still able to register for
+>>       training offered on TESS, view the GPN training catalogs,
+>>       and view their TESS training history.
+
+   Beginning June 5, 1995 there are 4 ways for you to access TESS 5.0:
+        1. type 'edplan' at your UNIX prompt
+        2. type 'tess' at your UNIX prompt
+        3. type 'il/ihq/411.tess' at the DATAKIT prompt
+	4. type 'rlogin ${TOOLSYS} -l trainme' at your UNIX prompt
+
+eof
+
+}
+
+edplanmsg
+echo "Do you want to transfer to TESS 5.0 right now (y/n) ? \c"
+read ans
+ans=`echo "$ans" | tr "[a-z]" "[A-Z]"`
+if [ "${ans}" = "Y" ]
+then
+	##############################
+	# Test for datakit
+	##############################
+	HASDK=`type dkcu | grep -v not`
+	
+	################################
+	# Create a start time variable.
+	################################
+	STARTDATE=`date "+%y%m%d%H%M%S"`
+	
+	if [ -z "$HASDK" ]
+	then
+		rlogin nwopk -l trainme
+		timestamp
+	else
+		dkcu il/ihq/411.tess
+	
+		################################
+		# Create a start time variable.
+		################################
+	        ENDDATE=`date "+%y%m%d%H%M%S"`
+	
+		DIFFDATE=`expr ${ENDDATE} - ${STARTDATE}`
+	
+		###################################
+		# If datakit is down, use tcp/ip.
+		###################################
+		if [ "${DIFFDATE}" -le "${MAXTIME1}" ]
+		then
+			rlogin nwopk -l trainme
+			timestamp
+	
+		fi
+	fi
+fi

@@ -1,0 +1,45 @@
+# @(#)  SID: 1.3;  module: getans;  last changed: 1/30/91  18:22:23
+#
+# This routine prompts a user with the first argument, returning the answer
+# in the environmental variable 'ans'.  If a second argument is given, it
+# must be a ksh88 pattern to be used to check the user's reply.  If the
+# reply does not match, he or she is requested to try again.
+
+getans() {
+    set +u
+    typeset prompt=$1 pattern=$2 default=$3 helptext=$4
+
+    until
+	if test -n "$default"; then
+	    echo "$prompt [$default] \c"
+	else
+	    echo "$prompt \c"
+	fi
+	read ans
+	if test -z "$ans"; then
+	    if test -z "$default"; then
+		echo "No default!"
+		false
+	    else
+		ans="$default"
+		true
+	    fi
+	elif test "$ans" = "?"; then
+	    false
+	elif test -z "$pattern"; then
+	    true
+	else
+	    eval [[ "$ans" = $pattern ]]
+	fi
+    do
+	if test "$ans" = "?"; then
+	    if test -z "$helptext"; then
+		echo "Sorry -- no help available"
+	    else
+		echo "$helptext"
+	    fi
+	else
+	    echo "Try again ... \c"
+	fi
+    done
+}

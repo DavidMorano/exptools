@@ -1,0 +1,330 @@
+
+
+
+     BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          BitMap - Resource allocation using a bit map
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS ooooffff BBBBiiiittttMMMMaaaapppp....hhhh
+          #include  <assert.h>
+          #include  <iostream.h>
+          #include  <Block.h>
+          #include  <Objection.h>
+
+          class BitMap {
+               public:
+                    BitMap(ulong base = 0, uint chunksize = 1, uint alloc = 0);
+
+                    long           allocate(uint units = 1, uint incr = 0);
+                    long           bestFit(uint units = 1, uint incr = 0);
+                    long           sequential(uint units = 1, uint incr = 0);
+                    void           take(ulong start, uint units = 1);
+                    void           free(ulong start, uint units = 1);
+                    inline uint         size(void) const;
+                    void           size(uint newSize);
+                    long           highest(void) const;
+                    inline void         grow(uint incr);
+                    inline ulong        base(void) const;
+                    inline uint         chunk(void) const;
+                    uint           isAllocated(ulong unit) const;
+                    void           read(istream& is);
+                    void           write(ostream& os);
+
+                    static Objection    NoSpace;
+                    static Objection    BadFree;
+                    static Objection    BadTake;
+                    static Objection    FileError;
+          };
+
+          class BitMapIter {
+               public:
+                    inline              BitMapIter(const BitMap& bm);
+
+                    int            next(ulong& rv);
+                    inline void         reset(void);
+          };
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This class performs resource allocation using a bit map.
+          Resources are measured in _b_a_s_i_c _u_n_i_t_s which represent a unit
+          of the resource being allocated.  It could represent a byte
+          of disk or file space, an element of an array, or any other
+          resource.  A BBBBiiiittttMMMMaaaapppp object represents a contiguous chunk of
+          resources numbered from some given base value to its current
+          size in basic units.  The number of units in the pool can be
+          increased either automatically when space runs out or at any
+          time upon request.
+
+
+
+     Page 1                                          (printed 2/21/91)
+
+
+
+
+
+
+     BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))
+
+
+
+          Allocation is performed in granules or _c_h_u_n_k_s where a chunk
+          is one or more basic units.  Currently the chunk size must
+          be a power of 2.  The chunk size restricts how allocation is
+          done.  For example, when allocating disk space, one might
+          wish that the allocation be done in blocks of 512 bytes,
+          1024 bytes, or some other size.  However, the value returned
+          by the allocation function should be a byte address since
+          this is what is required for the _l_s_e_e_k system call or the
+          _s_e_e_k_p_o_s function.  In this case, you would make the basic
+          unit correspond to a byte and the chunk size 512 or 1024
+          basic units.
+
+          By default, allocation begins at zero.  However, a base
+          value can be specified when constructing the BBBBiiiittttMMMMaaaapppp object
+          and then allocation will begin at this value.
+
+     BBBBiiiittttMMMMaaaapppp MMMMeeeemmmmbbbbeeeerrrr FFFFuuuunnnnccccttttiiiioooonnnnssss
+        BBBBiiiittttMMMMaaaapppp((((uuuulllloooonnnngggg bbbbaaaasssseeee ==== 0000,,,, uuuuiiiinnnntttt cccchhhhuuuunnnnkkkkssssiiiizzzzeeee ==== 1111,,,, uuuuiiiinnnntttt aaaalllllllloooocccc ==== 0000))));;;;
+          The constructor initializes a BBBBiiiittttMMMMaaaapppp object.  A base value
+          for allocation can be specified as the first argument.  If
+          omitted, the base value will be zero.
+
+          A chunk size can be specified as the second argument.  If
+          omitted, the chunk size will be one basic unit.  The chunk
+          size must be a power of 2.  If cccchhhhuuuunnnnkkkkssssiiiizzzzeeee is not a power of
+          2, it will be increased to the next highest power of 2.
+
+          An initial allocation can be specified as the third
+          argument.  If omitted, the initial size of the BBBBiiiittttMMMMaaaapppp will
+          be zero.  In this case, the ssssiiiizzzzeeee or ggggrrrroooowwww member function
+          must be called to enlarge the pool before the first
+          allocation or the first allocation must specify a non-zero
+          value for iiiinnnnccccrrrr (see below).  Otherwise, the first allocation
+          will fail.
+
+        aaaallllllllooooccccaaaatttteeee((((uuuuiiiinnnntttt uuuunnnniiiittttssss ==== 1111,,,, uuuuiiiinnnntttt iiiinnnnccccrrrr ==== 0000))));;;;
+          Allocates the requested number of basic units using the
+          first-fit algorithm.  If uuuunnnniiiittttssss is not an integral number of
+          chunks, it is rounded up to a chunk multiple.  The algorithm
+          distinguishes between requests for a single chunk and for
+          multiple chunks.  Allocation of a single chunk is done from
+          the high end of the pool and allocation of multiple chunks
+          is done from the low end of the pool.  This is done in an
+          attempt to minimize fragmentation.
+
+          If the space could not be allocated and iiiinnnnccccrrrr is greater than
+          zero, calls of ggggrrrroooowwww((((iiiinnnnccccrrrr)))) are made until the allocation can
+          be satisfied.  If iiiinnnnccccrrrr is zero, the objection NNNNooooSSSSppppaaaacccceeee is
+          raised.  The default action is to abort the program.  The
+          recovery action is to return -1 without having allocated
+          anything.
+
+
+
+
+     Page 2                                          (printed 2/21/91)
+
+
+
+
+
+
+     BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))
+
+
+
+        sssseeeeqqqquuuueeeennnnttttiiiiaaaallll((((uuuuiiiinnnntttt uuuunnnniiiittttssss,,,, uuuuiiiinnnntttt iiiinnnnccccrrrr ==== 0000))));;;;
+          This function is exactly like aaaallllllllooooccccaaaatttteeee except that
+          allocations are always made from the low end of the pool no
+          matter what size allocation is requested.  The out of space
+          condition is handled exactly as described above for
+          aaaallllllllooooccccaaaatttteeee.
+
+        bbbbeeeessssttttFFFFiiiitttt((((uuuuiiiinnnntttt uuuunnnniiiittttssss,,,, uuuuiiiinnnntttt iiiinnnnccccrrrr ==== 0000))));;;;
+          This function is just like aaaallllllllooooccccaaaatttteeee except that for
+          allocations of more than one chunk, a best-fit algorithm is
+          used instead of first fit.  Single chunk allocations and the
+          out of space condition are handled exactly as described
+          above for aaaallllllllooooccccaaaatttteeee.
+
+        vvvvooooiiiidddd  ttttaaaakkkkeeee((((uuuulllloooonnnngggg ssssttttaaaarrrrtttt,,,, uuuuiiiinnnntttt uuuunnnniiiittttssss ==== 1111))));;;;
+          Allocate the uuuunnnniiiittttssss units starting with unit number ssssttttaaaarrrrtttt.
+          If ssssttttaaaarrrrtttt minus the base value is not on a chunk boundary, it
+          is rounded down to the next lowest chunk.  If uuuunnnniiiittttssss is not a
+          multiple of the chunk size, it is rounded up to the next
+          chunk size boundary.  The resultant set of chunks are
+          allocated.
+
+          If any of these chunks are already allocated, the BBBBaaaaddddTTTTaaaakkkkeeee
+          objection is raised.  If the value of ssssttttaaaarrrrtttt is less than the
+          base value or the set of chunks to be taken extends beyond
+          the end of the pool, the BBBBaaaaddddTTTTaaaakkkkeeee objection is also raised.
+          In all cases, the default action is to abort and the
+          recovery action is to return without allocating anything.
+
+        vvvvooooiiiidddd ffffrrrreeeeeeee((((uuuulllloooonnnngggg ssssttttaaaarrrrtttt,,,, uuuuiiiinnnntttt uuuunnnniiiittttssss ==== 1111))));;;;
+          This function is called to free resources previously
+          allocated.  The value of ssssttttaaaarrrrtttt is rounded down to the
+          previous chunk boundary and the value of uuuunnnniiiittttssss is rounded up
+          to the next chunk boundary.
+
+          If the value of ssssttttaaaarrrrtttt is below the base value or the area to
+          be freed extends beyond the end of the pool or if any of the
+          chunks to be freed are already free, the BBBBaaaaddddFFFFrrrreeeeeeee objection
+          is raised.  The default action is to abort the program and
+          the recovery action is to return.  If the are to be freed
+          extends beyond the limits of the pool at either end, the
+          objection is raised immediately and, if recovery is called
+          for, the return occurs without having freed anything.  If
+          the area to be freed is completely within the pool but some
+          of the chunks to be freed are already free, the chunks from
+          the first specified upto the first not already free will be
+          freed.  Then the objection will be raised and, if recovery
+          is called for, ffffrrrreeeeeeee will return without processing any
+          subsequent chunks.  To put it simply, we quit when we
+          encounter the first error.
+
+        uuuuiiiinnnntttt ssssiiiizzzzeeee((((vvvvooooiiiidddd)))) ccccoooonnnnsssstttt;;;;
+
+
+
+     PPPPaaaaggggeeee 3333                                          ((((pppprrrriiiinnnntttteeeedddd 2222////22221111////99991111))))
+
+
+
+
+
+
+     BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))
+
+
+
+          Return the current size of the map in basic units.
+
+        vvvvooooiiiidddd ssssiiiizzzzeeee((((uuuuiiiinnnntttt nnnneeeewwwwSSSSiiiizzzzeeee))));;;;
+          Set the new size of the map to nnnneeeewwwwSSSSiiiizzzzeeee basic units.  The
+          value of nnnneeeewwwwSSSSiiiizzzzeeee will be rounded up to a chunk size
+          boundary.
+
+        lllloooonnnngggg hhhhiiiigggghhhheeeesssstttt((((vvvvooooiiiidddd)))) ccccoooonnnnsssstttt;;;;
+          Returns the highest allocated unit.
+
+        vvvvooooiiiidddd ggggrrrroooowwww((((uuuuiiiinnnntttt iiiinnnnccccrrrr))));;;;
+          Grow the pool by iiiinnnnccccrrrr units.  The value of iiiinnnnccccrrrr is rounded
+          up to a chunk size boundary.
+
+        uuuulllloooonnnngggg bbbbaaaasssseeee((((vvvvooooiiiidddd)))) ccccoooonnnnsssstttt;;;;
+          Return the base value.
+
+        uuuuiiiinnnntttt cccchhhhuuuunnnnkkkk((((vvvvooooiiiidddd)))) ccccoooonnnnsssstttt;;;;
+          Return the chunk size.
+
+        uuuuiiiinnnntttt iiiissssAAAAllllllllooooccccaaaatttteeeedddd((((uuuulllloooonnnngggg uuuunnnniiiitttt)))) ccccoooonnnnsssstttt;;;;
+          If the indicated unit is allocated, return 1.  Otherwise,
+          return 0.
+
+        vvvvooooiiiidddd rrrreeeeaaaadddd((((iiiissssttttrrrreeeeaaaammmm&&&& iiiissss))));;;;
+          Initialize the BBBBiiiittttMMMMaaaapppp from the indicated stream.  The data
+          at the current offset of iiiissss must have been written by wwwwrrrriiiitttteeee
+          (below).
+
+          If any I/O errors occur, the objection FFFFiiiilllleeeeEEEErrrrrrrroooorrrr is raised.
+          The default action is to abort the program.  The recovery
+          action is to ignore the error.
+
+        vvvvooooiiiidddd wwwwrrrriiiitttteeee((((oooossssttttrrrreeeeaaaammmm&&&& oooossss))));;;;
+          Write a binary image of the BBBBiiiittttMMMMaaaapppp to the stream.
+
+          If any I/O errors occur, the objection FFFFiiiilllleeeeEEEErrrrrrrroooorrrr is raised.
+          The default action is to abort the program.  The recovery
+          action is to ignore the error.
+
+        vvvvooooiiiidddd pppprrrriiiinnnntttt((((oooossssttttrrrreeeeaaaammmm&&&& oooossss)))) ccccoooonnnnsssstttt;;;;
+          Produce a symbolic dump of the BBBBiiiittttMMMMaaaapppp to the stream.  This
+          function is for debugging and the output produced is not
+          described or guaranteed to be maintained in future releases.
+
+     BBBBiiiittttMMMMaaaapppp OOOObbbbjjjjeeeeccccttttiiiioooonnnnssss
+          The default and recovery actions for all objections is
+          described with the functions that raise them.
+
+        OOOObbbbjjjjeeeeccccttttiiiioooonnnn NNNNooooSSSSppppaaaacccceeee
+          This objection is raised by the various allocation functions
+          when the requested allocation cannot be performed and on
+
+
+
+     Page 4                                          (printed 2/21/91)
+
+
+
+
+
+
+     BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))                  CCCCCCCClllliiiibbbb                  BBBBIIIITTTTMMMMAAAAPPPP((((3333CCCC++++++++))))
+
+
+
+          increment was specified with the allocation request.  See
+          aaaallllllllooooccccaaaatttteeee, sssseeeeqqqquuuueeeennnnttttiiiiaaaallll, and ffffiiiirrrrssssttttFFFFiiiitttt.
+
+        OOOObbbbjjjjeeeeccccttttiiiioooonnnn BBBBaaaaddddFFFFrrrreeeeeeee
+          This objection is raised only by ffffrrrreeeeeeee.
+
+        OOOObbbbjjjjeeeeccccttttiiiioooonnnn BBBBaaaaddddTTTTaaaakkkkeeee
+          This objection is raised only by ttttaaaakkkkeeee.
+
+        OOOObbbbjjjjeeeeccccttttiiiioooonnnn FFFFiiiilllleeeeEEEErrrrrrrroooorrrr
+          This objection is raised only by rrrreeeeaaaadddd and wwwwrrrriiiitttteeee.
+
+     BBBBiiiittttMMMMaaaappppIIIItttteeeerrrr MMMMeeeemmmmbbbbeeeerrrr FFFFuuuunnnnccccttttiiiioooonnnnssss
+          This iterator is used to process each allocated chunk of the
+          map.  If chunks are allocated or freed during an iteration,
+          the results are undefined.
+
+        BBBBiiiittttMMMMaaaappppIIIItttteeeerrrr((((ccccoooonnnnsssstttt BBBBiiiittttMMMMaaaapppp&&&& bbbbmmmm))));;;;
+          Initialize the iterator to iterate over map bbbbmmmm.
+
+        iiiinnnntttt nnnneeeexxxxtttt((((uuuulllloooonnnngggg&&&& rrrrvvvv))));;;;
+          If there are more allocated chunks not yet returned, set rrrrvvvv
+          to the unit number of the first (or only) unit of the next
+          allocated chunk and return 1.  Otherwise, leave rrrrvvvv unchanged
+          and return 0.
+
+        vvvvooooiiiidddd rrrreeeesssseeeetttt((((vvvvooooiiiidddd))));;;;
+          Reset the iterator to start at the first chunk again.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 2/21/91)
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+NEATO(1)                 USER COMMANDS                   NEATO(1)
+
+
+
+NNNNAAAAMMMMEEEE
+     neato - preprocessor for drawing undirected graphs
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+     nnnneeeeaaaattttoooo [----GGGG_n_a_m_e=_v_a_l_u_e] [----NNNN_n_a_m_e=_v_a_l_u_e] [-E_n_a_m_e=_v_a_l_u_e]  [----TTTT_l_a_n_g]
+     [----llll _l_i_b_f_i_l_e] [----oooo _o_u_t_f_i_l_e] [----vvvv] [files]
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+     _n_e_a_t_o draws undirected graphs using ``spring''  models  (see
+     Kamada and Kawai, Information Processing Letters 31:1, April
+     1989).  Input files must be formatted in the _d_o_t  attributed
+     graph  language.   By  default,  the  output of _n_e_a_t_o is the
+     input graph  with  layout  coordinates  appended.   To  make
+     Postscript, use the ----TTTTppppssss option.  FrameMaker MIF (----TTTTmmmmiiiiffff) and
+     HPGL (----TTTThhhhppppggggllll) are other choices.
+
+     Here is a brief synopsis of the graph language.
+
+     ggggrrrraaaapppphhhh _n_a_m_e {{{{  _s_t_a_t_e_m_e_n_t-_l_i_s_t  }}}}  is  the  top  level  graph.
+     Statements may be:
+
+     _n_a_m_e====_v_a_l;;;;
+     nnnnooooddddeeee [[[[_n_a_m_e====_v_a_l]]]];;;;
+     eeeeddddggggeeee [[[[_n_a_m_e====_v_a_l]]]];;;;  Set  the  default  graph,  node,  or  edge
+     attribute  _n_a_m_e  to _v_a_l.  Any subgraph, node, or edge speci-
+     fied  after  one  of   these   statements   inherits   these
+     attributes.
+
+     nnnn0000 [[[[_n_a_m_e_0=_v_a_l_0,_n_a_m_e_1=_v_a_l_1,...]]]];;;; Creates node nnnn0000 if  it  does
+     not exist, and sets its attributes according to the optional
+     list.
+
+     nnnn0000 -------- nnnn1111 -------- ... -------- nnnnnnnn  [[[[_n_a_m_e_0=_v_a_l_0,_n_a_m_e_1=_v_a_l_1,...]]]];;;;  Creates
+     edges  between nodes nnnn0000, nnnn1111, ..., nnnnnnnn and optionally sets the
+     given attributes.  Creates nodes as necessary.
+
+     ssssuuuubbbbggggrrrraaaapppphhhh _n_a_m_e {{{{ _s_t_a_t_e_m_e_n_t-_l_i_s_t }}}} Creates a subgraph.  A sub-
+     graph  may  appear  in place of an individual node within an
+     edge statement.  The ssssuuuubbbbggggrrrraaaapppphhhh  _n_a_m_e  part  is  optional.  If
+     missing, the subgraph is given an internal name.
+
+     While attribute names and values may be  arbitrary  strings,
+     certain  fixed  attributes control _n_e_a_t_o's layout algorithm,
+     as next described.
+
+GGGGRRRRAAAAPPPPHHHH AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEESSSS
+     Refer to _d_o_t(1) options to  control  the  layout  size.   In
+     addition, _n_e_a_t_o recognizes the following:
+
+     ssssttttaaaarrrrtttt====_v_a_l.  Requests random initial placement and seeds  the
+     random number generator.  If _v_a_l is not an integer, the pro-
+     cess ID or current time is used as the seed.
+
+
+
+Sun Release 4.0    Last change: 12 August 1994                  1
+
+
+
+
+
+
+NEATO(1)                 USER COMMANDS                   NEATO(1)
+
+
+
+     eeeeppppssssiiiilllloooonnnn====_n.  Sets the cutoff for the solver.  The default  is
+     0.1.
+
+NNNNOOOODDDDEEEE AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEESSSS
+     Refer to _d_o_t(1) for options to control node labels,  shapes,
+     sizes, colors, fonts, etc.
+
+EEEEDDDDGGGGEEEE AAAATTTTTTTTRRRRIIIIBBBBUUUUTTTTEEEESSSS
+     Refer to _d_o_t(1) for options to control edge line  style  and
+     labels.  In addition _n_e_a_t_o recognizes the following:
+
+     wwww====_f sets the weight (spring constant)  of  an  edge  to  the
+     given  floating  point  value.   The default is 1.0; greater
+     values make the edge tend more toward its optimal length.
+
+     lllleeeennnn====_f sets the optimal length of an edge.   The  default  is
+     1.0.
+
+CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLIIIINNNNEEEE OOOOPPPPTTTTIIIIOOOONNNNSSSS
+     ----vvvv (verbose) prints delta energy every 100th iteration.
+
+EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+     graph test123 {
+             a -- b -- c;
+             a -- {x y};
+             x -- c [w=10.0];
+             x -- y [w=5.0,len=3];
+     }
+
+CCCCAAAAVVVVEEEEAAAATTTTSSSS
+     Because unconstrained optimization is employed,  node  boxes
+     can possibly overlap or touch unrelated edges.  All existing
+     spring embedders seem to have this limitation.
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     ddddooootttt(1)
+     S.  C.  North,  "NEATO   User's   Manual".    Available   on
+     ftp.zoo.att.com in 1126/dotty/neato.ps.Z.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sun Release 4.0    Last change: 12 August 1994                  2
+
+
+

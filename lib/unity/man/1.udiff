@@ -1,0 +1,330 @@
+
+
+
+     uuuuddddiiiiffffffff((((1111))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    uuuuddddiiiiffffffff((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          udiff - Compare the tuples in two UNITY tables
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          uuuuddddiiiiffffffff [-e[1|2]] [-dqsvV] <_k_e_y__a_t_t_r_1> [to <_k_e_y__a_t_t_r_2>] ...
+               [show <_a_t_t_r_1> [to <_a_t_t_r_2>] ...]
+               [compare [only] <_a_t_t_r_1> [to <_a_t_t_r_2>] ...]
+               in <_t_a_b_l_e_1>[=<_a_l_t__t_a_b_l_e>] <_t_a_b_l_e_2>[=<_a_l_t__t_a_b_l_e>]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          uuuuddddiiiiffffffff compares the attribute values for tuples in two unity
+          files based on the given key attributes specified on the
+          command line.  Two kinds of mis-matches are reported: In the
+          first type, the key attributes match between a tuple in each
+          table, but one or more non-key attributes do not match.  In
+          this case the record number and key attributes are displayed
+          along with the non-matching non-key attributes.  Other
+          attributes may also be displayed by specifying them in the
+          ``show'' clause.  The second type of mis-match is an extra
+          tuple in one of the tables, i.e., a tuple that does not
+          match the key attributes of any tuple in the other table.
+          In this case the record number and all attributes are shown
+          for the extra tuple.  Matching tuples are not expected to be
+          in the same position in both tables unless the ``rec#''
+          attribute is specified as one of the key attributes.  All
+          comparisons are done character-by-character; numeric, date,
+          and regular expression comparisons are not supported.
+
+          After all mis-matching tuples are displayed a summary is
+          printed giving the number of matching tuples, the number of
+          extra tuples in each table, and the number of tuples with
+          non-key attribute mis-matches.  This summary may be
+          suppressed with the ----qqqq flag.
+
+          Unlike other UNITY commands, when locating the descriptor
+          file for each table, the table the directory resides in has
+          precedence over the current directory.  This is done to
+          allow different descriptor files for the same table name in
+          different directories.  Directories given in the UNITYDFILES
+          environment variable still have precedence over the current
+          directory or the table's directory when locating descriptor
+          files.
+
+          The ``show'' clause specifies attributes to display for all
+          mis-matching tuples.  Normally, only the key attributes and
+          any mis-matching attributes are displayed.
+
+          The ``compare'' clause specifies which attributes to
+          compare.  Normally, all attributes with the same name in
+          each table are compared.  Non-matching attribute names are
+          ignored.  This clause is used mainly to specify different
+          attribute names to compare in each table.  Unless the
+
+
+
+     Page 1                                          (printed 10/8/91)
+
+
+
+
+
+
+     uuuuddddiiiiffffffff((((1111))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    uuuuddddiiiiffffffff((((1111))))
+
+
+
+          ``only'' keyword is also given, any non-specified attributes
+          with matching names are still compared.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          Below are the command-line flags used to change uuuuddddiiiiffffffff's
+          operation:
+
+          ----dddd   Do not display records where the keys match, but non-
+               key attributes do not match.  Only extra tuples in one
+               table or the other will be displayed.
+
+          ----eeee[1111|2222]
+               Do not display extra records in the first table (----eeee1111),
+               in the second table (----eeee2222), or in either table (----eeee).
+               Only records where the keys match, but non-key
+               attributes do not match will be displayed.
+
+          ----ssss   Don't sort the tables on the given keys before
+               comparing the tuples; assume the tables are already
+               sorted properly.  This flag is provided as a work
+               around for memory limitations, since uuuuddddiiiiffffffff is so memory
+               intensive.  Each table can be sorted individually using
+               rrrreeeettttrrrriiiieeeevvvveeee((((1111)))) or aaaassssoooorrrrtttt((((1111)))) and then the comparison can be
+               done.
+
+          ----qqqq   Operate in quiet mode.  Normally, uuuuddddiiiiffffffff prints the
+               number of matching and mis-matching records on standard
+               error.  If this option is given, this message is
+               suppressed.
+
+          ----vvvv   Use the verbose or ``user-friendly'' names (if
+               available) from the descriptor file for labeling
+               attributes in the output.  Normally, the attribute
+               names are used for labels.  (See the ttttaaaabbbblllleeee(UNITY) or
+               ddddeeeessssccccrrrriiiippppttttoooorrrr(4) manual page for more details on the
+               user-friendly names.)
+
+          ----VVVV   Print the version of the command and exit.  No
+               comparisons are done.
+
+          Below are the command-line clauses which describe how to
+          compare the two tables.
+
+          <_k_e_y__a_t_t_r_1> [to <_k_e_y__a_t_t_r_2>] ...
+               Each named <_k_e_y__a_t_t_r_1> is used to find matching tuples
+               in the first table given.  If <_k_e_y__a_t_t_r_2> is also
+               given, it is used as the corresponding key attribute in
+               the second table; otherwise, <_k_e_y__a_t_t_r_1> is used.
+
+               All attribute names should be given as an attribute
+               name alone; no table name or positional number should
+               be prefixed to the name.  The ``_r_e_c#'' attribute can be
+
+
+
+     Page 2                                          (printed 10/8/91)
+
+
+
+
+
+
+     uuuuddddiiiiffffffff((((1111))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    uuuuddddiiiiffffffff((((1111))))
+
+
+
+               used as a key; however, the ``_s_e_e_k#'' _a_n_d``_a_l_l''
+               attributes cannot.
+
+          [show <_a_t_t_r_1> [to <_a_t_t_r_2>] ...]
+               In any mis-matching tuples, always display the given
+               attributes.  Normally, only mis-matching attribute
+               values are displayed.
+
+               All attribute names should be given as an attribute
+               name alone; no table name or positional number should
+               be prefixed to the name.  The ``_r_e_c#'' attribute can be
+               given here; however, the ``_s_e_e_k#'' _a_n_d``_a_l_l''
+               attributes cannot.
+
+          [compare [only] <_a_t_t_r_1> [to <_a_t_t_r_2>] ...]
+               Compare the given non-key attributes in mis-matching
+               tuples.  This clause is not normally needed unless
+               compared attributes have different names in each table
+               or only certain attributes are to be compared.
+               Normally, all non-key attributes with the same name in
+               each table are compared.  Non-matching attribute names
+               are ignored.  This clause allows a different attribute
+               name to be used in the first table than the second.  If
+               the ``only'' keyword is also given only the specified
+               attributes are compared.  Normally, all matching
+               attribute names not given in this clause are also
+               compared.
+
+               All attribute names should be given as an attribute
+               name alone; no table name or positional number should
+               be prefixed to the name.  The ``_r_e_c#'' attribute can
+               also be given here; however, the ``_s_e_e_k#'' and``_a_l_l''
+               attributes cannot.
+
+          in <_t_a_b_l_e_1>[=<_a_l_t__t_a_b_l_e>] <_t_a_b_l_e_2>[=<_a_l_t__t_a_b_l_e>]
+               The two tables to be compared.  The tables should be
+               given as full or partial path names.  A table named
+               ``-'' refers to standard input; this can only appear
+               once.
+
+               If <_t_a_b_l_e_2> is a directory, then the file name from
+               <_t_a_b_l_e_1> is appended to it and used as the second table
+               name.
+
+               By default, the descriptor file for a table is named
+               D<_t_a_b_l_e>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>'' after the table
+               name.  The alternate descriptor file will be
+               D<_a_l_t__t_a_b_l_e>.  Note that if <_a_l_t__t_a_b_l_e> contains a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the UNITYDFILES directories
+               or in the current directory.
+
+
+
+     Page 3                                          (printed 10/8/91)
+
+
+
+
+
+
+     uuuuddddiiiiffffffff((((1111))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    uuuuddddiiiiffffffff((((1111))))
+
+
+
+               The _U_N_I_T_Y_D_F_I_L_E_S entry in the EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT section
+               describes how the descriptor information for a table is
+               located.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+                    A colon-separated list of directories to search
+                    for table descriptor files.  If this is not
+                    specified, or if a needed file is not found in one
+                    of the directories, the current directory is
+                    searched.  If that fails, the directory where the
+                    associated table is located (based on the table
+                    name on the command line) is searched.
+
+                    NOTE: UNITY commands in _e_x_p_t_o_o_l_s only accept one
+                    directory in this variable.  Also, they use it
+                    only after looking in the current directory and in
+                    the table's directory; some commands do not use it
+                    at all.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          This command is more memory intensive than other UNITY
+          commands due to the in-memory sorting that takes place.
+          However, if the only key attribute is ``rec#'', sorting is
+          not needed and a lot less memory will be used.
+
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+          There is a limit on the number of attributes each table can
+          have.  Currently, this is 200 on mainframes and 100 on all
+          other machines.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Compare the table ``employee'' in the ``old'' and ``new''
+          directories.  The key attribute is the employee id,
+          ``empid'', in both tables.  Compare the ``sal'' attribute in
+          the old table to the ``salary'' attribute in the new table.
+          Always show the employee name for any mis-matching tuples.
+
+               udiff empid show name compare sal to salary \
+
+
+
+     Page 4                                          (printed 10/8/91)
+
+
+
+
+
+
+     uuuuddddiiiiffffffff((((1111))))                    NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                    uuuuddddiiiiffffffff((((1111))))
+
+
+
+                    in old/employee new
+
+     FFFFIIIILLLLEEEESSSS
+          AAAA<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e> and BBBB<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e>
+                    - Index files for <_a_t_t_r_i_b_u_t_e> in <_t_a_b_l_e>.
+
+          DDDD<_t_a_b_l_e>  - Descriptor file for <_t_a_b_l_e>, listing the
+                    attributes, their delimiting-character or width,
+                    printing information, and user-friendly names.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          descriptor(4), diff(1), and retrieve(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 10/8/91)
+
+
+

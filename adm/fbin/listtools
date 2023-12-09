@@ -1,0 +1,34 @@
+# @(#)  SID: 1.6;  module: listtools;  last changed: 1/28/93  13:23:47
+#
+# This routine returns a list of tools available for the current machine
+# type with a tool class given as argument.
+
+listtools() {
+    typeset wantedclass all
+    typeset tool class types RC
+    typeset PKGTAB=$HOME/adm/lib/pkgtab
+
+    if test "$1" = "-a"; then
+	all=true
+	wantedclass=$2
+    else
+	all=false
+	wantedclass=$1
+    fi
+
+    if test -r $PKGTAB; then
+	while IFS=: read tool class types REST; do
+	    if test "$class" = "$wantedclass"; then
+		if $all || [[ "$types" = ?(*,)@("$TYPE"|all)?(,*) ]]; then
+		    echo "$tool"
+		fi
+	    fi
+	done < $PKGTAB
+	RC=0
+    else
+	echo "$0: File '$PKGTAB' missing or unreadable" >&2
+	RC=2
+    fi
+
+    return $RC
+}

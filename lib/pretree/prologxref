@@ -1,0 +1,161 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Draw rule dependencies from a PROLOG crossreference file
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    prologxref  [-i file_of_files] [-F char]  cross_ref_file
+#
+# This program writes to stdout lines of the form:
+#
+#	r1 r2
+#
+#
+# The argument to this script should be PROLOG crossreference
+# report (from a Sun).
+#
+##########################################################
+
+
+FORHELP="\n\n(For more help, contact Bob Parnass)\n"
+USAGE="### error, USAGE:  `basename $0`   [-i file_of_files]  [-F char]  xref_report_files ${FORHELP}"
+
+TMP=/usr/tmp
+EDGEFILE=$TMP/P1a$$
+PARAMFILE=$TMP/P2a$$
+JUNKFILE=$TMP/P3a$$
+FILELIST=$TMP/P4a$$
+PIPEDFILE=$TMP/P5a$$
+
+TMPFILES="$EDGEFILE $PARAMFILE $JUNKFILE $FILELIST $PIPEDFILE"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+# parse command line arguments 
+set -- `getopt i:F:p $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	IFLAG=
+	FFLAG=
+	SEP=' '
+	PFLAG=
+	FILEOFFILES=
+
+	for i in $*
+	do
+		case $i in
+		-p)
+			# print params (ignore)
+			PFLAG="-p"
+			shift 1;;
+		-i)
+			# file of files
+			IFLAG="-i"
+			FILEOFFILES=$2
+			shift 2;;
+		-F)
+			# change interfield separator character
+			FFLAG="-F"
+			SEP="${2}"
+			shift 2;;
+		'-?')
+			echo ${USAGE} 1>&2
+			exit
+			;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+PIPED=
+
+# input file of files was specified
+if [ "$IFLAG" ]
+then
+	# -i argument specified on command line
+	cp "${FILEOFFILES}" "${FILELIST}"
+else
+	if [ $# -eq 0 ]
+	then
+		# assume source file is piped 
+		cat > "${PIPEDFILE}"
+		echo ${PIPEDFILE} > ${FILELIST}
+		PIPED=1
+
+	else
+		# files are specified on command line
+		while [ $# -gt 0 ]
+		do
+			echo ${1} >> ${FILELIST}
+			shift
+		done
+	fi
+fi
+exec < "${FILELIST}"
+while read INFILE
+do
+	test -r "${INFILE}"
+	if [ $? -ne 0 ]
+	then
+		echo "### error ### ${PGM}: Cannot read file ${INFILE}." 1>&2
+		echo "${USAGE}" 1>&2
+		rm -f ${TMPFILES}
+		exit 1
+	else
+		# cull out lines of interest
+		newform -i $INFILE \
+			| sed -e '1,10d' \
+			| grep -v  '^$' \
+			| grep -v '^ *$' \
+			| sed -e '/NOT CALLED/d' \
+			| sed -e 's/  / /g' \
+			> ${JUNKFILE}
+
+		awk '	{ \
+			#printf "LINE: %s\n", $0
+			if(index($0, " ")  != 1)
+				{
+				# line does not start with a blank, so
+				# assume first field is a predicate
+				predicate = $0
+				slash = index($1, "/")
+				if(slash)
+					predicate = substr(predicate, 1, slash - 1)
+				startfld = 2
+				}
+			else startfld = 1
+			
+			for (i = startfld; i <= NF; ++i)
+				{
+				if(index($i, "/"))
+					{
+					# must be a "called by"
+					calledby = $i
+					slash = index(calledby, "/")
+					if(slash)
+						calledby = substr(calledby, 1, slash - 1)
+					printf "%s %s\n", predicate, calledby
+					}
+				}
+			
+			}' ${JUNKFILE}  \
+			| sort -u  \
+			| sed -e "s/ /${SEP}/"
+	fi
+done
+
+rm -f "${TMPFILES}"
+exit 0

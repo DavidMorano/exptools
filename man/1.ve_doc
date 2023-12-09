@@ -1,0 +1,3960 @@
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 1
+
+
+
+             SSSSCCCCCCCCSSSS////EEEECCCCMMMMSSSS////SSSSAAAABBBBLLLLIIIIMMMMEEEE VVVVEEEERRRRSSSSIIIIOOOONNNN EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT UUUUSSSSEEEERRRR GGGGUUUUIIIIDDDDEEEE
+
+
+
+
+
+       1.  OOOOrrrrggggaaaannnniiiizzzzaaaattttiiiioooonnnn ooooffff TTTThhhhiiiissss GGGGuuuuiiiiddddeeee
+
+       This document provides a basic user's guide to the
+       SCCS/ECMS/SABLIME Version Environment (VE).  The general
+       functionality, as well as the details of the syntax of
+       invoking and using VE are described, but the internal
+       implementation of the tool is not covered.
+
+          Section 2 gives a high level description of the purpose
+                    and use of VE, including an overview of the
+                    current capabilities.
+
+          Section 3 covers the details of the way that VE works,
+                    contrasted to conventional text editors.
+                    Special capabilities of VE, including
+                    _r_e_f_e_a_t_u_r_i_n_g and _m_e_r_g_i_n_g are also covered.
+
+          Section 4 covers the way in which VE is invoked,
+                    including the interface to the Extended Change
+                    Management System.
+
+          Section 5 provides a detailed listing of the vvvviiii commands
+                    available in VE.
+
+          Section 6 provides a detailed listing of the eeeemmmmaaaaccccssss
+                    commands available in VE.
+
+          Section 7 describes the view menu and map and the version
+                    expressions used therein.
+
+       The VE user is assumed to be familiar with conventional text
+       editors, particularly either vvvviiii or eeeemmmmaaaaccccssss.  Since VE is an
+       extension of these editors, the common functionality is not
+       described here, and standard reference documents for vvvviiii or
+       eeeemmmmaaaaccccssss should be adequate.
+
+
+
+
+       2.  GGGGeeeennnneeeerrrraaaallll DDDDeeeessssccccrrrriiiippppttttiiiioooonnnn
+
+       The SCCS/ECMS/SABLIME Version Environment (VE) provides a
+       single command interface to activities with Source Code
+       Control System (SCCS) maintained files, especially in the
+       context of the Extended Change Management System (ECMS) and
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 2
+
+
+
+       the AT&T Product Administration System (SABLIME).  VE is an
+       alternative to eeeeddddggggeeeetttt, ssssggggeeeetttt, vvvviiii or eeeemmmmaaaaccccssss, and eeeeddddppppuuuutttt.
+       Additionally, vvvveeee provides an interface to many other ECMS
+       and SABLIME operations, including ssssggggeeeetttt, uuuunnnneeeeddddggggeeeetttt, uuuunnnneeeeddddppppuuuutttt,
+       and rrrreeeeppppoooorrrrtttt.  Features of vvvveeee also provide alternatives to
+       activities that normally would require ccccmmmmsssspppprrrr and qqqquuuueeeerrrryyyy.
+       Similar capabilities are available for SCCS users not in an
+       ECMS or SABLIME environment.
+
+       The basic goal of vvvveeee is to make it easy to examine or change
+       a file maintained under version control with ECMS, SABLIME,
+       or SCCS.  Current conventional scenarios extract a "flat"
+       image from ECMS/SABLIME/SCCS for editing, but to understand
+       the origin of each line of the flat file extracted, expert
+       knowledge of ECMS/SABLIME/SCCS and the SCCS file itself is
+       usually required.  The distinguishing feature of vvvveeee is that
+       the version information used for the extraction from
+       ECMS/SABLIME/SCCS is available during the editing or
+       browsing session.
+
+       For an ECMS or SABLIME user, viewing a file and having the
+       version information available can be as simple as
+
+            vvvveeee gggg====5555eeee6666____1111kkkk RRRRTTTTmmmmaaaaiiiinnnn....mmmmdddd
+
+       This places the user in the editor, with a view of the file
+       that is equivalent to that obtained by
+
+            ssssggggeeeetttt gggg====5555eeee6666____1111kkkk RRRRTTTTmmmmaaaaiiiinnnn....mmmmdddd
+
+       However, _n_o _f_i_l_e _h_a_d _t_o _b_e _c_r_e_a_t_e_d _i_n _t_h_e _c_u_r_r_e_n_t _d_i_r_e_c_t_o_r_y,
+       version information is readily available, and the view of
+       the file, equivalent to ssssggggeeeetttt with various combinations of
+       parameters, is easily changed _w_i_t_h_o_u_t _l_e_a_v_i_n_g _t_h_e _e_d_i_t_o_r.
+       Version information for the current line is easily displayed
+       with the editor command ^^^^GGGG (in vvvviiii mode) or ^^^^XXXX^^^^GGGG (in eeeemmmmaaaaccccssss
+       mode).  The version information shows the MR affecting the
+       line, who did the change, when it was done, the status of
+       the MR, and the abstract of the MR.
+
+       Moreover, editing in the versioned environment is fully
+       supported, with special handling for ECMS feature
+       constructs.  There are also provisions for the automatic
+       detection and merging of other changes to the file that
+       might occur if the user is editing without having locked the
+       file.
+
+       In the ECMS or SABLIME environment, use of vvvveeee presumes some
+       familiarity with ECMS or SABLIME; see the appropriate User's
+       Manual.  For the plain SCCS environment, see the standard
+       UNIX commands aaaaddddmmmmiiiinnnn,,,, ggggeeeetttt, and ddddeeeellllttttaaaa; vvvveeee has a built in aaaaddddmmmmiiiinnnn
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 3
+
+
+
+       command that can be used to create an SCCS file from an
+       ordinary file that is being edited.
+
+       vvvveeee also operates on ordinary text files, so can provide a
+       uniform editor interface when dealing with some files under
+       ECMS, SABLIME, or SCCS, as well as ordinary files.  In
+       particular, vvvveeee is suitable to specify as an editor to tools
+       like ccccssssccccooooppppeeee, and will seek to treat named files as ECMS,
+       SABLIME or SCCS files if at all possible.
+
+       The VE interface emulates the screen editors vvvviiii and eeeemmmmaaaaccccssss,
+       with a number of version specific extensions.
+
+       2.1  OOOOvvvveeeerrrrvvvviiiieeeewwww ooooffff CCCCaaaappppaaaabbbbiiiilllliiiittttiiiieeeessss ooooffff VVVVEEEE
+
+       The SCCS/ECMS/SABLIME Version Environment has these
+       capabilities:
+
+          - Accesses files directly from ECMS, SABLIME, or SCCS
+            with a single command interface
+
+          - Built-in commands to run eeeeddddggggeeeetttt, eeeeddddppppuuuutttt, etc.
+
+          - Browse only mode in which all editing commands are
+            prohibited
+
+          - Display of version information (including the MR
+            abstract) for current line, either on request or
+            automatically
+
+          - Search for the next line with the same video attribute
+            or version as the current line, search for next line
+            matching a given version expression
+
+          - #_f_e_a_t_u_r_e constructs are automatically interpreted when
+            reading, and such constructs are automatically
+            generated according to the current feature and the
+            nature of the change
+
+          - Project isolation information is used to prevent the
+            user from making changes that would produce cross
+            project contamination as well as meaningless featuring
+
+          - Automatic detection of other changes if editing has
+            been done without locking the file.
+
+          - Automatic merging of concurrent changes.
+
+          - Ability to run rrrreeeeppppoooorrrrtttt to get ECMS or SABLIME
+            information for a particular line
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 4
+
+
+
+          - Ability to adjust base for editing by specifying lines
+            to be hidden on the basis of the version attributes of
+            the lines
+
+          - Expressions of version attributes may be associated
+            with video attributes to visually draw attention to
+            interesting lines, with a version query language
+            supporting:
+
+               - Expression operators "and", "or", "not", and
+                 grouping
+
+               - Query keys delta, programmer, date, mr, mrstatus,
+                 mrdate, and various keywords related to ECMS
+                 featuring
+
+               - Query relations ==, !=, <, <=, >, >=
+
+          - The version expression to visibility and/or video
+            attribute mapping may be saved in a file by itself and
+            such mappings may be read from a file, or interactively
+            specified
+
+          - VVVViiii and eeeemmmmaaaaccccssss capabilities include:
+
+               - All of the viewing and cursor movement commands,
+                 e.g., paging and scrolling through file, basic
+                 cursor movement, movement by words
+
+               - All of the editing commands, e.g., input of new
+                 text, deletion of characters, words, lines, and
+                 marked areas
+
+               - All of the buffer and file manipulation commands,
+                 e.g. read, write, and multi-file editing
+
+               - Ordinary files may be edited, so text can be
+                 moved/copied between ordinary and versioned files.
+
+               - Recent changes may be undone
+
+
+       3.  DDDDeeeettttaaaaiiiillllssss ooooffff VVVVEEEE AAAAccccttttiiiioooonnnnssss
+
+       The following sections describe the actions taken by VE for
+       some typical command scenarios.  Editing within VE is very
+       similar to a normal text editor, but because of the
+       additional dimension of version, there are some important
+       differences.  The intent of the following sections is to
+       clarify what happens differently in VE, compared to a
+       conventional non-versioned text editor.
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 5
+
+
+
+       3.1  BBBBaaaassssiiiicccc TTTTeeeerrrrmmmmssss
+
+       A _d_e_l_t_a refers to a unit of change.  For VE, delta coincides
+       with the SCCS use of delta, i.e., a unit of change recorded
+       with the time that it was made, and the login making the
+       change.  If VE is interfacing to SCCS through a Change
+       Management System, then a delta will also be associated with
+       an MR and a status and time for that MR.
+
+       The _c_u_r_r_e_n_t _d_e_l_t_a refers to the delta that will be used to
+       label the current unit of change, i.e., the change that
+       takes place between the base extracted from SCCS and what is
+       returned to SCCS.
+
+       A _v_e_r_s_i_o_n refers to a set of attributes describing the
+       origin and destiny of a line.  These attributes include the
+       delta in which the line first appeared (i.e., the _i_n_s_e_r_t_i_n_g
+       _d_e_l_t_a of the line), zero or more deltas in which the line
+       was removed (i.e., _d_e_l_e_t_i_n_g _d_e_l_t_a_s for the line), and
+       possibly a _f_e_a_t_u_r_e attribute of the line (e.g., as indicated
+       by enclosing ECMS #_f_e_a_t_u_r_e directives).
+
+       An _e_d_i_t_i_n_g _s_e_s_s_i_o_n refers to the sequence of reading a base
+       from SCCS, making changes, and returning the changes to SCCS
+       as a delta, i.e., a single unit of change.  During the
+       editing session, VE may be entered and exited many times,
+       saving information about the session to disk so that it may
+       be resumed.  For the discussion here, editing session is
+       delineated by retrieval from SCCS and return to SCCS.
+
+       The _c_u_r_r_e_n_t _v_e_r_s_i_o_n refers to the attributes that describe
+       the current unit of change.  The current version consists
+       only of a delta (this will be the inserting delta of all
+       lines added, and will be the deleting delta of lines removed
+       during the editing session), and possibly a feature
+       expression (this feature expression will be associated with
+       lines inserted, and its negation with lines removed).  The
+       delta of the current version is fixed for an editing
+       session, but the feature attribute may be changed.
+
+       The _v_i_e_w of the file is the way the file looks in the
+       editor.  Lines may be _v_i_s_i_b_l_e or _i_n_v_i_s_i_b_l_e, and visible
+       lines may be further distinguished by video attributes.
+
+       A _v_i_d_e_o _a_t_t_r_i_b_u_t_e refers to a display attribute used to
+       visually distinguish lines of text on the screen.  This may
+       be highlighting, underlining, reverse video, different
+       fonts, colors, or whatever terminal attributes can be
+       exploited.  Terminal attributes are determined by the
+       TTTTEEEERRRRMMMMIIIINNNNFFFFOOOO description for the current terminal type.
+       Customized TTTTEEEERRRRMMMMIIIINNNNFFFFOOOO descriptions are usually required to
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 6
+
+
+
+       fully exploit the distinguishable display attributes of a
+       terminal.
+
+       The _o_w_n_e_r of a line refers to the ECMS feature which is able
+       to change a line as far as project isolation is concerned.
+       The owner of a line is determined from the closest feature
+       control directives surrounding the line that do not contain
+       any negation.  The _i_n_n_e_r featuring of a line refers to the
+       ECMS feature control that most closely surrounds the line.
+       _E_n_c_l_o_s_i_n_g featuring for a line can refer to any of the ECMS
+       feature controls within which the line is nested.  Thus, the
+       following line is owned by _5_E_3__1_L, has inner featuring
+       !_5_E_4__2_Q, and is enclosed by both _5_E_3__1_L and !_5_E_4__2_Q:
+
+                          #_f_e_a_t_u_r_e (_5_E_3__1_L)
+                          #_f_e_a_t_u_r_e (!_5_E_4__2_Q)
+                          _a_b_c_d_e_f_g
+                          #_e_n_d_f_e_a_t_u_r_e (!_5_E_4__2_Q)
+                          #_e_n_d_f_e_a_t_u_r_e (_5_E_3__1_L)
+
+       3.2  VVVViiiieeeewwww AAAAssssssssiiiiggggnnnnmmmmeeeennnntttt
+
+       VE allows the use of version expressions to determine which
+       lines are seen while editing, and what visual attributes are
+       associated with the visible lines.  Each line has a version
+       (of course many lines may have the same version), and a
+       given version expression can be considered to evaluate as
+       true or false for a given version.  That is, various
+       versions can be thought of as _m_a_t_c_h_i_n_g the version
+       expression.  (The syntax of version expressions is described
+       in detail in a later section.)  Version expressions may be
+       used to specify visibility or video attributes for the lines
+       whose version matches an assigned expression.
+
+       3.2.1  DDDDeeeeffffaaaauuuulllltttt VVVViiiissssiiiibbbbiiiilllliiiittttyyyy
+
+       By default, all included lines are visible and all excluded
+       lines are invisible.  The criteria for determining inclusion
+       of lines (and therefore the default visibility) may be
+       changed by the user.  Some of the options available apply
+       only to ECMS or SABLIME files (corresponding to the options
+       which may be specified to the ECMS or SABLIME ssssggggeeeetttt command),
+       and some of the options apply only to SCCS files
+       (corresponding to the options which may be specified to the
+       UNIX ggggeeeetttt command).  Examples of inclusion options that may
+       be specified are: a branch cutoff date (so that all deltas
+       after the date are excluded, and all deltas before the date
+       are included), restricting the included deltas to "official"
+       deltas (where the corresponding MRs have been approved or
+       integrated), a list of MRs to be included, etc.  In addition
+       to affecting the default visibility of lines, inclusion
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 7
+
+
+
+       options also affect how ECMS featuring is calculated (this
+       is covered in a later section).
+
+       3.2.2  VVVViiiissssiiiibbbbiiiilllliiiittttyyyy AAAAssssssssiiiiggggnnnnmmmmeeeennnnttttssss
+
+       The view menu may be used to make explicit visibility and
+       invisibility assignments that may override the default
+       visibility as described in the previous section.  In the
+       view menu, to assign invisible to a version expression means
+       that all lines whose version matches the version expression
+       will not be displayed at all.  If a line is invisible, it is
+       as if the line has ceased to exist, i.e, the cursor cannot
+       be moved to it, no context search will scan it, the line is
+       not counted in the line count of the file for line numbering
+       purposes, and so on.  Thus, for VE, invisible lines are
+       truly invisible; they do not figure into the operations of
+       the visually oriented editor/browser.  Changing visibility
+       assignments will, however, bring an invisible line back into
+       the visual realm where the editor can deal with it.
+
+       Because a particular version may match several different
+       version expressions, there must be some convention regarding
+       which matched expression determines the visibility value
+       used to determine whether to display a line.  The rule here
+       is very simple: version expressions are associated with the
+       values of visible and invisible in chronological order (this
+       is the order displayed in the visibility map list, i.e., the
+       last entry is the most recent assignment), and the value
+       assigned to a version is from the most recently specified
+       matching version expression in the visibility map list.
+       Thus the visibility map assignment list is traversed from
+       bottom to top (most recent to oldest) when looking for a
+       match, and the search is stopped with the first match.  If
+       there is no match, then a default visibility determination
+       is made according to the inclusion criteria as discussed in
+       the previous section.
+
+       For example, if invisible is assigned to versions which are
+       deleted by the current MR, and visible is assigned to
+       versions deleted by the current delta, then newly deleted
+       lines will be visible.  Even though they are deleted by the
+       current MR, they are also deleted by the current delta, and
+       the more recent assignment takes precedence.  Lines deleted
+       in previous sessions with the same MR, but earlier deltas,
+       will not be displayed.
+
+       VE will not permit visibility assignments which cause all
+       lines to become invisible.  If such an assignment is made,
+       VE will not allow the user to leave the view menu, for the
+       simple reason that under such conditions, there is no
+       reasonable place to put the cursor as the file is displayed.
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 8
+
+
+
+       3.2.3  VVVViiiiddddeeeeoooo AAAAttttttttrrrriiiibbbbuuuutttteeee AAAAssssssssiiiiggggnnnnmmmmeeeennnntttt
+
+       VE also allows the use of different display attributes to
+       visually show the version of the lines of text being
+       displayed.  Video attributes may be assigned to version
+       expressions, and the lines whose version matches an
+       expression assigned to a video attribute are then displayed
+       with that video attribute.  (The matching is subject to the
+       same "most recent visibility assignment" matching rule
+       described in the previous section.)  The video attribute
+       assignment is naturally only effective for visible lines.
+
+       For example, if underline is assigned to versions whose MR
+       status is _s_u_b_m_i_t_t_e_d, and then reverse is assigned to
+       versions with programmer _d_l_a, a line inserted by _d_l_a and
+       whose MR status is _s_u_b_m_i_t_t_e_d will display as reverse video.
+       Similarly, if the same video attribute is assigned to two
+       different version expressions, close inspection of the
+       version of a line displayed with this video attribute is
+       required to determine why this attribute is used.  As in the
+       example above, if underline is assigned to MR status
+       _s_u_b_m_i_t_t_e_d and underline is also assigned to programmer _d_l_a,
+       and a line displays as underlined, it may be because its MR
+       status is _s_u_b_m_i_t_t_e_d, or it was inserted by _d_l_a, or possibly
+       both.  By displaying the version information of the line,
+       the reason for the underlining can be determined.
+
+       3.3  EEEEddddiiiittttiiiinnnngggg AAAAccccttttiiiioooonnnnssss
+
+       The actions that take place in VE in response to editing
+       commands (i.e., commands that insert or delete text) may be
+       more complex than in a conventional text editor.  The
+       version context of the line affected by the editing command
+       is critical in determining the resulting actions.  In the
+       following sections, the various editing scenarios possible
+       are described and no special visibility or video attribute
+       assignments are assumed.
+
+       3.3.1  IIIInnnnsssseeeerrrrttttiiiioooonnnn ooooffff TTTTeeeexxxxtttt
+
+       Before discussing complicated version scenarios, the
+       simplest case of text insertion is described: If the editor
+       is in input mode and the next character typed would be
+       inserted before the first character on a line or appended
+       after the last character on a line, and if the next
+       character typed is a _r_e_t_u_r_n, then the result is simply a
+       new, blank line appearing on the screen in the appropriate
+       place.  The version of the new line will be that it is
+       inserted by the current delta, and the version of all other
+       lines will remain unchanged.  The visual appearance of this
+       action will be the same as for a conventional text editor -
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE      Page 9
+
+
+
+       a new line has simply been added into the file.
+
+       Now, however, assume that the editor is in input mode and
+       the next character typed is not _r_e_t_u_r_n.  (The cursor may be
+       at any position on a line, the character typed is to be
+       inserted in front of the cursor.)  Two cases must be
+       discussed here.
+
+       First, if the line to which the character is to be added was
+       inserted by the current delta (i.e., is a "new" line,
+       perhaps created as described above), then the actions are as
+       in a conventional text editor: the character is added into
+       the line, and the display is adjusted accordingly.  The
+       version of this adjusted line remains the same; it is still
+       a "new" line, inserted by the current delta.
+
+       The second case is where the line being added to is not a
+       "current" line, i.e., its version indicates that it was
+       inserted by a delta other than the current delta.  Another
+       way of phrasing this is that the line is an "old" line from
+       a previous delta (e.g., from a previous editing session).
+       In this case, the "old" representation of the line is
+       preserved, and a "new" representation, adjusted to reflect
+       the additional character, is added.  The "old" line is
+       referred to as the _a_r_c_h_i_v_e line in the discussion that
+       follows.  Where there had been one line in the file, there
+       are now two lines, differing only by one character.  Upon
+       close inspection of the versions of the lines, the "old"
+       line has the same delta configuration as before, but will
+       show the current delta as an additional deleting delta.
+       Thus, the "old" line does not belong to the current version,
+       and is kept as part of the file only to show the history of
+       the change (i.e., the way things were before the current
+       delta).  On the other hand, the "new," adjusted
+       representation of the line shows simply as being inserted by
+       the current delta; it is thus a line introduced by the
+       current editing session.
+
+       It is in this type of change scenario that VE differs
+       markedly from conventional editors.  Simply put, VE
+       preserves information about the way things looked before the
+       editing session began, using the version dimension of lines
+       of the file to distinguish the current set of changes from
+       the original state of the file.
+
+       One other possibility for an insertion scenario is the
+       situation where the character input is the _r_e_t_u_r_n character,
+       but the position where it is to be added is neither before
+       the beginning nor after the end.  If the line in which this
+       occurs is a "current" line (inserted by the current delta),
+       then the line is simply split into two lines, both of which
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 10
+
+
+
+       show as inserted by the current delta.  However, if the line
+       is an "old" line as above, then again the original
+       representation is preserved, marked as deleted by the
+       current delta, and two "new" lines, representing the
+       splitting of the old line, are added to the file.
+
+       The user has control over the manner in which these archived
+       lines are displayed.  With the default visibility
+       determination described in a previous section, VE behaves
+       visually like a conventional editor.  That is, when a line
+       is altered, it simply changes, and the archives described
+       above are invisible.  However, the user may enable the
+       display of archive lines (which are marked as deleted by the
+       current delta).  For example, a view map rule specifying
+       that lines matching the version expression "deleted by delta
+       == %s" are to be visible will show the original (now
+       deleted) lines.  In this case, the deleted lines will appear
+       in the display along with the modified line.  It is highly
+       recommended that to avoid confusion, video attribute
+       assignments be used to make the display meaningful, e.g.,
+       using the attribute "dim" for the deleted lines and/or the
+       attribute "standout" for the modified lines.
+
+       3.3.2  DDDDeeeelllleeeettttiiiioooonnnn ooooffff TTTTeeeexxxxtttt
+
+       Much of the activity of deleting text resembles the actions
+       taking place for text insertion.  If the command is given to
+       delete a line, and that line is a "new" line, i.e., inserted
+       by the current delta, then the line is discarded and the
+       display adjusted appropriately.  This behavior is the same
+       as one expects in a conventional text editor.  However, if
+       the line deleted is not a currently inserted line, then the
+       line's representation is not discarded, but rather only the
+       version of the line is changed to reflect that the current
+       delta is now a deleting delta for the line.  With the
+       default visibility, this has the same visual appearance: the
+       deleted line disappears.  However, as described earlier, the
+       display of deleted lines can be enabled, and a video
+       attribute assigned to such lines.  In this case, the
+       deletion of the line will only cause the video attribute of
+       the line to change, e.g., the line would change from normal
+       display to dim display if deleted lines were made visible
+       and assigned attribute "dim".  Of course, the version of the
+       deleted line has been adjusted, and displaying the version
+       will indicate that the line is deleted.  If the line is
+       already marked as deleted by the current delta, then
+       deleting it again is prohibited.
+
+       Deletion of text, say a character, on a line is very similar
+       to the insertion of a character.  If the line is "new," then
+       the representation is adjusted, but no other actions are
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 11
+
+
+
+       required.  If the line is not "new", then it is marked as an
+       "old" line (deleted by the current delta), and a "new"
+       representation of the line, reflecting the deleted
+       character, is added to the display.  The "new" line will
+       show as inserted by the current delta.
+
+       If the character deleted is the _r_e_t_u_r_n character itself,
+       then the action is that of joining two lines.  In this case,
+       two different lines are affected.  For each of them, the
+       same action as described above takes place, i.e., if its
+       version is the current version, no "old" copy needs to be
+       created, but if its version is not the current version, then
+       an "old" copy, showing the current delta as deleting delta,
+       must be created.  Given that these copies have been created
+       if necessary, the two lines are joined, so that there is now
+       only one line containing the text that had been on the two
+       lines, and the version of the line is inserted by the
+       current delta.
+
+       3.3.3  OOOOtttthhhheeeerrrr EEEEddddiiiittttiiiinnnngggg SSSScccceeeennnnaaaarrrriiiioooossss
+
+       Any other editing activity, e.g., deletion of words,
+       changing to end of line, etc., can be viewed as a composite
+       of the simple actions of single character insertion or
+       deletion, and line insertion or deletion.  Thus all editing
+       scenarios are covered by the previous discussion.
+
+       3.3.4  EEEECCCCMMMMSSSS FFFFeeeeaaaattttuuuurrrriiiinnnngggg
+
+       In "autofeaturing" mode (the default), VE understands the
+       initial feature control lines in a file, and generates
+       additional control lines as needed.  The version of each
+       line then contains the featuring implied by surrounding
+       feature control lines.  It is important to note that the
+       feature control lines used to determine this featuring are
+       the "included" feature control lines.  That is, if inclusion
+       options indicate that only certain deltas are included, then
+       only the feature control lines indicated by these deltas are
+       used to determine the feature of each line.  In particular,
+       if the inclusion criteria are changed, then featuring is
+       recalculated.
+
+       The previous discussions of editing actions assumed that the
+       file was "featureless", i.e., the file was not an ECMS
+       featured file, so that all lines had versions with no
+       feature.  The editing actions may be different for featured
+       files.  Moreover, not all editing may be possible if the
+       ECMS instance has project isolation checking enabled, since
+       changes that would result in cross project contamination are
+       prohibited.  Also, if the inclusion options do not specify
+       the entire MR branch of the file (i.e., all deltas
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 12
+
+
+
+       included), then editing is prohibited.  This is necessary
+       since ECMS requires the featuring for a change to be based
+       on the entire MR branch.
+
+       The following sections describe editing actions when ECMS
+       features are interpreted for a featured file.
+
+       3.3.4.1  IIIInnnnsssseeeerrrrttttiiiioooonnnn ooooffff TTTTeeeexxxxtttt iiiinnnn aaaa FFFFeeeeaaaattttuuuurrrreeeedddd FFFFiiiilllleeee
+
+       As in the scenarios already described, if new lines of text
+       are added, the version of the new lines is the current
+       version.  If the current version includes a feature, then
+       the version of the new lines also includes that feature.
+
+       First consider the case where the current version has no
+       feature specified.  This indicates that new text is to be
+       "unfeatured", i.e., should be extractable in all feature
+       configurations.  If the new line is added between unfeatured
+       lines, then the new line will be unfeatured.  If the new
+       line is added between lines that are only featured out for
+       some feature (e.g., #_f_e_a_t_u_r_e (!_A)), then the new line will
+       also be similarly featured out.  If the new line is added
+       between lines that are featured in for some feature (e.g.,
+       #_f_e_a_t_u_r_e (_A)), and project isolation is enabled, then the
+       insertion will not be permitted, since doing so would
+       "break" the feature block and produce contamination.  (If
+       project isolation is not enabled, the line will be added as
+       an unfeatured line, requiring that the active featuring be
+       ended and restarted.)
+
+       The second case to consider is when the current version
+       specifies a feature, say feature _A.  This indicates that new
+       text is to have feature _A.  If the new line is added between
+       lines that are already featured for _A, then the new line is
+       just inserted and inherits the featuring of the surrounding
+       lines (including whatever feature nesting is indicated by
+       the surrounding lines).  If the new line is added between
+       unfeatured lines, then the new line will be simply be
+       featured for _A, i.e., generated feature control lines of
+       #_f_e_a_t_u_r_e (_A) and #_e_n_d_f_e_a_t_u_r_e (_A) will surround the new line.
+       If the new line is added between lines otherwise featured,
+       then it will inherit the indicated nesting and also be
+       featured for _A, i.e., feature control lines will be
+       generated as above.  These latter actions may be prohibited
+       if the project information indicates that the resulting
+       featuring would not be extractable for the current project.
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 13
+
+
+
+       3.3.4.2  DDDDeeeelllleeeettttiiiioooonnnn ooooffff TTTTeeeexxxxtttt iiiinnnn aaaa FFFFeeeeaaaattttuuuurrrreeeedddd FFFFiiiilllleeee
+
+       As in the standard editing scenarios, deletion of text of a
+       line that has the current delta just results in the line
+       being changed as in conventional editing.  However, if text
+       from an "old" line is deleted, and the file is featured, a
+       different strategy must be taken, depending upon the feature
+       of the current version and the feature of the line being
+       changed.  If the feature "owning" the line is the same as
+       the feature of the current version, then the change can be
+       handled as in the non-featured case: the current delta is
+       added as a deleting delta to the original line, and an
+       altered copy with the current delta as inserting delta, and
+       featuring the same as the original line, is added.  (The
+       "owner" of a line is defined as the innermost feature
+       control with no negation that appears around the line.)  If
+       the feature "owning" the line is different from the feature
+       of the current version, then the change must be handled by
+       adjusting featuring.  If the current version has no feature,
+       then no changes are allowed to lines owned by a feature.
+       Otherwise, the original line is featured out for the current
+       feature, and the altered copy is featured in for the current
+       feature, respecting whatever feature nesting may occur
+       already.  A simple example should make this clear:
+
+         The line
+              _a_b_c_d_e_f_g
+         effectively becomes
+              #_f_e_a_t_u_r_e (!_A)
+              _a_b_c_d_e_f_g
+              #_e_n_d_f_e_a_t_u_r_e (!_A)
+              #_f_e_a_t_u_r_e (_A)
+              _c_d_e_f_g
+              #_e_n_d_f_e_a_t_u_r_e (_A)
+         when the first two characters are deleted and the current
+         feature is _A.
+
+       3.3.4.3  RRRReeeeffffeeeeaaaattttuuuurrrriiiinnnngggg
+
+       VE provides a special capability to limit editing activities
+       to modifying the featuring control constructs without
+       affecting any lines enclosed by the feature control.  This
+       is useful when code is "ported" from one project to another
+       by changing the featuring, or when an incorrect choice for
+       featuring must be corrected.  Since this type of activity
+       would typically violate the usual cross project
+       contamination checks, a special MR that can make changes in
+       any project is required.
+
+       In the 5ESS8r9 Software Development Environment, an "X" MR,
+       associated with the special project "r1xr2", is permitted to
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 14
+
+
+
+       make changes for all feature constructs.  The changes by an
+       "X" MR are unconstrained by ECMS, but a common use of such
+       MRs is to just change feature control lines.  To support
+       this, VE recognizes "X" MRs (i.e., those that have project
+       "r1xr2"), and requires the user to also provide the feature
+       to be changed and the feature to change it to (options oooollllddddffff
+       and nnnneeeewwwwffff).  Under such conditions, VE will disable all
+       normal editing commands, but all file navigation commands
+       will work as usual.  The only editing activity recognized is
+       the request to change the featuring for a block of featured
+       lines.  To do this, the block must be featured by the given
+       features (either positively or negatively), and the cursor
+       must be positioned on the beginning or ending feature
+       control line.  The command ^^^^VVVVxxxx (^^^^XXXXxxxx in eeeemmmmaaaaccccssss mode), will
+       then change the feature in both control constructs according
+       to the given features.  To provide visual reinforcement of
+       this change, VE provides a default view map for "X" MR usage
+       that highlights blocks featured by the old and new features.
+
+       If the user wants to do this type of editing and does not
+       have an assigned "X" MR, specifying no MR, but giving the
+       old and new feature names will activate the refeaturing
+       mode.  Note that in this case no eeeeddddggggeeeetttt can be done until a
+       real "X" MR is assigned.  If the need arises to do some
+       conventional editing with an "X" MR, changing the mode to
+       turn off _a_u_t_o_f_e_a_t_u_r_i_n_g will allow usual editing of the file,
+       including feature control lines.  However, this defeats the
+       purpose of assuring that editing is constrained to feature
+       control line changes, so should only be used in extreme
+       circumstances.
+
+       3.3.5  AAAArrrrcccchhhhiiiivvvveeee MMMMiiiiggggrrrraaaattttiiiioooonnnn
+
+       The editing actions described earlier often result in an
+       "archive" line, i.e., a copy of a line prior to a change but
+       with its version adjusted to show it has been logically
+       deleted (by a deleting delta or by featuring out).  If
+       migration is enabled, then an attempt is made to move the
+       archive line above other lines that were inserted in the
+       current delta, so that editing several consecutive lines
+       results in two blocks of text, one representing the "before"
+       block, and one the "after," rather than having old and new
+       lines alternately in the file.
+
+       This migration is especially desirable in the case of
+       featured files, where editing might otherwise result in
+       lines featured alternately _A and _n_o_t _A, which requires the
+       generation of four feature control lines, leading to
+       completely unreadable code.  Archive migration tends to
+       reduce this fragmentation by attempting to group lines
+       having common feature attributes together, by interchanging
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 15
+
+
+
+       the position of lines with complementary featuring.
+
+       3.3.6  AAAAuuuuttttoooommmmaaaattttiiiicccc MMMMeeeerrrrggggiiiinnnngggg ooooffff CCCCoooonnnnccccuuuurrrrrrrreeeennnntttt CCCChhhhaaaannnnggggeeeessss
+
+       VE allows editing to take place in the image retrieved from
+       ECMS, SABLIME, or SCCS  without requiring that the file be
+       locked by eeeeddddggggeeeetttt.  Although this type of use is discouraged
+       (and VE warns whenever a file is saved and it is not locked
+       for an MR), it may sometimes be necessary, e.g., an urgent
+       change is required and someone else has the file locked, or
+       experimental changes are being tried to determine if an MR
+       is really needed.  The danger in such scenarios is that
+       other deltas may be recorded under to the underlying SCCS
+       file while the file is unlocked.  If this occurs without the
+       knowledge of the user and the current changes are then
+       recorded under SCCS, this delta will wipe out the changes
+       made by the other delta.  To keep this from happening, VE
+       checks to see if the SCCS file has changed since it was
+       initially read and will not permit a delta to be made until
+       the two sets of changes are reconciled.
+
+       The reconciliation of concurrent changes is accomplished by
+       an automatic merging operation (::::mmmmeeeerrrrggggeeee in vvvviiii mode, ^^^^XXXXeeeemmmmeeeerrrrggggeeee
+       in eeeemmmmaaaaccccssss mode).  Invoking this operation will cause the more
+       recent underlying SCCS file to be read, and the current
+       editing session's delta (i.e., its insertions and deletions)
+       will be applied to this new base.  The editor reports the
+       size of both changes, and adjusts the view map to highlight
+       both sets of changes.  At this point, the user can inspect
+       the merged result to determine if there are logical or
+       physical conflicts that require manual intervention.  In any
+       case, the image maintained by VE is now up to date with
+       respect to the underlying SCCS file, so editing, and
+       operations like eeeeddddggggeeeetttt, may continue.
+
+
+       4.  IIIInnnnvvvvooookkkkiiiinnnngggg tttthhhheeee VVVVeeeerrrrssssiiiioooonnnn EEEEnnnnvvvviiiirrrroooonnnnmmmmeeeennnntttt
+
+       The Version Environment is started by
+
+                 vvvveeee [_o_p_t_i_o_n_s] _f_i_l_e    (for editing mode)
+       or
+                 vvvvbbbb [_o_p_t_i_o_n_s] _f_i_l_e    (for browsing mode)
+
+       In browsing mode, VE will not allow any changes to be made.
+
+       The following sections describe the various command line
+       options and environment variables recognized.
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 16
+
+
+
+       4.1  EEEEddddiiiittttoooorrrr SSSSttttaaaarrrrttttuuuupppp
+
+       When vvvvbbbb or vvvveeee is invoked, its editing mode will be either vvvviiii
+       or eeeemmmmaaaaccccssss, depending on the shell environment variable EEEEDDDDIIIITTTTOOOORRRR
+       (or EEEEDDDDIIIITTTTOOOORRRR4444VVVVEEEE if EEEEDDDDIIIITTTTOOOORRRR is not recognizable as vvvviiii or eeeemmmmaaaaccccssss).
+       If the tool is invoked as vvvvbbbb, then only commands for
+       perusing the text are enabled; all commands which change
+       text or write out the file are disabled.  More than one file
+       name may be specified, allowing the user to work through a
+       list of files without exiting the editor between each file.
+       (Search expressions and named buffer contents are preserved
+       between files.)
+
+       In vvvviiii mode, if the shell environment variable VVVVEEEEIIIINNNNIIIITTTT is set
+       and not null, its value will be interpreted as an "ex" type
+       of command to be performed before interactive editing
+       begins.  Thus, if VVVVEEEEIIIINNNNIIIITTTT is set to "se ai showversion",
+       automatic indenting and constant version display of the
+       current line will be enabled.
+
+       In eeeemmmmaaaaccccssss mode, the commands in any $$$$HHHHOOOOMMMMEEEE////....vvvveeee____iiiinnnniiiitttt file will
+       be executed when vvvveeee is invoked.
+
+       By default, for ECMS featured files, at startup all #_f_e_a_t_u_r_e
+       and #_e_n_d_f_e_a_t_u_r_e lines are interpreted, and used to assign
+       feature as part of the version of the lines they enclose.
+       The control lines are not editable.  Additional control
+       lines are generated as required by the editing.  Feature
+       control directives that are not included (as indicated by
+       the ssssggggeeeetttt-type parameters) are ignored for the purposes of
+       feature interpretation, and no feature attribute is assigned
+       to text lines that are not included.  If the shell
+       environment variable VVVVEEEEFFFFEEEEAAAATTTTUUUURRRREEEE is set and not null, or a
+       value is specified on the command line, the current feature
+       in the editor will be set to its value; this is the
+       featuring that will be used throughout the editing session.
+       (See the section on VE specific commands for commands to
+       change the current feature.)  If VVVVEEEEFFFFEEEEAAAATTTTUUUURRRREEEE is not set, but
+       FFFFEEEEAAAATTTTUUUURRRREEEE is set, then the first changeable feature named by
+       FFFFEEEEAAAATTTTUUUURRRREEEE is used for the current feature.  If neither of
+       these variables is set, and project isolation does not allow
+       non-featured code to be changed, then a current feature is
+       chosen, first trying for a feature with the same name as the
+       project, then looking for a changeable feature of required,
+       included, or allowed status (in that order).
+
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 17
+
+
+
+       4.2  LLLLooooccccaaaattttiiiinnnngggg tttthhhheeee ffffiiiilllleeee ttttoooo eeeeddddiiiitttt
+
+       VE determines what to read into its buffer for editing or
+       browsing according to the file name given on the command
+       line and the following rules:
+
+          - If the option ffffoooorrrrcccceeeeoooorrrrddddiiiinnnnaaaarrrryyyy====yyyy was specified to force
+            ordinary file behavior, then the named file is simply
+            read as an ordinary file.  If the file does not exist,
+            the buffer will be initially empty.
+
+          - If the file named by adding the prefix "SSSS...." to the
+            given name exists, then it is assumed to be the result
+            of saving a previous session with VE, and that session
+            will be resumed by using the contents of the saved
+            versioned file.
+
+          - If the file named by adding the prefix "ssss...." to the
+            given name exists, then it is assumed to be an SCCS
+            file, and the buffer is initialized by reading the text
+            lines from that file.  If an SCCS directory has been
+            specified, the check for the SCCS file will be tried
+            first in that directory, relative to any directory
+            indicated by the file name given.  Note that aaaaddddmmmmiiiinnnn is
+            used to create an SCCS file initially, e.g.,
+               aaaaddddmmmmiiiinnnn ----iiii////ddddeeeevvvv////nnnnuuuullllllll ssss....ffffiiiilllleeee
+            or the builtin aaaaddddmmmmiiiinnnn command of ve can be used.
+
+          - If there is no ECMS or SABLIME environment (no ECMS
+            prefix file or SABLIME global data base has been
+            determined or no generic has been given) then the named
+            file is simply read as an ordinary file.
+
+          - If the name given is a full path name, it is compared
+            to each node in the shell VVVVPPPPAAAATTTTHHHH variable, and if it
+            matches one of those nodes, the node part of the name
+            is ignored, and the file is accessed as an ECMS or
+            SABLIME file (see next item).  If it does not match any
+            node in the VVVVPPPPAAAATTTTHHHH, or is not a valid ECMS or SABLIME
+            name, it is treated as an ordinary file.
+
+          - If an ECMS or SABLIME environment exists and a generic
+            has been specified, then the buffer is initialized from
+            the ECMS or SABLIME data base.  The file to read from
+            the data base is determined by using the base name of
+            the given file name, and a directory determined from
+            the ddddiiiirrrr option or the current directory's relative
+            location in the first node of VVVVPPPPAAAATTTTHHHH, plus any directory
+            portion of the given name.  If such a file does not
+            exist under ECMS or SABLIME for the given generic, VE
+            behavior will be as if the ffffoooorrrrcccceeeeoooorrrrddddiiiinnnnaaaarrrryyyy====yyyy option had
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 18
+
+
+
+            been given.
+
+       4.3  PPPPaaaarrrraaaammmmeeeetttteeeerrrrssss
+
+       All parameters are optional; they are grouped into several
+       categories and described below.
+
+       4.3.1  GGGGeeeennnneeeerrrraaaallll OOOOppppttttiiiioooonnnnssss
+
+       The following command line options apply to SCCS, ECMS,
+       SABLIME, and ordinary file usage.
+
+       ----VVVV      causes the release of the version editor to be
+               printed, and the program exits.
+
+       ++++_n      causes the initial display to have the cursor
+               positioned at line number _n.
+
+       ++++////_R_E    causes the initial display to have the cursor
+               positioned at the first line containing the regular
+               expression _R_E.
+
+       4.3.2  EEEEddddiiiittttiiiinnnngggg AAAAccccttttiiiivvvviiiittttyyyy OOOOppppttttiiiioooonnnnssss
+
+       The following options control editing activity.  Except for
+       the first three, these options apply only to SCCS, ECMS, or
+       SABLIME usage.  In addition to being specified on the
+       command line, each of these options may also be given a new
+       value during the editing session.  In vvvviiii mode, this is
+       accomplished with the ::::sssseeeetttt command, e.g., ::::sssseeeetttt mmmmrrrr====rrrrttttaaaa11112222333344445555UUUU.
+       Boolean options may also be specified in typical vvvviiii fashion,
+       e.g., ::::sssseeeetttt nnnnooooeeeeddddggggeeeetttt is equivalent to eeeeddddggggeeeetttt====nnnn.  In eeeemmmmaaaaccccssss mode,
+       these options may be set by ^^^^XXXX^^^^MMMM, e.g., ^^^^XXXX^^^^MMMMmmmmrrrr====rrrrttttaaaa11112222333344445555UUUU.
+       Boolean options may also be specified in typical eeeemmmmaaaaccccssss
+       fashion, e.g., MMMM--------^^^^XXXX^^^^MMMMeeeeddddggggeeeetttt is equivalent to eeeeddddggggeeeetttt====nnnn.
+
+       ffffoooorrrrcccceeeeoooorrrrddddiiiinnnnaaaarrrryyyy====_y causes any file read to be treated as an
+                      ordinary file, regardless of the file prefix
+                      or existence in the ECMS or SABLIME data
+                      base.  The default is ffffoooorrrrcccceeeeoooorrrrddddiiiinnnnaaaarrrryyyy====nnnn.
+
+       vvvviiiieeeewwww====_n         causes the visibility and attribute
+                      assignments in the view map menu to be
+                      ignored.  The default is vvvviiiieeeewwww====yyyy.  (May also
+                      be specified as uuuusssseeeevvvviiiieeeewwwwmmmmaaaapppp instead of vvvviiiieeeewwww.)
+
+       vvvviiiieeeewwwwmmmmaaaapppp====_f_i_l_e   causes the visibility and attribute
+                      assignments in the view map menu to be taken
+                      from the named file.  The special value of
+                      ddddeeeeffffaaaauuuulllltttt will cause the current view map
+                      assignments to reset to the default
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 19
+
+
+
+                      assignments used when initializing a file.
+                      The default value for this option is taken
+                      from the environment variable VVVVIIIIEEEEWWWWMMMMAAAAPPPP.
+
+       pppprrrreeeeffffiiiixxxx====_f_i_l_e    specifies the prefix file that points to the
+                      ECMS data base.  If the shell variable PPPPRRRREEEEFFFFIIIIXXXX
+                      is set, its value is used.  If no prefix file
+                      is specified (either explicitly or through
+                      the environment), then no ECMS access can be
+                      done and no file can be treated as an ECMS
+                      file.  [Applies to ECMS files only.]
+
+       ssssaaaabbbbGGGGDDDDBBBB====_d_i_r_e_c_t_o_r_y specifies the SABLIME global data base
+                      directory.  If the shell variable ssssaaaabbbbGGGGDDDDBBBB is
+                      set, its value is used.  If no directory is
+                      specified (either explicitly or through the
+                      environment), then no SABLIME access can be
+                      done and no file can be treated as a SABLIME
+                      file.  [Applies to SABLIME files only.]
+
+       pppprrrroooodddduuuucccctttt====_p_r_o_d_n_a_m_e specifies the SABLIME product constraint.
+                      If the shell variable ssssaaaabbbbPPPPRRRROOOODDDD is set, its
+                      value is used.  If no product is specified
+                      (either explicitly or through the
+                      environment), then no SABLIME access can be
+                      done and no file can be treated as a SABLIME
+                      file.  [Applies to SABLIME files only.]
+
+       ccccoooommmmmmmmeeeennnntttt====_t_e_x_t   specifies text to be used as a comment for
+                      the SCCS delta command.  If non-interactive
+                      mode, no prompting will be done for comments
+                      when deltas are created.  If interactive
+                      mode, prompting will be done to confirm
+                      comment choice.  This option may also be
+                      specified by ----yyyy_t_e_x_t.  This option can only be
+                      specified on the command line and cannot be
+                      changed during the editing session.
+
+       eeeeddddiiiitttt====_n         inhibits interactive editing, i.e, the VE
+                      reads the file, saves a versioned copy, and
+                      exits.  This is mainly used with other
+                      options that cause actions like reserving the
+                      file for editing, or extracting a flat file.
+                      The default is eeeeddddiiiitttt====yyyy.  This option can only
+                      be specified on the command line and cannot
+                      be changed during the editing session.
+
+       ccccmmmmsssspppprrrr====_y        creates a P.file containing the visible lines
+                      of the file annotated by the MRs or deltas
+                      that affected the lines.  This option implies
+                      eeeeddddiiiitttt====nnnn, i.e., interactive editing is
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 20
+
+
+
+                      inhibited.  The default is ccccmmmmsssspppprrrr====nnnn.  This
+                      option can only be specified on the command
+                      line and cannot be changed during the editing
+                      session.  This option may also be specified
+                      by ssssccccccccsssspppprrrr or ssssrrrrccccpppprrrr.
+
+       SSSSffffiiiilllleeee====_n        prevents the creation of the saved versioned
+                      file (_S._f_i_l_e) in non-interactive mode.  When
+                      combined with eeeeddddiiiitttt====nnnn eeeexxxxttttrrrraaaacccctttt====yyyy the results
+                      will be like that produced by ggggeeeetttt////ssssggggeeeetttt for
+                      SCCS/ECMS/SABLIME files.  The default is
+                      SSSSffffiiiilllleeee====yyyy, so that the saved versioned file is
+                      created.  This option has no effect in
+                      interactive mode.
+
+       eeeeddddggggeeeetttt====_y        reserves the file for editing when reading;
+                      in the case of ECMS or SABLIME, an eeeeddddggggeeeetttt
+                      command is executed, and for SCCS files this
+                      is equivalent to ggggeeeetttt ----eeee (may also be
+                      specified by ----eeee).  eeeeddddggggeeeetttt====pppp may also be
+                      specified to indicate that before any attempt
+                      to read an SCCS/ECMS/SABLIME file, the user
+                      should be prompted as to whether the file
+                      should be reserved for editing.  eeeeddddggggeeeetttt====nnnn
+                      indicates that the file should not be
+                      reserved.
+
+       eeeeddddppppuuuutttt====_y        records the changes as a delta when writing;
+                      in the case of ECMS or SABLIME, an eeeeddddppppuuuutttt
+                      command is executed, and for SCCS files this
+                      is equivalent to ddddeeeellllttttaaaa (may also be specified
+                      by ----dddd).  eeeeddddppppuuuutttt====pppp may also be specified to
+                      indicate that when writing an
+                      SCCS/ECMS/SABLIME file, the user should be
+                      prompted as to whether the changes should be
+                      recorded as a delta.  eeeeddddppppuuuutttt====nnnn indicates that
+                      no delta should be made.
+
+       mmmmrrrr====_m_r          specifies an ECMS or SABLIME MR to associate
+                      with any editing activity.  This MR must be
+                      in the state 'assigned' for the given
+                      generic, and is required for eeeeddddggggeeeetttt====yyyy.  If the
+                      shell variable MMMMRRRR is set, its value is used.
+
+       nnnneeeewwwwffff====_f oooollllddddffff====_f  specifies old and new features to use for the
+                      special "X" MR mode of editing.  The presence
+                      of these options indicates the X MR editing
+                      mode, in which the only type of changes
+                      allowed are to switch featuring between the
+                      two indicated features.  (The editing command
+                      is ^^^^VVVVxxxx in vvvviiii mode and ^^^^XXXXxxxx in eeeemmmmaaaaccccssss mode.)
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 21
+
+
+
+                      [Applies to ECMS files only.]
+
+       vvvveeeeffffeeeeaaaattttuuuurrrreeee====_f    specifies an ECMS feature to use for editing.
+                      If given, it must be a valid feature
+                      changeable by the generic and project.  If
+                      not given and only featured changes are
+                      allowed, a suitable feature will be chosen by
+                      vvvveeee.  If the shell variable VVVVEEEEFFFFEEEEAAAATTTTUUUURRRREEEE is set,
+                      its value is used.  [Applies to ECMS files
+                      only.]
+
+       aaaauuuuttttooooeeeexxxxttttrrrraaaacccctttt====_y  causes the "flat" file to be produced
+                      whenever the editor saves the versioned file,
+                      i.e., is similar to the effect of the ECMS or
+                      SABLIME command ssssggggeeeetttt or the UNIX command ggggeeeetttt
+                      (may also be specified by eeeexxxxttttrrrraaaacccctttt====yyyy or ----qqqq).
+                      The default is aaaauuuuttttooooeeeexxxxttttrrrraaaacccctttt====yyyy for interactive
+                      editing, and aaaauuuuttttooooeeeexxxxttttrrrraaaacccctttt====nnnn for non-
+                      interactive use.
+
+       aaaauuuuttttooooffffeeeeaaaattttuuuurrrriiiinnnngggg====_n indicates that nnnnoooo interpretation of #_f_e_a_t_u_r_e
+                      control lines should be done.  Thus, the
+                      version of every line will be "featureless",
+                      and the control lines themselves will appear
+                      as ordinary text lines (may also be specified
+                      by ----ffff).  The default is aaaauuuuttttooooffffeeeeaaaattttuuuurrrriiiinnnngggg====yyyy.
+                      [Applies to ECMS files only.]
+
+       rrrreeeerrrreeeeaaaadddd====_y       causes the file to be read again after an
+                      SCCS delta has been made or when an ordinary
+                      file is converted to an SCCS file.  If this
+                      parameter has not been explicitly set, the
+                      user will be prompted for a response.
+
+       rrrrmmmm====_y           forces the "flat" file to be removed when the
+                      editor writes a new flat file, or when eeeeddddppppuuuutttt
+                      or uuuunnnneeeeddddggggeeeetttt is executed within the editor.
+                      Otherwise, the file will only be removed if
+                      the user responds affirmatively when
+                      prompted.  For uuuunnnneeeeddddggggeeeetttt, the associated saved
+                      versioned file (if it exists), is also
+                      similarly removed.  If rrrrmmmm====nnnn, the user will
+                      not be prompted and the flat file will not be
+                      overwritten or removed.
+
+       ppppddddeeeepppp====_p|_q|_l|_s   passed to any eeeeddddppppuuuutttt command executed by the
+                      editor, indicates whether to prompt for,
+                      quit, log, or log silently any physical
+                      dependencies detected during the eeeeddddppppuuuutttt.  The
+                      default is ppppddddeeeepppp====pppp.  [Applies to ECMS files
+                      only.]
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 22
+
+
+
+       ssssrrrrcccciiiinnnnffffoooo====_y|_n    passed to any eeeeddddggggeeeetttt command executed by the
+                      editor, indicates whether or not to display
+                      information about unapproved MRs.  The
+                      default is ssssrrrrcccciiiinnnnffffoooo====yyyy.  [Applies to ECMS files
+                      only.]
+
+       nnnneeeewwwwbbbbrrrraaaannnncccchhhh====_y    passed to any ggggeeeetttt ----eeee command executed by the
+                      editor, indicates whether or not to create a
+                      new branch (may also be specified by ----bbbb).
+                      The default is nnnneeeewwwwbbbbrrrraaaannnncccchhhh====nnnn.  [Applies to SCCS
+                      files only.]
+
+       4.3.3  IIIInnnniiiittttiiiiaaaallll VVVViiiieeeewwww OOOOppppttttiiiioooonnnnssss
+
+       gggg====_g_e_n_e_r_i_c      specifies the ECMS generic; a generic must be
+                      given if any ECMS activity is desired.  If
+                      the shell variable GGGGEEEENNNNEEEERRRRIIIICCCC or ssssaaaabbbbGGGGEEEENNNN is set,
+                      its value is used.  [Applies to ECMS and
+                      SABLIME files only.]
+
+       pppprrrroooojjjjeeeecccctttt====_p      specifies the ECMS project.  If the shell
+                      variable PPPPRRRROOOOJJJJEEEECCCCTTTT is set, its value is used.
+                      [Applies to ECMS files only.]
+
+       ddddiiiirrrr====_d_i_r_e_c_t_o_r_y  specifies the ECMS or SABLIME directory for
+                      the file to be accessed.  This is a relative
+                      path name known in the ECMS or SABLIME data
+                      base for the generic, and if not given,
+                      defaults to the relative location of the
+                      current directory in the first node listed in
+                      the shell variable VVVVPPPPAAAATTTTHHHH, provided that the
+                      current directory is a sub-directory of that
+                      first node.  [Applies to ECMS and SABLIME
+                      files only.]
+
+       bbbbrrrr====_o_f_c|_m_r      specifies which branch of the ECMS or SABLIME
+                      file to display.  The default is 'ofc', the
+                      official branch, containing only approved
+                      changes.  However, for eeeeddddggggeeeetttt====yyyy, the default
+                      is branch 'mr', containing the most recent
+                      view of the file, including unapproved
+                      changes.  If the shell variable BBBBRRRR is set,
+                      its value is used.  [Applies to ECMS and
+                      SABLIME files only.]
+
+       iiiinnnnccccmmmmrrrr====_m_r_s      specifies a comma separated list of MRs or
+                      groupnames of MRs to include in the display
+                      of the file, in addition to changes selected
+                      by the branch.  If the shell variable IIIINNNNCCCCMMMMRRRR
+                      is set, its value is used.  This option may
+                      also be specified as mmmmrrrrssss====_m_r_s or uuuummmmrrrrssss====_m_r_s.
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 23
+
+
+
+                      [Applies to ECMS and SABLIME files only.]
+
+       iiiinnnnccccssssttttaaaattttuuuussss====_s_t_a_t specifies a comma separated list of statuses
+                      of MRs to include in the display of the file,
+                      in addition to changes selected by the
+                      branch.  If the shell variable IIIINNNNCCCCSSSSTTTTAAAATTTTUUUUSSSS is
+                      set, its value is used.  [Applies to ECMS and
+                      SABLIME files only.]
+
+       iiiinnnnttttgggg====_y         specifies if only integrated MRs on the
+                      official branch should be included, rather
+                      than the default, which is both approved as
+                      well as integrated MRs.  The default is
+                      iiiinnnnttttgggg====nnnn.  If the shell variable IIIINNNNTTTTGGGG is set,
+                      its value is used.  [Applies to ECMS files
+                      only.]
+
+       bbbbrrrrddddaaaatttteeee====_d_a_t_e    specifies a cutoff date, so that only deltas
+                      prior to the cutoff date are included.  If
+                      the shell variable BBBBRRRRDDDDAAAATTTTEEEE is set, its value
+                      is used.  This option can also be given as
+                      bbbbrrrrddddtttt====_d_a_t_e or ----cccc_d_a_t_e.
+
+       ffff====_f_e_a_t_u_r_e_s     specifies a list of ECMS features to include
+                      in the display of the file.  If not specified
+                      the default included features for the generic
+                      and project are used; in any case the
+                      required features for the generic and project
+                      are always used.  If the shell variable
+                      FFFFEEEEAAAATTTTUUUURRRREEEE is set, its value is used.  [Applies
+                      to ECMS files only.]
+
+       aaaalllllllloooowwww====_f_e_a_t_u_r_e_s specifies a list of ECMS features to treat as
+                      if they have status "allow" for the project
+                      and generic - this will only be possible if
+                      the features do not have a status defined for
+                      the generic and project.  Such features are
+                      treated as if they have status "disallow" by
+                      default.  [Applies to ECMS files only.]
+
+       wwwwhhhhoooolllleeee====_y        specifies that the ECMS featured file is to
+                      be displayed without feature evaluation, i.e,
+                      all lines, including feature control lines,
+                      are shown.  This is the default for eeeeddddggggeeeetttt====yyyy,
+                      but otherwise the default is wwwwhhhhoooolllleeee====nnnn, in
+                      which case no feature lines are displayed,
+                      and only the lines extracted for the included
+                      feature set are shown.  If the shell variable
+                      WWWWHHHHOOOOLLLLEEEE is set, its value is used.  [Applies to
+                      ECMS files only.]
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 24
+
+
+
+       sssshhhhoooowwwwffffcccc====_y       specifies that feature control lines are to
+                      be displayed in the ECMS featured file.  By
+                      default, feature control lines are displayed
+                      if wwwwhhhhoooolllleeee====yyyy and not displayed if wwwwhhhhoooolllleeee====nnnn; this
+                      options allows feature control lines to be
+                      displayed, even if intervening text lines are
+                      suppressed because they are not extracted for
+                      the current project and generic.  [Applies to
+                      ECMS files only.]
+
+       ssssccccccccssssddddiiiirrrr====_d_i_r_e_c_t_o_r_y specifies the directory in which SCCS
+                      files reside.  If the shell variable SSSSCCCCCCCCSSSSDDDDIIIIRRRR
+                      is set, its value is used.  [Applies to SCCS
+                      files only.]
+
+       vvvveeeerrrrssssiiiioooonnnn====_S_I_D    specifies the version of the file to view by
+                      giving an SCCS Identifier (SID).  This may
+                      also be specified as ----rrrr_S_I_D.  The default is
+                      the most recent version of the file.  See ggggeeeetttt
+                      for more details.  [Applies to SCCS files
+                      only.]
+
+       iiiinnnnccccddddeeeellllttttaaaa====_l_i_s_t  specifies a list of deltas forced to be
+                      included, the list is comma separated and
+                      consists of SCCS Identifiers (SIDs).  This
+                      may also be specified as ----iiii_l_i_s_t.  [Applies to
+                      SCCS files only.]
+
+       eeeexxxxccccddddeeeellllttttaaaa====_l_i_s_t  specifies a list of deltas forced to be
+                      excluded, the list is comma separated and
+                      consists of SCCS Identifiers (SIDs).  This
+                      may also be specified as ----eeee_l_i_s_t.  [Applies to
+                      SCCS files only.]
+
+       4.4  EEEEnnnnvvvviiiirrrroooonnnnmmmmeeeennnntttt
+
+       As described in earlier sections, many parameter values may
+       be specified through shell environment variables.  These
+       variables are: BBBBRRRR,,,, BBBBRRRRDDDDAAAATTTTEEEE,,,, FFFFEEEEAAAATTTTUUUURRRREEEE,,,, GGGGEEEENNNNEEEERRRRIIIICCCC,,,, IIIINNNNCCCCMMMMRRRR,,,,
+       IIIINNNNCCCCSSSSTTTTAAAATTTTUUUUSSSS,,,, IIIINNNNTTTTGGGG,,,, PPPPRRRREEEEFFFFIIIIXXXX,,,, PPPPRRRROOOOJJJJEEEECCCCTTTT,,,, MMMMRRRR,,,, ssssaaaabbbbGGGGDDDDBBBB,,,, ssssaaaabbbbGGGGEEEENNNN,,,,
+       ssssaaaabbbbPPPPRRRROOOODDDD,,,, SSSSCCCCCCCCSSSSDDDDIIIIRRRR,,,, VVVVEEEEFFFFEEEEAAAATTTTUUUURRRREEEE,,,, VVVVIIIIEEEEWWWWMMMMAAAAPPPP,,,, WWWWHHHHOOOOLLLLEEEE.
+
+       In the EEEEddddiiiittttoooorrrr SSSSttttaaaarrrrttttuuuupppp section, the effect of the following
+       variables is described: EEEEDDDDIIIITTTTOOOORRRR,,,, EEEEDDDDIIIITTTTOOOORRRR4444VVVVEEEE,,,, VVVVEEEEIIIINNNNIIIITTTT.
+
+       Other shell variables used are:
+
+       PPPPAAAAGGGGEEEERRRR     indicates the screen paging program to use to
+                 display the output of certain shell commands run
+                 from the editor, such as rrrreeeeppppoooorrrrtttt.  This defaults to
+                 the standard UNIX command ppppgggg.
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 25
+
+
+
+       SSSSHHHHEEEELLLLLLLL     indicates the shell to invoke for shell escapes
+                 from the editor as well as file name and variable
+                 expansion.  This defaults to ////bbbbiiiinnnn////sssshhhh.
+
+       TTTTEEEERRRRMMMM      indicates the terminal type you are using (used by
+                 the ccccuuuurrrrsssseeeessss package).  See the RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS section
+                 for details about certain special cases.
+
+       VVVVPPPPAAAATTTTHHHH     indicates the search path for resolving ECMS or
+                 SABLIME file names.  If your current directory is
+                 one of the directories in VVVVPPPPAAAATTTTHHHH, then relative
+                 path names imply the portion of the path from the
+                 node in VVVVPPPPAAAATTTTHHHH to the current directory.  If full
+                 path names to files are given, and the initial
+                 portion of the name matches any node in VVVVPPPPAAAATTTTHHHH,
+                 then the remaining portion of the name is assumed
+                 to be the ECMS or SABLIME file desired, if it
+                 exists under ECMS or SABLIME.
+
+       4.5  EEEExxxxaaaammmmpppplllleeeessss ooooffff iiiinnnnvvvvooookkkkiiiinnnngggg VVVVEEEE
+
+       Following are some examples of different ways that VE may be
+       invoked.
+
+         1.  vvvvbbbb gggg====5555eeee5555____1111uuuu RRRRTTTTrrrrttttggggiiiinnnniiiitttt....cccc
+
+             Assuming that PPPPRRRROOOOJJJJEEEECCCCTTTT is set to 5e5_1u and that the
+             current directory is $_R_O_O_T/_r_t_a/_R_T_m_a_i_n with RRRROOOOOOOOTTTT the
+             first node in VVVVPPPPAAAATTTTHHHH, the file _r_t_a/_R_T_m_a_i_n/_R_T_r_t_g_i_n_i_t._c
+             is read from the ECMS data base and the initial view
+             contains only the approved MRs and has feature control
+             lines evaluated for generic 5e5_1u and project 5e5_1u.
+
+         2.  vvvveeee gggg====5555eeee5555____1111uuuu ddddiiiirrrr====rrrrttttaaaa////RRRRTTTTmmmmaaaaiiiinnnn mmmmrrrr====rrrrttttaaaa11112222333344445555aaaaUUUU eeeeddddggggeeeetttt====yyyy
+             RRRRTTTTrrrrttttggggiiiinnnniiiitttt....cccc
+
+             The same file is read from ECMS, but an eeeeddddggggeeeetttt command
+             is executed, and the initial view will contain all
+             MRs, and the whole file (with feature control lines)
+             will be displayed.  Note that if the mmmmrrrr and eeeeddddggggeeeetttt
+             parameters had not been specified, the initial view
+             would be as in the previous example.  However, the
+             parameters mmmmrrrr====rrrrttttaaaa11112222333344445555aaaaUUUU,,,, bbbbrrrr====mmmmrrrr,,,, wwwwhhhhoooolllleeee====yyyy could be
+             specified while in the editor, and eeeeddddggggeeeetttt could also be
+             executed, producing the same effect.
+
+         3.  vvvveeee RRRRTTTTrrrrttttggggiiiinnnniiiitttt....cccc
+
+             Assuming that some editing had taken place in the
+             previous example and the changes were saved and vvvveeee was
+             exited, this command causes the saved file
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 26
+
+
+
+             _S._R_T_r_t_g_i_n_i_t._c to be read and the editing session
+             resumed, with the same view.
+
+         4.  vvvveeee ....pppprrrrooooffffiiiilllleeee
+
+             Assuming there is no value for GGGGEEEENNNNEEEERRRRIIIICCCC, and no
+             existing saved versioned file for ._p_r_o_f_i_l_e, the
+             ordinary file ._p_r_o_f_i_l_e is edited.
+
+
+       5.  VVVViiii
+
+       This section describes the vvvviiii mode of VE.
+
+       5.1  VVVViiii CCCCoooommmmmmmmaaaannnnddddssss
+
+       Following are the vvvviiii editor/browser commands currently
+       implemented in VE.
+
+       5.1.1  IIIInnnntttteeeerrrrrrrruuuuppppttttiiiinnnngggg,,,, CCCCaaaannnncccceeeelllliiiinnnngggg
+
+          EEEESSSSCCCC       terminate input mode (back to command mode)
+
+       5.1.2  PPPPoooossssiiiittttiiiioooonnnniiiinnnngggg WWWWiiiitttthhhhiiiinnnn aaaa ffffiiiilllleeee
+
+          ^^^^BBBB        move back 1 page
+
+          ^^^^DDDD        scroll forward (a count changes the scroll
+                    amount)
+
+          ^^^^FFFF        move ahead 1 page
+
+          ^^^^UUUU        scroll backward (a count changes the scroll
+                    amount)
+
+          ////         search forward for regular expression
+
+          ????         search backward for regular expression
+
+          GGGG         move cursor to beginning of line number
+                    specified
+
+          nnnn         repeat search (context or version expression),
+                    same direction
+
+          NNNN         repeat search (context or version expression),
+                    opposite direction
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 27
+
+
+
+       5.1.3  AAAAddddjjjjuuuussssttttiiiinnnngggg tttthhhheeee SSSSccccrrrreeeeeeeennnn
+
+          ^^^^LLLL        refresh display
+
+          ^^^^EEEE        expose another line at the bottom of the screen
+
+          ^^^^YYYY        expose another line at the top of the screen
+
+          zzzz         redraw screen with current line positioned
+                    according to next character: <<<<CCCCRRRR>>>> for top of
+                    screen, .... for middle, and ---- for bottom; if a
+                    count is given, screen is redrawn around that
+                    line
+
+       5.1.4  MMMMaaaarrrrkkkkiiiinnnngggg aaaannnndddd RRRReeeettttuuuurrrrnnnniiiinnnngggg
+
+          ''''         move cursor to beginning of line with mark
+                    (next character is mark name)
+
+          ````         move cursor to mark (next character is mark
+                    name)
+
+          mmmm         mark the current position (followed by a lower
+                    case letter, the name of the mark)
+
+       5.1.5  LLLLiiiinnnneeee PPPPoooossssiiiittttiiiioooonnnniiiinnnngggg
+
+          RRRREEEETTTTUUUURRRRNNNN    move to beginning of next line
+
+          jjjj         move to next line, same column
+
+          kkkk         move to previous line, same column
+
+          ^^^^NNNN        move to next line, same column
+
+          ^^^^PPPP        move to previous line, same column
+
+          ++++         move to beginning of next line
+
+          ----         move to beginning of previous line
+
+          HHHH         move cursor to home position
+
+          LLLL         move cursor to beginning of last line on screen
+
+          MMMM         move cursor to beginning of middle line on
+                    screen
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 28
+
+
+
+       5.1.6  CCCChhhhaaaarrrraaaacccctttteeeerrrr PPPPoooossssiiiittttiiiioooonnnniiiinnnngggg
+
+          ^^^^HHHH        move cursor left one position
+
+          SSSSPPPPAAAACCCCEEEE     move cursor right one position
+
+          $$$$         move cursor to end of line
+
+          0000         move cursor to beginning of line
+
+          FFFF         move cursor to previous occurrence of specified
+                    character, on this line
+
+          TTTT         move cursor after previous occurrence of
+                    specified character on this line
+
+          ^^^^         move cursor to beginning of line (first non
+                    white space)
+
+          ffff         move cursor to next occurrence of specified
+                    character, on this line
+
+          hhhh         move cursor left one position
+
+          llll         move cursor right one position
+
+          tttt         move cursor before next occurrence of specified
+                    character on this line
+
+          ||||         move cursor to column (default first)
+
+          %%%%         move cursor to matching parenthesis, brace, or
+                    bracket, as appropriate
+
+       5.1.7  WWWWoooorrrrddddssss,,,, PPPPaaaarrrraaaaggggrrrraaaapppphhhhssss,,,, FFFFuuuunnnnccccttttiiiioooonnnnssss
+
+          bbbb         move cursor to beginning of previous word
+
+          eeee         move cursor to end of next word
+
+          wwww         move cursor to beginning of next word
+
+          {{{{         move cursor to beginning of previous paragraph
+
+          }}}}         move cursor to beginning of next paragraph
+
+          [[[[[[[[        move cursor to beginning of previous function
+                    definition
+
+          ]]]]]]]]        move cursor to beginning of next function
+                    definition
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 29
+
+
+
+       For the above word movements, a word is defined as a
+       sequence of letters, digits, or underscores, or else a
+       sequence of other non white space characters.  If a capital
+       letter is used as the word movement, a simpler definition of
+       just non white space characters is used.  A paragraph
+       beginning is indicated by a blank line or a line with just
+       white space.  The definition of a function is indicated by
+       the character '{' in the first column.
+
+
+       5.1.8  IIIInnnnsssseeeerrrrtttt aaaannnndddd RRRReeeeppppllllaaaacccceeee
+
+          ^^^^VVVV        in input mode, quotes the next character, e.g.,
+                    allows ^[, erase, and kill to be input
+
+          aaaa         change to input mode, right of cursor
+                    (Prohibited in BROWSE mode)
+
+          AAAA         change to input mode, end of line (Prohibited
+                    in BROWSE mode)
+
+          iiii         change to input mode, left of cursor
+                    (Prohibited in BROWSE mode)
+
+          IIII         change to input mode, beginning of line
+                    (Prohibited in BROWSE mode)
+
+          oooo         open new line after current line (Prohibited in
+                    BROWSE mode)
+
+          OOOO         open new line before current line (Prohibited
+                    in BROWSE mode)
+
+          rrrr         replace a single character (Prohibited in
+                    BROWSE mode)
+
+          RRRR         change to overstrike mode (Prohibited in BROWSE
+                    mode)
+
+       5.1.9  CCCChhhhaaaannnnggggeeee aaaannnndddd DDDDeeeelllleeeetttteeee
+
+          &&&&         repeat the last substitute command (Prohibited
+                    in BROWSE mode)
+
+          cccc         followed by an operand, deletes the specified
+                    operand and enters input mode; the operand may
+                    be any cursor movement, or "c" to indicate a
+                    line (Prohibited in BROWSE mode)
+
+          ssss         delete a character, and go into input mode
+                    (Prohibited in BROWSE mode)
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 30
+
+
+
+          SSSS         delete a line, and go into input mode
+                    (Prohibited in BROWSE mode)
+
+          XXXX         delete character before cursor (Prohibited in
+                    BROWSE mode)
+
+          xxxx         delete current character (Prohibited in BROWSE
+                    mode)
+
+          dddd         followed by an operand, deletes the specified
+                    operand; the operand may be any cursor
+                    movement, or "d" to indicate a line (Prohibited
+                    in BROWSE mode)
+
+          DDDD         delete to end of line (Prohibited in BROWSE
+                    mode)
+
+       5.1.10  MMMMiiiisssscccceeeellllllllaaaannnneeeeoooouuuussss
+
+          [[[[0000----9999]]]]     specify command repetition count
+
+          """"         precedes a named buffer specification, buffers
+                    1-9 are used for saving deleted text, and yank
+                    commands can be used to place text in buffers
+                    a-z
+
+          ....         repeat the last text changing command
+                    (Prohibited in BROWSE mode)
+
+          ^^^^^^^^        switch to previous file (synonym for :e #)
+
+          JJJJ         join lines (Prohibited in BROWSE mode)
+
+          ~~~~         toggle the case of the current character
+                    (Prohibited in BROWSE mode)
+
+          >>>>         followed by an operand, the lines from the
+                    current line to the specified operand are
+                    shifted right by one shift width; the operand
+                    may be any cursor movement, or ">" to indicate
+                    just lines (Prohibited in BROWSE mode)
+
+          <<<<         followed by an operand, the lines from the
+                    current line to the specified operand are
+                    shifted left by one shift width; the operand
+                    may be any cursor movement, or "<" to indicate
+                    just lines (Prohibited in BROWSE mode)
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 31
+
+
+
+       5.1.11  YYYYaaaannnnkkkk aaaannnndddd PPPPuuuutttt
+
+          yyyy         yank text into a buffer, if none is specified,
+                    the unnamed buffer is used, otherwise buffers
+                    a-z may be given; the yyyy command is followed by
+                    the object to be yanked, e.g., word, mark,
+                    etc., and yyyyyyyy is used to yank lines (Prohibited
+                    in BROWSE mode)
+
+          YYYY         yank a line (Prohibited in BROWSE mode)
+
+          PPPP         put saved text before cursor, may be preceded
+                    by a buffer name (Prohibited in BROWSE mode)
+
+          pppp         put saved text after cursor, may be preceded by
+                    a buffer name (Prohibited in BROWSE mode)
+
+       5.1.12  UUUUnnnnddddoooo
+
+          uuuu         undo the last change, a second undo command
+                    undoes the previous undo if there have been no
+                    further changes; a count may be specified to
+                    indicate how many changes to undo (Prohibited
+                    in BROWSE mode)
+
+          UUUU         undo all changes on the current line if it was
+                    the last line changed (Prohibited in BROWSE
+                    mode)
+
+       5.1.13  SSSSppppeeeecccciiiiaaaallll CCCCoooommmmmmmmaaaannnnddddssss
+
+          !!!!         pipes the lines indicated by the operand to a
+                    shell command and replaces the lines by the
+                    result
+
+          ^^^^DDDD        (in input mode) backspace over automatically
+                    generated indentation
+
+          ^^^^GGGG        print version attributes of current line in
+                    command window area
+
+          QQQQ         quit visual mode, enter "ex" mode
+
+          ZZZZZZZZ        save file to disk (if unsaved changes) and quit
+
+
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 32
+
+
+
+       5.2  VVVVEEEE SSSSppppeeeecccciiiiffffiiiicccc VVVViiii CCCCoooommmmmmmmaaaannnnddddssss
+
+                    To distinguish VE commands in vvvviiii mode that have
+                    no common vvvviiii counterpart, the command character
+                    ^^^^VVVV is used as a command prefix.  (This
+                    character is unused as a command in vvvviiii.)
+
+          ^^^^VVVV////       Search forward for next line matching given
+                    version expression.
+
+          ^^^^VVVV????       Search backward for next line matching given
+                    version expression.
+
+          ^^^^VVVVnnnn       Repeat expression search, same direction.
+
+          ^^^^VVVVNNNN       Repeat expression search, reverse direction.
+
+          ^^^^VVVVaaaa       Search forward for next line with same video
+                    attribute as current line.
+
+          ^^^^VVVVAAAA       Search backward for next line with same video
+                    attribute as current line.
+
+          ^^^^VVVV>>>>       Search forward for next line with given video
+                    attribute.
+
+          ^^^^VVVV<<<<       Search backward for next line with given video
+                    attribute.
+
+          ^^^^VVVVffff       Go to last line of innermost enclosing feature
+                    block.
+
+          ^^^^VVVVFFFF       Go to first line of innermost enclosing feature
+                    block.
+
+          ^^^^VVVV]]]]       Go to last line of enclosing feature block
+                    indicated by given feature.
+
+          ^^^^VVVV[[[[       Go to first line of enclosing feature block
+                    indicated by given feature.
+
+          ^^^^VVVV%%%%       Go to matching #_f_e_a_t_u_r_e/#_e_n_d_f_e_a_t_u_r_e control
+                    line.
+
+          ^^^^VVVVxxxx       This is a special command which is only
+                    recognized in a file which is being edited with
+                    a cross-project "X" MR.  The command may be
+                    given while positioned on a feature control
+                    line, and switches the featuring between the
+                    old and new features given on the command line.
+                    These features may be changed by "set oldf=f"
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 33
+
+
+
+                    or "set newf=f".
+
+          ^^^^VVVVuuuu       This is a special operator used to "undelete"
+                    lines.  Lines can not be undeleted while in
+                    autofeaturing mode, and only lines deleted by
+                    the current delta can be undeleted.  This
+                    operator works like other vvvviiii operators, e.g.,
+                    ^^^^VVVVuuuuuuuu undeletes one line, ^^^^VVVVuuuu''''aaaa undeletes from
+                    the current line to the one containing mark a.
+
+          ^^^^VVVVvvvv       Search forward for next line with same version
+                    as current line.
+
+          ^^^^VVVVVVVV       Search backward for next line with same version
+                    as current line.
+
+       5.3  EEEExxxx CCCCoooommmmmmmmaaaannnnddddssss
+
+       Following are the eeeexxxx type commands available from the VE.
+       These commands are invoked by entering ::::, the command, and
+       then RRRREEEETTTTUUUURRRRNNNN or EEEESSSSCCCC.  This mode may be entered permanently by
+       quitting visual mode with the visual command QQQQ (the ex
+       command vvvviiiissssuuuuaaaallll will return the editor to visual mode).  VE
+       will start in this mode if _E_D_I_T_O_R=_e_x.  For those commands
+       allowing file names, and for shell commands, the special
+       characters %%%% and #### are replaced by the current file name and
+       previous file name, respectively.  Shell metacharacters are
+       also expanded.  Most of these commands may be preceded by a
+       single line number, or a range of line numbers, where the
+       line numbers may be absolute numbers, . for the current
+       line, $ for the last line, a mark name, or a context search.
+       In addition, a constant may be added to or subtracted from
+       the relative references.  If a line reference only is given,
+       with no command, the action is to move the cursor to the
+       beginning of the line specified.  Some of the commands
+       require an extra argument which could be a count, a mark
+       name, a destination line address, etc.  Commands may be
+       abbreviated, often by one character; the minimal
+       abbreviation is shown in bold face.  Many commands also have
+       a variant form which is indicated by a trailing !!!!  on the
+       command name.
+
+          !!!!            execute a command in the shell, if a line
+                       range is given, the lines are input to the
+                       command and the resulting output replaces
+                       the lines
+
+          !!!!!!!!           re-execute last command executed in the
+                       shell
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 34
+
+
+
+          &&&&            repeat the last substitute command, the
+                       suffix gggg must be given if a global
+                       substitute is desired
+
+          <<<<            shift the indicated lines left one shift
+                       position
+
+          >>>>            shift the indicated lines right one shift
+                       position
+
+          ====            display the current line number
+
+          aaaarrrr_g_s         delete specified line range (default is
+                       current line)
+
+          aaaa_p_p_e_n_d       go into input mode, appending lines to the
+                       specified line (default is current line)
+                       until a line consisting of just "."
+
+          cccc_h_a_n_g_e       go into input mode, replacing the specified
+                       line range (default is current line); input
+                       is terminated by a line consisting of just
+                       "."
+
+          ccccoooo_p_y _a_d_d_r    put a copy of the specified line range
+                       (default is current line) after the given
+                       line [Also abbreviated by tttt]
+
+          dddd_e_l_e_t_e       delete specified line range (default is
+                       current line)
+
+          eeee_d_i_t         edit another file, view map and current
+                       version will be taken from the specified
+                       file, may specify ++++_n, options as on command
+                       line
+
+          ffff_i_l_e         change the remembered file name to the one
+                       given
+
+          gggg_l_o_b_a_l       global command execution.  Must be followed
+                       by /_R_E/ (where _R_E is a regular expression)
+                       or ^_V/_V_E/ (where _V_E is a version
+                       expression), and an ex command (which may
+                       contain addresses as usual).  The command is
+                       executed for each line matching the
+                       expression given.
+
+          iiii_n_s_e_r_t       go into input mode, inserting lines before
+                       the specified line (default is current line)
+                       until a line consisting of just "."
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 35
+
+
+
+          jjjj_o_i_n         combine the specified lines into a single
+                       line (default is current and next line)
+
+          mmmmaaaapppp _c _d_e_f    map the specified character to the given
+                       definition for command interpretation
+
+          mmmmaaaa_r_k _m       mark the specified line (default is current
+                       line) with the given mark name [Also may be
+                       abbreviated by kkkk]
+
+          mmmm_o_v_e _a_d_d_r    move the specified line range (default is
+                       current line) after the given line
+
+          nnnn_e_x_t         go on to edit the next file when a list was
+                       originally specified, or specify a new list
+                       and edit the first file, may specify ++++_n,
+                       options as on command line
+
+          nnnnuuuu_m_b_e_r       print the indicated line range, with line
+                       numbers [Also may be abbreviated by ####]
+
+          pppp_r_i_n_t        print the indicated line range
+
+          ppppuuuu_t _b_u_f      put the contents of the given buffer after
+                       the specified line (default current)
+
+          rrrr_e_a_d         read input text from a file; if the file
+                       name begins with a '!' it is interpreted as
+                       a command to be run and whose output is to
+                       be read (Prohibited in BROWSE mode)
+
+          rrrreeeewwww_i_n_d       equivalent to specifying the original file
+                       list, and edit the first file in the list
+
+          qqqq_u_i_t         quit, returning to the shell
+
+          sssshhhh_e_l_l        starts a subshell
+
+          ssssoooo_u_r_c_e       reads ex commands from the specified file.
+
+          ssss_u_b_s_t_i_t_u_t_e////_R_E////_n_e_w_t_e_x_t//// perform string substitution on
+                       line range (default is current line); an
+                       unquoted '&' in _n_e_w_t_e_x_t stands for the
+                       replaced string, while '~' stands for the
+                       previous replacement string.  If the suffix
+                       gggg is given, substitution is done for all
+                       occurrences of the regular expression on the
+                       line, otherwise only the first.  If the
+                       suffix cccc is given, confirmation is required
+                       before each substitution is made; the cursor
+                       is placed on the text to be replaced, typing
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 36
+
+
+
+                       yyyy goes ahead with the substitution, typing rrrr
+                       goes ahead with this substitution and all
+                       the rest, typing qqqq terminates the activity,
+                       and typing anything else skips to the next
+                       substitution.
+
+          ssss_u_b_s_t_i_t_u_t_e   repeat the last substitute command, the
+                       suffix gggg must be given if a global
+                       substitute is desired
+
+          sssseeee_t          sets certain options.  Boolean options
+                       (those with no value specified) are turned
+                       off by prefixing the option name with "no".
+                       The following may be specified:
+
+                          aaaaiiii        in input mode, generate
+                                    indentation automatically (long
+                                    form is aaaauuuuttttooooiiiinnnnddddeeeennnntttt)
+
+                          iiiicccc        ignore letter case in searches
+                                    (long form is iiiiggggnnnnoooorrrreeeeccccaaaasssseeee)
+
+                          lllliiiisssstttt      display tabs as ^^^^IIII and indicate
+                                    end of line with $$$$
+
+                          nnnnuuuu        display line numbers (long form
+                                    is nnnnuuuummmmbbbbeeeerrrr)
+
+                          sssswwww====_n      set shift width amount to _n
+                                    (long form is sssshhhhiiiiffffttttwwwwiiiiddddtttthhhh)
+
+                          ttttssss====_n      set tab stops at every _n
+                                    positions (long form is
+                                    ttttaaaabbbbssssttttoooopppp)
+
+                          wwwwssss        okay to wrap around the end of
+                                    the file when searching (long
+                                    form is wwwwrrrraaaappppssssccccaaaannnn)
+
+          uuuu_n_d_o         undo the last editing change
+
+          uuuunnnnmmmm_a_p _c      delete the indicated macro mapping
+
+          vvvv            same as the global command gggg, except that
+                       the commands are executed for all lines _n_o_t
+                       matching the given expression
+
+          vvvveeee_r_s_i_o_n      prints the editor version number and date
+
+          vvvviiiiuuuuaaaallll cccc      resume full screen mode, or if already in
+                       visual mode, this is equivalent to the
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 37
+
+
+
+                       command eeee to edit another file
+
+          wwww_r_i_t_e        save the editing session.  If editing an
+                       ECMS or SCCS file, a versioned file will be
+                       created (prefixed with "SSSS...."), using the
+                       original name if none is specified to this
+                       command.  If the option eeeeddddppppuuuutttt has the value
+                       yyyy, then the ECMS eeeeddddppppuuuutttt or SCCS command ddddeeeellllttttaaaa
+                       is also executed.  If editing an ordinary
+                       file, the contents of the buffer are simply
+                       written to the named file.  No line range
+                       should be given (if a line range is
+                       specified, this command is equivalent to the
+                       "SW" command described in the next section)
+                       (Prohibited in BROWSE mode)
+
+          wwwwqqqq           save the editing session, and quit the
+                       editor (Prohibited in BROWSE mode)
+
+          xxxx_i_t          save the editing session (if there are
+                       unsaved changes) and quit the editor
+
+          yyyy_a_n_k _b_u_f     yank the specified lines (default current)
+                       into the given buffer
+
+          zzzz            display a window of lines
+
+
+       5.4  VVVVEEEE SSSSppppeeeecccciiiiffffiiiicccc EEEExxxx CCCCoooommmmmmmmaaaannnnddddssss
+
+       Following are the VE specific eeeexxxx type commands.  As with
+       standard eeeexxxx commands, the commands are invoked by entering
+       ::::, the command, and then RRRREEEETTTTUUUURRRRNNNN or EEEESSSSCCCC.
+
+          VVVV         Go to the view menu.
+
+          EEEE         Write a flat file, containing just the lines
+                    indicated by the current inclusion options.
+                    For ECMS featured files, if aaaauuuuttttooooffffeeeeaaaattttuuuurrrriiiinnnngggg is
+                    not on, the whole file with feature control
+                    lines will be written (and the file name
+                    prefixed with "f."), otherwise just the lines
+                    extracted for the current generic and project
+                    will be written.
+
+          FFFF         Display the origin and type of the file,
+                    indicating SCCS, ECMS, SABLIME, or ordinary,
+                    and the date of the original SCCS file from
+                    which the current file was read.  For ECMS and
+                    SABLIME files, the generic, sourcefile, and
+                    directory name are also displayed.
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 38
+
+
+
+          PPPP         Produce a printable dump of visible lines of
+                    the file.  The result of this command will
+                    contain the information needed to produce a
+                    paper copy of the visible lines of the buffer,
+                    including video attribute information.  An
+                    appropriate filter is required to properly
+                    print the dump; its format consists of the view
+                    map (see description of view map files later)
+                    and the text lines.  Text lines consist of 'T',
+                    followed by a space, followed by a string
+                    representing the video attribute, followed by a
+                    space, and finally the text of the line.
+
+          SSSSWWWW        Write out the line range specified (default is
+                    all visible lines) to the file specified.  The
+                    default name is the original name used on
+                    invocation.  This command can be used to save
+                    all or a portion of what can be viewed into an
+                    ordinary file.
+
+          aaaaddddmmmmiiiinnnn     (Also ssssccccccccssss.)  For ordinary files only, run the
+                    command aaaaddddmmmmiiiinnnn to create an SCCS file whose
+                    initial contents are the current ordinary file.
+                    If the ssssccccccccssssddddiiiirrrr option has a value, this will be
+                    used to determine the location of the created
+                    SCCS file.  After the SCCS file is created,
+                    editing can continue if you choose to re-read
+                    the file; it will now be treated as an SCCS
+                    file with delta information available.
+
+          ((((uuuunnnn))))eeeeddddggggeeeetttt (Also ggggeeeetttt or uuuunnnnggggeeeetttt.)  For ECMS and SABLIME
+                    [SCCS] files, run the command ((((uuuunnnn))))eeeeddddggggeeeetttt
+                    [((((uuuunnnn))))ggggeeeetttt] to (un)reserve the file for editing.
+                    This does not affect the current contents of
+                    the editor buffer.  An MR must have been
+                    specified (see "set" options below).  If
+                    another change has occurred to the file since
+                    vvvveeee initially started up, the eeeeddddggggeeeetttt command will
+                    not be attempted, but a message indicating to
+                    do a mmmmeeeerrrrggggeeee (see below) will be given.  Once
+                    this has been done, eeeeddddggggeeeetttt may be tried again.
+
+          ((((uuuunnnn))))eeeeddddppppuuuutttt (Also ddddeeeellllttttaaaa or rrrrmmmmddddeeeellll.)  For ECMS and SABLIME
+                    [SCCS] files, run the command ((((uuuunnnn))))eeeeddddppppuuuutttt
+                    [ddddeeeellllttttaaaa////rrrrmmmmddddeeeellll] to (un)record the current changes
+                    as a delta.  Upon successful completion of
+                    eeeeddddppppuuuutttt (or ddddeeeellllttttaaaa), the editor's buffer is
+                    discarded.  Upon successful completion of
+                    uuuunnnneeeeddddppppuuuutttt (or rrrrmmmmddddeeeellll), you are prompted as to
+                    whether you want the changes for the removed
+                    delta retained in the editor's buffer as the
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 39
+
+
+
+                    current delta; responding yes allows you to
+                    rework the change without starting it all over;
+                    responding no causes the editor to discard the
+                    buffer.  If another change has occurred to the
+                    file since vvvveeee initially started up, the eeeeddddppppuuuutttt
+                    command will not be attempted, but a message
+                    indicating to do a mmmmeeeerrrrggggeeee (see below) will be
+                    given.  Once this has been done, eeeeddddppppuuuutttt may be
+                    tried again.  Note: SABLIME does not implement
+                    uuuunnnneeeeddddppppuuuutttt.
+
+          mmmmeeeerrrrggggeeee     For SCCS, ECMS, or SABLIME files, merge the
+                    changes from the current editing session to the
+                    original SCCS file.  If the original SCCS file
+                    has not changed since initial retrieval for the
+                    current changes, nothing is done.  (However,
+                    for ECMS and SABLIME files, the MR status
+                    information for the current generic is updated
+                    since this information affects the view, even
+                    though the underlying SCCS file is logically
+                    equivalent.)  If it has changed, the current
+                    changes are applied to this new base in a
+                    reasonable fashion.  A report of the number of
+                    lines inserted and deleted will be given, and
+                    the view map will be adjusted to give
+                    highlighting to lines inserted or deleted since
+                    original retrieval, and to lines inserted or
+                    deleted by the current session.  These changes
+                    should be inspected to insure that the changes
+                    are still relevant, correctly placed, and
+                    desired before formally recording them under
+                    SCCS/ECMS/SABLIME.
+
+          ccccmmmmsssspppprrrr     For ECMS/SABLIME (SCCS) files, write the
+                    visible lines of the file to a file named by
+                    adding the prefix "P.", and label each line
+                    with the MR (delta) that inserted it.  If a
+                    visible line is deleted by an MR (delta), show
+                    the deleting MR (delta), too.  Include line
+                    numbers if they are currently displayed.  This
+                    command may also be invoked as ssssccccccccsssspppprrrr or ssssrrrrccccpppprrrr.
+
+          mmmmrrrrddddeeeepppp     For ECMS files only, run the ECMS command mmmmrrrrddddeeeepppp
+                    to check for MR dependencies introduced by the
+                    current changes.
+
+          rrrreeeeppppoooorrrrtttt    For ECMS and SABLIME files only, execute the
+                    command rrrreeeeppppoooorrrrtttt to produce a report for the MR
+                    that inserted the current line.  Other options
+                    to rrrreeeeppppoooorrrrtttt may also be given.
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 40
+
+
+
+          ssssrrrrccccpppprrrr     Alternative name for ccccmmmmsssspppprrrr described above.
+
+          xxxxttttaaaammmm      For featured ECMS files only, run the ECMS
+                    command xxxxttttaaaammmm to check for cross project
+                    contamination introduced by the current
+                    changes.  The editor will prevent such
+                    contamination from being introduced as long as
+                    the user has stayed in aaaauuuuttttooooffffeeeeaaaattttuuuurrrriiiinnnngggg mode, so
+                    it is only useful to run this command if manual
+                    editing of feature control constructs has been
+                    done when aaaauuuuttttooooffffeeeeaaaattttuuuurrrriiiinnnngggg mode has been turned
+                    off.
+
+          sssseeeetttt       Sets certain VE specific options.  In addition
+                    to all of the options listed in the PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+                    section, and the usual vvvviiii options, the
+                    following Boolean options may also be specified
+                    (options that are on by default are so
+                    indicated):
+
+
+                    mmmmiiiiggggrrrraaaatttteeee      group archived lines together (on)
+
+                    sssshhhhoooowwwwaaaabbbbssssttttrrrraaaacccctttt display MR abstract in version
+                                 information (on)
+
+                    sssshhhhoooowwwwddddaaaatttteeee     display date delta was made in
+                                 version information (on)
+
+                    sssshhhhoooowwwwmmmmrrrrddddaaaatttteeee   display date MR status changed in
+                                 version information
+
+                    sssshhhhoooowwwwmmmmrrrrssssttttaaaattttuuuussss display MR status in version
+                                 information (on)
+
+                    sssshhhhoooowwwwppppggggmmmmrrrr     display login that made delta in
+                                 version information (on)
+
+                    sssshhhhoooowwwwvvvveeeerrrrssssiiiioooonnnn  always display version information
+                                 for current line (as if ^^^^GGGG were
+                                 given after every command)
+
+                    sssshhhhoooowwwwssssccccccccssssiiiidddd   display SCCS identifier (e.g.,
+                                 1.1.3.2) in version information
+
+                    sssshhhhoooowwwwvvvvttttiiiimmmmeeee    display time along with date in
+                                 version information
+
+                    vvvveeeerrrrbbbboooosssseeee      give messages in response to user
+                                 errors, rather than just beeping
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 41
+
+
+
+       Users who prefer to have certain options set all the time
+       may do so through the use of the VVVVEEEEIIIINNNNIIIITTTT environment
+       variable.  During editor initialization, the value of this
+       variable (if set and exported) is treated as a command typed
+       in to ex (i.e. after typing a colon in command mode).  Thus
+       a user wishing to always see version and sccsid information
+       would set VVVVEEEEIIIINNNNIIIITTTT="set showversion showsccsid" and export
+       VVVVEEEEIIIINNNNIIIITTTT.  Note that neither a colon nor a trailing newline is
+       required.
+
+       The use of the VVVVEEEEIIIINNNNIIIITTTT variable is not limited to setting
+       options; any command from the ve extended ex command set may
+       be specified, including multi-line commands (by embedding
+       newlines in the VVVVEEEEIIIINNNNIIIITTTT string).  One potential application
+       is to use the VVVV command to enter the view menu on startup,
+       rather than going directly to the file display.  Note
+       however that commands specified through VVVVEEEEIIIINNNNIIIITTTT will be
+       executed during editor initialization, so it is unwise to
+       use commands that rely on the file buffer and/or screen
+       display having been initialized.  Alternatively, if VVVVEEEEIIIINNNNIIIITTTT
+       is not set or is null, but the file $$$$HHHHOOOOMMMMEEEE////....vvvveeeerrrrcccc exists,
+       startup commands will be from this file.
+
+
+
+       6.  EEEEmmmmaaaaccccssss
+
+       This section describes the eeeemmmmaaaaccccssss mode of VE.
+
+       6.1  EEEEmmmmaaaaccccssss CCCCoooommmmmmmmaaaannnnddddssss
+
+       Emacs uses the following notation to display and input non-
+       printing characters:
+
+          ^^^^XXXX        Control-X, where X is any character.
+
+          MMMM----xxxx       Meta-x, where x is any character (including a
+                    control character).
+
+       Meta characters are entered by typing escape followed by
+       another character.  Many emacs commands take an optional
+       numeric argument. The argument for a command precedes the
+       command itself, and can be specified a number of ways.
+       Typing ^U specifies an argument of 4, or 4 times the current
+       argument. Typing escape followed by a sequence of digits
+       with or without a leading '-' specifies a decimal value.
+
+       Following are the eeeemmmmaaaaccccssss commands currently implemented in
+       VE.  If the command acts differently than in eeeemmmmaaaaccccssss it will
+       be noted.
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 42
+
+
+
+       6.1.1  GGGGeeeettttttttiiiinnnngggg HHHHeeeellllpppp oooorrrr GGGGeeeettttttttiiiinnnngggg OOOOuuuutttt ooooffff TTTTrrrroooouuuubbbblllleeee
+
+          MMMM----????       explains the next character
+
+          MMMM----wwww       puts a wall chart of explanations in the
+                    .wallchart buffer, instead of the current
+                    buffer as in eeeemmmmaaaaccccssss
+
+          ^^^^LLLL        refreshes the screen
+
+          ^^^^GGGG        quits from any command in progress
+
+          MMMM----uuuu       undoes the last significant text modification
+
+          ^^^^XXXX^^^^CCCC      exits gracefully
+
+       6.1.2  SSSSiiiimmmmpppplllleeee CCCCuuuurrrrssssoooorrrr MMMMoooovvvveeeemmmmeeeennnntttt CCCCoooommmmmmmmaaaannnnddddssss
+
+          ^^^^FFFF        moves forward one character
+
+          ^^^^BBBB        moves backward one character
+
+          ^^^^NNNN        moves down one line
+
+          ^^^^PPPP        moves up one line
+
+          ^^^^AAAA        moves to the beginning of the line
+
+          ^^^^EEEE        moves to the end of the line
+
+          MMMM----aaaa       moves to beginning of sentence
+
+          MMMM----eeee       moves to end of sentence
+
+          MMMM----<<<<       moves to the top of the file
+
+          MMMM---->>>>       moves to the end of the file
+
+          MMMM----ffff       moves forward one word
+
+          MMMM----bbbb       moves backward one word
+
+          ^^^^VVVV        moves to the next page
+
+          MMMM----vvvv       moves back one page
+
+          MMMM----gggg       moves to a specific line (its argument)
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 43
+
+
+
+       6.1.3  SSSSiiiimmmmpppplllleeee TTTTeeeexxxxtttt DDDDeeeelllleeeettttiiiinnnngggg aaaannnndddd MMMMoooovvvviiiinnnngggg CCCCoooommmmmmmmaaaannnnddddssss
+
+          ^^^^DDDD        deletes forward one character
+
+          ^^^^HHHH,,,,^^^^????     deletes backward one character
+
+          MMMM----dddd       deletes the next word
+
+          MMMM----^^^^HHHH,,,,MMMM----^^^^???? deletes the last word
+
+          ^^^^KKKK        kills to end of line (with argument, kills
+                    multiple lines)
+
+          MMMM---- ,,,,^^^^@@@@    sets the mark at the cursor position
+
+          ^^^^WWWW        kills the current region (between cursor and
+                    mark)
+
+          ^^^^YYYY        restores last killed text (leaves cursor and
+                    mark around it)
+
+          MMMM----yyyy       replaces the last restore() with the next text
+                    in the kill stack.
+
+          MMMM----pppp       puts the current region in the kill buffer
+                    without killing it
+
+          ^^^^XXXX^^^^XXXX      exchanges the mark and the cursor
+
+       6.1.4  SSSSiiiimmmmpppplllleeee FFFFiiiilllleeee aaaannnndddd BBBBuuuuffffffffeeeerrrr CCCCoooommmmmmmmaaaannnnddddssss
+
+          ^^^^XXXX^^^^RRRR      reads a new file
+
+          ^^^^XXXX^^^^WWWW      saves a new or old file (even if not modified)
+
+          ^^^^XXXX^^^^SSSS      saves the buffer in the current file (if
+                    modified)
+
+          ^^^^XXXX^^^^BBBB      changes Buffers (Change to * lists active
+                    buffers)
+
+          ^^^^XXXX^^^^FFFF      edits a file in its own buffer (if file has
+                    been read into a buffer, moves to it)
+
+          ^^^^XXXX^^^^KKKK      kills a buffer
+
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 44
+
+
+
+       6.1.5  SSSSiiiimmmmpppplllleeee SSSSeeeeaaaarrrrcccchhhh aaaannnndddd RRRReeeeppppllllaaaacccceeee CCCCoooommmmmmmmaaaannnnddddssss
+
+          ^^^^SSSS        starts a search (^J not recognized in search
+                    string)
+
+          ^^^^RRRR        starts a reverse search
+
+          MMMM----rrrr       starts query replace (0oes not become a
+                    newline)
+
+       6.1.6  IIIInnnnsssseeeerrrrttttiiiinnnngggg OOOOdddddddd CCCChhhhaaaarrrraaaacccctttteeeerrrrssss
+
+          ^^^^QQQQ        quotes the next character
+
+          MMMM----qqqq       quotes the next character and adds the 0200 bit
+
+          MMMM----\\\\       converts its argument to a character and
+                    inserts it
+
+       6.1.7  CCCCoooommmmmmmmaaaannnnddddssss RRRReeeellllaaaatttteeeedddd ttttoooo WWWWiiiinnnnddddoooowwwwssss
+
+          ^^^^XXXX2222       enters two window mode
+
+          ^^^^XXXX^^^^^^^^      causes the current window to grow one by line
+
+          ^^^^XXXX1111       exits two window mode
+
+          ^^^^XXXX^^^^OOOO      switches between windows
+
+       6.1.8  AAAAddddvvvvaaaannnncccceeeedddd SSSSeeeeaaaarrrrcccchhhh aaaannnndddd RRRReeeeppppllllaaaacccceeee CCCCoooommmmmmmmaaaannnnddddssss
+
+          MMMM----^^^^SSSS      regular expression search (\<, \>, and | not
+                    recognized)
+
+          MMMM----^^^^RRRR      regular expression query replace
+
+       6.1.9  KKKKeeeeyyyybbbbooooaaaarrrrdddd MMMMaaaaccccrrrroooossss aaaannnndddd IIIInnnnppppuuuutttt FFFFiiiilllleeeessss
+
+          ^^^^XXXX^^^^IIII      re-directs input from a file
+
+          ^^^^XXXX((((       starts a keyboard macro
+
+          ^^^^XXXX))))       ends a keyboard macro
+
+          ^^^^XXXXEEEE       executes the keyboard macro
+
+          ^^^^XXXXdddd       defines macros from the current buffer
+
+          ^^^^XXXX^^^^LLLL      loads a file full of macro definitions
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 45
+
+
+
+          MMMM----xxxx       calls a macro by name
+
+          ^^^^ZZZZ        exits one level
+
+       6.1.10  CCCCoooommmmmmmmaaaannnnddddssss tttthhhhaaaatttt EEEEssssccccaaaappppeeee ttttoooo UUUUNNNNIIIIXXXX
+
+          MMMM----!!!!       gets and executes a shell command
+
+          MMMM----$$$$       executes a command, saving the output in buffer
+                    .exec
+
+          ^^^^XXXX^^^^DDDD      changes the working directory
+
+       6.1.11  MMMMiiiisssscccceeeellllllllaaaannnneeeeoooouuuussss CCCCoooommmmmmmmaaaannnnddddssss
+
+          ^^^^OOOO        opens up a new line
+
+          ^^^^TTTT        transposes the next two characters
+
+          ^^^^XXXX^^^^TTTT      prompts for a buffer name and inserts the text
+                    between the cursor and the mark into the named
+                    buffer.
+
+          MMMM----////       starts a comment
+
+          MMMM----____       underlines the next word
+
+          ^^^^CCCC        capitalizes the current character
+
+          MMMM----cccc       capitalizes the next word
+
+          MMMM----llll       converts the next letter to lower case
+
+          MMMM----~~~~       marks a buffer as being unmodified (up to date)
+
+          MMMM----^^^^LLLL      re-displays with current line at top of page
+
+          MMMM----""""       auto fills the whole buffer
+
+          MMMM----::::       maps a character to a command
+
+          ^^^^XXXX^^^^MMMM      sets mode from argument (prompts for mode name)
+                    and string if necessary
+
+       6.2  VVVVEEEE SSSSppppeeeecccciiiiffffiiiicccc EEEEmmmmaaaaccccssss CCCCoooommmmmmmmaaaannnnddddssss
+
+          ^^^^XXXX^^^^GGGG      Print the current line number and version
+                    attributes.
+
+          ^^^^XXXX^^^^ZZZZ      Go to the view map menu (also may be specified
+                    by ^^^^XXXXVVVV).
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 46
+
+
+
+          ^^^^XXXX////       Search forward for next line matching given
+                    version expression.  (With negative argument,
+                    searches backward.)
+
+          ^^^^SSSS        Repeat search in forward direction (sub-command
+                    for version expression and video attribute
+                    searches).
+
+          ^^^^RRRR        Repeat search in backward direction (sub-
+                    command for version expression and video
+                    attribute searches).
+
+          ^^^^XXXXaaaa       Search for next line with a particular video
+                    attribute (no argument, or argument of 1,
+                    searches for line with same video attribute as
+                    the current line; argument of greater than one
+                    prompts for attribute; negative argument
+                    searches backward).
+
+          ^^^^XXXXeeee       Execute an SCCS/ECMS/SABLIME command, the
+                    command is prompted for, and may be eeeeddddggggeeeetttt or
+                    ggggeeeetttt, uuuunnnneeeeddddggggeeeetttt or uuuunnnnggggeeeetttt, eeeeddddppppuuuutttt or ddddeeeellllttttaaaa, uuuunnnneeeeddddppppuuuutttt
+                    or rrrrmmmmddddeeeellll.  (The first three may be abbreviated
+                    gggg, uuuu, and pppp, respectively.)
+                    Other commands that may be specified are ccccmmmmsssspppprrrr,,,,
+                    mmmmrrrrddddeeeepppp,,,, mmmmeeeerrrrggggeeee,,,, rrrreeeeppppoooorrrrtttt,,,, xxxxttttaaaammmm.
+                    For descriptions of these commands, see the vvvviiii
+                    MMMMooooddddeeee sections.
+
+          ^^^^XXXXffff       go to last line of feature block (no argument,
+                    or argument of 1, goes to last line of
+                    innermost enclosing feature block; argument of
+                    greater than one prompts for an enclosing
+                    feature; negative argument goes to first line
+                    of block)
+
+          ^^^^XXXXiiii       Display the origin and type of the file,
+                    indicating SCCS, ECMS, SABLIME, or ordinary,
+                    and the date of the original SCCS file from
+                    which the current file was read.  For ECMS and
+                    SABLIME files, the generic, sourcefile, and
+                    directory name are also displayed.
+
+          ^^^^XXXXuuuu       This is a special command used to "undelete"
+                    lines.  Lines can not be undeleted while in
+                    autofeaturing mode, and only lines deleted by
+                    the current delta can be undeleted.  A count
+                    may be given, and that number of lines,
+                    beginning with the current line, will be
+                    undeleted.
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 47
+
+
+
+          ^^^^XXXXxxxx       This is a special command which is only
+                    recognized in a file which is being edited with
+                    a cross-project "X" MR.  The command may be
+                    given while positioned on a feature control
+                    line, and switches the featuring between the
+                    old and new features given on the command line.
+                    These features may be changed by ^X^Moldf=f or
+                    ^X^Mnewf=f.
+
+          ^^^^XXXXvvvv       Search forward for next line with same version
+                    as current line.  (With negative argument,
+                    searches backward.)
+
+          ^^^^XXXXPPPP       Produce a P.file containing a printable dump of
+                    the visible file lines.
+
+          ^^^^XXXXWWWW       Write the currently visible lines to the named
+                    file as an ordinary file.  If an argument is
+                    given, append to the file if it exists.
+
+          ^^^^XXXXXXXX       Extract an S.file into a flat file (and if
+                    featured, an f.file).  With an argument, it
+                    prompts for the file name (and if featured,
+                    eeeexxxxttttrrrraaaacccctttt options)
+
+       6.3  EEEEmmmmaaaaccccssss MMMMooooddddeeeessss
+
+       Mode parameters allow you to customize the behavior of
+       certain commands.  Some modes are switches, indicating only
+       that something is either on or off, while others are numeric
+       parameters.  Modes can be set by the ^X^M command.  Typing
+       ^X^M followed by the name of a switch mode turns it on,
+       typing ^U^X^M followed by the name turns it off.  To set
+       numeric modes, give the value you want as an argument to
+       ^X^M, e.g. M-50^X^Mmode_name.  You can set modes in a
+       $HOME/.ve_init file, just like the $HOME/.emacs_init file.
+       If you do not have a $HOME/.ve_init file, VE will run the
+       ~VE/.ve_init default initialization file, just like eeeemmmmaaaaccccssss
+       runs the ~EMACS/.emacs_init file.  The default setting and
+       "read only" status is given in parentheses at the end of
+       each description.  Some modes are "read only" because they
+       only exist to be read by macros.
+
+       6.3.1  DDDDiiiissssppppllllaaaayyyy MMMMooooddddeeeessss
+
+          llllnnnnuuuummmmbbbb          display line numbers (on)
+
+          llllnnnnoooowwwwiiiidddd         line number width (4)
+
+          hhhheeeeiiiigggghhhhtttt         display height (screen lines - 4, read
+                         only)
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 48
+
+
+
+          wwwwiiiiddddtttthhhh          screen width (screen columns - 1, read
+                         only)
+
+          ttttaaaabbbbssssttttoooopppp        tab stop interval (8)
+
+          bbbbaaaacccckkkkssssppppaaaacccceeee      display of backspaces (on)
+
+          lllleeeeffffttttmmmmaaaarrrrggggiiiinnnn     left-most displayed column (0, read only)
+
+       6.3.2  IIIInnnntttteeeerrrrffffaaaacccceeee MMMMooooddddeeeessss
+
+          ssssaaaavvvveeee           automatic buffer saving (off)
+
+          ssssaaaavvvveeeettttyyyyppppeeee       save type ahead (256)
+
+          kkkkeeeeeeeeppppssssccccrrrroooollllllll     lines kept when paging (0)
+
+          ccccaaaasssseeeelllleeeessssssss       ignore letter case in searches (off)
+
+          eeeennnndddd____nnnneeeewwwwlllliiiinnnneeee    ^N at end of buffer adds a new line (off)
+
+          uuuussssiiiilllleeeennnntttt        silent UNIX commands (off)
+
+          nnnnooooeeeecccchhhhoooo         don't echo M-$ output (off)
+
+          sssseeeeaaaarrrrcccchhhh____nnnneeeewwwwlllliiiinnnneeee newline ends search (off)
+
+          aaaauuuuttttoooollllooooaaaadddd       automatic macro loading (on)
+
+       6.3.3  CCCCoooommmmmmmmaaaannnndddd MMMMooooddddeeeessss
+
+          ffffiiiillllllll           automatic line filling (on)
+
+          ffffiiiillllllllccccoooollll        right margin for ffffiiiillllllll mode (72)
+
+          cccc              C source indentation (0)
+
+          ccccoooommmmccccoooollll         starting comment column for M-/ (40)
+
+          rrrriiiiggggiiiidddd____nnnneeeewwwwlllliiiinnnneeee  typing a newline will always insert a
+                         newline (off)
+
+          rrrreeeeaaaaddddoooonnnnllllyyyy       read only buffer (off)
+
+          ppppiiiiccccttttuuuurrrreeee        tailor editing for two dimensional
+                         displays (off, read only)
+
+          oooovvvveeeerrrrwwwwrrrriiiitttteeee      overwrite instead of insert (off)
+
+          nnnnooooddddeeeelllleeeetttteeee       don't close deletions (off, read only)
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 49
+
+
+
+          nnnnoooottttaaaabbbbssss         eliminate tabs (off)
+
+       6.3.4  TTTTeeeerrrrmmmmiiiinnnnaaaallll MMMMooooddddeeeessss
+
+          nnnnoooobbbbeeeellllllll         no ringing of the terminal bell (off)
+
+          ccccoooonnnnttttrrrroooolllliiiiffffyyyy     translate the ccccttttllll____cccchhhhaaaarrrr followed by a
+                         character to a control character (off)
+
+          ccccttttllll____cccchhhhaaaarrrr       prefix character for ccccoooonnnnttttrrrroooolllliiiiffffyyyy (^^)
+
+       6.4  VVVVEEEE SSSSppppeeeecccciiiiffffiiiicccc EEEEmmmmaaaaccccssss MMMMooooddddeeeessss
+
+          mmmmiiiiggggrrrraaaatttteeee        group featured changes together (on)
+
+          sssshhhhoooowwwwaaaabbbbssssttttrrrraaaacccctttt   display MR abstract in version information
+                         (on)
+
+          sssshhhhoooowwwwddddaaaatttteeee       display date delta was made in version
+                         information (on)
+
+          sssshhhhoooowwwwmmmmrrrrddddaaaatttteeee     display date MR status changed in version
+                         information (off)
+
+          sssshhhhoooowwwwmmmmrrrrssssttttaaaattttuuuussss   display MR status in version information
+                         (on)
+
+          sssshhhhoooowwwwppppggggmmmmrrrr       display login that made delta in version
+                         information (on)
+
+          sssshhhhoooowwwwssssccccccccssssiiiidddd     display SCCS identifier (e.g. 1.1.3.2) in
+                         version information (off)
+
+          sssshhhhoooowwwwvvvveeeerrrrssssiiiioooonnnn    always display version information for
+                         current line (as if ^^^^XXXX^^^^GGGG were given after
+                         every command) (off)
+
+          sssshhhhoooowwwwvvvvttttiiiimmmmeeee      display time along with date in version
+                         information (off)
+
+          vvvveeeerrrrbbbboooosssseeee        give meaningful messages in response to
+                         user errors (on)
+
+       Additionally, various inclusion options may be set, or any
+       other option that can be set from the command line.
+
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 50
+
+
+
+       7.  AAAA VVVVeeeerrrrssssiiiioooonnnneeeedddd VVVViiiieeeewwww ooooffff tttthhhheeee FFFFiiiilllleeee
+
+       This section describes how to use the view menu to create a
+       view map to get a versioned view of the file.
+
+       7.1  VVVViiiieeeewwww MMMMeeeennnnuuuu CCCCoooommmmmmmmaaaannnnddddssss
+
+       Following are the commands available from the view menu:
+
+          aaaa  Assign an attribute to a version expression, the
+             version expression and attribute will be prompted for;
+             the number of an existing entry may be given if the
+             same version expression is desired; the attribute may
+             be specified as one or more letters from the displayed
+             attribute code list (multiple codes will combine
+             attributes)
+
+          vvvv  Assign visibility to a version expression, the version
+             expression and visibility value will be prompted for;
+             the number of an existing entry may be given if the
+             same version expression is desired
+
+          mmmm  Modify the visibility or attribute associated with an
+             assigned version expression
+
+          dddd  Delete a single visibility or attribute assignment, or
+             all current assignments
+
+          rrrr  Read visibility and attribute assignments from a file,
+             appending to the current assignments
+
+          wwww  Write out the current visibility and attribute
+             assignments to a file
+
+          iiii  Specify inclusion options.  The options are specified
+             as _o_p_t_i_o_n__n_a_m_e=_v_a_l_u_e, and any of the command line
+             options may be given.  See the descriptions of the
+             command line options, or ECMS/SABLIME ssssggggeeeetttt for more
+             details).
+
+          ^^^^LLLL Refresh the screen
+
+          qqqq  Quit the view menu, return to edit window
+
+       As noted earlier, a standard set of view mappings is
+       provided when VE initially reads a file from ECMS, SABLIME,
+       or SCCS.  The shell environment variable VVVVIIIIEEEEWWWWMMMMAAAAPPPP may be used
+       to provide one's own view assignments.  When the version
+       editor starts up, if VVVVIIIIEEEEWWWWMMMMAAAAPPPP is set and not null, then its
+       value will be interpreted as the name of a file containing
+       view assignments which will replace the view assignments
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 51
+
+
+
+       contained within the versioned file itself.  Such files are
+       most easily created with the view menu commands above; the
+       next section details the format of the assignments in file
+       form.
+
+       7.2  VVVViiiieeeewwww MMMMaaaapppp FFFFiiiilllleeeessss
+
+       View mappings may be stored separately in a file of just
+       view mappings (as produced by the wwww selection in the view
+       menu).  View mappings are of two types, visibility
+       assignment, or video attribute assignment, and appear in
+       files as follows.
+
+       Visibility mappings are lines of the form:
+            BBBB _c _v_e_r_s_i_o_n__e_x_p_r_e_s_s_i_o_n
+       where the line begins with BBBB (for view BBBBase), is followed by
+       a single space, then a character corresponding to the
+       visibility (i=invisible, v=visible), another single space,
+       and then the text of a version expression.  The text of the
+       expression may contain spaces.
+
+       Video attribute mappings are lines of the form:
+            AAAA _a _v_e_r_s_i_o_n__e_x_p_r_e_s_s_i_o_n
+       where the line begins with AAAA, is followed by a single space,
+       then a character string corresponding to the video
+       attributes, another single space, and then the text of a
+       version expression.  The text of the expression may contain
+       spaces.  Such a line thus represents a mapping of an
+       attribute to a version expression.  The character string
+       representing the attributes is formed from the following
+       values corresponding to basic curses terminal attributes:
+
+            n       normal
+            s       standout
+            u       underline
+            r       reverse
+            f       blink
+            d       dim
+            b       bold
+            a       alternate
+
+       The rrrr selection in the view menu will read such lines from a
+       specified file, and any line not beginning with AAAA or BBBB is
+       ignored.  Thus, the view map from a saved versioned SSSS....file
+       is easily read into the editor while working with a
+       different file.
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 52
+
+
+
+       7.3  VVVVeeeerrrrssssiiiioooonnnn EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss
+
+       Visibility or attributes may be assigned to a version
+       expression from the view menu (or by reading the assignment
+       from a file).  A version expression is a "primitive" version
+       expression, or is formed by combining version expressions
+       with expression operators.  The version expression can be
+       regarded as a means of selecting versions.  Thus, a version
+       expression is considered as true or false with respect to a
+       particular version, i.e., the set of version attributes of a
+       line of the file being edited.  Or, one may regard the
+       version expression as matching or not matching the version
+       attributes of a line.  The following sections give the
+       details.
+
+       7.3.1  EEEExxxxpppprrrreeeessssssssiiiioooonnnn OOOOppppeeeerrrraaaattttoooorrrrssss
+
+       The following operators may be used to combine version
+       expressions into more complex version expressions:
+
+         (((( ))))         Used for grouping of expressions
+
+         !!!!  or nnnnooootttt   Logical negation of an expression
+
+         &&&&&&&& or aaaannnndddd   Logical conjunction of two expressions
+
+         |||||||| or oooorrrr    Logical disjunction of two expressions
+
+
+       7.3.2  PPPPrrrriiiimmmmiiiittttiiiivvvveeee VVVVeeeerrrrssssiiiioooonnnn EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss
+
+       Primitive version expressions are usually formed with a
+       keyword, a relation operator, and a value.  The keywords
+       that may be used in primitives are:
+
+         ddddeeeellllttttaaaa       Used to select by an SCCS delta identifier
+                     (SID).  The keyword ssssiiiidddd may also be used here.
+                     [The value specified is an SID.]
+
+         rrrreeeelllleeeeaaaasssseeee     Used to select by the release portion of an
+                     SCCS delta identifier (SID).  Similarly,
+                     lllleeeevvvveeeellll, bbbbrrrraaaannnncccchhhh, and sssseeeeqqqquuuueeeennnncccceeee can be used to
+                     select on the basis of other parts of an SID.
+                     [The value specified is an integer.]
+
+         pppprrrrooooggggrrrraaaammmmmmmmeeeerrrr  Used to select by the login of the user
+                     creating SCCS delta.  The keyword ppppggggmmmmrrrr may
+                     also be used here.
+                     [The value specified is a login name.]
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 53
+
+
+
+         ddddaaaatttteeee        Used to select by the date of the SCCS delta.
+                     [The value specified is a date in the form of
+                     YY/MM/DD, or a date with time in the form
+                     YY/MM/DD@hh:mm:ss.]
+
+         mmmmrrrr          Used to select by the name of the ECMS/SABLIME
+                     MR associated with the delta.
+                     [The value specified is an MR name.]
+
+         mmmmrrrrssssttttaaaattttuuuussss    Used to select by the status of the
+                     ECMS/SABLIME MR associated with the delta.
+                     The keyword mmmmggggssssttttaaaattttuuuussss may also be used here.
+                     [The value specified is an ECMS/SABLIME MR
+                     state.]
+
+         mmmmrrrrddddaaaatttteeee      Used to select by the date of the status
+                     change of the ECMS/SABLIME MR associated with
+                     the delta.  Once the MR is approved, this date
+                     will remain fixed, i.e., it will correspond to
+                     the date of the delta on the official branch.
+                     In particular, the date will not change when
+                     the generic is integrated (since no new deltas
+                     are created by that activity).  The keyword
+                     cccchhhhggggddddaaaatttteeee may also be used here.
+                     [The value specified is as for ddddaaaatttteeee above.]
+
+         ggggeeeennnneeeerrrriiiicccc     Used to select by the generic of the SABLIME
+                     delta (this option is not useful for ECMS
+                     files).  The keyword gggg may also be used here.
+                     [The value specified is an ECMS/SABLIME MR
+                     state.]
+
+         eeeexxxxttttrrrraaaacccctttt     Used to select on the basis of whether a
+                     #_f_e_a_t_u_r_e'd line would be extracted by the
+                     feature list given.
+                     [The value specified is a comma separated list
+                     of feature names.  This list is to be
+                     interpreted in the same way as a comma
+                     separated list that is given to the ECMS
+                     _e_x_t_r_a_c_t command, i.e., the list specifies the
+                     features to be considered as "on" for the
+                     purpose of extraction, and all other features
+                     are considered as "off" by default.]
+
+         pppprrrroooojjjjeeeecccctttt     Used to select lines extracted for the given
+                     project.
+                     [The value specified is a project name.
+                     Currently, the only project name permitted is
+                     the project used during retrieval of the
+                     versioned file.]
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 54
+
+
+
+         oooowwwwnnnneeeerrrr       Used to select lines whose innermost
+                     nonnegative feature control is the specified
+                     feature.
+                     [The value specified is a feature.]
+
+         iiiinnnnnnnneeeerrrr       Used to select lines whose innermost feature
+                     control is the specified feature.
+                     [The value specified is a feature.]
+
+         eeeennnncccclllloooossssiiiinnnngggg   Used to select lines within the given feature
+                     control at some level.
+                     [The value specified is a feature.]
+
+       In addition the first six of the keywords listed above may
+       be prefixed by iiiinnnnsssseeeerrrrtttteeeeddddbbbbyyyy, ddddeeeelllleeeetttteeeeddddbbbbyyyy, or aaaaffffffffeeeecccctttteeeeddddbbbbyyyy, with an
+       optional space before and after the bbbbyyyy.  Such a prefix
+       indicates, for those version expressions that match
+       attributes associated with the change history, whether to
+       match against inserting or deleting attributes, or both.
+       The prefix '~~~~' is also recognized as shorthand for
+       ddddeeeelllleeeetttteeeeddddbbbbyyyy, and the prefix '****' is recognized as shorthand for
+       aaaaffffffffeeeecccctttteeeeddddbbbbyyyy.  If neither prefix is used then iiiinnnnsssseeeerrrrtttteeeeddddbbbbyyyy is
+       assumed.
+
+       Also, the values used in a version expression may contain
+       the following control sequences, which will be replaced as
+       indicated:
+
+         %%%%aaaa    allowed features for this project
+
+         %%%%cccc    changeable features for this project
+
+         %%%%ffff    FEATURE environment variable
+
+         %%%%gggg    generic for which the file is being edited
+
+         %%%%iiii    included features for this project
+
+         %%%%mmmm    MR associated with the current delta
+
+         %%%%nnnn    name of new feature (only set if editing with an
+               XMR)
+
+         %%%%oooo    name of old feature (only set if editing with an
+               XMR)
+
+         %%%%pppp    project associated with the current MR
+
+         %%%%rrrr    required features for this project
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 55
+
+
+
+         %%%%ssss    SCCS identifier of the current delta
+
+         %%%%tttt    date of the current delta
+
+         %%%%uuuu    programmer creating the current delta
+
+       The relational operators that may be used in primitive
+       version expressions are:
+
+         ========        Attribute is equal to value specified
+
+         !!!!====        Attribute is not equal to value specified
+
+         <<<<         Attribute is less than value specified
+
+         <<<<====        Attribute is less than or equal to value
+                   specified
+
+         >>>>         Attribute is greater than value specified
+
+         >>>>====        Attribute is greater than or equal to value
+                   specified
+
+       NNNNooootttteeeessss::::
+
+          - Comma separated lists may be used to specify multiple
+            values for the operators ======== and !!!!====.
+
+          - Only the ======== operator can be used with keyword eeeexxxxttttrrrraaaacccctttt
+            to specify the list of features for which extracted
+            lines are to match.
+
+          - Only the operators ======== and !!!!==== are meaningful with
+            keywords oooowwwwnnnneeeerrrr and iiiinnnnnnnneeeerrrr.
+
+          - For ECMS files, the status of MRs that were completed
+            prior to the file being addsrc'ed for this generic (and
+            thus may not exist in this generic) is set to the
+            pseudo status of "addsrc".
+
+          - The special value "official" may be used with the
+            keyword mmmmrrrrssssttttaaaattttuuuussss as shorthand for
+            "approved,integrated,addsrc".
+
+
+       7.3.3  EEEExxxxaaaammmmpppplllleeeessss ooooffff VVVVeeeerrrrssssiiiioooonnnn EEEExxxxpppprrrreeeessssssssiiiioooonnnnssss
+
+         1.  iiiinnnnsssseeeerrrrtttteeeedddd bbbbyyyy mmmmrrrr ======== rrrrttttaaaa11112222333344445555LLLL
+
+             Matches lines inserted by Modification Request
+             rta12345L.  The iiiinnnnsssseeeerrrrtttteeeedddd bbbbyyyy prefix is optional, but
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 56
+
+
+
+             improves readability.
+
+         2.  ddddeeeelllleeeetttteeeedddd bbbbyyyy mmmmrrrr ======== rrrrttttaaaa11112222333344445555LLLL
+
+             Matches lines deleted by Modification Request
+             rta12345L.
+
+         3.  pppprrrrooooggggrrrraaaammmmmmmmeeeerrrr ======== ddddllllaaaa |||||||| pppprrrrooooggggrrrraaaammmmmmmmeeeerrrr ======== ppppaaaallll
+
+             Matches lines inserted by login dla or pal.
+
+         4.  aaaaffffffffeeeecccctttteeeedddd bbbbyyyy pppprrrrooooggggrrrraaaammmmmmmmeeeerrrr ======== ddddllllaaaa
+
+             Matches lines inserted or deleted by login dla.
+
+         5.  iiiinnnnsssseeeerrrrtttteeeedddd bbbbyyyy ddddeeeellllttttaaaa ======== 1111....1111....1111....22228888
+
+             Matches lines inserted by delta 1.1.1.28.
+
+         6.  ddddeeeelllleeeetttteeeedddd bbbbyyyy ddddeeeellllttttaaaa >>>> 0000
+
+             Matches all deleted lines (i.e., lines which have been
+             deleted by any delta).
+
+         7.  mmmmrrrrssssttttaaaattttuuuussss !!!!==== ooooffffffffiiiicccciiiiaaaallll
+
+             Matches inserted lines that are not official (i.e.,
+             not approved nor integrated nor included when
+             addsrc'ed for this generic).
+
+         8.  ddddaaaatttteeee>>>>88886666////00006666 &&&&&&&& !!!!((((mmmmrrrrssssttttaaaattttuuuussss========aaaapppppppprrrroooovvvveeeedddd |||||||| mmmmrrrrssssttttaaaattttuuuussss========iiiinnnntttteeeeggggrrrraaaatttteeeedddd))))
+
+             Matches lines inserted during or after June 1986, and
+             not approved or integrated.  Note that for a
+             comparison like this, only a leading portion of the
+             value is given.  Since no date will consist of _j_u_s_t
+             86/06, all dates beginning with 86/06 will be
+             lexicographically strictly greater than 86/06.
+
+         9.  ddddaaaatttteeee >>>> 88886666////00006666 &&&&&&&& ddddaaaatttteeee <<<< 88886666////00008888
+
+             Matches lines inserted during June and July of 1986.
+
+        10.  eeeexxxxttttrrrraaaacccctttt ======== 5555EEEE2222____2222GGGG,,,,5555EEEE3333____1111LLLL,,,,5555EEEE4444____2222QQQQ
+
+             Matches lines extracted in presence of features
+             5E2_2G, 5E3_1L and 5E4_2Q (i.e., as ECMS "extract"
+             would produce).
+
+        11.  !!!!eeeexxxxttttrrrraaaacccctttt ======== 5555EEEE2222____2222GGGG,,,,5555EEEE3333____1111LLLL,,,,5555EEEE4444____2222QQQQ
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 57
+
+
+
+             Matches lines not extracted in presence of features
+             5E2_2G, 5E3_1L and 5E4_2Q, i.e., the complementary
+             lines to the preceding example (but not including
+             deleting lines).
+
+        12.  oooowwwwnnnneeeerrrr ======== 5555EEEE3333____1111LLLL
+
+             Matches all lines "owned" by 5E3_1L.  These are lines
+             that are enclosed within #_f_e_a_t_u_r_e (_5_E_3__1_L), but may
+             also be further nested within negative featuring,
+             e.g., #_f_e_a_t_u_r_e (!_5_E_4__2_Q).
+
+        13.  iiiinnnnnnnneeeerrrr ======== 5555EEEE3333____1111LLLL
+
+             Matches all lines immediately featured by 5E3_1L,
+             i.e., whose closest feature control lines are
+             #_f_e_a_t_u_r_e (_5_E_3__1_L) and #_e_n_d_f_e_a_t_u_r_e (_5_E_3__1_L).
+
+        14.  iiiinnnnnnnneeeerrrr ======== """"!!!!5555EEEE4444____2222QQQQ""""
+
+             Matches all lines immediately featured out for 5E4_2Q,
+             i.e., whose closest feature control lines are
+             #_f_e_a_t_u_r_e (!_5_E_4__2_Q) and #_e_n_d_f_e_a_t_u_r_e (!_5_E_4__2_Q).  Note
+             that the quotation marks are necessary so that "!" is
+             taken as part of the value.
+
+        15.  oooowwwwnnnneeeerrrr ========
+
+             Matches all lines that do not belong to a feature.
+             Such lines might not be enclosed within any #_f_e_a_t_u_r_e
+             construct, or may be enclosed in only negative
+             featuring, e.g., #_f_e_a_t_u_r_e (_n_o_t _5_E_2__2_G).
+
+        16.  iiiinnnnnnnneeeerrrr ========
+
+             Matches all unfeatured lines, i.e., those lines not
+             enclosed within any ####ffffeeeeaaaattttuuuurrrreeee construct, even negative
+             feature control.
+
+        17.  iiiinnnnnnnneeeerrrr !!!!====
+
+             Matches all featured lines, i.e., those lines enclosed
+             within any ####ffffeeeeaaaattttuuuurrrreeee construct.  Note that this is
+             different from !!!!iiiinnnnnnnneeeerrrr ======== , which matches everything
+             except lines that are unfeatured, and this would
+             include deleted lines.
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+       SCCS/ECMS/SABLIME VERSION ENVIRONMENT USER GUIDE     Page 58
+
+
+
+       7.3.4  SSSSttttaaaannnnddddaaaarrrrdddd VVVViiiieeeewwww MMMMaaaapppp PPPPrrrroooovvvviiiiddddeeeedddd bbbbyyyy VVVVEEEE
+
+       Following are the view map assignments provided by VE for a
+       featured ECMS file, shown much as they would appear in the
+       view map menu.
+
+            Visibility assignments:
+
+            Attribute assignments:
+             2. (s) inserted by mr == %m
+             3. (u) deleted by mr == %m
+
+       The first attribute assignment causes lines inserted by the
+       current MR to be displayed in standout mode.  The second
+       attribute assignment causes lines deleted by the current MR
+       to be underlined.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                            4/16/93
+
+
+
+
+
+
+
+
+
+
+
+                                 CONTENTS
+
+
+       1.  Organization of This Guide..........................   1
+
+       2.  General Description.................................   1
+           2.1  Overview of Capabilities of VE.................   3
+
+       3.  Details of VE Actions...............................   4
+           3.1  Basic Terms....................................   5
+           3.2  View Assignment................................   6
+                3.2.1   Default Visibility   6
+                3.2.2   Visibility Assignments   7
+                3.2.3   Video Attribute Assignment   8
+           3.3  Editing Actions................................   8
+                3.3.1   Insertion of Text   8
+                3.3.2   Deletion of Text  10
+                3.3.3   Other Editing Scenarios  11
+                3.3.4   ECMS Featuring  11
+                        3.3.4.1  Insertion of Text in a
+                                 Featured File  12
+                        3.3.4.2  Deletion of Text in a
+                                 Featured File  13
+                        3.3.4.3  Refeaturing  13
+                3.3.5   Archive Migration  14
+                3.3.6   Automatic Merging of Concurrent
+                        Changes  15
+
+       4.  Invoking the Version Environment....................  15
+           4.1  Editor Startup.................................  16
+           4.2  Locating the file to edit......................  17
+           4.3  Parameters.....................................  18
+                4.3.1   General Options  18
+                4.3.2   Editing Activity Options  18
+                4.3.3   Initial View Options  22
+           4.4  Environment....................................  24
+           4.5  Examples of invoking VE........................  25
+
+       5.  Vi..................................................  26
+           5.1  Vi Commands....................................  26
+                5.1.1   Interrupting, Canceling  26
+                5.1.2   Positioning Within a file  26
+                5.1.3   Adjusting the Screen  27
+                5.1.4   Marking and Returning  27
+                5.1.5   Line Positioning  27
+                5.1.6   Character Positioning  28
+                5.1.7   Words, Paragraphs, Functions  28
+                5.1.8   Insert and Replace  29
+                5.1.9   Change and Delete  29
+                5.1.10  Miscellaneous  30
+                5.1.11  Yank and Put  31
+
+
+
+                                  - i -
+
+
+
+
+
+
+
+
+
+
+
+                5.1.12  Undo  31
+                5.1.13  Special Commands  31
+           5.2  VE Specific Vi Commands........................  32
+           5.3  Ex Commands....................................  33
+           5.4  VE Specific Ex Commands........................  37
+
+       6.  Emacs...............................................  41
+           6.1  Emacs Commands.................................  41
+                6.1.1   Getting Help or Getting Out of
+                        Trouble  42
+                6.1.2   Simple Cursor Movement Commands  42
+                6.1.3   Simple Text Deleting and Moving
+                        Commands  43
+                6.1.4   Simple File and Buffer Commands  43
+                6.1.5   Simple Search and Replace Commands  44
+                6.1.6   Inserting Odd Characters  44
+                6.1.7   Commands Related to Windows  44
+                6.1.8   Advanced Search and Replace
+                        Commands  44
+                6.1.9   Keyboard Macros and Input Files  44
+                6.1.10  Commands that Escape to UNIX  45
+                6.1.11  Miscellaneous Commands  45
+           6.2  VE Specific Emacs Commands.....................  45
+           6.3  Emacs Modes....................................  47
+                6.3.1   Display Modes  47
+                6.3.2   Interface Modes  48
+                6.3.3   Command Modes  48
+                6.3.4   Terminal Modes  49
+           6.4  VE Specific Emacs Modes........................  49
+
+       7.  A Versioned View of the File........................  50
+           7.1  View Menu Commands.............................  50
+           7.2  View Map Files.................................  51
+           7.3  Version Expressions............................  52
+                7.3.1   Expression Operators  52
+                7.3.2   Primitive Version Expressions  52
+                7.3.3   Examples of Version Expressions  55
+                7.3.4   Standard View Map Provided by VE  58
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                  - ii -
+
+
+
+

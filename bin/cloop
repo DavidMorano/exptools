@@ -1,0 +1,218 @@
+#!/bin/sh
+
+#####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1990, 1991, 1992
+#			AT&T Bell Laboratories
+#####################################################################
+
+####################################################################
+# Annotate break/continue statements and loops in C source file
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				March 1990
+#
+# MODIFICATIONS:
+#	September 1990 - Bob Parnass
+#		remove temp files before exiting
+#	October 1990 - Bob Parnass
+#		1) add dollar sign to CCFILE in the TMPFILES= stmt
+#		2) remove temp file no longer needed
+#	March 1991	-Bob Parnass
+#		use private copy of newform if public version
+#		not available in /usr/bin
+#
+# USAGE:  cloop  [-bhcinsv]  [-m minsize]  [files]
+#
+#
+####################################################################
+VERSION="2.0"
+LIBDIR=`logdir exptools`/lib/cloop/
+TMP=/usr/tmp
+
+: ${TOOLS:?"environment variable is not set or is not exported"}
+
+# set temporary files
+TMPF1=$TMP/1cl$$
+TMPF2=$TMP/2cl$$
+TMPCF=$TMP/3cl$$
+CCFILE=$TMP/4cl$$
+
+TMPFILES="$TMPF1 $TMPF2 $TMPCF $CCFILE"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+PGM=`basename $0`
+
+ALLARGS=`echo $*| awk '{ printf("%s\n", substr($0, 1, 80)) }'`
+
+
+FORHELP="\n\t(Contact Bob Parnass if you require help.)"
+USAGE="USAGE:  ${PGM}  [-bdchins]  [-m minsize]  [files]\nVersion ${VERSION}\n${FORHELP}"
+FORHELP="\n\t(Read the manual page, then contact Bob Parnass if you need help.)\n"
+
+EXIT_CODE=0
+
+# parse command line arguments 
+set -- `getopt bsvdchinm: $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	for i in $*
+	do
+		case $i in
+		-b)
+			# supress goto comments
+			BFLAG="-b"
+			shift 1;;
+		-n)
+			# supress lines numbering
+			NFLAG="-n"
+			shift 1;;
+		-v)
+			# use | and : for vertical bar symbols
+			VFLAG="-v"
+			shift 1;;
+		-h)
+			# supress horizontal lines which show
+			# loop scope
+			HFLAG="-h"
+			shift 1;;
+		-s)
+			# supress vertical bars which show
+			# loop scope
+			SFLAG="-s"
+			shift 1;;
+		-i)	
+			# supress if/else statement processing
+			IFLAG="-i"
+			shift 1;;
+		-d)
+			# debug mode
+			DFLAG="-d"
+			shift 1;;
+		-c)
+			# supress comments for loop begin & end
+			CFLAG="-c"
+			shift 1;;
+		-m)
+			# minimum loop size to consider
+			# (in number of lines)
+			MFLAG="-m $2"
+			shift 2;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+
+# see if a public version of the newform program exists
+test -x /usr/bin/newform
+if [ $? -eq 0 ]
+then
+	# use public version
+	NEWFORM=/usr/bin/newform
+else
+	# use private version
+	NEWFORM=$TOOLS/lib/comment/newform
+fi
+
+
+NFILES=$#
+
+if [ $# -eq 0 ]
+then
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	${NEWFORM} -i $CFILE > $CCFILE
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: ${NEWFORM} failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1;
+		> $CCFILE
+	fi
+	
+	
+	${LIBDIR}cparser $CCFILE > $TMPF1
+	if [ $? -ne 0 ]
+	then
+
+		echo "Error in ${PGM}: parser failed on file '${CFILE}'." 1>&2
+		> $TMPF1
+		EXIT_CODE=1;
+	fi
+
+	egrep  -v -e '	var	|	con	' $TMPF1 | cut -f1,3 > $TMPF2
+	mv $TMPF2 $TMPF1
+	# tokenizer $CCFILE > $TMPF1
+	
+	
+	${LIBDIR}cloopfind  $DFLAG $TMPF1 > $TMPF2
+
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		echo "Error in ${PGM}: loop finder failed on file '${CFILE}'." 1>&2
+		> $TMPF2
+		EXIT_CODE=1;
+	fi
+	
+	grep -v block $TMPF2 | grep -v elsepend >$TMPF1
+
+	NC=`echo ${DFLAG} | wc -c`
+
+	# if debug enabled
+	if [ "${NC}" -eq 3 ]
+	then
+		cat ${TMPF1} 1>&2
+	fi
+
+	# print a commented listing
+	${LIBDIR}cloopprint $BFLAG $HFLAG $CFLAG $MFLAG $VFLAG $IFLAG $NFLAG $SFLAG -l $TMPF1 $CCFILE
+
+	if [ $? -ne 0 ]
+	then
+		echo "Error in ${PGM}: loop printer failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1
+	fi
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`expr ${NFILES} - 1`
+
+	# set next C source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}
+
+# There is a fifth dimension beyond that which is known to
+# man. It is a dimension as vast as space and as timeless as
+# infinity.  It is the middle ground between light and shadow,
+# between science and superstition. And it lies between the
+# pit of Man's fears and the summit of his knowledge.  This is
+# the dimension of imagination -- it is an area which we call
+# "The Twilight Zone".

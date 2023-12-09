@@ -1,0 +1,80 @@
+From: Dan_Jacobson@ATT.COM
+Subject: Day to day use of LaTeX, TeX, etc.
+Date: 6/1991
+= = = = = = =
+Ok... I want to print something on paper.  It's written in LaTeX.
+What do I do?
+
+$ latex file.tex		#makes file.dvi
+	#["underfill" & "overfill" messages are usually no big deal]
+
+$ latex file.tex		#a second time (if necessary) to get
+				#references right
+
+$ dvips -o file.ps file.dvi	#makes file.ps (PostScript)
+#[then relax while it runs MetaFont, it making some files in /usr/tmp/... if
+#necessary]
+$ prt -l postscript file.ps	#works at least in IH, Naperville, Illinois
+
+#[see the dvips toolman page for new shortcuts to the
+#above---eliminating the need to make an intermediate PostScript
+#file.]
+
+If it is a [e.g., TeXinfo mostly, I think] file with an index, use
+this procedure.  Let's pretend the file is called emacs.tex:
+
+1) Run tex on emacs.tex, producing emacs.cp, emacs.fn, emacs.ky,
+and emacs.vr (unsorted index files), plus emacs.aux (cross ref file).
+
+2) run texindex [currently (3/1991) located in $TOOLS/lib/tex/bin]
+   "texindex emacs.??"
+This produces sorted index files emacs.cps, emacs.fns, etc.
+that are used as input in step 3.
+
+3) Run tex on emacs.tex again.
+
+4) Now you have a dvi file [that you can run dvips on as above].
+
+= = = = = = =
+
+Personally I am usually found running LaTeX from a Makefile inside GNU
+Emacs' (exptools command name: "gnuemacs") compile mode, in contrast
+to say, invoking the editor from LaTeX as stated on the man page.  [No
+I don't have a package to make GNU Emacs jump to the line with the
+TeX/LaTeX error number on it, as it can do with, e.g., C compiler
+errors.]  [In the Makefile, say e.g., latex ..... < /dev/null, not
+latex ....  <&-, as the latter seems to start munching the
+$TOOLS/bin/latex front end scripts comments as keyboard input!]
+
+I also use ispell (see the documentation for the exptool GNU Emacs
+("gnuemacs"), as ispell is presently (11/1990) bundled with exptools
+GNU Emacs) to interactively spell check my documents.  ispell can be
+used as a stand-alone or inside GNU Emacs (GNU Emacs can emulate the
+vi editor, etc., by the way, and has a LaTeX-mode, etc.)
+
+I couldn't get by without Terry L. Anderson's AT&T documentstyle
+macros.  Run ../macros/tm.doc thru LaTeX, etc. as above to print out
+Terry's main document read about his macros.
+
+= = = = = = =
+
+Read the netnews groups comp.text.*, comp.fonts, and att.text.tex.
+For more info on netnews write to me, Dan_Jacobson@ATT.COM.
+
+= = = = = = =
+
+From: Fred.C.Yankowski@att.com
+Date: 14 Mar 94 16:16:00 GMT
+Subject: IH printers for tex and latex
+
+When directing a file produced by 'dvips' to a Comp Center
+printer at IH, route the job to "ihkodak1":
+
+	prt -lpost -dihkodak1 file.ps
+
+That printer produces good readable hardcopy from such
+files; other printers may produce output with spidery
+(thin) characters that are harder to read.
+
+[ You can also use "-Pqms" on the dvips command line.  This produces heavier
+characters.  See "Fonts" for more information.  -- Mark Hrtman ]

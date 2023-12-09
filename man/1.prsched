@@ -1,0 +1,396 @@
+
+
+
+     PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  prsched - Presents your monthly time schedule	graphically.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  pppprrrrsssscccchhhheeeedddd [ -HVnf ] [ -s <scale> ] { -t	<macro>	}* {
+	  <schedfile> |	- } ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  _p_r_s_c_h_e_d presents your	monthly	time schedule graphically.
+	  _p_r_s_c_h_e_d converts a montly schedule presented in an ascii
+	  file to a number of pic(1) statements. When printed via
+	  troff(1) it will look	like a monthly diary schedule.
+
+	  Once printed,	the output contains a box showing all days
+	  with time schedules from 08:00 to 20:00 hours	for every day
+	  of the month.	Whenever the schedule file contains appoint-
+	  ments	or notes that day a bar	is printed starting at the
+	  start	time and ending	at the end time	of the appointment.
+	  The reason for the appointment or note itself	(as specified
+	  in the schedule file)	will be	put in the bar if possible.
+	  Text that does not fit in the	bar will be printed underneath
+	  the box labelled "numbered activities".  For reference a
+	  number will be put in	the bar	.
+
+	  Bars that (partly) fall oooouuuuttttssssiiiiddddeeee the working hours 08:00 to
+	  20:00	(we have long days where we work) will (partly)	not be
+	  printed.  Texts belonging to these bars will also be printed
+	  under	the box, labelled "out of working hours".
+
+	  Socalled nnnnooootttteeeessss, i.e. reminders for a day, not	specifically
+	  bound	to a certain time, will	be printed at 18:00 hours and
+	  further.  The	note itself (the text) will be printed under-
+	  neath	the box	labelled "notes".
+
+	  Socalled ttttiiiimmmmeeeennnnooootttteeeessss, will of-course be	printed	at the time
+	  stated in the	schedule file.	The reason for the note	will
+	  be printed underneath	the box	also labelled "notes".
+
+
+     AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+	  _s_c_h_e_d_f_i_l_e Your schedule input	file. An example of a sched-
+		    file can be	found further on in this manual	page.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	  ----HHHH	    Type help information.
+
+	  ----VVVV	    Type version identification.
+
+	  ----ffff	    Suppress filling of	out of hours boxes. May	be
+		    necessary on some printers or versions of pic(1)
+		    that do not	support	filled boxes.
+
+
+
+
+     Page 1					     (printed 5/21/92)
+
+
+
+
+
+
+     PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))
+
+
+
+	  ----nnnn	    Put	the _N_u_m_b_e_r_e_d _A_c_t_i_v_i_t_i_e_s, _N_o_t_e_s and _O_u_t _o_f
+		    _W_o_r_k_i_n_g _H_o_u_r_s on the following page.
+
+	  ----ssss <_s_c_a_l_e>
+		    Scale the picture part. Default is 100%.  A	number
+		    greater than 100% means a smaller box, and vice
+		    versa.
+
+	  ----tttt <_m_a_c_r_o>
+		    The	macro specified	here will be put on top	of the
+		    output presented by	prsched. Any number of -t
+		    options may	be specified resulting in more macro's
+		    put	on the top of the output.
+
+		    This may for example be used to redefine the top
+		    of page (.TP).
+
+
+     SSSSCCCCHHHHEEEEDDDDFFFFIIIILLLLEEEE DDDDEEEEFFFFIIIINNNNIIIITTTTIIIIOOOONNNN
+	  A formal description of the schedule file is as follows.
+
+	    Www^^YYYY-MM-DD^[MARKED]
+	       _a_n_d/_o_r
+	    ^^^hh:mm-hh:mm^[S]^Free text
+	       _a_n_d/_o_r
+	    ^^^^^^^^-hh:mm^[S]^Free text
+	       _a_n_d/_o_r
+	    ^^^hh:mm-^^^^^^[S]^Free text
+	       _a_n_d/_o_r
+	    ^^^^^^^^-^^^^^^[S]^Free text
+
+	    Where:
+	    Www	   _ Weekday ([Mm]on,[Tt]ue,[Ww]ed,[Tt]hu,[Ff]ri,[Ss]at,[Ss]un)
+	    YYYY   _ Year in 4 digits (e.g. 1992)
+	    MM	   _ Month in 2	digits (e.g. 03)
+	    DD	   _ Day in 2 digits (e.g. 26)
+	    hh	   _ Minutes in	2 digits (e.g. 00)
+	    mm	   _ Minutes in	2 digits (e.g. 26)
+	    ^	   _ Space
+	    S	   _ Optional status identifier. This letter or
+		       digit will be printed as	is.
+		       Examples:
+		       W for Waiting
+		       A for Accepted
+	    MARKED _ Optional string to	identify a busy	schedule for that day
+	  _N_o_t_e _t_h_a_t _f_o_r	_b_e_s_t _r_e_s_u_l_t_s, _a_l_l _d_a_y_s _o_f _t_h_e _m_o_n_t_h _s_h_o_u_l_d _b_e
+	  _s_p_e_c_i_f_i_e_d. _T_h_e _h_o_u_r/_m_i_n_u_t_e _s_e_p_a_r_a_t_o_r ":" (_e._g. _2_0:_5_4)	_m_a_y _b_e
+	  _r_e_p_l_a_c_e_d _b_y _a	"." (_2_0._5_4) _i_f _n_e_c_e_s_s_a_r_y.
+
+     SSSSCCCCHHHHEEEEDDDDFFFFIIIILLLLEEEE EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+	  Fri  1991-11-01
+	  _____________________________________________
+
+
+
+     Page 2					     (printed 5/21/92)
+
+
+
+
+
+
+     PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))
+
+
+
+	  Sat  1991-11-02	 MARKED
+	     09:00-13:00   John's Aniversary
+	  _____________________________________________
+	  Sun  1991-11-03	 MARKED
+	  _____________________________________________
+	  Mon  1991-11-04
+	     09:00-10:00   Procedure Manual Chapter 6
+	  _____________________________________________
+	  Tue  1991-11-05
+	     08:00-08:15 W John: release CHARGE	package
+	     09:00-10:30 W Groupmeeting
+	  _____________________________________________
+	  Wed  1991-11-06
+	     10:00-11:30 W psanders:Department Meeting
+	  _____________________________________________
+	  Thu  1991-11-07
+	  _____________________________________________
+	  Fri  1991-11-08
+		  -	   Water the plants!
+		  -	   married 1000	days!
+	  _____________________________________________
+	  Sat  1991-11-09	 MARKED
+	  _____________________________________________
+	  Sun  1991-11-10	 MARKED
+	  _____________________________________________
+	  Mon  1991-11-11
+	     10:30-12:00 A PM chapter CSSDB/prb	review
+	  _____________________________________________
+	  Tue  1991-11-12
+	  _____________________________________________
+	  Wed  1991-11-13
+	     15:00-16:30 W Ed/Nico Customers-Q
+	     18:00-22:30   Party at Ria's place
+	  _____________________________________________
+	  Thu  1991-11-14
+	  _____________________________________________
+	  Fri  1991-11-15
+	  _____________________________________________
+	  Sat  1991-11-16	 MARKED
+	  _____________________________________________
+	  Sun  1991-11-17	 MARKED
+	  _____________________________________________
+	  Mon  1991-11-18
+	  _____________________________________________
+	  Tue  1991-11-19
+	  _____________________________________________
+	  Wed  1991-11-20
+	  _____________________________________________
+	  Thu  1991-11-21
+	  _____________________________________________
+
+
+
+
+
+     Page 3					     (printed 5/21/92)
+
+
+
+
+
+
+     PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))
+
+
+
+	  Fri  1991-11-22
+	  _____________________________________________
+	  Sat  1991-11-23	 MARKED
+	  _____________________________________________
+	  Sun  1991-11-24	 MARKED
+	  _____________________________________________
+	  Mon  1991-11-25
+	  _____________________________________________
+	  Tue  1991-11-26
+	     16:45-17:45   Buy an itarA
+	  _____________________________________________
+	  Wed  1991-11-27
+	  _____________________________________________
+	  Thu  1991-11-28
+	  _____________________________________________
+	  Fri  1991-11-29
+	  _____________________________________________
+	  Sat  1991-11-30	 MARKED
+	  _____________________________________________
+
+	  The following	is a description of the	schedfile example.
+
+	  DDDDaaaatttteeee
+	  Sat	1991-11-30 MARKED
+	  1  Three letters for the day of the week
+	  2  Two spaces
+	  3  The year-month-day	notation in exactly 10 chars.
+	  4  You can optionally	put the	text MARKED behind the
+	     date denoting that	this day is used up. Those days
+	     will be printed shaded.
+	     May be usefull for	non-working days.
+
+	  SSSScccchhhheeeedddduuuulllleeeessss
+	     16:45-17:45   Quality Mtng
+	  1  Three spaces
+	  2  Start-time	as HH:MM
+	  3  - (minus sign)
+	  4  End-time as HH:MM
+	  5  space
+	  6  Optional Status letter (or	blank)
+	  7  space
+	  8  Up	to 80 characters text. This is where you put
+	     what the activity is about. Meetings, notes,
+	     anything.
+
+	  NNNNooootttteeeessss
+		  -	   Water Plants
+	  1  Eight (8) spaces
+	  2  - (minus sign)
+	  3  Eight (8) spaces
+	  4  Up	to 80 characters text. This is where you put
+	     notes, reminders, things that you need to do that
+
+
+
+     Page 4					     (printed 5/21/92)
+
+
+
+
+
+
+     PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))
+
+
+
+	     day but not tied to a specific time. These	notes
+	     will be printed from the 18:00 hour timeline and
+	     further.
+
+	  TTTTiiiimmmmeeeeNNNNooootttteeeessss
+	     11:00-	   Coffee break
+	  1  Three (3) spaces.
+	  2  Start-time	as HH:MM
+	  3  - (minus sign)
+	  4  8 spaces
+	  5  Up	to 80 characters text. This is where you put
+	     notes, reminders, things that you need to do that
+	     day on a specific time. Not earlier nor later.
+
+	  Anything that	is not conform to these	rules is simply	left
+	  out of the picture. For example, lines to separate the day
+	  data may be put in the schedule file to visually separate
+	  the days.  Those will	not be printed in the output of
+	  _p_r_s_c_h_e_d. See also the	section: _s_c_h_e_d_f_i_l_e _e_x_a_m_p_l_e.
+
+	  An example of	a the output of	_p_r_s_c_h_e_d	can be found in
+	    $TOOLS/lib/prsched/prsched.troff
+	  Print	it using _p_i_c, _t_b_l and _t_r_o_f_f or if available use
+	  _p_r_t_f_m_t.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  Just print out the month October of 1992.
+	     prsched m19921009 | prtfmt
+
+	  Print	December of 1991. Scale	the picture to 120% of the
+	  original (means 20% smaller).	Create a top of	page macro
+	  just in front	of the diagram.
+	     prsched -s	120 -t ".P" -t ".de TP"	-t "" -t ".."
+	  December91 | prtfmt
+
+	  Use your local scheduling program and	print out your
+	  schedule.
+	     sched -p |	prsched	| prtfmt -K"TOPMARGIN -.6"
+
+	  Print	the tables underneath the box on the next page and
+	  print	it your	own print pipe.
+	     prsched -n	Schedfile| pic -Tpost -| tbl | troff -Tpost |
+	  prt -l troff
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	  The printed output file contains filled bars,	i.e. those
+	  bars filled with a gray pattern. Some	printertypes cannot
+	  print	filled bars or patterns	for that matter. In that case,
+	  bars will be printed blanc, without a	fill pattern. In other
+	  cases	you get	strange	error messages back from post proces-
+	  sors like dx9700(1).	Try using the -f option	of _p_r_s_c_h_e_d to
+	  suppress boxes to be filled.
+
+
+
+     Page 5					     (printed 5/21/92)
+
+
+
+
+
+
+     PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	    PPPPRRRRSSSSCCCCHHHHEEEEDDDD((((1111))))
+
+
+
+	  Schedules overlapping	in time	(on one	day) are printed as
+	  is.  This may	result in blurred, hard	to read	output.
+
+	  _p_r_s_c_h_e_d is build on international time presentation (i.e.
+	  HH:MM) and date presentation (i.e. YY-MM-DD) and heavily
+	  relies on that. Other	presentations would require a
+	  redesign.
+
+	  _p_r_s_c_h_e_d is used to print agenda's to be taken	along to meet-
+	  ings,	your home, etc.	Please don't make printouts too	often
+	  as this uses valueable paper.	For example, I print a
+	  schedule every week only if there are	changes.
+
+     AAAAUUUUTTTTHHHHOOOORRRR////PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Paul Sanders hvlpb!psanders
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6					     (printed 5/21/92)
+
+
+

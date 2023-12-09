@@ -1,0 +1,19 @@
+# 730windows, 1.9 - 17:44:31, 1/12/93
+# Load smaller program to check if resident yet.
+trap "stty echo;exit" 2 3
+stty -echo
+${DMDTOOLS:-$TOOLS}/lib/dmdtools/dmdtool checkres '730Windows+'
+read answer
+stty echo
+# If not loaded, load the real one
+if [ "$answer" != "yes" ]; then
+	echo "`basename $0` not in cache, loading..." >&2
+	if [ -f $HOME/.730winrc ]; then
+		args="`cat $HOME/.730winrc` $*"
+	else
+		args=${1+"$@"}
+	fi
+	exec ${DMDTOOLS:-$TOOLS}/lib/dmdtools/dmdtool `basename $0` $args
+else
+	echo "`basename $0` already loaded" >&2
+fi

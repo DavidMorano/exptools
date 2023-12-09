@@ -1,0 +1,83 @@
+#ident "@(#) /sable/sdb/ra/sblib/wgets/s.wgets.dd"
+/*      Copyright (c) 1990, 1991 AT&T - All Rights Reserved       */
+
+#ifndef CTRL
+#define CTRL(X)                  ('X' & 037)
+#endif
+#define MAX(A,B)                 (((A) > (B)) ? (A) : (B))
+#define MIN(A,B)                 (((A) < (B)) ? (A) : (B))
+
+#define NUMROWS(WINDOW)          ((WINDOW)->_maxy)
+#define NUMCOLS(WINDOW)          ((WINDOW)->_maxx)
+#define TOPROW(WINDOW)           ((WINDOW)->_begy)
+#define BOTTOMROW(WINDOW)        (TOPROW(WINDOW) + NUMROWS(WINDOW) - 1)
+#define LEFTCOL(WINDOW)          ((WINDOW)->_begx)
+#define RIGHTCOL(WINDOW)         (LEFTCOL(WINDOW) + NUMCOLS(WINDOW) - 1)
+
+/* FORM LABELS: QUIT    NULL    SAVE    PREV    NULL    ERASE   EDITFILE */
+/* MENU LABELS: QUIT    HELP    TOP     PREV    NULL    NULL    NULL     */
+
+#define QUIT_LABEL 1
+#define HELP_LABEL 2
+#define TOP_MENU_LABEL 3
+#define SAVE_LABEL 3
+#define PREVIOUS_LABEL 4
+#define ERASE_LABEL 6
+#define EDIT_FILE_LABEL 7
+
+#define CASE_HELP \
+   case KEY_F(HELP_LABEL): \
+   case KEY_HELP: \
+   case CTRL(?)
+#define CASE_TOP_MENU \
+   case KEY_F(TOP_MENU_LABEL): \
+   case KEY_HOME: \
+   case CTRL(T)
+/* 
+   wgets.c: in wgets() function, switch stmt fails if both CASE_TOP_MENU 
+   and CASE_SAVE are both used since both contain "case KEY_F(3)".
+   Solution: use CASE_T_MENU below in those two switch statements.
+*/
+#define CASE_T_MENU \
+   case KEY_HOME: \
+   case CTRL(T)
+
+#define CASE_SAVE \
+   case KEY_F(SAVE_LABEL): \
+   case KEY_SAVE: \
+   case KEY_NPAGE: \
+   case CTRL(N)
+#define CASE_PREVIOUS \
+   case KEY_F(PREVIOUS_LABEL): \
+   case KEY_UP: \
+   case KEY_PREVIOUS: \
+   case CTRL(P)
+#define CASE_NEXT \
+   case KEY_RIGHT: \
+   case KEY_DOWN: \
+   case KEY_NEXT: \
+   case KEY_ENTER: \
+   case '\n': \
+   case '\r': \
+   case '\t'
+#define CASE_QUIT \
+   case KEY_F(QUIT_LABEL):\
+   case KEY_END:\
+   case KEY_EXIT:\
+   case CTRL(Q):\
+   case CTRL(D)
+#define CASE_ERASE_FIELD \
+   case KEY_F(ERASE_LABEL):\
+   case KEY_SLEFT:\
+   case KEY_DL:\
+   case CTRL(U):\
+   case CTRL(X)
+#define CASE_EDIT_FILE \
+   case KEY_F(EDIT_FILE_LABEL): \
+   case KEY_OPEN: \
+   case CTRL(E)
+#define CASE_ERASE_CHAR \
+   case KEY_BACKSPACE:\
+   case KEY_DC:\
+   case '\b'
+

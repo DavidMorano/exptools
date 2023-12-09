@@ -1,0 +1,268 @@
+# Copyright (c) ATT-NS-NL
+# Provider J.H.Tijmensen ATT-NS-NL
+
+# ksh should be running
+'test' 1+3 -eq 4 || exec ksh $0 "${*}"	 # if csh, we'l now get ksh
+
+# Syntax crcp [-pr] source dest
+
+Version="crcp version:  0.1.10 (24 Jan 1995)"
+# Version 0.1.0	 Initial
+# Version 0.1.01 NCR remsh added
+# Version 0.1.02 removed -c option from cpio, not everwhere supported
+# Version 0.1.03 Ensure that TOOLS is set
+# Version 0.1.04 Found a bug in case the source was an directory
+# Version 0.1.05 If running csh, we'll now force ksh
+# Version 0.1.10 Handle multiple sources, increased error handling
+#                and reporting
+
+# Unknown Bugs:
+# Known Bugs:   When dest system is an NCR the crcp will hang
+#               (Reported to NCR)
+
+MINrOPT=no		# Is -p option in use ?
+MINpOPT=no		# Is -r option in use ?
+
+HTYPE=unknown		# Host OS (sunos/uts)
+RTYPE=unknown		# Remote OS (sunos/uts)
+
+FileNameS=""		# The list of files/dirs to copy to dest
+FileName1=unknown	# The file/dir to copy
+FileName2=unknown	# The file/dir to copy to
+
+DLogin=unknown		# Destination Login to use
+DSystem=unknown		# Destination System to use
+
+Usage()	{
+
+	echo 'Usage: crcp [-p]  sources dest' >&2
+	echo '       crcp [-rp] sources......dest' >&2
+	echo '       crcp -V' >&2
+	echo 'In dest one should specify the dest system and path' >&2
+	echo 'So dest should not be a local file or dir' >&2
+	exit 1
+}
+
+Options() {
+
+	for option in $*
+	do
+		case $option in
+		-p)	MINpOPT=yes			;;
+		-r)	MINrOPT=yes			;;
+		-rp)	MINpOPT=yes ; MINrOPT=yes	;;
+		-pr)	MINpOPT=yes ; MINrOPT=yes	;;
+		-V)	echo $Version >&2 ; exit 0	;;
+		*)	break				;;
+		esac
+		shift 1
+	done
+
+	if test $# -lt 2	# Should alway have source and dest
+	then
+		Usage
+	fi
+
+	while test $# -gt 1	# Create a list of sources
+	do
+
+		# Ensure source exists
+		if test ! -d $1 -a ! -f $1
+		then
+			echo crcp: $1: No such file or directory >&2
+			shift 1
+			continue
+		fi
+
+		# if -r option not used the source should not be a dir
+		if test -d $1 -a $MINrOPT = no
+		then
+			echo "crcp: $1: Is a directory (not copied)" >&2
+			shift 1
+			continue
+		fi
+
+		# source is a valid source, add to the list and get next
+		FileNameS="$FileNameS ${1}"
+		shift 1
+	done
+
+	case $1 in		# $1 is now the dest
+	*@*:*)	   DLogin=$(echo $1 | cut -f 1 -d '@' )
+		  DSystem=$(echo $1 | cut -f 2 -d '@' | cut -f 1 -d ':' )
+		FileName2=$(echo $1 | cut -f 2 -d '@' | cut -f 2 -d ':' )
+		;;
+	*.*:*)	   DLogin=$(echo $1 | cut -f 2 -d '.' | cut -f 1 -d ':' )
+		  DSystem=$(echo $1 | cut -f 1 -d '.' )
+		FileName2=$(echo $1 | cut -f 2 -d '.' | cut -f 2 -d ':' )
+		;;
+	*:*)	   DLogin=$LOGNAME
+		  DSystem=$(echo $1 | cut -f 1 -d ':' )
+	 	FileName2=$(echo $1 | cut -f 2 -d ':' )
+		;;
+	*)	echo Error: Destination should not be the local system >&2
+		Usage 
+		;;
+	esac
+
+}
+
+Rsh()	{
+
+	case $HTYPE in
+	/usr/ucb)	# SunOS
+		rsh="rsh  $DSystem -l $DLogin"
+		;;
+	/uts)		# Amdahl/uts
+		rsh="rcmd $DSystem -l $DLogin"
+		;;
+	/usr/bin/remsh*) # NCR
+		rsh="remsh $DSystem -l $DLogin"
+		;;
+	*)	echo "Host type $HTYPE is unknown, contact originator" >&2
+		exit 1
+		;;
+	esac
+
+	$rsh "$*" || exit 1
+}
+
+Htype() {      HTYPE=$(ls -d /usr/ucb /uts /usr/bin/remsh 2>&-) ; }
+Rtype() { RTYPE=$(Rsh "ls -d /usr/ucb /uts 2>&-")  ; }
+
+Hcompress()	{
+
+	if test -z "$TOOLS"
+	then
+		echo TOOLS variable not set >&2
+		exit 1
+	fi
+
+	PATH=$PATH:/usr/ucb:${TOOLS}/bin
+
+	# if source is a filename, cd to the dir
+
+	if test -f $FileName1
+	then
+		cd $(dirname $FileName1) || exit
+	fi
+
+	# if source is a dir, cd to the dir above
+	if test -d $FileName1
+	then
+		cd $(dirname $FileName1) || exit
+	fi
+
+	BaseName1=$(basename $FileName1)
+
+	# We only need cpio for -p/-r option
+
+	if test $MINpOPT = yes -o $MINrOPT = yes
+	then
+		# if both -r and -p copy the dir, keep the timestamp
+		if test $MINpOPT = yes -a  $MINrOPT = yes
+		then
+			find $BaseName1 -print | cpio -o | compress -c
+			return
+		fi
+
+		# if only -r copy the dir, don't keep the time stamp
+		if test $MINrOPT = yes
+		then
+			find $BaseName1 -print | cpio -o | compress -c
+			return
+		fi
+
+		# if only -p copy one file, keep the timestamp
+		if test $MINpOPT = yes
+		then
+			echo $BaseName1 | cpio -o | compress -c
+			return
+		fi
+	else
+		compress -c $BaseName1
+	fi
+}
+
+Runcompress()	{
+	
+	# If dest is a directory add the basename of the source to
+	# the dest so keep the BaseName1 around
+
+	BaseName1=$(basename $FileName1)
+
+	# We only need to uncpio if -p/-r is used
+	if test $MINpOPT = yes -o $MINrOPT = yes
+	then
+		# create dest, cd to it
+		# uncompress and uncpio with keeping the timestamps
+
+		if test $MINpOPT = yes -a $MINrOPT = yes
+		then
+			Rsh 'PATH=$PATH:/usr/ucb:~exptools/bin ;'" mkdir -p $FileName2 2>&- ; cd $FileName2; uncompress -c | cpio -idum ;"
+			return
+		fi
+
+		# create dest, cd to it
+		# uncompress and uncpio without keeping the timestamps
+
+		if test $MINrOPT = yes
+		then
+			Rsh 'PATH=$PATH:/usr/ucb:~exptools/bin ;'" mkdir -p $FileName2 2>&- ; cd $FileName2 ; uncompress -c | cpio -idu"
+			return
+		fi
+
+		# Since cpio will not change the filename it must
+		# be moved to the correct name after the uncpio
+
+		if test $MINpOPT = yes
+		then
+			Rsh 'PATH=$PATH:/usr/ucb:~exptools/bin ;'" if test -d $FileName2 ; then cd $FileName2 ; uncompress -c | cpio -idum ; else cd $(dirname $FileName2) ; uncompress -c | cpio -idum ; fi ; mv $BaseName1 $FileName2 "
+			return
+		fi
+	else
+		# if dest is an dir, the ultimate dest will be
+		# expanded with the basename of the source. If dest
+		# is not a dir we can simply copy to dest
+
+		Rsh 'PATH=$PATH:/usr/ucb:~exptools/bin ;'" if test -d $FileName2 ; then uncompress -c > $FileName2/$BaseName1 ; else uncompress -c > $FileName2 ; fi "
+	fi
+}
+
+
+Options $*	# parse options
+Htype		# Determine Host type so rsh/rcmd/remsh
+#Rtype		# Determine Remote type so rsh/rcmd/remsh
+
+retval=0	# Assume all ok
+
+# For each source in FileNameS we should compress and uncrompress
+for FileName1 in $FileNameS
+do
+
+	Result=$( (Hcompress | Runcompress) 2>&1 | grep -v block )
+
+	case ${Result:-OK} in
+	OK)	;;		# All OK just keep on going
+	"")	;;		# All OK just keep on going
+	*Login*incorrect*)	# Dest can't be reached
+		echo "$Result"
+		exit 1
+		;;
+	*unknown*host*)		# Dest can't be reached
+		echo "$Result"
+		exit 1
+		;;
+	*connection*timed*out*)	# Dest can't be reached
+		echo "$Result"
+		exit 1
+		;;
+	*)	retval=1	# Something wrong show and set retval
+		echo "$Result"
+		;;
+	esac
+done
+
+#Now we're done sending, return $retval to invoking shell
+
+exit $retval

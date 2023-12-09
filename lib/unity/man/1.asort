@@ -1,0 +1,264 @@
+
+
+
+     aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          asort - sort a table on a specified attribute
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _a_s_o_r_t [-q] [sort flags] [-Itable] [-Otable] aname _i_n table1 \
+           [_i_n_t_o table2]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _a_s_o_r_t command allows the user to sort a table on a given
+          attribute easily.  Note that this is _n_o_t an update command
+          and the original table is left untouched.  Any attribute
+          named in the description for the table may be given as the
+          attribute on which the table is to be sorted; the only
+          restriction is that the attribute values must be less than
+          500 characters in length.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the table already exists.  If _o_n_t_o is specified instead of
+          _i_n_t_o, the output is appended to the table if it already
+          exists or the table created and written if it does not
+          exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+          Sort options may be given as the initial argument(s) on the
+          command line.  Valid flags for the _a_s_o_r_t program are as
+          follows:
+
+          ----bbbb   Ignore leading blanks.
+
+          ----dddd   Dictionary sort (only letters, digits, and blanks are
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               considered).
+
+          ----ffff   Fold upper to lower case.
+
+          ----iiii   Ignore characters outside Ascii range 040-0176.
+
+          ----nnnn   Numeric sort.
+
+          ----rrrr   Reverse sort order.
+
+          ----tttt_x  Specify "tab character" separating sub-fields.
+
+          +_p_o_s_1 -_p_o_s_2
+               This notation restricts a sort key to a sub-field of
+               the specified UNITY field beginning at _p_o_s_1 and ending
+               just before _p_o_s_2.  _P_o_s_1 and _p_o_s_2 each have the form _m._n
+               where _m tells a number of fields to skip from the
+               beginning of the UNITY field and _n tells a number of
+               characters to skip further.  If any flags are present
+               they override all the global ordering options for the
+               field.  A missing ._n means .0; a missing -_p_o_s means the
+               end of the UNITY field.  Under the ----tttt_x option, sub-
+               fields are strings separated by _x; otherwise sub-fields
+               are non-empty non-blank strings separated by blanks.
+
+          ----uuuu   This option will suppress all records but one in each
+               set of records that has a given value for the specified
+               attribute.  The record selected from the set is
+               unpredictable (i.e., the first one is not always
+               chosen).  The user can presort the file in the desired
+               sort order and then run _a_s_o_r_t with the -u _a_n_d -m flags
+               which causes the first instance of each unique value to
+               be selected (thus, the selected lines are predictable).
+               The -u option _c_a_n_n_o_t be used with the -D, -t, +pos, or
+               -pos options (these four options are necessary to get
+               the -u option to work).
+
+          ----DDDD   This option causes the attribute specified to be
+               treated as a date is mm/dd/yy format so that the values
+               are sorted by yy, then mm, then dd.  This option _c_a_n_n_o_t
+               be used with the -u, -t, +pos, or -pos options (these
+               four options are necessary to get the -u option to
+               work).
+
+          The default is an alphanumeric sort on the entire attribute
+          value in ascending order.
+
+          The _a_s_o_r_t command provides several advantages for the user
+          over using the system _s_o_r_t(1) command directly on the table.
+          First, the line length limitation of _s_o_r_t of 512 characters
+          may cause long records to be silently truncated whereas
+          _a_s_o_r_t sorts only on the specified attribute.  Second, the
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          command to sort on a given attribute is independent of how
+          the attributes are stored since this information is hidden
+          from the user in the description file.  Thus, a table
+          structure may change (along with the corresponding
+          description file) without necessitating a change to the
+          command to sort on an attribute.  A third advantage of this
+          command is the reduced processing time required for large
+          tables.  When the table to be sorted exceeds 32 kilobytes,
+          the system _s_o_r_t program creates sorted temporary files and
+          then merges the temporaries together; this process is slow.
+          Since _a_s_o_r_t sorts only the specified attribute and an
+          associated seek location, there is a much greater chance
+          that the sort will be completed without the merging process.
+
+          The user can specify only a single sort field in the _a_s_o_r_t
+          command.  However, a table may be sorted on several
+          attributes by sorting first on the least significant
+          attribute, then on the next least significant attribute and
+          so on, sorting the most significant attribute last.
+          Although the sorting algorithm used by _s_o_r_t(1) is unstable,
+          the _a_s_o_r_t command makes each sorting pass stable (i.e.,
+          records with identical attribute values are output in the
+          order that they were input which is necessary for the
+          multi-key sort to work properly) by using the seek location
+          of the record as part of the sorting key.  The seek location
+          is padded with zeros on the left to ensure proper sorting
+          whether a numeric or alphanumeric sort is done.  A user
+          specifying reverse sort order (the "-r" sort option) should
+          be aware that this will also reverse the order of the seek
+          values so that multi-key sorts in reverse order will
+          probably not work as desired.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are sorted.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ asort sname in S into tmp3
+          asort: 3 records sorted from S.
+
+          BEFORE:                         AFTER:
+
+          |-------------------------|     |-------------------------|
+          |snu|sname     |city      |     |snu|sname     |city      |
+          |mbe|          |          |     |mbe|          |          |
+          |r  |          |          |     |r  |          |          |
+          |-------------------------|     |-------------------------|
+          |s1 |smith     |london    |     |s3 |blake     |paris     |
+          |s2 |jones     |nice      |     |s2 |jones     |nice      |
+          |s3 |blake     |paris     |     |s1 |smith     |london    |
+          |-------------------------|     |-------------------------|
+
+     FFFFIIIILLLLEEEESSSS
+
+
+
+     PPPPaaaaggggeeee 3333                                          ((((pppprrrriiiinnnntttteeeedddd 1111////11119999////99990000))))
+
+
+
+
+
+
+     aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           aaaassssoooorrrrtttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          unity/asort.c, zasort.c - the C source program
+          bin/asort, index2 - the executable programs
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _s_o_r_t(1), _i_n_d_e_x(UNITY)
+
+     CCCCAAAAVVVVEEEEAAAATTTT
+          The actual value that is sorted consists of
+
+          <UNITY field value>\01<8-digit seek value>
+
+          This allows the sort to be stable since earlier seek values
+          will appear first for lines with duplicate attribute values.
+          The attribute value is terminated with a '\01' (control-A)
+          instead of a '\0' because if an attribute value is null, the
+          output record would begin with '\0' and the sort(1) program
+          silently throws these records away.  _i_n_d_e_x_2 is used to
+          generate the records on which to sort.
+
+          In order to do a unique sort (option -u), the program
+          specifies that the tab character is control-A which is the
+          character that separates the attribute value from the seek
+          location.  A unique sort is done on each line for the first
+          field (i.e., the attribute) only so that the resulting list
+          will be unique on attribute value.  This means that the -t,
+          -pos, and +pos options cannot be used with the -u option.
+
+          In order to sort a table on a date field stored in mm/dd/yy
+          format, the user would execute
+
+          asort -t/ -n +2.0 -2.3 +0.0 -1.0 +1.0 -2.0 +2.3 -3.0 date in
+          table
+
+          Note that the last sub-field in the date field is split up
+          into two parts (i.e., +2.0 -2.3 and +2.4 -3.0).  The +2.0
+          -2.3 positions specify to sort on the year part of the date
+          only (excluding the seek value) and the +2.4 -3.0 positions
+          as the least significant sort sub-field ensure that the sort
+          is stable.  These values are added to the sort options when
+          the user specifies the -I option.  It was necessary to pick
+          a separator character for the values and virgule (/) was
+          chosen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+

@@ -1,0 +1,15 @@
+#
+#	Startup script for vrmail.
+#
+
+# If pager is pg(1), or not set, select alternate menu if one is not
+# already chosen.
+
+VM_PAGER=${VM_PAGER:-${PAGER:-pg}}; export VM_PAGER
+if echo "$VM_PAGER" | grep pg >/dev/null ;then
+	if [ "${VM_MENU:-}" = "" ]; then
+		VM_MENU=$TOOLS/lib/vrmail/menu.pg; export VM_MENU
+	fi
+fi
+
+exec $TOOLS/lib/vrmail/vrmail ${1+"$@"}

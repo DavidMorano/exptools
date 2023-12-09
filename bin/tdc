@@ -1,0 +1,748 @@
+#
+# Telerep, by Franco E. Barber, CB 3d230c, cblph!feb
+#
+# Modified for exptools by Peter Fales, IH 9C-242, ihlpb!psfales
+#
+# Initial Changes
+# 	Check/force execution with ksh
+# 	Store PRTCMD and TDCPRINTER in file
+# 	Use variable to to store "bc" location
+#	Make sure first line of file starts with %!
+#	Include "Pages: 1" in prologue
+#	Used "print -" instead of echo or /bin/echo for Sun Systems
+#
+# Modified by G. L. Sicherman, Room 2B-024, 480 Red Hill Rd., Middletown,
+# N.J. 07748, windmill!gls.
+#
+#	Move phone number field rightward so it doesn't overlap its caption.
+#	Clean up the prompts.
+#	Add a parenthesis-escaper.
+#
+# Modified by F. E. Barber, CB 3d230c, atlas!feb
+#
+#	Implement the 01-94 version of GN92-600.
+#
+# Modified by F. E. Barber, CB 3d230c, atlas!feb, 11-22-94.
+#	Implement the 07-94 version of GN92-600.
+#
+
+VERSION="@(#) Version 3.1 94/11/28"
+
+# Descended from telerep version 0.4: October 2, 1992
+# Descended from gn92-600vouch version 0.3
+
+# The best way I can come up with to check if running ksh:
+
+if [ ~ = \~ ]
+then
+        if [ -f /bin/ksh ]
+        then
+                /bin/ksh $0 $*
+	elif [ -f $TOOLS/bin/ksh ]
+	then
+		$TOOLS/bin/ksh $0 $*
+        else
+                /bin/echo "You must run tdc from the Korn Shell (ksh)"
+        fi
+        exit
+fi
+
+TMPF="/usr/tmp/$$.tdc"
+OS=$(uname -s)
+if [ "$OS" = DOS ]
+then
+	NULL=nul
+	LIBDIR=C:/lib
+	OFILE="GN92-600.frm"
+	DATAFILE=${HOME}/GN92-600.vch
+	DATAFILESAVE=${HOME}/GN92-600.bak
+	TR="tr -c -d"
+else
+	NULL=/dev/null
+	LIBDIR=$TOOLS/lib/tdc
+	DATAFILE=${HOME}/.GN92-600vouch
+	DATAFILESAVE=${HOME}/.GN92-600backup
+	OFILE="/usr/tmp/$$.tdc1"
+	TR="tr -cd"
+	#Someone had a problem because cat was aliased to more.
+	unalias cat
+	unalias print
+fi
+trap "/bin/rm -f $TMPF $OFILE; exit" 0 1 2 3 15
+
+function read_p
+{
+	read -r x
+	if [ $? -ne 0 ]
+	then return $?
+	fi
+	eval "$1=$(print -r - "$x" | sed -e 's/[\\()]/\\&/g' -e 's/./\\&/g')"
+	return 0
+}
+
+function escape		# escapes for double-quoted strings
+{
+	print -r - "$1" | sed -e 's/[\\$"`]/\\&/g'
+}
+
+# This shell script is called when the $DATAFILE has to be
+# updated from an old version to the current one.
+CONVERT_SCRIPT=${LIBDIR}/GNupdate.sh
+
+PROLOGUE=${LIBDIR}/GN92-600.ps
+INSTRUCTIONS=${LIBDIR}/GN92-600.cat
+
+# At one point, I had BC=$(whence bc) here.  Don't know why
+BC=bc
+PG=$(whence pg)
+
+# If whence couldn't find a pager, then use cat
+if [ "x${PG}" = "x" ]
+then
+	PG=cat
+fi
+PAGER=${PAGER:-${PG}}
+
+MYNAME="${0##*/}"
+
+USAGE="usage: $MYNAME [-v] [-g] [-c copies] [-r] [ -f name ]"
+
+if [ "$OS" != DOS ]
+then
+	unalias print
+fi
+
+# option processing.
+# "set directly from getopt doesn't work on some versions of ksh.
+# Use "args" as an intermediate step:
+args=$(getopt vgc:f:nr "$@") && { set -- $args; unset args; }
+if [ $? != 0 ]
+then
+	print -u2 - "$USAGE"
+	exit
+fi
+
+Copies=1
+RECORDFLAG=""
+REDOFLAG=""
+
+for i in "$@"
+do
+	case "$i" in
+	
+	-g ) ${PAGER} ${INSTRUCTIONS} ; exit;;
+	-v ) print -u2 - "$VERSION"; exit;;
+	-c ) Copies=$2 ; shift 2;;
+	-n ) RECORDFLAG=N; shift;;
+	-r ) REDOFLAG=Y; shift;;
+	-f ) DATAFILE=$HOME/.GN92-600$2; shift 2;;
+	-- ) shift; break;;
+	esac
+done
+
+
+print - "
+If you have questions about this tool, please contact the
+provider.  DO NOT CALL PAYROLL OR THE TRANSITION TEAM.  Thank you.
+
+To see the instructions that are printed on the rear
+of form GN92-600, please execute \"$MYNAME -g\".
+
+"
+
+# Prologue file must exist or there's no point continuing.
+if [ ! -r "$PROLOGUE" ]
+then
+	print - "Cannot read library file containing PostScript code for voucher."
+	print - "Unable to continue execution."
+	exit
+fi
+
+print - "%!Non conforming PostScript
+%!PS
+%%Pages: 1
+%!.........
+500 dict begin" > ${TMPF}
+
+
+# This is the version number of the GN-92-600 form that this
+# script supports.
+GN92Version="07-94"
+# This is the version number of the tdc program.
+ProgramVersion="${VERSION}"
+
+
+# See if a file exists with answers to recurring questions
+if [ -r "${DATAFILE}" ]
+then
+	# Try to figure out if the data file corresponds to this
+	# version of the program.
+
+	# This variable is set only in the 09-90 version of the file.
+	unset BossName
+
+	# This variable is set in the 09-90 and 01-94 version of the file.
+	unset BoxNS
+
+	# The variable GN92Version is set in the 07-94 and later versions.
+	myGN92Version=${GN92Version}
+	unset GN92Version # introduced by the 07-94 version
+
+	# File exists, read it to define answers to recurring questions
+	. "${DATAFILE}"
+	chmod 600 ${DATAFILE}
+
+	datafileGN92Version=${GN92Version}
+	GN92Version=${myGN92Version}
+	unset myGN92Version
+
+	if [ "x${GN92Version}" != "x${datafileGN92Version}" ]
+	then
+		if [ -r "${CONVERT_SCRIPT}" ]
+		then
+			. "${CONVERT_SCRIPT}"
+		else
+			echo "
+It appears that your personal data file, ${DATAFILE},
+was created by an older version of the ${MYNAME} program.
+This is ${VERSION} of ${MYNAME},
+and it supports the GN-92-600 form, version ${GN92Version}.
+
+${MYNAME} normally uses a companion program, ${CONVERT_SCRIPT},
+to convert the old version of the data file to the new version,
+but this program could not be found on this machine, so ${MYNAME}
+is unable to convert your data file.
+
+Your data file, ${DATAFILE}, has been renamed ${DATAFILESAVE}
+and saved for you to examine if you want to do so.
+Because the conversion script is not found, you must re-enter the data.
+
+"
+			rm -f ${DATAFILESAVE}
+			mv ${DATAFILE} ${DATAFILESAVE}
+
+			print - "Press return to continue execution."
+			read_p JUNK
+		fi
+	fi
+fi
+
+
+# Set defaults for answers.
+HomeTelNo=000-000-0000
+UniversalCard=00000000
+Today="01/01/70"
+LastName=""
+FirstName=""
+MiddleInit=""
+SSN=""
+OrganizationNo="ND0000000"
+WorkAddress1="Room Number"
+WorkAddress2="Street Address"
+WorkAddress3="City State Zip"
+WorkAddress4=""
+OfficePhone="000-555-0000"
+BoxWeekly=""
+BoxMonthly="X"
+
+# Set today's date
+Today=$(/bin/date "+%m/%d/%y")
+
+
+# See if a file exists with answers to recurring questions
+if [ -r "${DATAFILE}" ]
+then
+	# File exists, read it to define answers to recurring questions
+
+	. "${DATAFILE}"
+	chmod 600 ${DATAFILE}
+
+	# Reset these version strings just in case they were changed
+	# by the data file.
+
+	# This is the version number of the GN-92-600 form that this
+	# script supports.
+	GN92Version="07-94"
+	# This is the version number of the tdc program.
+	ProgramVersion="${VERSION}"
+
+	# Set today's date
+	Today=$(/bin/date "+%m/%d/%y")
+
+else
+	# No file. Create file, make it readable only by owner.
+	# Ask each question. Store answer in file.
+	touch ${DATAFILE}
+	chmod 600 ${DATAFILE}
+
+
+	print - "Your GN-92-600 personal data file, ${DATAFILE}, does not exist.
+Answer these questions and the answers will be written out to this
+file for you so that you do not have to answer them again.
+Please do not make mistakes, because this script has very little
+error checking built into it."
+
+
+	print - "Home Telephone Number (e.g. 614-555-1212): \c"
+	read_p HomeTelNo
+	HomeTelNo=$( print - ${HomeTelNo} | ${TR} '[0-9]' )
+
+	print - "If you do not have an Universal Card or do not plan"
+	print - "to submit any requests with Universal Card charges,"
+	print - "just hit return without entering anything."
+	print - "Last 8 digits of Universal Card Number: \c"
+	read_p UniversalCard
+	UniversalCard=$( print - ${UniversalCard} | ${TR} '[0-9]' )
+
+	print - "Your Last Name: \c"
+	read_p LastName
+
+	print - "Your First Initial or Name: \c"
+	read_p FirstName
+
+	print - "Your Middle Initial: \c"
+	read_p MiddleInit
+
+	print - "Your Social Security Number: \c"
+	read_p SSN
+	SSN=$( print - ${SSN} | ${TR} '[0-9]' )
+
+	print - "Your Organization Number (e.g. ND00000D0): \c"
+	read_p OrganizationNo
+	OrganizationNo=$( print - ${OrganizationNo} |${TR} '[0-9][a-z][A-Z]')
+
+	print - "
+The GN-92-600 form gives you four lines in which to write your
+complete work address.  You are free to use any format that you wish.
+Please enter each of the four lines of the address separately.
+If you do not need to input a second, third, or fourth line, just
+hit return at that prompt to enter a blank line."
+
+	print - "(1st line): \c"
+	read_p WorkAddress1
+	print - "(2nd line): \c"
+	read_p WorkAddress2
+	print - "(3rd line): \c"
+	read_p WorkAddress3
+	print - "(4th line): \c"
+	read_p WorkAddress4
+
+	print - "Your Office Phone Number (e.g. 614-860-4100): \c"
+	read_p OfficePhone
+
+	BoxWeekly=""
+	BoxMonthly=""
+
+	print - "What is your pay period?"
+	PS3="Enter the number that corresponds to your pay period: "
+	select name in \
+		"Weekly" \
+		"Monthly"
+	do
+		if [ "x${name}" = "x" ]
+		then
+			print - "Please enter a number from 1 to 2."
+			continue
+		fi
+		break
+	done
+
+	case "${REPLY}" in
+	1) BoxWeekly="X";;
+	2) BoxMonthly="X";;
+	esac
+	
+	
+	print - "
+GN92Version=\"$(escape "${GN92Version}")\"
+HomeTelNo=\"$(escape "${HomeTelNo}")\"
+UniversalCard=\"$(escape "${UniversalCard}")\"
+LastName=\"$(escape "${LastName}")\"
+FirstName=\"$(escape "${FirstName}")\"
+MiddleInit=\"$(escape "${MiddleInit}")\"
+SSN=\"$(escape "${SSN}")\"
+OrganizationNo=\"$(escape "${OrganizationNo}")\"
+WorkAddress1=\"$(escape "${WorkAddress1}")\"
+WorkAddress2=\"$(escape "${WorkAddress2}")\"
+WorkAddress3=\"$(escape "${WorkAddress3}")\"
+WorkAddress4=\"$(escape "${WorkAddress4}")\"
+OfficePhone=\"$(escape "${OfficePhone}")\"
+BoxWeekly=\"$(escape "${BoxWeekly}")\"
+BoxMonthly=\"$(escape "${BoxMonthly}")\"
+Copies=$Copies" > $DATAFILE
+
+
+
+	print - "Your ${DATAFILE} file has been created.
+You should not have to answer these questions again.
+If you want to change the answers, you may edit the file or
+you may delete the file and rerun this program, and it will
+prompt you for the answers again." 
+
+fi
+
+# If TDCRECORD is not defined and non-null, ask the user if they want
+# to save.
+if [ "${TDCRECORD+DEFINED}" = DEFINED ]
+then
+	RECORD=$HOME/$TDCRECORD
+else
+	if [ "$OS" = DOS ]
+	then
+		RECORD=tdc.rec
+	else
+		RECORD=.tdcrecord
+	fi
+	print
+	print "Would you like to keep a record of"
+	print "this submission in ${RECORD}? Y|N (y): \c"
+	read_p ANS
+	print
+	if [ "$ANS" != "N" -a "$ANS" != "n" ]
+	then
+		TDCRECORD=$RECORD
+	else
+		TDCRECORD=""
+	fi
+	print "# If set, TDCRECORD is the name of a file in \$HOME to record submissions" >> ${DATAFILE}
+	print "TDCRECORD=\"$TDCRECORD\"" >> ${DATAFILE}
+	RECORD=$HOME/$TDCRECORD
+fi
+
+[[ $Copies -lt 1 || $Copies -gt 3 ]] &&	Copies=1
+
+if [ "$REDOFLAG" = Y -a -s "$RECORD" ]
+then
+	echo "Re-running last entry stored in $RECORD.  Please wait...."
+
+	RECTMP=/tmp/${MYNAME}.rerun.$$
+	awk < ${RECORD} > ${RECTMP} '
+	BEGIN { version="" }
+	$1 == "Date:" { count=0 ; version="" }
+	$1 == "Version:" { version=$2 }
+	index($1,"/") != 0 { 
+		n=split($1,date,"/");
+		if ( n == 2 ) {
+			count++
+			month[count]=date[1];
+			year[count]=date[2];
+			bill[count]=$2;
+			card[count]=$3;
+			other[count]=$4;
+			business[count]=$6
+		}
+	}
+
+	END {
+		OFS="\t"
+		print "Version:", version
+		for ( i=1 ; i<=count ; i++ ) {
+			print month[i]
+			print year[i]
+			print bill[i] 
+			print card[i]
+			print other[i]
+			print business[i]
+		}
+	print
+	}' 
+
+	recordGN92Version=`grep "^Version:" ${RECTMP} | cut -f 2`
+	if [ "x${GN92Version}" = "x${recordGN92Version}" ]
+	then
+		# Skip the first line, it has the version number.
+		tail +2 ${RECTMP} |
+		$TOOLS/bin/$MYNAME -c$Copies -n > $NULL
+		print "Re-run complete."
+	else
+		echo "
+The last record in the TDC record file contains data for a version
+of the GN-92-600 form that is different than the version number that
+this program can process.  Because of differences between versions,
+data from a different version can not be reliably reprocessed by
+the this program.  Therefore, the rerun option can not be executed.
+
+Please rerun the program and manually enter the required data.
+
+"
+	fi
+
+	exit
+fi
+
+# Copy the personal data to output file.
+	print - "/#copies $Copies def
+/GN92Version (${GN92Version}) def
+/ProgramVersion (${ProgramVersion}) def
+/HomeTelNo (${HomeTelNo}) def
+/UniversalCard (${UniversalCard}) def
+/Today (${Today}) def
+/LastName (${LastName}) def
+/FirstName (${FirstName}) def
+/MiddleInit (${MiddleInit}) def
+/SSN (${SSN}) def
+/OrganizationNo (${OrganizationNo}) def
+/WorkAddress1 (${WorkAddress1}) def
+/WorkAddress2 (${WorkAddress2}) def
+/WorkAddress3 (${WorkAddress3}) def
+/WorkAddress4 (${WorkAddress4}) def
+/OfficePhone (${OfficePhone}) def
+/BoxWeekly (${BoxWeekly}) def
+/BoxMonthly (${BoxMonthly}) def" >> ${TMPF}
+
+
+
+# Start a loop
+#	Prompt for month and year of billing date
+#	If no entry, end of work.
+#	If an entry, ask for all required data.
+#	Calculate, and put out one row of figures.
+
+print - "
+Enter data for up to 12 months.  To stop entering data before reaching
+the last month, enter <Return> with no data at the next "Billing Month"
+prompt."
+
+LineNo=1
+while true
+do
+	if (( $LineNo > 12 ))
+	then
+		print - "
+The form only has room on it for 12 months.  You will need to fill out
+a second form if you have more than 12 months to process.
+"
+
+		break
+	fi
+
+	integer BillMon
+	BillMon=99
+	while [[ $BillMon -gt 12 || $BillMon -lt 0 ]] 
+	do
+		print - "Hit return to stop, else Enter Billing Month (1 - 12): \c"
+		read_p BillMon
+		BillMon=$( print - ${BillMon} | ${TR} '[0-9]' )
+		[[ $BillMon -gt 12 || $BillMon < 0 ]] && \
+			print - "Month must be between 1 and 12"
+	done
+
+	# Check for end of input 
+	[[ $BillMon = 0 ]] && break
+
+	integer BillYr
+	DefYear=$(date +%y)
+	print - "Enter Billing Year (default ${DefYear}): \c"
+	read_p BillYr
+
+	[[ $BillYr -eq 0 ]] && BillYr=${DefYear}
+
+	BillYr=$( print - ${BillYr} | ${TR} '[0-9]' )
+
+	print - "
+
+Enter the total amount of reimbursable AT&T toll charges shown
+on your residence telephone bill.  Include taxes and any state and
+local surcharges.  If none, just hit return or enter 0.
+"
+	print - ": \c"
+	read_p ColD
+	ColD=$( print - ${ColD} | ${TR} '[0-9].' )
+	ColD=$( print - ${ColD} | awk '{printf("%.2f\n", $0)}' )
+
+	print - "
+Enter the total amount of reimbursable AT&T toll charges shown
+on your AT&T Universal Card Statement.  Deduct the 10% discount, then
+add any state and local surcharges.  If none, just hit return or enter 0.
+"
+	print - ": \c"
+	read_p ColE
+	ColE=$( print - ${ColE} | ${TR} '[0-9].' )
+	ColE=$( print - ${ColE} | awk '{printf("%.2f\n", $0)}' )
+
+	print - "
+Enter the total amount of reimbursable charges for other
+AT&T Telephone Bills (e.g. Signature 800 SM and AT&T Easy Reach 700 SM.)
+If none, just hit return or enter 0.
+"
+	print - ": \c"
+	read_p ColF
+	ColF=$( print - ${ColF} | ${TR} '[0-9].' )
+	ColF=$( print - ${ColF} | awk '{printf("%.2f\n", $0)}' )
+
+
+	ColG=$( print - "${ColD} + ${ColE} + ${ColF}" | ${BC} )
+	ColG=$( print - ${ColG} | ${TR} '[0-9].' )
+	ColG=$( print - ${ColG} | awk '{printf("%.2f\n", $0)}' )
+
+	print - "\n"
+	print - "Your gross inter-LATA charges for this month are \$${ColG}."
+	print - "\n"
+
+	print - "
+Enter total amount of charges for company-related business calls,
+which should be vouchered through normal company channels,
+and business calls for your personal business enterprise.
+If none, just hit return or enter 0.
+"
+	print - ": \c"
+	read_p ColH
+	ColH=$( print - ${ColH} | ${TR} '[0-9].' )
+	ColH=$( print - ${ColH} | awk '{printf("%.2f\n", $0)}' )
+
+	ColI=$( print - "${ColG} - ${ColH}" | ${BC})
+#
+# We want to delete everything that is not a number, period, or dash.  The
+# funny syntax is needed for compatibility with the gnu version of tr which
+# has problems with dashes in the specifiecation string.
+#
+	ColI=$( print - ${ColI} | ${TR} '[0-9].-.---' )
+	ColI=$( print - ${ColI} | awk '{printf("%.2f\n", $0)}' )
+
+# FIX
+#	need a test for ${ColI} < 0
+# FIX
+	case "${ColI}" in
+	-*)
+		typeset -R10 cwD____=${ColD} cwE____=${ColE}
+		typeset -R10 cwF____=${ColF} cwH____=${ColH}
+		typeset -R10 cwI____=${ColI}
+
+		print - "
+WARNING: The sum of your residence telephone calls (column D)
+         plus AT&T Universal Card calls (column E) plus
+         other AT&T Telephone Bills (column F) adds up to
+         less than your business calls (column H.)
+         This is unexpected.
+
+             Col. D    Col. E    Col. F    Col. H    Col. I
+         ${cwD____}${cwE____}${cwF____}${cwH____}${cwI____}
+
+         Under these circumstances, the net value (column I) would be
+         calculated as a negative number.  Since a negative net value
+         makes no sense, if the data you have entered is correct the net
+         value should be replaced by 0.00.
+
+If you want to ignore this month's input data and be given an
+opportunity to reenter the set of figures, enter 'y'.
+If you would like to accept a net value of 0.00, just hit return.
+"
+		if [ -t 0 ]
+		then
+			print - "What is your choice? \c"
+			read_p WhatToDo
+			if [ "x${WhatToDo}" = "xy" ]
+			then
+				print - ""
+				print - "The figures you entered \c"
+				print - "for month number ${BillMon} \c"
+				print - "are being discarded."
+				print - "\n"
+			continue
+			fi
+		fi
+
+		print - ""
+		print - "Using 0.00 for the net inter-LATA value."
+		print - ""
+
+		ColI="0.00"
+		: ;;
+	esac
+# END OF FIX
+# END OF FIX
+
+	print - "\n"
+	print - "Your net inter-LATA charges for this month are \$${ColI}."
+	print - "\n"
+
+	print - "/Line${LineNo}BillMon (${BillMon}) def
+/Line${LineNo}BillYr (${BillYr}) def
+/Line${LineNo}ResidencePhoneCalls (${ColD}) def
+/Line${LineNo}UCardCalls (${ColE}) def
+/Line${LineNo}OtherATTBills (${ColF}) def
+/Line${LineNo}Gross (${ColG}) def
+/Line${LineNo}VoucherableCalls (${ColH}) def
+/Line${LineNo}Net (${ColI}) def" >> ${TMPF}
+
+
+	if [ ! -z "$TDCRECORD" -a "$RECORDFLAG" != N ]
+	then
+	
+		if [ $LineNo = 1 ]
+		then
+			print - "------------------------------------------------------" >> ${RECORD}
+			print "${Today} - submitted Telephone Reimbursement\n" >> ${RECORD}
+
+			print - "Date:\tD\tE\tF\tG\tH\tI" >> ${RECORD}
+			print - "Version: ${GN92Version}" >> ${RECORD}
+		fi
+		print - "${BillMon}/${BillYr}\t${ColD}\t${ColE}\t${ColF}\t${ColG}\t${ColH}\t${ColI}" >> ${RECORD}
+	fi
+
+	(( LineNo = LineNo + 1 ))
+done
+
+# Billing data entry loop ends here.
+
+cat ${TMPF} ${PROLOGUE} > ${OFILE}
+
+if [ -z "${PRTCMD}" ]
+then
+	print "\nEnter the print command used by your system to print a \
+PostScript job\nHit return for UNISON default (prt -lpost) or enter \
+command:\c"
+	read_p PRTCMD
+	PRTCMD=${PRTCMD:="prt -lpost"}
+	print "# PRTCMD is your local command to print a PostScript file" >> $DATAFILE
+	print "PRTCMD=\"$PRTCMD\"" >> $DATAFILE
+	if [ "$PRTCMD" = "prt" ]
+	then
+		print - 'WARNING:  You have specified "prt" as your PRTCMD without the "-lpost"'
+		print - "option.  This is probably incorrect.  Edit the $DATAFILE"
+		print - "and change PRTCMD if necessary."
+	fi
+fi
+
+# Check for TDCPRINTER defined, even if defined as NULL
+# If not defined, get from user
+if [ "${TDCPRINTER+DEFINED}" != DEFINED ]
+then
+	print "
+If the print command you gave accepts an optional argument to specify
+a printer name using this syntax:
+
+	${PRTCMD} -d printername
+
+you can enter the name of the optional printer at the next prompt.
+
+If your command does not accept this syntax, do not enter a printer
+name at this prompt!  Instead, you will need to enter the printer name
+as part of the print command that you already gave.  If you need to 
+change this, edit your $DATAFILE file and change the 
+print command stored in the shell variable PRTCMD.
+"
+
+	print "Enter the name of the PostScript printer you would like this sent to: \c"
+	read_p TDCPRINTER
+	print "# TDCPRINTER is the name of the printer to send output to." >> $DATAFILE
+	print "TDCPRINTER=\"$TDCPRINTER\"" >> $DATAFILE
+fi
+
+if [ "$OS" = DOS ]
+then
+	cp  $OFILE ${TDCPRINTER}
+else
+	if [ -z "${TDCPRINTER}" ] ; then
+		# eval is needed for when PRTCMD is:
+		#	uux - "sysname!lp -or -t$LOGNAME"
+		/bin/cat $OFILE | $(eval ${PRTCMD} > /dev/tty)
+	else
+		/bin/cat $OFILE | $(eval ${PRTCMD} -d${TDCPRINTER} > /dev/tty)
+	fi
+fi
+
+print
+print "Your printout has been sent to the $TDCPRINTER printer." >&2
+print "If this is incorrect please edit your $DATAFILE file." >&2
+

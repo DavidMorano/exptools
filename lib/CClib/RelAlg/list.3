@@ -1,0 +1,119 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/list/s.list.3"
+.\" 
+.PH "'LIST(3SB)'SBLIB C++ Library'LIST(3SB)'" 
+.PF "'10/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910004'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910004'"
+.SK 
+.VL 7 0 
+.LI "\fBNAME\fP" 
+.br 
+List, Link1, Link1_queue, Link1_stack, Link2 - classes for list handling 
+.LI "\fBSYNOPSIS\fP" 
+.SP
+.EX
+\#include <sblib.h> 
+ 
+.SO list.dd
+
+.SO link1.dd
+
+.SO link1qs.dd
+
+.SO link2.dd
+.EE
+.LI "\fBDESCRIPTION\fP" 
+.br
+The \*(Lt classes provide simple containers.
+List is an abstract base class used to derive various types of lists.  
+It should not be constructed directly.  List provides routines for 
+converting data to List_items (\fBitemize()\fP), appending to the end of the 
+list (\fBappend()\fP), pushing on the front of the list (\fBpush()\fP), popping 
+from the front of the list (\fBpop()\fP) and removing a specific item from 
+anywhere on the list (\fBremove()\fP).  List also contains routines for 
+walking through the list (\fBstartwalk()\fP, \fBwalk()\fP, \fBendwalk()\fP).  
+The \fBitemize()\fP, \fBstartwalk()\fP, \fBwalk()\fP and \fBendwalk()\fP
+routines do not modify the list, but \fBappend()\fP, \fBpush()\fP, \fBpop()\fP
+and \fBremove()\fP change the list by adding or removing items.
+.P
+Each List implementation uses a class derived from List_item to store 
+individual items.  The derived \fBitemize()\fP function dynamically
+allocates List_items.  The application program should delete the List_item
+when it is no longer needed.  The \fBitemize()\fP function is the \fBonly\fP
+approved way to
+allocate List_items.  Passing an application-allocated List_item to
+\fBappend()\fP or \fBpush()\fP bypasses the dynamic allocation provided by
+\fBitemize()\fP.  The results are undefined.
+.P
+The application treats the derived List_items as a base List_item.  They must
+not exchange List_items between different List-derived classes since the
+List_items are derived differently.
+The \fIdata\fP member of List_item is used to access
+the data retrieved from the list.
+The Lists do not
+make their own copy of the data they store.
+Therefore, if the user manipulates the data outside
+the list, the list will reflect the manipulation.
+.P
+The Link1 class provides a singly-linked List class.  It derives a 
+Link1_List_item class from the List_item class and redefines the List 
+members appropriately.
+The Link1_queue class is a restricted version of Link1 providing 
+\fBitemize()\fP and the queue operations \fBappend()\fP and \fBpop()\fP.
+The Link1_stack class is a restricted version of Link1 providing
+\fBitemize()\fP and the stack operations \fBpush()\fP and \fBpop()\fP.  
+.P
+The Link2 class provides a doubly-linked List class.  It derives a 
+Link2_List_item class from the List_item class and redefines the List 
+members appropriately.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The \*(Lt operations append(), remove() and push() will fail and abort or 
+return FALSE and set syserr.errno under the following circumstances:
+.VL 30 0 
+.LI "[NULL_POINTER]" 
+A NULL List_item pointer is passed as an argument.  
+.LE
+.SP
+The List operations will fail and abort or return FALSE and set
+listerr.errno under the following circumstances:
+.VL 30 0 
+.LI "[L_WRONG_LIST_TYPE]" 
+The List_item passed to \fBappend()\fP, \fBremove()\fP or \fBpush()\fP
+is not of the same List class as the List.  
+.LI "[L_ON_LIST]" 
+The List_item passed to \fBappend()\fP or \fBpush()\fP is already on
+some List.  
+.LI "[L_STILL_ON_LIST]" 
+The List_item being deleted is still on a list.  
+.LI "[L_NOT_ON_LIST]" 
+The List_item passed to \fBremove()\fP is not on that List.
+If the list is empty, this error will be generated for
+any invocations of \fBremove()\fP.
+.LI "[L_IN_WALK]" 
+The \fBpop()\fP, \fBremove()\fP or \fBstartwalk()\fP operation was 
+called between \fBstartwalk()\fP and \fBendwalk()\fP.  
+.LI "[L_NOT_IN_WALK]" 
+The \fBwalk()\fP operation was called when not between \fBstartwalk()\fP
+and \fBendwalk()\fP.  
+.LI "[L_NO_STARTWALK]"
+The \fBendwalk() operation was called without a corresponding
+\fBstartwalk()\fP.
+.LE 
+.LI "\fBEXAMPLE\fP" 
+.SP
+.EX
+.SO listE.ex
+.EE
+.LI "\fBWARNINGS\fP" 
+.SP
+The Lists do NOT make their own copy of the data they store.  Therefore, if
+the application manipulates the data outside the list, the list will reflect
+the manipulation.
+.SP 
+Data can be on more than one list if separately itemized, but items 
+(the containers of the data) can not be added to more than one list.
+.SP
+Items itemized using one derived List class are prevented from being stored on
+a different derived List class.
+.LE 

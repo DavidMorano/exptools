@@ -1,0 +1,198 @@
+
+
+
+     XXXXTTTTEEEEKKKK4444000011114444((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))	   XXXXTTTTEEEEKKKK4444000011114444((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  xtek4014 - Tektronix 4014 emulator
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  xxxxtttteeeekkkk4444000011114444 [ strap options ] [ ----VVVVuuuucccc ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  The _x_t_e_k_4_0_1_4 utility emulates	a Tektronix 4014 computer
+	  display terminal for AT&T Dot-Mapped Display terminals (5620
+	  DMD and 630 MTG). The	terminal must be operating in the
+	  layers environment before downloading	_x_t_e_k_4_0_1_4 [see
+	  _l_a_y_e_r_s(_1)].  For maximum Tektronix compatibility, a layer
+	  should be created using the full screen width	and three
+	  fifths of the	screen height.	Distortion of the image	will
+	  occur	otherwise.
+
+	  Command line options can be used to simulate 4014 strap
+	  options.  In addition, a variety of choices for portraying
+	  "grey	levels"	are selectable via the mouse.
+
+	  The ----VVVV option	causes _x_t_e_k_4_0_1_4	to print a message that	iden-
+	  tifies which version it is.
+
+	  The ----cccc option, available only	for the	630 MTG, results in
+	  the _x_t_e_k_4_0_1_4 program being kept (_c_a_c_h_e_d) in the terminal's
+	  RAM memory after quitting _x_t_e_k_4_0_1_4.  The next	invocation of
+	  _x_t_e_k_4_0_1_4 will	bring up the program quickly without having to
+	  download it.	Use the	630 MTG	_u_c_a_c_h_e(_1) program to remove
+	  _x_t_e_k_4_0_1_4 from	the terminal's cache.
+
+     SSSSTTTTRRRRAAAAPPPP OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	 SSSSttttrrrraaaapppp	     OOOOppppttttiiiioooonnnn			    EEEEffffffffeeeecccctttt
+
+     LFeffect	     ----llll*       Default:	Received LF displays LF	only.
+			       ----llll: Received LF displays	LF and CR.
+
+     CReffect	     ----rrrr*       Default:	Received CR displays CR	only.
+			       ----rrrr: Received CR displays	CR and LF.
+
+     DELimpliesLOY   ----dddd	       Default:	DEL is legal LOY.
+			       ----dddd: ESC ? also recognized as DEL.
+
+     GINcount	     ----eeee, -g|-   Default:	GIN mode sends four position
+			       characters, and a CR.
+			       ----eeee: Sends an EOT	following the CR.
+			       ----gggg: Sends only the GIN characters;
+			       without CR or EOT.  This	is needed for _g_e_d(1).
+
+     DIMallowed|=     ----uuuu	       Default:	ALLOWED.  The screen will dim
+			       after being idle	for 90 seconds in ALPHA	mode.
+
+
+
+
+
+     Page 1					      (printed 9/8/92)
+
+
+
+
+
+
+     XXXXTTTTEEEEKKKK4444000011114444((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))	   XXXXTTTTEEEEKKKK4444000011114444((((1111))))
+
+
+
+			       Recover either by typing	a character, or	by
+			       selecting sssshhhhiiiifffftttt on the button 2 menu.
+			       ----uuuu: The screen never dims.
+
+	  * Only one of	----llll and ----rrrr may be selected.
+	  |- Only one of	----eeee and ----gggg may be selected.
+	  |= This is not	a true 4014 strap, but is included to make the
+	  emulator more	usable.
+
+     MMMMOOOOUUUUSSSSEEEE
+	  BBBBuuuuttttttttoooonnnn 1111	 Button	1 is used to select the	cross hairs
+			 when in GIN mode.  Moving the mouse moves the
+			 cross hair position.
+
+	  BBBBuuuuttttttttoooonnnn 2222	 The button 2 menu contains a list of options
+			 and functions (Table 1).
+
+			______________________________________________
+		       |		   Table 1		     |
+		       |______________________________________________|
+		       | line/local    |  selects line or local	mode |
+		       |________________|______________________________|
+		       | page	       |  simulates 4014 ppppaaaaggggeeee key    |
+		       |________________|______________________________|
+		       | reset	       |  resets default font, sends |
+		       |	       |  cursor to home position,   |
+		       |	       |  and brightens	the screen   |
+		       |	       |  (at least)		     |
+		       |________________|______________________________|
+		       | font	       |  selects font menu	     |
+		       |________________|______________________________|
+		       | flash/no flash|  briefly highlights charac- |
+		       |	       |  ters as they are drawn     |
+		       |________________|______________________________|
+		       | dither/random |  selects either dithering   |
+		       |	       |  process or coin-flip method|
+		       |	       |  to simulate grey levels|-   |
+		       |________________|______________________________|
+		       | smear/focus   |  selects either a 2x2 cell  |
+		       |	       |  of pixels (smear) or a 1x1 |
+		       |	       |  cell (focus) to represent  |
+		       |	       |  100%|-			     |
+		       |________________|______________________________|
+		       | shift	       |  brightens the	screen	     |
+		       |	       |  (displayed only when the   |
+		       |	       |  screen is dim)	     |
+		       |________________|______________________________|
+		       | exit	       |  returns to the user's	shell|
+		       |________________||______________________________|
+
+			 |- Since a DMD does not	have grey levels or
+			 the resolution	of a real 4014,	some fiddling
+
+
+
+     Page 2					      (printed 9/8/92)
+
+
+
+
+
+
+     XXXXTTTTEEEEKKKK4444000011114444((((1111))))	 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((TTTTOOOOOOOOLLLLCCCCHHHHEEEESSSSTTTT))))	   XXXXTTTTEEEEKKKK4444000011114444((((1111))))
+
+
+
+			 with these may	be necessary to	produce	the
+			 best emulation.  DDDDiiiitttthhhheeeerrrr and ssssmmmmeeeeaaaarrrr yield the
+			 best results in most cases.
+
+     FFFFIIIILLLLEEEESSSS
+	  $TOOLS/lib/dmdtools/xtek4014	host support for _x_t_e_k_4_0_1_4
+	  $TOOLS/lib/630/xtek4014.m	terminal support for the 630
+	  MTG
+	  $TOOLS/lib/dmd/xtek4014.m	terminal support for the 5620
+	  DMD
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+	  layers(1), ged(1), graphics(1) in the	_U_N_I_X _S_y_s_t_e_m _V _U_s_e_r
+	  _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+	  ucache(1) in the _6_3_0 _M_T_G _S_o_f_t_w_a_r_e _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l.
+	  _T_e_k_t_r_o_n_i_x _4_0_1_4 _O_p_e_r_a_t_o_r'_s _M_a_n_u_a_l.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3					      (printed 9/8/92)
+
+
+

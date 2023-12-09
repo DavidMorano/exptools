@@ -1,0 +1,14 @@
+# @(#)  SID: 1.1;  module: genlinkdirs;  last changed: 11/6/90  13:23:09
+#
+# This routine returns a list of link directories for all active links on
+# the machine *except* for the link named as argument
+
+genlinkdirs() {
+    typeset EXCLUDEDID=$1
+
+    for ID in $DEFAULTSERVERID $SERVERIDLIST $DEFAULTLOCALID $LOCALIDLIST; do
+	if test "$ID" != "$EXCLUDEDID"; then
+	    echo "adm/rug/$ID/"
+	fi
+    done
+}

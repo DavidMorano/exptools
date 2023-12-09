@@ -1,0 +1,528 @@
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+NAME
+     vtbl - interactive table editor
+
+SYNOPSIS
+     vtbl [ -c ] [ -Ffontdir ] [ -ffamily ] [ _f_i_l_e ]
+
+     vtbl [ -c ] [ -Ffontdir ] [ -ffamily ] [ _n_r_o_w_s ] _n_c_o_l_u_m_n_s
+
+DESCRIPTION
+     _V_t_b_l provides a visual interface to _t_b_l on sun3/sun4 running
+     suntools  or  X11,  mips running X11, and sysV and v10 plat-
+     forms running the layers window manager on DMD630 terminals.
+     When  invoked  with _f_i_l_e, it constructs a table from the _t_b_l
+     input in that file.  Given _n_c_o_l_u_m_n_s, it sets up a 1x_n_c_o_l_u_m_n_s
+     table;  given  two  numbers,  it  sets  up an _n_r_o_w_sx_n_c_o_l_u_m_n_s
+     table.  When no argument is specified, a minimal  1x1  table
+     is displayed.
+
+     The -c option allows a user running layers on a DMD630  ter-
+     minal  to  cache the terminal program so that it will not be
+     downloaded when vtbl is invoked again.
+
+     The -F option allows the user to specify the font directory.
+     The  default  font  directory is /usr/lib/X11/fonts for X11,
+     /usr/lib/fonts/fixedwidthfonts for  suntools  and  $DMD/font
+     for the 630.
+
+     The -f option allows the user to  specify  the  font  family
+     when  running  X11  or suntools.  The default font family is
+     adobe-new century schoolbook for X11 and cour for  suntools.
+     The standard terminal font is always used on the 630.
+
+     _V_t_b_l allows editing of the  table  structure  and  the  text
+     using  the  mouse  and the keyboard.  Use button 1 to select
+     boxes, text, and lines.  Button 2  provides  editing  opera-
+     tions  while button 3 supports formatting and file handling.
+     Pressing button 1 while holding 2 or  3  provides  a  single
+     line of help information for each menu operation.
+
+     Table box structure is displayed as  a  dotted  frame  which
+     does  not appear in the final _t_b_l output.  The active region
+     is always displayed in reverse  video.   Clicking  button  1
+     within  the text region positions the cursor in the text and
+     puts the user in text editing mode.  Clicking  button  1  on
+     white  space  selects the box. Sweeping text selects strings
+     within and across  box  boundaries;  sweeping  across  boxes
+     selects the region.  Clicking and sweeping on a line selects
+     the line segment indicated.
+
+     Text typed by the user appears in the  active  box.   If  no
+     text is selected, characters are appended.  If the text cur-
+     sor is displayed, they are inserted at that  cursor.   If  a
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     1
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+     text  segment  appears  in  reverse video, they replace that
+     active string.  There  are  three  special  characters:  _t_a_b
+     moves  to  the  next column, _l_i_n_e _f_e_e_d moves down the column
+     and _r_e_t_u_r_n moves to the first column in the  next  row.   At
+     the  right and bottom edges, _t_a_b creates a column and _r_e_t_u_r_n
+     creates a row.  Multi-line text can be created by  position-
+     ing the cursor in text and typing _r_e_t_u_r_n.
+
+     When boxes or lines are selected,  button  2  provides  cut,
+     paste,  reshape,  exchange  and add operations.  Columns and
+     rows can be cut; any active region can be pasted.  Boxes and
+     regions  can  be  reshaped  to  span  other columns or rows.
+     Columns can be exchanged and subcolumns can be added to  the
+     left  or  right  of  the active line. When text is selected,
+     button 2 provides text  cut  and  paste  operations.   Whole
+     columns  of  text can be snarfed and pasted without changing
+     the box structure: two  columns  of  text  pasted  into  one
+     column  joins  them  inserting a blank between, a three-line
+     single text item pasted over three rows splits the  text  at
+     the newlines.
+
+     When a box or subtable is selected, the button 2  menu  pro-
+     vides:
+
+     _c_u_t  deletes structure and text in the active  subtable  and
+          copies it to the table buffer
+
+     _p_a_s_t_e
+          pastes structure and text from the  table  buffer  over
+          the active region
+
+     _s_n_a_r_f _o_r _s_a_v_e
+          copies structure and text in the active  subtable  into
+          the table buffer
+
+     _r_e_s_h_a_p_e
+          requests sweep of new region - position, size and shape
+          - for the active subtable
+
+     _e_x_c_h_a_n_g_e
+          requests sweep of second subtable and exchanges it with
+          the active subtable
+
+     _u_n_d_o undoes the  most  recent  table  cut,  paste,  reshape,
+          exchange or add operation
+
+     <_m_u_x> _t_e_x_t
+          exchanges the text and window manager buffers
+
+     When a line is selected, the button 2 menu provides:
+
+     _p_a_s_t_e _a_b_o_v_e|_b_e_l_o_w
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     2
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+          pastes structure and text from the table buffer into  a
+          new  region  added  above or below the highlighted line
+          segment
+
+     _p_a_s_t_e _l_e_f_t|_r_i_g_h_t
+          pastes structure and text from the table buffer into  a
+          new  region added left or right of the highlighted line
+          segment
+
+     _a_d_d _a_b_o_v_e|_b_e_l_o_w
+          adds a row above or below the highlighted line segment
+
+     _a_d_d _l_e_f_t|_r_i_g_h_t
+          adds a column to the left or right of  the  highlighted
+          line segment
+
+     _u_n_d_o undoes the  most  recent  table  cut,  paste,  reshape,
+          exchange or add operation
+
+     <_m_u_x> _t_e_x_t
+          exchanges the text and window manager buffers
+
+     When a text string is selected, the button 2 menu provides:
+
+     _c_u_t _t_e_x_t
+          cuts the selected text
+
+     _p_a_s_t_e _t_e_x_t
+          pastes the text  buffer  at  the  cursor  or  over  the
+          selected text
+
+     _s_n_a_r_f _t_e_x_t _o_r _s_a_v_e _t_e_x_t
+          copies the selected text into the text buffer
+
+     _s_e_t _a_l_i_g_n
+          aligns text  at  cursor  position  (effective  only  in
+          numeric columns)
+
+     _c_l_e_a_r _a_l_i_g_n
+          deletes text alignment(s) in active subtable
+
+     _u_n_d_o undoes the most recent text cut or paste operation
+
+     <_m_u_x> _t_e_x_t
+          exchanges the text and window manager buffers
+
+     Button 3 aligns columns, draws lines, and  specifies  fonts,
+     width, linesize, tab character and intercolumn spacing, sets
+     _t_b_l delimiters and global options for position  and  boxing,
+     and  reads  and writes _t_b_l and text in either abbreviated or
+     complete forms.
+
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     3
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+     _a_l_i_g_n_m_e_n_t->
+          submenus align boxes and text in the active subtable
+
+          _l_e_f_t left-justifies column text
+
+          _r_i_g_h_t
+               right-justifies text
+
+          _c_e_n_t_e_r
+               centers text
+
+          _a_l_p_h_a_b_e_t_i_c
+               left-aligns text centering widest entry
+
+          _n_u_m_e_r_i_c
+               numerically aligns on units and decimal points
+
+          _t_o_p  vertically aligns at top of high box
+
+          _m_i_d_d_l_e
+               vertically centers text in high box
+
+     _f_o_n_t->
+          submenus set the font face and size in the active subt-
+          able
+
+          _b_o_l_d->
+               emboldens text in current pointsize
+
+               _B._5,_B._6,_B._8,_B._9,_B._1_0,_B._1_1,_B._1_2,_B._1_4,_B._1_6,_B._1_8,_B._2_0,_B._2_2,_B._2_4
+                    emboldens in size selected
+
+          _i_t_a_l_i_c_s->
+               italicizes text in current pointsize
+
+               _I._5,_I._6,_I._8,_I._9,_I._1_0,_I._1_1,_I._1_2,_I._1_4,_I._1_6,_I._1_8,_I._2_0,_I._2_2,_I._2_4
+                    italicizes in size selected
+
+          _b_o_l_d _i_t_a_l_i_c_s->
+               puts  text  into  bold  italic  face  in   current
+               pointsize
+
+               _B_I._5,_B_I._6,_B_I._8,_B_I._9,_B_I._1_0,_B_I._1_1,_B_I._1_2,_B_I._1_4,_B_I._1_6,_B_I._1_8,_B_I._2_0,_B_I._2_2,_B_I._2_4
+                    sets bold italic in size selected
+
+          _r_o_m_a_n->
+               puts text into roman face in current pointsize
+
+               _R._5,_R._6,_R._8,_R._9,_R._1_0,_R._1_1,_R._1_2,_R._1_4,_R,_1_6,_R._1_8,_R._2_0,_R._2_2,_R._2_4
+                    sets roman in size selected
+
+          _p_o_i_n_t_s_i_z_e->
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     4
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+               requests and changes pointsize, maintaining face
+
+               _5,_6,_8,_9,_1_0,_1_1,_1_2,_1_4,_1_6,_1_8,_2_0,_2_2,_2_4
+                    sets size selected
+
+          _d_e_f_a_u_l_t
+               restores default terminal font
+
+          _o_t_h_e_r
+               requests user to type fontname
+
+          _m_a_t_c_h _f_o_n_t
+               requests user to select a box and matches its font
+
+     _l_i_n_e_s->
+          submenus draw and clear lines in the active region
+
+          - _l_i_n_e
+               adds  horizontal  and  vertical  single  connected
+               lines
+
+          = _l_i_n_e
+               adds  horizontal  and  vertical  double  connected
+               lines
+
+          - _u_n_d_e_r_l_i_n_e
+               adds single unconnected lines  the  width  of  the
+               text
+
+          = _u_n_d_e_r_l_i_n_e
+               adds double unconnected lines  the  width  of  the
+               text
+
+          - _b_o_r_d_e_r
+               boxes the region with single connected lines
+
+          = _b_o_r_d_e_r
+               boxes the region with double connected lines
+
+          _c_l_e_a_r _l_i_n_e_s
+               clears lines
+
+          _c_l_e_a_r _b_o_r_d_e_r
+               clears border
+
+     _s_t_y_l_e->
+          displays current style and submenus set width,  spacing
+          and global tbl options
+
+          _w_i_d_t_h
+               requests    column    width    (in    any    unit:
+               1i,10c,30P,m,n,u,v)
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     5
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+          _s_p_a_c_e->
+               requests intercolumn spacing (in ens)
+
+               _b_i_g_g_e_s_t,_b_i_g_g_e_r,_b_i_g
+                    sets spacing to 6, 5, 4
+
+               _d_e_f_a_u_l_t
+                    sets spacing to 3
+
+               _s_m_a_l_l,_s_m_a_l_l_e_r,_s_m_a_l_l_e_s_t
+                    sets spacing to 2, 1, 0
+
+          _b_e_a_u_t_i_f_y->
+               improves final output using complete  tbl  formats
+               and padding; default is no beautification: concise
+               tbl output (minimal tbl description)
+
+               _f_i_x _i_n_t_e_r_s_e_c_t_i_o_n
+                    avoid misaligned line crossings
+
+               _p_a_d _s_i_n_g_l_e _l_i_n_e_s
+                    add spacing around single lines
+
+               _p_a_d _d_o_u_b_l_e _l_i_n_e_s
+                    add spacing around double lines
+
+               _p_a_d _f_o_n_t_s
+                    add spacing around large fonts
+
+          _p_o_s_i_t_i_o_n->
+               positions table in final typeset output, no effect
+               on screen
+
+               _l_e_f_t left adjusts the table (_d_e_f_a_u_l_t)
+
+               _c_e_n_t_e_r
+                    centers the table
+
+               _e_x_p_a_n_d
+                    expands table to full width of  current  line
+                    length
+
+          _b_o_x_i_n_g->
+               maintains global boxing options in table
+
+               _d_e_f_a_u_l_t
+                    no global boxing maintained (_d_e_f_a_u_l_t)
+
+               _b_o_x  encloses the table in a box
+
+               _d_o_u_b_l_e_b_o_x
+                    encloses the table in two boxes
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     6
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+               _a_l_l_b_o_x
+                    encloses each item in the table in a box
+
+          _d_e_l_i_m_i_t_e_r_s->
+               selects table start and end commands
+
+               ._T_S/._T_E
+                    reads and writes macros .TS & .TE
+
+               _m_o_n_k reads and writes |begin(table) & |end(table)
+
+               _n_a_k_e_d
+                    reads and writes tables  with  no  delimiters
+                    (_d_e_f_a_u_l_t)
+
+          _l_i_n_e_s_i_z_e
+               requests and changes pointsize for lines or  rules
+               from boxing
+
+          _I/_O _t_a_b
+               requests and sets the tab character for  read  and
+               write
+
+     _r_e_a_d->
+          prompts for _t_b_l filename and  reads  specification  and
+          data
+
+          _t_b_l  reads _t_b_l input file
+
+          _t_b_l _i_n_t_o _r_e_g_i_o_n
+               reads _t_b_l input file into active region
+
+          _t_e_x_t reads text file into table structure on screen
+
+          _t_e_x_t _i_n_t_o _r_e_g_i_o_n
+               reads text file into  table  structure  in  active
+               region
+
+     _w_r_i_t_e->
+          prompts for output filename and writes to that file
+
+          _t_b_l  writes _t_b_l file from table on screen
+
+          _t_b_l _f_r_o_m _r_e_g_i_o_n
+               writes _t_b_l file from active region
+
+          _t_e_x_t writes text only from table on screen to file
+
+          _t_e_x_t _f_r_o_m _r_e_g_i_o_n
+               writes text only from active region to file
+
+     _q_u_i_t quits if table has been written; otherwise reports  and
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     7
+
+
+
+
+
+
+VTBL(1.0)         MISC. REFERENCE MANUAL PAGES          VTBL(1.0)
+
+
+
+          waits for another quit
+          on 630: _q_u_i_t->
+          _r_e_m_o_v_i_n_g _f_o_n_t_s - quits vtbl and removes fonts from  the
+          font cache (default)
+          _c_a_c_h_i_n_g _f_o_n_t_s - quits vtbl and leaves fonts in the font
+          cache
+
+SEE ALSO
+     _t_b_l(1)
+
+BUGS
+     Some _t_b_l features are not supported: multi-line text  always
+     contains  hard  _r_e_t_u_r_n_s, \Rx and dashes intermixed with text
+     in format descriptions to produce lines running horizontally
+     through a row are not available.
+
+     When using layers on the DMD630, quit  default  will  remove
+     fonts  from the font cache; to leave fonts in the font cache
+     use submenu to select "quit caching fonts".
+
+     On the DMD630 the input file may have at most  2  .T&'s;  if
+     vtbl  finds  a third .T&, the third .T& and everything after
+     it will be ignored.
+
+     <mux> deals with text only. If your window manager maps tabs
+     to  spaces then you will lose the table structure when using
+     <mux>.
+
+     _T_b_l does not try to adjust row height to handle large  fonts
+     and  is  quite willing to draw lines through text with large
+     fonts; _v_t_b_l attempts to pad row height to avoid  this;  how-
+     ever, this handling is not robust.
+
+     _V_t_b_l does not correctly align  the  baselines  of  different
+     font sizes.
+
+     If the message "corrected ...." is  displayed,  to  see  how
+     _v_t_b_l needed to change the input file, write the file immedi-
+     ately and see the _t_b_l man page for restrictions, eg.  cannot
+     span  n-type  or  a-type  columns and cannot have n and a in
+     same column.
+
+     _V_t_b_l does not support individual underlines that are all the
+     same type in a spanned column.
+
+     There are bugs.  Do send bug reports to research!eowyn.
+
+
+
+
+
+
+
+
+
+Sun Release 4.1       Last change: EXPTOOLS                     8
+
+
+

@@ -1,0 +1,542 @@
+
+USAGE='[ -h ] [ -i ] [ -v ] [ -asis ] [ -man ] [ -vg ] [ -gc ] [ -grap ] [ -pic ] [ -troff ] [ -TX97.font ] [ -mail|-route|-addr { "addr" | mailfile | - } ] any mmx parameters'
+
+
+#-----------------------------------------------------------------------
+# Function:	help
+# Description:	printout help message
+
+help()
+{
+	cat <<'!'
+	exmmx provides easy access to manual page processing, vugraph
+	generation, limited graphics, and mail/route service via the mmx
+	and xerox facilities.  Access is also provided to the post
+	database to derive addresses for mail/route service.
+
+	The options are:
+		-h	print out help message
+		-i	run job interactively
+		-v	print commands without execution
+		-asis	use input as is (unformatted)
+		-man	use manual page macros
+		-vg	supply defaults for vugraph generation
+		-gc	(same as -g) run input through gc (gc2pic for
+			troff) filter for limited graphics
+		-troff	use device independent troff
+		-grap	use grap language for typesetting graphs
+		-pic	use pic and device independent troff
+		-tbl	use tbl (same as -t)
+		-eqn	use eqn (same as -e)
+		-TX97.font specify troff font size
+		-mail	send output thru BTL mail; use address form of
+			"name location room" (eg, "J. Who IH 1B-234");
+			for multiple addresses, use mailfile with
+			address per line (without quotes); mailfile may
+			be - for standard input.  If location and room
+			are omitted from an address, the address is
+			looked up in the post database.
+		-route	same as -mail option except the output is labeled
+			with a BTL address in a box on the first page of
+			the document so that it can be delivered by the
+			regular BTL mail service when placed in an OUT
+			box.
+		-addr	same as -mail option except produce address list
+			that would be used by -mail/-route.  Useful for
+			debugging post output.
+		others	passed on blindly to mmx
+!
+	return 0
+}
+
+
+#-----------------------------------------------------------------------
+# Function:	postlookup  < names  > names with addresses
+# Description:	Split off names without addresses and use post to derive
+#		the address
+
+postlookup()
+{
+	POSTOUT=/usr/tmp/$$.po
+	TMP=/usr/tmp/$$.tmp
+	>$TMP
+	# print names with addresses and save those without
+	awk '
+		/[ 	][0-9][0-9]*[a-zA-Z]/	{ print; next }
+		/IH-HH/				{ print; next }
+						{ print >>tmp; next }
+		' tmp=$TMP -
+
+	# return if no addresses to lookup
+	test -s $TMP || return 0
+
+	# Transform each name into post form (eg, j doe -> j.doe
+	# or doe, j -> j.doe) and check that post finds an
+	# address for each name.
+	>$POSTOUT
+	PADDR=`wc -l <$TMP`
+	PFMT=`post -w -o %pn zzz 2>/dev/null  &&  echo "-o '%pn|%loc|%room'"`
+	sed '
+		s/^\([^,]*\),\(.*\)/\2.\1/
+		s/[ 	]\{1,\}/./g
+		s/^\.*//
+		s/\.*$//
+		s/[\.]\{2,\}/./g
+		' $TMP	|
+		xargs echo post -w $PFMT |
+		while read postcmd
+		do
+			# Test the success of each post command
+			$postcmd >>$POSTOUT 2>&1 || echo fail
+		done |
+		while read fail
+		do
+			# If post had a problem, dump its output
+			echo "$0:  post could not find some address(es):"
+			cat $POSTOUT
+			return 2
+		done >&2
+
+	grep post: $POSTOUT >/dev/null
+	if [ $? -eq 0 -o $PADDR -gt `wc -l <$POSTOUT` ]
+	then
+		echo "$0:  post could not find all addresses, post output follows:"
+		cat $POSTOUT
+		return 2
+	fi >&2
+
+	# Pick out the name and address from post output, pretty up
+	# the output by translating to upper case and inserting blanks.
+	# Note this is tricky because this is designed to handle post
+	# 2.0 thru 4.0 output format.  4.0 and on should be easy because
+	# the post -o lets you define the format.
+	tr -d "'" <$POSTOUT |
+	sed 's/[ 	]\{2,\}/	/g' |
+		tr -s '' '	' |
+		awk '-F	' '
+			/\|/ { print $0; next }
+			$1 ~ /^att[^,]*$/ { print $2 "	" $4; next }
+			{ print $1 "	" $4; next }
+			' |
+		tr '[a-z]' '[A-Z]' |
+		sed '
+			s/|/ /g
+			s/,/, /
+			s/	\([^0-9]*\)/ \1 /
+			'
+	return 0
+}
+
+
+#-----------------------------------------------------------------------
+# Function:	locdest  < names  > location tab addresses
+# Description:	the location in the address of the input names are
+#		used to produce a -ddestination.
+
+locdest()
+{
+	awk '
+	/[ 	;]IH[ 	][	 ]*[0-9]/	{ print "-dIH	" $0; next }
+	/[ 	;]ih[ 	][	 ]*[0-9]/	{ print "-dIH	" $0; next }
+	/[ 	;]IX[ 	][	 ]*[0-9]/	{ print "-dIX	" $0; next }
+	/[ 	;]ix[ 	][	 ]*[0-9]/	{ print "-dIX	" $0; next }
+	/[ 	;]IE[ 	][	 ]*[0-9]/	{ print "-die	" $0; next }
+	/[ 	;]ie[ 	][	 ]*[0-9]/	{ print "-die	" $0; next }
+	/[ 	;]IHP[ 	][	 ]*[0-9]/	{ print "-die	" $0; next }
+	/[ 	;]ihp[ 	][	 ]*[0-9]/	{ print "-die	" $0; next }
+	/[ 	;]IW[ 	][	 ]*[0-9]/	{ print "-dIW	" $0; next }
+	/[ 	;]iw[ 	][	 ]*[0-9]/	{ print "-dIW	" $0; next }
+	/[ 	;](MH|WV|MV)[ 	][	 ]*[0-9]/ { print "-dMH	" $0; next }
+	/[ 	;](mh|wv|mv)[ 	][	 ]*[0-9]/ { print "-dMH	" $0; next }
+	/[ 	;](WH|AL|CH|HL|MO|RD)[ 	][	 ]*[0-9]/ { print "-dWH	" $0; next }
+	/[ 	;](wh|al|ch|hl|ml|rd)[ 	][	 ]*[0-9]/ { print "-dWH	" $0; next }
+	/[ 	;](HO|FJ|HP|LZ|NP|PY|WB)[ 	][	 ]*[0-9]/ { print "-dHO	" $0; next }
+	/[ 	;](ho|fj|hp|lz|np|py|wb)[ 	][	 ]*[0-9]/ { print "-dHO	" $0; next }
+	/[ 	;](CB|IN|INH)[ 	][	 ]*[0-9]/ { print "-dCB	" $0; next }
+	/[ 	;](cb|in|inh)[ 	][	 ]*[0-9]/ { print "-dCB	" $0; next }
+	/[ 	;]DR[ 	][	 ]*[0-9]/	{ print "-dDR	" $0; next }
+	/[ 	;]dr[ 	][	 ]*[0-9]/	{ print "-dDR	" $0; next }
+		{ print "?	" $0 }
+	'
+	return 0
+}
+
+
+#-----------------------------------------------------------------------
+# Function:	predwb  < commands  > commands
+# Description:	the location in the address of the input names are
+#		used to produce a -ddestination.
+
+predwb()
+{
+	if [ -d /usr/add-on/dwb -o -d /usr/add-on/dwb2 -o -d /usr/add-on/dwb2.0a -o -d /usr/lib/dwb ]
+	then
+		cat
+	else
+		# transform commands into pre-DWB2.0 compatible form
+		sed "
+			/xpand/a\\
+			$GCCMD
+
+			/pic/s/-D/-TX97/
+			s/[ 	]-g[ 	]/ /
+			s!^[ 	]*dx9700!	/usr/bin/ndx9700!
+			"
+	fi
+	return 0
+}
+
+
+#-----------------------------------------------------------------------
+# Function:	procaddr  -mail|-addr|-route commandfile  < addresses  > commands
+# Description:	process the addresses and modify the command file
+
+procaddr()
+{
+	mar=$1
+	marfile=$2
+	AFILE=/usr/tmp/$$.afile
+	postlookup  >$AFILE  ||  return 2
+
+	# Dump addresses if requested with -addr
+	if [ "$mar" = "-addr" ]
+	then
+		cat $AFILE >&2
+		return 0
+	fi
+
+	# Modify the command file for address processing
+
+	NROFF=/usr/tmp/nroff.$$
+	MFILE=/usr/tmp/mail.$$
+
+	# Get everything up to but not including the opr/npf command and
+	# save input for opr/npf in temporary file with traps to remove it.
+
+	cat $marfile |
+		case $mar in
+		-mail)	sed '/opr[ 	]/,$d' ;;
+		-route)
+			sed '
+				/^npf[ 	]/,$d
+				/^dx9700[ 	]/,$d
+				/x9700[ 	]/,$d
+				'
+			;;
+		*)	cat ;;
+		esac
+
+	cat <<-!
+		cat - >$NROFF
+		trap 'rm -f /usr/tmp/$$.* /usr/tmp/*.$$; exit \$RC' 0
+		trap 'RC=4 exit 4' 1 2 3 15
+		!
+
+	test "$mar" = -route  &&  cat <<-'!'
+		# Function:	boxaddr
+		boxaddr()
+		{
+			awk '
+			       {
+				deliver = "| BDeliver to:R  " $0 "|"
+				dsize = length(deliver)
+				printf( "\nXT" )
+				for ( i = 0; i < dsize - 6; i++) {
+					printf( "Xg" )
+				}
+				printf( "Xd\n" )
+				printf( "%s\n", deliver)
+				printf( "XS" )
+				for ( i = 0; i < dsize - 6; i++) {
+					printf( "Xg" )
+				}
+				printf( "Xc\n" )
+				printf( "\n\n" )
+			      }' 
+		}
+		!
+
+	# Embed addresses prefixed by location destination in shell script
+	# as a here-is document so no tricks are needed for batch jobs
+	# where a /usr/tmp file would not be dependable
+	cat <<-!
+		cat <<-'?' |
+			`locdest <$AFILE`
+			?
+		!
+
+	case $mar in
+	-mail)
+		# Generate a script to read the location/address(es)
+		# and execute the opr command for each address.
+		OPROPTS=`sed -n 's/.*opr[ 	]\([^)]*\).*/\1/p' $marfile`
+		cat <<-!
+			while read loc addr
+			do
+				case \$loc in
+				\?)	echo "mailed to: \$addr"; loc= ;;
+				*)	echo "mailed to: \$addr via \$loc" ;;
+				esac
+				opr -mail "\$addr" \$loc $OPROPTS <$NROFF 2>&1
+			done  >&2
+			!
+		# Tack on the rest of the original command script
+		sed -n '/opr[ 	]/,$p' $marfile	|
+			sed '/.*opr[ 	]/s/^[^)]*//'
+		;;
+
+	-route)
+		# Sort the addresses on the address for -route option
+		# and insert the box with the address in place of the
+		# first 6 lines in the document.
+
+		cat <<-!
+			while read loc addr
+			do
+			    echo "\$addr" | boxaddr
+			    tail +7 $NROFF
+			done	|
+			!
+		sed -n '
+			/^npf[ 	]/,$p
+			/x9700[ 	]/,$p
+			' $marfile
+		;;
+	esac
+	return 0
+}
+
+
+#-----------------------------------------------------------------------
+# Function:	getcmds  > commands
+# Description:	Derive the commands from the mmx command by using the -v option
+
+getcmds()
+{
+	case $TYPE in 
+	-asis)
+		{ mmx -e -v $LEN $PARMS || return 2; } |
+			awk '
+				{ print }
+				/xpand/	{ print cmd }
+				' 'cmd=	{ echo ".nf"; cat - ; } |' -
+		;;
+	-man)
+		{ mmx -e -v $LEN $PARMS || return 2; } |
+			sed '
+				s!-mm! -man!
+				s!-cm! -man!
+				s!/usr/lib/macros/mmx! -man!
+			    '
+		;;
+	-vg)
+		# Set default vugraph options
+		mmx -e -i -v -ytr14 /dev/null >/dev/null 2>&1
+		case $? in
+		0)	FONT=-ytr14	;;
+		*)	FONT=-ytimes14	;;
+		esac
+		OFFSET=-o20
+		PRINT=-pport
+	
+		# If any default vugraph options are specified on the command
+		# line, override them 
+		for parm in $PARMS
+		do
+			case $parm in 
+			-p*) PRINT=;;
+			-y*) FONT=;OFFSET=;;
+			-o*) OFFSET=;;
+			*)   ;;
+			esac
+		done
+	
+		mmx -e -v $PRINT $OFFSET $FONT $PARMS || return 2
+		;;
+	-addr)	;;
+	*)	mmx -e -v $PARMS || return 2 ;;
+	esac |
+		sed 's/^\(batch.*<<\)!/\1"!"/' |
+		sed "/opr/s/opr/& $TWOSIDE /" |
+		if [ "$EQN" = "" ]
+		then
+			# if -e was not specified, delete the eqn command that was 
+			# added to mmx to force the xpand command to be generated.
+			fgrep -v eqn
+		else
+			cat
+		fi |
+		if [ "$TROFF" != "" ]
+		then
+			# if device independent troff requested/needed, change command script
+			if [ "$MOR" = -route ]
+			then
+				echo "$0:  can't use -pic/-troff with -route" >&2
+				return 2
+			fi
+				
+			sed "
+				1,\$s/-TX[ 	]/ /g
+				/nroff/s/-rL[0-9]*[ 	]/ /
+				/nroff/s/-rW[0-9]*[ 	]/ /
+				/nroff/s/-rO[0-9]*[ 	]/ /
+				/nroff/s/-TX97//
+				s/nroff/troff $TX97/
+				s!/usr/lib/macros/mmx!-cm!
+				s/neqn/eqn -TX97/
+				s!npf.*!$DX9700 |!
+				s!/usr/[^/]*/x9700.*\(-k[ 	]*[^ 	]*\).*!$DX9700 \1 |!
+				s!/usr/[^/]*/x9700.*!$DX9700 |!
+				/opr/s/-o0[ 	]/ /
+				" |
+				awk '
+					/xpand/	{
+						print
+						xpand = 1
+						next
+					}
+					/.*\/gc[ 	].*\|/	{
+						print "	gc2pic | "
+						pic = 1
+						next
+					}
+					grap != "" && xpand != ""	{
+						print "	grap  | "
+						grap = ""
+						pic = 1
+					}
+					pic != "" && xpand != ""	{
+						print "	pic -D | "
+						pic = ""
+					}
+					{ print }
+					' grap=$GRAP pic=$PIC -
+		else
+			cat
+		fi |
+			predwb
+	
+	return 0
+}
+
+
+#-----------------------------------------------------------------------
+# main program
+
+trap 'rm -f /usr/tmp/$$.* /usr/tmp/*.$$; exit $RC' 0
+trap 'RC=4 exit 4' 1 2 3 15
+
+SH=sh
+TYPE=
+GC=
+GCPARM=
+GCCMD=
+ADDR=
+MOR=
+IA=
+TROFF=
+GRAP=
+PIC=
+TBL=
+EQN=
+TX97=-TX97.ti10p
+DX9700=dx9700
+LEN=
+STDIN=
+TWOSIDE=
+PATH=$PATH:$TOOLS/bin; export PATH
+
+CMD=/usr/tmp/$$.cmd
+
+if [ $# -lt 1 ]
+then
+	echo "Usage:  $0  $USAGE" >&2
+	RC=1 exit 1
+fi
+
+# Pick out the special mmx options from the input parameters
+PARMS="$*"
+while [ $# -gt 0 ]
+do
+	case $1 in 
+	-h)		help; RC=0  exit 0 ;;
+	-man)		TYPE=$1; TROFF=-troff;;
+	-vg)		TYPE=$1;;
+	-asis)		TYPE=$1; GCPARM=-h;;
+	-gc)		GC=-g; GCCMD="`logdir exptools`/bin/gc |";;
+	-mail|-route)	MOR=$1; ADDR="$2"; shift;;
+	-addr)		MOR=$1; ADDR="$2"; TYPE=$1; SH=cat; shift;;
+	-v)		SH=cat;;
+	-i)		IA=interactive;;
+	-grap)		GRAP=$1; PIC=$1; TROFF=-troff;;
+	-pic)		PIC=$1; TROFF=-troff;;
+	-tbl|-t)	TBL=-t;;
+	-eqn|-e)	EQN=-e;;
+	-troff)		TROFF=$1;;
+	-TX97*)		TX97=$1;;
+	-2)		TWOSIDE=$1;;
+	-)		STDIN=/usr/tmp/$$.stdin;;
+	*)		;;
+	esac
+	shift
+done
+
+if [ "$TROFF" = "" ]
+then
+	LEN=-l66
+fi
+
+if [ "$STDIN" != "" -a "$ADDR" = "-" ]
+then
+	echo "$0:  can't use standard input for both mail/route and regular input" >&2
+	RC=2 exit 2
+fi
+
+# Strip out the special parameters so mmx won't see them
+PARMS=`echo " $GC $TBL $EQN $PARMS "	|
+	sed "
+		s![ 	]-mail[ 	]*$ADDR! !
+		s![ 	]-route[ 	]*$ADDR! !
+		s![ 	]-addr[ 	]*$ADDR! !
+		s![ 	]$TYPE[ 	]! !
+		s![ 	]-gc[ 	]! !
+		s![ 	]-grap[ 	]! !
+		s![ 	]-pic[ 	]! !
+		s![ 	]-tbl[ 	]! !
+		s![ 	]-eqn[ 	]! !
+		s![ 	]-troff[ 	]! !
+		s![ 	]-TX97[^ 	]*[ 	]! !
+		"`
+
+if [ "$ADDR" = "-" ]
+then
+	ADDR=/usr/tmp/$$.adr
+	cat - >$ADDR
+fi
+
+# If in interactive mode with standard input, copy to temp file
+# and change mmx - parameter to temp file.
+if [ "$IA" != "" -a "$STDIN" != "" ]
+then
+	cat - >$STDIN
+	PARMS=`echo " $PARMS "	| sed "s![ 	]-[ 	]! $STDIN !"`
+fi
+
+# Produce command sequence and execute
+
+{ getcmds  ||  RC=2 exit $RC; }  |
+	if [ "$ADDR" = "" ]
+	then
+		cat -
+	else
+		cat >$CMD
+		# Modify the command script to mail/route the output to each address
+		# Get address(es)
+		{ test -r "$ADDR" && cat $ADDR || echo "$ADDR"; } |
+			procaddr  $MOR $CMD  ||  RC=2  exit $RC
+	
+	fi |
+	$SH
+
+wait
+RC=0 exit 0

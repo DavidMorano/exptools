@@ -1,0 +1,371 @@
+%declare
+
+char mb[1024];
+
+unsigned max_count;
+unsigned count;
+int first;
+
+struct s_entry {
+	char *ptr; /* ptr to image */
+	char *pname; /* program space name */
+	int value; /* integer value */
+	ANY where; /* where in tree this came from */
+	int first; /* is this the first of the group */
+} sorted_list[10000];
+
+int code_cmp(a,b) struct s_entry *a; struct s_entry *b; 
+{
+	int rc = strcmp(a->ptr,b->ptr);
+	if(!rc) reporterror(NULL,"Duplicate symbol: %s",a->ptr);
+	return rc;
+};
+
+int myi, myi2;
+
+extern char basename[];
+
+extern unsigned checksum;
+
+
+
+%template
+
+#include <search.h>
+#include <string.h>
+#include <malloc.h>
+#include <sys/param.h>
+
+%forall a:TABLE_SPEC %loop
+	%{ max_count = count = 0; }
+	%forall b:TABLE_ENTRY_GROUP in a %loop
+		%{ first = 1; }
+		%forall c:TABLE_ENTRY in b %loop
+			%{ sorted_list[count].ptr=
+			table_entry_name(table_entry_spec(c)) ?
+			tok(table_entry_name(table_entry_spec(c))) :
+			tok(table_entry_string(table_entry_spec(c)));}
+			%{ sorted_list[count].value = max_count;}
+			%{ sorted_list[count].where =
+				table_entry_spec(c);}
+			%{ sorted_list[count].pname =
+				*(tok(table_entry_pname(c))) ?
+					tok(table_entry_pname(c)) :
+					tok(table_entry_name(table_entry_spec(c)));
+			}
+			%{ sorted_list[count].first = first;}
+			%{ count++; first = 0;}
+		%end-loop
+		%{ max_count++; }
+	%end-loop
+
+extern  struct _%(tok(table_name(a)))_entry { const char *ptr; int value; } _%(tok(table_name(a)))_table[];
+
+	%{ qsort(sorted_list,count,sizeof(struct s_entry),code_cmp); }
+
+struct _%(tok(table_name(a)))_entry _%(tok(table_name(a)))_table[] = {
+	%{
+		agprintf("\n");
+		for(myi=0;myi<count;myi++)
+			agprintf("{ \"%s\" , %d },\n",sorted_list[myi].ptr,
+				sorted_list[myi].value);
+	}{ "", 0 } };
+
+struct _%(tok(table_name(a)))_entry *_%(tok(table_name(a)))_itable[] = {
+	%{
+		agprintf("\n");
+		for(myi=0;myi<max_count;myi++) {
+			for(myi2=0;myi2<count;myi2++)
+				if(sorted_list[myi2].first &&
+					(myi == sorted_list[myi2].value)){
+					agprintf("&_%s_table[%d],\n",
+						tok(table_name(a)), myi2);
+					break;
+				}
+		}
+	}&_%(tok(table_name(a)))_table[0] };
+
+unsigned _%(tok(table_name(a)))_max_ip1 = %(itoa(max_count)) ;
+int _%(tok(table_name(a)))_cmp(struct _%(tok(table_name(a)))_entry *a,struct _%(tok(table_name(a)))_entry *b) { return strcmp(a->ptr,b->ptr); };
+
+class %(tok(table_name(a))) {
+	int i;
+	const char * istr;
+	int allocated;
+public:
+	%(tok(table_name(a)))() { i = -1; istr = (char*)0; allocated = 0; };
+	%(tok(table_name(a)))(const char * const a){allocated = 0; *this = a; };
+	%(tok(table_name(a)))(const %(tok(table_name(a))) &a) { allocated = 0; *this = a; };
+	%(tok(table_name(a)))(const int a) { allocated = 0; *this = a; };
+	~%(tok(table_name(a)))() { if(allocated) free((char*)istr); };
+	int integer() const { return i; };
+	const char *image() const { return istr; };
+	%(tok(table_name(a)))& operator=(const %(tok(table_name(a)))&);
+	%(tok(table_name(a)))& operator=(const int);
+	%(tok(table_name(a)))& operator=(const char * const);
+
+	%(tok(table_name(a)))& operator++() {
+		if ((i < 0) || (i >= _%(tok(table_name(a)))_max_ip1)) ;
+		else {
+			if(++i == _%(tok(table_name(a)))_max_ip1) i = -1;
+			*this = i;
+		};
+		return *this;
+	};
+
+	%(tok(table_name(a)))& operator--() {
+		if ((i < 0) || (i >= _%(tok(table_name(a)))_max_ip1)) ;
+		else *this = --i;
+		return *this;
+	};
+
+};
+
+%(tok(table_name(a)))& %(tok(table_name(a)))::operator=(const %(tok(table_name(a)))& a) {
+	if(allocated) free((char*)istr);
+	i = a.i;
+	if(allocated = a.allocated)
+		istr = strcpy(malloc(strlen(a.istr)+1),a.istr);
+	else istr = a.istr;
+	return *this;
+};
+%(tok(table_name(a)))& %(tok(table_name(a)))::operator=(const int a) {
+	i = a;
+	if(allocated) { free((char*)istr); allocated = 0; };
+	if( (a >= _%(tok(table_name(a)))_max_ip1) || ( a < 0) )
+		istr = (char*)0;
+	else istr = _%(tok(table_name(a)))_itable[a]->ptr;
+	return *this;
+};
+%(tok(table_name(a)))& %(tok(table_name(a)))::operator=(const char * const a) {
+	register struct _%(tok(table_name(a)))_entry *found;
+	struct _%(tok(table_name(a)))_entry junk;
+	if(allocated) { free((char*)istr); allocated = 0; };
+	junk.ptr = a;
+	if (found = (struct _%(tok(table_name(a)))_entry *)
+	bsearch((char*)&junk,(char*)_%(tok(table_name(a)))_table,
+	%(itoa(count)),
+	sizeof(struct _%(tok(table_name(a)))_entry),
+	(int (*)(const void *,const void *))_%(tok(table_name(a)))_cmp)){
+		i = found->value;
+		istr = found->ptr;
+	}
+	else {
+		i = -1;
+		allocated = 1;
+		istr = strcpy(malloc(strlen(a)+1),a);
+	};
+	return *this;
+};
+
+/* set definitions */
+
+#define _%(tok(table_name(a)))_set_size ( (%{agprintf("%d",max_count);} / NBTSPW ) +1 )
+
+class %(tok(table_name(a)))_set {
+	int bits[_%(tok(table_name(a)))_set_size];
+public:
+	void clear();
+	%(tok(table_name(a)))_set () { clear(); };
+	void set(const int a) {
+		if ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ;
+		else bits[a / NBTSPW] |= ( 1 << ( a %("%") NBTSPW) );
+	};
+	void clear(const int a) {
+		if ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ;
+		else bits[a / NBTSPW] &= ~( 1 << ( a %("%") NBTSPW) );
+	};
+	is_on(const int a) const {
+		return ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ? 0 :
+			bits[a / NBTSPW] & ( 1 << ( a %("%") NBTSPW) );
+	};
+	is_off(const int a) {
+		return ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ? 0 :
+			!( bits[a / NBTSPW] & ( 1 << ( a %("%") NBTSPW) ) );
+	};
+
+	%(tok(table_name(a)))_set& operator= (%(tok(table_name(a)))_set a);
+
+	friend operator== (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	friend operator!= (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+
+	// subset op
+	friend operator< (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+
+	// superset op
+	friend operator> (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+
+	// union ops
+	friend %(tok(table_name(a)))_set operator+ (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator+= (const %(tok(table_name(a)))_set& a);
+	// intersection ops
+	friend %(tok(table_name(a)))_set operator* (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator*= (const %(tok(table_name(a)))_set& a);
+	// difference ops
+	friend %(tok(table_name(a)))_set operator- (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator-= (const %(tok(table_name(a)))_set& a);
+	// exor ops
+	friend %(tok(table_name(a)))_set operator^ (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator^= (const %(tok(table_name(a)))_set& a);
+	// invert op
+	friend %(tok(table_name(a)))_set operator~ (const %(tok(table_name(a)))_set& a);
+
+};
+
+void
+%(tok(table_name(a)))_set::clear() {
+	register int *i = bits;
+	register int *end_i = &bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *(i++) = 0;
+};
+
+%(tok(table_name(a)))_set&
+%(tok(table_name(a)))_set::operator= (%(tok(table_name(a)))_set a) {
+	register int i = _%(tok(table_name(a)))_set_size;
+	while (--i >= 0)
+		bits[i] = a.bits[i];
+	return *this;
+};
+
+int operator== (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) if ( *i++ != *j++ ) return 0;
+	return 1;
+};
+
+int operator!= (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) if ( *i++ != *j++ ) return 1;
+	return 0;
+};
+
+// subset op
+operator< (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i )
+		if ( *i++ & ~(*j++) ) return 0;
+	return 1;
+};
+
+// superset op
+operator> (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i )
+		if ( ~(*i++) & *j++ ) return 0;
+	return 1;
+};
+
+// union ops
+%(tok(table_name(a)))_set operator+ (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	%(tok(table_name(a)))_set result;
+	register int *k = result.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *k++ = *i++ | *j++;
+	return result;
+};
+
+%(tok(table_name(a)))_set& %(tok(table_name(a)))_set::operator+= (const %(tok(table_name(a)))_set& a){
+	register int *i = bits;
+	register int *j = a.bits;
+	register int *end_i = &bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *i++ |= *j++;
+	return *this;
+};
+
+// intersection ops
+%(tok(table_name(a)))_set operator* (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	%(tok(table_name(a)))_set result;
+	register int *k = result.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *k++ = *i++ & *j++;
+	return result;
+};
+
+%(tok(table_name(a)))_set& %(tok(table_name(a)))_set::operator*= (const %(tok(table_name(a)))_set& a){
+	register int *i = bits;
+	register int *j = a.bits;
+	register int *end_i = &bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *i++ &= *j++;
+	return *this;
+};
+
+// difference ops
+%(tok(table_name(a)))_set operator- (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	%(tok(table_name(a)))_set result;
+	register int *k = result.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *k++ = *i++ & ~(*j++);
+	return result;
+};
+
+%(tok(table_name(a)))_set& %(tok(table_name(a)))_set::operator-= (const %(tok(table_name(a)))_set& a) {
+	register int *i = bits;
+	register int *j = a.bits;
+	register int *end_i = &bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *i++ &= ~(*j++);
+	return *this;
+};
+
+// exor ops
+%(tok(table_name(a)))_set operator^ (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	register int *i = a.bits;
+	register int *j = b.bits;
+	%(tok(table_name(a)))_set result;
+	register int *k = result.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *k++ = *i++ ^ *j++;
+	return result;
+};
+
+%(tok(table_name(a)))_set& %(tok(table_name(a)))_set::operator^= (const %(tok(table_name(a)))_set& a) {
+	register int *i = bits;
+	register int *j = a.bits;
+	register int *end_i = &bits[_%(tok(table_name(a)))_set_size];
+	while ( i < end_i ) *i++ ^= *j++;
+	return *this;
+};
+
+// invert op
+%(tok(table_name(a)))_set operator~(const %(tok(table_name(a)))_set& a) {
+	register int *i = a.bits;
+	register int *end_i = &a.bits[_%(tok(table_name(a)))_set_size];
+	%(tok(table_name(a)))_set result;
+	register int *k = result.bits;
+	while ( i < end_i ) *k++ = ~(*i++);
+	return result;
+};
+
+/* for each entry produce its constant */
+%forall c:TABLE_ENTRY in a %loop
+
+extern const %(tok(table_name(a)))  %if (table_entry_pname(c)) %then %(lower(strcpy(mb,tok(table_entry_pname(c))))) %else %(lower(strcpy(mb,tok(table_entry_name(table_entry_spec(c)))))) %end-if ( %{
+	extern int header_cmp();
+	struct s_entry junk;
+	struct s_entry *sptr;
+	junk.ptr = table_entry_name(table_entry_spec(c)) ?
+		tok(table_entry_name(table_entry_spec(c))) :
+		tok(table_entry_string(table_entry_spec(c)));
+	sptr = bsearch(&junk,sorted_list,count,sizeof(struct s_entry),header_cmp);
+	agprintf(" %d",sptr->value);
+	});
+
+%end-loop
+
+%end-loop
+
+/* define bolt with header file */
+int %(upper(strcpy(mb,basename)))_%{agprintf("%u",checksum);} ;

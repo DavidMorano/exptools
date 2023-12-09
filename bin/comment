@@ -1,0 +1,319 @@
+#!/bin/sh
+####################################################################
+#	    This is unpublished AT&T proprietary source code.
+#			All rights reserved
+#			Copyright (c) 1990, 1991, 1992
+#			AT&T Bell Laboratories
+####################################################################
+
+# Habit chains a dog to its vomit.
+
+####################################################################
+# Add comments to program source
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				October 1990
+#
+# MODIFIED:
+#	1/23/91	-added -p option
+#	2/5/91  -use private copy of newform if public version
+#		not available in /usr/bin
+#	9/12/91	-added nroff analyzer
+#	6/29/92 -added -h option to produce comment header blocks
+#
+# USAGE:  comment [-l  language]   [-p path] [-hr]
+#		[-f aux_comment_file] [files]
+#
+# NOTES:
+#	Languages supported are c, shell, epl, and nroff
+#	Default language is c.
+#
+####################################################################
+VERSION="5.0"
+PGM=`basename $0`
+LANGOPTIONS='c|epl|shell|nroff|troff'		# language options
+
+: ${TOOLS:?"environment variable is not set or is not exported"}
+
+LIBDIR=$TOOLS/lib/${PGM}/	# library pgms are in this directory
+# LIBDIR=./
+
+TMP=/usr/tmp
+
+# set temporary files
+TMPF1=$TMP/1Co$$
+COM=$TMP/2Co$$
+TMPCF=$TMP/3Co$$
+CCFILE=$TMP/4Co$$
+NUMSRC=$TMP/5Co$$
+ALLDBFILE=$TMP/6Co$$
+
+TMPFILES="$TMPF1 $COM $TMPCF $CCFILE $NUMSRC $ALLDBFILE"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "${PGM}: Aborted" 1>&2; exit 1' 1 2 3 15
+
+FORHELP="\n\t(Type 'toolman comment' for a manual page, then contact Bob Parnass\n\tif you need help.)\n"
+USAGE="USAGE:  ${PGM}  [-l language]  [-p path] [-hr]  [-f aux_comment_file]  [files]\n\nLanguages supported are: ${LANGOPTIONS}. Use -p for other languages.\n\nVersion ${VERSION}\n${FORHELP}"
+
+EXIT_CODE=0
+PFLAG=		# for -p option
+RFLAG=		# for -r option
+LFLAG=		# for -l option
+FFLAG=		# for -f option
+HFLAG=		# for -h option
+AUXDB=		# pathname of aux comment database if specified
+
+LANG=c
+
+# parse command line arguments 
+set -- `getopt hp:rf:l: $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	for i in $*
+	do
+		case $i in
+
+		-h)
+			# produce header comment blocks
+			if [ "$HFLAG" ]
+			then
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+
+			HFLAG=1
+			shift ;;
+		-l)
+			# language
+			if [ "$LFLAG" ]
+			then
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+
+			LFLAG=1
+
+			case $2 in
+			*)
+				LANG=$2
+				shift 2
+				;;
+			esac
+			;;
+
+		-p)
+			# use aux language processor
+			if [ "$PFLAG" ]
+			then
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+
+			PFLAG=1
+			PPATH=$2
+			shift 2
+			;;
+
+		-r)
+			# replace internal comments database
+			if [ "$RFLAG" ]
+			then
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+
+			RFLAG=1
+			shift ;;
+		-f)
+			# use aux comment file
+			if [ "$FFLAG" ]
+			then
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+
+			FFLAG=1
+			AUXDB=$2
+			test -r "${AUXDB}"
+
+			# if file exists and readable
+			if [ $? -ne 0 ]
+			then
+				echo "\n### error ### ${PGM}: Cannot read file ${AUXDB}\n"	 1>&2
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+			shift 2;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+# if user supplied language analyzer
+if [ $PFLAG ]
+then
+	if [ $HFLAG ]
+	then
+		echo "\n### error ### ${PGM}: -h and -p are mutually exclusive\n" 1>&2
+		echo "${USAGE}" 1>&2
+		exit 1
+	fi
+	LANGANALYZER=${PPATH}
+else
+		# language
+		case $LANG in
+			c|epl|shell|nroff)
+				;;
+			troff)
+				LANG=nroff
+				;;
+			*)
+				echo "\n### error ### ${PGM}: Must use -p option unless language is ${LANGOPTIONS}\n"	 1>&2
+				echo ${USAGE} 1>&2
+				exit 1
+
+				;;
+		esac
+
+	LANGANALYZER=${LIBDIR}${LANG}
+fi
+
+test -x "${LANGANALYZER}"
+if [ $? -ne 0 ]
+then
+
+	echo "\n### error ### ${PGM}: Cannot execute language analyzer:\n\t${LANGANALYZER}\n" 1>&2
+	echo "${USAGE}" 1>&2
+	exit 1
+fi
+
+if [ $RFLAG ]
+then
+	if [ $FFLAG ]
+	then
+		:
+	else
+		# does not make sense to override internal db if
+		# you do not specify an aux db to use
+		echo "### error ### ${PGM}: if -r specified, then you must use -f also." 1>&2
+		echo "${USAGE}" 1>&2
+		exit 1
+	fi
+fi
+
+
+if [ "$LANG" ]
+then
+	# set name of internal comments database for this language
+	if [ ${RFLAG} ]
+	then
+		DB=
+	else
+		DB=${LIBDIR}${LANG}.db
+
+		# if file exists and readable
+		test -r "${DB}"
+		if [ $? -ne 0 ]
+		then
+			echo "\n### error ### ${PGM}: Cannot read file ${DB}\n"	 1>&2
+			echo ${USAGE} 1>&2
+			exit 1
+		fi
+	fi
+else
+	echo "\nMust specify language as: ${LANGOPTIONS}" 1>&2
+	echo ${USAGE} 1>&2
+	exit 1
+fi
+
+
+
+# see if a public version of the newform program exists
+test -x /usr/bin/newform
+if [ $? -eq 0 ]
+then
+	# use public version
+	NEWFORM=/usr/bin/newform
+else
+	# use private version
+	NEWFORM=$TOOLS/lib/comment/newform
+fi
+
+NFILES=$#
+
+if [ $# -eq 0 ]
+then
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	if [ ${HFLAG} ]
+	then
+		if [ ${LANG} != "c" ]
+		then
+			echo "${PGM}: -h option not yet implemented for language ${LANG}" 1>&2
+			rm -f ${TMPFILES}
+			exit 1
+		fi
+
+		${NEWFORM} -i ${DB} $AUXDB \
+			| grep ';' \
+			| sed -e 's/;.*==> /\;/' \
+			| sed -e 's,/\* *,,' \
+			| sed -e 's, *\*/,,' > ${ALLDBFILE}
+				
+		LANGHEADER=${LIBDIR}${LANG}header
+
+		${LANGHEADER} -f ${ALLDBFILE} $CFILE
+		
+		EXIT_CODE=$?
+	else
+		${NEWFORM} -i ${DB} $AUXDB \
+			| awk -F\; '\
+				{
+				restline = $0
+				semicolon = index(restline, ";")
+				if(semicolon)
+					{
+					name = $1
+					count = 2
+					printf "%s;%2d;%s\n", name, count, $2
+					}
+				else
+					{
+					++count
+					printf "%s;%2d;%s\n", name, count, restline
+					}
+				}' > ${ALLDBFILE}
+
+	
+		${LIBDIR}mergecmt ${LANGANALYZER} ${ALLDBFILE} ${CFILE}
+		EXIT_CODE=$?
+	fi
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`expr ${NFILES} - 1`
+
+	# set next source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}

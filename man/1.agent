@@ -1,0 +1,198 @@
+
+
+
+     AAAAGGGGEEEENNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAAGGGGEEEENNNNTTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          agent - send agent calls to a layers terminal
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          aaaaggggeeeennnntttt [-clav] agentcall|"!com"|"&com" [chan|- [up to 4
+          args]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          AAAAggggeeeennnntttt sends agent commands to a 5620/630/730 to manipulate
+          windows.  Many of the agent commands are similar to the com-
+          mands on the terminal's button 3 menu.  The agentcall can be
+          a number as defined in "agent.h" (in
+          $TOOLS/lib/agent/include) or can be one of the names listed
+          below.  Only the first character of an agentcall name is
+          significant except for commands that are two "words"; in
+          that case the first character of both words are required.
+          For example, NEWLAYER requires both an 'N' and an 'L'.  Case
+          in an agentcall name is insignificant.
+
+          The channel number defaults to the current window if missing
+          but is required if extra arguments are required for the
+          call.  A channel number of '-' also defaults to the current
+          channel.  Channel numbers are assigned sequentially starting
+          at 1 for the initial window on a 630/730, and you can use
+          the -c option (see below) to find out a channel number of a
+          window.
+
+          Here are the available agent calls by name.
+
+          CURRENT
+             Make the window current.
+
+          DELETE
+             Delete the window.
+
+          TOP
+             Pop the window to the top.
+
+          BOTTOM
+             Push the window to the bottom.
+
+          NEW
+             Create a new window so that the upper left hand corner is
+             at the X, Y coordinates specified as the first two extra
+             arguments and so that the lower right hand corner is at
+             the X, Y coordinates specified as the next two extra
+             arguments.  Coordinates are the same as those specified
+             in a "layers -f" file.  The passed-in channel number is
+             ignored and a free channel is selected by the terminal.
+
+          NEWLAYER
+             Exactly like NEW except no shell is created to run in the
+
+
+
+     Page 1                                          (printed 6/21/93)
+
+
+
+
+
+
+     AAAAGGGGEEEENNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAAGGGGEEEENNNNTTTT((((1111))))
+
+
+
+             new window.
+
+          MOVE
+             Move the window so that the upper left hand corner is at
+             the X, Y coordinates specified in the extra arguments.
+
+          RESHAPE
+             Reshape the window; arguments are the same as for NEW.
+
+          EXIT
+             Exit layers.
+
+          ROMVERSION
+             Return the rom version of the terminal.
+
+          !com
+             Execute shell command "com" in a window.  If window coor-
+             dinates are given, this behaves just like a NEW but the
+             shell command is executed in it instead of $SHELL.  As in
+             the "layers -f" file, the last command in "com" should be
+             invoked with "exec".
+
+          &com
+             Exactly like "!com" except that aaaaggggeeeennnntttt doesn't wait for
+             the command to exit.  NOTICE: character-xt-driver based
+             layers does not know that this new process is associated
+             with the target window, so deleting the target window
+             will not kill this process.  Use "!com" so aaaaggggeeeennnntttt will
+             kill the command when aaaaggggeeeennnntttt itself is killed. This has
+             the desired side effect of killing the command when
+             layers is exited, but has the unfortunate side effect of
+             killing the command if the originating window is deleted.
+             If you run aaaaggggeeeennnntttt in the background, this will still work.
+
+          The following agentcalls are available only on 730 terminals
+          running 777733330000wwwwiiiinnnnddddoooowwwwssss.  See 777733330000wwwwiiiinnnnddddoooowwwwssss(1) for information about
+          parameters to these agentcalls.
+
+          CREATESCREEN
+             Create a new screen.
+
+          DESTROYSCREEN
+             Destroy current screen.
+
+          NEXTSCREEN
+             Jump to the next screen.
+
+          PREVSCREEN
+             Jump to the previous screen.
+
+          NEWHOST
+             Initialize a new host.
+
+
+
+     Page 2                                          (printed 6/21/93)
+
+
+
+
+
+
+     AAAAGGGGEEEENNNNTTTT((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             AAAAGGGGEEEENNNNTTTT((((1111))))
+
+
+
+          EXITHOST
+             Exit a host.
+
+          TILELAYER
+             Change window into a small box (iconify).
+
+          UNTILELAYER
+             Restore window from the small box (uniconify).
+
+          HOSTDIALER
+             Set a host dialer.
+
+          DIALRESET
+             Rest a dialer.  Used by 777733330000sssseeeettttddddiiiiaaaallll(1).
+
+          DIALCONCAT
+             Add 8 bytes to a dialer string.  Used by 777733330000sssseeeettttddddiiiiaaaallll(1).
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          -c Print out the channel number returned from the terminal
+             to standard output.  This is useful when doing a NEW to
+             determine which channel was selected.  You can also use
+             AAAAggggeeeennnntttt -c by itself (except on old versions of pseudo-tty
+             layers) to determine the channel number of the current
+             window.
+
+          -l Determine if on logged-in layer and return true or false.
+
+          -a Print out the response in ascii.  This is the default for
+             ROMVERSION.
+
+          -v Verbose mode, for debugging.  Prints out what is sent and
+             received in the agent call.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          AAAAggggeeeennnntttt is particularly useful from within the "layers -f"
+          startup file on a 630/730 to be able to re-use channels that
+          are freed up by downloaded programs.  Here is a sample from
+          one of those startup files:
+              8 960 64 1016 exec dmdlock -u
+              56 480 968 900 echo "please wait";sleep 55;agent NEW 1 32 32 944 452;agent NEW 1 32 504 944 924;agent MOVE 1 56 56;agent CURRENT 1;exec $SHELL
+
+          To create a window, run "mailx" in it, and delete the window when
+          mailx finishes:
+              CHAN=`agent -c NEWLAYER 1 32 32 944 452`
+              agent "!mailx" $CHAN
+              agent DELETE $CHAN
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 6/21/93)
+
+
+

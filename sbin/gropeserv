@@ -1,0 +1,27 @@
+#!/usr/bin/ksh
+# GROPESERV
+
+
+: ${LOCAL:=/usr/add-on/local}
+: ${TOOLS:=/usr/add-on/exptools}
+export LOCAL TOOLS
+
+
+PROG=${TOOLS}/bin/grope
+if [[ ! -x ${PROG} ]] ; then
+  echo "service not available"
+  exit 1
+fi
+
+
+FPATH=${LOCAL}/fbin
+export FPATH
+
+
+pathadd PATH ${TOOLS}/bin
+pathadd LD_LIOBRARY_PATH ${TOOLS}/lib
+
+
+grope "${@}"
+
+

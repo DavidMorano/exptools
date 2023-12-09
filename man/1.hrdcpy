@@ -1,0 +1,528 @@
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+     NAME
+	  hrdcpy - make	hard copy of terminal I/O
+
+     SYNOPSIS
+	  hrdcpy [-p|-P] [-a] [-i] [-e 'exit-cmd'] [-s start-file]
+	  file
+
+     DESCRIPTION
+	  Hrdcpy records terminal transactions in the specified	file.
+	  This is particularly useful for recording CRT	display	ses-
+	  sions, although it may be used with any terminal type. It
+	  should be noted that hrdcpy increases	the overhead of	termi-
+	  nal interactions; thus it should not be used indiscrim-
+	  inately.  Hrdcpy can be terminated by	entering a control D
+	  (or a	control-Z in emacs mode).
+
+     OPTIONS
+	  Certain commands (e.g. csh(1)	and its(5ESS)) have builtin
+	  tty line editor that conflict	with hrdcpy's line editor.  If
+	  -p is	specified hrdcpy will use pipe(2)s rather than pseudo
+	  ttys to connect its processes	to the target process.	Use of
+	  pipes	will disable most builtin tty line editors.  However,
+	  using	pipes brings about its own problems (see BUGS).	 If -P
+	  is specified hrdcpy will use pseudo ttys but will not	dis-
+	  able its editting feature if the target process puts the tty
+	  into the raw mode (very rarely needed).
+
+	  If -a	is specified the saved information will	be appended to
+	  the file rather than overwriting it.
+
+	  Normally hrdcpy throws away any characters (up to 5120) in
+	  the output pipe between it and the subject program when the
+	  'break' key is hit.  Specifying -i inhibits this.
+
+	  If -e	is specified, an exit-cmd must also be specified.  In
+	  this case, when hrdcpy exits it will execute the exit-cmd
+	  rather than printing the name	of the output file.  In	most
+	  cases, the exit-cmd will need	to be specified	in either sin-
+	  gle or double	quotes.
+
+	  If -s	is specified, a	start-file must	also be	specified.  In
+	  this case the	lines of the file will be inserted into	the
+	  input	stream before the keyboard is read.  See METERING sec-
+	  tion.
+
+     EDITING
+	  Normally each	line is	simply entered followed	by a new-line
+	  ('RETURN' or 'LINE FEED').  At any point while entering a
+	  line from a terminal,	if 'echo' mode (see stty(1)) is
+	  active, the user has the option to edit the line.  To	edit,
+	  the user moves the cursor to the point needing correction
+	  and then inserts or deletes characters or words as needed.
+
+
+
+     Page 1					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+	  Many of the editing commands are control characters or
+	  escape sequences.  The notation for control characters is
+	  caret	(^) followed by	the character.	For example, ^F	is the
+	  notation for control F.  This	is entered by depressing 'f'
+	  while	holding	down the "CTRL"	(control) key.	The "SHIFT"
+	  key is not depressed (^f would be a better notation, but the
+	  convention is	^F).  (The notation ^? indicates the DEL
+	  (delete) key.)
+
+	  The notation for escape sequences in EMACS editing mode is
+	  M- followed by a character.  For example, M-f	(pronounced
+	  Meta f) is entered by	depressing ESC (escape)	followed by
+	  'f'.	(M-F would be the notation for ESC followed by "SHIFT"
+	  (capital) 'F'.)
+
+	  All edit commands operate from any place on the line (not
+	  just at the beginning).  Neither the "RETURN"	nor the	"LINE
+	  FEED"	key is entered after edit commands except when noted.
+
+	  The editing features require that the	user's terminal	accept
+	  "RETURN" as carriage return without line feed	and that a
+	  space	(' ') must overwrite the current character on the
+	  screen.  ADM terminal	users should set the "space - advance"
+	  switch to 'space'.  Hewlett-Packard series 2621 terminal
+	  users	should set the straps to "bcGHxZ etX".
+
+	  There	are two	editing	modes: emacs and vi. Hrdcpy will come
+	  up in	emacs mode by default, unless the shell	variable
+	  VISUAL or EDITOR is assigned a value ending in 'vi'.
+
+	Common Edit Commands
+	  erase	    (User defined erase	character as defined by	the
+		    stty command, usually ^H or	#.)  Delete previous
+		    character (only when performing an insert if in vi
+		    mode, otherwise in vi mode this is the same	as h.)
+
+	  kill	    (User defined kill character as defined by the
+		    stty command, usually ^G or	@.)  Kill the entire
+		    current line.  If two kill characters are entered
+		    in succession, all kill characters from then on
+		    cause a line feed (useful when using paper termi-
+		    nals).
+
+	  \	    Escape next	character. Editing characters, the
+		    user's erase, kill and interrupt (normally ^?)
+		    characters may be entered in a line	or in a	search
+		    string if preceded by a \.	The \ removes the next
+		    character's	editing	features.
+
+	  ^V	    Display mode and version of	hrdcpy.	 Mode is
+		    either VI or EMACS.	 The EMACS version described
+		    in this document is	4-10-92.  The VI version
+
+
+
+     Page 2					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+		    described in this document is 1-23-93.  If ^V is
+		    hit	twice in a row,	the editing mode is changed
+		    from EMACS to VI or	VI to EMACS, effective after
+		    the	next carriage return.
+
+	  ^L	    Line feed and print	current	line.
+
+	EMACS Edit Commands
+	  ^F	    Move cursor	forward	(right)	one character.
+
+	  M-f	    Move cursor	forward	one word.  (The	editor's idea
+		    of a word is a string of characters	consisting of
+		    only letters, digits and underscores.)
+
+	  ^B	    Move cursor	backward (left)	one character.
+
+	  M-b	    Move cursor	backward one word.
+
+	  ^A	    Move cursor	to start of line.
+
+	  ^E	    Move cursor	to end of line.
+
+	  ^]char    Move cursor	to character on	current	line.
+
+	  ^X^X	    Interchange	the cursor and mark.
+
+	  ^D	    Delete current character.
+
+	  M-d	    Delete current word.
+
+	  M-^?	    (Meta-DEL) Delete previous word.
+
+	  ^T	    Transpose current character	with next character.
+
+	  ^C	    Capitalize current character.
+
+	  M-C	    Capitalize current word.
+
+	  ^K	    Kill from the cursor to the	end of the line.  If
+		    given a parameter of zero then kill	from the start
+		    of the line	to the cursor.
+
+	  ^W	    Kill from the cursor to the	mark.
+
+	  M-p	    Push the region from the cursor to the mark	on the
+		    stack.
+
+	  ^Y	    Restore last item removed from line. (Yank item
+		    back to the	line.)
+
+	  ^@	    (Null character) Set mark.
+
+
+
+
+     Page 3					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+	  M-	    (Meta space) Set mark.
+
+	  ^J	    (New line)	Send the current line to the subject
+		    command.
+
+	  ^M	    (Return)   Send the	current	line to	the subject
+		    command.
+
+	  ^P	    Fetch previous line. Each time ^P is entered the
+		    previous line back in time is accessed.
+
+	  M-<	    Fetch the least previous (oldest) line.
+
+	  ^N	    Fetch next line. Each time ^N is entered the next
+		    line forward in time is accessed.
+
+	  M->	    Fetch most recent (youngest) line.
+
+	  ^Rstring  Reverse search history for a previous line con-
+		    taining string.  String is terminated by a
+		    "RETURN" or	"NEW LINE" and is a regular expression
+		    as defined by the UNIX text	editor (ed).
+
+	  ^O	    Operate - Send the current line to the subject
+		    command and	fetch the next line relative to	the
+		    current line from the history.
+
+	  M-digits  (Escape) Define numeric parameter, the digits are
+		    taken as a parameter to the	next command.  The
+		    commands that accept a parameter are ^F, ^B,
+		    erase, ^K, ^D, ^P and ^N.
+
+	  M-letter  Softkey - Your environment is searched for a vari-
+		    able by the	name letter.  If the variable is
+		    defined its	value will be inserted on the line.
+
+	  ^U	    Multiply parameter of next command by 4.
+
+	  M-h	    Display saved history of lines.
+
+	  ^Z	    Hrdcpy terminates when it detects that the child
+		    shell it created terminates.  If, for some reason,
+		    the	command	fails to terminate enter ^Z.  This
+		    will terminate hrdcpy and the child	shell (and all
+		    processes in its process group).  (You can also
+		    use	your end-of-file character as defined by the
+		    stty command, normally ^D, if the current line is
+		    null.)
+
+	VI Edit	Commands
+	  As in	the editor VI, there are two modes, command and	input.
+	  By default, the line editor is in input mode.	 Most of the
+
+
+
+     Page 4					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+	  following commands can only be entered in the	command	mode
+	  and can be preceded by an integer number specifying how many
+	  times	to perform the command.
+
+	  ^D	    Hrdcpy terminates when it detects that the child
+		    shell it created terminates.  If, for some reason,
+		    the	command	fails to terminate enter your end-of-
+		    file character, normally ^D.  This will terminate
+		    hrdcpy and the child shell (and all	processes in
+		    its	process	group).
+
+	  l	    Move cursor	forward	(right)	one character.
+
+	  space	    Like l, move cursor	forward	one character.
+
+	  h	    Move cursor	backward (left)	one character.
+
+	  w	    Move cursor	forward	one alpha-numeric word.
+
+	  b	    Move cursor	backward one alpha-numeric word.
+
+	  W	    Move cursor	forward	one blank delimited word.
+
+	  B	    Move cursor	backward one blank delimited word.
+
+	  e	    Move cursor	to end of the current alpha-numeric
+		    word.
+
+	  E	    Move cursor	to end of the current blank delimited
+		    word.
+
+	  0	    Move cursor	to the start of	the line.
+
+	  ^	    Move cursor	to the first non-blank character of
+		    the	line.
+
+	  $	    Move cursor	to the end of the line.
+
+	  k,-	    Fetch previous command.  Each time this is
+		    entered, the previous command back in time is
+		    accessed.
+
+	  j,+	    Fetch next command.	 Each time this	is entered,
+		    the	next command forward in	time is	accessed.
+
+	  /string   Reverse search history for a previous line con-
+		    taining string.  String is terminated by a
+		    "RETURN" or	"NEW LINE" and is a regular expression
+		    as defined by the UNIX text	editor (ed).
+
+	  n	    Search for next match of the last string given to
+		    /.
+
+
+
+     Page 5					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+	  a	    Enter input	mode and enter text after the current
+		    character.
+
+	  i	    Enter input	mode and enter text before the current
+		    character.
+
+	  A	    Append text	to the end of the line.	 Equivalent to
+		    $a.
+
+	  I	    Enter input	mode and enter text before the begin-
+		    ning of the	line.
+
+	  x	    Delete the current character.
+
+	  X	    Delete the character to the	left of	the cursor.
+
+	  r	    Replace the	current	character with the next	char-
+		    acter typed.
+
+	  s	    Substitute for the current character - deletes
+		    current character and enters input mode.
+
+	  ^[	    (ESCAPE) - exit input mode.
+
+	  D	    Delete to the end of line.
+
+	  C	    Change to the end of line.	Equivalent to Da.
+
+	  dmotion   Delete with	the specified motion. If the motion is
+		    d, delete the entire line, other motions can be:
+
+		    l	      to the right one character
+
+		    h	      to the left one character
+
+		    w,e	      to the end of the	current	alpha-numeric
+			      word
+
+		    W,E	      to the end of the	current	blank delim-
+			      ited word
+
+		    b	      back to the beginning of the previous
+			      alpha-numeric word
+
+		    B	      back to the beginning of the current
+			      blank delimited word
+
+		    $	      to the end of the	line
+
+	  cmotion   Change with	the specified motion. If the motion is
+		    c, delete the entire line, other motions can be as
+		    listed for d above.
+
+
+
+     Page 6					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+     Escape Command.
+	  A line that starts with a ! is taken as a shell escape line.
+	  All characters after the ! to	the end	of the line are	passed
+	  to system(3) upon execution of the line (^M, ^J or ^O).
+
+     History File
+	  If the variable 'HISTORY' is set to a	filename, hrdcpy saves
+	  a record of all lines	entered	in the specified file upon
+	  exit and loads from the file upon start up.  This file must
+	  NOT be the same file as used by ksh as the formats are dif-
+	  ferent!
+
+     METERING
+	  In many cases	when using a start-file	you will have to meter
+	  the rate the start-file is processed.	 For example, to have
+	  the start-file call the editor (/bin/ed) and then have the
+	  start-file supply editor commands, if	the start-file con-
+	  tains	only:
+
+	   cd /etc
+	   ed /etc/passwd
+	   g/root/p
+
+	  you'll get a message indicating g/root/p was not found.  If
+	  however, your	start-file contains:
+
+	   cd /etc
+	   ed /etc/passwd
+	   !PAUSE 6
+	   g/root/p
+
+	  the entry for	root will be found and printed.
+
+	  The problem is that without the !PAUSE, the lines after a
+	  program (such	as the editor) is entered will be processed by
+	  the shell rather than	the desired program.  The !PAUSE
+	  causes a delay so that the desired program will get these
+	  lines	rather than the	shell.	The number, is the number of
+	  seconds of the delay.	 Values	of 1 to	60 are valid.  Values
+	  outside this range are converted to 60.
+
+     BUGS
+	  Hrdcpy, to locate the	cursor,	issues a new line when the
+	  first	character of each line is entered.
+
+	  Several VI commands are unimplemented, notably u,U,.,f, and
+	  F.
+
+	  Except in raw	mode with pseudo ttys, hrdcpy can not simulate
+	  a ^D to be EOF.
+
+	  On systems WITHOUT pseudo ttys that hrdcpy can access	(or if
+
+
+
+     Page 7					      (printed 1/8/96)
+
+
+
+
+
+
+     HRDCPY(1)		 UNIX System V (Exptools)	     HRDCPY(1)
+
+
+
+	  -p is	used):
+	       The stty(1) command will	not work within	hrdcpy.
+
+	       The control tty (/dev/tty) is not defined when using
+	       hrdcpy.
+
+	       Commands	that put the tty in the	raw mode (e.g. vi,
+	       emacs, more, less) can not be run through hrdcpy.  How-
+	       ever, they can be executed as an	escaped	(!) command.
+	       Example:
+
+	       !emacs file
+
+	       The output of programs that use buffered	output may not
+	       appear at your terminal until several lines of input
+	       are entered. This can be	corrected by inserting a
+	       fflush(3S) for the output stream	(e.g. stdout) before
+	       each read from stdin.
+
+     ALSO SEE
+	  Log(1) command in exptools.
+
+     PROVIDERS
+	  Hrdcpy is provided by	Michael	T. Veach.  The VI editing
+	  feature is maintained	by Steven G. Spearman.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8					      (printed 1/8/96)
+
+
+

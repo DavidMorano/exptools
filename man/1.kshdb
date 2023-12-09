@@ -1,0 +1,396 @@
+     KKKKSSSSHHHHDDDDBBBB((((1111))))               UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               KKKKSSSSHHHHDDDDBBBB((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+
+          kshdb - debug Korn Shell script
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+          kkkksssshhhhddddbbbb [ ----cccc ] [ ----kkkk ] [ ----ssss ] [ ----hhhh ] [ ssssccccrrrriiiipppptttt ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+
+          _K_s_h_d_b creates a debug-augmented version of ssssccccrrrriiiipppptttt for
+          testing purposes.  kkkksssshhhhddddbbbb works with the Korn Shell, ksh88
+          and later, only.  kshdb takes a script which has already
+          been corrected of syntax errors, creates a temporary debug-
+          augmented version, and runs that version of the script.  The
+          new temporary script executes the DDDDEEEEBBBBUUUUGGGG and EEEEXXXXIIIITTTT traps in
+          conjunction with the sssseeeetttt -x command to activate a
+          ____kkkksssshhhhddddbbbb____ttttrrrraaaapppp script, which in turn accepts and executes
+          interactive debug commands.  The directory containing a
+          prototype ____ddddeeeebbbbuuuugggg startup script is appended to the user's
+          FFFFPPPPAAAATTTTHHHH during execution of kshdb.  (See the man pages for kkkksssshhhh
+          for use of the FFFFPPPPAAAATTTTHHHH variable.)  The prototype ____ddddeeeebbbbuuuugggg
+          startup script may be found in ~exptools/lib/kshdb.  The
+          user can tailor the prototype and insert the directory of
+          the tailored version in his/her own FPATH.
+
+          Upon reaching the DDDDBBBBGGGG>>>> prompt, the user may enter any of the
+          following commands:
+
+          a                   (arguments) display the  current values
+                              of arguments to the script or function.
+
+          b <line> [cmds...]  (break) set a breakpoint at line <line>.
+                              Execute command list "cmds..." when the
+                              breakpoint is reached.  (The commands
+                              should be separated by semi-colons, as
+                              in ksh, and surrounded by quotes.)  The
+                              list of currently-set breakpoints (and
+                              their "actions") may be printed using
+                              "b" without arguments.  The <line> may
+                              be specified as a number (i.e. the line
+                              in the currently displayed scope) or in
+                              the form <function>.<line> (i.e. the
+                              line in function <function>).
+
+          c                   (calls) display the function call stack:
+                              currently active functions and
+                              associated line numbers.  This is a
+                              typical debugger call/stack trace.
+
+          d <line>            (delete) delete the breakpoint at line
+                              <line>.  The command sequence is
+                              automatically cleared, as well.  As in
+                              the "b" command, "lines" may also be
+                              specified in the form <function>.<line>.
+
+
+
+     Page 1                                           (printed 4/1/92)
+
+
+
+     KKKKSSSSHHHHDDDDBBBB((((1111))))               UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               KKKKSSSSHHHHDDDDBBBB((((1111))))
+
+
+
+          e <function>        (examine) set the list/breakpoint
+                              context to function <function>.  After
+                              executing this command, subsequent use
+                              of "b", "d", "l", "p", "w" and "z" is
+                              limited to the scope of <function>.
+                              Execution of "e" without an argument
+                              shows the current scope.  Execution of
+                              "e" with argument "main" resets the
+                              scope to the main script.
+
+          g                   (go) continue execution to the next
+                              breakpoint, to the next exit point or to
+                              the end of the script if no breakpoints
+                              lie in the path of execution.
+
+          h                   (help) using ${PAGER:-pg} display an
+                              on-line help message.
+
+          l <line1> <line2>   (list) print to the terminal the portion
+                              of the current display scope from line
+                              <line1> through line <line2>.
+
+          p [<line>]          (print) print the current (just
+                              executed) line or the (optional)
+                              specified line.
+
+          q                   (quit) quit to the shell.
+
+          r <args...>         (run) run the script with the specified
+                              args.  This command may be thought of as
+                              a combination of "go" and setting
+                              arguments.  This command is generally
+                              executed only after setting breakpoints
+                              (using "b") in the path of execution.
+
+          s [<steps>]         (step) execute <steps> trace-points of
+                              the script.  This command counts the
+                              number of times the script traps to the
+                              debugger and halts for user input when
+                              the number of times the debugger is
+                              entered equals <steps>.  If no <steps>
+                              argument is specified, then one "step"
+                              is executed.  This form of "step" steps
+                              over function calls.  If a breakpoint is
+                              reached, execution may trap to the
+                              debugger prior to the completion of a
+                              step.
+
+          S [<steps>]         (Step) this form of "step" steps into
+                              function calls.
+
+          w                   (window) print the ten lines around the
+                              current line.
+
+
+
+
+
+     Page 2                                           (printed 4/1/92)
+
+
+
+     KKKKSSSSHHHHDDDDBBBB((((1111))))               UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               KKKKSSSSHHHHDDDDBBBB((((1111))))
+
+
+
+          x <var>             (examine) examine the value of the
+                              environment variable <var>.  <var> may
+                              be a simple environment variable or an
+                              array or array cell.  "x <array>" causes
+                              the full contents of the array to be
+                              displayed (as in "x <array>[*]"), while
+                              "x <array>[<index>]" causes only the
+                              specified array value to be displayed.
+
+          z                   (sdb just ran out of letters) print the
+                              current line + next 9.
+
+          any ksh cmd         Execute any legal ksh command, such as
+                              assignment.
+
+     DDDDIIIISSSSPPPPLLLLAAAAYYYY AAAANNNNDDDD EEEEXXXXEEEECCCCUUUUTTTTIIIIOOOONNNN SSSSCCCCOOOOPPPPEEEESSSS
+
+          The "a" and "x" commands execute in reference to the current
+          "execution scope" (set automatically by ksh to whatever
+          function is executing).  The b,d,l,p,w and z commands
+          execute in reference to the current "display scope". The
+          user may control the "display scope" using the "e" command.
+          Both "scopes" are initially set to "main".  Whenever a new
+          function is called or a return from a function is executed,
+          the "display scope" is reset to the newly active "execution
+          scope".
+
+          The scope of "main" consists of the lines in the user's
+          script file, surrounded by the declaration of function
+          "main".  The scope of a function consists of the surrounding
+          braces {} and everything in between.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE ____ddddeeeebbbbuuuugggg CCCCOOOOMMMMMMMMAAAANNNNDDDDSSSS
+
+            b fee.22 "x foo; x bar; g"
+
+          In this example, the debugger will break at line 22 in
+          function "fee" and execute two e(x)amine commands followed
+          by "go".
+
+            e fee
+
+          In this example, the debugger will restrict printout of
+          lines to those in the function fee.  Breakpoints will be
+          referenced from the start of the function. The previous
+          example break command can then be specified as
+
+            b 22 "x foo; x bar; g"
+
+     UUUUSSSSAAAAGGGGEEEE HHHHIIIINNNNTTTTSSSS
+
+          In a typical scenario, the user lists portions of the script
+          using the llll (list) command.  The user then sets one or more
+          breakpoints at selected lines using the bbbb (break) command.
+          The user may optionally specify a command, in quotes, to
+
+
+
+     Page 3                                           (printed 4/1/92)
+
+
+
+     KKKKSSSSHHHHDDDDBBBB((((1111))))               UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               KKKKSSSSHHHHDDDDBBBB((((1111))))
+
+
+
+          execute automatically upon reaching the breakpoint.  Then
+          the user begins execution with the rrrr (run) command,
+          specifying zero or more arguments to pass to the script.
+          Upon reaching the selected breakpoint; the user may examine
+          environment variables using the xxxx (examine) command;
+          single-step one or more steps using the ssss (step) command;
+          step into functions using the SSSS (Step) command; delete
+          breakpoints using the dddd (delete) command; show the
+          currently-active call trace using the cccc (calls) command;
+          list lines of the debug-augmented script file, using the llll
+          (list), wwww (window) or zzzz (next page) commands, etc.  The user
+          may quit using the qqqq command or using ^D (control-D) or
+          simply "exit".
+
+          Note (1): execution of "exit" by the user's script causes
+          execution of the script to terminate and re-entry into the
+          debugger.  This may be useful for debugging scripts which
+          declare all variables using "typeset"; all variables will be
+          reset upon re-execution of the "r" (run) command.
+
+          Note (2): these features make it easier to debug a K-shell
+          function script.  Function scripts typically are located in
+          the user's fbin, or elsewhere in the user's FPATH.  To debug
+          a function script, the user may create a temporary copy of
+          the script without the surrounding function declaration, and
+          debug the script as usual.  If multiple functions are
+          declared in a function script file, determine which function
+          will be considered as the "main" function, and proceed from
+          there as above.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD LLLLIIIINNNNEEEE SSSSWWWWIIIITTTTCCCCHHHHEEEESSSS
+
+          The ----ssss (save) switch may be specified in the kshdb command
+          to save the debug-augmented script for study.  The script
+          file need not be in the user's current working directory
+          when kshdb is invoked.  If multiple versions of the script
+          file exist in the user's path, one of these may be selected
+          when the user specifies the ----cccc (choice) switch.  The ----kkkk (k-
+          shell history) switch causes the debugger to save debug
+          commands in the k-shell history.  Commands may be recalled
+          from the history file, edited, etc.  as in kkkksssshhhh....  (See the
+          man pages for ksh.)
+
+          Example:
+
+            kshdb foo
+
+          In this example, the user has invoked kkkksssshhhhddddbbbb to debug the
+          Korn Shell script "foo". kkkksssshhhhddddbbbb creates a debug-augmented
+          version of "foo" which it then executes.  The debug-
+          augmented version of "foo" traps to the ____ddddeeeebbbbuuuugggg startup
+          script, and the user sees the DDDDBBBBGGGG>>>> prompt.
+
+            kshdb -s bar
+
+
+
+
+     Page 4                                           (printed 4/1/92)
+
+
+
+     KKKKSSSSHHHHDDDDBBBB((((1111))))               UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               KKKKSSSSHHHHDDDDBBBB((((1111))))
+
+
+
+          In this example, the user has decided to save the debug-
+          augmented version of "bar" upon exit from kkkksssshhhhddddbbbb....
+
+            kshdb -c fee
+
+          In this example, the user has multiple versions of "fee" in
+          his/her PATH.  For each version found, kshdb queries the
+          user whether he/she wishes to debug that version.
+
+            kshdb -k fie
+
+          In this example, kshdb is invoked with the k-shell history
+          mechanism turned on.  In this case, the debug-augmented
+          script file begins with the additional line
+
+            typeset _kshdb_read_options="-s"
+
+          and the debug read/eval loop uses "read -s" for user input.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+
+          The DEBUG trap does not get activated after every line of a
+          script.  Typical lines which do not trap are loop brackets,
+          like "do" and "done" and if brackets, like "then" "else"
+          "fi".
+
+          Traps are automatically set to enable to user to examine the
+          context of errors in greater detail.
+
+          Ksh does not appear to preserve DEBUG traps across function
+          calls under UTS.  Similar limitations may apply to other
+          implementations.  In order to get around this problem, kshdb
+          attempts to "seed" the script with calls to _kshdb_set_trap
+          at the beginning of every function.  The inserted calls to
+          _kshdb_set_trap ensure that the user can return to the
+          debugger after a function call.  EXIT traps are also set in
+          order to ensure that the debugger is called upon function
+          exits.  Without the presence of the _kshdb_set_trap lines,
+          "going" or "stepping" past a function call results in
+          disabling DEBUG traps, and continuing to the end of the
+          script.
+
+          Although ksh allows function declarations to be lexically
+          nested, kshdb does not recognize this situation, and the
+          scope and display commands will not operate properly.  kshdb
+          may also get confused if {} braces are used in a context
+          other than a function declaration.  In particular, if the
+          user's script uses awk (or another scripting language which
+          uses {} braces), kshdb may get confused.  The user should
+          check the instrumented script file for inappropriate
+          instrumenting with "_kshdb_set_trap".
+
+     FFFFIIIILLLLEEEESSSS
+
+            $TOOLS/lib/kshdb/_debug
+
+
+
+     Page 5                                           (printed 4/1/92)
+
+
+
+     KKKKSSSSHHHHDDDDBBBB((((1111))))               UUUUNNNNIIIIXXXX 3333....0000 ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               KKKKSSSSHHHHDDDDBBBB((((1111))))
+
+
+
+            /usr/tmp/$$.*
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+
+            ksh(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+
+          Version 1.2 of kshdb and _debug were written by Larry
+          Gearhart of AT&T, Bell Labs.  The author is grateful to Dave
+          Dykstra, Dave Korn and Tony Hansen for valuable suggestions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                           (printed 4/1/92)
+
+
+

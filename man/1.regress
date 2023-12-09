@@ -1,0 +1,1254 @@
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          regress - enter or control a regression-testing environment
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          regress  [ -l ] [ -n | -d ] [ module ... ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _r_e_g_r_e_s_s command allows a user to access and operate in a
+          regression-testing environment.  The environmental variable
+          REGRESSDIR is expected to point to the root directory of a
+          tree of files set up to determine 1) what modules are to be
+          regression tested, and 2) what scripts are to be used to
+          test each module.
+
+          When the regression-testing environment is entered, the user
+          has access to special commands to run test scripts, capture
+          golden (i.e., accepted as correct) output from such scripts,
+          and list and explain tests.  By using these commands a user
+          can run a battery of tests to determine if the execution
+          behavior of the given modules matches the behavior of the
+          same modules as captured previously.  The user is told
+          whether each test succeeds or fails.  Normally, the first
+          test to fail causes the battery of tests to stop; however,
+          the user can request the tests to continue even with such
+          failures.
+
+          The basic steps involved with running and evaluating a test
+          script are these:
+
+          1)  The script is invoked, with the standard and error
+              output stored in two separate files,
+
+          2)  The _d_i_f_f(_1) command is used to compare the standard and
+              error outputs of the test script against the golden
+              (i.e., accepted as correct) versions of the standard and
+              error outputs, marking any differences, and
+
+          3)  The test is declared a failure if there are any
+              differences in the above comparisons, otherwise it
+              succeeds.
+
+          Please note that the above tests are based on a line-by-line
+          comparison of the standard and error outputs of test
+          scripts.  This means that this command can only be used with
+          output that can be compared on a line-by-line basis, or can
+          be converted to such form.  See the section _T_e_s_t _S_c_r_i_p_t_s
+          below for ideas on how such conversion might be done on the
+          output of programs not normally compared on a line-by-line
+          basis.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDD----LLLLIIIINNNNEEEE AAAARRRRGGGGUUUUMMMMEEEENNNNTTTTSSSS
+          -l      This flag requests a listing of all the modules that
+
+
+
+     Page 1                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+                  can be tested in the environment specified by the
+                  REGRESSDIR environmental variable.  Each module
+                  listed corresponds to a directory under REGRESSDIR
+                  containing files that define the tests to be
+                  performed, the golden output captured from previous
+                  runs of the tests, etc.
+
+          -n      This flag requests that a new module (as named by
+                  the _m_o_d_u_l_e command-line argument) be included in the
+                  testing environment.  This causes a directory named
+                  'module' to be created under the REGRESSDIR
+                  directory containing the appropriate subdirectories
+                  needed to support regression testing.
+
+          -d      This flag requests that a module (as named by the
+                  _m_o_d_u_l_e command-line argument) be deleted from the
+                  testing environment.  This results in the directory
+                  named 'module' being removed from the REGRESSDIR
+                  directory along with all its subdirectories.
+
+          module  This argument identifies a module to be processed.
+                  When none of the other flags are used, this argument
+                  causes a subshell to be started with the following
+                  changes to the environment:
+
+                  1) The current working directory is changed to the
+                     directory containing the test scripts, i.e.,
+                     $REGRESSDIR/module/cases,
+
+                  2) The prompt is changed to 'REGRESS(module):', and
+
+                  3) The PATH variable is prefixed with the directory
+                     containing the special regression-testing
+                     commands described below.
+
+                  If several modules are identified on the command
+                  line, the first two items above change slightly:
+
+                  1) The current working directory is changed to
+                     $REGRESSDIR, and
+
+                  2) The prompt is changed to 'REGRESS:'.
+
+          A test _m_o_d_u_l_e is simply a collection of tests all focused on
+          a common goal.  The name chosen for the module generally
+          reflects this goal.  For example, if a system to be tested
+          consists of several stand-alone commands, each test module
+          might focus on an individual command, with each module named
+          after the command it was testing.  On the other hand, if a
+          single, complex system were to be tested, the modules might
+          be focused on testing important subsystems, each named after
+          the subsystem being tested.
+
+
+
+     Page 2                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          It is up to the regression test developer to decide what
+          components of a system should be tested, to turn those into
+          the test modules of this regression test system, and then to
+          develop a battery of tests for each module.
+
+     FFFFIIIILLLLEEEESSSS
+        SSSSeeeettttuuuupppp ffffiiiilllleeeessss
+          When the _r_e_g_r_e_s_s command is processed, a test is made to see
+          if the special setup files $$$$RRRREEEEGGGGRRRREEEESSSSSSSSDDDDIIIIRRRR////....rrrreeeeggggrrrreeeessssssss and
+          $$$$HHHHOOOOMMMMEEEE////....rrrreeeeggggrrrreeeessssssss exist (in that order), and if so, they are
+          executed (dotted in).  These files can contain whatever
+          setup steps the user wishes.  The modules named on the
+          _r_e_g_r_e_s_s command line are passed along as command line
+          arguments to these shell scripts.
+
+        RRRReeeeggggrrrreeeessssssssiiiioooonnnn tttteeeessssttttiiiinnnngggg ffffiiiilllleeeessss
+          The following shows the typical files in a regression tree
+          for the module _m_o_d_u_l_e_A under the REGRESSDIR directory:
+
+               moduleA/
+                   cases/
+                       0.1         1.0         1.1         2.0         2.1
+                       2.2         2.3         2.4
+                   db/
+                       2.0/
+                           datafile    namelist
+                       2.1/
+                           datafile
+                       2.2/
+                           datafile    codes
+                       2.3/
+                           datafile    namelist     codes
+                       2.4/
+                           datafile    addresses
+                       common/
+                           input
+                   stdin/
+                       1.0         1.1
+                   stdout/
+                       0.1         1.0         1.1         2.0         2.1
+                       2.2         2.3         2.4
+                   stderr/
+                       0.1         1.0         1.1         2.0         2.1
+                       2.2         2.3         2.4
+                   stats/
+                   g_stderr/
+                       0.1         1.0         1.1         2.0         2.1
+                       2.2         2.3         2.4
+                   g_stdout/
+                       0.1         1.0         1.1         2.0         2.1
+                       2.2         2.3         2.4
+                   g_stats/
+
+
+
+     Page 3                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+                       0.1         1.0         1.1         2.0         2.1
+                       2.2         2.3         2.4
+                   results/
+                       2.2
+
+          The following explains the major directories above:
+
+          cases     This directory contains the test scripts used to
+                    test moduleA.  The naming convention for such
+                    scripts is _n_u_m_b_e_r._n_u_m_b_e_r, where the first number
+                    is used to indicate the class of the test, and the
+                    second number identifies the invocation order of
+                    the test within each class.  See the section "Case
+                    names" below for a discussion of how case names
+                    are organized and used.
+
+          db        This directory is optional, and is only used if
+                    certain test scripts require supporting data
+                    files.  Each directory under ddddbbbb matches the name
+                    of a case script under the ccccaaaasssseeeessss directory that
+                    uses it.
+
+          stdin     This directory is optional, and is only used if
+                    certain test scripts require standard input.  Each
+                    directory under ssssttttddddiiiinnnn matches the name of a case
+                    script under the ccccaaaasssseeeessss directory that needs it.
+
+          stdout    This directory contains the standard output from
+                    running the cases found in the ccccaaaasssseeeessss directory.
+                    The output filename matches the case that
+                    generated it.
+
+                    If a case does not generate output, no output file
+                    is created.
+
+          stderr    This directory contains the error output from
+                    running the cases found in the ccccaaaasssseeeessss directory.
+                    The error output filename matches the case that
+                    generated it.
+
+                    If a case does not generate error output, no
+                    error-output file is created.
+
+          stats     This directory contains the run-time statistics of
+                    the cases found in the ccccaaaasssseeeessss directory.  These
+                    statistics record the time of day when the test
+                    was run, as well as the system time, user time,
+                    and overall time used by the test.
+
+          g_stdout  This directory is similar to the ssssttttddddoooouuuutttt directory
+                    above, except it stores the _g_o_l_d_e_n standard output
+                    files, i.e., the correct standard output of the
+
+
+
+     Page 4                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+                    cases found in the ccccaaaasssseeeessss directory.
+
+          g_stderr  This directory is similar to the ssssttttddddeeeerrrrrrrr directory
+                    above, except it stores the _g_o_l_d_e_n error-output
+                    files, i.e., the correct error output of the cases
+                    found in the ccccaaaasssseeeessss directory.
+
+          g_stats   This directory is similar to the ssssttttaaaattttssss directory
+                    above, except it stores the _g_o_l_d_e_n run-time
+                    statistics, i.e., the run time statistics when the
+                    golden output was captured.
+
+          results   This directory contains the results of comparing
+                    the latest test output against the golden output
+                    for each test case run.  If the test fails (i.e.,
+                    the result of comparing the test and golden
+                    outputs shows differences), the differences are
+                    stored in this directory.  The error message
+                    displayed by the @_t_e_s_t command identifies where in
+                    this directory the user should look to see the
+                    comparison.
+
+                    If the test succeeds (i.e., there are no
+                    differences), no such file is created.
+
+     FFFFIIIILLLLEEEENNNNAAAAMMMMEEEE EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTTAAAALLLL VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+          To simplify the task of moving among the various directories
+          shown above, a number of environmental variables are
+          automatically defined whenever a single module is being
+          regression tested (i.e., whenever the regress environment is
+          started with only a single module on the command line).  In
+          general, the names of the variables are the same as the
+          subdirectories under $REGRESSDIR/module, to wit:
+
+                    $cases       (=$REGRESSDIR/module/cases)
+                    $db          (=$REGRESSDIR/module/db)
+                    $stdin       (=$REGRESSDIR/module/stdin)
+                    $stdout      (=$REGRESSDIR/module/stdout)
+                    $stderr      (=$REGRESSDIR/module/stderr)
+                    $stats       (=$REGRESSDIR/module/stats)
+                    $g_stdout    (=$REGRESSDIR/module/g_stdout)
+                    $g_stderr    (=$REGRESSDIR/module/g_stderr)
+                    $g_stats     (=$REGRESSDIR/module/g_stats)
+                    $results     (=$REGRESSDIR/module/results)
+
+          Such variables can be used in ordinary Unix commands such as
+          _c_d or _l_f as ordinary directory names.  Thus, a user should
+          be able to issue the command
+
+                    cd $cases
+
+          from any directory to be taken to the cases directory.
+
+
+
+     Page 5                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          Similarly, the command
+
+                    cat $cases/1.0
+
+          could be used to print out the 1.0 test script from any
+          directory.
+
+          When several modules are being tested at the same time
+          (i.e., when several modules are given on the command line)
+          the above environmental variables are not defined in the
+          user's environment.  They are, however, still defined in the
+          environments of the @test and @try commands, i.e., then each
+          test case is executed.
+
+     CCCCAAAASSSSEEEE NNNNAAAAMMMMEEEESSSS
+        CCCCllllaaaasssssssseeeessss
+          The script names follow the pattern _n_u_m_b_e_r._n_u_m_b_e_r, where the
+          first number identifies the case class, and the second
+          number identifies the processing order within the class.
+
+          When many tests are requested at the same time, they are
+          processed in the order determined first by the class name
+          and second by the class processing order.  Therefore,
+          setting up and naming tests involves deciding on the correct
+          sequence in which the tests should be performed.  Users are
+          free to define the meaning of the test classes any way they
+          see fit, but the following are recommended definitions
+          designed to start with simple tests and then move to more
+          complicated ones.
+
+          0.n   _E_r_r_o_r, _h_e_l_p, _a_n_d _u_s_a_g_e _m_e_s_s_a_g_e_s. This class checks to
+                see that all common error, help, and usage messages
+                are generated correctly.  This is important to test
+                first, because any error messages generated during
+                later tests need to be trusted for accuracy and
+                completeness.
+
+                The special test 0.0 is often used for scripts that
+                verify that USAGE messages are correctly generated in
+                all cases.
+
+          1.n   _M_i_d_d_l_e-_o_f-_t_h_e-_r_o_a_d _t_e_s_t_s. This class checks to see
+                that the basic functions expected of the module are
+                done correctly.  These are not tricky tests, but
+                rather basic tests to establish that the modules do
+                what is expected in common, run-of-the-mill
+                situations.
+
+          2.n   _B_o_u_n_d_a_r_y-_c_o_n_d_i_t_i_o_n _t_e_s_t_s. These tests check to see
+                that the modules work correctly at their boundaries,
+                i.e., when given the largest and smallest allowable
+                numeric arguments or input data, the longest and
+
+
+
+     Page 6                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+                shortest strings, files, number of arguments, etc.
+                Frequently, developers forget to check all such
+                boundary conditions of their modules, even though this
+                is a rich source of error.
+
+          3.n   _E_x_h_a_u_s_t_i_v_e _t_e_s_t_s. These tests exhaustively go though
+                all the options or input alternatives the module is
+                supposed to handle, to make sure they are all properly
+                dealt with.
+
+          4-9.n _E_x_o_t_i_c _t_e_s_t_s. These tests (4 up to and including class
+                9) address the tricky, obscure problems that require
+                specialized testing and a deep understanding of what
+                the module is doing inside.  Many times these are the
+                quirky problems tied to internal data structures or
+                internal resource problems.
+
+          10.n  _D_e_v_i_c_e- _o_r _h_a_r_d_w_a_r_e-_d_e_p_e_n_d_e_n_t _t_e_s_t_s. Tests in class 10
+                (and above) should be used for those scripts that
+                require special setup steps or execution conditions
+                that may not always be in effect.  This allows two
+                broad categories of tests to be defined: those that
+                can be run at any time (classes 0-9), and those that
+                can only be run a certain times (classes 10 and
+                above).  A typical example of the latter would be
+                tests that depended on hardware devices that were not
+                always available or are not on all machines on which
+                the tests are to be run.
+
+          See the next section, "Case patterns," for information about
+          how to use the patterns _a_l_l and _A_L_L to process the two broad
+          categories of tests (classes 0-9 and classes 10 and above)
+          discussed above.
+
+        CCCCaaaasssseeee PPPPaaaatttttttteeeerrrrnnnnssss
+          Case names are used on the command lines of the special
+          commands used to process regression tests (see below).  In
+          addition, test case _p_a_t_t_e_r_n_s can also be used.  Using
+          patterns can make it easier to specify entire test classes
+          or all available tests.
+
+          The following case patterns can be used wherever a command-
+          line argument can be used.
+
+          all  The _a_l_l pattern refers to all tests in classes 0 to 9.
+               These are the tests that do not require any special
+               setup to perform.  Thus, to request that all tests in
+               the classes 0 to 9 should be done, the command
+
+                    @test all
+
+               would be issued.
+
+
+
+     Page 7                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          ALL  The _A_L_L pattern refers to all tests in all classes,
+               including those in classes 10 and above that require
+               special hardware or execution environments.  Thus, to
+               request that all tests for a module should be done, the
+               command
+
+                    @test ALL
+
+               would be issued.
+
+          shell metacharacters
+               Multiple cases can be specified simultaneously using
+               the shell metacharacter mechanism.  Care must be taken,
+               however, to be aware of the current working directory
+               and the files in it when such patterns are issued
+               unquoted.  Unquoted metacharacters are evaluated by the
+               shell in the current working directory, whereas _q_u_o_t_e_d
+               metacharacters are evaluated by the regression system
+               in the ccccaaaasssseeeessss directory.
+
+               For example, the command
+
+                    @test 1.\*
+
+               will result in all class 1 cases being processed, no
+               matter where the command is issued, while the command
+
+                    @test 1.*
+
+               will result in the _c_u_r_r_e_n_t _w_o_r_k_i_n_g _d_i_r_e_c_t_o_r_y being
+               examined for files matching the "1.*" pattern, and then
+               any cases in the ccccaaaasssseeeessss directory that match those
+               filenames will be processed.  This can sometimes lead
+               to surprising results if you are not in the ccccaaaasssseeeessss
+               directory to begin with.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDDSSSS
+          Once in the regression environment, the user's PATH is
+          altered to include several special commands needed to run
+          tests, display help, etc.  To avoid name clash with other,
+          similarly named commands, these commands all begin with the
+          '@' character.
+
+          The following give one-line summaries of these special
+          commands, which are all explained in detail below:
+
+               @capture   Capture the output of a test and mark it golden
+               @explain   Explain the purpose of a test
+               @help      Provide on-line help
+               @ls        List the case scripts available to be run
+               @remove    Remove a test and all its supporting files
+               @rename    Rename a test and all its supporting files
+
+
+
+     Page 8                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+               @test      Run and evaluate a given test script
+               @type      Display a given test script
+               @try       Run and display the output of a given test script
+               @using     Display the names of modules currently being tested
+
+
+          In addition, there are a few additional commands that are
+          meant to be used in test scripts:
+
+               @comment   Display a comment on both stdout and stderr
+               @mask      Mask output matching given patterns
+               @showdo    Display a command to stdout and stderr, then execute it
+
+
+        @@@@ttttrrrryyyy
+          This command runs the tests named on its command line and
+          directs its standard and error outputs to the terminal,
+          allowing the results to be examined by the user.  This is
+          particularly useful when case scripts are being edited,
+          since the results of editing changes can be seen at once.
+
+          Here is the command usage:
+
+               USAGE:  @try  case [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+
+        @@@@tttteeeesssstttt
+          This command runs the tests given on its command line,
+          storing the standard and error outputs away, finally
+          analyzing them to see if the tests passed or failed.  Here
+          is the command usage:
+
+               USAGE:  @test  [ -i ]  case [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+
+          The ----iiii flag requests that if an error occurs during the
+          running of the tests, that it be ignored and the tests
+          continue to completion.
+
+          Standard or error output containing text surrounded by the
+          strings '[{*' and '*}]' is treated specially during
+          analysis.  These strings are used to indicate text that is
+          different from run to run but which should compare as equal.
+          See the @_m_a_s_k command below for more details.
+
+          The following example shows a successful test being run on
+          the module 'moduleA':
+
+
+
+
+     Page 9                                          (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+             $ @test 1.0
+
+             - - - - - - - - - - - - - - - - - - - - -
+             > Testing 'moduleA' using case 1.0.
+             > Testing basic functions
+             Done!  Now analyzing the results  . . .
+             ---> moduleA  1.0   P A S S E S !  <---
+             TEST version generated on         |  GOLDEN version generated on
+             Sun May 19 21:36:40 EDT 1991      |  Sat Apr  6 20:44:13 EST 1991
+
+             real    0m11.40s                  |  real     0m10.58s
+             user    0m4.65s                   |  user     0m4.41s
+             sys     0m6.65s                   |  sys      0m5.93s
+
+          The following shows the same test, but with errors:
+
+             - - - - - - - - - - - - - - - - - - - - -
+             > Testing 'moduleA' using case 1.0.
+             > Testing basic flags
+             Done!  Now analyzing the results  . . .
+             ---> moduleA  1.0   F A I L S !  <---
+                  See $results/1.0  (     41 lines)
+                  and  $stdout/1.0  (    122 lines)
+                  and  $stderr/1.0  (     76 lines)
+             TEST version generated on         |  GOLDEN version generated on
+             Sun May 19 21:36:40 EDT 1991      |  Sat Apr  6 20:44:13 EST 1991
+
+             real    0m11.40s                  |  real     0m10.58s
+             user    0m4.65s                   |  user     0m4.41s
+             sys     0m6.65s                   |  sys      0m5.93s
+
+             *** Error detected -- aborting!
+
+
+        @@@@ccccaaaappppttttuuuurrrreeee
+          This command runs the tests given on the command line,
+          saving the standard and error output as the golden output
+          for the case.  Such golden output is used later by the @_t_e_s_t
+          command when deciding if a rerunning of the test has passed
+          or failed.
+
+          Here is the command usage:
+
+               USAGE:  @capture  case [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+
+        @@@@eeeexxxxppppllllaaaaiiiinnnn
+          This command is used to print the explanation or purpose of
+          each case given on the command line, as identified by the
+          '#Purpose:' comment lines in the script.  See the section
+
+
+
+     Page 10                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          "Test scripts" below for more details on such lines.
+
+          Here is the command usage:
+
+               USAGE:  @explain  [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+          When used without arguments, it defaults to 'ALL'.
+
+        @@@@ttttyyyyppppeeee
+          This command is used to print out each given test script on
+          the standard output.  It can be issued from any directory.
+          Here is the command usage:
+
+               USAGE:  @type  case [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+
+        @@@@llllssss
+          This command is used to list the test scripts currently
+          available to be run.  It can be issued from any directory.
+          Here is the command usage:
+
+               USAGE:  @ls  [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+          When used without arguments, it defaults to the argument
+          'ALL'.
+
+        @@@@rrrreeeennnnaaaammmmeeee
+          This command allows a user to change the name of a test
+          case.  Here is the command usage:
+
+               USAGE:  @rename  oldcase newcase
+
+          This command not only changes the name of the case script in
+          the ccccaaaasssseeeessss directory, but all the other files associated with
+          it throughout the regression testing tree.
+
+        @@@@rrrreeeemmmmoooovvvveeee
+          This command allows a user to remove a test case script
+          along with all its associated files, such as its golden
+          output.  Here is the command usage:
+
+               USAGE:  @remove  case [ case ... ]
+
+          The case arguments can be named explicitly, such as '1.0',
+          or can be given as case patterns, such as 'all' or '1.\*'.
+
+
+
+
+     Page 11                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+        @@@@hhhheeeellllpppp
+          This command provides on-line help for the regression
+          system.  Here is the command usage:
+
+               USAGE:  @help [ item ]
+
+          If no argument is given, this command prints a general help
+          message.  If an argument is given, it should either be a
+          regression command (type "@help commands" for a list) or a
+          regression topic (type "@help topics" for a list).
+
+        @@@@uuuussssiiiinnnngggg
+          This command reminds the user what modules are being
+          regression tested.  This is really only useful when several
+          modules are being tested at the same time, because when only
+          one module is being tested its name is placed in the system
+          prompt.
+
+          Here is the command usage:
+
+               USAGE:  @using
+
+          and here is an example of using this command:
+
+               $ @using
+
+               Using the following modules:
+                   moduleA    moduleB
+
+
+        @@@@mmmmaaaasssskkkk
+          _T_h_i_s _c_o_m_m_a_n_d _i_s _a _f_i_l_t_e_r _i_n_t_e_n_d_e_d _f_o_r _u_s_e _w_i_t_h_i_n _t_e_s_t
+          _s_c_r_i_p_t_s.  It is used to handle the problem of test script
+          output that contains text that varies unavoidably from run
+          to run, such as the display of dates or times.  Such output
+          would cause the @test command to fail because the test and
+          golden outputs would not match.  If the changeable text were
+          masked in some way, so that the given fields appeared the
+          same during comparison, then the test and golden output
+          could be successfully compared, only failing if something
+          else changed.
+
+          The @mask filter performs this function.  It is given
+          command-line arguments that identify the patterns to be
+          masked.  The output from this filter is the same as the
+          input, with the exception that all occurrences of the given
+          patterns are replaced.
+
+          Here is the command usage:
+
+               USAGE:  @mask  [ -s ] [ -r replacement ]  pattern ...
+
+
+
+
+     Page 12                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          The _p_a_t_t_e_r_n arguments are the patterns to be masked by the
+          filter, specified using the pattern-matching notation of
+          _e_d(_1). The default replacement string for such patterns is 5
+          asterisks (*****), but the user can specify another
+          replacement string with the ----rrrr flag.  With either of these
+          options, the original text is completely hidden by the
+          replacement string.  If it is important to keep such text
+          visible for whatever reason, then the ----ssss flag should be
+          used.  This flag _s_u_r_r_o_u_n_d_s the text matched with the strings
+          '[{*' and '*}]', but otherwise leaves the original text
+          untouched.  The @test command searches for such strings when
+          comparing the golden and test outputs, replacing them with
+          the default string of 5 asterisks (*****) before comparing
+          the files with _d_i_f_f(_1).
+
+          The following examples show several uses of this filter:
+
+               $ TIMEPATTERN="[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
+
+               $ date | @mask $TIMEPATTERN
+               Sat Jun  1 ***** EDT 1991
+
+               $ date | @mask -r XXXXX $TIMEPATTERN
+               Sat Jun  1 XXXXX EDT 1991
+
+               $ date | @mask -s $TIMEPATTERN
+               Sat Jun  1 [{*20:04:23*}] EDT 1991
+
+          For complex situations that @mask can't handle, users can
+          write their own filters that do similar masking, either
+          replacing given text with replacement strings or surrounding
+          it with the '[{*' and '*}]' mask indicators.
+
+        @@@@sssshhhhoooowwwwddddoooo
+          _T_h_i_s _c_o_m_m_a_n_d _i_s _i_n_t_e_n_d_e_d _f_o_r _u_s_e _w_i_t_h_i_n _t_e_s_t _s_c_r_i_p_t_s.  It
+          makes writing test scripts easier by both echoing and
+          executing the shell command given to it as argument.  This
+          is most useful when tracking down regression test failures,
+          since the standard output and standard error will contain
+          the record of the commands issued as well as the output from
+          those commands.  If the output device is a terminal (as with
+          the @try command), the command is only echoed to standard
+          output.
+
+          Here is the command usage:
+
+               USAGE:  @showdo  command  [ comment ]
+
+          If the second argument is used, it is taken as a comment
+          about the test being done, displayed separately on the line
+          before the command is echoed.  Examples of this command are
+          shown below:
+
+
+
+     Page 13                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+               $ @showdo date
+
+               # Executing: date
+               Sun Jun  2 09:35:15 EDT 1991
+
+               $ @showdo date "Make sure we can get the date"
+
+               ##########
+               # Testing: Make sure we can get the date
+               # Executing: date
+               Sun Jun  2 09:36:13 EDT 1991
+
+
+        @@@@ccccoooommmmmmmmeeeennnntttt
+          _T_h_i_s _c_o_m_m_a_n_d _i_s _i_n_t_e_n_d_e_d _f_o_r _u_s_e _w_i_t_h_i_n _t_e_s_t _s_c_r_i_p_t_s.  It
+          allows a comment to be inserted into both the standard
+          output and standard error of test scripts.  If the output of
+          the command is to a terminal (as would be the case with the
+          @try command), the output is only sent to standard error.
+
+          Here is the command usage:
+
+               USAGE:  @comment  [ -s ] comment
+
+          The ----ssss flag requests a simple, one line comment.  Otherwise,
+          the comment is preceded and followed by extra lines to make
+          it stand out.  The following examples show this:
+
+               $ @comment -s This is a simple comment
+               # This is a simple comment
+
+               $ @comment This comment stands out
+
+               #
+               # This comment stands out
+               #
+
+
+     TTTTEEEESSSSTTTT SSSSCCCCRRRRIIIIPPPPTTTTSSSS
+          Each test case is defined by a shell script in the ccccaaaasssseeeessss
+          directory using names of the form _n_u_m_b_e_r._n_u_m_b_e_r. (See the
+          "Case names" section above.)  When each test is run, its
+          standard output and standard error are captured and saved
+          for later comparison.  If available, the standard input for
+          the test is provided from a special input file and data
+          files can be accessed from a special database directory
+          defined just for the given case.
+
+          The following shows a basic test script that we will
+          elaborate in this section, which will be called case 1.0 of
+          module _m_o_d_u_l_e_A:
+
+
+
+
+     Page 14                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+               # Make sure the -a flag works properly
+
+               moduleA -a <<!
+               27 41 330
+               15 -1 62
+               !
+
+          The above script tests _m_o_d_u_l_e_A providing two lines of input
+          from stdin and using the -a command-line flag.  The
+          following sections extend the above example to use more of
+          the features of the regress system.
+
+        EEEExxxxppppllllaaaaiiiinnnniiiinnnngggg tttthhhheeee ppppuuuurrrrppppoooosssseeee ooooffff ccccaaaasssseeeessss
+          While the comment in the above script is useful, it will not
+          be displayed to testers unless they list the test script.
+          Lines that begin '# Purpose:', however, make the comments
+          that follow available to the @_e_x_p_l_a_i_n and @_t_e_s_t commands, so
+          that users can be more easily kept informed about the
+          purpose of each test.
+
+          This is how the example looks using this feature:
+
+               # Purpose: Make sure the -a flag works properly
+
+               moduleA -a <<!
+               27 41 330
+               15 -1 62
+               !
+
+          Here is how the @_e_x_p_l_a_i_n command would display the purpose:
+
+               REGRESS(moduleA): @explain 1.0
+
+               > Case 1.0
+                 Make sure the -a flag works properly
+
+          A similar display is included in the output of the @_t_e_s_t
+          command when the 1.0 script is run to identify its purpose.
+
+        SSSSuuuuppppppppllllyyyyiiiinnnngggg ssssttttddddiiiinnnn aaaauuuuttttoooommmmaaaattttiiiiccccaaaallllllllyyyy
+          Instead of having the standard input to the moduleA command
+          coming from a _h_e_r_e document, as in the above case, it can be
+          supplied automatically by creating a file under the $_s_t_d_i_n
+          directory.  The name of the file would be the same as the
+          name of the case script (1.0), and its contents would be the
+          two data lines shown above.  This would change our example
+          to the following:
+
+               # Purpose: Make sure the -a flag works properly
+
+               moduleA -a
+
+
+
+
+     Page 15                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          When small amounts of input data are to be supplied via
+          stdin, _h_e_r_e documents are probably more convenient.  When
+          larger amounts of data are to be supplied, however, it may
+          be better to set up separate stdin files.
+
+        CCCCaaaasssseeee----ssssppppeeeecccciiiiffffiiiicccc ddddaaaattttaaaa ffffiiiilllleeeessss
+          Testers are free to create and access whatever files they
+          need for each test.  Whenever a test script is run, its
+          first argument ($1) is set to the private database directory
+          that is exclusively for the use of that test script.  This
+          argument can be used within a test script.  For example,
+          suppose the above stdin data were instead put in a file
+          called 'input' in this private database directory.  Then our
+          example could be changed as follows:
+
+               # Purpose: Make sure the -a flag works properly
+
+               moduleA -a < $1/input
+
+          The private database directories are all found under the $$$$ddddbbbb
+          directory (see above), each directory named after the test
+          script it matches.  Thus, in our example, the directory
+          $db/1.0/ would contain whatever special files were needed by
+          the 1.0 case.
+
+          Another advantage to using the private database directory
+          concerns modules that create files in the current working
+          directory.  By issuing a _c_d command to the private database
+          directory, the executing module is free to create whatever
+          work files are needed in the current directory or below,
+          without interfering with the needs of any other test script.
+          Thus, if the moduleA routine created local files as it runs,
+          it might be better to use the following script:
+
+               # Purpose: Make sure the -a flag works properly
+
+               cd $1     # Go to the private database directory
+               moduleA -a < input
+
+          It would probably _n_o_t be a good idea to cd to $db/1.0 in the
+          script, because if the case name were later changed the cd
+          would go to the wrong directory.
+
+        CCCCoooommmmmmmmoooonnnn ddddaaaattttaaaa ffffiiiilllleeeessss
+          If the same data files are to be used by many case scripts,
+          they can be placed in files or directories directly under
+          the $$$$ddddbbbb directory (rather than subdirectories named after
+          cases).  For example, if the input in our example above was
+          to be used by several test scripts, it could be put in the
+          directory $$$$ddddbbbb////ccccoooommmmmmmmoooonnnn and accessed as follows:
+
+               # Purpose: Make sure the -a flag works properly
+
+
+
+     Page 16                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+               moduleA -a < $db/common/input
+
+
+     PPPPRRRREEEEPPPPAAAARRRRIIIINNNNGGGG OOOOUUUUTTTTPPPPUUUUTTTT FFFFOOOORRRR LLLLIIIINNNNEEEE----BBBBYYYY----LLLLIIIINNNNEEEE CCCCOOOOMMMMPPPPAAAARRRRIIIISSSSOOOONNNN
+          Since the regress system is based on the line-by-line
+          comparison of the test and golden versions of the stdout and
+          stderr of its test scripts, there are problems when running
+          tests that don't fit this model.  There are some techniques
+          that can be used to handles such situations.
+
+        CCCCoooommmmmmmmaaaannnnddddssss tttthhhhaaaatttt pppprrrroooodddduuuucccceeee ffffiiiilllleeeessss
+          If a command produces line-oriented files when it runs, a
+          simple technique to check such files is to print them to
+          stdout after the command executes.  This moves the text of
+          the files into the test or golden outputs so they can be
+          included in the @test comparison.  If such files contains
+          non-printable characters, using filters such as ccccaaaatttt ----vvvv to
+          make them visible is advised.
+
+          The following example shows a portion of a test script used
+          to test the command moduleA that creates two output files:
+          file1 and file2, the second file containing control
+          characters.
+
+               # Purpose: Make sure the files created by -b are correct
+
+               @showdo "moduleA -b" "Creating file1 and file2"
+               @comment "Showing file1"
+               cat file1
+               @comment "Showing file2"
+               cat -v file2
+
+
+        CCCCoooommmmmmmmaaaannnnddddssss pppprrrroooodddduuuucccciiiinnnngggg oooouuuuttttppppuuuutttt tttthhhhaaaatttt iiiissss nnnnooootttt lllliiiinnnneeee oooorrrriiiieeeennnntttteeeedddd
+          Since the ddddiiiiffffffff((((1111)))) command is used to compare test and golden
+          outputs, only output that can be compared line by line is
+          suitable for testing by this system.  This generally means
+          that such output cannot be included in regression test
+          evaluation.  One option that can be used in limited cases,
+          however, is to convert non-line-oriented output to line-
+          oriented output.  This is, of course, application specific
+          and requires some sort of program that can do this
+          conversion.
+
+          For example, if a program controls terminal screens, it
+          might be possible to write a filter that would take periodic
+          "snapshots" of the resulting screen and display them to
+          standard output in a line-by-line form.  Changes to the
+          program that produced screens different from what was
+          intended could then be detected by regress and quickly
+          located.
+
+
+
+
+     Page 17                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+     SSSSEEEETTTTTTTTIIIINNNNGGGG UUUUPPPP AAAA RRRREEEEGGGGRRRREEEESSSSSSSSIIIIOOOONNNN EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          To begin using this command, a regression environment needs
+          to be set up.  Minimally, this only requires a directory in
+          which to put the test cases, data and I/O files.  The name
+          of the chosen directory needs to be assigned to the
+          REGRESSDIR variable.
+
+          Be sure that the directory chosen for the regression testing
+          files be in a filesystem with enough space to satisfy the
+          needs of the testing files.
+
+          Once the REGRESSDIR variable has been assigned a value, the
+          first module to be tested can be declared.  The following
+          shows an example of defining a new regression testing
+          directory:
+
+               $ REGRESSDIR=/lu5/regressdir  export REGRESSDIR
+               $ regress -n moduleA
+               Creating directories for 'moduleA' module.
+
+               $ regress -l
+               The following modules have been set up for regression testing:
+                    moduleA
+
+               $ regress moduleA
+
+               Using "moduleA" module in all  @  commands.
+
+               Changing directory to '/lu5/regressdir/moduleA/cases'
+               Type ^D to quit,  @help  for help
+
+               REGRESS(moduleA):
+
+          After defining the REGRESSDIR variable, the user declares
+          the _m_o_d_u_l_e_A module to be a new module that should be set up
+          in that environment.  Next the user requests a listing of
+          all the available modules in the environment and sees that
+          only 'moduleA' is available.  Finally, the user enters the
+          regression environment, and is taken to the $cases
+          directory, where case scripts can be created to set up the
+          regression tests.
+
+          In the above example, the REGRESSDIR variable was assigned
+          by the user.  This is not how it is generally done.
+          Typically, such variables are assigned either in the user's
+          ....pppprrrrooooffffiiiilllleeee file, or when a development environment is entered
+          using the exptools _c_e(_1) command.  Assigning this variable
+          is therefore kept hidden and out of the way.
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+        KKKKsssshhhh88888888
+          The regress system depends on the current shell being the
+
+
+
+     Page 18                                         (printed 5/27/93)
+
+
+
+
+
+
+     RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           RRRREEEEGGGGRRRREEEESSSSSSSS((((1111))))
+
+
+
+          1988 version of the Korn shell.  When invoked, it performs
+          tests to determine if the shell is appropriate, and if not
+          it puts out an error message and stops.
+
+        FFFFiiiilllleeeessssyyyysssstttteeeemmmm cccclllleeeeaaaannnnssssiiiinnnngggg
+          Because there is the potential for an enormous number of
+          files being maintained that are not really needed, the
+          regress system actively removes files it considers unneeded
+          when a @test or @capture run is completed.  Examples of this
+          are test or golden stdout or stderr files that are empty, or
+          stdout or stderr files which successfully match their golden
+          counterparts.  To save disk space, such files are removed.
+
+     RRRREEEETTTTUUUURRRRNNNN CCCCOOOODDDDEEEESSSS
+          This command returns an error code of 2 if it is unable to
+          set up the requested regression environment.  Otherwise, it
+          returns 0.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          The exptools command ce(1) for an automatic way to define
+          the REGRESSDIR variable when working on project files.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          The original regression test code on which this system is
+          based was written by Bruce Beare for the CRAS Project.  The
+          current system was developed and is provided by George Otto
+          (ptah!otto).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 19                                         (printed 5/27/93)
+
+
+

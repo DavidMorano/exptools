@@ -1,0 +1,179 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Find branches in a SNOBOL program
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    snobol  source_files
+#
+# This program parses a SNOBOL language source file
+# and writes lines of the form:
+#
+#	start_line# end_line#
+#
+#
+# The argument to this script should be a SNOBOL
+# source files.
+#
+##########################################################
+
+
+FORHELP="\n\n(For more help, contact Bob Parnass)\n"
+USAGE="*** error, USAGE:  `basename $0`   files ${FORHELP}"
+
+TMP=/usr/tmp
+LABELFILE=$TMP/a1a$$
+BRANCHFILE=$TMP/a2a$$
+JUNKFILE=$TMP/a3a$$
+
+TMPFILES="$LABELFILE $BRANCHFILE $JUNKFILE"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# check for bad command line args which start with a minus sign
+for ARG do
+	case "${ARG}" in
+		-*)
+			echo "${USAGE}" 1>&2
+			echo "        Bogus command line argument" 1>&2
+			exit 1
+			# script exits
+			;;
+		*)
+			;;
+	esac
+done
+
+
+# see if a public version of the newform program exists
+test -x /usr/bin/newform
+if [ $? -eq 0 ]
+then
+	# use public version
+	NEWFORM=/usr/bin/newform
+else
+	# use private version
+	NEWFORM=$TOOLS/lib/comment/newform
+fi
+
+# input file of fcn calls must be specfied
+if [ $# -ge 1 ]
+then
+	while [ $# -ne 0 ]
+	do
+		# cull out lines of interest
+		INFILE=${1}
+
+		# convert tabs to spaces
+		# delete all strings contained within single and
+		# double quotes and the quotes themselves
+		$NEWFORM -i $INFILE \
+			| sed -e "s/'.*'//g" -e 's/".*"//g' \
+			| awk ' \
+				((index($0, "*") != 1) && (index($0, "-") != 1)) \
+					{
+					wholeline = $0
+					len = length(wholeline)
+
+					# find first space
+					space = index(wholeline, " ")
+
+					# if line has a label
+					if((space != 1) && (index(wholeline, "+") != 1))
+						{
+						if(space == 0)
+							label = wholeline
+						else
+							label = substr(wholeline, 1, space-1)
+						}
+					else label = ""
+					# if line has a label
+					if(label != "")
+						{
+						printf "%s %d LABELFOO\n", label, NR
+						}
+					restline = substr(wholeline, length(label), len - length(label) + 1)
+					k = index(restline, ":")
+					# if line has a first branch
+					if(k > 0)
+						{
+						len = length(restline)
+						restline = substr(restline, k + 1, len - k + 1)
+						lp = index(restline, "(")
+						rp = index(restline, ")")
+						dest = substr(restline, lp+1, rp-lp-1)
+						if(length(dest) > 0)
+							{
+							printf "%s %d\n", dest, NR
+							}
+						len = length(restline)
+						restline = substr(restline, rp + 1, len - rp + 1)
+
+						k = index(restline, ":")
+						# if line has a second branch
+						if(k > 0)
+							{
+							lp = index(restline, "(")
+							rp = index(restline, ")")
+							dest = substr(restline, lp+1, rp-lp-1)
+printf "\tlp=%d, rp=%d, dest=%s, restline=%s\n", lp, rp, dest, restline
+							}
+						if(length(dest) > 0)
+							{
+							printf "%s %d\n", dest, NR
+							}
+						}
+					 } ' > $JUNKFILE
+
+
+				
+		grep 'LABELFOO$' $JUNKFILE \
+			| cut -d' ' -f1,2 \
+			| sort -u > $LABELFILE
+		
+		# labelfile now contains lines of the form:
+		#	label line#
+		
+		
+		grep -v 'LABELFOO$' $JUNKFILE \
+			| cut -d' ' -f1,2 \
+			| sort -u > $BRANCHFILE
+		
+		# branch now contains lines of the form:
+		#	label line#
+		
+		
+		
+		
+		join  -t' ' -a1 -j1 1 -j2 1 -o 1.2 2.2 $BRANCHFILE $LABELFILE \
+			| awk '\
+				{
+				if(NF == 2)
+					printf "%s %s\n", $1, $2
+				else
+					printf "%s %s\n", $1, $1
+				}'
+				
+
+		shift
+	done
+
+	rm -f "${TMPFILES}"
+
+	exit 0
+else
+	# input file not specified on cmd line
+	echo "${USAGE}" 1>&2
+	echo "        Input file must be specified" 1>&2
+	exit 1
+fi

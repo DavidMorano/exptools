@@ -1,0 +1,25 @@
+#ident "@(#) /sable/sdb/ra/rel/relation/s.bfRel.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+class BF_Relation : public Relation
+{
+include(bfRel.pd)
+public:
+   BF_Relation(Intension &i,const char *file=0,Fileperm perm=READWRITE)
+        : Relation (i,new BF_Extension(file,perm)) { triggerFunc = 0; }
+   BF_Relation(Attribute &a,const char *file=0,Fileperm perm=READWRITE)
+        : Relation (a,new BF_Extension(file,perm)) { triggerFunc = 0; }
+   void trigger(Boolean_t (*func)(Tuple *,Tuple *)) { triggerFunc = func; }
+   void after(void (*func)(Tuple *,Tuple *)) { afterFunc = func; }
+   Boolean_t truncate();
+   void startwalk();
+   void startwalk(Predicate &);
+   Tuple *walk();
+   Boolean_t operator=(Tuple *t);
+   virtual void endwalk();
+   Boolean_t operator+=(Tuple *t);
+   /* Operators =, += and walk() become lost in the inheritence */
+   Boolean_t operator=(Relation &r){ return Relation::operator=(r); }
+   Boolean_t operator+=(Relation &r){ return Relation::operator+=(r); }
+   Boolean_t walk(IntensionValue &iv) { return Relation::walk(iv); }
+};

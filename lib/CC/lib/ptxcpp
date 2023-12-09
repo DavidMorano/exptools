@@ -1,0 +1,62 @@
+#!/bin/sh
+# ptxcpp - run both the standard C preprocessor and the
+# parameterization filter (ptfilt).  Also run the freestore
+# filter (fsipp) if requested.
+
+CCLIBDIR=${CCLIBDIR-${TOOLS}/lib/CC/lib/}
+if test "$CCLIBDIR" != ""
+then	CCLIBDIR="$CCLIBDIR/"
+fi
+
+ptxC=${ptxC-${CCLIBDIR}ptfilt}
+fsippC=${fsippC-${CCLIBDIR}fsipp}
+
+usefs=0
+useptx=1
+opts=
+defmem=D
+deflist=
+
+cppC=$1
+shift
+for A 
+do	case $A in
+	-C)	;;
+	-ptx)	useptx=0
+		;;
+	-fs)	usefs=1
+		;;
+	-I*)	opts="$opts $A"
+		;;
+	-D*)	# don't know why all this contortion is necessary,
+		# but the CC script does it, so I guess I'd better too.
+		#
+		eval $defmem='"$A"'
+		deflist="$deflist \"\$$defmem\""
+		defmem=${defmem}x
+		;;
+	-U*)	opts="$opts $A"
+		;;
+	*)	break
+		;;
+	esac
+	shift
+done
+
+#echo "opts are: $opts" >/dev/tty
+#echo "star is now $*" >/dev/tty
+
+if [ $usefs -eq 1 ]
+then	if [ $useptx -eq 1 ]
+	then	echo "${cppC} ... $* | ${ptxC} | ${fsippC}" 1>&2
+		eval ${cppC} '$opts' $deflist $* | ${ptxC} | ${fsippC}
+	else	echo "${cppC} ... $* | ${fsippC}" 1>&2
+		eval ${cppC} '$opts' $deflist $* | ${fsippC}
+	fi
+else	if [ $useptx -eq 1 ]
+	then	eval ${cppC} '$opts' $deflist $* | ${ptxC}
+	else	eval ${cppC} '$opts' $deflist $*
+	fi
+fi
+
+

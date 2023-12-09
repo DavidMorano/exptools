@@ -1,0 +1,594 @@
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          Real - infinite precision arithmetic
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee <<<<rrrreeeeaaaallll....hhhh>>>>
+
+          ttttyyyyppppeeeeddddeeeeffff lllloooonnnngggg EEEExxxxpppp____tttt ;;;;
+          ssssttttaaaattttiiiicccc iiiinnnntttt ccccoooonnnnsssstttt BBBBIIIITTTTSSSSIIIINNNNLLLLOOOONNNNGGGG ==== 33332222 ;;;;
+                    ////////  _B_I_T_S_I_N_L_O_N_G _a_n_d _E_x_p__t _a_r_e _i_m_p_l_e_m_e_n_t_a_t_i_o_n _d_e_p_e_n_d_e_n_t
+
+          ccccllllaaaassssssss PPPPlllliiiimmmmiiiitttt {{{{
+                    ////////  _A _P_l_i_m_i_t _s_p_e_c_i_f_i_e_s _t_h_e _a_m_o_u_n_t _t_o _c_o_m_p_u_t_a_t_i_o_n _t_o _d_o
+                    ////////  _b_e_f_o_r_e _d_e_c_i_d_i_n_g _t_h_a_t _s_o_m_e _R_e_a_l _i_s _z_e_r_o.
+                    }}}} ;;;;
+          PPPPlllliiiimmmmiiiitttt aaaabbbbssss____pppplllliiiimmmmiiiitttt((((iiiinnnntttt)))) ;;;;
+          PPPPlllliiiimmmmiiiitttt rrrreeeellll____pppplllliiiimmmmiiiitttt((((iiiinnnntttt)))) ;;;;
+          PPPPlllliiiimmmmiiiitttt ooooppppeeeerrrraaaattttoooorrrr++++((((PPPPlllliiiimmmmiiiitttt,,,,PPPPlllliiiimmmmiiiitttt)))) ;;;;
+          PPPPlllliiiimmmmiiiitttt pppplllliiiimmmmiiiitttt((((iiiinnnntttt)))) ;;;;
+          eeeexxxxtttteeeerrrrnnnn PPPPlllliiiimmmmiiiitttt iiiinnnnffff____pppplllliiiimmmmiiiitttt,,,, ddddiiiivvvviiiiddddeeee____pppplllliiiimmmmiiiitttt,,,, rrrreeeellllaaaattttiiiioooonnnn____pppplllliiiimmmmiiiitttt;;;;
+          eeeexxxxtttteeeerrrrnnnn PPPPlllliiiimmmmiiiitttt iiiioooo____pppplllliiiimmmmiiiitttt,,,, sssspppplllliiiitttt____pppplllliiiimmmmiiiitttt,,,, rrrroooouuuunnnndddd____pppplllliiiimmmmiiiitttt,,,, uuuunnnnddddeeeerrrrfffflllloooowwww____pppplllliiiimmmmiiiitttt ;;;;
+
+          eeeennnnuuuummmm RRRRoooouuuunnnndddd____ddddiiiirrrr {{{{
+                    rrrroooouuuunnnndddd____ddddoooowwwwnnnn,,,, rrrroooouuuunnnndddd____uuuupppp,,,, rrrroooouuuunnnndddd____nnnneeeeaaaarrrr,,,, rrrroooouuuunnnndddd____ppppoooossss,,,, rrrroooouuuunnnndddd____nnnneeeegggg
+                    }}}} ;;;;
+
+
+          ccccllllaaaassssssss SSSSiiiinnnngggglllleeee ;;;; ccccllllaaaassssssss SSSSeeeerrrriiiieeeessss ;;;;
+          ccccllllaaaassssssss RRRReeeeaaaallll {{{{
+             ppppuuuubbbblllliiiicccc::::
+                              ////////  _C_o_n_s_t_r_u_c_t_o_r_s (_a_n_d _d_e_s_t_r_u_c_t_o_r)
+                              RRRReeeeaaaallll(((()))) ;;;;
+                              RRRReeeeaaaallll((((lllloooonnnngggg)))) ;;;;
+                              RRRReeeeaaaallll((((iiiinnnntttt)))) ;;;;
+                              RRRReeeeaaaallll((((ddddoooouuuubbbblllleeee)))) ;;;;
+                              RRRReeeeaaaallll((((SSSSeeeerrrriiiieeeessss****)))) ;;;;
+                              RRRReeeeaaaallll((((RRRReeeeaaaallll&&&&)))) ;;;;
+                              ~~~~RRRReeeeaaaallll(((()))) ;;;;
+
+                              ////////  _a_s_s_i_g_n_m_e_n_t
+                    vvvvooooiiiidddd      ooooppppeeeerrrraaaattttoooorrrr====((((RRRReeeeaaaallll&&&&)))) ;;;;
+
+                              ////////  _M_i_s_c_e_l_l_a_n_e_o_u_s _o_p_e_r_a_t_i_o_n_s
+                    iiiinnnntttt       oooobbbbvvvviiiioooouuuussss____zzzzeeeerrrroooo(((()))) ;;;;
+                    lllloooonnnngggg      iiiirrrroooouuuunnnndddd((((RRRRoooouuuunnnndddd____ddddiiiirrrr====rrrroooouuuunnnndddd____ddddoooowwwwnnnn,,,,
+                              PPPPlllliiiimmmmiiiitttt ==== rrrroooouuuunnnndddd____pppplllliiiimmmmiiiitttt))));;;;
+                    RRRReeeeaaaallll      rrrroooouuuunnnndddd((((RRRRoooouuuunnnndddd____ddddiiiirrrr====rrrroooouuuunnnndddd____ddddoooowwwwnnnn,,,,
+                              PPPPlllliiiimmmmiiiitttt ==== rrrroooouuuunnnndddd____pppplllliiiimmmmiiiitttt))));;;;
+                    vvvvooooiiiidddd      sssshhhhoooowwww((((iiiinnnntttt ffffoooorrrrcccceeee====0000,,,,cccchhhhaaaarrrr**** ppppffffxxxx====0000,,,,cccchhhhaaaarrrr**** ssssffffxxxx====""""0000)))) ;;;;
+                    iiiinnnntttt       ssssiiiiggggnnnn((((PPPPlllliiiimmmmiiiitttt ==== rrrreeeellllaaaattttiiiioooonnnn____pppplllliiiimmmmiiiitttt )))) ;;;;
+                    vvvvooooiiiidddd      sssspppplllliiiitttt((((EEEExxxxpppp____tttt&&&& eeee,,,, lllloooonnnngggg&&&& nnnn,,,,
+                              iiiinnnntttt pppprrrreeeecccc ==== BBBBIIIITTTTSSSSIIIINNNNLLLLOOOONNNNGGGG----1111,,,,
+                              PPPPlllliiiimmmmiiiitttt ==== sssspppplllliiiitttt____pppplllliiiimmmmiiiitttt )))) ;;;;
+
+
+
+     Page 1                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+                    vvvvooooiiiidddd      sssspppplllliiiitttt((((EEEExxxxpppp____tttt&&&& eeee,,,, RRRReeeeaaaallll&&&& rrrr,,,,
+                              PPPPlllliiiimmmmiiiitttt ==== sssspppplllliiiitttt____pppplllliiiimmmmiiiitttt )))) ;;;;
+                    vvvvooooiiiidddd      sssspppplllliiiitttt((((EEEExxxxpppp____tttt &&&&,,,, SSSSiiiinnnngggglllleeee**** &&&&,,,, iiiinnnntttt nnnn ==== 0000)))) ;;;;
+                    ssssttttaaaattttiiiicccc vvvvooooiiiidddd((((****uuuufffflllloooowwwwaaaaccccttttiiiioooonnnn))))((((RRRReeeeaaaallll&&&&)))) ;;;;
+
+                              ////////  _A_r_i_t_h_m_e_t_i_c _r_e_l_a_t_i_o_n_s
+                    iiiinnnntttt       eeeeqqqquuuuaaaallll((((RRRReeeeaaaallll &&&&rrrr,,,, PPPPlllliiiimmmmiiiitttt ==== rrrreeeellllaaaattttiiiioooonnnn____pppplllliiiimmmmiiiitttt)))) ;;;;
+                    iiiinnnntttt       ggggeeee((((RRRReeeeaaaallll &&&&rrrr,,,, PPPPlllliiiimmmmiiiitttt ==== rrrreeeellllaaaattttiiiioooonnnn____pppplllliiiimmmmiiiitttt)))) ;;;;
+                    iiiinnnntttt       ggggtttt((((RRRReeeeaaaallll &&&&rrrr,,,, PPPPlllliiiimmmmiiiitttt ==== rrrreeeellllaaaattttiiiioooonnnn____pppplllliiiimmmmiiiitttt)))) ;;;;
+
+                    iiiinnnntttt       eeeeqqqquuuuaaaallll((((lllloooonnnngggg)))) ;;;;
+                    iiiinnnntttt       ggggeeee((((lllloooonnnngggg)))) ;;;;
+                    iiiinnnntttt       ggggtttt((((lllloooonnnngggg)))) ;;;;
+                    iiiinnnntttt       lllleeee((((lllloooonnnngggg)))) ;;;;
+                    iiiinnnntttt       lllltttt((((lllloooonnnngggg)))) ;;;;
+
+                              ////////  _C_o_n_v_e_r_s_t_i_o_n_s
+                              ooooppppeeeerrrraaaattttoooorrrr ddddoooouuuubbbblllleeee(((()))) ;;;;
+                    ddddoooouuuubbbblllleeee    ddddbbbbllll((((PPPPlllliiiimmmmiiiitttt)))) ;;;;
+
+                              ////////  _M_o_d_i_f_y_i_n_g _a_s_s_i_g_n_m_e_n_t
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr++++====((((RRRReeeeaaaallll&&&& yyyy)))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr----====((((RRRReeeeaaaallll&&&& yyyy)))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr****====((((RRRReeeeaaaallll&&&& yyyy)))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr////====((((RRRReeeeaaaallll&&&& yyyy)))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr++++====((((lllloooonnnngggg yyyy )))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr----====((((lllloooonnnngggg yyyy )))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr****====((((lllloooonnnngggg yyyy )))) ;;;;
+                    RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr////====((((lllloooonnnngggg yyyy )))) ;;;;
+
+
+          }}}} ;;;;
+
+          ////////  _A_r_i_t_h_m_e_t_i_c _O_p_e_r_a_t_i_o_n_s
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr++++((((RRRReeeeaaaallll&&&&,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr****((((RRRReeeeaaaallll&&&&,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr////((((RRRReeeeaaaallll&&&&,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr----((((RRRReeeeaaaallll&&&&,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr++++((((lllloooonnnngggg,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr****((((lllloooonnnngggg,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr////((((lllloooonnnngggg,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr----((((lllloooonnnngggg,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr++++((((RRRReeeeaaaallll&&&&,,,,lllloooonnnngggg)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr****((((RRRReeeeaaaallll&&&&,,,,lllloooonnnngggg)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr////((((RRRReeeeaaaallll&&&&,,,,lllloooonnnngggg)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr----((((RRRReeeeaaaallll&&&&,,,,lllloooonnnngggg)))) ;;;;
+
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr----((((RRRReeeeaaaallll&&&&)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr<<<<<<<<((((RRRReeeeaaaallll&&&&,,,,lllloooonnnngggg)))) ;;;;
+          RRRReeeeaaaallll      ooooppppeeeerrrraaaattttoooorrrr>>>>>>>>((((RRRReeeeaaaallll&&&&,,,,lllloooonnnngggg)))) ;;;;
+
+
+
+     Page 2                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+          RRRReeeeaaaallll      ffffaaaabbbbssss((((RRRReeeeaaaallll)))) ;;;;
+
+          ////////  _A_r_i_t_h_m_e_t_i_c _C_o_m_p_a_r_i_s_o_n_s
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr========((((RRRReeeeaaaallll &&&&xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr!!!!====((((RRRReeeeaaaallll &&&&xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr>>>> ((((RRRReeeeaaaallll &&&&xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr>>>>====((((RRRReeeeaaaallll &&&&xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr<<<< ((((RRRReeeeaaaallll &&&&xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr<<<<====((((RRRReeeeaaaallll &&&&xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr========((((RRRReeeeaaaallll &&&&xxxx,,,, lllloooonnnngggg yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr!!!!====((((RRRReeeeaaaallll &&&&xxxx,,,, lllloooonnnngggg yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr>>>> ((((RRRReeeeaaaallll &&&&xxxx,,,, lllloooonnnngggg yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr>>>>====((((RRRReeeeaaaallll &&&&xxxx,,,, lllloooonnnngggg yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr<<<< ((((RRRReeeeaaaallll &&&&xxxx,,,, lllloooonnnngggg yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr<<<<====((((RRRReeeeaaaallll &&&&xxxx,,,, lllloooonnnngggg yyyy)))) ;;;;
+
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr========((((lllloooonnnngggg xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr!!!!====((((lllloooonnnngggg xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr>>>> ((((lllloooonnnngggg xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr>>>>====((((lllloooonnnngggg xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr<<<< ((((lllloooonnnngggg xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+          iiiinnnntttt ooooppppeeeerrrraaaattttoooorrrr<<<<====((((lllloooonnnngggg xxxx,,,, RRRReeeeaaaallll &&&&yyyy)))) ;;;;
+
+          ////////  _I_n_s_e_r_t_e_r _a_n_d _e_x_t_r_a_c_t_o_r
+          ccccllllaaaassssssss iiiioooossssttttrrrreeeeaaaammmm ;;;;
+          iiiioooossssttttrrrreeeeaaaammmm&&&& ooooppppeeeerrrraaaattttoooorrrr<<<<<<<<((((iiiioooossssttttrrrreeeeaaaammmm&&&&,,,,RRRReeeeaaaallll)))) ;;;;
+          iiiioooossssttttrrrreeeeaaaammmm&&&& ooooppppeeeerrrraaaattttoooorrrr>>>>>>>>((((iiiioooossssttttrrrreeeeaaaammmm&&&&,,,,RRRReeeeaaaallll&&&&)))) ;;;;
+
+          ccccllllaaaassssssss SSSSeeeerrrriiiieeeessss {{{{
+                    ////////  _S_e_r_i_e_s _i_s _i_n_t_e_n_d_e_d _t_o _b_e _d_e_r_i_v_e_d _f_r_o_m
+          pppprrrrooootttteeeecccctttteeeedddd::::
+                              SSSSeeeerrrriiiieeeessss(((()))) ;;;;
+
+                    ////////  _v_i_r_t_u_a_l_s _t_o _b_e _s_u_p_p_l_i_e_d _i_n _d_e_r_i_v_e_d _c_l_a_s_s
+                              vvvviiiirrrrttttuuuuaaaallll ~~~~SSSSeeeerrrriiiieeeessss(((()))) ;;;;
+
+                    vvvviiiirrrrttttuuuuaaaallll RRRReeeeaaaallllbbbboooouuuunnnndddd(((()))) ;;;;
+                    vvvviiiirrrrttttuuuuaaaallll RRRReeeeaaaallllnnnneeeexxxxtttt(((()))) ;;;;
+                    vvvviiiirrrrttttuuuuaaaallll vvvvooooiiiiddddsssstttteeeepppp(((()))) ;;;;
+          ppppuuuubbbblllliiiicccc::::
+                    vvvvooooiiiidddd      sssshhhhoooowwww((((cccchhhhaaaarrrr**** ppppffffxxxx====0000,,,,cccchhhhaaaarrrr**** ssssffffxxxx====""""0000)))) ;;;;
+          }}}} ;;;;
+
+          ////////  _M_a_t_h _l_i_b_r_a_r_y _f_u_n_c_t_i_o_n_s
+          ####ddddeeeeffffiiiinnnneeee PPPPIIII ppppiiii(((())))
+
+          RRRReeeeaaaallll aaaaccccoooossss((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll aaaassssiiiinnnn((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll aaaattttaaaannnn((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll aaaattttaaaannnn((((RRRReeeeaaaallll,,,,RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll aaaattttaaaannnn2222((((RRRReeeeaaaallll,,,,RRRReeeeaaaallll)))) ;;;;
+
+
+
+     Page 3                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+          RRRReeeeaaaallll aaaattttoooorrrr((((cccchhhhaaaarrrr****))));;;;
+          RRRReeeeaaaallll aaaattttoooorrrr((((uuuunnnnssssiiiiggggnnnneeeedddd cccchhhhaaaarrrr****))));;;;
+          RRRReeeeaaaallll cccceeeeiiiillll((((RRRReeeeaaaallll vvvv)))) ;;;;
+          RRRReeeeaaaallll ccccoooossss((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll eeeexxxxpppp((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll fffflllloooooooorrrr((((RRRReeeeaaaallll vvvv)))) ;;;;
+          RRRReeeeaaaallll ffffrrrreeeexxxxpppp((((RRRReeeeaaaallll,,,,iiiinnnntttt****)))) ;;;;
+          RRRReeeeaaaallll lllloooogggg((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll mmmmooooddddffff((((RRRReeeeaaaallll,,,,RRRReeeeaaaallll,,,,RRRReeeeaaaallll&&&&,,,, PPPPlllliiiimmmmiiiitttt ==== rrrroooouuuunnnndddd____pppplllliiiimmmmiiiitttt)))) ;;;;
+          RRRReeeeaaaallll mmmmooooddddffff((((RRRReeeeaaaallll,,,,RRRReeeeaaaallll&&&&,,,, PPPPlllliiiimmmmiiiitttt ==== rrrroooouuuunnnndddd____pppplllliiiimmmmiiiitttt)))) ;;;;
+          RRRReeeeaaaallll mmmmooooddddffff((((RRRReeeeaaaallll vvvv,,,, RRRReeeeaaaallll**** iiiipppp)))) ;;;;
+          RRRReeeeaaaallll nnnnaaaattttllllooooggggbbbbaaaasssseeee(((()))) ;;;;
+          RRRReeeeaaaallll ppppiiii(((()))) ;;;;
+          RRRReeeeaaaallll ppppoooowwww((((RRRReeeeaaaallll,,,,EEEExxxxpppp____tttt)))) ;;;;
+          RRRReeeeaaaallll ppppoooowwww((((RRRReeeeaaaallll,,,,RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll rrrriiiinnnntttt((((RRRReeeeaaaallll vvvv)))) ;;;;
+          RRRReeeeaaaallll ssssiiiinnnn((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll ssssqqqqrrrrtttt((((RRRReeeeaaaallll)))) ;;;;
+          RRRReeeeaaaallll ttttaaaannnn((((RRRReeeeaaaallll)))) ;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The class RRRReeeeaaaallll implements an infinite precision real number
+          (floating point) type.   The ordinary arithmetic operations
+          (such as +, -, +=... ) have their mathematical meanings.
+          For the most part programs may treat RRRReeeeaaaalllls as if it were one
+          of the ordinary (builtin) numeric types.  However, when
+          comparing two Reals (explicitly or implicitly for an
+          operation like truncation) some care must be taken to avoid
+          infinite loops.
+
+          In the following assume
+          - xxxx, yyyy, z are Reals.
+          - _x, _y and _z are the corresponding mathematical values.  _z
+          - nnnn and mmmm are longs.
+          - _n and _m are the corresponding mathematical values.
+          - iiii and iiii are ints.
+          - _i and _j are the corresponding mathematical values.
+          - pppp and qqqq are Plimits.
+          - ssss and tttt are char*s.
+          - eeee is an Exp_t.
+          - dddd is a double.
+          - iiiioooossss is an iostream.
+
+          Real Constructors:
+
+          RRRReeeeaaaallll xxxx
+               _x=0
+
+          RRRReeeeaaaallll xxxx ==== nnnn
+               _x=_n
+
+          RRRReeeeaaaallll xxxx ==== iiii
+
+
+
+     Page 4                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+               _x=_i
+
+          RRRReeeeaaaallll xxxx ==== &&&&ssss
+               (See discussion of Series)
+
+          RRRReeeeaaaallll xxxx ==== yyyy
+               _x=_y
+
+          In several situations the Real package must decide if two
+          Reals represent the same number or (equivalently) if a Real
+          is zero.  In such cases the package uses a limit (Plimit) to
+          decide when to stop computation and report an approximate
+          result of overflow.  Many operations may be supplied with a
+          Plimit explicitly or will use a default.  There are a large
+          collection of variables for specifying these defaults.
+          Functions for creating Plimits are:
+
+          pppp====aaaabbbbssss____pppplllliiiimmmmiiiitttt((((iiii))))
+               Compute at least _i significant bits past the binary
+               point.
+
+          pppp====rrrreeeellll____pppplllliiiimmmmiiiitttt((((iiii))))
+               Compute _i bits more than the significance that was
+               started with.  Unfortunately the concept of
+               "significants started with" cannot be formulated
+               abstractly in terms of mathematical values.  It has
+               meaning only interms of implementation details that are
+               not specified by the interface.  However, relative
+               Plimits may be useful in guaranteeing that progress is
+               made in some computations when it is not possible to
+               determine a priori some absolute limits.
+
+          pppp++++qqqq  Forces as much computation as either pppp or qqqq would.
+
+          Miscellaneous operations
+
+          yyyy====xxxx  _x is assigned to yyyy
+
+          iiii====xxxx....oooobbbbvvvviiiioooouuuussss____zzzzeeeerrrroooo(((())))
+               If the representation of xxxx makes it clear that _x=0 then
+               iiii is set to 0.  iiii may be set to a non-zero value if
+               either _x is definitely not zero or if the
+               implementation is unable to tell.  _o_b_v_i_o_u_s__z_e_r_o only
+               performs some fast checks and always returns quickly.
+
+          nnnn====xxxx....iiiirrrroooouuuunnnndddd((((rrrr,,,,aaaabbbbssss____pppplllliiiimmmmiiiitttt((((iiii))))))))
+
+               Round _x to an integral value and assign the result to
+               nnnn.  When _x is close to a cross-over point, it is
+               possible for _i_r_o_u_n_d to assign a value to nnnn that is off
+               by 1.  pppp controls how conservative to be in avoiding
+               this "mistake".  In particular there is some value
+
+
+
+     Page 5                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+               within 2-_i of _x that would properly be rounded to nnnn. rrrr
+               determines the direction of rounding as follows:
+
+               rrrroooouuuunnnndddd____ddddoooowwwwnnnn
+                    towards zero
+
+               rrrroooouuuunnnndddd____uuuupppp
+                    away from zero
+
+               rrrroooouuuunnnndddd____nnnneeeeaaaarrrr
+                    toward nearest integer
+
+               rrrroooouuuunnnndddd____ppppoooossss
+                    toward more positive (or less negative)
+
+               rrrroooouuuunnnndddd____nnnneeeegggg
+                    toward more negative (or less positive)
+          An overflow is possible if |_x| is too large, in which case the
+          result is undefined.
+
+          yyyy====xxxx....rrrroooouuuunnnndddd((((rrrr,,,,pppp))))
+               is the same as nnnn====xxxx....iiiirrrroooouuuunnnndddd((((rrrr,,,,pppp)))) except that an overflow
+               is not possible.
+
+          xxxx....sssshhhhoooowwww((((iiii,,,,ssss,,,,tttt))))
+               Causes a description of _x to be written to ccccoooouuuutttt.
+               Preceeded by ssss and followed tttt.  Larger values of iiii
+               cause more detail to be computed before the description
+               is output.
+
+          iiii====xxxx....ssssiiiiggggnnnn((((pppp))))
+               is -1, 0 or +1 depending on whether _x is negative,
+               zero, or positive respectively.
+
+          xxxx....sssspppplllliiiitttt((((eeee,,,,nnnn,,,,iiii,,,,pppp))))
+               Look for eeee and nnnn such that |_n|>2_i and _n2_e-_x<1.  If _x=0
+               _s_p_l_i_t assigns 0 to n, and a large negative number to e.
+               In some cases the representation may suggest that _x=0
+               but it may not be possible to verify and _s_p_l_i_t will
+               assign 1 or -1 to nnnn.
+
+          xxxx....sssspppplllliiiitttt((((eeee,,,,yyyy,,,,pppp))))
+               Assigns values to eeee and yyyy so that _x=_y2_e and 1/2_<|_y|<1.
+               When it makes a mistake (i.e. computation is stopped by
+               pppp) it errs by assigning a value to yyyy between 0 and 1/2.
+
+          Arithmetic relations:
+
+          iiii====xxxx....eeeeqqqquuuuaaaallll((((yyyy,,,,pppp))))
+               If iiii is non-zero then _x=_y.  Mistakes go in favor of
+               setting iiii to 0.
+
+
+
+
+     Page 6                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+          iiii====xxxx....ggggeeee((((yyyy,,,,pppp))))
+               If iiii is non-zero then _x_>_y.  Mistakes go in favor of
+               setting iiii to 0.
+
+          iiii====xxxx....ggggtttt((((yyyy,,,,pppp))))
+               iiii is non-zero if _x>_y. Mistakes go in favor of setting iiii
+               to 0.
+
+          dddd====((((ddddoooouuuubbbblllleeee))))xxxx
+               dddd is assigned a value "near" xxxx.
+
+          dddd====xxxx....ddddbbbbllll((((pppp))))
+               dddd is assigned a value "near" xxxx.  pppp is used as an
+               argument to the underlying call of _s_p_l_i_t.
+
+          All arithmetic operators and comparisons are overloaded to
+          combine two Reals or a Real and a long.  Modifying
+          assignments are overloaded so as to allow a Real on the left
+          hand side and a Real or long on the right hand side.  Other
+          arithmetic operations are also defined:
+
+          yyyy====ffffaaaabbbbssss((((xxxx))))
+               _y=|_x|
+
+          yyyy====xxxx<<<<<<<<nnnn
+               _y=_x2_n
+
+          yyyy====xxxx>>>>>>>>nnnn
+               _y=_x2-_n
+
+          iiiioooossss<<<<<<<<xxxx
+               A decimal expansion of _x is inserted into iiiioooossss.  The
+               number of digits in the expansion is determined by
+               iiiioooossss....pppprrrreeeeccccssssiiiioooonnnn(((()))).
+
+          iiiioooossss>>>>>>>>xxxx
+               A decimal number with arbitrary many digits, optionally
+               with leading sign and trailing exponent is extracted
+               from iiiioooossss.
+
+          Class Series supports evaluation of infinite series.  It is
+          designed to be derived from.  If ssss is a Series,  RRRReeeeaaaallll((((&&&&ssss))))
+          has a real value _s that is determined via calls to the
+          virtual members of ssss.
+
+          These must satisfy the following constraints.
+
+          xxxx====ssss....bbbboooouuuunnnndddd(((())))
+               _x_>|_s|
+
+          xxxx====ssss....nnnneeeexxxxtttt(((())))
+               _x is the next term of the series.  The value of the
+
+
+
+     Page 7                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+               series is not changed.  Repeated calls to _n_e_x_t return
+               the same value.
+
+          ssss....sssstttteeeepppp(((())))
+               modifies ssss to remove the first term.
+
+          To understand this definition, consider that the value of a
+          Series might be computed by the following (potentially
+          infinite) loop
+               for (Real x = 0 ; s.bound() > 0 ; s.step() ) x += s.next() ;
+          RRRReeeeaaaallll((((&&&&ssss)))) embodies this computation but avoids the infinite
+          loop.  A particular Series object should be incorporated in
+          only one Real and should be allocated via nnnneeeewwww because the
+          internal reference counting mechanisms of the Real package
+          may do a ddddeeeelllleeeetttteeee.
+
+          Ordinary mathematical functions (mainly defined as infinite
+          series):
+
+          yyyy====aaaaccccoooossss((((xxxx))))
+               inverse cosine
+
+          yyyy====aaaassssiiiinnnn((((xxxx))))
+               inverse sine
+
+          yyyy====aaaattttaaaannnn((((xxxx))))
+               inverse tanget.  -J/2<_y<_p_i/2
+
+          zzzz====aaaattttaaaannnn((((xxxx,,,,yyyy)))), zzzz====aaaattttaaaannnn2222((((xxxx,,,,yyyy))))
+               inverse tanget.  Quadrant determined by signs of x and
+               y.
+
+          xxxx====aaaattttoooorrrr((((ssss))))
+               Convert ASCII (string) representation to real.  ssss is
+               interpreted as a decimal number with the same
+               conventions as the iostream extractor.
+
+          yyyy====cccceeeeiiiillll((((xxxx))))
+               is equivalent to yyyy====xxxx....rrrroooouuuunnnndddd((((rrrroooouuuunnnndddd____ppppoooossss)))).
+
+          yyyy====ccccoooossss((((xxxx))))
+               trig cosine
+
+          yyyy====eeeexxxxpppp((((xxxx))))
+               _y=_e_x (where _e is the base of natural logarithms).
+
+          yyyy====fffflllloooooooorrrr((((xxxx))))
+               equivalent to yyyy====xxxx....rrrroooouuuunnnndddd((((rrrroooouuuunnnndddd____nnnneeeegggg))))
+
+          yyyy====ffffrrrreeeexxxxpppp((((xxxx,,,,&&&&iiii))))
+               equivalent to _x._s_p_l_i_t(_y,_i).
+
+
+
+
+     Page 8                                          (printed 11/9/90)
+
+
+
+
+
+
+     RRRREEEEAAAALLLL((((3333CCCC++++++++))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((CCCCCCCClllliiiibbbb))))            RRRREEEEAAAALLLL((((3333CCCC++++++++))))
+
+
+
+          yyyy====lllloooogggg((((xxxx))))
+               natural logarithm (base _e).
+
+          wwww====mmmmooooddddffff((((xxxx,,,,yyyy,,,,zzzz,,,,pppp))))
+               Assigns to zzzz an integral multiple of _y, such that
+               _x=_z*_y+_w and |_w|<1
+
+          wwww====mmmmooooddddffff((((xxxx,,,,zzzz,,,,pppp))))
+               equivalent to wwww====mmmmooooddddffff((((xxxx,,,,1111,,,,zzzz,,,,pppp))))
+
+          wwww====mmmmooooddddffff((((xxxx,,,,&&&&zzzz))))
+               equivalent to wwww====mmmmooooddddffff((((xxxx,,,,zzzz,,,,rrrroooouuuunnnndddd____pppplllliiiimmmmiiiitttt))))
+
+          yyyy====nnnnaaaattttllllooooggggbbbbaaaasssseeee(((())))
+               _y=_e the base of natural logarithms.
+
+          yyyy====ppppiiii(((())))
+               _y=J
+
+          yyyy====ppppoooowwww((((xxxx,,,,eeee))))
+               _y=_x_e. (eeee is an Exp_t, i.e. an integral value).
+
+          zzzz====ppppoooowwww((((xxxx,,,,yyyy))))
+               _z=_x_y
+
+          yyyy====rrrriiiinnnntttt((((xxxx))))
+               equivalent to yyyy====xxxx....rrrroooouuuunnnndddd((((rrrroooouuuunnnndddd____nnnneeeeaaaarrrr))))
+
+          yyyy====ssssiiiinnnn((((xxxx))))
+               trig sine
+
+          yyyy====ssssqqqqrrrrtttt((((xxxx))))
+               square root
+
+          yyyy====ttttaaaannnn((((xxxx))))
+               trig tangent
+
+     BBBBUUUUGGGGSSSS
+          The conversion from doubles to Reals looses some precision.
+          It will capture only 31 bits of precision from the double.
+          (This was all it is easy to get in a portable way.)
+
+          The assignment operator is declared to return vvvvooooiiiidddd rather
+          than RRRReeeeaaaallll to avoid some excess overheads of reference
+          counting.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ios.intro(3C++)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Jerry Schwarz
+
+
+
+
+     Page 9                                          (printed 11/9/90)
+
+
+

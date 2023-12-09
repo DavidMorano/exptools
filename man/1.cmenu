@@ -1,0 +1,330 @@
+
+
+
+     ccccmmmmeeeennnnuuuu((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             ccccmmmmeeeennnnuuuu((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          cmenu - a menu description language and program generator
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccmmmmeeeennnnuuuu [-o arg][-t][-r][-N][-s][-c][-m][-M][-L][-I] file
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          ccccmmmmeeeennnnuuuu is a very high level language which generates a C pro-
+          gram from a given menu structure specification. It is
+          designed to be very easy to use for end-users ranging from
+          non-programmers to user-interface designers.  It produces
+          terminal-independent code utilizing the curses and ccccmmmmeeeennnnuuuu
+          support libraries. Of the possible program segments in a
+          cmenu program, all but the MENU specification section are
+          optional.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          The application executable name can be specified with:
+
+          ----oooo          specifies the executable program name for the
+                      compiler instruction of the generated Makefile.
+                      This option defaults to nnnneeeewwwwmmmmeeeennnnuuuu....
+
+          ccccmmmmeeeennnnuuuu will supply default values to all of the following:
+
+          ----tttt          will include a simple signal handling routine in
+                      the application. The routine will simply not
+                      accept interrupts. This is provided to prevent
+                      ungraceful exits from the curses environment and
+                      hanging the terminal. The default is to not
+                      include a signal handling routine so that users
+                      can customize signal handling on an application
+                      basis.
+
+          ----rrrr          allows the return key to select a menu item as
+                      well as the spacebar. The default is to not
+                      allow the return key select.
+
+          ----NNNN          suppresses item letters from being printed on
+                      menu displays. Item letters appear in []'s and
+                      can be used to select an item just by pressing
+                      that letter. Default is to print item letters.
+
+          ----ssss          allows the menu items to be selected oooonnnnllllyyyy by the
+                      letter in []'s.  This option will disable the J,
+                      K, <space>, and <return> keys.  This option ccccaaaannnn----
+                      nnnnooootttt be used when the ----NNNN option is used.  Default
+                      is to enable J, K, <space>, and <return> keys.
+                      Return key is enabled only if the ----rrrr option is
+                      supplied.
+
+          ----cccc          generates an application program without
+
+
+
+     Page 1                                           (printed 8/7/92)
+
+
+
+
+
+
+     ccccmmmmeeeennnnuuuu((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             ccccmmmmeeeennnnuuuu((((1111))))
+
+
+
+                      invoking the compiler. The default is to invoke
+                      the compiler after code generation.
+
+          ----mmmm          creates just a main.c.
+
+          ----MMMM          creates just a Makefile.
+
+          The following are ccccmmmmeeeennnnuuuu environment options:
+
+          ----LLLL          specifies the directory where the ccccmmmmeeeennnnuuuu library
+                      should be located. Only use this option if you
+                      are using a local copy. Without this option,
+                      ccccmmmmeeeennnnuuuu will look in the $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ccccmmmmeeeennnnuuuu direc-
+                      tory.
+
+          ----IIII          specifies the directory where the ccccmmmmeeeennnnuuuu header
+                      files should be located. Only use this option if
+                      you are using a local copy. Without this option,
+                      ccccmmmmeeeennnnuuuu will look in the $$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ccccmmmmeeeennnnuuuu direc-
+                      tory.
+
+     CCCCMMMMEEEENNNNUUUU PPPPRRRROOOOGGGGRRRRAAAAMMMM SSSSTTTTRRRRUUUUCCCCTTTTUUUURRRREEEE
+          A ccccmmmmeeeennnnuuuu program has the following overall structure. Only
+          the Menu Descriptions section is required.
+
+          CMENU Comments -
+               C-style comments can be embedded in a ccccmmmmeeeennnnuuuu program
+               anywhere in the description file. A comment is begins
+               with ////**** and ends with ****////. Cmenu description file com-
+               ments will not be generated in the main.c program.
+
+          Global C Declarations -
+               This section is surrounded by the DCL and ENDDCL key-
+               words.
+
+          Precode -
+               Code which is executed prior to entering the curses
+               environment. This is provided for initialization rou-
+               tines if necessary.
+
+          Menu Descriptions -
+               This section is required. One or more menu descriptions
+               can be specified.  Menu descriptions have the general
+               form of menu name, optional title line(s), and one or
+               more choice options. Most choice options are of the
+               form:
+
+                    KEYWORD     "LABEL"   TYPE-OF-ACTION
+
+          User Defined C Functions -
+               If more customized C routines are needed, they can be
+               defined here and called from any C code blocks which
+
+
+
+     Page 2                                           (printed 8/7/92)
+
+
+
+
+
+
+     ccccmmmmeeeennnnuuuu((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             ccccmmmmeeeennnnuuuu((((1111))))
+
+
+
+               have been declared in the ccccmmmmeeeennnnuuuu description.
+
+          Finalcode -
+               Code which is executed prior to exiting the program
+               from the main menu is defined here.  This code can be
+               accessed from any menu by calling the function men-
+               leave() (which will only exist if the FINALCODE keyword
+               is used).
+
+     KKKKEEEEYYYYWWWWOOOORRRRDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNNSSSS
+          /*
+           * Optional Comments
+           * can be placed  anywhere in
+           * the CMENU description file.
+           */
+
+          DCL
+          ---  /* GLOBAL C DECLARATIONS */
+          ---
+          ENDDCL
+
+          PRECODE
+               ACTION "shell command"
+               | CODE { /* C CODE BLOCK */ }
+
+          MENU menu_name
+               TITLE " Optional Title "
+
+                      ACTION "Label" /* Prompts on Return */
+                        "shell command"
+                    | ACT "Label" /* No prompt on Return */
+                        "shell command"
+                    | CODE "Label"
+                        { /* C-code block */ }
+                    | CUCODE "Label"
+                        { /* Curses code block */ }
+                    | VIEW "Label" /* Display text file */
+                        "text_file"
+                    | NEW_MENU "Label"
+                        menu_name
+                    | NEW_MENU menu_name /* Default label generated */
+
+          /* USER DEFINED C FUNCTIONS */
+
+          FUNCTION rtn_type func_name(arg1, arg2, ...)
+
+          FINALCODE
+               ACTION "Shell Command"
+               | CODE { /* C code block */ }  /* USER DEFINED EXIT
+               CODE */
+               | CUCODE  { /* Curses code block */ }
+
+
+
+
+     Page 3                                           (printed 8/7/92)
+
+
+
+
+
+
+     ccccmmmmeeeennnnuuuu((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             ccccmmmmeeeennnnuuuu((((1111))))
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          This is a simple mail organization interface using 'post -f'
+          (or mailx -f):
+
+          MENU mail
+
+          TITLE " Saved Mail Files "
+               ACT "POST" "post"
+               ACT "MBOX" "post -f $HOME/mail/mbox"
+               ACT "OUTBOX" "post -f $HOME/mail/outbox"
+               ACT "PROJECT MAIL" "post -f $HOME/mail/project"
+               ACT "School Mail" "post -f $HOME/mail/uiuc"
+               ACT "AA Notices" "post -f $HOME/mail/aa"
+               ACT "Edit this menu" "$EDITOR $HOME/mail/mailmenu"
+
+          After saving that in a file called "mail.desc", you would
+          perform the following actions:
+
+               cmenu -o mailmenu mail.desc
+
+
+          You will see output messages indicating that main.c and
+          Make.menu have been generated, and that the output program
+          is called mailmenu. Now invoke the program by typing:
+
+               mailmenu
+
+
+          You will be prompted with a menu display. If the Mail files
+          actually exist, you will have a useful mail organizer.
+
+          The ACT and ACTION keywords are distinguished by the way
+          they return to the created menu environment. ACTION will
+          prompt you to continue after your specified shell command
+          returns. ACT will not prompt you and is useful for interact-
+          ing with commands like post which have built in prompts.
+
+          Here is a more full blown (but less useful) example to
+          illustrate the overall form a ccccmmmmeeeennnnuuuu program might take.
+          Notice that multiple menu descriptions are allowed as well
+          as user defined C functions and global declarations. (Note:
+          C preprocessor statements must be left justified to be
+          picked up during compilation.)
+
+          DCL
+               char sp[100], jun[20];
+          #define TSTMSG "  This is a test Message!!!  "
+               int junk[5];
+          ENDDCL
+
+          PRECODE
+               ACTION "echo This is specified with the PRECODE
+
+
+
+     Page 4                                           (printed 8/7/92)
+
+
+
+
+
+
+     ccccmmmmeeeennnnuuuu((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             ccccmmmmeeeennnnuuuu((((1111))))
+
+
+
+          keyword! "
+               ACTION "sleep 2"
+
+          MENU top
+          TITLE   " THIS IS AN OPTIONAL TITLE for the MAIN MENU "
+          TITLE   " And This is an Optional Second TITLE line  "
+
+               ACTION "lf" "`logdir exptools`/bin/lf"
+
+               NEW_MENU "CMENU SOURCE and PRODUCT FILES" example
+
+               CODE "Code stuff"
+               {
+               printf("THIS ILLUSTRATES the CODE KEYWORD!!!\n\n");
+               printf("It is used to escape to non-curses C
+          routines.\n");
+               stuf(); /* A user defined function */
+               go_prompt(); /* go_prompt() or go_noprompt() must be */
+                         /* used to return to the menu environment  */
+               }
+
+          MENU example
+          TITLE " CMENU Examples "
+
+               VIEW "Look at the Source for this program"
+                    "$CMENU/tst/demo.src"
+               VIEW "Look at the Generated C code for this program"
+                    "$CMENU/tst/main.c"
+               CUCODE "EXIT PROGRAM" { menleave(); exit(0); }
+
+          FUNCTION stuf() {
+               /* This is a simple test of the CODE and FUNCTION
+          options */
+               printf("\nThis is just plain printf style C
+          code.!!\n");
+          }
+
+          FINALCODE ACTION "echo That's all folks!"
+
+     CCCCMMMMEEEENNNNUUUU QQQQUUUUIIIIRRRRKKKKSSSS
+          There is no direct mechanism in ccccmmmmeeeennnnuuuu description files to
+          set a shell environment. Consequently, if multiple users are
+          expected to use the generated object code, it will be neces-
+          sary to set up the necessary environment variables in a
+          script which ultimately calls the executable program.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          stage(1), unity(1), curses(3), tgen(1).
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Daniel L Feistamel 708-979-6195
+          att!ihdan!danf
+
+
+
+     Page 5                                           (printed 8/7/92)
+
+
+

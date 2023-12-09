@@ -1,0 +1,136 @@
+                       CHALLENGE: GMACS IN 2 PAGES
+SOME NECESSARY NOTATION.
+Any ordinary character goes into the buffer (no insert command needed).
+Commands are all control characters or other characters prefixed by Escape or
+a control-X. Escape is sometimes called Meta or Altmode in GMACS.
+^		A control character.  ^F means "control F".
+ESC-		A two-character command sequence where the first character is
+		Escape.  ESC-F means "ESCAPE then F".
+ESC-X string	A command designated "by hand".  "ESC-x read-file" means:
+		type "Escape", then "x", then "read-file", then <cr>.
+dot	    	GMACS term for cursor position in current buffer.
+mark		An invisible set position in the buffer used by region commands.
+region		The area of the buffer between the dot and mark.
+
+CHARACTER OPERATIONS.
+	^B	Move left (Back)
+	^F	Move right (Forward)
+	^P	Move up (Previous)
+	^N	Move down (Next)
+	^D	Delete right
+	^H or BS or DEL or RUBOUT	Delete left
+	^T	Transpose previous 2 characters (ht_ -> th_)
+	^Q      Literally inserts (quotes) the next character typed (e.g. ^Q-^L)
+	^U-n	Provide a numeric argument of n to the command that follows
+		(n defaults to 4, eg. try ^U-^N and ^U-^U-^F)
+	^M or CR	newline
+	^J or NL	newline followed by an indent
+
+WORD OPERATIONS.
+	ESC-b	Move left (Back)
+	ESC-f	Move right (Forward)
+*	ESC-d	Kills word right (^Y yanks it back at dot)
+*	ESC-h	Kills word left (^Y yanks it back at dot)
+*	ESC-t	Transpose previous 2 words (if only_ -> only if_)
+	ESC-c	Capitalize word
+	ESC-l	Lowercase word
+	ESC-u	Uppercase word
+	ESC-^	Invert case of word
+
+LINE OPERATIONS.
+	^A	Move to the beginning of the line
+	^E	Move to the end of the line
+	^O	Open up a line for typing
+	^K	Kill from dot to end of line (^Y yanks it back at dot)
+*	ESC-^O	Close up any blank lines around dot
+*	^X-^T	Transpose current line with the previous
+
+SENTENCE AND PARAGRAPH OPERATIONS.
+	ESC-a	Move to beginning of the sentence
+	ESC-e	Move to end of the sentence
+	ESC-[	Move to beginning of the paragraph
+	ESC-]	Move to end of the paragraph
+	ESC-j	Justify the current paragraph
+*	ESC-P	Justify and fill the current paragraph
+
+GETTING OUT.
+	^X-^S	Save the file being worked on
+	^X-^W	Write the current buffer into a file with a different name
+	^X-^M	Write out all modified files
+	^X-^F	Write out all modified files and exit
+	^C or ESC-^C or ^X-^C	Finish by exiting to the shell
+	^_	Recursively push (escape) to a new shell
+
+* Note: These commands are bound to the given key by the default Gmacs profile
+file. If you have a .emacs_pro file, they will not be defined unless you do so
+yourself.
+SCREEN AND SCREEN OPERATIONS.
+	^L	Redisplay screen (^U-^L just redisplays the line)
+	^V	Show next screen page
+	ESC-v	Show previous screen page
+	^Z	Scroll screen up
+	ESC-z	Scroll screen down
+	ESC-!	Move the line dot is on to top of the screen
+	ESC-,	Move cursor to beginning of window
+	ESC-.	Move cursor to end of window
+	^X-2	Split the current window in two windows (same buffer shown in each)
+	^X-1	Resume single window (using current buffer)
+	^X-d	Delete the current window, giving space to window below
+	^X-n	Move cursor to next window
+	^X-p	Move cursor to previous window
+	ESC-^V	Display the next screen page in the other window
+	^X-^Z	Shrink window
+	^X-z	Enlarge window
+
+BUFFER AND FILE OPERATIONS.
+	^Y      Yank back the last thing killed (kill and delete are different)
+	^X-^V	Get a file into a buffer for editing
+	^X-^R	Read a file into current buffer, erasing old contents
+	^X-^I	Insert file at dot
+	^X-^O	Select a different buffer (it must already exist)
+	^X-B	Select a different buffer (it need not pre-exist)
+	^X-^B	Edit the list of buffers
+	ESC-^Y	Insert selected buffer at dot
+	ESC-<	Move to the top of the current buffer
+	ESC->	Move to the end of the current buffer
+
+HELP AND HELPER FUNCTIONS.
+	^G or BREAK	Abort anything at any time (it beeps, sometimes you need 2)
+	^X-^U	Undo the effects of previous commands
+	ESC-?	Show every command containing string (try ESC-? para)
+	ESC-X info	Browse through the Gmacs manual
+	ESC-X learn	Go through introductory course to Gmacs
+
+SEARCH.
+	^S	Search forward
+	^R	Search backward
+*	ESC-^S	"Incremental" search, searches while you enter string
+*	ESC-^R	"Incremental" reverse search
+*	ESC-n	Continue search to next occurrence of string
+*	ESC-p	Continue search to previous occurrence of string
+
+REPLACE.
+	ESC-r	Replace one string with another
+*	ESC-R	Replace one regular expression with another
+	ESC-q	Query Replace, one string with another
+*	ESC-Q	Query Replace, one regular expression with another
+
+REGION OPERATIONS. Some commands reset the mark, so check it before using.
+	^@ or ESC-space	Set the mark
+	^X-^X	Interchange dot and mark (i.e. go to the other end of the region)
+	^W      Kill region (^Y yanks it back at dot)
+
+MACRO OPERATIONS.
+	^X-(	Start remembering keystrokes, ie. start defining a keyboard macro
+	^X-)	Stop remembering keystrokes, ie. end the definition
+	^X-e	Execute remembered keystrokes, ie. execute the keyboard macro
+
+COMPILING (MAKE) OPERATIONS
+	^X-^E	Execute the "make" (^U for another) command, saving output in a buffer
+	^X-^N	Go to the next error in the file
+	^X-^P	Go to the previous error in the file
+	^X-!	Execute the given command, saving output in a buffer
+
+MAIL
+	^X-r	Read mail
+	^X-m	Send mail

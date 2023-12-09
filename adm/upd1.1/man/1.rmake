@@ -1,0 +1,132 @@
+
+
+
+     RRRRMMMMAAAAKKKKEEEE((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))        RRRRMMMMAAAAKKKKEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          rmake - EXPTOOLS remote build interface
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          rrrrmmmmaaaakkkkeeee [ ----ccccuuuuvvvvSSSS ] [ ----MMMM mmmmaaaaiiiillllaaaaddddddddrrrr ] [ ----PPPP ppppwwwwddddffffiiiilllleeee ] ----pppp ppppkkkkggggiiiidddd \
+                ----ssss ssssrrrrccccffffiiiilllleeee ----tttt ttttaaaarrrrggggeeeetttt [ ----tttt ttttaaaarrrrggggeeeetttt ]... \
+                ----mmmm mmmmttttyyyyppppeeee [ ----mmmm mmmmttttyyyyppppeeee ]... [ mmmmaaaaccccddddeeeeffffssss ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _r_m_a_k_e is used by EXPTOOLS providers to compile programs for
+          various machine types.  The arguments are:
+
+          ----cccc       (no check) Override local password check.
+
+          ----MMMM       (mail address) Sends build output to the given mail
+                   address.
+
+          ----mmmm       (machine type) Send the job to a machine of the
+                   given type, e.g. ibm.  The _m_a_c_h_i_n_e_s(1) command can
+                   be used to display the full list of machine types.
+                   If mmmmttttyyyyppppeeee is _a_l_l, a job will be sent to a machine of
+                   each actively supported type.
+
+          ----PPPP       (password file) A filename containing the password
+                   for the given pkgid may be given.  The password
+                   must be the only item on the first line of this
+                   file.
+
+          ----pppp       (package ID) The pkgid given must be allowed to
+                   execute the remote build service on each build
+                   machine.
+
+          ----SSSS       (no strip) Do not strip target (use only for
+                   debugging core dumps!).
+
+          ----ssss       (source file) A single source file or an archive
+                   built by _c_p_i_o(1) with the ----cccc option.  If the
+                   latter, its name must have a ....ZZZZ suffix if
+                   compressed or ....ccccppppiiiioooo if not compressed.
+
+          ----tttt       (target) The target for _m_a_k_e(1).  More than one
+                   target may be specified; this is useful when the
+                   source is a _c_p_i_o file.  Each target will be
+                   stripped of symbols to save space (see _s_t_r_i_p(1))
+                   and sent back as ttttaaaarrrrggggeeeetttt....mmmmttttyyyyppppeeee....
+
+          ----uuuu       (unconditional copy) When installing a _c_p_i_o source
+                   file, use the ----uuuu _c_p_i_o(1) option.
+
+          ----vvvv       (verbose) When installing a _c_p_i_o source file, use
+                   the ----vvvv _c_p_i_o(1) option.
+
+
+
+
+     Page 1                                          (printed 2/17/93)
+
+
+
+
+
+
+     RRRRMMMMAAAAKKKKEEEE((((1111))))        UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR))))        RRRRMMMMAAAAKKKKEEEE((((1111))))
+
+
+
+          mmmmaaaaccccddddeeeeffffssss  Optional macro definitions to pass to _m_a_k_e(1) at
+                   the remote site.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          To make for one machine type using a single source file
+          (note that the source file name without the ".c" suffix must
+          match the target name):
+             rmake -p compress -s compress.c -t compress -m ibm
+
+          To use a passwd file and make for more than one machine type
+          using a _c_p_i_o file containing multiple source files and a
+          makefile:
+             rmake -p dt -P ~/.p -s dt.cpio -t dt -m ibm -m 3b2
+
+          To make more than one target for all machine types:
+             rmake -p emacs -s emacs.cpio -t emacs -t dired -m all
+
+          Macro definitions for _m_a_k_e(1) must be specially quoted if
+          the macro definition contains white space:
+             rmake -pksh -sksh.cpio.Z -tksh -mibm "DEFS='-DSYSV -DVI'"
+
+          Note the double quotes surrounding the macro definition.
+
+          If you are at Hilversum or Malmesbury, route the return mail
+          through the _a_t_t gateway machine:
+             rmake -pfmlife -sfmlife.c -tfmlife -mibm -Matt!hvlpa!ahilgers
+
+     FFFFIIIILLLLEEEESSSS
+          /usr/tmp/$$rmake.job - packaged job file
+          /usr/tmp/$$rmake.d   - directory for assembling job _c_p_i_o
+          file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _c_p_i_o(1), _m_a_k_e(1), _m_a_c_h_i_n_e_s(1), _r_e_p_f_i_l_e(1), _s_t_r_i_p(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 2/17/93)
+
+
+

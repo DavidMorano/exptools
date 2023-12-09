@@ -1,0 +1,166 @@
+# machines - generate machine lists for updates
+
+TOOLS=`logdir exptools`
+MQUERY=$TOOLS/adm/lib/mquery
+PKGTAB=$TOOLS/adm/lib/pkgtab
+PATH=$PATH:$TOOLS/adm/lib
+
+cmd=$0
+case $cmd in
+*/*)
+	cmd=`basename $0`
+	;;
+esac
+
+case $# in
+0)
+	attrs="name, addr, domain, type, release, flavor, keyword"
+	cat <<! >&2
+usage: $cmd [-ad -ffieldlist -ttable] selection-clause
+
+where
+	-a	print all attributes
+	-d	debug - print query command
+	-f	specify attributes to print
+	-t	alternate table to query
+	selection-clause (SC) is:
+		machine-type	(3b,vax,etc.)
+		opt-tool	(CC,emacs,prolog,etc.)
+		SC and|or SC	(logical "and" and "or")
+		! SC		(logical inversion)
+		( SC )		(same as SC by itself)
+		attr=value	(=,!= value is regular expression,
+				 ==,!== value is exact pattern)
+	attributes are: $attrs
+	The list of legal values for each attribute may be obtained by
+	using the attribute name as a selection clause as follows:
+		$cmd types	(shows all legal types)
+	or
+		$cmd releases	(shows all legal releases)
+	etc.
+
+Examples:
+	$cmd all		- all machines
+	$cmd -a 3b2		- all 3B2 machines and their optional tools
+	$cmd vax or ibm	- all vax and ibm machines
+	$cmd gmacs		- all machines with the gmacs optional tool
+!
+	exit 1
+	;;
+esac
+
+table=${EXPTAB:+"-t$EXPTAB"}
+args=
+
+while :
+do
+	${1:+:} ${1:-break}
+	arg=$1
+	shift
+	case "$arg" in
+	L*)
+		exec Lmachines $args $arg ${*:-}
+		exit 1
+		;;
+	-a|-d|-ad|-da|-f?*)
+		state=
+		args="$args $arg"
+		continue
+		;;
+	-f)
+		state=
+		args="$args $arg $1"
+		shift
+		continue
+		;;
+	and|or)
+		state=relop
+		select="$select $arg"
+		continue
+		;;
+	'('|')'|'!'|*=*)
+		state=
+		select="$select $arg"
+		continue
+		;;
+	-t?*)
+		state=
+		table="$arg"
+		continue
+		;;
+	-t)
+		state=
+		table="$arg$1"
+		shift
+		continue
+		;;
+	all)
+		state=
+		select="$select name!==exphub"
+		continue
+		;;
+	names|addrs|types|domains|releases|flavors|keywords)
+		if test $arg = keywords
+		then	attr=$arg
+		else	attr=`expr $arg : '\(.*\)s'`
+		fi
+		$MQUERY $table -f$attr $attr!== \
+			| sed -e 's/ //g' -e '/^$/d' -e 's/,/\
+/g' \
+			| sort -u
+		exit 0
+		;;
+	esac
+
+	# match on machine type
+	if test -x /bin/mips && /bin/mips	# work around mips paste command bug
+	then	typecase=${typecase:-`$MQUERY -ftype type!== | tr -d ' ' | sort -u | paste -s -d'|' - /dev/null | line`}
+	else	typecase=${typecase:-`$MQUERY -ftype type!== | tr -d ' ' | sort -u | paste -s -d'|' -`}
+	fi
+	if test -z "$typecase"
+	then	echo "machines: unable to get machine type list" >&2
+		exit 1
+	fi
+	eval "case $arg in
+	$typecase)
+		if test \"\$state\" = relop
+		then	state=
+		else	select=\"\$select \${select:+or}\"
+		fi
+		select=\"\$select type==$arg\"
+		continue
+	esac"
+
+	# match on optional packages
+	pkgcase=${pkgcase:-`grep ':opt:' $PKGTAB | cut -d: -f1 | paste -s -d'|' -`}
+	eval "case $arg in
+	${pkgcase})
+		if test \"\$state\" = relop
+		then	state=
+		else	select=\"\$select \${select:+or}\"
+		fi
+		select=\"\$select ( type==\`grep '^$arg:' $PKGTAB | cut -d: -f3 | sed 's/,/ or type=/gp'\` )\"
+		continue
+	esac"
+
+	# there currently aren't any keywords, so don't execute this time-consuming code
+	#keycase=${keycase:-`$MQUERY -fkeywords keywords!== |tr ',' '\012'|tr -d ' '|sort -u|paste -s -d'|' - |sed 's/^|//p'`}
+	#eval "case $arg in
+	#${keycase})
+	#	state=
+	#	select=\"\$select keywords=$arg\"
+	#	continue
+	#esac"
+
+	case $state in
+	relop)
+		state=
+		select="$select keywords=$arg"
+		;;
+	*)
+		select="$select ${select:+or} name==$arg"
+		;;
+	esac
+done
+
+exec $MQUERY $table $args $select

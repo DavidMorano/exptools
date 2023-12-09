@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# toolnews - print news items
+
+# $TOOLS may not be set correctly until the user reads the introductory news.
+if test -n "$TOOLS" -a -d $TOOLS/lib/toolnews
+then	:
+else	echo 'The TOOLS environment variable must be set to the exptools home directory' >&2
+	echo 'and exported; see the following introduction to exptools.' >&2
+	sleep 2
+	${PAGER:-cat} `logdir exptools`/lib/toolnews/Intro >&2
+	exit 1
+fi
+cd $TOOLS/lib/toolnews
+
+# get options, if any. (a=all, n=names only, s=report only)
+if set -- `getopt ans $*`
+then
+	for i
+	do	shift
+		case $i in
+		-[ans])	option="$i" ;;
+		--)	break ;;
+		esac
+	done
+else	echo "Usage: toolnews [-ans]" >&2
+	echo "or     toolnews toolname ..." >&2
+	exit 1
+fi
+
+# Mark whether the user has a toolnews time file.  If not, then
+# mark him/her as a new user and give all the help possible.
+timefile=$HOME/.toolnews_time
+if test -f $timefile
+then	hasfile=yes
+else	hasfile=no
+fi
+
+# get the list of news files.
+if test $# -gt 0
+then
+	newsfiles="$*"
+elif test "$option" = "-a"
+	then
+		newsfiles=*
+	elif [ $hasfile = yes ]
+		then
+			newsfiles=`/bin/find * -type f -newer $timefile -print | tr "\012" " "`
+		else
+			newsfiles=`echo *`
+fi
+
+# Exit if nothing new today
+if test "$newsfiles"
+then :
+else exit 1
+fi
+
+# If special option given, do it and be done with it.
+case "$option" in
+-s)	count=`echo $newsfiles | wc -w`
+	if [ $count -eq 1 ]
+		then
+		echo 1 toolnews item.
+		else
+		# echo without quotes to eliminate whitespace from wc
+		echo $count toolnews items.
+	fi
+	exit 0
+	;;
+-n)	echo "toolnews: $newsfiles"
+	exit 0
+	;;
+esac
+touch $timefile
+
+# display the news
+for i in $newsfiles
+do	echo	# \n doesn't work on some BSD-based types
+	echo toolnews: $i
+	echo ========================
+	if test -r $i
+	then
+		cat $i
+	else
+		echo "**** no toolnews for $i ****"
+	fi
+done | ${PAGER:-cat}

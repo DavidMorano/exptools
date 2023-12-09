@@ -1,0 +1,50 @@
+#!/usr/bin/ksh
+# PERMS
+
+
+: ${HOME:=$( userhome )}
+export HOME
+
+
+: ${LOCAL:=/usr/add-on/local}
+: ${AST:=/usr/add-on/ast}
+: ${NCMP:=/usr/add-on/ncmp}
+: ${EXTRA:=/usr/extra}
+export LOCAL AST NCMP EXTRA
+
+if [[ -n "${FPATH}" ]] ; then
+  FPATH=${FPATH}:${LOCAL}/fbin
+else
+  FPATH=${LOCAL}/fbin
+fi
+export FPATH
+
+
+pathadd PATH ${LOCAL}/bin
+pathadd LD_LIBRARY_PATH ${LOCAL}/lib
+
+pathadd PATH ${AST}/bin
+pathadd LD_LIBRARY_PATH ${AST}/lib
+
+pathadd PATH ${NCMP}/bin
+pathadd LD_LIBRARY_PATH ${NCMP}/lib
+
+pathadd PATH ${EXTRA}/bin
+pathadd LD_LIBRARY_PATH ${EXTRA}/lib
+
+
+
+HOMEFILES=" .fetchmailrc .rhosts .netrc .fetchmailrc .auth "
+chacl -Q -c g-rw,o-rw ${HOMEFILES}
+
+
+chacl -Q -rc -t f g-rw,o-rw .sl .ssh .ssh2
+
+chacl -r -t f o-w mail
+
+chacl -Q -rc -t f u+r,g+r,o+r,o-w ${NCMP}/* &
+chacl -Q -rc -t d u+rx,g+rx,o+rx ${NCMP}/* &
+wait
+
+
+

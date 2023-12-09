@@ -1,0 +1,49 @@
+# ppr - shell script for printing CRETIN charts and other PIC figures.
+#
+# Connie O'Dell - December 21, 1987
+#
+# Changes: August 21, 1989 - changed to reflect installation of new "dx9700"
+# as standard.
+# Changes: October 3, 1990 - changed to support prtfmt as default print script
+#
+
+
+#if type prtfmt > /dev/null && [ -s $HOME/.prt ]
+if type prtfmt && [ -s $HOME/.prt ]
+then
+	EF=/tmp/cretin_e.$LOGNAME
+	prtfmt $* > $EF
+	retstat=$?
+	cat $EF
+	
+	# Notify me if printing script fails...
+	if [ $retstat != 0 -a -x /bin/mail ] 
+	then
+		(type prtfmt; cat $HOME/.prt; cat $EF ) |/bin/mail ihlpy!odell 
+	fi
+	exit $retstat
+fi
+
+TF=/tmp/cretin_t.$LOGNAME
+DF=/tmp/cretin_d.$LOGNAME
+OF=/tmp/cretin_o.$LOGNAME
+
+font=X97.ti10p
+DX9700="dx9700"
+
+cat $* | pic -TX97 | troff -rN4 -T$font -mm - 2>$TF \
+ | $DX9700 2>$DF | opr -r -txr -jcretin 1>$OF 2>&1
+retstat=$?
+
+# Notify me if printing script fails...
+if [ $retstat != 0 -a -x /bin/mail ] 
+then
+	(echo "DX9700=${DX9700}"; cat $TF | sort -u; cat $DF $OF) \
+	| /bin/mail ihlpy!odell 
+fi
+
+# Ignore duplicate font size warnings from troff & dx9700.
+cat $TF | sort -u; cat $DF $OF; rm $TF $DF $OF
+exit $retstat
+
+

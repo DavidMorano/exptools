@@ -1,0 +1,66 @@
+
+
+
+     rrrrmmmmuuuulllloooocccckkkk((((1111))))                  NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                  rrrrmmmmuuuulllloooocccckkkk((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          rmulock - Remove the lock file for a UNITY table.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          rrrrmmmmuuuulllloooocccckkkk [-f] <_u_n_i_t_y__t_a_b_l_e>
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The rrrrmmmmuuuulllloooocccckkkk command attempts to remove the lockfile
+          associated with the specified UNITY data table.  This
+          command is used to unlock a table after a system crash
+          ocurred while the table was being modified, e.g. using
+          uuuueeeeddddiiiitttt(UNITY).  In order to remove the lockfile for a table,
+          the user must be the same as the login modifying the table
+          when the system crashed.
+
+          If rrrrmmmmuuuulllloooocccckkkk cannot remove a lock file, below are the steps a
+          table owner can use to get around the lockfile:
+
+          1.   Copy the table to a new temporary name.
+
+          2.   Move the original table to yet another name using the
+               mmmmvvvv(1) command.  _D_o _n_o_t _r_e_m_o_v_e _t_h_i_s _f_i_l_e _u_n_t_i_l _t_h_e
+               _l_o_c_k_f_i_l_e _i_s _r_e_m_o_v_e_d _a_s _p_a_r_t _o_f _p_e_r_i_o_d_i_c _s_y_s_t_e_m _c_l_e_a_n_u_p
+               _o_n /_t_m_p!  _O_t_h_e_r_w_i_s_e, _t_h_e _l_o_c_k_e_d _t_a_b_l_e (_o_r _a_n_y _o_t_h_e_r
+               _t_a_b_l_e) _m_a_y _m_a_g_i_c_a_l_l_y _b_e_c_o_m_e _l_o_c_k_e_d.
+
+          3.   Move the new temporary copy of the relation back to the
+               original table name.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          ----ffff   Force the removal of the lockfile, even though normal
+               error checking would prevent it.  This option does not
+               override normal file permissions; it only ignores
+               checks on the lockfile's size and mode.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          The owner of the lockfile is the only one who can remove it.
+          The login last modifying a data table owns the table's
+          lockfile.
+
+
+
+
+
+
+
+     Page 1                                         (printed 11/18/90)
+
+
+

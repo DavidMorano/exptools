@@ -1,0 +1,462 @@
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          newsview - a curses-based program to read local news items
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          nnnneeeewwwwssssvvvviiiieeeewwww [ ----VVVV ] [ ----dddd ] [ ----eeee ] [ ----llll ] [ ----nnnn_n_e_w_s_p_a_t_h ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        OOOOvvvveeeerrrrvvvviiiieeeewwww
+          _N_e_w_s_v_i_e_w is a screen-oriented program that can be used to
+          read news items from one or more news directories.  These
+          directories are typically writable by all users, and provide
+          a forum for the exchange of local news or project-related
+          information.  The most common such directory is ////uuuussssrrrr////nnnneeeewwwwssss
+          and is used to inform users of system-related matters, such
+          as machine down-time or the installation of new software.
+          The most common program used to read this type of news is
+          the System V _n_e_w_s command.
+
+          While the System V _n_e_w_s program lets all of the news scroll
+          off your screen, _n_e_w_s_v_i_e_w shows you a list of the news
+          items, tells you which ones you have not read, and lets you
+          page through each item one at a time, using a built-in pager
+          similar to the exptools _l_e_s_s program.
+
+        OOOOppppttttiiiioooonnnnssss
+          _N_e_w_s_v_i_e_w accepts the following command-line options:
+
+          ----VVVV            Display the _n_e_w_s_v_i_e_w version ID and exit.
+
+          ----dddd            Display the default news directories and
+                        default print command, then exit.
+
+          ----eeee            Exit immediately of there are no new news
+                        items to read.
+
+          ----llll            List the number of new news items (if any) in
+                        each directory, then exit.
+
+          ----nnnn_n_e_w_s_p_a_t_h    Override the default NEWSPATH by specifying
+                        one or more directories, separated by colons.
+
+          If you do not use the ----nnnn option, _n_e_w_s_v_i_e_w will read the
+          NEWSPATH variable from your environment.  If NEWSPATH is not
+          set, a system-wide default will be used.  Here is an example
+          of how to set up your NEWSPATH in your .profile:
+
+               NEWSPATH=/usr/news:$TOOLS/lib/toolnews:/local/project/news
+               export NEWSPATH
+
+
+
+
+
+
+
+     Page 1                                          (printed 3/19/94)
+
+
+
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+        SSSSccccrrrreeeeeeeennnnssss
+          _N_e_w_s_v_i_e_w has three types of screens: the main directory
+          menu, the file list screen, and the file display screen.
+          The first two screens display lists of directories and
+          files.  In each of these screens one entry will be
+          highlighted in reverse-video.  You can move up and down the
+          list using arrow keys and other control keys described
+          below.  Pressing the RETURN key will select the entry that
+          is currently highlighted.  You can also select an entry by
+          typing its number.
+
+          The main menu lists the directories in your NEWSPATH, or
+          those you specified with the ----nnnn option.  The number of "new"
+          items (items you have not yet read) and the total number of
+          items in each directory will also be displayed on this
+          screen.  Selecting a directory will bring you to the "list"
+          screen for that directory.  Alternatively, if you type the
+          "r" command, you will automatically be put into the
+          "display" screen for the next news item that you have not
+          yet read.
+
+          The "list" screen lists the names of the news items in one
+          news directory.  You can page or scroll through this list,
+          read items from this directory, or enter other commands as
+          described below.
+
+          When you read a news item, you are put into the "display"
+          screen for that item.  From there, you can page or scroll
+          through the item, read other items, or enter other commands
+          as described below.
+
+        CCCCoooommmmmmmmaaaannnnddddssss
+          Most _n_e_w_s_v_i_e_w commands are single keystrokes and do not
+          require you to hit RETURN.  Exceptions to this are entering
+          a number, a search string, or a file name.  Some keys are
+          defined for all three types of screens.  Others are only
+          recognized in the "list" or "display" screens.  In the
+          following descriptions, the notation "^A" represents the
+          character "<Ctrl-A>":
+
+        PPPPaaaaggggeeee////ssssccccrrrroooollllllll ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in all three types of screens:
+
+          SPACE       Move forward one page in the screen.  In the
+                      directory or list screens, this will display the
+                      next page of directory or file names.  In the
+                      display screen, this will display the next page
+                      of the current file.  If a search string is
+                      defined, in the display screen SPACE brings the
+                      next occurrence of the search string to the top
+                      of the screen (see SSSSeeeeaaaarrrrcccchhhh ccccoooommmmmmmmaaaannnnddddssss below).
+
+
+
+
+     Page 2                                          (printed 3/19/94)
+
+
+
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+          ^F          Same as SPACE, except that if a search string is
+                      defined, in the display screen ^F will not
+                      perform a search the way SPACE does.
+
+          ^B or b     Move backward one page in the screen.
+
+          ^D or d     Scroll down half a page.
+
+          ^U or u     Scroll up half a page.
+
+          ^E          Scroll down one line.
+
+          ^Y          Scroll up one line.
+
+        MMMMeeeennnnuuuu sssseeeelllleeeeccccttttiiiioooonnnn ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in the directory screen and list
+          screen:
+
+          DOWN or j   Move menu selection down one line.
+
+          UP or k     Move menu selection up one line.
+
+          RETURN      Enter the directory or news item that is
+                      currently highlighted in reverse-video.
+
+          0-9         Select a directory or news item by entering its
+                      number.
+
+        FFFFiiiilllleeee sssseeeelllleeeeccccttttiiiioooonnnn ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in the list screen and display
+          screen:
+
+          r         Read the next item that you have not yet read.
+                    The list screen will display the word "Unread"
+                    next to any item whose timestamp is newer than
+                    that of the latest item you have read.  See FILES
+                    below for a description of the ....nnnneeeewwwwssssvvvviiiieeeewwww file,
+                    which holds the timestamps for each news
+                    directory.
+
+          n         Read the next item (sequentially) in the current
+                    directory.
+
+          p         Read the previous item (sequentially) in the
+                    current directory.
+
+          t         Read the current item.  From the list screen, this
+                    is the same as pressing RETURN.  From the display
+                    screen, this will re-read the current item from
+                    the beginning (or "top").
+
+
+
+
+
+     Page 3                                          (printed 3/19/94)
+
+
+
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+        FFFFiiiilllleeee mmmmaaaannnnaaaaggggeeeemmmmeeeennnntttt ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in the list screen and display
+          screen:
+
+          c         Create a news item.  You must have write-
+                    permission in the news directory to create an
+                    item.
+
+          e         Edit a news item.  You must be the owner of the
+                    item (or super-user) in order to edit it.
+
+          DELETE    Remove a news item.  You must be the owner (or
+                    super-user) to remove an item.
+
+        FFFFiiiilllleeee ddddiiiissssppppoooossssiiiittttiiiioooonnnn ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in the list screen and display
+          screen:
+
+          s         Save an item in a file.  You can specify a file
+                    name to be created using its full path name, or a
+                    name relative to the directory from which you
+                    entered _n_e_w_s_v_i_e_w.  If you provide a directory name
+                    only, a file will be created in that directory
+                    using the name of the news item.
+
+          *         Print an item.  The news item will be piped to the
+                    command you specify by your NEWSPRINT environment
+                    variable.  If this variable is not set, a system-
+                    wide default command will be used.
+
+          |         Pipe an item to a shell command.  You enter a
+                    shell command, and _n_e_w_s_v_i_e_w will pipe the item to
+                    that command.
+
+          m         Send mail to the owner of an item.  You will be
+                    placed in an editor defined by your EDITOR
+                    environment variable, if set.  The default editor
+                    is _v_i. The mail message will automatically include
+                    the text of the news item, which you can edit or
+                    remove completely before sending the mail.  You
+                    can also change the mail recipients by editing the
+                    "To:" line.  This is useful, for example, when
+                    sending mail to an _e_x_p_t_o_o_l_s provider, since all
+                    _e_x_p_t_o_o_l_s news items are owned by the _e_x_p_t_o_o_l_s
+                    login, and it would not be appropriate to address
+                    your mail to that login.
+
+
+
+
+
+
+
+
+
+     Page 4                                          (printed 3/19/94)
+
+
+
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+        DDDDiiiirrrreeeeccccttttoooorrrryyyy sssseeeelllleeeeccccttttiiiioooonnnn ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in the list screen and display
+          screen:
+
+          N         Change to the next news directory.
+
+          P         Change to the previous news directory.
+
+          D         Go to the main directory menu.
+
+        PPPPrrrrooooggggrrrraaaammmm tttteeeerrrrmmmmiiiinnnnaaaattttiiiioooonnnn ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in all three types of screens:
+
+          q         Quit from _n_e_w_s_v_i_e_w, and update your ....nnnneeeewwwwssssvvvviiiieeeewwww
+                    file, which contains the timestamp of the latest
+                    news item you have read in each directory.
+
+          x         Exit from _n_e_w_s_v_i_e_w without updating your ....nnnneeeewwwwssssvvvviiiieeeewwww
+                    file.
+
+          ^Z        On systems with job control, the ^Z key will
+                    suspend the _n_e_w_s_v_i_e_w process.  To resume, use the
+                    shell's "fg" command.
+
+        CCCCoooommmmmmmmaaaannnnddddssss aaaavvvvaaaaiiiillllaaaabbbblllleeee ffffrrrroooommmm tttthhhheeee lllliiiisssstttt ssssccccrrrreeeeeeeennnn oooonnnnllllyyyy::::
+          a         Toggle between listing news items alphabetically,
+                    and chronologically, which is the default.
+
+          f         Toggle between showing the full names of the news
+                    files, and showing just the first 14 characters
+                    (followed by the file's owner and size).  On some
+                    systems, file names are limited to 14 characters.
+
+          o         Only show those items that are owned by your
+                    login.
+
+          z         Mark all items in the current directory as "read",
+                    even if you have not read them.
+
+        CCCCoooommmmmmmmaaaannnnddddssss aaaavvvvaaaaiiiillllaaaabbbblllleeee ffffrrrroooommmm tttthhhheeee ddddiiiissssppppllllaaaayyyy ssssccccrrrreeeeeeeennnn oooonnnnllllyyyy::::
+          g         Go to the end of the current item.
+
+          l         Return to the list screen.
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 3/19/94)
+
+
+
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+        SSSSeeeeaaaarrrrcccchhhh ccccoooommmmmmmmaaaannnnddddssss::::
+          These commands may be used in the list screen or display
+          screen:
+
+          /         Search for a string (or regular expression).  If
+                    you are in the list screen, only those files that
+                    contain the search string will appear in your
+                    list.  If you are in the display screen, _n_e_w_s_v_i_e_w
+                    will highlight all occurrences of the search
+                    string in reverse-video.  Pressing the SPACE key
+                    in this mode will advance the screen such that the
+                    next occurrence of the search string will appear
+                    at the top of the display.  Whatever search string
+                    you enter from "list" will be used in "display"
+                    and vice-versa.  To turn off searching, enter a
+                    null search string.
+
+          i         Ignore upper/lower case differences when
+                    searching.  By default, case differences are
+                    ignored.  Pressing "i" once will cause _n_e_w_s_v_i_e_w to
+                    treat upper and lower case characters differently.
+                    Pressing "i" again will revert to ignoring case
+                    differences.
+
+        HHHHeeeellllpppp CCCCoooommmmmmmmaaaannnnddddssss
+          ? or h    From the main directory screen, this will display
+                    a description of the _n_e_w_s_v_i_e_w program.  You may
+                    use the page and scroll commands to browse through
+                    this description, and the "q" command to return to
+                    the directory screen.  From the list or display
+                    screens, this will display a one-page list of
+                    available commands.  From this help screen, you
+                    may enter any available command, or press RETURN
+                    to return to the list or display screen.
+
+          ^L        Redraw the current screen, if it was garbaged by
+                    some other program (e.g., _w_a_l_l).
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          TOOLS          Home directory of the _e_x_p_t_o_o_l_s login.  If not
+                         set, _n_e_w_s_v_i_e_w will print an error message and
+                         exit.
+
+          NEWSPATH       This variable may contain a list of news
+                         directories you wish to read from.  Directory
+                         names are separated by a colon (like PATH).
+                         If not set, the default is
+                         "/usr/news:$TOOLS/lib/toolnews".
+
+          NEWSPRINT      If set, you may print news items using this
+                         command.  This is any command that you would
+                         use to print an ASCII file.  CTRM users might
+
+
+
+     Page 6                                          (printed 3/19/94)
+
+
+
+
+
+
+     NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))     UUUUNNNNIIIIXXXX RRRReeeeffffeeeerrrreeeennnncccceeee MMMMaaaannnnuuuuaaaallll ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))      NNNNEEEEWWWWSSSSVVVVIIIIEEEEWWWW((((1111))))
+
+
+
+                         set "NEWSPRINT=pcprint".  If not set, the
+                         default is "prt".
+
+          EDITOR         Set this variable to the name of the editor
+                         that you want to use when creating or editing
+                         news items.  If it is not set, the default
+                         editor is _v_i.
+
+     FFFFIIIILLLLEEEESSSS
+          The file ....nnnneeeewwwwssssvvvviiiieeeewwww in your HOME directory is created and
+          maintained by _n_e_w_s_v_i_e_w.  This file contains one line for
+          each news directory that _n_e_w_s_v_i_e_w has encountered.  Each
+          line consists of the name of the news directory, followed by
+          a TAB, followed by the timestamp of the last item you have
+          read in that directory.  Here is what a typical ....nnnneeeewwwwssssvvvviiiieeeewwww
+          file might look like:
+
+               /usr/news                     699657138
+               /usr/add-on/exptools/lib/toolnews       699657375
+               /local/project/news           699656341
+
+          This is an ASCII file that you can edit.  For example, if
+          one of your news directories is moved to a different place,
+          but the files under that directory are preserved, you may
+          want to edit your ....nnnneeeewwwwssssvvvviiiieeeewwww file and change the directory
+          name.  The timestamps are stored as the number of seconds
+          since January 1, 1970 (which is the standard UNIX time
+          format), so you should probably not modify that value unless
+          you know what you are doing.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          news(1), vi(1), less(EXPTOOLS), grep(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Richard A. Johnson
+
+     NNNNOOOOTTTTEEEESSSS
+          The System V _n_e_w_s program uses the file ....nnnneeeewwwwssss____ttttiiiimmmmeeee in your
+          HOME directory to keep track of the timestamp of the latest
+          item you have read.  _N_e_w_s_v_i_e_w will not use this file, so
+          when you run _n_e_w_s_v_i_e_w for the first time, it will indicate
+          that you have not read any news items, even if you have read
+          them with _n_e_w_s.
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 3/19/94)
+
+
+

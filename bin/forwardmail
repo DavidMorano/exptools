@@ -1,0 +1,204 @@
+
+# forwardmail:  Cause mail to be forwarded to a destination, or to
+# undo mail forwarding.
+#
+# EMACS_MODES: !c
+
+set -u
+PATH=/usr/5bin:/bin:/usr/bin:/usr/lbin
+umask 077			# So that no one else can read tmp files
+
+USAGE=`echo "Usage: $0 address\n       $0 -u"`
+
+if test $# -ne 1
+then
+	echo "$0: ERROR: Incorrect number of parameters\n\n$USAGE\n" 1>&2
+	exit 1
+fi
+
+set -- `getopt u $*`
+
+test $? -ne 0  &&  echo "\n$USAGE\n" 1>&2  &&  exit 1
+
+ACTION=set		# Default action
+
+for i in $*
+do
+	case $i in
+	-u)	ACTION=unset ; shift;;
+	--)	shift ; break;;
+	esac
+done
+
+: ${LOGNAME:=`logname`}
+: ${MAIL:=/usr/mail/$LOGNAME}
+
+
+# Some implementations of the shell allow $MAIL to have the form
+# "path?message".  Delete the "?message", if it exists.
+
+
+MAIL=`echo ${MAIL} | cut -f1 -d'?'`
+
+UNAME=`uname`
+
+if test -f $MAIL
+then
+	# The mail file ($MAIL) exists
+
+	# $MAIL, to work correctly, must have some specific
+	# attributes.  Check for these attributes.
+
+	LSLINE=`ls -l $MAIL | tr -s ' ' ' '`
+	PERM=`echo $LSLINE | cut -f1 -d' '`
+	GROUP=`echo $LSLINE | cut -f4 -d' '`
+
+	case "$PERM" in
+	-rw-rw----)	:
+			;;
+	*)		echo "$0: ERROR: $MAIL has permissions $PERM." >&2
+			echo "Should have permissions -rw-rw----." \
+			     " Invoke:\n\t\tchmod 660 $MAIL" >&2
+			ls -l $MAIL >&2
+			exit 1
+			;;
+	esac
+
+	case "$GROUP" in
+	mail)	:
+		;;
+	*)	echo "$0: Warning: $MAIL group not 'mail'." >&2
+		echo "Suggest that you invoke:\n\t\tchgrp mail $MAIL" >&2
+		ls -l $MAIL >&2
+		;;
+	esac
+
+	if test ! -w $MAIL
+	then
+		echo "$0: ERROR: Cannot write to $MAIL" >&2
+		exit 1
+	fi
+
+	if test ! -r $MAIL
+	then
+		echo "$0: ERROR: Cannot read $MAIL" >&2
+		exit 1
+	fi
+fi
+
+case $ACTION in
+unset)	if test -f $MAIL
+	then
+		case `line < $MAIL` in
+		"Forward to "*)
+			# Create a zero length mailfile
+
+			# > $MAIL
+			( echo 1d; echo w; echo q ) | /bin/ed - $MAIL
+			;;
+		esac
+	fi
+	;;
+
+set)	FORWARD_TO=${1}
+
+	case "$FORWARD_TO" in
+	${UNAME}!${LOGNAME}|${LOGNAME})
+
+		echo "$0: ERROR: It's not safe to forward to current" \
+		     "uname ($UNAME) and\ncurrent logname ($LOGNAME)." >&2
+		exit 1
+		;;
+	*!*)
+		# Address = dest!logname
+		:
+		;;
+	*)
+		# Address = logname, therefore, check if the logname
+		# exists on this machine.
+
+		logdir $FORWARD_TO > /dev/null 2>&1
+
+		if test $? -ne 0
+		then
+			echo "${0}: ERROR: Logname $FORWARD_TO" \
+			     "does not exist on this machine" \
+			     "(${UNAME})." 1>&2
+			exit 1
+		fi
+		;;
+	esac
+
+	if test -f $MAIL
+	then
+		# Mailfile exists
+
+		if grep -c '^From ' $MAIL  1>/dev/null  2>&1
+		then
+			# There is unread mail in $MAIL.  Send
+			# this unread mail to the forwarding
+			# destination.
+
+			# Create a protected, private directory
+
+			echo "$0: Warning: Unread mail being sent to $FORWARD_TO" 1>&2
+
+			TMPDIR=/usr/tmp/${LOGNAME}$$
+
+			trap "cd ..; rm -fr $TMPDIR" 0 1 2 3 15
+
+			mkdir $TMPDIR ; chmod 700 $TMPDIR ; cd $TMPDIR
+
+			# Split the mailfile into separate
+			# messages and create temporary files
+
+			csplit -s -k $MAIL '/^From /' '{98}' 2>/dev/null
+
+			while test -r xx99
+			do
+				# Reached the csplit maximum of 100 files;
+				# loop until all messages are extracted.
+
+				mv xx99 tmp.save
+
+				for i in xx*
+				do
+					mail $FORWARD_TO < $i
+				done
+
+				rm xx*
+
+				csplit -s -k tmp.save '/^From /' '{98}' 2>/dev/null
+
+			done	# END while test -r xx99
+
+			for i in xx*
+			do
+				mail $FORWARD_TO < $i
+			done
+
+			rm -f xx* tmp.save
+
+		fi	# END if grep ...
+	else
+		# Mail file does not exist, so create it
+
+		echo "filler" | mail $LOGNAME
+
+	fi	# END if test -f $MAIL
+
+	if [ -x /usr/lib/sendmail ]
+	then
+	    echo "Warning!\07 /usr/lib/sendmail exists on your system and" 1>&2
+	    echo "forwarding may not work properly." 1>&2
+	fi
+
+	echo "Forward to $FORWARD_TO" > $MAIL
+
+	test $? -ne 0  &&  exit 1		# Could not write to $MAIL
+
+	;;
+
+esac	# END case $ACTION
+
+exit 0	# Success

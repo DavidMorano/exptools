@@ -1,0 +1,31 @@
+#  @(#)  SID: 1.2;  module: @comment;  last changed: 6/6/91  16:44:20
+
+#  This command allows users to add comments to test output to make
+#  the output of tests easier to understand
+
+if test "$1" = "-s"; then
+    COMPLEX=false
+    shift
+else
+    COMPLEX=true
+fi
+
+if $COMPLEX; then
+    echo
+    echo "#"
+fi
+echo "# $*"
+if $COMPLEX; then
+    echo "#"
+fi
+
+if test ! -t 2; then
+    if $COMPLEX; then
+	echo
+	echo "#"
+    fi
+    echo "# $*"
+    if $COMPLEX; then
+	echo "#"
+    fi
+fi >&2

@@ -1,0 +1,132 @@
+     EMACS_MODES: !c fill SCCS_ID = @(#)macget.1w 1.5
+
+     NNNNAAAAMMMMEEEE
+          macget - receive file from macintosh via modem7/macterminal
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          mmmmaaaaccccggggeeeetttt [ ----rrrrdddduuuuUUUUbbbbxxxx ] [file]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _M_a_c_g_e_t receives a file from a Macintosh running MacTerminal.
+          The File Transfer settings should specify the "Modem7"
+          transfer method and a "MacTerminal" remote system.  This
+          program is designed for use with the 1.1 Release version of
+          MacTerminal, or other terminal emulators that support either
+          Mac XModem or MacBinary XModem protocols.
+
+          To use this program, log into the unix system using
+          MacTerminal, start macget with the desired options, select
+          "Send File..." from the "File" menu, and open the file you
+          wish to send.  If MacTerminal is properly configured, it
+          will put up an indicator showing how much of the file has
+          been transferred.  Several Control-X's may be used to force
+          macget to give up if the transfer fails.
+
+          The optional _f_i_l_e parameter specifies the name to use when
+          creating the unix files, otherwise the Mac file name is used
+          (with spaces converted to underscores).
+
+          If none of the ----rrrrdddduuuu flags are specified, _m_a_c_g_e_t creates
+          three unix files from the received Mac file:  _f_i_l_e....iiiinnnnffffoooo,
+          _f_i_l_e....ddddaaaattttaaaa, and _f_i_l_e....rrrrssssrrrrcccc.  This mode is useful for storing
+          Mac files so they can be restored later using _m_a_c_p_u_t.
+
+          The ----rrrr flag specifies _r_e_s_o_u_r_c_e mode.  Only _f_i_l_e....rrrrssssrrrrcccc will be
+          created, from the Mac file's resource fork.
+
+          The ----dddd flag specifies _d_a_t_a mode.  Only _f_i_l_e....ddddaaaattttaaaa will be
+          created, containing the data fork of the Mac file.
+
+          The ----xxxx flag causes macget to create a single "MacBinary"
+          file instead of the normal three files.  This single file
+          can be up loaded to a mac using macput -x.
+
+          The ----uuuu flag requests _u_n_i_x mode, in which carriage returns
+          are converted into unix newline characters, and the unix
+          file _f_i_l_e....tttteeeexxxxtttt is created.  A file saved from Mac
+          applications as "text only" can be transferred using this
+          option to convert it to a normal unix text file.
+
+          The ----UUUU flag is the same as the ----uuuu flag except that the
+          result filename has no .text part.
+
+          The ----bbbb flag causes macget to use the MacBinary xModem
+          protocol, it will also attempt to use CRC16 instead of
+          checksum.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          macput(local)
+
+
+
+
+     Page 1                                          (printed 5/23/90)
+
+
+
+
+
+
+     MMMMAAAACCCCGGGGEEEETTTT((((1111))))           UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))            MMMMAAAACCCCGGGGEEEETTTT((((1111))))
+
+
+
+     BBBBUUUUGGGGSSSS
+          The modem7 protocol will not work over flow controlled
+          communication lines, some terminal concentrators, or when
+          using rlogin.
+
+          MacTerminal Beta versions 0.5 and 0.9 incorrectly calculate
+          record checksums under certain circumstances, preventing
+          some files from being successfully transferred; this bug has
+          been fixed in the released version 1.1.
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Dave Johnson, Brown 7/31/84 -x option and Sys V Port by Mark
+          Nettleingham
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Mark Nettleingham
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 5/23/90)
+
+
+

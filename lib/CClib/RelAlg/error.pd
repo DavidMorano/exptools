@@ -1,0 +1,29 @@
+#ident "@(#) /sable/sdb/ra/sblib/error/s.error.pd"
+/*      Copyright (c) 1991 AT&T - All Rights Reserved          */
+
+ const Error_message *const errorList;
+ const int maxErrs;
+
+ static char *newLabel(const char *fileName, const unsigned line);
+
+ static char *timeStr();
+ static int getverb(char *);
+ static void writeError(const Error_message *errMsg, FILE *fp, int verb,
+                        const char *label=(char*)0,
+                        const char *suffix=(char*)0);
+ static void staticInitializer();
+
+ /*  It would be handy to convert the various verbs & their pieces into structs:
+ **  struct {
+ **      int verb;         used by cmdverb, converb, mailverb, stderrverb
+ **      char *string      used by console_device, errroCmdStr & mailUsers
+ **      FILE *fp          used by console, & errorCmdPipe
+ **  } command, console, mail, stdErr;
+ */
+ static int cmdverb, converb, initialized, mailverb, stderrverb, printErrorTo;
+ static const char *errorCmdStr;
+ static char *console_device, *errorId, *mailUsers;
+ static FILE *console, *errorCmdPipe;
+ static SIG_PF otrap;
+ static void errexit(int signo);
+ static void pipeTrap(int signo);

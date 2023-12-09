@@ -1,0 +1,55 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/curse/s.curse.3"
+.\"
+.PH "'CURSE(3SB)'SBLIB C++ Library'CURSE(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.VL 7 0
+.LI "\fBNAME\fP"
+.SP
+Curse - base class for classes using curses(3X)
+.LI "\fBSYNOPSIS\fP"
+.SP
+.EX
+\#include <sblib.h>
+
+.SO curse.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.SP
+The Curse class provides a base class for deriving other curses(3X) related
+classes.  The first construction of a Curse object calls the curses function
+initscr() while the last destruction calls the curses function endwin().
+The Curse class also calls endwin() whenever any signal whose default setting
+is termination is detected while a Curse object is active.  If a trap function
+existed prior to the first Curse construction, the detected signal will be
+cascaded to it.  If this prior trap returns without exiting, the Curse trap
+function will call initscr() again.
+.P
+If you use classes derived from Curse you don't generally need to define a
+base Curse object.  However, if you call a curses function prior to constructing
+the first derived class object, for example as an argument to the derived class
+constructor, you should define a Curse prior to that function call so that it
+will behave properly.  A base Curse object can also be used for curses programs
+without any derived objects.  In that case it provides a simple means for
+entering and exiting curses and it protects against signals.
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO curseE.ex
+.EE
+.LI "\fBDIAGNOSTICS\fP
+.br
+If Curse traps a signal and the previous setting is SIG_DFL, Curse
+prints the message "Signal <number> received." to standard error
+and exits using the signal number as the exit status.
+.LI "\fBWARNINGS\fP
+.br
+If new signal traps are set after the Curse object is declared, the application
+must take responsibility for saving the trap function address returned from
+signal(2) or sigset(2), and invoking that trap function from within the new 
+trap function.
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Fm, \*(Mn, \*(Wg, curses(3X)
+.LE

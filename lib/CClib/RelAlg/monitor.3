@@ -1,0 +1,43 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/monitor/s.monitor.3"
+.\"
+.PH "'MONITOR(3SB)'SBLIB C++ Library'MONITOR(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+MONITOR - macro to monitor process execution
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <sblib.h>
+
+\#define MONITOR(FUNC)
+void (*FUNC)();
+
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The MONITOR macro spawns a child process.  The child process calls the
+function named by FUNC.  If it returns from FUNC it will exit with a 0
+status.  The parent process waits for the child process to exit.  If the
+child exits with a value of 0, due to a SIGTERM signal, or due to a SIGKILL
+signal, the parent sets errno to 0 and returns.  If the child exits with any
+other signal or value the parent will respawn the child.  If the child survives
+less than 5 seconds for five consecutive respawns, the parent sets errno to the
+child's exit status and returns.  If the spawn fails, the parent leaves
+errno with the value set by fork(2) and returns.
+.LI "\fBWARNINGS\fP"
+.br
+If the child does not exit, MONITOR will not return.  If the child
+does not use errno as its exit status, MONITOR's errno value will
+not be meaningful.  Since MONITOR is implemented as a macro, the type
+of FUNC is checked downstream by the compiler.  C++ should catch type
+mismatches.  With the C compiler it is incumbent on the programmer to
+make sure FUNC takes no parameters and is void.
+.LI "\fBSEE ALSO\fP"
+.br
+intro(3SB), cpp(1).
+.LE

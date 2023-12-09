@@ -1,0 +1,77 @@
+#######################################################
+# Program written by Dan Alfrey (11/11/94) to access
+# il/ihq/411.tess from the UNIX command line.
+#######################################################
+
+TOOLSYS="nwopk"
+MINTIME="10"
+MAXTIME="20"
+
+
+badnetmsg()
+{
+#######################################################
+# Banner message in the event of inaccessable network. 
+#######################################################
+
+cat << eof
+	   In the event of network problems or timeouts,
+	  you may try accessing the TESS system directly 
+	      over datakit using the dial string:
+
+		DESTINATION: il/ihq/411.tess 
+
+	or over Ethernet from your command line with:
+
+	          rlogin ${TOOLSYS} -l trainme
+
+eof
+}
+
+timestamp()
+{
+        ENDDATE=`date "+%y%m%d%H%M%S"`
+
+	DIFFDATE=`expr ${ENDDATE} - ${STARTDATE}`
+
+	if [ "${DIFFDATE}" -le "${MAXTIME}" ]
+	then
+		badnetmsg
+	fi
+}
+
+##############################
+# Test for datakit
+##############################
+HASDK=`type dkcu | grep -v not`
+
+################################
+# Create a start time variable.
+################################
+STARTDATE=`date "+%y%m%d%H%M%S"`
+
+if [ -z "$HASDK" ]
+then
+	rlogin ${TOOLSYS} -l trainme
+	timestamp
+else
+	dkcu il/ihq/411.tess
+
+	################################
+	# Create a start time variable.
+	################################
+        ENDDATE=`date "+%y%m%d%H%M%S"`
+
+	DIFFDATE=`expr ${ENDDATE} - ${STARTDATE}`
+
+	###################################
+	# If datakit is down, use tcp/ip.
+	###################################
+	if [ "${DIFFDATE}" -le "${MINTIME}" ]
+	then
+		echo "\nRetrying \c"
+		rlogin ${TOOLSYS} -l trainme
+		timestamp
+
+	fi
+fi

@@ -1,0 +1,198 @@
+
+
+
+     ggggeeeettttrrrreeeelllliiiinnnnffffoooo((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ggggeeeettttrrrreeeelllliiiinnnnffffoooo((((3333))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          getrelinfo - Locate and read in attribute information for a
+          relation.
+          freerelinfo - Free memory associated with relation.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ####iiiinnnncccclllluuuuddddeeee """"uuuurrrreeeellllaaaattttiiiioooonnnn....hhhh""""
+
+          ssssttttrrrruuuucccctttt uuuurrrreeeellllaaaattttiiiioooonnnn ****
+          ggggeeeettttrrrreeeelllliiiinnnnffffoooo(((( rrrreeeellllppppaaaatttthhhh,,,, rrrreeeellllppppttttrrrr,,,, ssssaaaavvvveeeeddddppppaaaatttthhhh ))))
+          cccchhhhaaaarrrr ****rrrreeeellllppppaaaatttthhhh;;;;
+          ssssttttrrrruuuucccctttt uuuurrrreeeellllaaaattttiiiioooonnnn ****rrrreeeellllppppttttrrrr;;;;
+          iiiinnnntttt ssssaaaavvvveeeeddddppppaaaatttthhhh;;;;
+
+          vvvvooooiiiidddd
+          ffffrrrreeeeeeeerrrreeeelllliiiinnnnffffoooo(((( rrrreeeellllppppttttrrrr ))))
+          ssssttttrrrruuuucccctttt uuuurrrreeeellllaaaattttiiiioooonnnn ****rrrreeeellllppppttttrrrr;;;;
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The ggggeeeettttrrrreeeelllliiiinnnnffffoooo() routine returns the attribute information
+          for _r_e_l_p_a_t_h by locating and reading the descriptor file for
+          _r_e_l_p_a_t_h.  The descriptor file's name will be D_r_e_l_n_a_m_e, where
+          _r_e_l_n_a_m_e is the file name portion of _r_e_l_p_a_t_h.  The relation
+          information is placed in the urelation structure pointed to
+          by _r_e_l_p_t_r.  A pointer to the relation information structure
+          is returned on success, or NULL on failure.
+
+          A pointer to the descriptor file path will be saved if
+          _s_a_v_e_d_p_a_t_h is true (non-zero).
+
+          The ffffrrrreeeeeeeerrrreeeelllliiiinnnnffffoooo() routine frees all memory allocated with
+          ggggeeeettttrrrreeeelllliiiinnnnffffoooo().
+
+          See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section of the ccccmmmmppppqqqquuuueeeerrrryyyy(1)
+          manual page for information on compiling and linking
+          commands which use the new UNITY.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _r_e_l_p_a_t_h
+               A path name to the relation which attribute information
+               is needed for.  This can be a full path, a partial
+               path, or just the file name of the relation.  The file
+               need not exist, either, since only descriptor
+               information is read in.  The descriptor file is located
+               using the UNITYDFILES environment variable.
+
+               The _r_e_l_p_a_t_h can also be of the form
+
+
+                    <table>=<alt_table>
+
+               In this case the description information is located
+
+
+
+     Page 1                                           (printed 9/5/91)
+
+
+
+
+
+
+     ggggeeeettttrrrreeeelllliiiinnnnffffoooo((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ggggeeeettttrrrreeeelllliiiinnnnffffoooo((((3333))))
+
+
+
+               based on _a_l_t__t_a_b_l_e, but the relation's data path is set
+               to _t_a_b_l_e.
+
+          _r_e_l_p_t_r
+               A pointer to a relation structure where attribute
+               information will be placed.  If this parameter is NULL,
+               a structure will be allocated using mmmmaaaalllllllloooocccc(3).  A
+               pointer to this structure is returned on success.
+
+          _s_a_v_e_d_p_a_t_h
+               Flag saying whether to save the path to the descriptor
+               file or not.  If true (non-zero) the path to the
+               descriptor file will be saved in the relation
+               structure.  Space for the path name will be allocated
+               using mmmmaaaalllllllloooocccc(3).
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+               A colon-separated list of directories to search for the
+               relation descriptor file.  If this is not specified, or
+               if the needed file is not found in one of the
+               directories, the current directory is searched.  If
+               that fails, the directory portion of _r_e_l_p_a_t_h is
+               searched.
+
+               Some previous UNITY implementations only accept one
+               directory in this variable.  Also, they use it only
+               after looking in the current directory and in the
+               relation's directory.  Some commands do not use the
+               variable at all.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          A pointer to the urelation structure is returned on success.
+          NULL is returned on failure and the external variable uerror
+          will contain the error code.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Read the relation information for the /_e_t_c/_p_a_s_s_w_d file.
+          Allocate a structure for the information dynamically.  Do
+          not store the path to the descriptor file.
+
+               #include "urelation.h"
+
+               struct urelation *relptr;
+
+               relptr = getrelinfo( "/etc/passwd", NULL, FALSE );
+               if ( relptr == NULL )
+               {
+                    (void)pruerror( );
+                    /* print application message and return failure */
+               }
+
+
+
+
+     Page 2                                           (printed 9/5/91)
+
+
+
+
+
+
+     ggggeeeettttrrrreeeelllliiiinnnnffffoooo((((3333))))               NNNNeeeewwww UUUUNNNNIIIITTTTYYYY               ggggeeeettttrrrreeeelllliiiinnnnffffoooo((((3333))))
+
+
+
+          Read the relation information for the file _t_m_p_p_w_d, which has
+          the same description as /_e_t_c/_p_a_s_s_w_d.  Use a statically
+          allocated relation structure.  Do not store the path to the
+          descriptor file.
+
+               #include "urelation.h"
+
+               struct urelation pwdrel;
+
+               if ( getrelinfo( "tmppwd=passwd", &pwdrel, FALSE ) == NULL )
+               {
+                    (void)pruerror( );
+                    /* print application message and return failure */
+               }
+
+     EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        RRRReeeellllaaaattttiiiioooonnnn aaaannnndddd AAAAttttttttrrrriiiibbbbuuuutttteeee SSSSttttrrrruuuuccccttttuuuurrrreeeessss
+          The urelation structure returned from ggggeeeettttrrrreeeelllliiiinnnnffffoooo() is
+          defined in _u_r_e_l_a_t_i_o_n._h.
+
+          The descriptor information about each attribute is contained
+          in the uattribute structure defined in the same file.
+
+     FFFFIIIILLLLEEEESSSS
+          DDDD_r_e_l_n_a_m_e
+               - Descriptor file for _r_e_l_n_a_m_e, where _r_e_l_n_a_m_e is the
+               file name portion of the _r_e_l_p_a_t_h parameter .  This file
+               lists the relation's attributes, their delimiting-
+               character or width, printing information, and user-
+               friendly names.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          cmpquery(1) and descriptor(4).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                           (printed 9/5/91)
+
+
+

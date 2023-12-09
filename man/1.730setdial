@@ -1,0 +1,132 @@
+
+
+
+       777733330000SSSSEEEETTTTDDDDIIIIAAAALLLL((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   777733330000SSSSEEEETTTTDDDDIIIIAAAALLLL((((1111))))
+
+
+
+       NNNNAAAAMMMMEEEE
+	    730setdial - Set a dial string on a	730 terminal
+
+       SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	    777733330000sssseeeettttddddiiiiaaaallll [-d 1-5]	string
+
+       DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	    _7_3_0_s_e_t_d_i_a_l is used to load a string	into a particular dial
+	    edit entry in the 730 terminal.  The ----dddd option is used to
+	    specify which entry	to load	the string into.  If ----dddd	is not
+	    specified, entry 1 will be used.
+
+	    The	ssssttttrrrriiiinnnngggg parameter will be loaded	into the dial edit entry
+	    using special escapes to specify control characters	and the
+	    timing and separator characters.  When a ''''\\\\'''' is encountered
+	    in the string, the character which follows will be inter-
+	    preted specially.  The characters, 1, 2 and	3, correspond to
+	    the	PF-key-entered values providing	delays.	 The send-recv
+	    separator keystroke, PF4, is specified by 4.  Any uppercase
+	    letter, A through Z, specifies the corresponding control
+	    character.	The other special characters are r, f, n, b and
+	    d.	These correspond to carriage return, form feed,	new
+	    line, backspace, and delete	(\177) respectively.
+
+
+       EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+	    An example script which uses this functionality and	also
+	    some of the	other new _a_g_e_n_t(_1) functions to	create new
+	    screens follows.
+
+
+		 sys=${1:-lps}
+		 ss=${2:-gr}
+		 let=${3:-n}
+		 load=${4:-n12.01bwm}
+		 type=${5:-lab}
+		 NEWSCREEN=30
+		 DELSCREEN=31
+		 NEXTSCREEN=32
+		 PREVSCREEN=33
+		 NEWHOST=34
+		 EXITHOST=35
+		 SETDIALER=36
+		 RESETDIALER=37
+		 DIALCONCAT=38
+		 IDMPHYS=-6
+		 num=`grep $sys	$HOME/lib/idms | cut -f2 -d:`
+		 if [ $num = ""	]; then
+		      echo "$0:	can't find number for $sys" >&2
+		      exit 1
+		 fi
+		 730setdial -d1	'CMD\4d	'$num'\r\4login\4retrofit ggw 730 '$let' '$ss' '$load' '$type'\r\4ID\4gregg\r\4'$let'> \4layers\r\4'
+
+
+
+       Page 1					       (printed	1/12/93)
+
+
+
+
+
+
+       777733330000SSSSEEEETTTTDDDDIIIIAAAALLLL((((1111))))	   UUUUNNNNIIIIXXXX	SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	   777733330000SSSSEEEETTTTDDDDIIIIAAAALLLL((((1111))))
+
+
+
+		 agent $SETDIALER $IDMPHYS 1
+		 agent $NEWSCREEN
+		 agent $NEXTSCREEN
+		 agent $NEWHOST	$IDMPHYS 0
+
+
+
+       CCCCAAAAVVVVEEEEAAAATTTTSSSS
+	    The	hhhhoooosssstttt ttttoooo	aaaaggggeeeennnntttt interface	provides only a	limited	amount
+	    of space for sending strings.  Thus, this program uses the
+	    reset code followed	by the append code for as many times as
+	    it requires	to load	the complete string.
+
+	    There is a limited amount of space in the terminal for dial
+	    strings.  Any characters beyond the	terminal imposed limit
+	    will be silently ignored.
+
+       PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	    _7_3_0_s_e_t_d_i_a_l is provided by Gregg Wonderly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       Page 2					       (printed	1/12/93)
+
+
+

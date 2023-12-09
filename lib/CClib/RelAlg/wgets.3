@@ -1,0 +1,77 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/wgets/s.wgets.3"
+.\"
+.PH "'WGETS(3SB)'SBLIB C++ Library'WGETS(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.VL 7 0
+.LI "\fBNAME\fP"
+.P
+wgets, init_screen, set_labels, clear_labels - curses operations
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX 
+\#include <sblib.h>
+
+extern "C"
+   {
+   void init_screen();
+   void setLabels(char *labels[8]);
+   void set_labels();
+   void set_menu_labels();
+   void clear_labels();
+   int wgets(char *,unsigned,WINDOW *);
+   };
+
+.SO wgets.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The \fBwgets()\fP function reads through a window into a string.
+It has several features not found in the curses wgetstr routine.
+.BL
+.LI
+The length of the string is passed as an argument.  If the user types
+more than length minus 1 characters wgets will beep and refuse to accept
+each new character until a terminating character is received.
+Length should be less than or equal to the size of memory pointed to by string
+(e.g. if string is a character array of 20 bytes, length should be 20).
+.LI
+Wgets has one or more characters for each of the following functions:
+erase character, erase field, save (done with record), quit (done with input)
+next (next field in record) and previous (previous field in record).
+The erase character and erase field functions are used for editing,
+the others are
+terminating functions.  When a character specifying one of the terminating
+functions is received,
+wgets returns the value of that character.  The sets of
+characters and matching case clauses are defined in wgets.h.
+The interpretation of the terminating functions is left to the
+application code but the intended interpretation is defined above.
+.LI
+The \fBinit_screen()\fP, \fBsetLabels()\fP and \fBclear_labels()\fP functions
+may be used to provide soft labels.  The \fBset_labels()\fP
+function calls \fBsetLabels()\fP with function key designations that agree
+with the wgets interpretation.  The \fBset_menu_labels()\fP function calls
+\fBsetLabels()\fP with function key designations that are consistent with
+\*(Mn.  The \fBinit_screen()\fP function is called instead of initscr().
+In addition to the initscr() functionality it sets up soft labels and puts
+curses in a state where calls to wgetch(3X) are in character-at-a-time
+no-echo mode while calls to \*(Wg are in line-at-a-time echo mode.
+The \fBset_labels()\fP function should be called before \fBwgets()\fP to
+display the soft labels.  The \fBclear_labels()\fP function should be
+called when finished to erase the soft labels.
+.LE
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The \*(Wg functions print know error messages.  Their behavior is that
+of the underlying curses(3X) library.
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO wgetsE.ex
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+curses(3X),\*(Cs,\*(Fm,\*(Mn
+.LE

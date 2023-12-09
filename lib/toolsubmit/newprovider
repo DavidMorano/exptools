@@ -1,0 +1,250 @@
+Experimental Tools (exptools) allows AT&T employees to share tools.  As a
+potential tool provider, you should be aware of the conditions we agreed to in
+order to get the exptools logins on the Computer Center machines.
+
+  1.  No tools can be setuid/setgid for security reasons (if you don't know
+      what this means don't worry about it).
+
+  2.  The set of tools will be the same on all machines, as far as is possible
+      (those termed standard tools).  The only exceptions are tools (termed
+      optional tools) that only work on a particular machine type, and tools
+      that take up a large amount of disk space.  Optional tools are installed
+      by the local exptools administrators (see "providers admin" command
+      output) when requested by their customers, who can use the toolinfo
+      command to see if they want the optional tool package.  If your tool is
+      optional you will need to provide a toolinfo description, which is
+      usually the initial toolnews.
+
+  3.  The exptools login can be moved to a new file system to aid in load
+      balancing.  This means that full path names cannot be compiled into
+      executable files, so shell scripts must use $TOOLS and C programs must
+      use getenv("TOOLS") to find the exptools home directory and append the
+      exptools path name of a file, e.g. "lib/emacs/helpfile".  Do not use the
+      logdir command to set $TOOLS in your shell script as this will slow down
+      your script and wastes CPU time; just print an error message if it is not
+      set, e.g.
+
+           : ${TOOLS:?environment variable is not set or is not exported}
+
+      In addition, no machine names may be compiled into executable files; the
+      tool must use uname(2) to determine the system name if necessary.
+
+  4.  Man pages must be provided for all tools, but they can be linked together
+      if several tools are described on the same man page.
+
+  5.  Man pages must be already formatted to avoid overloading a machine when a
+      customer requests all man pages to be printed.
+
+Man pages must be formatted with this command
+
+    nroff -man tool.1 >1.tool
+
+or this command if you need the tbl preprocessor
+
+    tbl tool.1 | nroff -man | col >1.tool
+
+Some tools will require additional documentation, which can go in a 1._t_o_o_l_doc
+file
+
+    nroff -mm tool.mm >1.tool_doc
+
+Do not use half line spacing (.sp .5) as this causes the following line to
+overstrike the previous line and the page break to shift up on the Xerox 9700
+printers used by some Computer Centers.
+
+On your man pages use the macro
+
+    .TH TOOL 1 EXPTOOLS
+
+to make the header for the man page, where TOOL is your tool package name in
+all capital letters.
+
+If the tool is used elsewhere and EXPTOOLS is not appropriate in the header,
+place a macro string reference in the .TH macro as in
+
+    .TH TOOL 1 \*(eX
+
+and then format the man page with
+
+    (echo ".ds eX EXPTOOLS"; cat tool.1) | nroff -man >1.tool
+
+This will make sure that the tool is identified in EXPTOOLS, but also allow for
+the fact that it is a awkward to edit the file before distributing it
+elsewhere.
+
+Because of the exptools distributed "Table of Contents" and "Permuted Index,"
+the following requirements should also be met
+
+  1.  The description following the name of the command in the NAME section of
+      the man page must not extend over more than one line.
+
+  2.  One of the names of the command in the NAME section must match one of the
+      names of the man page files. That is, if the file is called 1.punt, the
+      name line should read
+
+          punt - drop back 10 yards
+
+  3.  Note that the command name should not be capitalized.  If the man page
+      has multiple links, then there should be a separate line under the NAME
+      section for each link.  No bold or italic type should be used in the NAME
+      entry.
+
+It is a good idea to add a ----VVVV option to print the tool's version number and
+exit, so you can verify that a customer reporting a problem is using the latest
+version.  If not, the _w_h_e_r_e command shows what bin the tool is in.  If it is in
+exptools, the _r_u_g_i_n_f_o command shows if the customer's exptools is up-to-date.
+
+Tools submitted to exptools are maintained by the provider.  Only the
+executables and man pages, plus any required data files are distributed to the
+exptools machines.  Source is not part of the exptools distribution process;
+customers who need it to port your tool to an unsupported machine type will ask
+you for it.  We expect you to port your tool to all supported machine types if
+possible, even though you can't test it on all because you don't have access to
+all types.  We have people willing to consult about porting problems.  Our
+customers will tell you if your tool doesn't work, and you can debug the
+problem through them, or they can give you temporary access to their machine.
+
+There are several commands in $TOOLS/adm/bin that you use to remotely make,
+distribute, and otherwise maintain your tool(s).
+
+Command     Synopsis
+
+rmake       Remotely makes a tool on a machine type (like vax).  A machine type
+            of "all" sends the compilation request to the rmake machine for all
+            supported types.  You must use rmake even for your home machine's
+            type because of variations in machines, e.g. paging executables
+            won't run on swapping machines.  rmake will always make on a
+            machine whose executable will work on all machines of that type.
+            Your makefile must use "$(CC)" instead of "cc" and not set CC to
+            anything because rmake sets "CC='cc -Kc'" in the environment for
+            3b2's to compile so the executables will work on 3b2's without a
+            MAU (Math Accelerator Unit).  This command and others below will
+            prompt you for a password that will be supplied to you.
+
+prpkg       Lists the update or create permissions for your tool package's
+            files and directories.
+
+repfile     Adds or replaces a file on one, some, or all machine types.
+
+delfile     Deletes a file on one, some, or all machine types.  Use it to
+            remove obsolete files in the future.
+
+pkgaudit    Remotely executes the ls -l and sum commands on all the files in
+            your tool package and mails you the results.
+
+machines    Used by the above commands to translate a machine type alias such
+            as "all" or optional tool package name such as "emacs" to a list of
+            machines.  You can get a list of machine types and their oldest
+            supported operating system release, minimum supported hardware
+            configuration, whether the byte order is most/least significant
+            byte (msb/lsb), and whether they have various software packages
+            (dmd,630,CC,X) used to rmake tools, with
+
+                 machines -a all | cut -c24-
+
+Enter the command name without arguments to get further information about
+command usage and arguments.  You can print man pages for them with
+
+    toolman -X -D provider \*
+
+The general layout of exptools relative to $TOOLS is
+
+Directory/File                   Contents
+
+bin/                             main executable compiled file(s) or shell
+                                 script(s)
+
+fbin/                            ksh functions
+
+man/                             1.* man page file(s)
+
+lib/toolnews/_p_a_c_k_a_g_e             tool package news file (removed after 6
+                                 months)
+
+lib/toolinfo/_p_a_c_k_a_g_e/description optional tool package description file
+
+lib/_p_a_c_k_a_g_e/                     any other files and directories
+
+To submit a tool you must provide
+
+  1.  A man page meeting the above specifications (it can be unformatted as
+      toolsubmit will format it).
+
+  2.  A toolnews(EXPTOOLS) file introducing the tool, which includes your name
+      and electronic mail address, and that of any co-providers.
+
+  3.  A list of files with paths relative to $TOOLS.  Please limit file and
+      directory names to 14 characters so packages are portable to machine
+      types running System V Release 2 and 3.
+
+  4.  Whether the tool package will contain any compiled files or other binary
+      files where byte order is significant, that is, files that can't be
+      copied directly to a different machine type.  (If your answer is no,
+      "all" will be put in the machine type list for the package so it will
+      automatically be copied to new machine types.)
+
+  5.  Your support level for the tool (higher levels include lower levels)
+
+           6       Provider makes major enhancements.
+           5       Provider makes minor enhancements.
+           4       Provider fixes bugs.
+           3       Provider ports tool to new machine types.
+           2       Provider reports bugs to author or supporting
+                   organization or will send source to the bug finder,
+                   and installs any bug fixes received.
+           1       Provider answers questions and suggests how to work
+                   around bugs.
+
+We may respond with requests for man page corrections, to organize the tool
+files differently, or to change the tool name to make it more meaningful and
+easier to say over the phone (e.g. "regress" vs. "rgrss" or "Regress") for
+consulting on customer problems.  We decide whether to make the tool package
+optional based on the size (as indicated by the number of files) and how broad
+the expected customer base is.  We will let you know when your tool package is
+approved and will supply you with the rmake/repfile password to enable you to
+remotely compile and distribute your package.
+
+Once your tool is installed you may want to know how much is it used.  We can
+provide monthly usage for about 5000 people on about 20 IH ibm machines, which
+is a good sample.  Most smaller machines do not keep accounting records. We
+have discussed a logging and reporting mechanism, but space is tight on many
+machines and log files would use it up, causing administration problems.  It is
+difficult to find an absolutely reliable way of trimming log files without
+losing data that would continuously run and audit and restart itself if needed,
+like a switching system does.  Do not have your tool send mail to yourself on
+each usage because:
+
+  1.  Exptools gets manually copied to secure, isolated machines, and the SA's
+      have to constantly dump this queued mail and regard it as a security
+      violation.
+
+  2.  We once had to remove a tool because it was sending mail to a machine
+      that had been removed.
+
+  3.  It can slow down execution several seconds on small machines like 3b2's
+      and i386 PC's.
+
+  4.  There is a potential for a disastrous overload of the mail network, as
+      some exptools are use over 200K times/month on the IH ibm machines alone,
+      and this would attract harsh management attention that might cause the
+      demise of exptools as we know it.
+
+We expect you to notify us if you are leaving the company so we can find
+another provider for your tool package, otherwise we will make it an
+unsupported tool and may phase it out.
+
+If you have any further questions please contact us via electronic mail only.
+
+     Exptools Administrators
+     att!exptools
+
+
+
+
+
+
+
+
+
+
+

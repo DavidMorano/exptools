@@ -1,0 +1,25 @@
+#ident "@(#) /sable/sdb/ra/sblib/node/s.node.pd"
+/*      Copyright (c) 1991 AT&T - All Rights Reserved          */
+
+   Boolean_t _valid;
+   char *nodeName;
+   struct stat statBuf;
+
+   /*
+   **  These variables are static so that the following friend functions
+   **  (invoked by ftw()) will be able to pass and receive information
+   **  to and from the Node member functions.  It is the responsibility of
+   **  the Node member functions to initialize the appropriate
+   **  statics before calling walk() and to use the information in
+   **  the appropriate statics before returning.
+   **  These friend functions, statics and the Node member functions
+   **  are tightly coupled.
+   */
+   static Link1_stack dirsToRemove;
+   static const char *sourceNode, *toNode;
+   static int groupId, userId;
+
+   friend int _chown(char *,struct stat *, int);
+   friend int _remove(char *,struct stat *, int);
+   friend int _link(char *,struct stat *, int);
+   friend int _copy(char *,struct stat *, int);

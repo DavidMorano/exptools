@@ -1,0 +1,40 @@
+# @(#)gspell.sh	1.9
+
+# make certain that the proper version of grope is found
+PATH=$TOOLS/bin:$PATH
+export PATH
+
+# parse the options
+set -- `getopt "?i:l:n:V" "$@"`
+if [ $? != 0 ]
+then
+    echo "Usage:   $0 [-n numwords]  [-i ignore-list]  [-V]  [-l dictionary]  [filename ...]"
+    exit 1
+fi
+NWORDS=
+DICTIONARY=
+IGNORE=
+for i in "$@"
+do
+    case "$i" in
+        -n) NWORDS="-n $2"; shift 2;;
+	-i) IGNORE="$2"; shift 2;;
+	-V) echo "$0: Version @(#)gspell.sh	1.9"; exit ;;
+	-l) DICTIONARY="-l $2"; shift 2;;
+	--) shift; break;;
+    esac
+done
+
+# let spell and grope do the hard work
+if [ -n "$IGNORE" ]
+then
+    TMP1=/tmp/.gs1.$$
+    trap 'rm -f $TMP1' 0 1 2 3 15
+    sort "$IGNORE" > $TMP1
+    spell "$@" |
+	sort |
+	comm -13 $TMP1 -
+else
+    spell "$@"
+fi |
+    grope $NWORDS $DICTIONARY -s -1

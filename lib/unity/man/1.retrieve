@@ -1,0 +1,1254 @@
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          retrieve - retrieve information from UNITY tables
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          rrrreeeettttrrrriiiieeeevvvveeee [-cEiqsuvV] [-d_c] [-A||||-B||||-F<_f_o_r_m_a_t>|-_T]]]]
+               [<_p_r_i_n_t__o_p_t_i_o_n_s>]
+               [<_a_t_t_r_i_b_u_t_e>[:<_m_o_d_i_f_i_e_r_s>]... [as <_n_e_w_a_t_t_r>] ...]
+               [sorted [by <_a_t_t_r>:<_m_o_d_i_f_i_e_r_s> ...]] [unique]
+               from <_t_a_b_l_e>[=<_a_l_t__t_a_b_l_e>]...
+               [into||||onto <_n_e_w__t_a_b_l_e>[=<_a_l_t__t_a_b_l_e>]]
+               [where <_w_h_e_r_e__c_l_a_u_s_e>]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          rrrreeeettttrrrriiiieeeevvvveeee is a generalized query command for retrieving
+          information from a collection of UNITY tables.  It querys
+          information from the given tables by a process of projec-
+          tions, selections, and/or joins on the tables.
+
+          rrrreeeettttrrrriiiieeeevvvveeee differs from the other UNITY commands (such as
+          uuuusssseeeelllleeeecccctttt(1), uuuupppprrrriiiinnnntttt(1), and uuuupppprrrriiiinnnnttttffff(1) ) in several ways.
+          First, and foremost, rrrreeeettttrrrriiiieeeevvvveeee can query information from
+          several (up to eight) different tables at once, rather than
+          just a single table.  Any joins are done as part of the
+          query, without the need of intermediate files.  Secondly,
+          the formatting of the selected information is handled
+          separately from the query itself.  rrrreeeettttrrrriiiieeeevvvveeee makes use of
+          several formatter commands (pppprrrrttttaaaabbbblllleeee(1), pppprrrrbbbblllloooocccckkkk(1), and
+          qqqqpppprrrriiiinnnnttttffff(1) ) to format the selected information into a form
+          dictated on the rrrreeeettttrrrriiiieeeevvvveeee command line.  By default no for-
+          matting is done; all information is printed as it appears in
+          the original tables.
+
+          The command line for rrrreeeettttrrrriiiieeeevvvveeee can be divided into four
+          parts: (1) option flags which specify how to format the
+          retrieved information, (2) the attributes to retrieve from
+          the various tables including specifications for sorting or
+          uniqueness, (3) the tables on which the query is performed,
+          and (4) the where-clause, which stipulates what records
+          should be selected from the given tables.  These are all
+          described below; see the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section for a
+          detailed explanation of the where-clause.
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          Besides selecting arbitrary records and attributes from the
+          tables, rrrreeeettttrrrriiiieeeevvvveeee also provides facilities for formatting the
+          retrieved information.  These facilities are provided by
+          piping the retrieved information to a back-end formatting
+          program.  There are currently four different output formats,
+          indicated by command-line flags.  Flags for the individual
+          formatting command are also accepted on the command line.
+
+          ----AAAA   Print the output unformatted, as it exists in the
+
+
+
+     Page 1                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               individual tables.  The exception to this is if an
+               attribute has a delimiter and is the last attribute in
+               a table, but not the last in the attribute list for
+               rrrreeeettttrrrriiiieeeevvvveeee, then it's terminator (normally a newline) is
+               converted to a tab.  (See the ----dddd option to override
+               this replacement.)
+
+          ----BBBB   Print each record in the output as a block, with a
+               label to the left of each attribute value.  (This for-
+               matting is done by the pppprrrrbbbblllloooocccckkkk(1) command.)
+
+          ----FFFF_f_o_r_m_a_t
+               Print the output according to the format string _f_o_r_m_a_t.
+               The format string is like that used by pppprrrriiiinnnnttttffff(3),
+               except that only ``%s'' is supported for attribute
+               values.  (This formatting is done by the qqqqpppprrrriiiinnnnttttffff(1)
+               command.)
+
+          ----TTTT   Print the output as a table with column headings.
+               (This formatting is done by the pppprrrrttttaaaabbbblllleeee(1) command.)
+
+          <_p_r_i_n_t__o_p_t_i_o_n_s>
+               Flags recognized by the individual formatting commands
+               are acceptable on the rrrreeeettttrrrriiiieeeevvvveeee command line and are
+               passed on to the appropriate formatting command.  More
+               details on each formatting command are available by
+               consulting their individual manual pages.  (See
+               pppprrrrbbbblllloooocccckkkk(1), pppprrrrttttaaaabbbblllleeee(1), and qqqqpppprrrriiiinnnnttttffff(1).)
+
+               If no particular formatter is indicated on the command
+               line, but there are print flags given for the for-
+               matter, the table (----TTTT) format is used.  On the other
+               hand, if no formatter is indicated and no other print
+               flags are given either, then the output is printed
+               unformatted (----AAAA).
+
+          Below are the miscellaneous command line flags recognized
+          directly by rrrreeeettttrrrriiiieeeevvvveeee:
+
+          ----cccc   Create the description for the output at the beginning
+               of the output itself.  The description is consistent
+               with normal descriptions contained in the data table,
+               as described in the ddddeeeessssccccrrrriiiippppttttoooorrrr(4) manual page.  This
+               option applies whether an _i_n_t_o-clause is given or the
+               output is just sent to stdout.  This option is ignored,
+               however, if the output is formated.  A major use of
+               this option is for piping the output of one rrrreeeettttrrrriiiieeeevvvveeee
+               command to another New Unity command, such as
+               nnnnaaaalllltttteeeerrrr(1).
+
+          ----dddd_c  Use the character _c as the delimiter between all attri-
+               bute values in the output.
+
+
+
+     Page 2                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+          ----EEEE   Check if a tuple matching the given where-clause and
+               projection criteria exists, but don't print it.  If
+               such a tuple combination does not exist, rrrreeeettttrrrriiiieeeevvvveeee will
+               exit with an unsuccessful status.  All options involv-
+               ing sorting, uniqueness, and formatting are ignored
+               with this option.
+
+               This option is similar to projecting a single null
+               attribute (see below), but also accounts for which
+               attributes are projected.
+
+          ----iiii   Ignore the case of letters in _a_l_l the string and regu-
+               lar expression comparisons of the where-clause.  This
+               option is a short hand notation to pre-pending the
+               ``cccc'' prefix to all the comparison operators in the
+               where-clause.  With this option, the string ``this''
+               would match ``This'' or ``THIS''.  The regular expres-
+               sion ``this'' would match ``This is a test'' or ``THIS
+               IS A TEST''.  (There is no need for grouping with
+               square brackets.)  This option is analogous to the -i
+               option of ggggrrrreeeepppp(1).
+
+          ----qqqq   Operate in quiet mode.  Normally, rrrreeeettttrrrriiiieeeevvvveeee prints the
+               number of records retrieved on standard error.  If this
+               option is given, this message is suppressed.
+
+          ----ssss   Sort the output, but don't remove duplicate lines.
+               Normally, the output is not sorted and there may be
+               multiple, identical entries.  The sort order is nor-
+               mally left to right and is done in ascending order
+               using a character-by-character comparison.  (See the
+               ssssoooorrrrtttt bbbbyyyy and attribute <_m_o_d_i_f_i_e_r_s> sections below for
+               how to modify the sort criteria.)
+
+          ----uuuu   Print only unique entries in the output.  Normally,
+               there may be multiple, identical entries in the output.
+               Identical entries are records where all the _d_i_s_p_l_a_y_e_d
+               attribute values are the same.  Normally, a character-
+               by-character comparison is used.  (See the attribute
+               <_m_o_d_i_f_i_e_r_s> section below for how to modify the com-
+               parison type.)
+
+               Note:  The output is not necessarily sorted with this
+               option.  If both sorting and uniqueness are desired,
+               use both ----ssss and ----uuuu.
+
+          ----vvvv   Use the verbose or ``user-friendly'' names (if avail-
+               able) from the descriptor file for labeling attributes
+               in the formatted output.  Normally, the attribute names
+               are used for labels.  (See the ttttaaaabbbblllleeee(UNITY) or
+               ddddeeeessssccccrrrriiiippppttttoooorrrr(4) manual page for more details on the
+               user-friendly names.)  This option implies that the
+
+
+
+     Page 3                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               output should be formatted.
+
+          ----VVVV   Print the version of the command and exit.  No query is
+               done.
+
+          Below are the command-line clauses which describe the query
+          executed by rrrreeeettttrrrriiiieeeevvvveeee.  The clauses must all follow the
+          command-line flags described above.  The clauses must also
+          be specified in the order listed in the usage statement or a
+          syntax error will result.
+
+          <_a_t_t_r_i_b_u_t_e>[::::<_m_o_d_i_f_i_e_r_s>...] [aaaassss <_n_e_w__a_t_t_r>] ...
+               Each named <_a_t_t_r_i_b_u_t_e> is printed in the output (i.e.,
+               a projection), in the given order.  If no attributes
+               are specified, all attributes without an explicit zero
+               print width in the descriptor files from all the tables
+               will appear in the output in the order of the original
+               tables.
+
+               The special attribute ``_a_l_l'' refers to all attributes
+               in a table.  This attribute cannot be used in the
+               where-clause, however.  The special attribute ``_r_e_c#''
+               refers to the record number within a table.  The spe-
+               cial attribute ``_s_e_e_k#'' refers to the seek location of
+               the start of the tuple within its table.  The _r_e_c# and
+               _s_e_e_k# attributes can be used in the where-clause or as
+               a projected attribute.  The _a_l_l attribute can only be
+               used as a projected attribute.
+
+               If a single null attribute is given (i.e., ""), no out-
+               put will be generated.  However, if no relation con-
+               tains a tuple matching the where-clause, rrrreeeettttrrrriiiieeeevvvveeee will
+               exit with an unsuccessful (non-zero) exit status.  This
+               test is most useful for single relation queries.  For
+               multi-relation queries, the exit code only indicates if
+               one of the relations has a matching tuple, _n_o_t _w_h_e_t_h_e_r
+               _a_l_l _r_e_l_a_t_i_o_n_s _h_a_v_e _a _m_a_t_c_h_i_n_g _t_u_p_l_e.  This option is
+               only provided for backward compatibility with previous
+               versions of rrrreeeettttrrrriiiieeeevvvveeee; finer control over existence
+               testing is available with the ----EEEE option.  (See its
+               description above.)
+
+               The syntax for specifying attribute names differs
+               slightly from other UNITY commands.  Whenever an attri-
+               bute name is not unique among the queried tables, the
+               attribute name must be prefixed either with the table's
+               file name (_n_o_t _t_h_e _p_a_t_h _n_a_m_e) and a period (``.''), or
+               a number representing the position of the table among
+               all tables on the command line and a period.  For exam-
+               ple, if the tables used in the query were, in order,
+               _d_i_r/_c_l_a_s_s, _d_i_r/_o_w_n_e_r, and _d_i_r/_o_w_n_i_n_f_o, then an attri-
+               bute _l_o_g_i_n from the _d_i_r/_o_w_n_e_r table could be referenced
+
+
+
+     Page 4                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               as
+
+                    2.login
+
+               or, equivalently,
+
+                    owner.login
+
+               These two forms can be arbitrarily intermixed on the
+               command line.  However, the second form has the advan-
+               tage that the attribute references are independent of
+               the order the tables appear on the command line.  When-
+               ever multiple tables with the same filename are used in
+               a query, the first form must be used.
+
+               If an attribute name is unique among all queried
+               tables, then no prefix is needed on the attribute
+               (although it is still allowed).  The syntax is then
+               identical to other previous UNITY commands.
+
+               _N_o_t_e _t_h_a_t _t_h_i_s _s_a_m_e _s_y_n_t_a_x _f_o_r _t_h_e _a_t_t_r_i_b_u_t_e _n_a_m_e_s _a_l_s_o
+               _a_p_p_l_i_e_s _t_o _a_t_t_r_i_b_u_t_e _r_e_f_e_r_e_n_c_e_s _w_i_t_h_i_n _t_h_e _w_h_e_r_e-
+               _c_l_a_u_s_e.
+
+               The optional "_a_s" feature allows attributes to be
+               renamed in the output or in any created descriptor
+               file.  For example, ``retrieve aname1 as aname2 ...''
+               will rename the ``aname1'' attribute to ``aname2'' in
+               any formatted output or in any descriptor file created
+               for a new table.
+
+               The attribute <_m_o_d_i_f_i_e_r_s> dictate special handling for
+               the given attribute, such as a column print width and
+               sorting criteria.  Any number of modifiers can be given
+               for an attribute; each must begin with a colon (``:'').
+               The modifiers can be separated by white space or can
+               immediately follow each other.  Below are the recog-
+               nized attribute modifiers:
+
+               ::::aaaasssscccceeeennnnddddiiiinnnngggg
+                    Sort the attribute's values in ascending order.
+                    This is the default sort order.  This option
+                    implies that the output will be sorted.
+
+               ::::bbbbllllaaaannnnkkkkssss
+                    Remove all white space from the beginning of the
+                    attribute and any sub-fields before doing the sort
+                    or determining uniqueness.  If uniqueness is not
+                    specified on the command line, this option implies
+                    that the output will be sorted.
+
+               ::::<_p_r_w_i_d_t_h>
+
+
+
+     Page 5                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               ::::cccc<_p_r_w_i_d_t_h>
+               ::::llll<_p_r_w_i_d_t_h>
+               ::::rrrr<_p_r_w_i_d_t_h>
+                    Print the attribute in a column <_p_r_w_i_d_t_h> charac-
+                    ters wide.  Also optionally force the attribute to
+                    be left justified ('l'), right justified ('r'), or
+                    centered ('c') in the column.  This modifier is
+                    only used for table formatted output and is
+                    ignored otherwise.  If an attribute value is wider
+                    than the print width, it will wrap around onto the
+                    next line.  (See the pppprrrrttttaaaabbbblllleeee(1) command for more
+                    information on table formatting.)
+
+                    The justification and <_p_r_w_i_d_t_h> override any print
+                    width and justification given for the attribute in
+                    the descriptor file for the corresponding table.
+                    (See the ttttaaaabbbblllleeee(UNITY) or ddddeeeessssccccrrrriiiippppttttoooorrrr(4) manual
+                    pages.)  If no justification is given anywhere,
+                    the attribute will be left justified.  If no print
+                    width is given anywhere, and the attribute is a
+                    terminated attribute, the column will be 12 char-
+                    acters wide.  If the attribute is a fixed width
+                    attribute, the column will be as many characters
+                    wide as the attribute is.
+
+               ::::ccccaaaasssseeeelllleeeessssssss
+                    Use a character-by-character comparison on this
+                    attribute for sorting or uniqueness, but ignore
+                    the case of letters.  If uniqueness is not speci-
+                    fied on the command line, this option implies that
+                    the output will be sorted.
+
+               ::::ddddaaaatttteeee
+                    Use a date comparison on this attribute for sort-
+                    ing or uniqueness.  If uniqueness is not specified
+                    on the command line, this option implies that the
+                    output will be sorted.
+
+               ::::ddddeeeelllliiiimmmm<_c_h_a_r>
+                    If the output is unformatted, use the given <_c_h_a_r>
+                    as the delimiter for this attribute.  If the out-
+                    put is formatted (i.e., the ----TTTT, ----BBBB, or ----FFFF options
+                    were given) this modifier is ignored.  The normal
+                    C escape sequences are allowed in <_c_h_a_r>, such as
+                    ``\n''.  If all attributes should have the same
+                    delimiter, the ----dddd option can be used as a short-
+                    hand notation.  Unlike most modifiers, this modif-
+                    ier _m_u_s_t _n_o_t be abbreviated; everything after
+                    ``:delim'' is used to get the attribute delimiter.
+
+               ::::ddddeeeesssscccceeeennnnddddiiiinnnngggg
+                    Sort the attribute's values in descending order.
+
+
+
+     Page 6                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+                    Normally, attribute values are sorted in ascending
+                    order.  This option implies that the output will
+                    be sorted.
+
+               ::::ffffiiiieeeelllldddd<_f_i_e_l_d#>[.<_c_h_a_r#>][----<_f_i_e_l_d#>[.<_c_h_a_r#>],...
+                    Use only the given sub-fields and/or character
+                    positions in the attribute for sorting.  This
+                    option implies that records will be sorted; sub-
+                    fields are not used when determining uniqueness.
+                    Up to four sub-field ranges may be specified.  Any
+                    additional ranges are ignored.  Sub-field and
+                    character positions start at 1.  The ending field
+                    and character positions are inclusive.  The sub-
+                    fields are determined by the split string given
+                    with the ::::sssspppplllliiiitttt modifier.  The default split
+                    string is a comma.
+
+                    If different sub-fields need different types of
+                    comparisons (e.g., a number appended to a string),
+                    the attribute and sub-fields can be listed multi-
+                    ple times, each with the different comparison
+                    specification.  All the attributes but one should
+                    have the ::::nnnnooooddddiiiissssppppllllaaaayyyy modifier.
+
+               ::::nnnnooooddddiiiissssppppllllaaaayyyy
+                    Do not display this attribute in the output.  This
+                    option is useful when the sorted attribute is not
+                    displayed (e.g., the ``rec#'' attribute), or when
+                    an attribute's sub-fields need different types of
+                    comparisons.  Note, however, that this modifier
+                    does _n_o_t imply sorting.  Furthermore, uniqueness
+                    does not apply to non-displayed attributes.
+
+               ::::nnnnuuuummmmeeeerrrriiiicccc
+                    Use a numeric comparison on this attribute for
+                    sorting or uniqueness.  This is the default (and
+                    only supported) comparison type for the special
+                    ``rec#'' and ``seek#'' attributes.
+
+               ::::sssspppplllliiiitttt<_s_t_r_i_n_g>
+                    Use the given <_s_t_r_i_n_g> as the delimiters for
+                    splitting the attribute into sub-fields for sort-
+                    ing.  (See the ::::ffffiiiieeeelllldddd modifier for more informa-
+                    tion on sub-fields.)  This option implies that
+                    records will be sorted; sub-fields are _n_o_t used
+                    when determining uniqueness.  Unlike most modif-
+                    iers, this modifier _m_u_s_t _n_o_t be abbreviated;
+                    everything after ``:split'' is used as the split
+                    string.  The default split string is ``,''.  Each
+                    character in the split string is used to locate
+                    the end of the respective sub-field in the attri-
+                    bute.  The last character in the split string is
+
+
+
+     Page 7                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+                    repeated as needed.  Thus, if five fields are
+                    separated by commas, ``:split,'' and
+                    ``:split,,,,'' are equivalent specifications.  If
+                    the first field were separated by a forward slash
+                    and the rest by commas, the modifier would be
+                    ``:split/,''.  If a colon (``:'') is needed as one
+                    of the split characters, it must be preceded by a
+                    backslash (``\'') in order to not be interpreted
+                    as the start of a new modifier.  Normal C-like
+                    escape sequences are also recognized in the split
+                    string.
+
+               ::::ssssttttrrrriiiinnnngggg
+                    Use a character-by-character comparison on this
+                    attribute for sorting or uniqueness.  This is the
+                    default comparison type except the special
+                    ``rec#'' and ``seek#'' attributes, which are
+                    always numeric.  If uniqueness is not specified on
+                    the command line, this option implies that the
+                    output will be sorted.
+
+          [ssssoooorrrrtttteeeedddd [bbbbyyyy <_a_t_t_r>:<_m_o_d_i_f_i_e_r_s> ...]]
+               The retrieved records should be sorted on the given
+               attributes.  Normally, the output is not sorted and
+               there may be multiple, identical entries.  If no sort
+               attributes are given, the sort order is left to right
+               and is done in ascending order using a character-by-
+               character comparison.  The attribute <_m_o_d_i_f_i_e_r_s> can be
+               used to modify the sort criteria.  (See the attribute
+               <_m_o_d_i_f_i_e_r_s> section above for more details.)  This
+               option is the same as the ----ssss option.  It is provided as
+               an alternate syntax for use when more detail is needed
+               for the sort attributes or using the flag is not possi-
+               ble or inappropriate, e.g., in makefiles.
+
+          [uuuunnnniiiiqqqquuuueeee]
+               Print only unique entries in the output.  Normally,
+               multiple, identical entries may be retrieved.  Identi-
+               cal entries are records where all the _d_i_s_p_l_a_y_e_d attri-
+               bute values are the same.  Normally, a character-by-
+               character comparison is used.  (See the attribute
+               <_m_o_d_i_f_i_e_r_s> section above for how to modify the com-
+               parison type.)  This option is the same as the ----uuuu
+               option.  It is provided as an alternate syntax for use
+               when using the flag is not possible or inappropriate,
+               e.g., in makefiles.
+
+               Note:  The output is not necessarily sorted with this
+               option.  If both sorting and uniqueness are desired,
+               use both ssssoooorrrrtttteeeedddd and uuuunnnniiiiqqqquuuueeee.
+
+          ffffrrrroooommmm <_t_a_b_l_e>[====<_a_l_t__t_a_b_l_e>]...
+
+
+
+     Page 8                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               The list of tables needed in the query.  The tables
+               should be given as full or partial path names.  A table
+               named ``-'' refers to standard input; this can only
+               appear once.  The keyword ffffrrrroooommmm is only needed if pro-
+               jected attributes are specified.
+
+               By default, the descriptor file for a table is named
+               D<_t_a_b_l_e>.  A descriptor file from another table can be
+               specified by adding ``=<_a_l_t__t_a_b_l_e>'' after the table
+               name.  The alternate descriptor file will be
+               D<_a_l_t__t_a_b_l_e>.  Note that if <_a_l_t__t_a_b_l_e> contains a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the UNITYDFILES directories
+               or in the current directory.
+
+               The _U_N_I_T_Y_D_F_I_L_E_S entry in the EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT section
+               describes how the descriptor information for a table is
+               located.
+
+          iiiinnnnttttoooo|oooonnnnttttoooo <_n_e_w__t_a_b_l_e>[====<<<<aaaalllltttt____ttttaaaabbbblllleeee>>>>]...
+               Normally, all output from rrrreeeettttrrrriiiieeeevvvveeee is written to the
+               standard output.  If an iiiinnnnttttoooo clause is given, the named
+               file is created (which must not previously exist).  If
+               oooonnnnttttoooo is used instead of iiiinnnnttttoooo, the output is appended to
+               the specified file.  The file will still be created if
+               it does not exist.
+
+               If the output is unformatted, <_n_e_w__t_a_b_l_e> will be a
+               UNITY table.  If a descriptor cannot be located, it
+               will also be created in the current directory.  By
+               default, the descriptor file for the table is named
+               D<_n_e_w__t_a_b_l_e>.  A descriptor file from another table can
+               be specified by adding ``=<_a_l_t__t_a_b_l_e>'' after the table
+               name.  The alternate descriptor file will be
+               D<_a_l_t__t_a_b_l_e>.  Note that if <_a_l_t__t_a_b_l_e> contains a
+               path, the path will only be used if the descriptor file
+               cannot be found in one of the UNITYDFILES directories
+               or in the current directory.
+
+               The _U_N_I_T_Y_D_F_I_L_E_S entry in the EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT section
+               describes how the descriptor information for a table is
+               located.
+
+          wwwwhhhheeeerrrreeee <_w_h_e_r_e__c_l_a_u_s_e>
+               A set of comparisons which control which records will
+               be selected.  If omitted, a cross product of all
+               records in all tables is selected.  See the EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD
+               DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN section for details on the syntax of the
+               where-clause.
+
+     EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+          UNITYDFILES
+
+
+
+     Page 9                                          (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+                    A colon-separated list of directories to search
+                    for table descriptor files.  If this is not speci-
+                    fied, or if a needed file is not found in one of
+                    the directories, the current directory is
+                    searched.  If that fails, the directory where the
+                    associated table is located (based on the table
+                    name on the command line) is searched.
+
+                    NOTE: UNITY commands in _e_x_p_t_o_o_l_s only accept one
+                    directory in this variable.  Also, they use it
+                    only after looking in the current directory and in
+                    the table's directory; some commands do not use it
+                    at all.
+
+     EEEEXXXXIIIITTTT CCCCOOOODDDDEEEESSSS
+          0    Normal termination.
+
+          1    Invocation error - accompanied by explanatory message.
+
+          2    Execution error - accompanied by explanatory message.
+
+          3    Abnormal termination - command killed by signal.
+
+     RRRREEEESSSSTTTTRRRRIIIICCCCTTTTIIIIOOOONNNNSSSS
+          No more than eight tables may be given.
+
+          There is no maximum record size limit, but each individual
+          attribute is limited to the size of an I/O block: 10K on
+          mainframes, 6K on Vaxen and other mid-size machines, and 4K
+          on other smaller machines.
+
+          There is a limit on the number of attributes each table can
+          have.  Currently, this is 200 on mainframes and 100 on all
+          other machines.
+
+          The attribute limit for individual tables applies also to
+          the the total number of attributes printed out, whether the
+          output is formatted or not.  Any attributes beyond this
+          limit are ignored.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          The following examples are based on three tables, described
+          below with their description files.
+
+          The _c_l_a_s_s table groups files together; owners then own the
+          classes, not the individual files:
+
+               dir  t:   32l  File's Directory Path
+               file t:   14l  File Name
+               class     t\n  32l  Grouping File Belongs To
+
+          The _o_w_n_e_r table lists the owners of each class:
+
+
+
+     Page 10                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               class     t:   32l  Grouping File Belongs To
+               ownid     t\n  6r   Owner's ID Number
+
+          The _o_w_n_i_n_f_o table gives the information about each owner:
+
+               ownid     t:   6r   Owner's ID Number
+               mach t:   10l  Machine Where Owner Resides
+               login     t:   8l   Owner's Login on Machine
+               name t:   32l  Owner's Name
+               supv t:   32l  Owner's Supervisor
+               dept t\n  10l  Owner's Department
+
+          Retrieve the name, supervisor and machine for all
+          occurrences of the login ``_j_q_p_u_b_l_i_c''.  Print the informa-
+          tion out unformatted.  The records should be sorted by name,
+          supervisor, and record number.  The record number should not
+          be displayed, however.
+
+               retrieve name supv mach       \
+                    sorted by name supv rec# \
+                    from owninfo             \
+                    where login leq jqpublic
+
+          Retrieve the owners' name, machine, and login for the file
+          _M_G_b_l_o_c_k._L in the directory _p_c/_h_d_r.  Print the information
+          out as a table.  Use algebraic comparison symbols instead of
+          the two-character nmeumonics:
+
+               retrieve -T owninfo.name owninfo.mach owninfo.login    \
+                    from class owner owninfo                     \
+                    where class.dir = pc/hdr and                 \
+                         class.file = MGblock.L and              \
+                         class.class f= owner.class and          \
+                         owner.ownid fn= owninfo.ownid
+
+          Continuing with the previous example, suppose there can be
+          owners in our data base for individual files or there can be
+          ``default'' owners for all files in a directory, i.e., for
+          any file not explicitly listed in the data base.  (In this
+          case the _f_i_l_e attribute would be ``%default''.)  Under these
+          assumptions we need to use an eeeellllsssseeee-operator to get the
+          proper information from the data base.  The previous query
+          is repeated below to handle these new assumptions.  The
+          changes are shown in italic:
+
+               retrieve -T owninfo.name owninfo.mach owninfo.login    \
+                    from class owner owninfo                     \
+                    where \( class.dir leq pc/hdr and            \
+                         class.file leq MGblock.L \) _e_l_s_e        \
+                         \( _c_l_a_s_s._d_i_r _l_e_q _p_c/_h_d_r _a_n_d             \
+                         _c_l_a_s_s._f_i_l_e _l_e_q %_d_e_f_a_u_l_t \) and          \
+                         class.class fleq owner.class and        \
+
+
+
+     Page 11                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+                         owner.ownid feq owninfo.ownid
+
+          Retrieve information about files that are owned by people in
+          J. Q. Public's group, i.e. files whose owner's supervisor
+          resembles ``J. Q. Public''.  Print the information out in
+          the form
+
+               <_d_i_r_e_c_t_o_r_y>/<_f_i_l_e> is owned by <_o_w_n_e_r'_s _n_a_m_e>\n
+
+          The command for this is:
+
+               retrieve -F"%s/%s is owned by %s\n"               \
+                          class.dir class.file owninfo.name      \
+                    from class owner owninfo                     \
+                    where owninfo.supv req "J.* Q.* Public" and  \
+                         class.class fleq owner.class and        \
+                         owner.ownid feq owninfo.ownid
+
+          Note that a regular-expression comparison is used to catch
+          the various versions of the supervisor name that might
+          exist.
+
+          Retrieve information about the files _M_G_b_l_o_c_k_1._L, _M_G_b_l_k_2._L,
+          and _M_G_b_l_k_3._L from the directory _p_c/_h_d_r.  Use the set member-
+          ship operator to specify the comparisons on the file name:
+
+               retrieve -T owninfo.name owninfo.mach owninfo.login         \
+                    from class owner owninfo                     \
+                    where class.dir = pc/hdr and                      \
+                         class.file in MGblock1.L,MGblk2.L,MGblk3.L and    \
+                         class.class f= owner.class and                    \
+                         owner.ownid fn= owninfo.ownid
+
+     EEEEXXXXTTTTEEEENNNNDDDDEEEEDDDD DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+        TTTThhhheeee WWWWhhhheeeerrrreeee----CCCCllllaaaauuuusssseeee
+          The where-clause specifies a subset of the records in the
+          tables based on comparisons of the values of certain attri-
+          butes in the tables.  The comparisons can also be combined
+          with boolean operators and grouped arbitrarily with
+          parentheses.
+
+          Each comparison in the where-clause takes one of two forms.
+          It either compares an attribute to a constant value:
+
+               <_a_t_t_r_i_b_u_t_e> <_c_m_p__t_y_p_e><_c_m_p__o_p_e_r> <_v_a_l_u_e>
+
+          or compares two attributes:
+
+               <_a_t_t_r_i_b_u_t_e> ffff[oooo]<_c_m_p__t_y_p_e><_c_m_p__o_p_e_r> <_a_t_t_r_i_b_u_t_e>
+
+          The <_c_m_p__o_p_e_r> tells what kind of comparison operation
+          should be done.  It can be expressed as a two-character
+
+
+
+     Page 12                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+          mnemonic or as an algebraic symbol.  The <_c_m_p__t_y_p_e> tells
+          the data type of the comparison operands, e.g., numbers,
+          strings, or regular expressions.  If there is no <_c_m_p__t_y_p_e>
+          and a two-character mnemonic symbol is used for <_c_m_p__o_p_e_r>,
+          a numeric comparison will be done.  If there is no
+          <_c_m_p__t_y_p_e> and an algebraic symbol is used for <_c_m_p__o_p_e_r>, a
+          normal string comparison will be done.
+
+          The two-character mnemonics for <_c_m_p__o_p_e_r> and their mean-
+          ings are shown below:
+
+               eeeeqqqq   equal to
+               nnnneeee   not equal to
+               lllltttt   less than
+               lllleeee   less than or equal to
+               ggggeeee   greater than or equal to
+               ggggtttt   greater than
+
+          The algebraic symbols for <_c_m_p__o_p_e_r> and their meanings are
+          shown below:
+
+               ====    equal to
+               !!!!====   not equal to
+               <<<<    less than
+               <<<<====   less than or equal to
+               >>>>====   greater than or equal to
+               >>>>    greater than
+
+          NOTE:  When using these symbols, the '<' and '>' characters
+          should be quoted (using a backslash '\', or double or single
+          quotes) to avoid interpretation by the shell.
+
+          The comparison operator, <_c_m_p__o_p_e_r> may be prefixed with
+          another character, the <_c_m_p__t_y_p_e>, to specialize the com-
+          parison as follows:
+
+          nnnn    Do a numerical comparison.  Both values are converted
+               to double float values and compared.  Thus, values like
+               ``1.0'' and ``1'', which would fail an equality test
+               based on a character-by-character comparison, would
+               match using a numerical equality comparison (i.e.,
+               ``_e_q'').
+
+               This is the default comparison type when a two-
+               character mnemonic is used to indicate the comparison
+               operation.
+
+          llll    Do a lexical, or character-by-character, comparison.
+               The two values are compared as character strings using
+               the standard ASCII character set.  Thus, ``1.0'' would
+               be greater than ``1''; ``tim'' would be less than
+               ``time''; and ``test'' would equal ``test''.
+
+
+
+     Page 13                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               This is the default comparison type when an algebraic
+               symbol is used to indicate the comparison operation.
+
+          cccc    Do a character-by-character comparison, but ignore the
+               case of letters.  The two values are compared as char-
+               acter strings using the standard ASCII character set,
+               except that upper- and lower-case characters are con-
+               sidered equivalent.  Thus, ``1.0'' would be greater
+               than ``1''; ``tim'' would be less than ``time''; and
+               ``test'' would equal ``TEST''.  This option may also
+               follow the regular-expression comparison (i.e., ``rc'')
+               to do caseless regular expression matching, without the
+               need for groupings with square brackets.
+
+          rrrr    Do a regular-expression comparison.  (This type of com-
+               parison can only be used with the _e_q, =, _n_e, and !=
+               comparison operators.)  The second value is taken as a
+               regular expression against which to compare the first
+               value.  The rrrreeeeggggeeeexxxx(3) regular-expression matching rou-
+               tines are used to compile regular expressions and make
+               comparisons.  The manual page for rrrreeeeggggeeeexxxx(3) gives, in
+               detail, the regular expression syntax that is used.
+               (It is an enhanced version of that used by eeeedddd(1), and
+               ggggrrrreeeepppp(1).)  Regular expressions should normally be sur-
+               rounded by single quotes to avoid expansion by the
+               shell.
+
+               This option may also be followed by the caseless com-
+               parison (i.e., ``rc'') to do caseless regular expres-
+               sion matching, without the need for groupings with
+               square brackets.
+
+               As a shorthand notation, ``~'' is equivalent to ``req''
+               and ``!~'' is equivalent to ``rne'' as comparison
+               operators.  When using kkkksssshhhh(1), the tilda (~) should be
+               quoted to avoid expansion by the shell.
+
+               Regular expression comparisons cannot be used in
+               field-to-field comparisons.
+
+          dddd    Do a date and time comparison.  Date comparisons treat
+               the values as dates in the form
+
+            <month>{- or /}<day>{- or /}<year> [<hour>:<min>:<sec>]
+
+               where _m_o_n_t_h is between 1 and 12 inclusive; _d_a_y is
+               between 1 and 31 inclusive, and _y_e_a_r is between 0 and
+               99 inclusive.  The time-of-day is optional, but if
+               included, must follow the conventions of a 24-hour
+               clock.  If the time-of-day is omitted, it is considered
+               to be midnight, ``00:00:00''.  Note that numbers less
+               than 10 may appear as either single or two digit
+
+
+
+     Page 14                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               numbers (e.g., 1 or 01).  The delimiters for month,
+               day, and year may be either a forward slash (``/'') or
+               a hyphen (``-'').
+
+          The 'f' before <_c_m_p__t_y_p_e> indicates a ``field-to-field''
+          (i.e., attribute-to-attribute) comparison.  The operand fol-
+          lowing <_c_m_p__o_p_e_r> is expected to be an attribute name rather
+          than a constant value.  A field-to-field, regular-expression
+          comparison (i.e, ``ffffrrrreeeeqqqq'' or ``ffffrrrrnnnneeee'') is _n_o_t allowed.  This
+          prefix is primarily used to stipulate conditions of a join
+          between two tables.  However, the attributes can also be
+          from the same table.
+
+          If ``fo'' is used in a field-to-field comparison, an outer
+          join will be done between the given attributes, instead of a
+          normal join.  In an outer join, any record in one table
+          which does not join with any record in the other table is
+          joined with the ``null tuple''.  The null tuple is a tuple
+          in which all attributes values are empty strings.
+
+          If ``fO'' (capital-O) is used in a field-to-field com-
+          parison, an outer join will also be done between the attri-
+          butes; however, only tuples from the first attribute's rela-
+          tion which don't join with a tuple in the second relation
+          will be joined with the ``null tuple''.  _N_o_n-_j_o_i_n_i_n_g _t_u_p_l_e_s
+          _f_r_o_m _t_h_e _s_e_c_o_n_d _a_t_t_r_i_b_u_t_e'_s _r_e_l_a_t_i_o_n _a_r_e _t_r_e_a_t_e_d _l_i_k_e _a
+          _n_o_r_m_a_l-_j_o_i_n.
+
+          There is also a set-membership operator ``in''.  It is used
+          to match a list of attributes with any one of a set of
+          values.  The general form for this operator is
+
+               <_a_t_t_A>[,,,,<_a_t_t_B>...] <_c_m_p_t_y_p_e>iiiinnnn     \\\\
+                    <<<<_v_a_l_1_A>[,,,,<_v_a_l_1_B>...],,,,<_v_a_l_2_A>[,,,,<_v_a_l_2_B>...]
+
+          This operator is a short hand notation for
+
+               (((( <_a_t_t_A> <_c_m_p_t_y_p_e>==== <_v_a_l_1_A> [aaaannnndddd <_a_t_t_B> <_c_m_p_t_y_p_e>==== <_v_a_l_1_B> ...] )))) oooorrrr\\\\
+               (((( <_a_t_t_A> <_c_m_p_t_y_p_e>==== <_v_a_l_2_A> [aaaannnndddd <_a_t_t_B> <_c_m_p_t_y_p_e>==== <_v_a_l_2_B> ...] )))) ...
+
+          Unless a space or tab is part of the comparison value
+          itself, it should not be embedded in the comparison values.
+          (For example, no space should be placed after the commas.)
+          Note also that any un-escaped spaces or tabs will cause a
+          syntax error.
+
+          The following values are recognized for <_c_m_p_t_y_p_e> to dictate
+          the type of comparison used.  Each type of comparison works
+          as described above for the normal comparison operators:
+
+          llll    Do a string comparison.  This is the default if no
+               <_c_m_p_t_y_p_e> is specified.
+
+
+
+     Page 15                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+          cccc    Do a string comparison, but ignore the case of letters.
+
+          dddd    Do a date comparison.
+
+          nnnn    Do a numeric comparison.
+
+          rrrr    Do a regular expresion comparison.
+
+          The ``f'' prefix (field-to-field comparison) is not allowed.
+
+          When multiple attributes are used with the set-membership
+          operator, the comparison values may be grouped together by
+          enclosing them in parenthesis.  If there are less values in
+          the parenthesis than there are attributes listed, the
+          remaining comparison values are assumed to be zero for
+          numeric comparisons and empty strings for string, regular
+          expression, and date comparisons.  If more values are given
+          in the parenthesis than attributes, the extra values are
+          assumed to be part of a new comparison combination.
+
+          To embed a comma or parenthesis in a comparison value, pre-
+          cede it with a backslash (``\'').
+
+          The comparison and set-membership operators above can be
+          combined with boolean operators, selection operators and/or
+          parenthesis to form a more complex where-clause:
+
+          !!!!    _B_o_o_l_e_a_n _n_e_g_a_t_i_o_n. This operator reverses the logic of
+               the clause to the immediate right.
+
+          aaaannnndddd  _B_o_o_l_e_a_n _c_o_n_j_u_n_c_t_i_o_n. The clause on the left and the
+               clause on the right of this operator must both be true
+               in order for records to be selected.
+
+          oooorrrr   _B_o_o_l_e_a_n _d_i_s_j_u_n_c_t_i_o_n. Either the clause on the left or
+               the clause on the right of this operator must be true
+               in order for records to be selected.
+
+          ``----'' _o_r ``mmmmiiiinnnnuuuussss''
+               _S_e_t _d_i_f_f_e_r_e_n_c_e _o_p_e_r_a_t_o_r. Select those records which do
+               _n_o_t match the clause to the immediate right.  In
+               field-to-field comparsisons across different tables
+               (i.e., joins), this operator indicates to select those
+               records which do _n_o_t join with any record in the other
+               table, according to the given comparison condition.
+               For selection operations this operator is equivalent to
+               boolean negation.
+
+               As an abbreviation, a minus sign can be given after the
+               initial ``f'' in a field-to-field comparison to indi-
+               cate set difference.  For example, the clause
+
+
+
+
+     Page 16                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+
+                         - ( 1.login f= 2.login )
+
+               is equivalent to
+
+                         1.login f-= 2.login
+
+               Note that unlike most other operators, set-difference
+               is evaluation-order dependent.  For example, in the
+               expression
+
+
+                    1.name req Smith and 1.login f-= 2.login
+
+               what records are output depends on whether the set
+               difference or the regular expression is evaluated
+               first.  Within the New Unity query evaluator, all com-
+               parisons involving a single relation are evaluated
+               before any comparisons across relations.  So, in the
+               above example, the regular expression would be
+               evaluated first, followed by the set difference.  If a
+               different operation ordering is needed (e.g., a set
+               difference and then a single field comparison), the
+               only recourse is to use two rrrreeeettttrrrriiiieeeevvvveeee commands and pipe
+               the output of one into the other using the ----cccc option.
+               With regard to comparisons across relations, normal
+               joins are done first, followed by outer joins, followed
+               by set differences.
+
+               Currently, the set difference operator is allowed only
+               on individual comparisons, not on arbitrary expres-
+               sions.  This is due to a bug in the current implementa-
+               tion on how set difference on arbitrary expressions is
+               handled.  (It almost always produces the wrong result.)
+               When the bug is fixed, this restriction will be lifted.
+               If you want the set difference of an expression, you
+               must manually distribute the operator to all the indi-
+               vidual comparisons.
+
+          ``(((('' _a_n_d ``))))''
+               _G_r_o_u_p_i_n_g _o_p_e_r_a_t_o_r_s. The parenthesis are used to group
+               parts of the where-clause together to dictate the order
+               of evaluation.  They are used primarily to override the
+               normal precedence of the the boolean operations.  (See
+               the discussion of precedence below.)  Each parenthesis
+               must appear as a separate argument on the command line.
+               They should also be escaped to avoid interpretation by
+               the shell.
+
+          eeeellllsssseeee _S_e_l_e_c_t_i_o_n-_p_r_e_c_e_d_e_n_c_e _o_p_e_r_a_t_o_r. The clause to the left
+               is first used to match records, but if none are found,
+               the clause to the right is used to match records.  It
+
+
+
+     Page 17                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+               is analogous to an ``ordered OR'' operation (also known
+               as a ``short-circuited OR''), where the first expres-
+               sion, evaluating left to right, that is true causes an
+               exit from the evaluation.  This operator is used to
+               apply a precedence to the possible values of an attri-
+               bute.  It can also be used to provide the notion of a
+               default value for an attribute.  See the EXAMPLES sec-
+               tion for a sample use of this operator.
+
+               It is important to note that the negation of an else-
+               operator yields an and-operator.  Double negation of an
+               else-operator yields an or-operator.
+
+               Currently, there are a few restrictions for the else-
+               operator:
+
+               1.The left and right clauses must not contain field-
+                 to-field comparisons from different tables.
+
+               2.The tables referenced in the left and right clauses
+                 must be the same.
+
+               Unlike most other operators, the eeeellllsssseeee operator is
+               execution-order dependent.  For example, in the expres-
+               sion
+
+
+                    login = sam and name = Sam else name = SAM
+
+               what records are output will depend on whether the
+               match on _l_o_g_i_n is done first, or whether the eeeellllsssseeee----
+               clause is done first.  Within New Unity's query evalua-
+               tor, all non-eeeellllsssseeee comparisons are done before the
+               eeeellllsssseeee-clause.  To specify that the _l_o_g_i_n match should be
+               done after the eeeellllsssseeee-clause, it should be included
+               directly in each side of the eeeellllsssseeee-clause:
+
+
+                    \( login = sam and name = Sam \) \
+                    else \( login = sam and name = SAM \)
+
+               Alternately, multiple rrrreeeettttrrrriiiieeeevvvveeee commands can be used
+               where the output of one is piped into the other using
+               the ----cccc option.
+
+          The operator precedence for the where-clause, from highest
+          to lowest, is: the comparison operators, the eeeellllsssseeee operator,
+          the negation operator (``!'')  and set-difference operator
+          (``-''), the aaaannnndddd operator, and finally, the oooorrrr operator.
+          Parentheses may be used to group conditions to override pre-
+          cedence.
+
+
+
+
+     Page 18                                         (printed 4/14/92)
+
+
+
+
+
+
+     rrrreeeettttrrrriiiieeeevvvveeee((((1111))))                 NNNNeeeewwww UUUUNNNNIIIITTTTYYYY                 rrrreeeettttrrrriiiieeeevvvveeee((((1111))))
+
+
+
+        MMMMiiiisssscccceeeellllllllaaaannnneeeeoooouuuussss
+          The processing time of the rrrreeeettttrrrriiiieeeevvvveeee command can be decreased
+          using an index created by the iiiinnnnddddeeeexxxx(UNITY) command on any or
+          all attributes used in the where-clause.  Note, however,
+          that indexes can only be used for normal, character-to-
+          character (lexical) comparisons.  Indexes are ignored for
+          all other types of comparisons.
+
+     FFFFIIIILLLLEEEESSSS
+          AAAA<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e> and BBBB<_t_a_b_l_e>....<_a_t_t_r_i_b_u_t_e>
+                    - Index files for <_a_t_t_r_i_b_u_t_e> in <_t_a_b_l_e>.
+
+          DDDD<_t_a_b_l_e>  - Descriptor file for <_t_a_b_l_e>, listing the attri-
+                    butes, their delimiting-character or width, print-
+                    ing information, and user-friendly names.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          catalog(UNITY), cmpquery(1), descriptor(4), index(UNITY),
+          prtable(1), prblock(1), qprintf(1), table(UNITY),
+          uprint(UNITY), uprintf(UNITY), and uselect(UNITY).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 19                                         (printed 4/14/92)
+
+
+

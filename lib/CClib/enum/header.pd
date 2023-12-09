@@ -1,0 +1,273 @@
+%declare
+
+extern char mb[];
+extern unsigned max_count;
+extern unsigned count;
+extern int first;
+
+extern int myi;
+extern int myi2;
+
+extern char *bsearch();
+extern char basename[];
+extern unsigned checksum;
+
+struct s_entry {
+	char *ptr; /* ptr to image */
+	char *pname; /* program space name */
+	int value; /* integer value */
+	ANY where; /* where in tree this came from */
+	int first; /* is this the first of the group */
+} sorted_list[10000];
+
+extern int code_cmp();
+int header_cmp(a,b) struct s_entry *a, *b; { return strcmp(a->ptr,b->ptr); };
+
+
+
+
+%template
+#ifndef %(upper(strcpy(mb,basename)))_HDR
+#define %(mb)_HDR
+
+#include <search.h>
+#include <string.h>
+#include <malloc.h>
+#include <sys/param.h>
+
+%forall a:TABLE_SPEC %loop
+	%{ max_count = count = 0; }
+	%forall b:TABLE_ENTRY_GROUP in a %loop
+		%{ first = 1; }
+		%forall c:TABLE_ENTRY in b %loop
+			%{ sorted_list[count].ptr=
+			table_entry_name(table_entry_spec(c)) ?
+			tok(table_entry_name(table_entry_spec(c))) :
+			tok(table_entry_string(table_entry_spec(c)));}
+			%{ sorted_list[count].value = max_count;}
+			%{ sorted_list[count].where = 
+				table_entry_spec(c);}
+			%{ sorted_list[count].pname =
+				*(tok(table_entry_pname(c))) ?
+					tok(table_entry_pname(c)) :
+					tok(table_entry_name(table_entry_spec(c)));
+			}
+			%{ sorted_list[count].first = first;}
+			%{ count++; first = 0;}
+		%end-loop
+		%{ max_count++; }
+	%end-loop
+
+	%{ qsort(sorted_list,count,sizeof(struct s_entry),code_cmp); }
+
+/* extern definitions to things in the .C companion file */
+extern  struct _%(tok(table_name(a)))_entry { const char *ptr; int value; } _%(tok(table_name(a)))_table[];
+extern struct _%(tok(table_name(a)))_entry *_%(tok(table_name(a)))_itable[];
+
+#define _%(tok(table_name(a)))_max_ip1 %(itoa(max_count))
+extern int _%(tok(table_name(a)))_cmp(struct _%(tok(table_name(a)))_entry *a,struct _%(tok(table_name(a)))_entry *b);
+
+/* typecheck for proper bsearch arguments */
+inline char *bsearch(const char*key, char*base, unsigned nel, int siz,
+	int (*_%(tok(table_name(a)))_cmp)(struct _%(tok(table_name(a)))_entry *a,struct _%(tok(table_name(a)))_entry *b))  {
+		return (char *)bsearch(key,base,nel,siz,(int (*)(const void *,const void *))_%(tok(table_name(a)))_cmp);
+};
+
+/* base class definiton */
+class %(tok(table_name(a))) {
+	int i;
+	const char * istr;
+	int allocated;
+public:
+	%(tok(table_name(a)))() { i = -1; istr = (char*)0; allocated = 0; };
+	%(tok(table_name(a)))(const char * const a){allocated = 0; *this = a; };
+	%(tok(table_name(a)))(const %(tok(table_name(a))) &a) { allocated = 0; *this = a; };
+	%(tok(table_name(a)))(const int a) { allocated = 0; *this = a; };
+	~%(tok(table_name(a)))() { if(allocated) free((char*)istr); };
+	int integer() const { return i; };
+	const char *image() const { return istr; };
+	%(tok(table_name(a)))& operator=(const %(tok(table_name(a)))&);
+	%(tok(table_name(a)))& operator=(const int);
+	%(tok(table_name(a)))& operator=(const char * const);
+
+	%(tok(table_name(a)))& operator++() {
+		if ((i < 0) || (i >= _%(tok(table_name(a)))_max_ip1)) ;
+		else {
+			if(++i == _%(tok(table_name(a)))_max_ip1) i = -1;
+			*this = i;
+		};
+		return *this;
+	};
+
+	%(tok(table_name(a)))& operator--() {
+		if ((i < 0) || (i >= _%(tok(table_name(a)))_max_ip1)) ;
+		else *this = --i;
+		return *this;
+	};
+
+};
+
+/* additional operators for == != with this class, int and string */
+inline int operator== (const %(tok(table_name(a)))& a,
+	const %(tok(table_name(a)))& b) {
+	/* is unknown == unknown ??? */
+	return ((a.integer() == -1) || (b.integer() == -1)) ?
+		strcmp(a.image(),b.image()) == 0 :
+		a.integer() == b.integer(); 
+};
+
+inline int operator!= (const %(tok(table_name(a)))& a,
+	const %(tok(table_name(a)))& b) {
+	/* is unknown != unknown ??? */
+	return ((a.integer() == -1) || (b.integer() == -1)) ?
+		strcmp(a.image(),b.image()) != 0 :
+		a.integer() != b.integer(); 
+};
+
+inline int operator== ( const int a, const %(tok(table_name(a)))& b) {
+	return a == b.integer();
+};
+
+inline int operator== ( const %(tok(table_name(a))) &a, const int b) {
+	return a.integer() == b;
+};
+
+inline int operator!= ( const int a, const %(tok(table_name(a)))& b) {
+	return a != b.integer();
+};
+
+inline int operator!= ( const %(tok(table_name(a))) &a, const int b) {
+	return a.integer() != b;
+};
+
+inline int operator== ( const char * const a, const %(tok(table_name(a)))& b) {
+	%(tok(table_name(a))) junk = a;
+	return junk == b;
+};
+
+inline int operator== ( const %(tok(table_name(a))) &a, const char * const b) {
+	%(tok(table_name(a))) junk = b;
+	return a == junk;
+};
+
+inline int operator!= ( const char * const a, const %(tok(table_name(a)))& b) {
+	%(tok(table_name(a))) junk = a;
+	return junk != b;
+};
+
+inline int operator!= ( const %(tok(table_name(a))) &a, const char * const b) {
+	%(tok(table_name(a))) junk = b;
+	return a != junk;
+};
+
+/* set definitions */
+
+#define _%(tok(table_name(a)))_set_size ( (%{agprintf("%d",max_count);} / NBTSPW ) +1 )
+
+class %(tok(table_name(a)))_set {
+	int bits[_%(tok(table_name(a)))_set_size];
+public:
+	void clear();
+	%(tok(table_name(a)))_set () { clear(); };
+	void set(const int a) {
+		if ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1) ) ;
+		else bits[a / NBTSPW] |= ( 1 << ( a %("%") NBTSPW) );
+	};
+	%(tok(table_name(a)))_set (const %(tok(table_name(a))) &a) {
+		clear(); set(a.integer()); };
+	void clear(const int a) {
+		if ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ;
+		else bits[a / NBTSPW] &= ~( 1 << ( a %("%") NBTSPW) );
+	};
+	is_on(const int a) const {
+		return ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ? 0 :
+			bits[a / NBTSPW] & ( 1 << ( a %("%") NBTSPW) );
+	};
+	in(const int a) { return is_on(a); };
+	is_off(const int a) {
+		return ( (a < 0) || (a >= _%(tok(table_name(a)))_max_ip1)) ? 0 :
+			!( bits[a / NBTSPW] & ( 1 << ( a %("%") NBTSPW) ) );
+	};
+
+	%(tok(table_name(a)))_set& operator= (%(tok(table_name(a)))_set a);
+
+	friend int operator== (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	friend int operator!= (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+
+	// subset op
+	friend operator< (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+
+	// superset op
+	friend operator> (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+
+	// union op
+	friend %(tok(table_name(a)))_set operator+ (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator+= (const %(tok(table_name(a)))_set& a);
+
+	// intersection op
+	friend %(tok(table_name(a)))_set operator* (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator*= (const %(tok(table_name(a)))_set& a);
+
+	// difference op
+	friend %(tok(table_name(a)))_set operator- (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator-= (const %(tok(table_name(a)))_set& a);
+
+	// exor op
+	friend %(tok(table_name(a)))_set operator^ (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b);
+	%(tok(table_name(a)))_set& operator^= (const %(tok(table_name(a)))_set& a);
+
+	// invert op
+	friend %(tok(table_name(a)))_set operator~ ( const %(tok(table_name(a)))_set& a);
+
+};
+
+inline %(tok(table_name(a)))_set operator& (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	return a * b;
+};
+
+inline %(tok(table_name(a)))_set operator| (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	return a + b;
+};
+
+inline operator >= (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	return a > b;
+};
+
+inline operator <= (const %(tok(table_name(a)))_set& a, const %(tok(table_name(a)))_set& b) {
+	return a < b;
+};
+
+inline operator > ( const int a, const %(tok(table_name(a)))_set& b) {
+	return b.is_on(a);
+};
+
+inline operator > ( const %(tok(table_name(a))) a, const %(tok(table_name(a)))_set& b) {
+	return b.is_on(a.integer());
+};
+
+/* for each entry define const of type class and a constant for switch stmt use */
+%forall c:TABLE_ENTRY in a %loop
+
+extern const %(tok(table_name(a))) %if (table_entry_pname(c)) %then %(lower(strcpy(mb,tok(table_entry_pname(c))))) %else %(lower(strcpy(mb,tok(table_entry_name(table_entry_spec(c)))))) %end-if ;
+
+#define %if (table_entry_pname(c)) %then %(upper(strcpy(mb,tok(table_entry_pname(c))))) %else %(upper(strcpy(mb,tok(table_entry_name(table_entry_spec(c)))))) %end-if %{
+
+	struct s_entry junk;
+	struct s_entry *sptr;
+	junk.ptr = table_entry_name(table_entry_spec(c)) ?
+		tok(table_entry_name(table_entry_spec(c))) :
+		tok(table_entry_string(table_entry_spec(c)));
+	sptr = bsearch(&junk,sorted_list,count,sizeof(struct s_entry),header_cmp);
+	agprintf(" %d\n",sptr->value);
+	}
+
+%end-loop
+
+%end-loop
+
+/* bolt this file to the .C */
+extern int %(upper(strcpy(mb,basename)))_%{agprintf("%u",checksum);} ;
+static int * %(mb) = &%(mb)_%{agprintf("%u",checksum);} ;
+inline void %(mb)_RemoveWarning () { int *i = %(mb); };
+
+#endif

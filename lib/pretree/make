@@ -1,0 +1,154 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+##########################################################
+# Extract rule dependencies from a make(1) makefile file
+#
+#		Author: Bob Parnass
+#		Date:	Oct 1990
+#		AT&T Bell Laboratories
+#
+# USAGE:    make  [-F char] [-i file_of_files] [makefiles]
+#
+# This program writes to stdout lines of the form:
+#
+#	rule1 rule2
+#
+##########################################################
+PGM=`basename $0`
+MAKECMD=/bin/make
+
+FORHELP="\n\n(For more help, read the manual page then contact Bob Parnass)\n"
+USAGE="### error ### ${PGM}:\nUSAGE:  `basename $0`  [-i file_of_files] [-F char]\n\t\t[makefiles] ${FORHELP}"
+
+TMP=/usr/tmp
+JUNKFILE=$TMP/cc$$.c
+CFILE=$TMP/ccb$$
+CSCOPEFILE=$TMP/ccc$$
+ALLFILES=$TMP/ccd$$
+MAKEOUT=$TMP/cce$$
+
+
+TMPFILES="${CSCOPEFILE} ${JUNKFILE} ${CFILE} ${MAKEOUT} ${ALLFILES}"
+
+# trap unexpected signals so we clean up temp file
+trap 'rm -f ${TMPFILES}; trap 0; exit 1'  1 2 3 15
+
+
+# parse command line arguments 
+set -- `getopt i:F:p $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	IFLAG=
+	FFLAG=
+	SEP=" "
+	PFLAG=
+	FILEOFFILES=
+
+	for i in $*
+	do
+		case $i in
+		-p)
+			# ignore this option
+			PFLAG="-p"
+			shift 1;;
+		-i)
+			# file of files
+			IFLAG="-i"
+			FILEOFFILES=$2
+			shift 2;;
+		-F)
+			# change interfield separator character
+			FFLAG="-F"
+			SEP="{$2}"
+			shift 2;;
+		'-?')
+			echo ${USAGE} 1>&2
+			exit
+			;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+> $ALLFILES
+
+# input file of fcn calls was specified
+if [ "$IFLAG" ]
+then
+	# -i argument specified on command line
+	test -r "${FILEOFFILES}"
+	if [ $? -eq 0 ]
+	then
+		for FILE in `cat "${FILEOFFILES}"`
+		do
+			cat "${FILE}" >> "${ALLFILES}"
+		done
+	else
+		echo "### error ### ${PGM}: Cannot read file ${FILEOFFILES}" 1>&2
+		rm -f ${TMPFILES}
+		exit 1
+	fi
+else
+	if [ $# -eq 0 ]
+		then
+		# assume source file is piped 
+		cat > "${ALLFILES}"
+		PIPED=1
+
+	else
+		# files are specified on command line
+		while [ $# -gt 0 ]
+		do
+			FILE=${1}
+			test -r "${FILE}"
+			if [ $? -ne 0 ]
+			then
+				echo "#### error ### ${PGM}: Cannot read file ${FILE}." 1>&2
+				echo "${USAGE}" 1>&2
+				rm -f ${TMPFILES}
+				exit 1
+			else
+				cat "${FILE}" >> "${ALLFILES}"
+			fi
+			shift
+		done
+	fi
+fi
+
+${MAKECMD} -f ${ALLFILES} -p "${MAKEFLAGS}" > ${MAKEOUT} 2> /dev/null
+EXITCODE=$?
+
+if [ "${EXITCODE}" -ne 0 ]
+then
+	echo "### warning ### ${PGM}: ${MAKECMD} had nonzero exit code" 1>&2
+fi
+
+awk '\
+	{
+	if(index($0, ":") && (index($0, "=") == 0))
+		{
+		len = length($0)
+		if(index($0, ":") != len)
+			{
+			for(i = 2; i <= NF; ++i)
+				printf "%s %s\n", $1, $i
+			}
+		}
+	}' ${MAKEOUT} \
+| sed -e 's/://' \
+| sed -e "s/ /$SEP/"
+EXITCODE=$?
+
+
+rm -f "${TMPFILES}"
+
+exit $EXITCODE

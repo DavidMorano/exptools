@@ -1,0 +1,283 @@
+###############################################################################
+#	    This is unpublished AT&T proprietary source code.		      #
+#			All rights reserved				      #
+#			Copyright (c) 1990				      #
+#			AT&T Bell Laboratories				      #
+###############################################################################
+
+####################################################################
+# Add comments to C program source
+#
+#				Author:	Bob Parnass
+#				AT&T Bell Laboratories
+#				October 1990
+#
+#
+# USAGE:  shell   -f comment_file    [files]
+#
+# NOTES:
+#
+####################################################################
+VERSION="1.0"
+PGM=`basename $0`
+TOOLS=`logdir exptools`
+#LIBDIR=`logdir exptools`/lib/${PGM}/
+LIBDIR=./
+
+
+#if [ "${LOGNAME}" != "parnass" ]
+#then
+	# log this instance and send mail to provider
+	#(echo "Subject: ${LOGNAME} exec ${PGM}\n\nexecuted ${PGM};`uname -n`;${LOGNAME};`date`;`pwd`;${ALLARGS}" | mail att!ihlpn!parnass) > /dev/null 2>&1
+#fi
+
+TMP=/usr/tmp
+
+# set temporary files
+TMPCF=$TMP/3shc$$
+CCFILE=$TMP/4shc$$
+FCNLINE=$TMP/5shc$$
+COMMENTS=$TMP/6shc$$
+NOTABS=$TMP/7shc$$	# script with tabs converted to blanks
+HERELESS=$TMP/8shc$$	# script with here-document blanked out
+
+TMPFILES="$TMPCF $CCFILE $FCNLINE $COMMENTS $NOTABS ${HERELESS}"
+
+# trap unexpected signals so we clean up temp files
+trap 'rm -f ${TMPFILES};echo "Aborted by user" 1>&2; exit 1' 1 2 3 15
+
+FORHELP="\n\t(Type toolman $PGM, for a manual page, then contact Bob Parnass\n\tif you need help.)\n"
+USAGE="USAGE:  ${PGM}  -f comment_file  [files]\nVersion ${VERSION}\n${FORHELP}"
+
+EXIT_CODE=0
+FFLAG=
+CMTFILE=
+
+# parse command line arguments 
+set -- `getopt f: $*`
+if [ $? !=  0 ]
+then
+	echo ${USAGE} 1>&2
+	exit 1
+else
+	ARROWARGS=
+	for i in $*
+	do
+		case $i in
+
+		-f)
+			FFLAG=1
+			CMTFILE=$2
+			test -r "$CMTFILE"
+			if [ $? -ne 0 ]
+			then
+				echo "### error ### ${PGM}: Cannot read file $CMTFILE" 1>&2
+				echo ${USAGE} 1>&2
+				exit 1
+			fi
+			shift 2;;
+		--)
+			shift; break;;
+		esac
+	done
+fi
+
+
+
+NFILES=$#
+
+if [ "$FFLAG" ]
+then
+	:
+else
+	echo "### error ### ${PGM}: File of comments must be specified." 1>&2
+	echo "${USAGE}" 1>&2
+	exit 1
+fi
+if [ $# -eq 0 ]
+then
+	cat > $TMPCF
+	CFILE=$TMPCF
+	NFILES=1
+else
+	CFILE=$1
+fi
+
+while [ ${NFILES} -ne 0 ]
+do
+	newform -i $CFILE > $NOTABS
+
+	# check for failure
+	if [ $? -ne 0 ]
+	then
+		# probably cannot find file or open for reading
+		echo "Error in ${PGM}: newform failed on file '${CFILE}'." 1>&2
+		EXIT_CODE=1;
+		> $NOTABS
+	fi
+
+	# Detect here-documents in script and substitute
+	# blank lines for them
+	#
+	# force the first record to be a single quote
+	# because it's a pain to declare a single quote
+	# constant within this in-line awk script
+	
+	(echo "'";sed -e 's/  / /g' \
+		-e 's/".*"//g' ${NOTABS} )\
+		|awk '\
+			{
+			restline = $0
+			if(NR==1)
+				{
+				ticksymb = $0
+				inhere = 0
+				}
+			else
+				{
+				if(inhere == 1)
+					{
+					# find end of here label
+					if(index(restline, endhere))
+						inhere = 0
+					printf " \n"
+					}
+				else
+					{
+					len = length(restline)
+				
+					# strip comments
+					pound = index(restline, "#")
+					if(pound)
+						restline = substr(restline, 1, pound-1)
+					# search line for here-document symbol
+					heredoc = index(restline, "<<")
+					if(heredoc)
+						{
+						inhere = 1
+						beforehere = substr(restline, 1, heredoc -1)
+						printf "%s\n", beforehere
+						hereflag = 1
+						len = length(restline)
+						endhere = substr(restline, heredoc + 2, len -heredoc-1)
+						backslash = index(endhere, "\\")
+						len = length(endhere)
+						if(backslash == 1)
+							endhere = substr(endhere, 2, len -1)
+						len = length(endhere)
+						tick = index(endhere, ticksymb)
+						if(tick == 1)
+							{
+							# delete leading tick
+							endhere = substr(endhere, 2, len -1)
+							tick = index(endhere, ticksymb)
+							# delete trailing tick
+							if(tick)
+								endhere = substr(endhere, 1, tick -1)
+							}
+						space = index(endhere, " ")
+						if(space)
+							endhere = substr(endhere, 1, space -1)
+						}
+					else
+						{
+						# not in here doc so pass
+						# line through
+						print $0
+						}
+					}
+				}
+			}' > "${HERELESS}"
+	# evaluate stuff between backticks
+	awk '\
+		{
+		restline = $0
+		len = length(restline)
+		backslash = index(restline, "\\")
+		more = 1
+		while(len && (backslash == len) && (more==1))
+			{
+			more = getline(junk)
+			restline = restline $0
+			len = length(restline)
+			backslash = index(restline, "\\")
+			}
+
+		# strip comments
+		pound = index(restline, "#")
+		if(pound)
+			restline = substr(restline, 1, pound-1)
+		n=split(restline, a, "`")
+		for(i=2; i < n; i=i+2)
+			{
+			token = a[i]
+			while(index(token, " ") == 1)
+				{
+				# trim leading spaces
+				len = length(token)
+				token = substr(token, 2, len-1)
+				}
+			space = index(token, " ")
+			if(space)
+				token = substr(token, 1, space -1)
+				
+			printf "%s;%d\n", token, NR
+			}
+		}' "${HERELESS}" > "${FCNLINE}"
+
+	cat "${HERELESS}" \
+		| sed -e 's/!/ /g' \
+		-e "s/'.*'//g" \
+		-e "s/'/ /g" \
+		-e 's/=/ /g' \
+		-e 's/\${.*}/ /g' \
+		-e 's/".*"//g' \
+		-e 's/[<>%{};=*[]//g' \
+		-e 's/[`()<>]/ /g' \
+		| awk '\
+			{
+			restline = $0
+			len = length(restline)
+			backslash = index(restline, "\\")
+			more = 1
+			while(len && (backslash == len) && (more==1))
+				{
+				more = getline(junk)
+				restline = restline $0
+				len = length(restline)
+				backslash = index(restline, "\\")
+				}
+
+			pound = index(restline, "#")
+			if(pound)
+				restline = substr(restline, 1, pound-1)
+			n = split(restline, array, " ")
+			for(i=1; i <= n; ++i)
+				{
+				name=array[i]
+				if((length(name) > 1) && (index(name, "$") == 0))
+					printf "%s;%d\n", name, NR
+				}
+			}'  >> $FCNLINE
+		
+		sort  -u -o $FCNLINE $FCNLINE
+	# basename
+
+	sort $CMTFILE > $COMMENTS
+	join -t\; -j1 1 -j2 1 -o 1.2 2.2 2.3  $FCNLINE $COMMENTS
+
+	if [ $# -ne 0 ]
+	then
+		shift
+	fi
+
+	NFILES=`expr ${NFILES} - 1`
+
+	# set next source input file
+	CFILE=$1
+done
+
+# clean up
+rm -f ${TMPFILES}
+
+exit ${EXIT_CODE}

@@ -1,0 +1,132 @@
+
+
+
+     ssssttttaaaatttt((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            ssssttttaaaatttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          stat - do elementary statistical analysis on numeric
+          attributes
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _s_t_a_t [-_I_t_a_b_l_e] [-_O_t_a_b_l_e] [_a_n_a_m_e ... _i_n ] _t_a_b_l_e_1 [ _i_n_t_o _t_a_b_l_e_2 ] \
+           [_w_h_e_r_e _c_l_a_u_s_e]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          This command does an elementary statistical analysis of the
+          specified numeric attributes in the table.  If no attributes
+          are specified, then an analysis is done on all attributes in
+          the table.  The _s_t_a_t command provides the user with the sum,
+          count, average, minimum, maximum, and standard deviation for
+          each attribute specified on the command line (the attribute
+          values must be numeric).  Records in the table that contain
+          invalid (non-numeric) attribute values for any of these
+          attributes are omitted from the calculation.  However, all
+          invalid entries are listed in the output as warning messages
+          to the user.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          If the _w_h_e_r_e clause is specified, then the statistical
+          analysis is done only on the selected records (see the Intro
+          manual page for details on use of the _w_h_e_r_e clause).
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table and a corresponding descrition file is
+          created in the current directory.  An error is printed if
+          the output table already exists.  If _o_n_t_o is specified
+          instead of _i_n_t_o, the output is appended to the table if it
+          already exists or the table created and written if it does
+          not exist.
+
+          Attributes in the output table are _t_o_t_a_l, _c_o_u_n_t, _a_v_e_r_a_g_e,
+          _m_i_n, _m_a_x, and _s_t_d__d_e_v and this table can then be used by any
+          of the other UNITY commands.  The associated user-friendly
+          names are ATTRIBUTE NAME, TOTAL OF VALUES, COUNT OF VALUES,
+          AVERAGE OF VALUES, MINIMUM VALUE, MAXIMUM VALUE, and
+          STANDARD DEVIATION (used by several of the UNITY commands on
+          output).
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     ssssttttaaaatttt((((UUUUNNNNIIIITTTTYYYY))))            UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll            ssssttttaaaatttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.  Otherwise, the "into clause" should
+          not be used so that the output will be written to the
+          standard output but a description file is not created.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ uprint INV
+
+
+          |-------------------------|
+          |snu|pnu| qty|price| total|
+          |mbe|mbe|    |     |      |
+          |r  |r  |    |     |      |
+          |-------------------------|
+          |s1 |p1 | 300|  .25| 75.00|
+          |s1 |p2 | 200|  .30| 60.00|
+          |s1 |p3 | 400|  .35|140.00|
+          |s2 |p1 | 100|  .23| 23.00|
+          |s2 |p2 | 200|  .32| 64.00|
+          |s3 |p1 | 300|  .24| 72.00|
+          |-------------------------|
+
+          $ stat qty price total in INV where pnumber leq p1
+
+                              total  count     average       min       max   std dev
+                   qty       700.00      3      233.33    100.00    300.00     94.28
+                 price         0.72      3        0.24      0.23      0.25      0.01
+                 total       170.00      3       56.67     23.00     75.00     23.84
+
+          $ stat -Otmp qty in INV into - | (sleep 3; uselect -Itmp total from -)
+
+          would print the total value from the _s_t_a_t command.
+          There is no way to get the total value alone with just _s_t_a_t.
+
+     FFFFIIIILLLLEEEESSSS
+          unity/stat.c, zstat.c - the C source program
+          bin/stat - the executable program
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _d_i_s_t(UNITY), _d_d_i_s_t(UNITY)
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

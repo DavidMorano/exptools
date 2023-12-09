@@ -1,0 +1,73 @@
+.\" #ident "@(#) /sable/sdb/ra/sblib/menu/s.menu.3"
+.\"
+.PH "'MANAGE MENUS(3SB)'SBLIB C++ Library'MANAGE MENUS(3SB)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.sp
+manage_menus - menu forms and state-based transitions
+.LI "\fBSYNOPSIS\fP"
+.sp
+.EX
+\#include <sblib.h>
+
+.SO menu.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.sp
+The \*(Mn function formats menu screens, obtains selections from the user, and
+uses the selection to invoke specified functions and/or change to a new menu
+screen.  The \fIstate_table\fP argument supplies the information needed.
+The \fIstate_table\fP is an array of struct menu.  Each menu structure contains
+information to format a complete menu screen.  The \fIheading\fP is printed at
+the top of the screen.  \fBOpts\fP is an array of struct transition.  Each
+\fIopts\fP entry has a \fImenu_item\fP that is printed on the menu screen.
+The \fIopts\fP entry (struct transition) has several other members.  The
+\fIhelp_message\fP is printed if the user requests help for the menu option.
+The \fIaction\fP function is invoked and passed stdscr (see curses(3X))
+when the user selects the menu option.
+The \fInext_state\fP is used to index the \fIstate_table\fP and select
+a new struct menu if the \fIaction\fP returns TRUE.  Thus each option selected
+can call an application-defined function and/or go to a new menu.  The
+\fInoop\fP always returns TRUE.  It can be used as the \fIaction\fP if a new
+menu is the only desired result.
+.P
+The \fIcurrent_state\fP argument is used to index the \fIstate_table\fP for
+the initial state.  The \*(Mn function loops until the user decides to quit,
+then returns the final current state.  This can be saved and used to restart
+at the same point, or \*(Mn can always be called with the same initial state,
+such as state 0.  State 0 is assumed by \*(Mn to be the "main menu" state.
+.P
+The \*(Mn function is a Finite State Automata.  Its input alphabet consists
+of letters corresponding to the numbers 0 to \fINUM_OPTIONS\fP, currently
+a to x.  Its output is defined by the various \fIaction\fP functions and
+its state tables is defined by \fIstate_table\fP.  Since \*(Mn is a Finite
+State Automata, its behavior is well defined and easy to modify.
+.P
+The most difficult barrier to using \*(Mn is correctly defining the
+\fIstate_table\fP.  The \fIhelp_message\fP, for example, is an array of
+fixed-length strings that is a member of an array of structures that is
+a member of another array of structures.  Careful attention to curly braces,
+commas and string lengths is a must!  The compiler will rarely give an error
+that is more specific than "somewhere within the state table".  We recommend
+indenting the curly braces to show nesting levels and commenting the start
+of each new struct menu.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The \*(Mn function will display error messages to the user interactively, but
+will not return any diagnostics to the calling function.
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO menuE.ex
+.EE
+.LI "\fBWARNINGS\fP"
+.br
+\*(Mn uses stdscr only.
+.LI "\fBSEE ALSO\fP"
+.sp
+ curses(3X),\*(Cs,\*(Wg
+.LE

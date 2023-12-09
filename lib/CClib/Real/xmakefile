@@ -1,0 +1,78 @@
+#rules "genrules"
+
+PFLAGS = -pg
+GFLAGS = -g
+CCFLAGS = -O
+
+CC=nCC
+
+if !BASE
+	BASE = .
+end
+
+LOCAL=$(HOME)
+INCLDIR_INSTALL=$(LOCAL)/include
+LIBDIR_INSTALL=$(LOCAL)/lib
+
+TSRCDIR=tests.src
+
+IOPTS = $(CSEARCH:/^-%C/-I/) -I.
+
+EXACTSRC = real.c realio.c single.c bigit.c exactio.c \
+		shift.c addition.c mult.c division.c series.c \
+		pow.c modf.c trig.c exp.c plimit.c
+
+EXACTHDRS = real.h exact.h bigit.h exp.h trig.h
+
+
+EXACTFILES = $(EXACTSRC) $(EXACTHDRS)
+
+MAKEFILES = xmakefile
+
+MANPAGES = real.3
+
+CPIOFILES = $(EXACTFILES) $(MANPAGES) README real.mk xmakefile
+
+.SUFFIXES: .CLEAR 
+
+OMAKETARG = real.a install
+
+real.g.a :MKLIB: $(CSEARCH) $(IOPTS) -%Tdebug $(GFLAGS) $(EXACTSRC) 
+
+real.p.a :MKLIB: $(CSEARCH) $(IOPTS) -%Tprofile  $(PFLAGS) $(EXACTSRC) 
+
+real.a :MKLIB: $(CSEARCH) $(IOPTS) -%Treal.D $(CCFLAGS) $(EXACTSRC)
+
+install: $(INCLDIR_INSTALL)/real.h $(LIBDIR_INSTALL)/real.a
+
+$(INCLDIR_INSTALL)/real.h :K:  $(CSEARCH) real.h
+	cp $(>) $(<)
+	
+$(LIBDIR_INSTALL)/real.a : real.a ;ARUPDATE
+	cp $(>) $(<)
+
+real.mk : xmakefile 
+	mkold -g /home/jss/lib/genrules.mo -o reread -f $(*:N=*makefile) \
+		-2-x/usr/local \
+		CC='$(CC)' CCFLAGS=-O \
+		INCLDIR_INSTALL='$(INCLDIR_INSTALL)' \
+		LIBDIR_INSTALL='$(LIBDIR_INSTALL)' \
+		$(OMAKETARG) \
+	| sed -e 's;$(CC).*-I;$\(CC\) $\(CCFLAGS\) -I;' \
+		-e 's;CC=$(CC);CC=CC;' \
+		-e 's;$(INCLDIR_INSTALL);$\(LOCAL\)/include;' \
+		-e 's;$(LIBDIR_INSTALL);$\(LOCAL\)/lib;' \
+	| ( if [ "$(BASE)" != "." ] ; then
+			sed -e 's;$(BASE);.;g' ;
+		else cat ;
+			fi ; ) \
+	>$(<)
+
+/* No searches in the following so it only works in base directory */
+
+real.cpio : $(CPIOFILES)
+	ls $(*) | cpio -ocv > $(<)
+
+moveup : .VIRTUAL .FORCE 
+	echo $(EXACTFILES) $(MAKEFILES) $(MANPAGES) | moveup $(CSEARCH:/^-%C//)
+

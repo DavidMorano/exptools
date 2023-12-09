@@ -1,0 +1,264 @@
+
+
+
+     VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))      UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))       VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          verifyfiles - check file ownership and permissions
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          vvvveeeerrrriiiiffffyyyyffffiiiilllleeeessss [ ----iiii ] [ ----rrrr root ] [ ----yyyy ] [ ----VVVV ] file...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _v_e_r_i_f_y_f_i_l_e_s checks the characteristics of files as described
+          in input database files.  The characteristics checked
+          include user and group ownership, permissions, hard links,
+          file size and checksum.
+
+        OOOOppppttttiiiioooonnnnssss
+          ----iiii        Interactively fix files with incorrect ownership,
+                    permissions or links.  Without this option or ----yyyy,
+                    file inconsistencies are only listed on stdout.
+
+          ----rrrr root   Use _r_o_o_t as the root directory for all file names
+                    in the input database files.  Without this option,
+                    the root directory is "/".
+
+          ----yyyy        Fix files with incorrect ownership or permissions.
+                    This option is the same as ----iiii except that it
+                    automatically answers _y_e_s to questions about
+                    fixing ownership or permission.  It does not
+                    attempt to fix link problems.
+
+          ----VVVV        Print the version number of the _v_e_r_i_f_y_f_i_l_e_s
+                    program on stdout.  Without this option, no
+                    version number is printed.
+
+        DDDDaaaattttaaaabbbbaaaasssseeee FFFFoooorrrrmmmmaaaatttt
+          _v_e_r_i_f_y_f_i_l_e_s database files contain lines in the following
+          formats:
+
+          ::::ddddiiiirrrr::::name
+                    This is a directory specification.  All lines
+                    following this apply to directory _n_a_m_e until
+                    another directory specification is encountered.
+                    If no directory specification is given, the
+                    initial directory name is the root directory which
+                    is "/" unless the ----rrrr command line option is used.
+
+          name::::mode::::owner::::group::::[option::::]...
+                    This is a file specification. The file named _n_a_m_e
+                    will be checked to make sure it is owned by _o_w_n_e_r
+                    and group _g_r_o_u_p with octal mode _m_o_d_e.  An asterisk
+                    (*) in a mode, owner or group field means any
+                    value is acceptable.  The _o_p_t_i_o_n field may be
+                    cccc====nnn to indicate a checksum value (algorithm 0)
+                    of _n_n_n, CCCC====nnn to indicate a checksum value
+                    (algorithm 1) of _n_n_n, iiii====path to indicate same
+
+
+
+     Page 1                                           (printed 9/6/91)
+
+
+
+
+
+
+     VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))      UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))       VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))
+
+
+
+                    inode (hard link) as file _p_a_t_h, nnnn====nnn to indicate
+                    the number of hard links is _n_n_n, ssss====nnn to indicate
+                    a file size of _n_n_n bytes, or a field of the form
+                    tttt====X where _X may be dddd for a directory, bbbb for a
+                    block special file, cccc for a character special file
+                    or pppp for a pipe (FIFO special file).  If no _t=
+                    option field is specified, an ordinary file is
+                    assumed.  The algorithm 0 checksum is calculated
+                    like the _s_u_m(1) command with no option.  The
+                    algorithm 1 checksum is calculated like the _s_u_m(1)
+                    command with the -_r option.
+
+          ::::ddddeeeellll::::char
+                    This is a delimiter specification.  All lines
+                    following this use the character _c_h_a_r to delimit
+                    fields until another delimiter specification is
+                    encountered.  The initial delimiter character is
+                    :.
+
+          #### anything
+                    This is a comment.
+
+          Blank lines in a _v_e_r_i_f_y_f_i_l_e_s database file are ignored.
+
+          The following is a sample _v_e_r_i_f_y_f_i_l_e_s database file:
+
+                    :dir:/a1/abc
+                    .profile:700:abc:*:
+                    bin:700:abc:*:t=d:
+                    group_plans:660:abc:1234:
+                    pubbin:755:abc:*:t=d:
+                    :dir:/a1/abc/bin
+                    :del:+
+                    :mkcmd+700:abc:*:
+                    +del+:
+                    foobar:700:abc:*:c=518:
+
+          For this sample _v_e_r_i_f_y_f_i_l_e_s database file, in directory
+          /a1/abc, file .profile is checked for mode 700 and ownership
+          by abc, directory bin is checked for mode 700 and ownership
+          by abc, file group_plans is checked for mode 660 and
+          ownership by abc with group 1234, and directory pubbin is
+          checked for mode 755 and ownership by abc.  Then in
+          directory /a1/abc/bin, file :mkcmd is checked for mode 700,
+          ownership by abc and file foobar is checked for mode 700,
+          ownership by abc and a checksum value of 518.  Because the
+          file named :mkcmd contained the current delimiter character,
+          the delimiter character was temporarily changed from : to +.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          verifyfiles myfiles
+                    Use the file _m_y_f_i_l_e_s as a _v_e_r_i_f_y_f_i_l_e_s database to
+
+
+
+     Page 2                                           (printed 9/6/91)
+
+
+
+
+
+
+     VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))      UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))       VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))
+
+
+
+                    check file ownerships/permissions.
+
+          verifyfiles -i myfiles
+                    Verify the files and interactively attempt to fix
+                    inconsistencies.
+
+          verifyfiles -y myfiles
+                    Verify the files and fix inconsistencies.
+
+          verifyfiles -r $HOME myfiles
+                    Verify the files with $HOME used as the root
+                    directory for all the file names in the _m_y_f_i_l_e_s
+                    database.
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          _v_e_r_i_f_y_f_i_l_e_s exits with a code of 1 if there is an error in
+          command usage and prints the following message on stderr:
+
+          _u_s_a_g_e: _v_e_r_i_f_y_f_i_l_e_s [-_i] [-_r _r_o_o_t] [-_y] [-_V] _f_i_l_e...
+
+          Otherwise _v_e_r_i_f_y_f_i_l_e_s exits with a code of 0.
+
+          If _v_e_r_i_f_y_f_i_l_e_s can not open a database file, it prints the
+          following message to stderr and continues:
+
+          _c_a_n _n_o_t _o_p_e_n %_s
+
+          If _v_e_r_i_f_y_f_i_l_e_s is executed with both the ----iiii option and the
+          ----yyyy option, it prints the following message to stderr and
+          continues:
+
+          _v_e_r_i_f_y_f_i_l_e_s: _B_o_t_h -_i _a_n_d -_y _a_r_e _s_e_t. -_y _t_u_r_n_e_d _o_f_f.
+
+        DDDDaaaattttaaaabbbbaaaasssseeee EEEErrrrrrrroooorrrrssss
+          The following self-explaining error messages to stdout may
+          occur during interpretation of a database file:
+
+          _D_e_l_i_m_i_t_e_r _c_h_a_r_a_c_t_e_r _m_i_s_s_i_n_g
+          _D_i_r_e_c_t_o_r_y _n_a_m_e _m_i_s_s_i_n_g _i_n _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _D_i_r_e_c_t_o_r_y _n_a_m_e _t_o_o _l_o_n_g
+          _E_x_t_r_a_n_e_o_u_s _d_a_t_a _i_n _d_e_l_i_m_i_t_e_r
+          _E_x_t_r_a_n_e_o_u_s _f_i_e_l_d _i_n _d_i_r_e_c_t_o_r_y _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _F_i_l_e _g_r_o_u_p _m_i_s_s_i_n_g _i_n _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _F_i_l_e _g_r_o_u_p _n_a_m_e _t_o_o _l_o_n_g
+          _F_i_l_e _m_o_d_e _m_i_s_s_i_n_g _i_n _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _F_i_l_e _n_a_m_e _m_i_s_s_i_n_g _i_n _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _F_i_l_e _n_a_m_e _t_o_o _l_o_n_g
+          _F_i_l_e _o_w_n_e_r _m_i_s_s_i_n_g _i_n _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _F_i_l_e _o_w_n_e_r _n_a_m_e _t_o_o _l_o_n_g
+          _I_n_v_a_l_i_d _c_h_a_r_a_c_t_e_r %_c _i_n _m_o_d_e
+          _N_o _s_u_c_h _g_r_o_u_p _n_a_m_e
+          _N_o _s_u_c_h _u_s_e_r _n_a_m_e
+
+
+
+     Page 3                                           (printed 9/6/91)
+
+
+
+
+
+
+     VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))      UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))       VVVVEEEERRRRIIIIFFFFYYYYFFFFIIIILLLLEEEESSSS((((1111))))
+
+
+
+          _N_o_n-_n_u_m_e_r_i_c _i_n _c_h_e_c_k_s_u_m _f_i_e_l_d
+          _N_o_n-_n_u_m_e_r_i_c _i_n _f_i_l_e _l_i_n_k_s _f_i_e_l_d
+          _N_o_n-_n_u_m_e_r_i_c _i_n _f_i_l_e _s_i_z_e _f_i_e_l_d
+          _O_p_t_i_o_n _f_i_e_l_d _t_o_o _l_o_n_g
+          _T_h_i_s _f_i_l_e _s_p_e_c_i_f_i_c_a_t_i_o_n _i_s _i_g_n_o_r_e_d
+          _T_o_o _f_e_w _f_i_e_l_d_s _i_n _f_i_l_e _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _T_o_o _m_a_n_y _d_i_g_i_t_s _i_n _f_i_l_e _m_o_d_e _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _U_n_k_n_o_w_n _f_i_l_e _t_y_p_e _s_p_e_c_i_f_i_e_d = %_c
+          _U_n_k_n_o_w_n _o_p_t_i_o_n _f_o_r_m_a_t _i_n _s_p_e_c_i_f_i_c_a_t_i_o_n
+          _U_n_k_n_o_w_n _o_p_t_i_o_n _s_p_e_c_i_f_i_e_d = %_c
+
+        EEEExxxxeeeeccccuuuuttttiiiioooonnnn EEEErrrrrrrroooorrrrssss
+          The following self-explaining error messages to stdout may
+          occur during file checking:
+
+          %_s _f_i_l_e _t_y_p_e _i_s %_s _s_h_o_u_l_d _b_e %_s
+          _C_a_n _n_o_t _a_c_c_e_s_s _f_i_l_e _o_r _d_i_r_e_c_t_o_r_y %_s
+          _C_a_n'_t _o_p_e_n %_s _f_o_r _r_e_a_d_i_n_g
+          _C_h_a_n_g_e _g_r_o_u_p _f_a_i_l_e_d
+          _C_h_a_n_g_e _m_o_d_e _f_a_i_l_e_d
+          _C_h_a_n_g_e _o_w_n_e_r _f_a_i_l_e_d
+          _C_h_e_c_k_s_u_m _o_f %_s _i_s %_u _s_h_o_u_l_d _b_e %_d
+          _F_i_l_e _m_o_d_e _o_f %_s _i_s %_o _s_h_o_u_l_d _b_e %_o
+          _F_i_l_e _o_r _d_i_r_e_c_t_o_r_y %_s _d_o_e_s _n_o_t _e_x_i_s_t
+          _F_i_l_e _o_w_n_e_r _o_f %_s _i_s %_s _s_h_o_u_l_d _b_e %_s
+          _F_i_l_e _s_i_z_e _o_f %_s _i_s %_l_d _s_h_o_u_l_d _b_e %_d
+          _G_r_o_u_p _o_w_n_e_r _o_f %_s _i_s %_s _s_h_o_u_l_d _b_e %_s
+          _H_a_r_d _l_i_n_k _o_f %_s _i_s %_l_u _s_h_o_u_l_d _b_e %_l_u [%_s]
+          _L_i_n_k _c_o_u_n_t _o_f %_s _i_s %_l_d _s_h_o_u_l_d _b_e %_l_d
+          _L_i_n_k _f_a_i_l_e_d, %_s _l_o_s_t
+          _R_e_a_d _e_r_r_o_r _o_n %_s
+          _U_n_a_b_l_e _t_o _p_e_r_f_o_r_m _c_h_e_c_k_s_u_m
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _s_u_m(1), _v_d_b_g_e_n(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                           (printed 9/6/91)
+
+
+

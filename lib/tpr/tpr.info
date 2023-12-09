@@ -1,0 +1,267 @@
+# tpr.info     sid: 1.21 date: 8/26/92 time: 18:51:46 delta: 8/26/92 18:51:45";
+#
+# the printer=vaild and term=valid will let tpr
+# know that the printer and terminal is defined -
+# without these tpr will exit before printing.
+# 
+# 1.  VINT,ELIT,PICA,GOTH,BELL,MINI,VG14,PR18,XR18 describe
+#     the escape sequences for the different fonts
+# 2.  By appending 'l', eg. VINTl, specifies the page length for
+#     the specified length.
+# 3.  TPRBOLDON, TPRBOLDOFF are are the strings that turn bold on or off
+# 4.  TPRUNDERON, TPRUNDEROFF are are the strings that turn underlining on or off
+# 5.  TPRBEGP is the string to issue before the data is printed
+# 6.  TPRENDP is the string to issue after the data is printed
+# 7.  TPRSTARTP is the string to issue to start the printer
+# 8.  TPRSTOPP is the string to issue to stop the printer
+# 9.  style, speed, buffer, cs, parity, flow are default vaules for tpr
+# 10. TPRSTARTT is the string to be issued to start the terminal printing
+# 11. TPRSTOPT is the string to be issued to stop the terminal printing
+# 12. TPRESC means the number of escapes to send so that one
+#     escape gets to printer
+# 13. cs is the caracter size for comminication
+# 14. parity is the parity for comminication
+# 15. printer or terminal name lines must start, end and separate names 
+#     with '|'.
+# 16. Any style can be programable.  Specify the font name in upper
+#     case and on the same line specify the number of lines with the
+#     style name with l.  (eg. ELIT="string"; ELITl=66;)  
+#     This is how the stylr will be verified.
+|teletype|ctrmtele|
+printer=valid;
+VINT="[2w[1z";VINTl=66; # 12chars 6lines
+ELIT="[2w[1z";ELITl=66;
+PICA="[1w[1z";PICAl=66; # 10chars 6lines
+GOTH="[1w[1z";GOTHl=66;
+BELL="[3w[2z";BELLl=88; # 13.6chars 8lines
+MINI="[4w[2z";MINIl=88; # 16.7chars 8lines
+VG14="[5w[6z";VG14l=44; # 5chars 4lines
+PR18="[6w[6z";PR18l=44; # 6chars 4lines
+XR18="[7w[6z";XR18l=44; # 6.8chars 4lines
+TPRBOLDON="[7m";
+TPRBOLDOFF="[0m";
+TPRUNDERON="no";
+TPRUNDEROFF="no";
+TPRBEGP="";
+TPRENDP="";
+TPRSTARTP="";
+TPRSTOPP="";
+style=bell;
+speed=40;
+buffer=2048;
+NEXTPRINTER
+|473|att473|478|att478|
+printer=valid;
+# 3n n/216 inches per line - n is in ascii
+# W0 double width off
+# W1 double width on
+#  compresed mode off
+#  compresed mode on
+MINI="3W0";MINIl=132; # 16.8chars 8lines
+VINT="3!W0";VINTl=72; # 10chars 6.5lines
+PICA="3$W0";PICAl=66; # 10chars 6lines
+VG14="36W1";VG14l=44; # 5chars 4lines
+TPRBOLDON="E";
+TPRBOLDOFF="F";
+TPRUNDERON="-1";
+TPRUNDEROFF="-0";
+TPRBEGP="U0";  # Bi-driectional
+TPRENDP="F-0"; # empasized and underline off, form-feed
+TPRSTARTP="";
+TPRSTOPP="";
+style=pica;
+speed=120;
+buffer=256;
+NEXTPRINTER
+|hpink|hpinkjet|ctrmink|
+printer=valid;
+VINT="&k0S&l6D";VINTl=66; # 12chars/in 80char/line 6 lines/inch
+ELIT="&k0S&l6D";ELITl=66;
+PICA="&k3S&l6D";PICAl=66; # 10.7ch/in  71ch/line   6 lines/inch
+GOTH="&k3S&l6D";GOTHl=66;
+BELL="no";          BELLl=no; # no bell font
+MINI="&k2S&l8D";MINIl=88; # 21.3ch/in  142ch/line  8 lines/inch
+VG14="no";          VG14l=no; # no vg14 font
+PR18="&k1S&l6D";PR18l=66; # 6ch/in     40ch/line   6 lines/inch
+XR18="no";          XR18l=no; # no xr18 font
+TPRBOLDON="(s1B";
+TPRBOLDOFF="(s0B";
+TPRUNDERON="&dD";
+TPRUNDEROFF="&d@";
+TPRBEGP="&s0C";
+TPRENDP="(s0B&d@"; # Turn off bold, underscore - then form feed
+TPRSTARTP=""; # printer does not have capability to (dis/en)able 
+TPRSTOPP="";  # print head
+style=vint;
+speed=40;
+buffer=1024;
+NEXTPRINTER
+|hpink.epson|epson|ctrmepson|
+printer=valid;
+VINT="2";VINTl=66; # 12chars/in 80char/line 6 lines/inch
+ELIT="2";ELITl=66;
+PICA="2";PICAl=66; # 10.7ch/in  71ch/line   6 lines/inch
+GOTH="2";GOTHl=66;
+MINI="0";MINIl=88;   # 21.3ch/in  142ch/line  8 lines/inch
+PR18="2";PR18l=66;   # 6ch/in     40ch/line   6 lines/inch
+TPRBOLDON="E";
+TPRBOLDOFF="F";
+TPRUNDERON="-1";
+TPRUNDEROFF="-0";
+TPRBEGP="";		# Don't need to add line wrap (default)
+TPRENDP="F-0";	# Turn off bold and underline when done
+TPRSTARTP=""; # printer does not have capability to (dis/en)able 
+TPRSTOPP="";  # print head
+style=vint;
+speed=40;
+buffer=1024;
+# cs="-7";		 7 bit character for HP inkjet
+# parity="o";		 odd parity for HP inkjet
+NEXTPRINTER
+|hpdeskjet|deskjet|
+printer=valid;
+ELIT="(s2T";ELITl=66;
+PICA="(s1T";PICAl=66;
+GOTH="(s6T";GOTHl=66;
+COUR="(s3T";COURl=66;
+HELV="(s4T";HELVl=66;
+TMRM="(s5T";TMRMl=66;
+SCPT="(s7T";SCPTl=66;
+PRST="(s8T";PRSTl=66;
+PR="(s11T";PRl=44;
+COND="(s85T";CONDl=44;
+TPRBOLDON="(s3B";
+TPRBOLDOFF="(s0B";
+TPRUNDERON="(s1S";
+TPRUNDEROFF="(s0S";
+TPRBEGP="&s0C";
+TPRENDP="&s1C";
+TPRSTARTP="";
+TPRSTOPP="";
+style=elit;
+speed=120;
+buffer=16000;
+NEXTPRINTER
+#
+# the following entry works for a Kodak Diconix Inkjet
+# configured serially in Epson mode.
+#
+|diconix|
+printer=valid;
+PICA="5!$";PICAl=66; # 10 chars 6 lines
+GOTH="5!$";PICAl=66; # 10 chars 6 lines
+ELIT="M";    ELITl=66; # 12 chars 6 lines
+VINT="M";    VINTl=66; # 12 chars 6 lines
+MINI="";   MINIl=88; # 19.2chars 8lines
+PR18="W1";   PR18l=66; # 6 chars 6 lines
+TPRBOLDON="E";
+TPRBOLDOFF="F";
+TPRUNDERON="4";
+TPRUNDEROFF="5";
+TPRBEGP="";
+TPRENDP="";
+TPRSTARTP="@";
+TPRSTOPP="";
+style=elit;
+speed=40;
+buffer=2048;
+NEXTPRINTER
+|apple|imagewriter|
+printer=valid;
+VINT="E";VINTl=66; # 12chars 6lines
+ELIT="E";ELITl=66;
+PICA="N";PICAl=66; # 10chars 6lines
+GOTH="N";GOTHl=66;
+BELL="e";BELLl=66; # 13.6chars 8lines
+MINI="Q";MINIl=66; # 16.7chars 8lines
+VG14="n";VG14l=66; # 5chars 4lines
+PR18="N";PR18l=66; # 6chars 4lines
+XR18="N";XR18l=66; # 6.8chars 4lines
+TPRBOLDON="!";
+TPRBOLDOFF="\"";
+TPRUNDERON="X";
+TPRUNDEROFF="Y";
+TPRBEGP="";
+TPRENDP="";
+TPRSTARTP="";
+TPRSTOPP="";
+style=bell;
+speed=40;
+buffer=2048;
+NEXTPRINTER
+|5620|5620nf|dmd|630|730|730R2|730+|
+printer=valid;
+VINT="";VINTl=66; # 12chars 6lines
+ELIT="";ELITl=66;
+PICA="";PICAl=66; # 10chars 6lines
+GOTH="";GOTHl=66;
+BELL="";BELLl=88; # 13.6chars 8lines
+MINI="";MINIl=88; # 16.7chars 8lines
+VG14="";VG14l=44; # 5chars 4lines
+PR18="";PR18l=44; # 6chars 4lines
+XR18="";XR18l=44; # 6.8chars 4lines
+TPRBOLDON="[7m";
+TPRBOLDOFF="[0m";
+TPRUNDERON="[4m";
+TPRUNDEROFF="[0m";
+TPRBEGP="";
+TPRENDP="";
+TPRSTARTP="";
+TPRSTOPP="";
+flow=notset;
+style=bell;
+speed=40;
+buffer=2048;
+NEXTPRINTER
+|emacsterm|viterm|
+printer=valid;
+TPRTERM=default; # specified as a printer - not a terminal interface.
+VINT="&F4!medium font!";VINTl=66; # 12chars 6lines
+ELIT="&F4!medium font!";ELITl=66;
+PICA="&F4!medium font!";PICAl=66; # 10chars 6lines
+GOTH="&F4!medium font!";GOTHl=66;
+BELL="&F4!medium font!";BELLl=88; # 13.6chars 8lines
+MINI="&F4!small font!";MINIl=88; # 16.7chars 8lines
+VG14="&F4!large font!";VG14l=44; # 5chars 4lines
+PR18="&F4!large font!";PR18l=44; # 6chars 4lines
+XR18="&F4!large font!";XR18l=44; # 6.8chars 4lines
+TPRBOLDON="R1";
+TPRBOLDOFF="R0";
+TPRUNDERON="U1";
+TPRUNDEROFF="U0";
+TPRBEGP="";
+TPRENDP="";
+TPRSTARTP="";
+TPRSTOPP="R0U0";
+flow=notset;
+style=bell;
+speed=40;
+buffer=2048;
+NEXTPRINTER
+----------
+|ctrm|ctrmink|ctrmtele|
+term=valid;
+# for putting ctrm into record mode
+TPRSTARTT="&p3p20C" # 3 in ascii is ''
+TPRSTOPT="\\n"
+TPRESC=one
+# for putting ctrm into logging mode
+# TPRSTARTT="&p11C";
+# TPRSTOPT="&p13C";
+# TPRESC=two
+NEXTTERM
+|5425|4425|5420|4420|tty5425|tty4425|tty5420|tty4420|
+|630|630dmd|630mtg|630-24|630dmd-24|630mtg-24|att630|att630-24|
+|730|730+|730R2|
+|vt100|emacsterm|viterm|
+term=valid;
+TPRSTARTT="[5i";
+TPRSTOPT="[4i";
+TPRESC=one
+NEXTTERM
+|default|
+term=valid;
+TPRSTARTT="";
+TPSTOPT="";
+TPRESC=one
+NEXTTERM

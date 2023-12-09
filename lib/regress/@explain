@@ -1,0 +1,49 @@
+#  @(#)  SID: 1.3;  module: @explain;  last changed: 6/26/91  20:23:55
+
+USAGE="USAGE:  $0  [ case ... ]"
+
+if test -z "$MODULES"; then
+    @error@ 1
+else
+    for ARG; do
+	case $ARG in
+	all)
+	    ARGLIST="[0-9].+([0-9])"
+	;;
+	ALL)
+	    ARGLIST="+([0-9]).+([0-9])"
+	;;
+	* )
+	    ARGLIST="$ARGLIST $1"
+	esac
+	shift
+    done
+    NN="+([0-9])"
+    if test -z "$ARGLIST"; then
+	if test -r $REGRESSDIR/@casenames; then
+	    ARGLIST=@($(<$REGRESSDIR/@casenames)|$NN).$NN
+	else
+	    ARGLIST=$NN.$NN
+	fi
+    fi
+    for MODULE in $MODULES; do
+	if test $MODCNT -gt 1; then
+	    echo
+	    echo "#########################"
+	    echo "# Module: $MODULE"
+	fi >&2
+	cd $REGRESSDIR/$MODULE/cases
+	for CASE in $(eval ls $ARGLIST 2>/dev/null | sort -n); do
+	    echo "\n> Case $CASE"
+	    if test ! -r $CASE; then
+		@error@ 7 $CASE
+	    else
+		sed  >&2 -n "/^# *[Pp]urpose: */ s//  /p" $CASE
+		if test $? -eq 1; then
+		    echo >&2 "  *unknown* -- no comments found in case file!"
+		fi
+	    fi
+	done
+	echo
+    done
+fi

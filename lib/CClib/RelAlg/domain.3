@@ -1,0 +1,104 @@
+.\" #ident "@(#) /sable/sdb/ra/rel/domain/s.domain.3"
+.\"
+.PH "'DOMAIN(3RA)'Relational Algebra C++ Library'DOMAIN(3RA)'"
+.PF "'09/91'All Rights Reserved'Page %'"
+.OF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.EF "'ra2'Copyright \(co 1991 AT&T'ra910000'"
+.SK
+.SK
+.VL 7 0
+.LI "\fBNAME\fP"
+.br
+Domain, Dname, Constraint - data types and operators for relational algebra
+.LI "\fBSYNOPSIS\fP"
+.br
+.EX
+\#include <relation.h>
+
+.SO dname.dd
+
+.SO domain.dd
+
+.SO constr.dd
+.EE
+.LI "\fBDESCRIPTION\fP"
+.br
+The Dname class provides assignment and comparison operators for Domain names.
+It consists of a character array, an operator = for assignment of strings or
+other Dnames to the Dname, and operators == and != for comparison of Dnames.
+When assigning strings, the NULL character pointer will be converted to a
+NULL (zero length) string and a string whose length is greater than LNAME-1
+characters (not including the terminator) will be truncated to LNAME-1
+characters.  Applications using relational algebra never need to refer to
+Dnames directly.
+.P
+Domains define the base set of values with which Attributes (fields) are
+associated.  Domains are conceptually similar to typedefs in C.  If two
+Attributes have the same Domain they can be renamed to each other, which
+allows them to be joined.  Domains are constructed by specifying
+a name, which is converted to Dname, a type and a length.
+The type may be either INT (short, long or int depending on the Int_t typedef),
+FLOAT (float or double depending on Float_t) or STRING (fixed length character
+arrays).  For INT and FLOAT the length argument to the constructor is ignored
+and the size of Int_t and Float_t, respectively, are used.
+For STRING the length argument may be any valid Dlength, but extremely large
+domains could cause memory allocation failures.
+Domains are most easily defined using the macros int_domain,
+float_domain, and string_domain, which map the internal Domain
+name to the C++ identifier and supply the size information for INT and FLOAT.
+.P
+If data needs to be exchanged between relations and other C++ objects, it
+is useful to typedef each defined Domain.  This simplifies the creation of
+equivalent structures (icons) for the relations.
+.P
+Constraints may be used to further restrict Domain values.  Constraints provide
+comparison through the Domain operators ==, !=, <=, >=, < and >.
+INT Domains may be compared to Int_t values, FLOAT Domains to Float_t
+values and STRING Domains to strings (char *) or Patterns.  Comparisons can
+be combined using the Constraint operators &&, \(br\(br and !.
+.P
+Constraints are applied automatically to Tuples in Relations.  They may also be
+applied to any appropriately typed data using the Domain::constrain() operation.
+If you call Domain::constrain() using the default print=TRUE, constrain() will
+print the R_CONSTRAINT_FAILED message if the constraint fails.
+Domain::constrain() calls Domain::constraint_string() to supplement the error
+message.  Application code may want to use Domain::constraint_string() to
+format their own error or explanatory message, particularly if they call
+Domain::constrain() with print=FALSE.  The string returned by
+constraint_string() should be deleted when the application is done with it.
+.LI "\fBDIAGNOSTICS\fP"
+.br
+The Domain constructor will fail and abort and relerr.errno will be set if one
+of the following are true:
+.VL 10 0
+.LI "[R_INVALID_LENGTH]"
+A STRING Domain is constructed with a length of 0, a FLOAT Domain is constructed
+with a length other than sizeof(Float_t) or an INT Domain is constructed with a
+length other than sizeof(Int_t).
+.LE
+.P
+The Domain operations constrain(), ==, !=, <=, >=, < and > will fail and abort
+and relerr.errno will be set if one of the following are true:
+.VL 10 0
+.LI "[R_NOT_STRING_DOMAIN]"
+A char * or Pattern is constrained on a FLOAT or INT Domain.
+.LI "[R_NOT_INT_DOMAIN]"
+An Int_t is constrained on a FLOAT or STRING Domain.
+.LI "[R_NOT_FLOAT_DOMAIN]"
+A Float_t is constrained on a INT or STRING Domain.
+.LE sp
+The Constraint && and \(br\(br operations will fail and abort
+and relerr.errno will be set if the following is true:
+.VL 30 0
+.LI "[R_MIXED_DOMAINS]"
+The left Domain is not equal to the right Domain.
+.LE
+.LI "\fBEXAMPLE\fP"
+.br
+.EX
+.SO domainE.ex
+.EE
+.LI "\fBSEE ALSO\fP"
+.br
+\*(Er, \*(Pn, \*(At, \*(Tp, \*(Ex, \*(Rl, intro(3RA)
+.LE

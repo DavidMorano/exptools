@@ -1,0 +1,132 @@
+
+
+
+     CCCCTTTTAAAAGGGGSSSS((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCTTTTAAAAGGGGSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ctags - create a tags file
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccttttaaaaggggssss [ ----BBBBFFFFaaaattttuuuuwwwwvvvvxxxx ] name ...
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_t_a_g_s makes a tags file for _e_x(1) from the specified C,
+          Pascal, Fortran, YACC, lex, and lisp sources.  A tags file
+          gives the locations of specified objects (in this case
+          functions and typedefs) in a group of files.  Each line of
+          the tags file contains the object name, the file in which it
+          is defined, and an address specification for the object
+          definition. Functions are searched with a pattern, typedefs
+          with a line number. Specifiers are given in separate fields
+          on the line, separated by blanks or tabs.  Using the _t_a_g_s
+          file, _e_x can quickly find these objects definitions.
+
+          If the ----xxxx flag is given, _c_t_a_g_s produces a list of object
+          names, the line number and file name on which each is
+          defined, as well as the text of that line and prints this on
+          the standard output.  This is a simple index which can be
+          printed out as an off-line readable function index.
+
+          If the ----vvvv flag is given, an index of the form expected by
+          _v_g_r_i_n_d(1) is produced on the standard output.  This listing
+          contains the function name, file name, and page number
+          (assuming 64 line pages).  Since the output will be sorted
+          into lexicographic order, it may be desired to run the
+          output through ssssoooorrrrtttt ----ffff.  Sample use:
+               ctags -v files | sort -f > index
+               vgrind -x index
+
+          Files whose names end in ....cccc or ....hhhh are assumed to be C source
+          files and are searched for C routine and macro definitions.
+          Files whose names end in ....yyyy are assumed to be YACC source
+          files.  Files whose names end in ....llll are assumed to be either
+          lisp files if their first non-blank character is `;', `(',
+          or `[', or lex files otherwise.  Other files are first
+          examined to see if they contain any Pascal or Fortran
+          routine definitions; if not, they are processed again
+          looking for C definitions.
+
+          Other options are:
+
+          ----FFFF   use forward searching patterns (/.../) (default).
+
+          ----BBBB   use backward searching patterns (?...?).
+
+          ----aaaa   append to tags file.
+
+          ----tttt   create tags for typedefs.
+
+
+
+     Page 1                                           (printed 4/9/91)
+
+
+
+
+
+
+     CCCCTTTTAAAAGGGGSSSS((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             CCCCTTTTAAAAGGGGSSSS((((1111))))
+
+
+
+          ----wwww   suppressing warning diagnostics.
+
+          ----uuuu   causing the specified files to be _u_p_d_a_t_e_d in tags, that
+               is, all references to them are deleted, and the new
+               values are appended to the file.  (Beware: this option
+               is implemented in a way which is rather slow; it is
+               usually faster to simply rebuild the _t_a_g_s file.)
+
+          The tag _m_a_i_n is treated specially in C programs.  The tag
+          formed is created by prepending _M to the name of the file,
+          with a trailing .c removed, if any, and leading pathname
+          components also removed.  This makes use of _c_t_a_g_s practical
+          in directories with more than one program.
+
+     FFFFIIIILLLLEEEESSSS
+          tags      output tags file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          ex(1), vi(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Ken Arnold; FORTRAN added by Jim Kleckner; Bill Joy added
+          Pascal and ----xxxx,,,, replacing _c_x_r_e_f; C typedefs added by Ed
+          Pelegri-Llopart.
+
+     BBBBUUUUGGGGSSSS
+          Recognition of ffffuuuunnnnccccttttiiiioooonnnnssss, ssssuuuubbbbrrrroooouuuuttttiiiinnnneeeessss and pppprrrroooocccceeeedddduuuurrrreeeessss for
+          FORTRAN and Pascal is done is a very simpleminded way.  No
+          attempt is made to deal with block structure; if you have
+          two Pascal procedures in different blocks with the same name
+          you lose.
+
+          The method of deciding whether to look for C or Pascal and
+          FORTRAN functions is a hack.
+
+          Does not know about #ifdefs.
+
+          Should know about Pascal types.  Relies on the input being
+          well formed to detect typedefs.  Use of -tx shows only the
+          last line of typedefs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                           (printed 4/9/91)
+
+
+

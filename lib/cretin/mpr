@@ -1,0 +1,34 @@
+# mpr - General purpose shell script for printing memos containing 
+# PIC figures, including CRETIN charts.
+# 
+# Connie O'Dell - March 28, 1989.
+#
+# Include a chart by putting ".so cretin.pic" in the memo.
+# You don't presently have a variety of fonts to choose from, 
+# only those supported by dx9700.
+#
+# If you want a proprietary marking at page bottoms, put .PM BP (or
+# whatever the appropriate marking is) near the beginning of your document.
+#
+# When CRETIN is run, it uses the ppr script, which is simpler than this
+# and doesn't put a page number at the top of the page.
+#
+echo "Outdated: use prtfmt"
+exit 2
+
+TF=/tmp/cretin_t.$LOGNAME
+DF=/tmp/cretin_d.$LOGNAME
+OF=/tmp/cretin_o.$LOGNAME
+case `type ndx9700` in
+	*not*found)	
+		font=X97.ti10p
+		DX9700="dx9700";;
+	*)
+		font=X97.ti10p
+		DX9700="ndx9700";;
+esac
+soexpand $* | pic -TX97 | tbl | eqn | troff  -T$font -mm - 2>$TF \
+| $DX9700 2>$DF | opr -r -txr -1 1>$OF 2>&1
+retstat=$?
+cat $TF | sort -u; cat $DF $OF; rm $TF $DF $OF
+exit $retstat

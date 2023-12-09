@@ -1,0 +1,19 @@
+% Compute the font construction parameters for the Computer
+% Modern Math Symbol family.  This is essentially the Computer Modern
+% Math Italic family with more parameters and a different
+% character set.
+
+input c-cmmi;
+
+% the following font parameters are explained in {\sl The \TeX book}, Appendix G
+subs:=             % subscript point size
+    (if design_size <   7.5: (5/design_size)
+ elseif design_size <   9.5: (6/design_size)
+ elseif design_size <  10.5: (7/design_size)
+ elseif design_size <  12.5: (8/design_size)
+ elseif design_size < 12.96: (1/1.44)
+                       else: (1/1.2)fi);
+
+rth#:=.4pt#;  % assume that rules will come from cmex10
+
+input c-sigma;  % compute sigma 8 through 22 from rth#, subs, etc.

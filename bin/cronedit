@@ -1,0 +1,52 @@
+#
+#	@(#) cronedit - Version 1.4, Date last delta: 11/27/91
+#
+# This shell script enables the user to edit their crontab file
+# without needing to remember to submit the edited file to
+# crontab.
+#
+# The EDITOR environment variable is used to determine the
+# preferred editor; the default editor is 'ed'.
+#
+# Author:	Alice J. Ramsay
+#
+
+# Make sure that the cronfile will only be accessible to the
+# owner.
+#
+umask 077
+
+if [ ! -s ${CRONTAB:=$HOME/.crontab} ]
+then
+	>$CRONTAB
+	if [ ${?} -ne 0 ]
+	then
+		echo "${0}: Could not create $CRONTAB; exiting command"
+		exit 2
+	fi
+fi
+
+# Get the current crontab contents, if there are none, create an
+# empty crontab file.
+#
+crontab -l >${CRONTAB} 2>/dev/null || >${CRONTAB}
+
+#
+# Put user into editor to change crontab file.
+#
+: ${EDITOR:=ed}
+echo "\nPutting you into editor '$EDITOR' to make your changes"
+$EDITOR ${CRONTAB}
+
+echo "\nDo you want your changes to be given to crontab? (y or n) \c\c"
+read ANSWER
+ANSWER=`echo ${ANSWER} | cut -c1 | tr "[A-Z]" "[a-z]"`
+
+if [ "${ANSWER}" = "y" ]
+then
+	crontab ${CRONTAB}
+	echo "\nCompleted successful update of crontab file for ${LOGNAME}"
+else
+	echo "\nNo changes given to crontab."
+	echo "Changed file is available in $CRONTAB"
+fi

@@ -1,0 +1,198 @@
+
+
+
+     CCCCSSSSTTTTYYYYLLLLEEEE((((1111))))                                               CCCCSSSSTTTTYYYYLLLLEEEE((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          cstyle - analyze C source programming style
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ccccssssttttyyyylllleeee [[[[----tttt]]]] [[[[----ssss]]]] [[[[----rrrr]]]] [[[[----aaaa]]]] <<<<ffffiiiilllleeee>>>> ............
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _C_s_t_y_l_e performs a textual analysis of a C program, yielding
+          a percentage `style score'.  Although program style is
+          largely a matter of personal taste, it is often a trade-off
+          between conciseness and intelligibility.  This tool attempts
+          to quantify those features of program layout and organiza-
+          tion that tend to make it more visually appealing and more
+          easily comprehensible.  A low style score may indicate a
+          program that will be difficult for other programmers to
+          understand and maintain.  The features that contribute to
+          the style score are based on proposals made by Rees (1982),
+          adapted for C rather than Pascal:
+
+          Module length -
+                      The average length, in non-blank lines, of func-
+                      tion definitions.
+
+          Identifier length -
+                      The average length, in characters, of user iden-
+                      tifiers.
+
+          Comments -  The percentage of all lines that contain com-
+                      ments
+
+          Indentation -
+                      The ratio of initial spaces to total number of
+                      characters.
+
+          Blank lines -
+                      The percentage of all lines that are blank.
+
+          Line length -
+                      The average number of non-blank characters per
+                      line.
+
+          Embedded spaces -
+                      The average number of embedded spaces per line.
+
+          Constant definitions -
+                      The percentage of all user identifiers that are
+                      defined constants.
+
+          Reserved words -
+                      The number of different reserved words and stan-
+                      dard functions used.
+
+
+
+
+     Page 1                                           (printed 5/4/92)
+
+
+
+
+
+
+     CCCCSSSSTTTTYYYYLLLLEEEE((((1111))))                                               CCCCSSSSTTTTYYYYLLLLEEEE((((1111))))
+
+
+
+          Included files -
+                      The extent to which a program is segmented by
+                      using #_i_n_c_l_u_d_e files.
+
+          Goto statements -
+                      The number of occurrences of a _g_o_t_o statement.
+
+          A score is associated with each of the above metrics, each
+          contributing a different maximum percentage to the final
+          score, in recognition of the fact that some factors are more
+          important than others. All scores are additive, with the
+          exception of the last, which is subtractive. Too high or too
+          low a figure for each metric is detrimental to the final
+          score.  The individual score is determined by reference to a
+          table which specifies, for each metric:
+
+               the point L, below which no score is obtained;
+
+               the point S, the start of the `ideal range' for the
+               metric;
+
+               the point F, the finish of the ideal range; and
+
+               the point H, above which no score is obtained.
+
+          Values between S and F score maximum marks; those between L
+          and S, and F and H, score marks depending on their exact
+          position within the range, linearly interpolated.  In the
+          output, the percentage of the maximum obtained is shown,
+          together with an indication of whether the score is above or
+          below the ideal range.
+
+          The values for all the parameters are controlled by a confi-
+          guration file.  By default, the file ._s_t_y_l_e__p_a_r_m in the home
+          directory is used.  This can be overwritten by setting an
+          environment variable _S_T_Y_L_E__P_A_R_M.  If a configuration file
+          cannot be found, a set of default values will be used.
+
+          The configuration file consists of lines of the following
+          form:
+
+               <_c_h_a_r_a_c_t_e_r_i_s_t_i_c> <_M> <_L> <_S> <_F> <_H>
+
+          where:
+
+          _c_h_a_r_a_c_t_e_r_i_s_t_i_c - is one of:
+
+               _C_H_A_R_A_C_T_E_R_S__P_E_R__L_I_N_E
+               _C_O_M_M_E_N_T__L_I_N_E_S
+               _I_N_D_E_N_T_A_T_I_O_N
+               _B_L_A_N_K__L_I_N_E_S
+               _S_P_A_C_E_S__P_E_R__L_I_N_E
+
+
+
+     Page 2                                           (printed 5/4/92)
+
+
+
+
+
+
+     CCCCSSSSTTTTYYYYLLLLEEEE((((1111))))                                               CCCCSSSSTTTTYYYYLLLLEEEE((((1111))))
+
+
+
+               _M_O_D_U_L_E__L_E_N_G_T_H
+               _R_E_S_E_R_V_E_D__W_O_R_D_S
+               _I_D_E_N_T_I_F_I_E_R__L_E_N_G_T_H
+               _G_O_T_O_S
+               _I_N_C_L_U_D_E__F_I_L_E_S
+               _D_E_F_I_N_E_S
+
+          and corresponds directly to the characteristics described
+          above.  Only the first three characters of the characteris-
+          tic name are compared and can be either lower or upper case.
+
+          _M - is a maximum score used for weighting
+
+          _L, _S, _F, and _H - are the table points described above.
+
+          The following switches can be specified on the command line:
+
+          -_t   print a total score for all files on the command line;
+               the default is to print separate score for each file.
+
+          -_r   print raw data in addition to the final score.
+
+          -_s   print statistics and the parameters used in addition to
+               the final score.
+
+          -_a   print all.  Equivalent to specifying both -_r and -_s.
+
+     RRRREEEEFFFFEEEERRRREEEENNNNCCCCEEEESSSS
+          Berry, R.E. and Meekings, B.A.E. (1985). `Style analysis of
+          C programs', _C_o_m_m. _A_C_M, 22228888, No. 1 (January).
+
+          Rees, M.J. (1982). `Automatic assessment aids for Pascal
+          programs', _A_C_M _S_i_g_p_l_a_n _N_o_t_i_c_e_s, 11117777, No. 10 (October).
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRRSSSS
+          Brian A.E. Meekings
+
+          Michael D. Soren
+
+          Tomasz D. Kudrycki
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                           (printed 5/4/92)
+
+
+

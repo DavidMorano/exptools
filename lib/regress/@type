@@ -1,0 +1,43 @@
+#  @(#)  SID: 1.3;  module: @type;  last changed: 3/17/91  11:25:39
+
+USAGE="USAGE:  $0  case [ case ...]"
+
+if test -z "$MODULES"; then
+    @error@ 1
+elif test $# -eq 0; then
+    echo "$USAGE"
+    @error@ 2
+    exit 2
+else
+    for ARG; do
+	case $ARG in
+	all)
+	    ARGLIST="[0-9].+([0-9])"
+	;;
+	ALL)
+	    ARGLIST="+([0-9]).+([0-9])"
+	;;
+	* )
+	    ARGLIST="$ARGLIST $1"
+	esac
+	shift
+    done
+    for MODULE in $MODULES; do
+	if test $MODCNT -gt 1; then
+	    echo "\n"
+	    echo "#########################"
+	    echo "# Module: $_module"
+	    echo "#########################"
+	fi >&2
+	cd $REGRESSDIR/$MODULE/cases
+	cases=`eval ls $ARGLIST 2>/dev/null | sort -n`
+	for case in $cases; do	
+	    echo
+	    echo "> Module '$MODULE'; Case $case"
+	    echo "- - - - - - - - - - - - - - - -"
+	    cat $case
+	    echo "-------------------------------"
+	done
+    done
+    echo
+fi

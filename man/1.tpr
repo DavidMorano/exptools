@@ -1,0 +1,463 @@
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          tpr - flow control and format output for desktop printers.
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          tpr [-y style] [-s speed] [-T printer] [-h] [-B buffer_size]
+          [-N|-F] [-H] [-o offset] [-7|-8] [-p parity] [-V] [-P]
+          [file/s]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _T_p_r provides _o_p_r(_1) like specified fonts for _T_e_l_e_t_y_p_e _5_3_1_0
+          _o_r _5_3_2_0 printers and _H_P _t_h_i_n_k_j_e_t printers and others.  Use
+          the -_P option to know which printers are available.  Also it
+          does special handshaking with _H_e_w_l_e_t_t-_P_a_c_k_a_r_d (_H_P) printers
+          in its terminals.  It can take input from stdin or from
+          file/s.
+
+          _T_p_r helps to prevent printer buffer overflow by providing
+          flow control.
+
+          _T_p_r also tries to put terminals into media copy mode, which
+          means that the terminal will not read any ascii but instead
+          send all input to the printer port. Also this prevents the
+          user from having to change any terminal modes to print hard
+          copys.  The terminals to put into media copy mode is also
+          specified in the tpr.info file.
+
+          The _H_P _t_h_i_n_k_j_e_t has only seven bit size characters for
+          parity checking.  To remedy this, tpr gives the option to
+          change character size and parity to fit the users needs.
+          This is also defined in the tpr.info file. (See stty(1) or
+          termio(7) for details.)
+
+          _T_p_r will support printing for an MSDOS PC running _c_t_r_m as
+          the communications program. The printer can be specified as
+          _c_t_r_m_i_n_k or _c_t_r_m_t_e_l_e _o_r _t_h_e _T_E_R_M _c_a_n _b_e
+
+          Automatic logging of text to the printer will be attempted
+          if possible.  This will prevent extra text, such as prompts,
+          from appearing on the printer.  Of course terminals with
+          media copy mode this is not necessary.  At the moment the
+          only printers tpr knows with this feature is a teletype 5310
+          and 5320.
+
+          With the _H_e_w_l_e_t_t _P_a_c_k_a_r_d terminal printers, _t_p_r will send
+          either two seconds or 20 lines, which ever is less text to
+          the terminal.  Then _t_p_r will send the command to print that
+          page waiting for it to respond.  Since the terminal is not
+          logging bottom,  then there is no need to slow output,
+          because the terminal tells _t_p_r when it can start again.
+
+          _T_p_r gets its information from a file, named _t_p_r._i_n_f_o. It
+          resides in the directory, $_T_O_O_L_S/_l_i_b/_t_p_r. _T_p_r._i_n_f_o can be
+
+
+
+     Page 1                                          (printed 7/25/91)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+          modified by the user in a fairly easy manner.  The user can
+          specify defaults in this file or even include a printer that
+          _t_p_r does not even know about.  In case of a new printer
+          type, let the provider know and this information could be
+          updated in the official file.  For more information,
+          _t_p_r._i_n_f_o explains what it needs in an opening comment.
+
+        OOOOPPPPTTTTIIIIOOOONNNNSSSS::::
+          ----yyyy _s_t_y_l_e    The available styles for the _T_e_l_e_t_y_p_e printer
+                      are:
+                      ssssttttyyyylllleeee   cccchhhhaaaarrrrssss////iiiinnnn   lllliiiinnnneeee////iiiinnnn   cccchhhhaaaarrrrssss////lllliiiinnnneeee   lllliiiinnnneeeessss////ppppaaaaggggeeee
+8                      ____________________________________________________
+                      vint    12         6         96           66
+                      elit    12         6         96           66
+                      pica    10         6         80           66
+                      goth    10         6         80           66
+                      bell    13.6       8         108          88
+                      mini    16.7       8         132          88
+                      vg14    5          4         40           44
+                      pr18    6          4         48           44
+                      xr18    6.8        4         54           44
+
+                      The available styles for the _H_P _t_h_i_n_k_j_e_t printer
+                      are:
+                      ssssttttyyyylllleeee   cccchhhhaaaarrrrssss////iiiinnnn   lllliiiinnnneeee////iiiinnnn   cccchhhhaaaarrrrssss////lllliiiinnnneeee   lllliiiinnnneeeessss////ppppaaaaggggeeee
+8                      ____________________________________________________
+                      vint    12         6         80           66
+                      elit    12         6         80           66
+                      pica    10.7       6         71           66
+                      goth    10.7       6         71           66
+                      mini    21.3       8         142          88
+                      pr18    6          6         40           66
+
+                      The styles are approximations of the standard
+                      XXXXeeeerrrrooooxxxx 9999777700000000 styles. The default style is bell for
+                      the _T_e_l_e_t_y_p_e printer and vint or elit for the _H_P
+                      _t_h_i_n_k _j_e_t printer.
+
+                      The vaiable style can be used in the tpr.info
+                      file to specify this option.  Also other styles
+                      can be customized in the tpr.info file for
+                      different printers.  The comment in the tpr.info
+                      file explains how to do this.
+
+          ----ssss _s_p_e_e_d    _S_p_e_e_d is the speed of the printer in chars/sec.
+                      The valid numbers are in the range 1 through
+                      160.  The normal default is 60.  This is
+                      accomplished by sending enough characters to
+                      fill the printer buffer then waiting a long
+                      enough time for the buffer to empty. This scheme
+                      is needed because most hardware configurations
+                      do not allow for flow control from the printer.
+                      This often results in overflowing the printer
+
+
+
+     Page 2                                          (printed 7/25/91)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+                      buffer and garbaged output. By use of the ----ssss
+                      option the flow rate of characters (known as
+                      software flow control) can be slowed to inhibit
+                      overflow or quickened if the the wait time is
+                      long.  The vaiable speed can be used in the
+                      tpr.info file to specify this option.
+
+          ----TTTT _p_r_i_n_t_e_r  _P_r_i_n_t_e_r can be one of hp - for an HP terminal
+                      printer, hpinkjet - for the HP think jet
+                      printer, ctrmink - for the HP think jet printer
+                      on a PC computer, ctrmtele - for the teletype
+                      printer on a PC computer, or the default,
+                      teletype 5310 or 5320.
+
+          ----hhhh          The ----hhhh option will translate underscoring or
+                      bold sequences into appropriate escape sequences
+                      for the appropriate printer.
+
+          ----BBBB _b_u_f_f_e_r__s_i_z_e
+                      _B_u_f_f_e_r__s_i_z_e is the size of the input buffer of
+                      the printer. This option is ignored for an HP
+                      printer, is 800 for the HP think jet, and is
+                      2000 for the teletype.  The vaiable buffer can
+                      be used in the tpr.info file to specify this
+                      option.
+
+          ----NNNN||||----FFFF       In case the hardware configuration is set up to
+                      do flow control then ----NNNN option will turn the
+                      software flow-control off to let hardware do the
+                      it. When this option is set the ----BBBB aaaannnndddd ----ssss
+                      options are ignored.  The default, ----FFFF,,,, means
+                      that the software will send so many characters
+                      and wait for a specific time.  The vaiable flow
+                      can be set to notset in the tpr.info file to
+                      indicate the -N option.  If it is set to set, it
+                      will indicate the -F option.
+
+          ----HHHH          The ----HHHH option is used to print a document in
+                      high resolution, meaning that the entire
+                      document is printed in bold.  This gives better
+                      letter quality. Only the teletype or HP think
+                      jet is supported.
+
+          ----oooo _o_f_f_s_e_t   _O_f_f_s_e_t is the size of the left margin in spaces.
+                      Its default is 0.
+
+          ----7777||||----8888       These options refer to the character size for
+                      communications.  Character size 8 is the
+                      default.  The vaiable cs can be set to -7 or -8
+                      in the tpr.info file to specify this option.
+
+          ----pppp _p_a_r_i_t_y   _P_a_r_i_t_y is the parity the user can specify.
+
+
+
+     Page 3                                          (printed 7/25/91)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+                      Valid  values are: e for even, o for odd, and n
+                      for none.  Parity none is the default.  The
+                      vaiable parity can be used in the tpr.info file
+                      to specify this option.
+
+          ----VVVV          This will dump the version of all the files that
+                      tpr knows about.
+
+          ----PPPP          This will dump the known printers in the
+                      tpr.info file to stdout.
+
+        EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS::::
+          These are variables, exported from the shell, can be used to
+          customize _t_p_r to your liking.
+
+          TTTTPPPPRRRRPPPPRRRRIIIINNNNTTTTEEEERRRR    This variable specifies the default for the ----TTTT
+                        option.
+
+          TTTTPPPPRRRRBBBBUUUUFFFFFFFFEEEERRRR     This variable specifies the default for the ----BBBB
+                        option.
+
+          TTTTPPPPRRRRSSSSTTTTYYYYLLLLEEEE      This variable specifies the default for the ----yyyy
+                        option.
+
+          TTTTPPPPRRRRSSSSPPPPEEEEEEEEDDDD      This variable specifies the default for the ----ssss
+                        option.
+
+          fffflllloooowwwwccccoooonnnnttttrrrroooollll   When this variable equals nnnnoooottttsssseeeetttt then software
+                        flow control will not occur. When it is
+                        anything else ( say sssseeeetttt ) then software flow
+                        control will occur.
+
+          TTTTPPPPRRRRBBBBEEEEGGGG        When this variable is set then it will be
+                        echoed out at the beginning instead of the
+                        default escape codes.  TTTThhhhiiiissss mmmmaaaayyyy bbbbeeee sssseeeetttt aaaatttt tttthhhheeee
+                        uuuusssseeeerrrr''''ssss rrrriiiisssskkkk....
+
+          TTTTPPPPRRRREEEENNNNDDDD        When this variable is set then it will be
+                        echoed out at the end instead of the default
+                        escape codes.  TTTThhhhiiiissss mmmmaaaayyyy bbbbeeee sssseeeetttt aaaatttt tttthhhheeee uuuusssseeeerrrr''''ssss
+                        rrrriiiisssskkkk....
+
+          TTTTPPPPRRRRHHHHIIIIGGGGHHHHLLLLIIIIGGGGHHHHTTTT  When this variable equals set then
+                        highlighting will take place. See the ----hhhh
+                        option.
+
+          TTTTPPPPRRRRHHHHIIIIGGGGHHHHRRRREEEESSSS    When this variable equals set then the
+                        document will be printed in high resolution.
+                        See the ----HHHH option.
+
+          TTTTPPPPRRRRCCCCSSSS         When this variable is set to either -7 or -8,
+                        this will be the default for the character
+
+
+
+     Page 4                                          (printed 7/25/91)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+                        size.
+
+          TTTTPPPPRRRRPPPPAAAARRRRIIIITTTTYYYY     When this variable is set to e, o, or n then
+                        this will be the default parity.
+
+          TTTTPPPPRRRRLLLLIIIIBBBB        A file can be used also to specify defaults or
+                        install a printer that _t_p_r does not understand
+                        normally. To do this export TTTTPPPPRRRRLLLLIIIIBBBB and set it
+                        to a directory name containing the file named
+                        ttttpppprrrr....iiiinnnnffffoooo....
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          # To print to a teletype printer removing all unprintables.
+          ttttpppprrrr ffffiiiilllleeee
+
+          # To print to a teletype showing unprintables as printables.
+          (See _e_p_r(_1)).
+          eeeepppprrrr ffffiiiilllleeee |||| ttttpppprrrr ----yyyyppppiiiiccccaaaa
+
+          # To print bold and underscoring to a teletype.
+          ttttoooooooollllmmmmaaaannnn ttttpppprrrr |||| ttttpppprrrr ----ssss 44440000 ----hhhh ----yyyy vvvviiiinnnntttt
+
+          # To print bold and underscoring to HP terminal printer
+          ttttoooooooollllmmmmaaaannnn ttttpppprrrr |||| ttttpppprrrr ----TTTThhhhpppp ----hhhh
+
+          # If in _l_a_y_e_r_s(_1)/_d_m_d_p_s(_1) this might be appropriate:
+          ttttpppprrrr ----yyyyggggooootttthhhh ffffiiiilllleeee |||| ddddmmmmddddpppprrrr
+
+          # or if dmdps does adequate flow control:
+          ttttpppprrrr ----NNNN ----yyyymmmmiiiinnnniiii ffffiiiilllleeee||||ddddmmmmddddpppprrrr
+
+          # To change the tpr.info for a different printer.
+          # Refer to $TOOLS/lib/tpr/tpr.info for explanations of
+          variables.
+          eeeexxxxppppoooorrrrtttt TTTTPPPPRRRRLLLLIIIIBBBB;;;;TTTTPPPPRRRRLLLLIIIIBBBB====....::::$$$$HHHHOOOOMMMMEEEE////bbbbiiiinnnn::::$$$$TTTTOOOOOOOOLLLLSSSS////lllliiiibbbb////ttttpppprrrr;;;;
+          ttttpppprrrr ffffiiiilllleeee
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 5                                          (printed 7/25/91)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+     WWWWIIIIRRRREEEE HHHHAAAARRRRNNNNEEEESSSSSSSS
+          The following diagram shows how to build a wiring harness to
+          parallel the printer with the terminal.
+           RS-232                                   RS-232
+          connector                                 connector to
+                                                    terminal
+          -------                                   -------
+          |     |   1                           1   |     |
+          |     |-----------------------------------|     |
+          |     |   2                           2   |     |
+          |     |-----------------------------------|     |
+          |     |   3                           3   |     |
+          |     |----------------x------------------|     |
+          |     |   7            |              7   |     |
+          |     |-------------x--|------------------|     |
+          |     |   20        |  |             20   |     |
+          |     |-------------|--|------------------|     |
+          |     |             |  |                  |     |
+          -------             |  |                  -------
+          from modem          |  |
+             or               |  |
+          datakit             |  |                  -------
+                              |  |              3   |     |
+                              |  |------------------|     |
+                              |                     |     |
+                              |                     |     |
+                              |                 7   |     |
+                              |---------------------|     |
+                                                    |     |
+                                                    |     |
+                                                    |     |
+                                                    -------
+                                                    RS-232
+                                                    connector to
+                                                    printer
+
+          This will allow the printer to log text. The option ''''DDDDCCCC22224444''''
+          must be ''''YYYYEEEESSSS'''' for _t_p_r to turn the logging on and off. This
+          is necessary because all characters coming to the screen
+          will also be sent to the printer. So with the option set to
+          ''''YYYYEEEESSSS'''' the script will be able to disable the print head and
+          only print what you want printed.  When first powering up
+          the printer it will be logging text. To turn it off send a
+          ''''ccccoooonnnnttttrrrroooollll----TTTT'''' and this will disable the printer. The options
+          CCCCMMMMOOOODDDD must be NNNNOOOOMMMMDDDD,,,, PPPPRRRRTTTTYYYY and BBBBAAAAUUUUDDDD must be that of the
+          terminal.  You might consider storing these under the
+          alternate options. The DDDDCCCC22224444 option is used for this harness.
+          If your configuration uses a printer port then this option
+          can be ''''NNNNOOOO''''....
+
+          NNNNOOOOTTTTEEEE:::: TTTThhhhiiiissss hhhhaaaarrrrnnnneeeessssssss wwwwiiiillllllll nnnnooootttt wwwwoooorrrrkkkk wwwwiiiitttthhhhiiiinnnn _l_a_y_e_r_s.
+
+
+
+
+     Page 6                                          (printed 7/25/91)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))              UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))               TTTTPPPPRRRR((((1111))))
+
+
+
+     FFFFIIIILLLLEEEESSSS
+          $TOOLS/lib/tpr/1000     to slow input for printer.
+          $TOOLS/lib/tpr/tprnice  filter to optimize bold and
+          underscores.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          pr(1), col(1), dmdpr(5620 DMD), dmdps(5620 DMD), hp(1),
+          stty(1), termio(7)
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          When making font size changes certain escape sequences are
+          sent (See the users guide to the 5310 and 5320 printer
+          section 7). Unfortunately some terminals also interpret
+          these sequences and does other things with them. If you
+          would like to be able to use the slowing mechanism the
+          command is $TOOLS/lib/tpr/1000 (give the argument -z to find
+          out how it works). If you would like to be able to use the
+          highlighting mechanism the command is $TOOLS/lib/tpr/tprnice
+          (give the argument -z to find out how it works).
+
+
+          version 1.tpr  sid: 1.21 date: 7/25/91 time: 00:36:53 delta: 7/25/91 00:21:39";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 7/25/91)
+
+
+

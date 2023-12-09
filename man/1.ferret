@@ -1,0 +1,396 @@
+
+
+
+     FFFFEEEERRRRRRRREEEETTTT((((1111))))                   ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                  FFFFEEEERRRRRRRREEEETTTT((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ferret - mail file pruner
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ffffeeeerrrrrrrreeeetttt [ ----aaaallllnnnnoooopppprrrrssssvvvvVVVV ] [ ----ffff mail file ] [ ----cccc command file ] [
+          ----dddd directory ] [ ----eeee cmd expr ]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          FFFFeeeerrrrrrrreeeetttt is a utility that parses a mail format file into
+          messages and then performs a set of tests on each message.
+          If a given test succeeds, the associated action is performed
+          on the message.  The message will then be removed from the
+          mail file unless otherwise indicated.
+
+          Each test and action pair comprises a ffffeeeerrrrrrrreeeetttt command:
+               [+]uuuusssseeeerrrr::::tttteeeesssstttt::::aaaaccccttttiiiioooonnnn
+
+          The uuuusssseeeerrrr field is used to match the _f_r_o_m field from the
+          message.  A null uuuusssseeeerrrr field will match any message.  The
+          shell metacharacters ? and * can be used to match one
+          character and zero or more characters, respectively.  An !
+          must be matched explicitly.  Thus, the string _i_h_u_g_e!* would
+          match all messages sent from machine _i_h_u_g_e.
+
+          The tttteeeesssstttt field specifies the UNIX command to be evaluated.
+          This test may access the whole message, the message text,
+          and/or values of the mail header lines (see ESCAPES below).
+          The default test is ttttrrrruuuueeee.
+
+          The aaaaccccttttiiiioooonnnn field specifies the UNIX command to be evaluated
+          upon success of the indicated test.  This action has access
+          to all the information available to the test.  The default
+          action is no action.
+
+          For a given message, ffffeeeerrrrrrrreeeetttt will start at the beginning of
+          the command list, trying to match the _f_r_o_m line of the
+          message with the uuuusssseeeerrrr field of the command.  If the match
+          succeeds, the test will be executed.  If the test succeeds,
+          the action will be executed. Failure of the match, the test,
+          or the action will cause ffffeeeerrrrrrrreeeetttt to continue to the next
+          command.
+
+          Once a message has successfully passed the action, it is
+          marked as processed.  Processed messages will be removed
+          from the mail file unless the command contains a + as the
+          first character.
+
+     EEEESSSSCCCCAAAAPPPPEEEESSSS
+          FFFFeeeerrrrrrrreeeetttt commands support a number of %-escapes to make
+          information available to the tttteeeesssstttt and the aaaaccccttttiiiioooonnnn.  The
+          supported escapes are:
+
+
+
+
+     Page 1                                          (printed 7/23/90)
+
+
+
+
+
+
+     FFFFEEEERRRRRRRREEEETTTT((((1111))))                   ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                  FFFFEEEERRRRRRRREEEETTTT((((1111))))
+
+
+
+                    %%%%dddd   Returns the message date string.
+
+                    %%%%FFFF   Returns the full _f_r_o_m mail path.
+
+                    %%%%ffff   Returns the portion of the _f_r_o_m mail path
+                         matching the uuuusssseeeerrrr field.
+
+                    %%%%ssss   Returns the _s_u_b_j_e_c_t string of the message.
+
+                    %%%%mmmm   Returns a filename containing just the body
+                         of the message.
+
+                    %%%%MMMM   Returns a filename containing the entire
+                         message (headers and all).
+
+                    %%%%HHHH   Returns a filename containing the message
+                         header.
+
+                    %%%%%%%%   Returns a single %.  This escape must be used
+                         if any %s need to be included in the tttteeeesssstttt and
+                         aaaaccccttttiiiioooonnnn fields.
+
+                    %%%%::::   Returns a colon.  This escape must be used if
+                         any colons need to be included in the tttteeeesssstttt
+                         and aaaaccccttttiiiioooonnnn fields.
+
+          In addition to these escapes, the aaaaccccttttiiiioooonnnn supports several
+          special forms.  These special forms are used to aid in
+          moving messages to files.
+
+                    %%%%mmmm>>>> _f_i_l_e
+                         Place the message text in the file _f_i_l_e.
+
+                    %%%%mmmm>>>>>>>> _f_i_l_e
+                         Append the message text to the file _f_i_l_e.
+
+                    %%%%MMMM>>>> _f_i_l_e
+                         Place the full message (including headers) in
+                         the file _f_i_l_e.
+
+                    %%%%MMMM>>>>>>>> _f_i_l_e
+                         Append the full message (including headers)
+                         to the file _f_i_l_e.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          FFFFeeeerrrrrrrreeeetttt supports the following options:
+
+                    ----aaaa   Process all messages in the mail file.  The
+                         default is to process only the new messages.
+
+                    ----llll   Provide a list of the messages in the mail
+                         file.  No further processing of the mail file
+
+
+
+     Page 2                                          (printed 7/23/90)
+
+
+
+
+
+
+     FFFFEEEERRRRRRRREEEETTTT((((1111))))                   ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                  FFFFEEEERRRRRRRREEEETTTT((((1111))))
+
+
+
+                         will be done.  When specified without the ----aaaa
+                         option, this option will list only the new
+                         messages.  That is, those messages that have
+                         not been processed with ffffeeeerrrrrrrreeeetttt or with a mail
+                         reader.
+
+                    ----nnnn   Indicate what action would be taken if ffffeeeerrrrrrrreeeetttt
+                         were executed without the ----nnnn option.  This
+                         option is similar to the ----nnnn option of
+                         make(1).
+
+                    ----oooo   Send output from the test and action to
+                         standard output.  The default is to redirect
+                         stdout and stderr to /dev/null.
+
+                    ----rrrr   Process the mailbox in read-only mode.  This
+                         means that ffffeeeerrrrrrrreeeetttt does all the specified
+                         processing, including writing messages into
+                         files, but the ffffeeeerrrrrrrreeeetttt'd temporary mailbox is
+                         not copied back into the mailbox.  Thus, when
+                         run on a mailbox, the mailbox will not be
+                         changed (no messages will be removed and no
+                         Status lines added).  When run on stdin, no
+                         messages will be written to stdout.  This
+                         option is useful for repetitive processing of
+                         a mailbox.
+
+                    ----ssss   Read mail file input from stdin and write
+                         output to stdout.  This option is ignored if
+                         the ----ffff option is specified.
+
+                    ----pppp   This option is the same as the -s option
+                         except that I assumes that the input is a
+                         single message.  This option is intended for
+                         use with mailers that allow the user to
+                         specify a program to which mail should be
+                         piped.  This option prepends all lines in the
+                         message text beginning with FFFFrrrroooommmm with a >>>>, to
+                         support forwarded messages.
+
+                    ----vvvv   Provide a verbose description of the
+                         operation on a message by message basis.
+
+                    ----VVVV   Print the ffffeeeerrrrrrrreeeetttt version number.  No mail
+                         file processing will be done.
+
+
+                    ----ffff _m_a_i_l _f_i_l_e
+                         Specifies the mail file from which input is
+                         to be taken.  If this option is not specified
+                         and the ----ssss or ----pppp option is not used, the
+                         input file defaults to the file indicated by
+
+
+
+     Page 3                                          (printed 7/23/90)
+
+
+
+
+
+
+     FFFFEEEERRRRRRRREEEETTTT((((1111))))                   ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                  FFFFEEEERRRRRRRREEEETTTT((((1111))))
+
+
+
+                         the user's MMMMAAAAIIIILLLL environment variable.  If
+                         this variable is unset or null, the input
+                         file is taken to be ////uuuussssrrrr////mmmmaaaaiiiillll////${_L_O_G_N_A_M_E}.
+
+                    ----cccc _c_o_m_m_a_n_d _f_i_l_e
+                         Specifies the file from which the commands
+                         are to be read.  If this option is not
+                         specified and the ----eeee option is not used, the
+                         command file defaults to the file indicated
+                         by the FFFFEEEERRRRRRRREEEETTTTRRRRCCCC environment variable.  If
+                         this variable is unset or null, the input
+                         file is taken to be $$$${{{{HHHHOOOOMMMMEEEE}}}}////....ffffeeeerrrrrrrreeeetttt____rrrrcccc.
+
+                    ----eeee _c_o_m_m_a_n_d
+                         Specifies a ffffeeeerrrrrrrreeeetttt command to be used.  This
+                         option can be used to augment the commands
+                         from a command file or it can be used alone.
+                         Commands specified with the ----eeee option are
+                         executed before those in a specified command
+                         file.  Multiple ----eeee options may be specified.
+
+                    ----dddd _d_i_r_e_c_t_o_r_y
+                         Specifies the directory in which the commands
+                         are to be executed.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          $ ferret -V
+          ferret 3.1
+
+          # list new (unprocessed) messages in $MAIL
+          #
+          $ ferret -l
+
+          # list all messages in $MAIL
+          #
+          $ ferret -la
+
+          $ cat cmdfile1
+          # Remove non-error line printer messages
+          #
+          lp:grep 'Job.*to printer' %m:
+          $ ferret -c cmdfile1
+
+          $ cat cmdfile2
+          # Automatically save messages about created MRs in
+          # $HOME/mrs/mrlog
+          #
+          :grep 'MR.*created' %m:%m>>mrlog
+          $ ferret -c cmdfile2 -d mrs
+
+          $ cat cmdfile3
+          # Remove messages from UUCP uucleans
+
+
+
+     Page 4                                          (printed 7/23/90)
+
+
+
+
+
+
+     FFFFEEEERRRRRRRREEEETTTT((((1111))))                   ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                  FFFFEEEERRRRRRRREEEETTTT((((1111))))
+
+
+
+          #
+          uucp:[ '%s' = "uuclean ran" ]:
+          $ ferret -c cmdfile3
+
+          $ cat cmdfile4
+          # Warn me of messages from my_boss
+          #
+          +my_boss::echo "\07\07Mail from %f has arrived!!\07\07" > /dev/tty
+          $ ferret -c cmdfile4
+          Mail from my_boss has arrived!!
+
+          $ cat cmdfile5
+          # Automatic request processing
+          #
+          :[ '%s' = "Request Document" ]:mail %F < Doc_file
+          $ ferret -c cmdfile5
+
+          # Print all the messages (old and new) from 'user1' in mailfile
+          $ ferret -a -f mailfile -e"+user1::%M>/dev/tty"
+               ...
+          $
+
+          # Show the subject of all messages from the system _f_o_o
+          $ ferret -a -f mailfile -e"+foo!*::echo '%f %s'>/dev/tty"
+               ...
+          $
+
+          # Print messages from user in 'file' without changing 'file'
+          $ ferret -o -a -r -f file -e "user::cat %M"
+                - or -
+          $ ferret -s -o -a -r -e "user::cat %M" < file
+                - or -
+          $ ferret -s -a -e "+user::" -e:: < file
+
+          # Save all messages sent to net-dept
+          $ ferret -e ":grep '^To%:.*net-dept' %H:%M>>deptlog"
+          $
+
+          # forward mail to ferret
+          #    use $HOME/fermail as the save directory
+          $ forward -p $TOOLS/bin/ferret -p -c fermail/cmdfile -d fermail
+
+     FFFFIIIILLLLEEEESSSS
+          $$$${{{{FFFFEEEERRRRRRRREEEETTTTRRRRCCCC}}}}
+               This specifies the default location of the command
+               file.
+
+          $$$${{{{HHHHOOOOMMMMEEEE}}}}////....ffffeeeerrrrrrrreeeetttt____rrrrcccc
+               This is the default location of the command file if
+               FFFFEEEERRRRRRRREEEETTTTRRRRCCCC is unset or null.
+
+          $$$${{{{MMMMAAAAIIIILLLL}}}}
+
+
+
+     Page 5                                          (printed 7/23/90)
+
+
+
+
+
+
+     FFFFEEEERRRRRRRREEEETTTT((((1111))))                   ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))                  FFFFEEEERRRRRRRREEEETTTT((((1111))))
+
+
+
+               This specifies the default location of the mail file.
+
+          ////uuuussssrrrr////mmmmaaaaiiiillll////$$$${{{{LLLLOOOOGGGGNNNNAAAAMMMMEEEE}}}}
+               This is the default location of the mail file if MMMMAAAAIIIILLLL
+               is unset or null.
+
+          $$$${{{{FFFFEEEERRRRRRRREEEETTTTDDDDIIIIRRRR}}}}
+               This environment variable contains the directory in
+               which the commands are to be executed.
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          Michael H. Comer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                          (printed 7/23/90)
+
+
+

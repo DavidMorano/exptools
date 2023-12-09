@@ -1,0 +1,132 @@
+
+
+
+     aaaalllltttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           aaaalllltttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          alter - alter the value of an attribute in one or more
+          records
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _a_l_t_e_r [-q] [-Itable] [-Otable] aname _t_o value _i_n table1 \
+           [_i_n_t_o table2] [where clause]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _a_l_t_e_r command changes the value of an attribute (aname)
+          to a particular value (value) for those records that satisfy
+          the _w_h_e_r_e condition in the specified table.  If the field to
+          be altered is a fixed width field and the new value to be
+          substituted is of shorter length, the value is padded on the
+          right with blanks; a new value of longer length than the
+          field width is an error and the program exits.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          This command is considered an update command if a table name
+          is given and the "into clause" is not specified.  In this
+          case, a temporary file is updated (i.e., the records
+          satisfying the _w_h_e_r_e clause are altered), the original file
+          is removed, and the temporary file is linked to the original
+          table, thus updating the table.  Only one user may update
+          the table at a time (a lock file is used to enforce this)
+          but any number of users may read the table.  The user must
+          have write permission in the directory containing the table,
+          but needs only read permission on the table itself.  The
+          group and user identification, and mode of the table are
+          preserved.
+
+          If an "into clause" is specified, the altered table is
+          written into the named table and a corresponding descrition
+          file is created in the current directory.  The input table
+          is not locked during the update.  An error is printed if the
+          output table already exists.  If _o_n_t_o is specified instead
+          of _i_n_t_o, the output is appended to the table if it already
+          exists or the table created and written if it does not
+          exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.  The -O
+          option must be used to specify the name of a table from
+          which the output description file name can be determined.
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     aaaalllltttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))           UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll           aaaalllltttteeeerrrr((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          The description file will be created in the current
+          directory.  The output description file is needed only if
+          the output of this command is being piped to the input of
+          another UNITY command.
+
+          If the "-q" option is specified, the program does not print
+          out the number of records that are altered.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          $ alter city to nice in S where sname leq jones
+          alter: 1 records altered in S.
+
+          BEFORE:                        AFTER:
+
+          |-------------------------|    |-------------------------|
+          |snu|sname     |city      |    |snu|sname     |city      |
+          |mbe|          |          |    |mbe|          |          |
+          |r  |          |          |    |r  |          |          |
+          |-------------------------|    |-------------------------|
+          |s1 |smith     |london    |    |s1 |smith     |london    |
+          |s2 |jones     |paris     |    |s2 |jones     |nice      |
+          |s3 |blake     |paris     |    |s3 |blake     |paris     |
+          |-------------------------|    |-------------------------|
+
+     FFFFIIIILLLLEEEESSSS
+          unity/alter.c, zalter.c - the C source program
+          bin/alter - the executable program
+          /tmp/???????? - the lockfile
+          <directory of table>/atmp?????? - the temporary update file
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _I_n_t_r_o(UNITY), _d_e_l_e_t_e(UNITY), _i_n_s_e_r_t(UNITY), _u_e_d_i_t(UNITY),
+          _u_e_n_t_e_r(UNITY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+

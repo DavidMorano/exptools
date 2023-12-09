@@ -1,0 +1,132 @@
+
+
+
+     DDDDOOOOLLLLOOOOOOOOPPPP((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     DDDDOOOOLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+	  doloop - print values	from a for loop
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	  doloop [-c] [-n] endval
+	  doloop [-c] [-n] begval endval [increment [format]]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	  Print	out the	numeric	values between begval (default 1) and
+	  endval, counting by increment	(default 1), and printed using
+	  the given printf(3) format (default "%d").  Unless -n	is
+	  specified, newlines will be printed between the values.
+	  Negative increments will count down instead of up.
+
+	  If -c	is specified, then begval and endval are treated as
+	  characters and must be of the	form X,	^X, M-X	or M-^X.  The
+	  default format is "%c".
+
+	  The format may include up to 8 references to the number.
+	  This permits the number to be	printed	out in different
+	  formats on the same output line.
+
+	  The internal C loop looks something like this	when counting
+	  up:
+
+	       for (i =	begval;	i <= endval; i += increment)
+		    printf(format, i);
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+	  This command is useful in shell programs such	as
+
+	       for i in	`doloop	100`
+	       do
+		    touch foo.$i
+	       done
+
+	  Print	a quick	ASCII chart:
+
+	       doloop -c ' ' '~' 1 "%3d	%#4o %#x %c"
+
+	  Print	the numbers from 1 to 50:
+
+	       doloop 50
+
+	  Print	the numbers from 35 to 50:
+
+	       doloop 35 50
+
+	  Print	the numbers from 50 to 35:
+
+	       doloop 50 35
+
+
+
+
+     Page 1					     (printed 4/16/91)
+
+
+
+
+
+
+     DDDDOOOOLLLLOOOOOOOOPPPP((((1111))))		 UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))	     DDDDOOOOLLLLOOOOOOOOPPPP((((1111))))
+
+
+
+	  Print	the numbers from 35 to 50 counting by 2:
+
+	       doloop 35 50 2
+
+	  Print	the numbers from 50 to 35 counting by -3:
+
+	       doloop 50 35 -3
+
+	  Print	the numbers from 35 to 50 counting by 2, but using the
+	  format "Line %d:", as	in
+
+	       Line 35:
+	       Line 37:
+	       Line 39:
+	       ...
+
+	       doloop 35 50 2 "Line %d:"
+
+	  Print	the numbers from 5 to 50 by 5's	with no	newlines
+
+	       doloop -n 5 50 5	"%d"
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+	  Tony Hansen
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+	  Tony Hansen, hansen@pegasus.att.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2					     (printed 4/16/91)
+
+
+

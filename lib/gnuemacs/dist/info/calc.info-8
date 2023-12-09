@@ -1,0 +1,1134 @@
+Info file: calc.info,    -*-Text-*-
+produced by texinfo-format-buffer
+from file: calc.texinfo
+
+
+
+
+
+This file documents Calc, the GNU Emacs calculator.
+
+Copyright (C) 1990, 1991 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled "GNU General Public License" is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled "GNU General Public License" may be
+included in a translation approved by the author instead of in the
+original English.
+
+
+
+File: calc.info  Node: Error Forms, Prev: Modulo Forms, Up: Data Types, Next: Interval Forms
+
+Error Forms
+===========
+
+An "error form" is a number with an associated standard deviation, as in
+`2.3 +/- 0.12'.  The notation `x +/- sigma' stands for an uncertain
+value which follows a normal or Gaussian distribution of mean `x' and
+standard deviation or "error" `sigma'.  Both the mean and the error can
+be either numbers or formulas.  Generally these are real numbers but the
+mean may also be complex.  If the error is negative or complex, it is
+changed to its absolute value.  An error form with zero error is
+converted to a regular number by the Calculator.
+
+All arithmetic and transcendental functions accept error forms as input.
+Operations on the mean-value part work just like operations on regular
+numbers.  The error part for any function `f(x)' (such as `sin(x)') is
+defined by the error of `x' times the derivative of `f' evaluated at the
+mean value of `x'.  For a two-argument function `f(x,y)' (such as
+addition) the error is the square root of the sum of the squares of the
+errors due to `x' and `y'.  Note that this definition assumes the errors
+in `x' and `y' are uncorrelated.  A side effect of this definition is
+that `(2 +/- 1) * (2 +/- 1)' is not the same as `(2 +/- 1)^2'; the
+former represents the product of two independent values which happen to
+have the same probability distributions, and the latter is the product
+of one random value with itself.  The former will produce an answer with
+less error, since on the average the two independent errors can be
+expected to cancel out.
+
+Consult a good text on error analysis for a discussion of the proper use
+of standard deviations.  Actual errors often are neither
+Gaussian-distributed nor uncorrelated, and the above formulas are valid
+only when errors are small.  As an example, the error arising from
+`sin(x +/- sigma)' is `sigma abs(cos(x))'.  When `x' is close to zero,
+`cos(x)' is close to one so the error in the sine is close to `sigma';
+this makes sense, since `sin(x)' is approximately `x' near zero, so a
+given error in `x' will produce about the same error in the sine.
+Likewise, near 90 degrees `cos(x)' is nearly zero and so the computed
+error is small: The sine curve is nearly flat in that region, so an
+error in `x' has relatively little effect on the value of `sin(x)'.
+However, consider `sin(90 +/- 1000)'.  The cosine of 90 is zero, so Calc
+will report zero error!  We get an obviously wrong result because we
+have violated the small-error approximation underlying the error
+analysis.  If the error in `x' had been small, the error in `sin(x)'
+would indeed have been negligible.
+
+To enter an error form during regular numeric entry, use the `p'
+("plus-or-minus") key to type the `+/-' symbol.  (If you try actually
+typing `+/-' the `+' key will be interpreted as the Calculator's
+`+' command!)  Within an algebraic formula, you can press `M-p' to
+type the `+/-' symbol, or type it out by hand.
+
+Error forms and complex numbers can be mixed; the formulas shown above
+are used for complex numbers, too, except that if the error part evaluates
+to a complex number its absolute value (or the square root of the sum of
+the squares of the absolute values of the two error contributions) is
+used.  Mathematically, this corresponds to a radially symmetric Gaussian
+distribution of numbers on the complex plane.  However, note that Calc
+considers an error form with real components to represent a real number,
+not a complex distribution around a real mean.
+
+Error forms may also be composed of HMS forms.  For best results, both
+the mean and the error should be HMS forms if either one is.
+
+The algebraic function `sdev(a, b)' builds the error form `a +/- b'.
+
+
+File: calc.info  Node: Interval Forms, Prev: Error Forms, Up: Data Types, Next: Incomplete Objects
+
+Interval Forms
+==============
+
+An "interval" is a subset of consecutive real numbers.  For example,
+the interval `[2 .. 4]' represents all the numbers from 2 to 4,
+inclusive.  If you multiply it by the interval `[0.5 .. 2]' you
+obtain `[1 .. 8]'.  This calculation represents the fact that if
+you multiply some number in the range `[2 .. 4]' by some other
+number in the range `[0.5 .. 2]', your result will lie in the range
+from 1 to 8.  Interval arithmetic is used to get a worst-case estimate
+of the possible range of values a computation will produce, given the
+set of possible values of the input.
+
+Calc supports several varieties of intervals, including "closed"
+intervals of the type shown above, "open" intervals such as `(2 .. 4)',
+which represents the range of numbers from 2 to 4 *exclusive*, and
+"semi-open" intervals in which one end uses a round parenthesis and the
+other a square bracket.  In mathematical terms, `[2 .. 4]' means `2 <= x
+<= 4', whereas `[2 .. 4)' represents `2 <= x < 4', `(2 .. 4]' represents
+`2 < x <= 4', and `(2 .. 4)' represents `2 < x < 4'.
+
+The lower and upper limits of an interval must be either real numbers
+(or HMS or date forms), or symbolic expressions which are assumed to be
+real-valued, or `-inf' and `inf'.  In general the lower limit
+must be less than the upper limit.  A closed interval containing only
+one value, `[3 .. 3]', is converted to a plain number (3)
+automatically.  An interval containing no values at all (such as
+`[3 .. 2]' or `[2 .. 2)') can be represented but is not
+guaranteed to behave well when used in arithmetic.  Note that the
+interval `[3 .. inf)' represents all real numbers greater than
+or equal to 3, and `(-inf .. inf)' represents all real numbers.
+In fact, `[-inf .. inf]' represents all real numbers including
+the real infinities.
+
+Intervals are entered in the notation shown here, either as algebraic
+formulas, or using incomplete forms.  (*Note Incomplete Objects::.)
+In algebraic formulas, multiple periods in a row are collected from
+left to right, so that `1....1e2' is interpreted as `1 .. .. 1e2'
+(a syntax error) rather than `1. .. .1e2'.  Use spaces or type
+`1.0..0.1e2' to make the notation unambiguous.  If you omit
+the lower or upper limit, a default of `-inf' or `inf'
+(respectively) is furnished.
+
+"Infinite mode" also affects operations on intervals
+(*Note Infinities::).  Calc will always introduce an open infinity,
+as in `1 / (0 .. 2] = [0.5 .. inf)'.  But closed infinities,
+`1 / [0 .. 2] = [0.5 .. inf]', arise only in infinite mode;
+otherwise they are left unevaluated.  Note that the "direction" of
+a zero is not an issue in this case, since the zero is always assumed
+to be continuous with the rest of the interval.  For intervals that
+contain zero inside them Calc is forced to give the result,
+`1 / (-2 .. 2) = [-inf .. inf]'.
+
+While it may seem that intervals and error forms are similar, they are
+based on entirely different concepts of inexact quantities.  An error
+form `x +/- sigma' means a variable is random, and its value could be
+anything but is "probably" within one sigma of the mean value `x'.  An
+interval `[a .. b]' means a variable's value is unknown, but guaranteed
+to lie in the specified range.  Error forms are statistical or "average
+case" approximations; interval arithmetic tends to produce "worst case"
+bounds on an answer.
+
+Intervals may not contain complex numbers, but they may contain
+HMS forms or date forms.
+
+*Note Set Operations::, for commands that interpret interval forms
+as subsets of the set of real numbers.
+
+The algebraic function `intv(n, a, b)' builds an interval form
+from `a' to `b'; `n' is an integer code which must
+be 0 for `(..)', 1 for `(..]', 2 for `[..)', or
+3 for `[..]'.
+
+Please note that in fully rigorous interval arithmetic, care would be
+taken to make sure that computation of the lower bound rounds toward
+minus infinity, while upper bound computations round toward plus
+infinity.  Calc's arithmetic always uses a round-to-nearest mode,
+which means that roundoff errors could creep into an interval
+calculation to produce intervals slightly smaller than they ought to
+be.  For example, entering `[1..2]' and pressing `Q 2 ^'
+should yield the interval `[1..2]', but in fact it yields the
+(slightly too small) interval `[1..1.9999999]' due to roundoff
+error.
+
+
+File: calc.info  Node: Incomplete Objects, Prev: Interval Forms, Up: Data Types, Next: Variables
+
+Incomplete Objects
+==================
+
+When `(' or `[' is typed to begin entering a complex number or
+vector, respectively, the effect is to push an "incomplete" complex
+number or vector onto the stack.  The `,' key adds the value(s) at
+the top of the stack onto the current incomplete object.  The `)'
+and `]' keys "close" the incomplete object after adding any values
+on the top of the stack in front of the incomplete object.
+
+As a result, the sequence of keystrokes `[ 2 , 3 RET 2 * , 9 ]'
+pushes the vector `[2, 6, 9]' onto the stack.  Likewise, `( 1 , 2 Q )'
+pushes the complex number `(1, 1.414)' (approximately).
+
+If several values lie on the stack in front of the incomplete object,
+all are collected and appended to the object.  Thus the `,' key is
+redundant: `[ 2 RET 3 RET 2 * 9 ]'.  Some people prefer the equivalent
+SPC key to RET.
+
+As a special case, typing `,' immediately after `(', `[', or
+`,' adds a zero or duplicates the preceding value in the list being
+formed.  Typing DEL during incomplete entry removes the last item
+from the list.
+
+The `;' key is used in the same way as `,' to create polar complex
+numbers:  `( 1 ; 2 )'.  When entering a vector, `;' is useful for
+creating a matrix.  In particular, `[ [ 1 , 2 ; 3 , 4 ; 5 , 6 ] ]' is
+equivalent to `[ [ 1 , 2 ] , [ 3 , 4 ] , [ 5 , 6 ] ]'.
+
+Incomplete entry is also used to enter intervals.  For example,
+`[ 2 .. 4 )' enters a semi-open interval.  Note that when you type
+the first period, it will be interpreted as a decimal point, but when
+you type a second period immediately afterward, it is re-interpreted as
+part of the interval symbol.  Typing `..' corresponds to executing
+the `calc-dots' command.
+
+If you find incomplete entry distracting, you may wish to enter vectors
+and complex numbers as algebraic formulas by pressing the apostrophe key.
+
+
+File: calc.info  Node: Variables, Prev: Incomplete Objects, Up: Data Types, Next: Formulas
+
+Variables
+=========
+
+A "variable" is somewhere between a storage register on a conventional
+calculator, and a variable in a programming language.  (In fact, a Calc
+variable is really just an Emacs Lisp variable that contains a Calc
+number or formula.)  A variable's name is normally composed of letters
+and digits.  Calc also allows apostrophes and underscores in variable
+names.  The Calc variable `foo' corresponds to the Emacs Lisp variable
+`var-foo'.  The `s s' (`calc-store') command and other commands that
+operate on variables can be made to use any arbitrary Lisp variable
+simply by backspacing over the `var-' prefix in the minibuffer.
+
+In a command that takes a variable name, you can either type the full
+name of a variable, or type a single digit to use one of the special
+convenience variables `var-q0' through `var-q9'.  For example, `3 s s 2'
+stores the number 3 in variable `var-q2', and `3 s s foo RET' stores
+that number in variable `var-foo'.
+
+To push a variable itself (as opposed to the variable's value) on the
+stack, enter its name as an algebraic expression using the apostrophe
+(') key.  Variable names in algebraic formulas implicitly have
+`var-' prefixed to their names.  The `#' character in variable
+names used in algebraic formulas corresponds to a dash `-' in the
+Lisp variable name.  If the name contains any dashes, the prefix `var-'
+is *not* automatically added.  Thus the two formulas `foo + 1'
+and `var#foo + 1' both refer to the same variable.
+
+The `=' (`calc-evaluate') key "evaluates" a formula by
+replacing all variables in the formula which have been given values by a
+`calc-store' or `calc-let' command by their stored values.
+Other variables are left alone.  Thus a variable that has not been
+stored acts like an abstract variable in algebra; a variable that has
+been stored acts more like a register in a traditional calculator.
+With a positive numeric prefix argument, `=' evaluates the top
+N stack entries; with a negative argument, `=' evaluates
+the Nth stack entry.
+
+A few variables are called "special constants".  Their names are `e',
+`pi', `i', `phi', and `gamma'.  (*Note Scientific Functions::.)  When
+they are evaluated with `=', their values are calculated if necessary
+according to the current precision or complex polar mode.  If you wish
+to use these symbols for other purposes, simply undefine or redefine
+them using `calc-store'.
+
+The variables `inf', `uinf', and `nan' stand for
+infinite or indeterminate values.  It's best not to use them for
+regular variables, since Calc uses special algebraic rules when
+it manipulates them.  Calc displays a warning message if you store
+a value into any of these special variables.
+
+*Note Store and Recall::, for a discussion of commands dealing with variables.
+
+
+File: calc.info  Node: Formulas, Prev: Variables, Up: Data Types
+
+Formulas
+========
+
+When you press the apostrophe key you may enter any expression or formula
+in algebraic form.  (Calc uses the terms "expression" and "formula"
+interchangeably.)  An expression is built up of numbers, variable names,
+and function calls, combined with various arithmetic operators.
+Parentheses may
+be used to indicate grouping.  Spaces are ignored within formulas, except
+that spaces are not permitted within variable names or numbers.
+Arithmetic operators, in order from highest to lowest precedence, and
+with their equivalent function names, are:
+
+     `_' [`subscr'] (subscripts);
+
+     postfix `%' [`percent'] (as in `25% = 0.25');
+
+     prefix `+' and `-' [`neg'] (as in `-x')
+       and prefix `!' [`lnot'] (logical "not," as in `!x');
+
+     `+/-' [`sdev'] (the standard deviation symbol) and
+       `mod' [`makemod'] (the symbol for modulo forms);
+
+     postfix `!' [`fact'] (factorial, as in `n!')
+       and postfix `!!' [`dfact'] (double factorial);
+
+     `^' [`pow'] (raised-to-the-power-of);
+
+     `*' [`mul'];
+
+     `/' [`div'], `%' [`mod'] (modulo), and
+       `\' [`idiv'] (integer division);
+
+     infix `+' [`add'] and `-' [`sub'] (as in `x-y');
+
+     `|' [`vconcat'] (vector concatenation);
+
+     relations `=' [`eq'], `!=' [`neq'], `<' [`lt'], `>' [`gt'],
+       `<=' [`leq'], and `>=' [`geq'];
+
+     `&&' [`land'] (logical "and");
+
+     `||' [`lor'] (logical "or");
+
+     the C-style "if" operator `a?b:c' [`if'];
+
+     `!!!' [`pnot'] (rewrite pattern "not");
+
+     `&&&' [`pand'] (rewrite pattern "and");
+
+     `|||' [`por'] (rewrite pattern "or");
+
+     `:=' [`assign'] (for assignments and rewrite rules);
+
+     `::' [`condition'] (rewrite pattern condition);
+
+     `=>' [`evalto'].
+
+Note that, unlike in usual computer notation, multiplication binds more
+strongly than division:  `a*b/c*d' is equivalent to `(a*b)/(c*d)'.
+
+The multiplication sign `*' may be omitted in many cases.  In
+particular, if the righthand side is a number, variable name, or
+parenthesized expression, the `*' may be omitted.  Implicit
+multiplication has the same precedence as the explicit `*' operator.
+The one exception to the rule is that a variable name followed by a
+parenthesized expression, as in `f(x)', is interpreted as a function
+call, not an implicit `*'.  In many cases you must use a space if you
+omit the `*': `2a' is the same as `2*a', and `a b' is the same as `a*b',
+but `ab' is a variable called `ab', *not* the product of `a' and `b'!
+Also note that `f (x)' is still a function call.
+
+The rules are slightly different for vectors written with square
+brackets.  There, the space character is interpreted (like the comma) as
+a separator of elements of the vector.  Thus `[ 2a b+c d ]' is
+equivalent to `[2*a, b+c, d]', whereas `2a b+c d' is equivalent to
+`2*a*b + c*d'.  Note that spaces around the brackets, and around
+explicit commas, are ignored.  To force spaces to be interpreted as
+multiplication you can enclose a formula in parentheses as in `[(a b)
+2(c d)]', which is interpreted as `[a*b, 2*c*d]'.  An implicit comma is
+also inserted between `][', as in the matrix `[[1 2][3 4]]'.
+
+Vectors that contain commas (not embedded within nested parentheses or
+brackets) do not treat spaces specially:  `[a b, 2 c d]' is a vector
+of two elements.  Also, vectors entered with curly braces instead of
+square brackets do not give spaces any special treatment.  When Calc
+displays a vector that does not contain any commas, it will insert
+parentheses if necessary to make the meaning clear:  `[(a b)]'.
+
+The expression `5%-2' is ambiguous; is this five-percent minus two,
+or five modulo minus-two?  Calc always interprets the leftmost symbol as
+an infix operator preferentially (modulo, in this case), so you would
+need to write `(5%)-2' to get the former interpretation.
+
+A function call is, e.g., `sin(1+x)'.  Function names follow the same
+rules as variable names except that the default prefix `calcFunc-' is
+used (instead of `var-') for the internal Lisp form.  Most mathematical
+Calculator commands like `calc-sin' have function equivalents like
+`sin'.  If no Lisp function is defined for a function called by a
+formula, the call is left as it is during algebraic manipulation:
+`f(x+y)' is left alone.  Beware that many innocent-looking short names
+like `in' and `re' have predefined meanings which could surprise you;
+however, single letters or single letters followed by digits are always
+safe.  *Note Function Index::.
+
+In the documentation for particular commands, the notation `H S'
+(`calc-sinh') [`sinh'] means that the key sequence `H S', the command
+`M-x calc-sinh', and the algebraic function `sinh(x)' all represent the
+same operation.
+
+Commands that interpret ("parse") text as algebraic formulas include
+algebraic entry (`''), editing commands like ``' which parse
+the contents of the editing buffer when you finish, the `M-# g'
+and `M-# r' commands, the `C-y' command, the X window system
+"paste" mouse operation, and Embedded Mode.  All of these operations
+use the same rules for parsing formulas; in particular, language modes
+(*Note Language Modes::) affect them all in the same way.
+
+When you read a large amount of text into the Calculator (say a vector
+which represents a big set of rewrite rules; *Note Rewrite Rules::),
+you may wish to include comments in the text.  Calc's formula parser
+ignores the symbol `%%' and anything following it on a line:
+
+     [ a + b,   %% the sum of "a" and "b"
+       c + d,
+       %% last line is coming up:
+       e + f ]
+
+This is parsed exactly the same as `[ a + b, c + d, e + f ]'.
+
+*Note Algebra::, for commands for manipulating formulas symbolically.
+
+
+File: calc.info  Node: Stack and Trail, Prev: Data Types, Up: Top, Next: Mode Settings
+
+Stack and Trail Commands
+************************
+
+This chapter describes the Calc commands for manipulating objects in the
+stack and in the trail buffer.  (These commands operate on objects of any
+type, such as numbers, vectors, formulas, and incomplete objects.)
+
+* Menu:
+
+* Stack Manipulation::
+* Trail Commands::
+* Keep Arguments::
+
+
+File: calc.info  Node: Stack Manipulation, Prev: Stack and Trail, Up: Stack and Trail, Next: Trail Commands
+
+Stack Manipulation Commands
+===========================
+
+To duplicate the top object on the stack, press RET or SPC (two
+equivalent keys for the `calc-enter' command).  Given a positive numeric
+prefix argument, these commands duplicate several elements at the top of
+the stack.  Given a negative argument, these commands duplicate the
+specified element of the stack.  Given an argument of zero, they
+duplicate the entire stack.  For example, with `10 20 30' on the stack,
+RET creates `10 20 30 30', `C-u 2 RET' creates `10 20 30 20 30', `C-u -
+2 RET' creates `10 20 30 20', and `C-u 0 RET' creates `10 20 30 10 20
+30'.
+
+The LFD (`calc-over') command (on a key marked Line-Feed if you have it,
+else on `C-j') is like `calc-enter' except that the sign of the numeric
+prefix argument is interpreted oppositely.  Also, with no prefix
+argument the default argument is 2.  Thus with `10 20 30' on the stack,
+LFD and `C-u 2 LFD' are both equivalent to `C-u - 2 RET', producing `10
+20 30 20'.
+
+To remove the top element from the stack, press DEL (`calc-pop').  The
+`C-d' key is a synonym for DEL.  (If the top element is an incomplete
+object with at least one element, the last element is removed from it.)
+Given a positive numeric prefix argument, several elements are removed.
+Given a negative argument, the specified element of the stack is
+deleted.  Given an argument of zero, the entire stack is emptied.  For
+example, with `10 20 30' on the stack, DEL creates `10 20', `C-u 2 DEL'
+creates `10', `C-u - 2 DEL' creates `10 30', and `C-u 0 DEL' creates an
+empty stack.
+
+The M-DEL (`calc-pop-above') command is to DEL what
+LFD is to RET, i.e., it interprets the sign of the numeric
+prefix argument in the opposite way, and the default argument is 2.
+Thus M-DEL by itself removes the second-from-top stack element,
+leaving the first, third, fourth, and so on; `M-3 M-DEL' deletes
+the third stack element.
+
+To exchange the top two elements of the stack, press TAB
+(`calc-roll-down').  Given a positive numeric prefix argument, the
+specified number of elements at the top of the stack are rotated
+downward.  Given a negative argument, the entire stack is rotated
+downward the specified number of times.  Given an argument of zero, the
+entire stack is reversed top-for-bottom.  For example, with `10 20 30 40
+50' on the stack, TAB creates `10 20 30 50 40', `C-u 3 TAB' creates `10
+20 50 30 40', `C-u - 2 TAB' creates `40 50 10 20 30', and `C-u 0 TAB'
+creates `50 40 30 20 10'.
+
+The command M-TAB (`calc-roll-up') is analogous to TAB except that it
+rotates upward instead of downward.  Also, the default with no prefix
+argument is to rotate the top 3 elements.  For example, with `10 20 30
+40 50' on the stack, M-TAB creates `10 20 40 50 30', `C-u 4 M-TAB'
+creates `10 30 40 50 20', `C-u - 2 M-TAB' creates `30 40 50 10 20', and
+`C-u 0 M-TAB' creates `50 40 30 20 10'.
+
+A good way to view the operation of TAB and M-TAB is in
+terms of moving a particular element to a new position in the stack.
+With a positive argument n, TAB moves the top stack
+element down to level n, making room for it by pulling all the
+intervening stack elements toward the top.  M-TAB moves the
+element at level n up to the top.  (Compare with LFD,
+which copies instead of moving the element in level n.)
+
+With a negative argument -n, TAB rotates the stack
+to move the object in level n to the deepest place in the
+stack, and the object in level n+1 to the top.  M-TAB
+rotates the deepest stack element to be in level n, also
+putting the top stack element in level n+1.
+
+*Note Selecting Subformulas::, for a way to apply these commands to
+any portion of a vector or formula on the stack.
+
+
+File: calc.info  Node: Trail Commands, Prev: Stack Manipulation, Up: Stack and Trail, Next: Keep Arguments
+
+Trail Commands
+==============
+
+The commands for manipulating the Calc Trail buffer are two-key sequences
+beginning with the `t' prefix.
+
+The `t d' (`calc-trail-display') command turns display of the
+trail on and off.  Normally the trail display is toggled on if it was off,
+off if it was on.  With a numeric prefix of zero, this command always
+turns the trail off; with a prefix of one, it always turns the trail on.
+The other trail-manipulation commands described here automatically turn
+the trail on.  Note that when the trail is off values are still recorded
+there; they are simply not displayed.  To set Emacs to turn the trail
+off by default, turn it off with `t d', then save the mode settings
+with `m m' (`calc-save-modes').
+
+The `t i' (`calc-trail-in') and `t o' (`calc-trail-out') commands switch
+the cursor into and out of the Calc Trail window.  In practice they are
+rarely used, since the commands shown below are a more convenient way to
+move around in the trail, and they work "by remote control" when the
+cursor is still in the Calculator window.
+
+There is a "trail pointer" which selects some entry of the trail at
+any given time.  The trail pointer looks like a `>' symbol right
+before the selected number.  The following commands operate on the
+trail pointer in various ways.
+
+The `t y' (`calc-trail-yank') command reads the selected value in
+the trail and pushes it onto the Calculator stack.  It allows you to
+re-use any previously computed value without retyping.  With a numeric
+prefix argument N, it yanks the value N lines above the current
+trail pointer.
+
+The `t <' (`calc-trail-scroll-left') and `t >'
+(`calc-trail-scroll-right') commands horizontally scroll the trail
+window left or right by one half of its width.
+
+The `t n' (`calc-trail-next') and `t p' (`calc-trail-previous)' commands
+move the trail pointer down or up one line.  The `t f'
+(`calc-trail-forward') and `t b' (`calc-trail-backward') commands move
+the trail pointer down or up one screenful at a time.  All of these
+commands accept numeric prefix arguments to move several lines or
+screenfuls at a time.
+
+The `t [' (`calc-trail-first') and `t ]' (`calc-trail-last') commands
+move the trail pointer to the first or last line of the trail.  The `t
+h' (`calc-trail-here') command moves the trail pointer to the cursor
+position; unlike the other trail commands, `t h' works only when Calc
+Trail is the selected window.
+
+The `t s' (`calc-trail-isearch-forward') and `t r'
+(`calc-trail-isearch-backward') commands perform an incremental search
+forward and backward through the trail.  You can press RET to terminate
+the search; the trail pointer moves to the current line.  If you cancel
+the search with `C-g', the trail pointer does not move.
+
+The `t m' (`calc-trail-marker') command allows you to enter a
+line of text of your own choosing into the trail.  The text is inserted
+after the line containing the trail pointer; this usually means it is
+added to the end of the trail.  Trail markers are useful mainly as the
+targets for later incremental searches in the trail.
+
+The `t k' (`calc-trail-kill') command removes the selected line
+from the trail.  The line is saved in the Emacs kill ring suitable for
+yanking into another buffer, but it is not easy to yank the text back
+into the trail buffer.  With a numeric prefix argument, this command
+kills the N lines below or above the selected one.
+
+The `t .' (`calc-full-trail-vectors') command is described
+elsewhere; *Note Vector and Matrix Formats::.
+
+
+File: calc.info  Node: Keep Arguments, Prev: Trail Commands, Up: Stack and Trail
+
+Keep Arguments
+==============
+
+The `K' (`calc-keep-args') command acts like a prefix for
+the following command that prevents that command from removing its
+arguments from the stack.  For example, after `2 RET 3 +',
+the stack contains the sole number 5, but after `2 RET 3 K +',
+the stack contains the arguments and the result: `2 3 5'.
+
+This works for all commands that take arguments off the stack.  As
+another example, `K a s' simplifies a formula, pushing the
+simplified version of the formula onto the stack after the original
+formula (rather than replacing the original formula).
+
+Note that you could get the same effect by typing `RET a s',
+copying the formula and then simplifying the copy.  One difference
+is that for a very large formula the time taken to format the
+intermediate copy in `RET a s' could be noticeable; `K a s'
+would avoid this extra work.
+
+Even stack manipulation commands are affected.  TAB works by
+popping two values and pushing them back in the opposite order,
+so `2 RET 3 K TAB' produces `2 3 3 2'.
+
+A few Calc commands provide other ways of doing the same thing.
+For example, `' sin($)' replaces the number on the stack with
+its sine using algebraic entry; to push the sine and keep the
+original argument you could use either `' sin($1)' or
+`K ' sin($)'.  *Note Algebraic Entry::.  Also, the `s s'
+command is effectively the same as `K s t'.  *Note Storing Variables::.
+
+Keyboard macros may interact surprisingly with the `K' prefix.
+If you have defined a keyboard macro to be, say, `Q +' to add
+one number to the square root of another, then typing `K X' will
+execute `K Q +', probably not what you expected.  The `K'
+prefix will apply to just the first command in the macro rather than
+the whole macro.
+
+If you execute a command and then decide you really wanted to keep
+the argument, you can press `M-RET' (`calc-last-args').
+This command pushes the last arguments that were popped by any command
+onto the stack.  Note that the order of things on the stack will be
+different than with `K':  `2 RET 3 + M-RET' leaves
+`5 2 3' on the stack instead of `2 3 5'.  *Note Undo::.
+
+
+File: calc.info  Node: Mode Settings, Prev: Stack and Trail, Up: Top, Next: Arithmetic
+
+Mode Settings
+*************
+
+This chapter describes commands that set modes in the Calculator.
+They do not affect the contents of the stack, although they may change
+the *appearance* or *interpretation* of the stack's contents.
+
+* Menu:
+
+* General Mode Commands::
+* Precision::
+* Inverse and Hyperbolic::
+* Calculation Modes::
+* Simplification Modes::
+* Declarations::
+* Display Modes::
+* Language Modes::
+* Calc Mode Line::
+
+
+File: calc.info  Node: General Mode Commands, Prev: Mode Settings, Up: Mode Settings, Next: Precision
+
+General Mode Commands
+=====================
+
+You can save all of the current mode settings in your `.emacs' file
+with the `m m' (`calc-save-modes') command.  This will cause
+Emacs to reestablish these modes each time it starts up.  The modes saved
+in the file include everything controlled by the `m' and `d'
+prefix keys, the current precision and binary word size, whether or not
+the trail is displayed, and the current height of the Calc window.
+The current interface (used when you type `M-# M-#') is also saved.
+If there were already saved mode settings in the file, they are replaced.
+Otherwise, the new mode information is appended to the end of the file.
+
+The `m R' (`calc-mode-record-mode') command tells Calc to
+record the new mode settings (as if by pressing `m m') every
+time a mode setting changes.  If Embedded Mode is enabled, other
+options are available; *Note Mode Settings in Embedded Mode::.
+
+The `m F' (`calc-settings-file-name') command allows you to
+choose a different place than your `.emacs' file for `m m',
+`Z P', and similar commands to save permanent information.
+You are prompted for a file name.  All Calc modes are then reset to
+their default values, settings from the file you named are loaded
+if this file exists, and this file becomes the one that Calc will
+use in the future for commands like `m m'.  The default settings
+file name is `~/.emacs'.  You can see the current file name by
+giving a blank response to the `m F' prompt.  See also the
+discussion of the `calc-settings-file' variable; *Note Installation::.
+
+If the file name you give contains the string `.emacs' anywhere
+inside it, `m F' will not automatically load the new file.  This
+is because you are presumably switching to your `~/.emacs' file,
+which may contain other things you don't want to reread.  You can give
+a numeric prefix argument of 1 to `m F' to force it to read the
+file no matter what its name.  Conversely, an argument of -1 tells
+`m F' *not* to read the new file.  An argument of 2 or -2
+tells `m F' not to reset the modes to their defaults beforehand,
+which is useful if you intend your new file to have a variant of the
+modes present in the file you were using before.
+
+The `m x' (`calc-always-load-extensions') command enables a mode
+in which the first use of Calc loads the entire program, including all
+extensions modules.  Otherwise, the extensions modules will not be loaded
+until the various advanced Calc features are used.  Since this mode only
+has effect when Calc is first loaded, `m x' is usually followed by
+`m m' to make the mode-setting permanent.
+
+The `m X' or `M-# L' (`calc-load-everything') command loads
+all parts of Calc that have not yet been loaded.  This is the command
+that Calc executes upon startup if `m x' mode has been enabled.
+
+The `m S' (`calc-shift-prefix') command enables a mode in which
+all of Calc's letter prefix keys may be typed shifted as well as unshifted.
+If you are typing, say, `a S' (`calc-solve-for') quite often
+you might find it easier to turn this mode on so that you can type
+`A S' instead.  When this mode is enabled, the commands that used to
+be on those single shifted letters (e.g., `A' (`calc-abs')) can
+now be invoked by pressing the shifted letter twice: `A A'.  Note
+that the `v' prefix key always works both shifted and unshifted, and
+the `z' and `Z' prefix keys are always distinct.  Also, the `h'
+prefix is not affected by this mode.  Press `m S' again to disable
+shifted-prefix mode.
+
+
+File: calc.info  Node: Precision, Prev: General Mode Commands, Up: Mode Settings, Next: Inverse and Hyperbolic
+
+Precision
+=========
+
+The `p' (`calc-precision') command controls the precision to
+which floating-point calculations are carried.  The precision must be
+at least 3 digits and may be arbitrarily high, within the limits of
+memory and time.  This affects only floats:  Integer and rational
+calculations are always carried out with as many digits as necessary.
+
+The `p' key prompts for the current precision.  If you wish you
+can instead give the precision as a numeric prefix argument.
+
+Many internal calculations are carried to one or two digits higher
+precision than normal.  Results are rounded down afterward to the
+current precision.  Unless a special display mode has been selected,
+floats are always displayed with their full stored precision, i.e., what
+you see is what you get.  Reducing the current precision does not round
+values already on the stack, but those values will be rounded down
+before being used in any calculation.  The `c 0' through `c 9' commands
+(*Note Conversions::) can be used to round an existing value to a new
+precision.
+
+It is important to distinguish the concepts of "precision" and
+"accuracy".  In the normal usage of these words, the number
+123.4567 has a precision of 7 digits but an accuracy of 4 digits;
+the precision is the total number of digits not counting leading
+or trailing zeros (regardless of the position of the decimal point).
+The accuracy is simply the number of digits after the decimal point
+(again not counting trailing zeros).  In Calc you control the precision,
+not the accuracy of computations.  If you were to set the accuracy
+instead, then calculations like `exp(100)' would generate many
+more digits than you would typically need, while `exp(-100)' would
+probably round to zero!  In Calc, both these computations give you
+exactly 12 (or the requested number of) significant digits.
+
+The only Calc features that deal with accuracy instead of precision
+are fixed-point display mode for floats (`d f'; *Note Float Formats::),
+and the rounding functions like `floor' and `round'
+(*Note Integer Truncation::).  Also, `c 0' through `c 9'
+deal with both precision and accuracy depending on the magnitudes
+of the numbers involved.
+
+If you need to work with a particular fixed accuracy (say, dollars and
+cents with two digits after the decimal point), one solution is to work
+with integers and an "implied" decimal point.  For example, $8.99
+divided by 6 would be entered `899 RET 6 /', yielding 149.833
+(actually $1.49833 with our implied decimal point); pressing `R'
+would round this to 150 cents, i.e., $1.50.
+
+
+File: calc.info  Node: Inverse and Hyperbolic, Prev: Precision, Up: Mode Settings, Next: Calculation Modes
+
+Inverse and Hyperbolic Flags
+============================
+
+There is no single-key equivalent to the `calc-arcsin' function.
+Instead, you must first press `I' (`calc-inverse') to set the "Inverse
+Flag", then press `S' (`calc-sin').  The `I' key actually toggles the
+Inverse Flag.  When this flag is set, the word `Inv' appears in the mode
+line.
+
+Likewise, the `H' key (`calc-hyperbolic') sets or clears the Hyperbolic
+Flag, which transforms `calc-sin' into `calc-sinh'.  If both of these
+flags are set at once, the effect will be `calc-arcsinh'.  (The
+Hyperbolic flag is also used by some non-trigonometric commands; for
+example `H L' computes a base-10, instead of base-e, logarithm.)
+
+Command names like `calc-arcsin' are provided for completeness, and
+may be executed with `x' or `M-x'.  Their effect is simply to
+toggle the Inverse and/or Hyperbolic flags and then execute the
+corresponding base command (`calc-sin' in this case).
+
+The Inverse and Hyperbolic flags apply only to the next Calculator
+command, after which they are automatically cleared.  (They are also
+cleared if the next keystroke is not a Calc command.)  Digits you
+type after `I' or `H' (or `K') are treated as prefix
+arguments for the next command, not as numeric entries.  The same
+is true of `C-u', but not of the minus sign (`K -' means to
+subtract and keep arguments).
+
+The third Calc prefix flag, `K' (keep-arguments), is discussed
+elsewhere.  *Note Keep Arguments::.
+
+
+File: calc.info  Node: Calculation Modes, Prev: Inverse and Hyperbolic, Up: Mode Settings, Next: Simplification Modes
+
+Calculation Modes
+=================
+
+The commands in this section are two-key sequences beginning with
+the `m' prefix.  (That's the letter `m', not the META key.)
+
+The `m a' (`calc-algebraic-mode') command is described elsewhere
+(*Note Algebraic Entry::).
+
+* Menu:
+
+* Angular Modes::
+* Polar Mode::
+* Fraction Mode::
+* Infinite Mode::
+* Symbolic Mode::
+* Matrix Mode::
+* Automatic Recomputation::
+* Working Message::
+
+
+File: calc.info  Node: Angular Modes, Prev: Calculation Modes, Up: Calculation Modes, Next: Polar Mode
+
+Angular Modes
+-------------
+
+The Calculator supports three notations for angles: radians, degrees,
+and degrees-minutes-seconds.  When a number is presented to a function
+like `sin' that requires an angle, the current angular mode is
+used to interpret the number as either radians or degrees.  If an HMS
+form is presented to `sin', it is always interpreted as
+degrees-minutes-seconds.
+
+Functions that compute angles produce a number in radians, a number in
+degrees, or an HMS form depending on the current angular mode.  If the
+result is a complex number and the current mode is HMS, the number is
+instead expressed in degrees.  (Complex-number calculations would
+normally be done in radians mode, though.  Complex numbers are converted
+to degrees by calculating the complex result in radians and then
+multiplying by 180 over `pi'.)
+
+The `m r' (`calc-radians-mode'), `m d' (`calc-degrees-mode'), and `m h'
+(`calc-hms-mode') commands control the angular mode.  The current
+angular mode is displayed on the Emacs mode line.  The default angular
+mode is degrees.
+
+
+File: calc.info  Node: Polar Mode, Prev: Angular Modes, Up: Calculation Modes, Next: Fraction Mode
+
+Polar Mode
+----------
+
+The Calculator normally "prefers" rectangular complex numbers in the
+sense that rectangular form is used when the proper form can not be
+decided from the input.  This might happen by multiplying a rectangular
+number by a polar one, by taking the square root of a negative real
+number, or by entering `( 2 SPC 3 )'.
+
+The `m p' (`calc-polar-mode') command toggles complex-number
+preference between rectangular and polar forms.  In polar mode, all
+of the above example situations would produce polar complex numbers.
+
+
+File: calc.info  Node: Fraction Mode, Prev: Polar Mode, Up: Calculation Modes, Next: Infinite Mode
+
+Fraction Mode
+-------------
+
+Division of two integers normally yields a floating-point number if the
+result cannot be expressed as an integer.  In some cases you would
+rather get an exact fractional answer.  One way to accomplish this is
+to multiply fractions instead:  `6 RET 1:4 *' produces `3:2'
+even though `6 RET 4 /' produces `1.5'.
+
+To set the Calculator to produce fractional results for normal integer
+divisions, use the `m f' (`calc-frac-mode') command.  For example, `8/4'
+produces `2' in either mode, but `6/4' produces `3:2' in Fraction Mode,
+but `1.5' in Float Mode.
+
+At any time you can use `c f' (`calc-float') to convert a
+fraction to a float, or `c F' (`calc-fraction') to convert a
+float to a fraction.  *Note Conversions::.
+
+
+File: calc.info  Node: Infinite Mode, Prev: Fraction Mode, Up: Calculation Modes, Next: Symbolic Mode
+
+Infinite Mode
+-------------
+
+The Calculator normally treats results like `1 / 0' as errors;
+formulas like this are left in unsimplified form.  But Calc can be
+put into a mode where such calculations instead produce "infinite"
+results.
+
+The `m i' (`calc-infinite-mode') command turns this mode
+on and off.  When the mode is off, infinities do not arise except
+in calculations that already had infinities as inputs.  (One exception
+is that infinite open intervals like `[0 .. inf)' can be
+generated; however, intervals closed at infinity (`[0 .. inf]')
+will not be generated when infinite mode is off.)
+
+With infinite mode turned on, `1 / 0' will generate `uinf',
+an undirected infinity.  *Note Infinities::, for a discussion of the
+difference between `inf' and `uinf'.  Also, `0 / 0'
+evaluates to `nan', the "indeterminate" symbol.  Various other
+functions can also return infinities in this mode; for example,
+`ln(0) = -inf', and `gamma(-7) = uinf'.  Once again,
+note that `exp(inf) = inf' regardless of infinite mode because
+this calculation has infinity as an input.
+
+The `m i' command with a numeric prefix argument of zero,
+i.e., `C-u 0 m i', turns on a "positive infinite mode" in
+which zero is treated as positive instead of being directionless.  
+Thus, `1 / 0 = inf' and `-1 / 0 = -inf' in this mode.
+Note that zero never actually has a sign in Calc; there are no
+separate representations for +0 and -0.  Positive
+infinite mode merely changes the interpretation given to the
+single symbol, `0'.  One consequence of this is that, while
+you might expect `1 / -0 = -inf', actually `1 / -0'
+is equivalent to `1 / 0', which is equal to positive `inf'.
+
+
+File: calc.info  Node: Symbolic Mode, Prev: Infinite Mode, Up: Calculation Modes, Next: Matrix Mode
+
+Symbolic Mode
+-------------
+
+Calculations are normally performed numerically wherever possible.
+For example, the `calc-sqrt' command, or `sqrt' function in an
+algebraic expression, produces a numeric answer if the argument is a
+number or a symbolic expression if the argument is an expression:
+`2 Q' pushes 1.4142 but `' x+1 RET Q' pushes `sqrt(x+1)'.
+
+In "symbolic mode", controlled by the `m s' (`calc-symbolic-mode')
+command, functions which would produce inexact, irrational results are
+left in symbolic form.  Thus `16 Q' pushes 4, but `2 Q' pushes
+`sqrt(2)'.
+
+The shift-`N' (`calc-eval-num') command evaluates numerically the
+expression at the top of the stack, by temporarily disabling
+`calc-symbolic-mode' and executing `=' (`calc-evaluate').  Given a
+numeric prefix argument, it also sets the floating-point precision to
+the specified value for the duration of the command.
+
+To evaluate a formula numerically without expanding the variables it
+contains, you can use the key sequence `m s a v m s' (this uses
+`calc-alg-evaluate', which resimplifies but doesn't evaluate
+variables.)
+
+
+File: calc.info  Node: Matrix Mode, Prev: Symbolic Mode, Up: Calculation Modes, Next: Automatic Recomputation
+
+Matrix and Scalar Modes
+-----------------------
+
+Calc sometimes makes assumptions during algebraic manipulation that
+are awkward or incorrect when vectors and matrices are involved.
+Calc has two modes, "matrix mode" and "scalar mode", which
+modify its behavior around vectors in useful ways.
+
+Press `m v' (`calc-matrix-mode') once to enter matrix mode.
+In this mode, all objects are assumed to be matrices unless provably
+otherwise.  One major effect is that Calc will no longer consider
+multiplication to be commutative.  (Recall that in matrix arithmetic,
+`A*B' is not the same as `B*A'.)  This assumption affects
+rewrite rules and algebraic simplification.  Another effect of this
+mode is that calculations that would normally produce constants like
+0 and 1 (e.g., `a - a' and `a / a', respectively) will now
+produce function calls that represent "generic" zero or identity
+matrices: `idn(0)', `idn(1)'.  The `idn' function
+`idn(A,N)' returns A times an NxN
+identity matrix; if N is omitted, it doesn't know what
+dimension to use and so the `idn' call remains in symbolic
+form.  However, if this generic identity matrix is later combined
+with a matrix whose size is known, it will be converted into
+a true identity matrix of the appropriate size.  On the other hand,
+if it is combined with a scalar (as in `idn(1) + 2'), Calc
+will assume it really was a scalar after all and produce, e.g., 3.
+
+Press `m v' a second time to get scalar mode.  Here, objects are
+assumed *not* to be vectors or matrices unless provably so.
+For example, normally adding a variable to a vector, as in
+`[x, y, z] + a', will leave the sum in symbolic form because
+as far as Calc knows, `a' could represent either a number or
+another 3-vector.  In scalar mode, `a' is assumed to be a
+non-vector, and the addition is evaluated to `[x+a, y+a, z+a]'.
+
+Press `m v' a third time to return to the normal mode of operation.
+
+If you press `m v' with a numeric prefix argument N, you
+get a special "dimensioned matrix mode" in which matrices of
+unknown size are assumed to be NxN square matrices.
+Then, the function call `idn(1)' will expand into an actual
+matrix rather than representing a "generic" matrix.
+
+Of course these modes are approximations to the true state of
+affairs, which is probably that some quantities will be matrices
+and others will be scalars.  One solution is to "declare"
+certain variables or functions to be scalar-valued.
+*Note Declarations::, to see how to make declarations in Calc.
+
+There is nothing stopping you from declaring a variable to be
+scalar and then storing a matrix in it; however, if you do, the
+results you get from Calc may not be valid.  Suppose you let Calc
+get the result `[x+a, y+a, z+a]' shown above, and then stored
+`[1, 2, 3]' in `a'.  The result would not be the same as
+for `[x, y, z] + [1, 2, 3]', but that's because you have broken
+your earlier promise to Calc that `a' would be scalar.
+
+Another way to mix scalars and matrices is to use selections
+(*Note Selecting Subformulas::).  Use matrix mode when operating on
+your formula normally; then, to apply scalar mode to a certain part
+of the formula without affecting the rest just select that part,
+change into scalar mode and press `=' to resimplify the part
+under this mode, then change back to matrix mode before deselecting.
+
+
+File: calc.info  Node: Automatic Recomputation, Prev: Matrix Mode, Up: Calculation Modes, Next: Working Message
+
+Automatic Recomputation
+-----------------------
+
+The "evaluates-to" operator, `=>', has the special
+property that any `=>' formulas on the stack are recomputed
+whenever variable values or mode settings that might affect them
+are changed.  *Note Evaluates-To Operator::.
+
+The `m C' (`calc-auto-recompute') command turns this
+automatic recomputation on and off.  If you turn it off, Calc will
+not update `=>' operators on the stack (nor those in the
+attached Embedded Mode buffer, if there is one).  They will not
+be updated unless you explicitly do so by pressing `=' or until
+you press `m C' to turn recomputation back on.  (While automatic
+recomputation is off, you can think of `m C m C' as a command
+to update all `=>' operators while leaving recomputation off.)
+
+To update `=>' operators in an Embedded buffer while
+automatic recomputation is off, use `M-# u'.
+*Note Embedded Mode::.
+
+
+File: calc.info  Node: Working Message, Prev: Automatic Recomputation, Up: Calculation Modes
+
+Working Messages
+----------------
+
+Since the Calculator is written entirely in Emacs Lisp, which is not
+designed for heavy numerical work, many operations are quite slow.
+The Calculator normally displays the message `Working...' in the
+echo area during any command that may be slow.  In addition, iterative
+operations such as square roots and trigonometric functions display the
+intermediate result at each step.  Both of these types of messages can
+be disabled if you find them distracting.
+
+Type `m w' (`calc-working') with a numeric prefix of 0 to disable all
+"working" messages.  Use a numeric prefix of 1 to enable only the plain
+`Working...' message.  Use a numeric prefix of 2 to see intermediate
+results as well.  With no numeric prefix this displays the current mode.
+
+
+File: calc.info  Node: Simplification Modes, Prev: Calculation Modes, Up: Mode Settings, Next: Declarations
+
+Simplification Modes
+====================
+
+The current "simplification mode" controls how numbers and formulas
+are "normalized" when being taken from or pushed onto the stack.
+Some normalizations are unavoidable, such as rounding floating-point
+results to the current precision, and reducing fractions to simplest
+form.  Others, such as simplifying a formula like `a+a' (or `2+3'),
+are done by default but can be turned off when necessary.
+
+When you press a key like `+' when `2' and `3' are on the
+stack, Calc pops these numbers, normalizes them, creates the formula
+`2+3', normalizes it, and pushes the result.  Of course the standard
+rules for normalizing `2+3' will produce the result `5'.
+
+Simplification mode commands consist of the lower-case `m' prefix key
+followed by a shifted letter.
+
+The `m O' (`calc-no-simplify-mode') command turns off all optional
+simplifications.  These would leave a formula like `2+3' alone.  In
+fact, nothing except simple numbers are ever affected by normalization
+in this mode.
+
+The `m N' (`calc-num-simplify-mode') command turns off simplification of
+any formulas except those for which all arguments are constants.  For
+example, `1+2' is simplified to `3', and `a+(2-2)' is simplified to
+`a+0' but no further, since one argument of the sum is not a constant.
+Unfortunately, `(a+2)-2' is *not* simplified because the top-level `-'
+operator's arguments are not both constant numbers (one of them is the
+formula `a+2').  A constant is a number or other numeric object (such as
+a constant error form or modulo form), or a vector all of whose elements
+are constant.
+
+The `m D' (`calc-default-simplify-mode') command restores the
+default simplifications for all formulas.  This includes some easy and
+fast simplifications such as `a+0' to `a', and `a + 2 a'
+to `3 a'.
+
+The `m B' (`calc-bin-simplify-mode') mode applies the default
+simplifications to a result and then, if the result is an integer,
+uses the `b c' (`calc-clip') command to clip the integer according
+to the current binary word size.  *Note Binary Functions::.  Real numbers
+are rounded to the nearest integer and then clipped; other kinds of
+results (after the default simplifications) are left alone.
+
+The `m A' (`calc-alg-simplify-mode') mode does algebraic
+simplification; it applies all the default simplifications, and also
+the more powerful (and slower) simplifications made by `a s'
+(`calc-simplify').  *Note Algebra::.
+
+The `m E' (`calc-ext-simplify-mode') mode does "extended"
+algebraic simplification, as by the `a e' (`calc-simplify-extended')
+command.  *Note Algebra::.
+
+The `m U' (`calc-units-simplify-mode') mode does units simplification;
+it applies the command `u s' (`calc-simplify-units'), which in turn is a
+superset of `calc-simplify'.  In this mode, variable names which are
+identifiable as unit names (like `mm' for "millimeters") are simplified
+with their unit definitions in mind.
+
+A common technique is to set the simplification mode down to the lowest
+amount of simplification you will allow to be applied automatically,
+then use manual commands like `calc-clean' or `calc-simplify' to perform
+higher types of simplifications on demand.  *Note Algebraic
+Definitions::, for another sample use of no-simplification mode.
+
+

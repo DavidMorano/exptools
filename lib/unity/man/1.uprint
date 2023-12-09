@@ -1,0 +1,594 @@
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          uprint, print - formatted presentation of a UNITY table
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          _u_p_r_i_n_t  [options] [aname ... _i_n ] table1 [ into table2 ] \
+           [where clause]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          The _u_p_r_i_n_t program provides a printout of a UNITY table in
+          tabular form for those records that satisfy the _w_h_e_r_e
+          condition.  _u_p_r_i_n_t automatically handles wrapping header
+          information (i.e., attribute names) and attribute values
+          onto more than one line of a particular column if it
+          encounters a lengthy value (because of UNITY's variable-
+          length fields).
+
+          _u_p_r_i_n_t can also be used to output only some of the
+          attributes of a table, thus incorporating the effect of a
+          project function.  If no attribute names are specified, then
+          all attributes of the table are printed.  If a list of
+          attributes appears, then the table will contain only those
+          fields listed in the order that they appear.  Duplicate
+          attribute names are allowed and the number of columns is
+          limited by the number of attributes allowed in a description
+          file (currently 100 attributes).  Additionally, if the
+          number of attributes is sufficiently large so that all
+          attribute columns will not fit across a line,  multiple
+          tables or sections are printed.
+
+          If the -I option is used, the table name specified is used
+          to determine an alternate description file to be used in
+          reading the input table.
+
+          The output is written to the standard output by default.  If
+          an "into clause" is specified, the output is written into
+          the named table.  An output description file is not created
+          since the output of _u_p_r_i_n_t is not in the format of a UNITY
+          table.  An error is printed if the output table already
+          exists.  If _o_n_t_o is specified instead of _i_n_t_o, the output is
+          appended to the table if it already exists or the table
+          created and written if it does not exist.
+
+          If the input table specified is "-", then input is taken
+          from the standard input instead of a table.  The -I option
+          must be used to specify the name of a table from which the
+          description file name can be determined and used.
+
+          If the output table name specified is "-", then the table
+          output will be written to the standard output.
+
+          The _u_p_r_i_n_t program leaves two lines at the top of the page
+          and prints a header consisting of a dashed line, the
+
+
+
+     Page 1                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          attribute names for the columns and then another dashed line
+          (this default can be modified by using the "-a", "-h" and
+          "-t" options discussed below).  If the printout is paginated
+          (see the "-l" option below), the header (i.e., attribute
+          list) is printed at the top of each page, four blank lines
+          are printed at the bottom of each page (see the "-f" option
+          for printing a footer), and the last page is filled with
+          blank lines (i.e., newline characters).
+
+          Several command line options, available for the _p_r(1)
+          command, are provided with the _u_p_r_i_n_t command.  Print
+          information specified in the description file allows the
+          user to specify a print width for each attribute as well as
+          how the attribute value is to be positioned within the
+          attribute column.
+
+          The command line options are as follows:
+
+          -d   The output is double spaced.  If the "-d" is followed
+               by a character, than that character is used to print
+               the horizontal separator line.  The default is to print
+               spaces (except where the column separators appear).
+               Thus, to get separators consisting of hyphens, use "-
+               d-".
+
+          -e   Record numbers are printed on the left of the table
+               (enumeration).  The number is printed to the left of
+               the first line of output for each record.  The table is
+               shifted five characters to the right and the table
+               width is decreased by five characters.  Numbering will
+               continue until 9999 and then restart at 1.  Any header,
+               footer, or attribute list specified with the -h, -f, or
+               -a print options are NOT shifted to the right.  It was
+               decided that the user may want a header or footer over
+               the record numbers.
+
+          -v   Instead of printing the attribute names as headers for
+               each column, the "user-friendly" name is printed, if
+               they are available in the description file (see _t_a_b_l_e
+               for more details).
+
+          -w_k  The width of the line is set to _k character positions.
+               The default width is 79 characters per line; the
+               default was chosen so tables will be printed nicely on
+               video terminals.  If "-w" is specified without a width,
+               the width defaults to 120 characters per line.
+
+          -o_k  Each line is offset by _k character positions (the
+               default is 0).  The number of character positions per
+               line is the sum of the width and the offset.
+
+          -l_k  The length of a page is set to _k lines.  The default is
+
+
+
+     Page 2                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               no pagination.  If "-l" is specified with no page
+               length, the default is the standard UNIX default of 66
+               lines per page.  The minimum allowable page length is
+               10.
+
+          -h   The next argument is used as a header to be printed at
+               the top of each page in addition to the attribute list.
+               Two blank lines will be printed at the top of the page,
+               followed by the header line, followed by two blank
+               lines, the attribute list, and the table.  The header
+               argument may consist of multiple lines but it is the
+               user's responsibility to account for the right number
+               of lines appearing on the page (e.g., if the header
+               consists of two lines, the user should specify -l65 to
+               get the right number of data lines output for a default
+               page length of 66 lines).  Note that '\n' is _n_o_t
+               expanded to a newline.  The only expansion that is done
+               is that "%d" expands to the current page number.  A
+               side effect of this is that the user must specify "%%"
+               to get a single "%" printed (problems may occur if a
+               "%" is used in any other way).  This option is ignored
+               if the -l option is not specified.
+
+          -a   The next argument is used as the line to be printed
+               instead of the attribute names.  The line will be
+               printed immediately before the table and the attribute
+               name line will not appear.  The argument may consist of
+               multiple lines but it is the user's responsibility to
+               account for the right number of lines appearing on the
+               page (e.g., if the header consists of two lines, the
+               user should specify -l65 to get the right number of
+               data lines output for a default page length of 66
+               lines).  Note that '\n' is _n_o_t expanded to a newline.
+               The only expansion that is done is that "%d" expands to
+               the current page number.  A side effect of this is that
+               the user must specify "%%" to get a single "%" printed
+               (problems may occur if a "%" is used in any other way).
+
+          -f   The next argument is used as a footer to be printed at
+               the bottom of each page.  This option will work only if
+               the "-l" option is specified.  The bottom of the page
+               output will consist of two blank lines, followed by the
+               footer line, and followed by two more blank lines.  The
+               footer argument may consist of multiple lines but it is
+               the user's responsibility to account for the right
+               number of lines appearing on the page (e.g., if the
+               footer consists of two lines, the user should specify
+               -l65 to get the right number of data lines output for a
+               default page length of 66 lines).  Note that '\n' is
+               _n_o_t expanded to a newline; use an actual newline as
+               part of the value within quotes.  The only expansion
+               that is done is that "%d" expands to the current page
+
+
+
+     Page 3                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               number.  A side effect of this is that the user must
+               specify "%%" to get a single "%" printed (problems may
+               occur if a "%" is used in any other way).  This option
+               is ignored if the -l option is not specified.
+
+          -r   No error messages are printed about failure to open
+               files.
+
+          -t   The five-line identifying header and the five-line
+               trailer normally supplied for each page are not
+               printed.  The program also quits printing after the
+               last section without spacing to the end of the page.
+
+          -s_c  Columns are separated by the single character '_c'
+               instead of vertical bars ('|').  The default for _c is
+               '|'.
+
+          -u   This option causes the output to be printed "un-boxed"
+               (i.e., blanks are printed instead of the separator
+               lines).
+
+          -n_c  This option causes all occurrences of '_c' to be
+               translated into a skip to the next row within the
+               attribute column.  Thus, the user can explicitly
+               control where breaks occur in attribute values even if
+               the value would not fill the column.  The newline
+               character is not printed.  For example, a description
+               field in a data catalog could be stored as a single
+               UNITY field with tildes representing newlines.  When
+               printing the fields, the tildes could be translated
+               into new rows to correctly format the description.
+               Note that all strings between the newline delimiters
+               must be less than or equal to the column width for the
+               attribute so that the formatting will work correctly.
+               The default for _c is tilde (~).
+
+          -b   This option will cause all _m_u_l_t_i-_l_i_n_e fields to be
+               split at the last space, comma, semi-colon, colon, or
+               if not found, the last non-alphanumeric character that
+               appears on a row for the attributes.  Blanks that would
+               appear at the beginning of the next line are ignored.
+               If the row does not have a non-alphanumeric character,
+               the program will split the value at the column end.
+               For example, the attribute value "hello, world" being
+               put in a 9-character column will be split as "hello,"
+               and "world" using the "-b" option, and as "hello, wo"
+               and "rld" otherwise.  If the fields are not multi-line,
+               this option has no effect on the output.
+
+               The "-n" option takes priority over the "-b" option.
+               Thus if the "-n" and "-b" options are both given, the
+               program will first scan for a newline character.
+
+
+
+     Page 4                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+               Failing to find one, it scans backwards trying to find
+               a break character _o_n_l_y if the entire attribute value
+               will not fit into the column width specified for the
+               field.  Failing to find a break character, it splits
+               the attribute value exactly at the field width.  Note
+               that the "-n" has an effect even if the attribute value
+               will fit on the row while the "-b" option takes effect
+               only on multi-line attribute values.
+
+          -p   The "-p" (paging) option indicates that records should
+               not be printed across pages when possible.  The number
+               of lines needed to print a record is calculated before
+               printing begins and if the record will not fit on the
+               current page, printing will start on a new page.  The
+               only time that a record will print across more than one
+               page is if it will not fit on a single page.  This
+               option is ignored if the -l option is not specified.
+
+          -R   This option suppresses the printing of repeated
+               attribute values from record to record when they appear
+               on the left-hand side of the table (see example in
+               EXAMPLES section).  All attribute values are printed
+               for the first record on each page.
+
+          -I   If the -I option is used, the table name specified is
+               used to determine an alternate description file to be
+               used in reading the input table.
+
+          The print information that is stored in the description file
+          is handled as follows.  The user may specify print
+          information for any attribute field in the description file
+          by following the attribute type with a tab and then the
+          print width appended with the positioning character.  The
+          print width may be any integer value (within the limits of
+          an _i_n_t for the machine); the _u_p_r_i_n_t program checks for a
+          reasonable print width as explained below.  The positioning
+          character may be 'l', 'r', or 'c' for left justification,
+          right justification, or centering respectively.  The default
+          positioning is left justification.  Note that both the print
+          width and justification can be changed by inputing them
+          directly on the command line immediately following the
+          attribute name (see below).
+
+          The user may enter the printing information directly with
+          the _t_a_b_l_e command by inputing the attribute type and the
+          print information as a single parameter (quotes are
+          necessary so that it will be taken as a single parameter).
+          The format for specifying an attribute type is
+
+          {w<length> | t<terminator>}[<tab>[print width][position]]
+
+          The following is an example of a definition for the
+
+
+
+     Page 5                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          /etc/passwd file with print information specified.
+
+          login  t:      8l
+          passwd t:      14l
+          uid    t:      5r
+          gid    t:      5r
+          acct   t:      20l
+          home   t:      15l
+          shell  t\n     12l
+
+          Note, in the example, that the "login" attribute is left
+          justified whereas the "uid" and "gid" attributes are right
+          justified.
+
+          Column width for an attribute is determined as follows:
+
+          1.   If an attribute list is specified on the command line
+               and an attribute name is specified with a colon (:) and
+               an integer value appended, then that integer value is
+               taken to be the field width and over-rides all other
+               considerations (e.g., uprint login:12 in /etc/passwd
+               would print the login field with a field width of 12
+               characters).  The integer value may be followed by a
+               'l', 'c', or 'r' which is taken as a justification
+               character (left, center, or right, respectively).
+
+          2.   If a print width is given in the description file, it
+               over-rides all considerations other than if a width is
+               specified on the command line.  However, if it is less
+               than 1, it is ignored.  Note that if the print width is
+               less than the length of the attribute name, the
+               attribute name will be wrapped around in the header.
+
+          3.   If the field is a fixed width field, the column width
+               is the maximum of the attribute name length and the
+               attribute width.
+
+          4.   If the field is a terminator field, the column width is
+               set to a fixed default.  The default is currently 12
+               and may be changed by re-defining COLW in _z_u_p_r_i_n_t._c and
+               compiling/linking the program again.
+
+          5.   If the resulting column width as determined from steps
+               1, 2, 3, and 4 above is greater than the line width
+               minus two (since two character positions are reserved
+               for the beginning and ending "|" of the table), the
+               value is reset to line width minus two.
+
+          The _u_p_r_i_n_t program has no limitations regarding the amount
+          of data that can be printed.  The program prints lines as
+          they are generated rather than setting them up in arrays.
+          The resulting program has no data limitations.  The _u_p_r_i_n_t
+
+
+
+     Page 6                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+          command may also be referenced by _p_r_i_n_t (these commands are
+          linked to provide upward compatibility).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+     $ uprint -w65 /etc/passwd    # simple uprint command
+
+
+     |--------------------------------------------------------------|
+     |login   |passwd        |  uid|  gid|acct                      |
+     |--------------------------------------------------------------|
+     |root    |WrO2xgZ/9QZIc |    0|    1|3784,Admin                |
+     |sync    |              |   20|    1|3784,Admin                |
+     |--------------------------------------------------------------|
+
+
+     |----------------------------|
+     |home           |shell       |
+     |----------------------------|
+     |/              |            |
+     |/              |/bin/sync   |
+     |----------------------------|
+
+     $ uprint -v -b login uid in /etc/passwd      # uprint with projection
+
+
+     |--------------|
+     |LOGIN   | USER|
+     |NAME    |   ID|
+     |--------------|
+     |root    |    0|
+     |sync    |   20|
+     |--------------|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 7                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     $ uprint -l15 -h "`date '+%m/%d/%y'`    GENERAL HEADING        Page %d
+     Another line of heading" login gid in /etc/passwd
+
+
+     02/08/82    GENERAL HEADING        Page 1
+     Another line of heading
+
+
+     |--------------|
+     |login   |  gid|
+     |--------------|
+     |last    |   11|
+     |root    |    1|
+     |--------------|
+
+
+
+
+
+
+     02/08/82    GENERAL HEADING        Page 2
+     Another line of heading
+
+
+     |--------------|
+     |login   |  gid|
+     |--------------|
+     |uname   |    1|
+     |daemon  |    1|
+     |--------------|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8                                          (printed 1/19/90)
+
+
+
+
+
+
+     uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))    UUUUNNNNIIIITTTTYYYY UUUUsssseeeerrrr''''ssss MMMMaaaannnnuuuuaaaallll    uuuupppprrrriiiinnnntttt,,,,pppprrrriiiinnnntttt((((UUUUNNNNIIIITTTTYYYY))))
+
+
+
+     $ uprint -l15 -h "`date '+%m/%d/%y'`    GENERAL HEADING        Page %d
+     Another line of heading" -a "|attribute list|" login gid in /etc/passwd
+
+
+     02/08/82    GENERAL HEADING        Page 1
+     Another line of heading
+
+
+     |attribute list|
+     |--------------|
+     |last    |   11|
+     |root    |    1|
+     |uname   |    1|
+     |--------------|
+
+
+
+
+
+
+     02/08/82    GENERAL HEADING        Page 2
+     Another line of heading
+
+
+     |attribute list|
+     |--------------|
+     |daemon  |    1|
+     |bin     |    2|
+     |adm     |    4|
+     |--------------|
+
+     $ uprint table                   $ uprint -R table
+
+
+     |--------------------------|     |--------------------------|
+     |a1      |a2      |a3      |     |a1      |a2      |a3      |
+     |--------------------------|     |--------------------------|
+     |abc     |def     |ghi     |     |abc     |def     |ghi     |
+     |abc     |def     |ghj     |     |        |        |ghj     |
+     |abc     |deg     |ghj     |     |        |deg     |ghj     |
+     |abd     |deg     |ghj     |     |abd     |deg     |ghj     |
+     |--------------------------|     |--------------------------|
+
+     FFFFIIIILLLLEEEESSSS
+          unity/uprint.c, zuprint.c - the C source program
+          bin/uprint, print - the executable programs (linked)
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          _c_a_t_a_l_o_g, _u_p_r_i_n_t_f, _t_a_b_l_e(UNITY), _p_r(1)
+
+
+
+
+
+
+     Page 9                                          (printed 1/19/90)
+
+
+

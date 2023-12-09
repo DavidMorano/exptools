@@ -1,0 +1,45 @@
+#ident "@(#) /sable/sdb/ra/sblib/form/s.form.dd"
+/*      Copyright (c) 1989, 1990, 1991 AT&T - All Rights Reserved */
+
+struct field
+   {
+   char *caption;
+   int length;
+   char *data;     /* assigned by Form::Form() */
+   };
+
+typedef enum formtype { RECORD, TABLE } FORMTYPE;
+
+class Form : private Curse
+   {
+   WINDOW *const base;
+   WINDOW *msgwin;
+   WINDOW *errwin;
+   WINDOW **subwindows;
+   unsigned _capacity;
+   void Form::edit_file(WINDOW *basewin,char *path) const;
+public:
+   const unsigned nitems;
+   struct field *const fields;
+   friend ostream &operator<<(ostream &,const Form &);
+
+   Form(field *formfields,unsigned nfields,char *heading=NULL,
+      FORMTYPE type=RECORD,WINDOW *b=(WINDOW *)0);
+   ~Form();
+   Boolean_t input(unsigned row=0) const;
+   Boolean_t update(unsigned row=0,unsigned startfield=0) const;
+   void display(unsigned row=0) const;
+   Boolean_t reread(unsigned field,unsigned row=0) const;
+   void message(char *m=0) const;
+   int prompt(char *m="Press return to continue:") const;
+   void error(char *e=0) const;
+   const unsigned capacity() const;
+   void frefresh(WINDOW *s=0) const;
+   };
+
+extern Error formerr;
+const int F_CANT_SUBWIN = 0;
+const int F_GETCH_ERROR = 1;
+const int F_INVALID_FIELD = 2;
+const int F_TOO_FEW_COLUMNS = 3;
+const int F_WINDOW_TOO_SMALL = 4;

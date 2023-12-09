@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Converts old-style dossier stuff to the new format that uses macros.
+# 
+nawk '
+    function getln() {
+	while (getline)
+	    if (length($0)) break;
+	return $0;
+    }
+
+    BEGIN {
+	printf(".EN");
+	for (i = 0; i < 6; i++) printf(" \"%s\"", getln());
+	printf("\n.AP");
+	for (i = 0; i < 4; i++)
+		if (i != 2)
+			printf(" \"%s\"", getln());
+		else
+			getln();
+	printf("\n.OV %s\n", getln());
+	SUP = getln();
+	MGR = getln();
+    }
+
+    (NF == 0) && !VICTIM { next; }
+    (NF == 0) && (C == 0) { C++; if (thing) print thing; thing = ".C1"; next; }
+    (NF == 0) && (C == 1) { C++; thing = ".C2"; getln(); getline; next; }
+    (NF == 0) && (C == 2) { C = 0; thing = ".C3 " getln(); next; }
+    /^\.bp/ { getline; next; }
+    /^\.pg 2/ {
+	printf(".SS \"%s\" \"%s\"\n", SUP, MGR);
+	VICTIM = getln();
+	next;
+    }
+    /^\.dap/ { print ".DA"; getline; while (getline) print $0; exit; }
+    { if (thing) { print thing; thing = ""; } print; }
+' $*

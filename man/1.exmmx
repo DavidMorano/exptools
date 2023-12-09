@@ -1,0 +1,198 @@
+
+
+
+     EEEEXXXXMMMMMMMMXXXX((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEEXXXXMMMMMMMMXXXX((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          exmmx - extended mmx for Xerox 9700 printing
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          eeeexxxxmmmmmmmmxxxx [----hhhh] [----iiii] [----vvvv] [----aaaassssiiiissss] [----mmmmaaaannnn] [----vvvvgggg] [----ggggcccc] [----ggggrrrraaaapppp]
+          [----ppppiiiicccc] [----ttttrrrrooooffffffff] [----TTTTXXXX99997777....font [----mmmmaaaaiiiillll||||----rrrroooouuuutttteeee||||----aaaaddddddddrrrr addr [----2222] ]
+          other mmx parameters
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _e_x_m_m_x provides easy access to manual page processing,
+          vugraph generation, limited graphics, and BTL mail/routing
+          service via the _m_m_x and Xerox 9700 printer.  It also
+          provides an interface to the _p_o_s_t database to look up
+          addresses of BTL employees for mail delivery.
+
+          The options to _e_x_m_m_x are:
+
+          ----hhhh          help - printout help message
+
+          ----iiii          interactive - run job interactively (default is
+                      batch job).
+
+          ----vvvv          verbose - show UNIX command stream without
+                      executing.  This can be very useful to trouble
+                      shoot problems or to modify the command stream
+                      for a particular application.
+
+          ----aaaassssiiiissss       use input as is (unformatted)
+
+          ----mmmmaaaannnn        use manual page macros
+
+          ----vvvvgggg         supply defaults for vugraph generation to use
+                      the tr14 font
+
+          ----ggggcccc         run input through gc filter for nroff or through
+                      gc2pic for troff for special graphics
+                      characters.  (See _F_i_g_u_r_e_s _a_n_d _T_a_b_l_e_s _U_s_i_n_g
+                      _N_r_o_f_f:  _t_h_e _g_c _F_i_l_t_e_r, by C. Scussel, TM-82-
+                      45162-2, January 21, 1982).
+
+          ----ggggrrrraaaapppp       run input through the grap filter using the
+                      device independent troff (See _G_R_A_P - _A _L_a_n_g_u_a_g_e
+                      _f_o_r _T_y_p_e_s_e_t_t_i_n_g _G_r_a_p_h_s, by J. L. Bentley and B.
+                      W. Kernighan, 11272-850515-04TM, May 15, 1985).
+
+          ----ppppiiiicccc        run input through the pic filter using the
+                      device independent troff.  (See _P_I_C - _A _C_r_u_d_e
+                      _G_r_a_p_h_i_c_s _L_a_n_g_u_a_g_e _f_o_r _T_y_p_e_s_e_t_t_i_n_g, by B. W.
+                      Kernighan, TM-80-1272-2, June 9, 1980).
+
+          ----ttttrrrrooooffffffff      use the device independent troff rather than
+                      nroff.
+
+
+
+     Page 1                                          (printed 11/5/88)
+
+
+
+
+
+
+     EEEEXXXXMMMMMMMMXXXX((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEEXXXXMMMMMMMMXXXX((((1111))))
+
+
+
+          ----TTTTXXXX99997777...._f_o_n_t  use font with the device independent troff
+                      (default -TX97.ti10p).
+
+          ----mmmmaaaaiiiillll _a_d_d_r  send xerox output thru the BTL mail using the
+                      _o_p_r mail option.  _a_d_d_r has the form of "name
+                      location room" (eg, "J. Who IH 1B-234") where
+                      blanks or tabs must delimit the location code.
+                      Name may be upper or lower case of the form
+                      'First Last' or 'Last, First' where First may be
+                      either initials or a full name (eg, John White;
+                      J A White; White, John A).  For multiple
+                      addresses, _a_d_d_r should be a file (or ---- for
+                      standard input) that contains an address per
+                      line (without quotes).  If the location and room
+                      is absent from any address or if the "address"
+                      is a post alias, the address(es) as found in the
+                      _p_o_s_t database is used.
+
+          ----rrrroooouuuutttteeee _a_d_d_r produce a document copy per _a_d_d_r with a 'Deliver
+                      to:  addr' box on the front page of each
+                      document.  This routing label allows each
+                      document to be placed in a BTL out box for
+                      delivery by the BTL mail service.  _a_d_d_r is the
+                      same as defined for ----mmmmaaaaiiiillll.
+
+          ----aaaaddddddddrrrr _a_d_d_r  will list the addresses that would be used by
+                      -mail/-route.  This is useful for checking the
+                      addresses from the post database.
+
+          ----2222          use two sided output (site dependent).
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          exmmx -man -gc -mail "Jane Doe WH 1Z-536" man.page
+
+          exmmx -man -gc -mail mfile man.page
+
+          The first example will format the man.page, convert any
+          special drawing characters to the special graphics
+          characters, and send the xerox output via BTL mail to Jane
+          Doe at Whippany.  The second example will do the same but
+          will send the output to every address in the file _m_f_i_l_e.
+
+          cat <-! >rfile
+               Jane Doe WH 1Z-536
+               John Bell
+               Smith, J. R.
+               !
+          exmmx -t -route rfile document.mm
+
+          This example will run _d_o_c_u_m_e_n_t._m_m through _t_b_l, format it,
+          and make three copies, one labeled with a 'Deliver to:  Jane
+          Doe WH 1Z-536', one labeled with a 'Deliver to:  BELL, J IH
+
+
+
+     Page 2                                          (printed 11/5/88)
+
+
+
+
+
+
+     EEEEXXXXMMMMMMMMXXXX((((1111))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))             EEEEXXXXMMMMMMMMXXXX((((1111))))
+
+
+
+          1B-234', and one labeled with a 'Deliver to:  SMITH, J R MH
+          1Z-567' (as found in the _p_o_s_t database).
+
+          pr abc.c | exmmx -asis -mail "Jane Doe WH 1Z-536" -
+
+          This example will send a pr listing of the C program abc.c
+          to Jane Doe.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          gc, mmx, nroff(1), opr(1), pic(1), post(1), troff(1)
+
+     CCCCAAAAVVVVEEEEAAAATTTTSSSS
+          _e_x_m_m_x is a preprocessor for _m_m_x that makes assumptions about
+          the commands generated by _m_m_x.  If the commands sequence
+          generated by _m_m_x is changed, _e_x_m_m_x may be invalidated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 3                                          (printed 11/5/88)
+
+
+

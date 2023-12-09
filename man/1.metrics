@@ -1,0 +1,528 @@
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE::::
+          metrics -- static measurements of "C" source programs
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS::::
+          mmmmeeeettttrrrriiiiccccssss [ -l ] or [ -f ] [ -m ] [ -h ] [ -s ]   file(s)
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN::::
+          _M_E_T_R_I_C_S is a set of static software metrics for assessing
+          "C" language source programs.
+
+          ----llll        The -l option, when used alone, will produce a
+                    line analysis of the file followed by the
+                    cummulative totals, on a file by file basis (see
+                    example 3). This option may be used with the -f
+                    option to expand the analysis of the lines on a
+                    function basis (see example 2), but this option
+                    excludes the file by file totals. The -l option
+                    will cause all other options to be ignored.
+
+          ----ffff        The -f option instructs the program to calculate
+                    the requested metrics for the source file(s) on a
+                    function by function basis; must be used with
+                    other options.
+
+          ----mmmm        The -m option will run the McCabe metrics only;
+                    may be used with other options (except -l).
+
+          ----hhhh        The -h option will run the Halstead metrics only;
+                    may be used with other options (except -l).
+
+          ----ssss        The -s option will run the span of references and
+                    flow metrics only; may be used with other options
+                    (except -l).
+
+          ddddeeeeffffaaaauuuulllltttt   The default condition is an analysis of each input
+                    file, all metrics, on a file by file basis.
+
+          This system measures static software metrics of source code.
+          Execution and real-time complexity can be assessed with
+          prof(1) or profile(2).
+
+          These measures have been shown to correlate with important
+          aspects of software quality, such as number of bugs,
+          programmer effort required, readability of the completed
+          code, and difficulty of changing and maintaining the
+          software.  However, the results of studies do not agree on
+          the value of each of these metrics, (each is useful to study
+          specific, but different, characteristics of the program in a
+          given environment) use the numbers for relative comparisons
+          only.
+
+          Measures currently implemented are estimates of the
+
+
+
+     Page 1                                          (printed 5/13/92)
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+          presently accepted theoretical concepts. Additional
+          information may be found in [M. Halstead, _E_l_e_m_e_n_t_s _o_f
+          _S_o_f_t_w_a_r_e _s_c_i_e_n_c_e, (Reg.)Elsevier North_Holland, New York,
+          1977.]  for the Halstead metrics and the Mccabe metrics may
+          be found in [T. J. Mccabe, _A _C_o_m_p_l_e_x_i_t_y _M_e_a_s_u_r_e, (Reg.)IEEE
+          Transactions on Software Engineering SE 2 (4), 308_316,
+          (1976).
+
+
+           The metrics currently implemented are:
+
+        NNNNuuuummmmbbbbeeeerrrr ooooffff SSSSoooouuuurrrrcccceeee LLLLiiiinnnneeeessss aaaannnndddd CCCChhhhaaaarrrraaaacccctttteeeerrrrssss
+          Many people have argued that the best predictor of software
+          complexity is simply the length of the module, including the
+          comments and blank lines (this is a truer indication of the
+          programming effort).
+
+        NNNNuuuummmmbbbbeeeerrrr ooooffff NNNNoooonnnnCCCCoooommmmmmmmeeeennnnttttaaaarrrryyyy SSSSoooouuuurrrrcccceeee LLLLiiiinnnneeeessss
+          A truer measure of the size of the functional program is the
+          number of lines not including the "white lines, and
+          commentary lines".  The suggested number of NCSL is 50 to
+          100 per function.
+
+        NNNNuuuummmmbbbbeeeerrrr ooooffff FFFFuuuunnnnccccttttiiiioooonnnnssss DDDDeeeeffffiiiinnnneeeedddd iiiinnnn tttthhhheeee MMMMoooodddduuuulllleeee
+          More separately defined functions make a more complex
+          control flow and more complex stacking of variables,
+          increasing readability problems and chance for bugs.
+          Smaller values are preferred.
+
+        MMMMccccCCCCaaaabbbbeeee''''ssss VVVV((((gggg))))1111,,,, oooorrrr CCCCyyyycccclllloooommmmaaaattttiiiicccc NNNNuuuummmmbbbbeeeerrrr
+          This number is a measure of control flow complexity, defined
+          as a count of the number of distinct branches in the graph
+          of the program.  Smaller values are preferred.
+
+        MMMMccccCCCCaaaabbbbeeee''''ssss VVVV((((gggg))))2222 CCCCyyyycccclllloooommmmaaaattttiiiicccc NNNNuuuummmmbbbbeeeerrrr
+          This number is the V(g)1 for compound predicates [ IF( X1 ||
+          X2) ] which is counted as one branch for V(g)1 but two
+          branches in V(g)2.  This is an improved count of the
+          decisions (complexity) within a program.
+
+        NNNNuuuummmmbbbbeeeerrrr ooooffff GGGGOOOOTTTTOOOO SSSSttttaaaatttteeeemmmmeeeennnnttttssss
+          This number is a count of the number of unconditional jumps
+          in the program, or "goto" statements.  Structured software
+          can be written without goto statements, but sparing use has
+          been shown to be beneficial to software quality.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss nnnnuuuummmmbbbbeeeerrrr ooooffff uuuunnnniiiiqqqquuuueeee ooooppppeeeerrrraaaattttoooorrrrssss nnnn1111
+          The halstead operators and operands are counted consistent
+          with the counting rules developed at IBM's Santa Teresa lab
+          [Fitsos 1979].  Operators are "if", "while", "switch" etc.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss nnnnuuuummmmbbbbeeeerrrr ooooffff uuuunnnniiiiqqqquuuueeee ooooppppeeeerrrraaaannnnddddssss nnnn2222
+
+
+
+     PPPPaaaaggggeeee 2222                                          ((((pppprrrriiiinnnntttteeeedddd 5555////11113333////99992222))))
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+          The unique operands are variables, constants, functions etc.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss ttttoooottttaaaallll ooooppppeeeerrrraaaattttoooorrrrssss aaaannnndddd ooooppppeeeerrrraaaannnnddddssss NNNN1111 NNNN2222
+          These counts are the total of the operators (N1) and
+          operands (N2) found in the program and are the basic counts
+          used by Halstead to calculate the other parameters.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss VVVV,,,, oooorrrr PPPPrrrrooooggggrrrraaaammmm VVVVoooolllluuuummmmeeee
+          This number is an estimate of the information content of the
+          program.  Smaller numbers are related to less complexity.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss LLLL,,,, oooorrrr PPPPrrrrooooggggrrrraaaammmm LLLLeeeevvvveeeellll
+          This number, which has a maximum value of 1.0, is related to
+          the number of distinct operators and the frequency of use of
+          operands.  It is related to the "power" of the programming
+          constructs used in the module.  Larger values are preferred.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss EEEE,,,, oooorrrr PPPPrrrrooooggggrrrraaaammmmmmmmiiiinnnngggg EEEEffffffffoooorrrrtttt
+          This number is the total number of elementary mental
+          discriminations required to generate the program.  It is
+          defined as  V/L .  This measure correlates with program
+          bugs, program readability, and development time.  Smaller
+          numbers are preferred.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss DDDD,,,, oooorrrr PPPPrrrrooooggggrrrraaaammmm DDDDiiiiffffffffiiiiccccuuuullllttttyyyy
+          This number is the reciprocal of L, and is intended to
+          relate especially to the readability of the software module.
+          Smaller values are preferred.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss EEEExxxxppppeeeecccctttteeeedddd PPPPrrrrooooggggrrrraaaammmm LLLLeeeennnnggggtttthhhh
+          This number is a theoretical value of program size based on
+          "optimal" use of the operands in the program.  Smaller
+          values are preferred.
+
+        HHHHaaaallllsssstttteeeeaaaadddd''''ssss RRRReeeeaaaallll PPPPrrrrooooggggrrrraaaammmm LLLLeeeennnnggggtttthhhh
+          This number, the value of length, is the total number of
+          operators and operands actually present in the program (N1 +
+          N2).  Smaller values are preferred.  This calculation is not
+          provided.
+
+        DDDDeeeevvvviiiiaaaattttiiiioooonnnn ooooffff RRRReeeeaaaallll vvvvssss.... EEEExxxxppppeeeecccctttteeeedddd LLLLeeeennnnggggtttthhhh
+          This index is composed of the real length divided by the
+          expected length.  A value of zero means that real length is
+          the same as expected length.  A positive value means that
+          the program is long (it may be redundant, perhaps
+          inefficient), and a negative value means that it is short
+          (possibly dense, suggesting poor readability, thus difficult
+          to debug).  A zero value is not desirable (nor abtainable in
+          the real world) but a positive value may be desirable in a
+          control (decision intensive) program and a negative value
+          may be desirable for a data processing program.  This
+          calculation is not provided.
+
+
+
+     Page 3                                          (printed 5/13/92)
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+        SSSSppppaaaannnn ooooffff RRRReeeeffffeeeerrrreeeennnncccceeee ooooffff VVVVaaaarrrriiiiaaaabbbblllleeeessss
+          The span of reference is the number of lines over which a
+          variable is active, from the first mention to the last (not
+          including the declaration).  Smaller values are preferred.
+          A good derived measure is the mean span of reference times
+          the number of variables, divided by the number of lines of
+          code.  This is the mean number of variables active at any
+          time in the program.  If this derived value is too large,
+          then the variables are difficult for people to keep
+          separated in their mind.
+
+        FFFFuuuunnnnccccttttiiiioooonnnnssss CCCCaaaalllllllleeeedddd ffffrrrroooommmm EEEEaaaacccchhhh FFFFuuuunnnnccccttttiiiioooonnnn
+          This display allows the creation of a graph of
+          interconnectedness of subfunctions in each module.
+          Generally, calling sequences of subroutines should not be
+          too many levels deep, as it is easy to lose track of the
+          arguments passed and the functions performed.  This goal may
+          conflict with principles of "information hiding" in
+          subroutines.
+
+          Use of these measures is, of course, at the discretion of
+          the developer but if used as a relative measure as the
+          program is evolved or changed a better understanding of the
+          complexity and flow of the program can result.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 1111 ::::
+          input: metrics test1.c
+
+          C Software Static Metrics
+
+          **************** File: test1.c *******************
+          Total number of lines  . . . . . . . . . . .     200
+          Total number of blank lines  . . . . . . . .       8
+          Total number of comment lines. . . . . . . .      13
+          Total number of comment/source lines . . . .       0
+          Total number of Non Commentary Source lines.     179
+          McCabe's simple complexity V(G)1 . . . . . .      22
+          McCabe's full complexity V(G)2 . . . . . . .      25
+          Number of functions defined  . . . . . . . .       2
+          Number of Macro functions  . . . . . . . . .       0
+          Number of function calls . . . . . . . . . .      40
+          Number of break & continue statements. . . .       7
+          Number of goto statements  . . . . . . . . .       0
+          Number of unique goto's  . . . . . . . . . .       0
+          Number of unique operators . . . . . . . . .      30
+          Number of unique operands  . . . . . . . . .      76
+          Total number of operators  . . . . . . . . .     410
+          Total number of operands . . . . . . . . . .     307
+          Halstead's program level . . . . . . . . . . 1.65038e-02
+          Halstead's program volume  . . . . . . . . . 4.82392e+03
+          Halstead's program difficulty  . . . . . . . 6.05921e+01
+          Halstead's programming effort  . . . . . . . 2.92291e+05
+
+
+
+     Page 4                                          (printed 5/13/92)
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+          Halstead's expected program length . . . . . 1.53455e+02
+          Number of different variables  . . . . . . .      34
+          Mean span of reference (lines) . . . . . . . . 47.38
+          Largest span of reference(lines) . . . . . . .   161
+              [ is Variable"  opt " on line 35]
+
+          Functions Called From test1.c (and line number of call):
+
+               fgets() - 86
+               fprintf() - 52
+               freopen() - 50
+               printf() - 62 - 83 - 84 - 92 - 93 - 94 - 95 - 96 - 97 - 161 - 162
+                     - 163 - 164 - 165 - 168 - 171 - 178 - 179 - 180 - 181 - 182 - 189
+                     - 190 - 191 - 192 - 193 - 194 - 197
+               regex() - 27 - 89 - 111 - 116 - 121 - 123 - 135
+               try() - 44 - 56
+
+          Total number of function calls. . . . . .      40
+
+          <<<<<<<<<<   end of file test1.c   >>>>>>>>>>>>
+
+
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 2222 ::::
+          input: metrics -lf test.c
+
+          C Software Static Metrics
+
+          **************** file: test.c *******************n
+
+          xxxxxxxxxxx  External Declarations  xxxxxxx
+          Number of lines  . . . . . . . . . . . . . .      11
+          Number of blank lines    . . . . . . . . . .       3
+          Number of comment lines  . . . . . . . . . .       0
+          Number of combined comment & source lines. .       0
+          Non Commentary Source Lines  . . . . . . . .       8
+
+          ========== Function:  main(argc,argv) ==========
+          Number of lines  . . . . . . . . . . . . . .      26
+          Number of blank lines    . . . . . . . . . .       0
+          Number of comment lines  . . . . . . . . . .       0
+          Number of combined comment & source lines. .       0
+          Non Commentary Source Lines  . . . . . . . .      26
+
+          ========== Function:  subf(filenum) ==========
+          Number of lines  . . . . . . . . . . . . . .     109
+          Number of blank lines  . . . . . . . . . . .       1
+          Number of comment lines  . . . . . . . . . .       0
+          Number of combined comment & source lines. .       0
+          Non Commentary Source Lines  . . . . . . . .     108
+
+
+
+     Page 5                                          (printed 5/13/92)
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+          ::::::::::  The total line counts for File test.c :::::::::
+          Total number of lines  . . . . . . . . . . .     146
+          Total number of blank lines  . . . . . . . .       4
+          Total number of comment lines. . . . . . . .       0
+          Total number of comment/source lines . . . .       0
+          Total number of Non Commentary Source lines.     142
+
+          <<<<<<<<<<<<<<<<<<<  END OF FILE  test.c  >>>>>>>>>>>>>
+
+
+
+          *  The combined comment & source lines are counted in the NCSL.
+
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE 3333::::
+          input: metrics -l *.c
+
+          C Software Static Metrics
+
+          ::::::::::  The total line counts for File test3.c :::::::::
+          Total number of lines  . . . . . . . . . . .      65
+          Total number of blank lines  . . . . . . . .      14
+          Total number of comment lines. . . . . . . .       4
+          Total number of comment/source lines . . . .       0
+          Total number of Non Commentary Source lines.      47
+
+                    Cumulative Totals
+          Cum total number of lines  . . . . . . . . . . .      65
+          Cum total number of blank lines  . . . . . . . .      14
+          Cum total number of comment lines. . . . . . . .       4
+          Cum total number of comment/source lines . . . .       0
+          Cum total number of Non Commentary Source lines.      47
+
+          ::::::::::  The total line counts for File test4.c :::::::::
+          Total number of lines  . . . . . . . . . . .     103
+          Total number of blank lines  . . . . . . . .       6
+          Total number of comment lines. . . . . . . .      12
+          Total number of comment/source lines . . . .       0
+          Total number of Non Commentary Source lines.      85
+
+                    Cumulative Totals
+          Cum total number of lines  . . . . . . . . . . .     168
+          Cum total number of blank lines  . . . . . . . .      20
+          Cum total number of comment lines. . . . . . . .      16
+          Cum total number of comment/source lines . . . .       0
+          Cum total number of Non Commentary Source lines.     132
+
+
+
+     NNNNOOOOTTTTEEEE 1111::::
+          Don't compare the sum of the Cyclomatic number ( V(g) ) of
+
+
+
+     Page 6                                          (printed 5/13/92)
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+          the functions to the cyclomatic number of the file, because
+          McCabe adds a count of one to the internal analysis, for the
+          decision to envoke the function (or file) being evaluated.
+          It is more meaningful to evaluate the Cyclomatic number on a
+          function basis.
+
+
+     NNNNOOOOTTTTEEEE 2222::::
+          The outputs contain paging commands for the printer to avoid
+          some of the printing over page ends.  The paging works if
+          you pipe the output to the printer such as in :  metrics x.c
+          y.c z.c | nopr A command similar to this may be placed in
+          your makefile to provide an automatic listing of the metrics
+          each time you do a build.
+
+     WWWWAAAARRRRNNNNIIIINNNNGGGGSSSS::::
+          These programs only produce estimates of the measures,
+          because most real programs are not perfectly structured, and
+          because of the usual parsing problems in "real" languages.
+          However, the closer the module is to perfectly structured,
+          the less error is in the estimated measures. For consistent
+          results it may be advisable to use the C Beautifier (CB) on
+          the files.
+
+          Source files controlled with SCCS also give strange results.
+          To test SCCS files, "get" the version you wish to test, then
+          run metrics on that file.
+
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          The software metric tool was written by George H. Heblinger.
+
+
+     PPPPRRRROOOOVVVVIIIIDDDDEEEERRRR
+          The software metric tool is provided by David Good.
+
+
+     BBBBUUUUGGGGSSSS AAAANNNNDDDD DDDDEEEESSSSIIIIGGGGNNNN DDDDEEEECCCCIIIISSSSIIIIOOOONNNNSSSS::::
+          For reliable results only "C" source programs which pass
+          through the compiler unscathed should be used with metrics.
+
+          Variable span does not take full advantage of "C" local and
+          automatic variables.  Variables defined globally within a
+          file and locally within a function are distinguished, but no
+          further discrimination is made.  This is designed to reflect
+          "readability" of variables, rather than compilation power.
+
+          The programs expect to find all global variables at the top
+          of the source file, before any functions are defined.  That
+          is, any fully global variables declared between two function
+          definitions are treated as if they are local to the
+          immediately preceding function.
+
+
+
+     Page 7                                          (printed 5/13/92)
+
+
+
+
+
+
+     MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))          UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((EEEEXXXXPPPPTTTTOOOOOOOOLLLLSSSS))))           MMMMEEEETTTTRRRRIIIICCCCSSSS((((1111))))
+
+
+
+          Function declarations that are not also function definitions
+          are treated like function calls.
+
+          Symbolic Constants are treated like variables, even if they
+          are included in #define lines.
+
+          #include files are not automatically included in the
+          analysis.
+
+          A user should have only one metrics command in progress at a
+          time, otherwise clashes of temporary files will occur.
+          Temporary files are created in the ////ttttmmmmpppp directory.
+
+          If a line of an input file contains only a complete comment,
+          and the comment starts to the right of column 32, metrics()
+          may not interpret this line as a comment line.  Suspected
+          cause: incorrect regular expression in "fndef" file.
+
+          If a line of an input file contains source instructions and
+          the start of a comment, successive lines containing the
+          remainder of the comment will be interpreted as non-
+          commentary source code lines (NCSL).  Suspected causes:
+          incorrect regular expression in "fndef" file, and logic in
+          function try().
+
+          If a "blank" line of an input file contains more than 32
+          spaces or tabs, it will not be interpreted as as a blank
+          line.  Suspected cause: incorrect regular expression in
+          "fndef" file.
+
+          Input lines longer than 100 characters may be interpreted as
+          multiple lines, causing incorrect counts in NCSL, blank
+          lines, comment lines, and mixed source/comment lines.
+          Suspected causes: Value of 100 hard coded in for array
+          bounds, and fgets() used in function try().
+
+          The "metrics" shell program contains logic related to
+          viewpathing.  Viewpathing is not discussed in the manual
+          pages, and this logic is buggy.
+
+          In the calculation of the McCabe statistic, the "do-while"
+          construct will be counted twice.  It should only be counted
+          once.
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 8                                          (printed 5/13/92)
+
+
+
