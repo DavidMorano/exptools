@@ -1,6 +1,6 @@
 EXPTOOLS
 
-Welcome to AT&T Bell Laboratories Expperimental-Tools distribution.
+Welcome to AT&T Bell Laboratories Experimental-Tools distribution.
 
 These programs are collected from around the Labs and Centers from
 people who thought that they might be useful to others.  This
@@ -12,5 +12,4 @@ quite valuable in themselves.
 
 Use the command 'toolman' to display manual pages for the programs
 in this collection.
-
 
