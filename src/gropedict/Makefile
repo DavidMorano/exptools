@@ -261,20 +261,4 @@ dictfiles.o:		dictfiles.c dictfiles.h
 
 configfile.o:		configfile.c configfile.h
 
-userinfo.o:		userinfo.c userinfo.h
-
-getutmpent.o:		getutmpent.c getutmpent.h
-
-
-vecstr_loadfile.o:	vecstr_loadfile.c
-
-vecstr_env.o:		vecstr_env.c
-
-filemap.o:		filemap.c filemap.h
-
-realname.o:		realname.c realname.h
-
-lastlogfile.o:		lastlogfile.c lastlogfile.h
-
-
 
