@@ -1,6 +1,8 @@
+S (command)
+
 The search command (usually abbreviated to s) is the main search
-capability of slimsrch. It allows you to find all records that have
-a given combination of terms. He search command takes a full Boolean
+capability of slimsrch.  It allows you to find all records that have
+a given combination of terms. The search command takes a full Boolean
 combination of terms.  The operators are (in order of precedence):
 
   /=<field list>      restrict a set to a list of fields
