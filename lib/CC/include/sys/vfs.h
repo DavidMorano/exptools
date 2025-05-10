@@ -142,8 +142,8 @@ extern struct vfssw *vfsNVFS;		/* vfs switch table end marker */
 #undef fstatfs
 
 extern "C" {
-	int statfs(const char *, struct statfs *);
-	int fstatfs(int, struct statfs *);
+	int statfs(const char *,struct statfs *);
+	int fstatfs(int,struct statfs *);
 };
 
 #endif
