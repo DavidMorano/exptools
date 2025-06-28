@@ -137,7 +137,7 @@ extern int	matstr(const char **,const char *,int) ;
 extern int	sfshrink(const char *,int,const char **) ;
 extern int	nleadstr(const char *,const char *,int) ;
 extern int	strnlen(const char *,int) ;
-extern int	sperm(IDS *,struct stat *,int) ;
+extern int	permid(IDS *,struct stat *,int) ;
 extern int	haslc(const char *,int) ;
 extern int	hasuc(const char *,int) ;
 
@@ -372,7 +372,7 @@ int		mode ;
 
 	    rs = SR_NOTDIR ;
 	    if (S_ISDIR(sb.st_mode) && sip->open.ids)
-	        rs = sperm(&sip->id,&sb,mode) ;
+	        rs = permid(&sip->id,&sb,mode) ;
 
 	}
 
